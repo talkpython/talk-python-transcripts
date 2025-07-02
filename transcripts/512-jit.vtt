@@ -1,0 +1,2603 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:05.380
+Do you like to dive into the details and intricacy of how Python executes and how we can optimize it?
+
+00:00:05.860 --> 00:00:07.700
+Well, do I have an episode for you?
+
+00:00:08.200 --> 00:00:18.740
+We welcome back Brant Bucher to give us an update on the upcoming JIT compiler for Python and why it differs from JITs for languages such as C# and Java.
+
+00:00:19.200 --> 00:00:24.060
+This is Talk Python To Me, episode 512, recorded May 27th, 2025.
+
+00:00:24.200 --> 00:00:24.300
+five.
+
+00:00:40.060 --> 00:00:40.580
+Welcome
+
+00:00:40.580 --> 00:01:15.140
+to Talk Python To Me, a weekly podcast on Python. This is your host, Michael Kennedy. Follow me on Mastodon, where I'm @mkennedy, and follow the podcast using @talkpython, both accounts over at Fostadon.org, and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is brought to you by Sentry. Don't let those errors go unnoticed. Use Sentry like we do here at Talk Python.
+
+00:01:15.660 --> 00:01:20.220
+sign up at talkpython.fm/century. Brent, welcome back to Talk Python To Me.
+
+00:01:20.520 --> 00:01:27.300
+Great to have you here. Thanks for having me again. Yeah, nice to see you. Believe it or not, we're going to talk about Python performance again. That'll be fun. Yeah.
+
+00:01:27.500 --> 00:01:28.140
+You've been doing a lot
+
+00:01:28.140 --> 00:01:57.920
+with it lately. It's awesome. Yes, quite a bit, quite a bit. You've been working on the faster CPython initiative, but especially you've been working on basically having Python, the interpreter, rewrite instructions to make it faster. And previously you talked about, you were on the show to talk about the specializing adaptive interpreter. And now we're going to talk about a JIT. So maybe before we dive into it, give us a quick introduction on who you are, what you do, and then we can sort of set the stage for that.
+
+00:01:58.100 --> 00:02:00.180
+Sure, sure. So my name is Brant Bucher.
+
+00:02:00.880 --> 00:02:23.120
+I am a Python core developer. I've been working on Python in some capacity for the last six years or so. I have a smattering of peps from kind of just over that time period. Everything from Adding union operators to dictionaries, to changing the grammar for decorators, to adding structural pattern matching, and now kind of building towards JIT compilation, amongst other things.
+
+00:02:24.060 --> 00:02:32.320
+And so for the last four years, I've been doing that full time at Microsoft, where I've been part of the Faster CPython project over there.
+
+00:02:33.080 --> 00:02:45.700
+And basically for the last two years, as part of that work, I've been mostly focused on landing a JIT compiler, just-in-time compiler in CPython, the reference of the limitation of Python that
+
+00:02:45.700 --> 00:02:46.700
+most
+
+00:02:46.700 --> 00:02:49.720
+people are actually using when they type Python in the command line.
+
+00:02:49.870 --> 00:02:50.020
+Yeah.
+
+00:02:50.190 --> 00:02:50.340
+Yeah.
+
+00:02:50.720 --> 00:02:50.800
+Yeah.
+
+00:02:51.120 --> 00:02:51.300
+Awesome.
+
+00:02:51.700 --> 00:02:54.700
+Well, thanks for all that work because Python's gotten a lot faster.
+
+00:02:55.100 --> 00:02:55.360
+Yes.
+
+00:02:55.580 --> 00:02:55.800
+Yeah.
+
+00:02:56.420 --> 00:03:00.120
+Over the last four years, it's gotten something like 50% faster overall.
+
+00:03:00.880 --> 00:03:04.280
+And a lot of that, like our goal is to be totally transparent with that.
+
+00:03:04.320 --> 00:03:08.620
+And so like you don't need to make any code changes for your code to speed up.
+
+00:03:08.780 --> 00:03:10.460
+The idea is you just upgrade your version of Python.
+
+00:03:11.020 --> 00:03:12.040
+Nothing breaks, ideally.
+
+00:03:12.420 --> 00:03:18.560
+And you're just able to run faster and pay less for your cloud bill or do more or whatever.
+
+00:03:19.120 --> 00:03:21.180
+Buy a smaller server, something like that.
+
+00:03:21.400 --> 00:03:21.840
+Yep, exactly.
+
+00:03:22.920 --> 00:03:25.920
+And so that's been like really, really cool to see that playing out.
+
+00:03:25.980 --> 00:03:28.540
+And I mean, that 50% is just kind of like an average number.
+
+00:03:28.720 --> 00:03:44.420
+But like, for example, and I had mentioned this at PyCon where I just gave a talk, but for example, real world workloads like Pilot, for example, same version of Pilot runs over 100% faster on newer versions of Python than it did like four years ago, which is really, really cool to see.
+
+00:03:44.700 --> 00:03:48.280
+Yeah, that's awesome. And that's not necessarily because they change anything. It's just.
+
+00:03:48.490 --> 00:03:49.920
+Nope. In fact, we pin the
+
+00:03:49.920 --> 00:03:53.820
+exact same version of Pilot in the benchmark just because we want to avoid having them
+
+00:03:53.820 --> 00:03:54.660
+change stuff and
+
+00:03:54.660 --> 00:03:57.000
+then us trying to figure out what went wrong with our benchmark.
+
+00:03:57.060 --> 00:03:57.400
+Yeah, yeah.
+
+00:03:57.580 --> 00:04:00.220
+Did it go slower because they added this feature or whatever? Yeah.
+
+00:04:00.330 --> 00:04:00.700
+Yeah, exactly.
+
+00:04:01.320 --> 00:04:05.020
+So 50% faster on average obviously depends on your workload.
+
+00:04:05.680 --> 00:04:06.120
+But
+
+00:04:06.120 --> 00:04:08.560
+I think that that is a big change.
+
+00:04:09.000 --> 00:04:11.040
+You're talking CPU. What about memory?
+
+00:04:12.310 --> 00:04:17.079
+Do some of these features come at trading memory for CPU time or things like that?
+
+00:04:17.400 --> 00:04:19.660
+A bit of memory. I'm fuzzy on the exact numbers.
+
+00:04:20.000 --> 00:04:29.660
+But when we first added the specializing adaptive interpreter, which was how we got a nice 25% boost in 3.11, that changed the size of the bytecode slightly.
+
+00:04:29.890 --> 00:04:37.100
+And so we used inline caches and basically some scratch space inside of the bytecode itself, which did increase memory a bit.
+
+00:04:37.900 --> 00:04:43.940
+But that's more of like a fixed cost per kind of the function that you have.
+
+00:04:44.580 --> 00:04:51.660
+Basically, every function gets a little bit bigger, but it's not like we're attaching all sorts of metadata to your actual data.
+
+00:04:51.840 --> 00:04:51.980
+So
+
+00:04:51.980 --> 00:04:53.860
+for smaller programs that
+
+00:04:53.860 --> 00:04:57.540
+just run a few functions and don't have much data, maybe you'll see a proportionally larger increase.
+
+00:04:57.800 --> 00:05:03.040
+But if you're actually working with large amounts of data where memory pressure is actually a concern, you'll probably won't notice anything at all.
+
+00:05:03.280 --> 00:05:04.040
+Yeah, exactly.
+
+00:05:04.240 --> 00:05:07.520
+A lot of that stuff ends up in C, some C layer anyway, right?
+
+00:05:07.700 --> 00:05:08.980
+Especially on the data science side.
+
+00:05:09.480 --> 00:05:14.300
+But you're not doing something like the pi object, the C thing itself, right?
+
+00:05:14.420 --> 00:05:19.620
+It's not like now they've got a ref count, now it's got some other flag on every object you create.
+
+00:05:19.860 --> 00:05:23.480
+Well, so, I mean, we do take kind of a holistic approach to how we're improving performance.
+
+00:05:23.640 --> 00:05:25.700
+And so it's not just things in the interpreter itself.
+
+00:05:25.800 --> 00:05:27.940
+a lot of it is changing the representation of objects and stuff.
+
+00:05:28.160 --> 00:05:31.680
+So if you're asking if we're making breaking changes to C extensions, that's not the case.
+
+00:05:32.220 --> 00:05:37.360
+But we have changed sort of how your Python objects are implemented under the hood pretty substantially.
+
+00:05:38.140 --> 00:05:38.700
+So like,
+
+00:05:39.680 --> 00:05:49.340
+for example, in recent versions of Python, and this was actually the free-threaded team at Meta that made some of these changes, which is pretty cool, but they just do less ref count in the interpreter.
+
+00:05:49.380 --> 00:05:56.840
+If we can prove that we don't need to increment the reference count and decrement it all over the place, then that work just doesn't happen.
+
+00:05:57.580 --> 00:06:02.380
+But kind of more substantially, we've also made changes to the way that instance dictionaries work.
+
+00:06:02.720 --> 00:06:08.500
+So in older versions of Python, every object actually had a full dictionary hanging off of it.
+
+00:06:09.640 --> 00:06:11.400
+You find that dunder dict, right?
+
+00:06:11.860 --> 00:06:12.300
+Exactly.
+
+00:06:13.230 --> 00:06:13.340
+Yep.
+
+00:06:13.700 --> 00:06:21.700
+And so kind of one thing that is fairly obvious to most Python programmers is that that dunder dict isn't actually accessed all that often.
+
+00:06:22.360 --> 00:06:23.660
+In fact, it's very rarely accessed.
+
+00:06:23.680 --> 00:06:31.700
+And so what we do in recent versions of Python is that rather than creating that dictionary, we do create the full dictionary if you ask for it.
+
+00:06:31.850 --> 00:06:38.000
+But in the case where you don't ask for it, we literally just put the values of the dictionary in the object itself.
+
+00:06:38.300 --> 00:06:40.680
+So it's very similar to how slots work.
+
+00:06:41.250 --> 00:06:48.600
+So most Python objects, if you don't actually ask for the dunder dict, you basically get a slotted instance, which is really
+
+00:06:48.600 --> 00:06:48.780
+neat.
+
+00:06:48.860 --> 00:06:49.040
+It's great
+
+00:06:49.040 --> 00:06:49.460
+for memory
+
+00:06:49.460 --> 00:06:53.440
+and it's great for all sorts of optimizations that we're doing under the hood as well.
+
+00:06:53.620 --> 00:06:58.440
+And, okay, so what happens if for a while you don't access the
+
+00:06:58.440 --> 00:06:59.040
+Dundedict and
+
+00:06:59.040 --> 00:07:00.040
+then all of a sudden you do?
+
+00:07:00.170 --> 00:07:03.400
+Is it get dynamically generated and you pay a little price for that?
+
+00:07:03.740 --> 00:07:11.260
+Yes, but we still, so, I mean, we could get really into the weeds with this because I love geeking out about this stuff and the implementation details and stuff.
+
+00:07:11.380 --> 00:07:11.940
+Basically,
+
+00:07:12.460 --> 00:07:17.300
+when you do ask for that dictionary, it will create a dictionary, but the dictionary will just be two pointers.
+
+00:07:17.540 --> 00:07:22.200
+One is to the keys of the dictionary, which are on the class and are shared by all instances.
+
+00:07:22.760 --> 00:07:27.660
+And another pointer, which is to the values of the dictionary, which still live on the object in those slots.
+
+00:07:28.020 --> 00:07:30.180
+And so even when you ask for the dictionary, it's a very lightweight thing.
+
+00:07:31.100 --> 00:07:31.360
+And
+
+00:07:31.360 --> 00:07:34.700
+then it's only once you start actually like messing with the dictionary.
+
+00:07:35.080 --> 00:07:45.880
+Like, for example, if you add a ton of attributes and there's not space on the instance anymore, or if you start adding like non-string keys or weird things like that, then we actually materialize a full dictionary and copy everything over.
+
+00:07:46.140 --> 00:07:53.080
+But we try very, very hard to avoid actually creating dictionaries, because it's a very heavy thing for something that should be as light as instance attributes.
+
+00:07:53.500 --> 00:07:56.920
+Yeah, it makes a massive difference whether you have slots or not, actually.
+
+00:07:57.110 --> 00:08:05.460
+And if you have a million entries of a class with five attributes, you don't want to have the names of those attributes repeated a million times, just the data.
+
+00:08:05.840 --> 00:08:07.800
+Exactly. Like some of the memory savings are massive.
+
+00:08:07.910 --> 00:08:15.520
+And like I said, it just makes things easier for us under the hood because we don't need to chase pointers around just to look up an attribute out of a dictionary, which is a very common thing to do.
+
+00:08:16.020 --> 00:08:16.220
+Yeah,
+
+00:08:16.320 --> 00:08:17.980
+it's very common.
+
+00:08:18.320 --> 00:08:18.520
+Yes.
+
+00:08:18.900 --> 00:08:31.800
+And another thing that, you know, I'm sure some people listening, I know that you know, but one of the other considerations is sort of cache behaviors like L1, L2 cache behaviors of accessing data.
+
+00:08:31.860 --> 00:08:37.120
+And the more spread out it is, the more you start breaking the cache locality of things.
+
+00:08:37.580 --> 00:08:37.880
+And yeah,
+
+00:08:37.960 --> 00:08:38.500
+it's not great.
+
+00:08:38.740 --> 00:08:39.140
+Yeah, exactly.
+
+00:08:39.440 --> 00:08:48.520
+Before, if we wanted to get something out of the dictionary, we needed to follow a pointer to the object and follow a pointer to its dictionary, then follow a pointer to the values and follow a pointer to the thing that we're getting out.
+
+00:08:48.580 --> 00:08:57.760
+So now it's just, we already have the object, get an offset into its values and fish out the object and increment its reference count.
+
+00:08:57.920 --> 00:08:58.340
+That's awesome.
+
+00:08:58.430 --> 00:08:59.160
+When did that come out?
+
+00:08:59.740 --> 00:09:00.440
+I think that
+
+00:09:00.440 --> 00:09:02.340
+was 312-ish, something like that.
+
+00:09:02.880 --> 00:09:11.740
+Mark Shannon gave a talk at PyCon, I think it was last year, talking about some of these improvements, both memory and like you were saying, like cache
+
+00:09:11.740 --> 00:09:13.340
+locality and all that.
+
+00:09:14.080 --> 00:09:14.320
+Excellent.
+
+00:09:14.740 --> 00:09:19.440
+There's many little roads and paths we could take to go into the
+
+00:09:19.440 --> 00:09:20.080
+weeds and the details.
+
+00:09:20.080 --> 00:09:22.480
+I could talk about this stuff for 24 hours if you have the time.
+
+00:09:23.880 --> 00:09:27.400
+Maybe we'll do a 24-hour live stream on JIT sometime, but maybe not just today.
+
+00:09:29.580 --> 00:09:32.760
+I know we're going to get into it, but just sort of looking forward.
+
+00:09:33.080 --> 00:09:35.860
+What's the memory story with the JIT stuff?
+
+00:09:36.160 --> 00:09:37.120
+Yeah, we've actually...
+
+00:09:37.120 --> 00:09:37.700
+Significant or is it pretty cheap?
+
+00:09:38.020 --> 00:09:47.600
+It's pretty cheap because, like I said, a lot of the cost that you're paying is proportional to the amount of code that you're executing, not proportional to the amount of data that you're executing it on.
+
+00:09:47.890 --> 00:09:53.360
+So again, a lot of the situations where you have this sort of memory pressure are going to be when you're working with large amounts of data.
+
+00:09:54.100 --> 00:09:55.780
+And with that, you probably won't notice it too much.
+
+00:09:56.300 --> 00:10:07.460
+For our benchmark suite, which has a high ratio code to data, meaning very little data, but a lot of code in our experience, the overhead is something in the ballpark of 1% to 2%.
+
+00:10:07.480 --> 00:10:21.000
+It used to be higher, like 5% to 10%-ish, but one of the core devs, Savannah Ostrovsky, or Savannah Bailey now, she actually just got married, It worked on at the last Python core dev sprint, getting that number down.
+
+00:10:21.480 --> 00:10:26.600
+And so that's something we've been keeping an eye on, but it's not too huge of a concern right now just because it's in that kind of negligible zone.
+
+00:10:27.180 --> 00:10:40.480
+Probably as we start doing smarter things in the JIT where we need to actually keep a lot of metadata around to be able to reconstruct the world when we exit the JIT, that's where kind of a lot of that memory overhead can come from.
+
+00:10:41.140 --> 00:10:44.700
+But I'm not too concerned about it right now and users shouldn't be either, at least at this stage.
+
+00:10:45.120 --> 00:10:46.920
+Okay, I'm resisting going into the details for that one.
+
+00:10:47.700 --> 00:10:48.820
+But we're going to be back to it.
+
+00:10:48.860 --> 00:10:49.460
+It's hard, yeah.
+
+00:10:50.060 --> 00:10:50.900
+Yeah, it's amazing.
+
+00:10:51.300 --> 00:10:52.340
+It's so interesting.
+
+00:10:52.490 --> 00:10:56.580
+And I am, just before we get into the details, I am so excited for a JIT for
+
+00:10:56.580 --> 00:10:56.800
+Python.
+
+00:10:56.990 --> 00:10:57.080
+I
+
+00:10:57.080 --> 00:10:58.080
+think this is fantastic.
+
+00:10:59.180 --> 00:11:04.020
+It opens up so many optimizations and interesting performance boosts.
+
+00:11:04.500 --> 00:11:05.860
+Yeah, yeah, you can do a lot of cool things.
+
+00:11:05.910 --> 00:11:11.720
+I mean, optimizing a dynamic language like Python is just sort of lying about what you're doing, right?
+
+00:11:11.900 --> 00:11:14.840
+Like you're just avoiding doing things that the user won't notice.
+
+00:11:14.980 --> 00:11:21.780
+like these dynamic type checks and reference counting and not actually creating dictionaries behind people's backs and stuff.
+
+00:11:21.890 --> 00:11:32.220
+And so I think that JIT compiler gives us even more opportunities to leverage those sorts of cheating when we're executing your code.
+
+00:11:33.320 --> 00:11:35.500
+And so, yeah, it's something that we're excited about too.
+
+00:11:35.600 --> 00:11:37.060
+Plus, it's just really fun to work on.
+
+00:11:37.220 --> 00:11:38.640
+I do this because I love it.
+
+00:11:38.700 --> 00:11:39.980
+It's really interesting to me.
+
+00:11:40.320 --> 00:11:44.180
+And so the fact that other people get to benefit from our work is really cool, to say the least.
+
+00:11:44.600 --> 00:12:03.740
+Yeah, for sure. We'll come back to it in a second. But I think one thing I just want to ask you about, since I know you were intimately involved with it, worked really closely with the team, is there's been some reorgs and layoffs and certain things at Microsoft that impacted some of the key folks working on faster CPython.
+
+00:12:04.220 --> 00:12:13.560
+I don't want to necessarily dive into all their details. I'll let those lie, right? That's their situation. And people have talked about it in public, so whoever wants to know can figure it out.
+
+00:12:13.780 --> 00:12:19.720
+But I do want to just ask, like, what is the status or the future of the Faster CPython project?
+
+00:12:19.910 --> 00:12:23.520
+Does that mean it's frozen in time where it was last couple weeks ago?
+
+00:12:23.590 --> 00:12:24.360
+Or what's the story?
+
+00:12:24.580 --> 00:12:24.780
+Yeah.
+
+00:12:24.850 --> 00:12:36.680
+So just on the layoffs themselves, like, as you probably heard, like, my team was very, very heavily affected by the kind of across the board layoffs that happened at Microsoft on the Tuesday before PyCon.
+
+00:12:37.560 --> 00:12:37.960
+And again,
+
+00:12:37.960 --> 00:12:41.220
+I won't discuss individual names or situations because it probably isn't the right forum.
+
+00:12:41.320 --> 00:12:49.280
+But me speaking personally, I mean, this sucked, like all layoffs sucked, but this one hit particularly hard because it was like the majority of the team that
+
+00:12:49.280 --> 00:12:49.660
+I work
+
+00:12:49.660 --> 00:12:59.440
+on. And it also just kind of represented something more because what we were working on was really special and giving back to the community and all of that. And we had a lot of momentum, which is kind of tough to see that.
+
+00:13:00.240 --> 00:13:04.320
+Kind of zooming out, though, like part of the reason it sucks so much is because it was a really cool opportunity.
+
+00:13:04.710 --> 00:13:14.520
+And it's something really, really special that you don't get to see that much, which is large companies funding open source development and funding it in a way where everyone actually gets to benefit from the work.
+
+00:13:14.630 --> 00:13:17.180
+Right. Like Microsoft took a chance.
+
+00:13:17.560 --> 00:13:22.780
+And at one point, I mean, they're paying seven full time engineers to work on this stuff, which is not like
+
+00:13:22.780 --> 00:13:23.400
+a negligible
+
+00:13:23.400 --> 00:13:24.240
+amount of resources.
+
+00:13:24.580 --> 00:13:28.020
+Right. So one thing I want to emphasize is like,
+
+00:13:28.360 --> 00:13:28.440
+yeah,
+
+00:13:28.640 --> 00:13:30.000
+like I don't agree with the decision.
+
+00:13:30.020 --> 00:13:33.480
+to, you know, impact our team the way they did.
+
+00:13:33.700 --> 00:13:37.520
+And obviously, like, these are all very, very smart, talented people.
+
+00:13:37.680 --> 00:13:42.100
+So if you get the opportunity to hire them, you absolutely should, because they're some of the best Python and C programmers on the planet.
+
+00:13:42.760 --> 00:13:50.800
+But I don't want the takeaway to be that after the dust has settled on this, that Microsoft is some sort of villain, because, like, they're one of the only companies that are doing this sort of work at this scale.
+
+00:13:51.180 --> 00:13:53.840
+And I want more companies doing that, not fewer.
+
+00:13:54.260 --> 00:14:04.160
+And so I think it's important that we encourage teams like ours to exist and not dwell on kind of the negative things that can happen after a lot of the work is completed.
+
+00:14:04.580 --> 00:14:04.720
+Yeah,
+
+00:14:04.820 --> 00:14:06.380
+I agree with that for sure.
+
+00:14:06.440 --> 00:14:06.780
+I mean,
+
+00:14:06.820 --> 00:14:12.380
+there's tons of other big tech companies and others who didn't fund an initiative at all.
+
+00:14:12.820 --> 00:14:16.320
+And Microsoft did for three years and it's made a huge difference, right?
+
+00:14:16.520 --> 00:14:18.520
+And I don't know, what do you feel about momentum?
+
+00:14:18.940 --> 00:14:24.940
+You know, one of the challenges with these things is it just takes to start making progress or to refactor things to make it possible.
+
+00:14:25.180 --> 00:14:26.600
+It's just so much work.
+
+00:14:26.800 --> 00:14:34.880
+I know a lot of people have tried to make some of these changes just in their spare time and hardly win anywhere because it's still involved, right?
+
+00:14:35.140 --> 00:14:38.840
+There's been a team working on this for a while and still is to some degree, right?
+
+00:14:38.900 --> 00:14:39.620
+Just a little bit less.
+
+00:14:40.100 --> 00:14:40.220
+Yeah.
+
+00:14:40.260 --> 00:14:43.820
+I mean, one really important thing
+
+00:14:43.820 --> 00:14:46.500
+about our team was we proved that the model works.
+
+00:14:46.600 --> 00:14:49.880
+Like 50% faster in four years is absolutely something to be proud of.
+
+00:14:49.880 --> 00:14:52.840
+And that's like a real impact that can be immediately felt, right?
+
+00:14:53.680 --> 00:15:13.360
+And one thing that I think is important about funding these teams and funding full-time open source development, which we've been seeing more of kind of over the past couple of years, whether it's developers and residents or the work that Meta is doing on free threading, is that it allows us to take on larger projects that otherwise wouldn't really be feasible by one volunteer or small team of volunteers, right?
+
+00:15:14.200 --> 00:15:24.300
+So being able to plan and execute on the timescale of months and years in kind of a coordinated effort is a really great opportunity.
+
+00:15:24.530 --> 00:15:26.720
+And I think we took full good advantage of that.
+
+00:15:27.270 --> 00:15:34.260
+And one thing that I think is equally important is not only making these big changes that can only be maintained by that team at that large company.
+
+00:15:34.620 --> 00:15:44.540
+One thing that I think our team did really, really well is that we took the time to kind of weigh our priorities and make sure that whatever we came up with could be maintained by the community.
+
+00:15:44.670 --> 00:15:53.780
+Maybe it could only be developed and initially executed by a team of full-time core developers with the resources of a large company.
+
+00:15:54.220 --> 00:16:03.780
+But going forward, everything that we've done is absolutely able to be maintained by both the volunteers that we are collaborating with and new people who are approaching it for the first time.
+
+00:16:03.880 --> 00:16:33.300
+So we're already having discussions about sort of how to have community stewardship of the FasterCPython project going forward. And I mean, at the Python core developer sprints at PyCon, we're seeing a lot of people who have never worked at Microsoft helping to land new optimizations in the JIT and things like that. So we do have a lot of momentum. Obviously, this hurts it, but I think it is good to make sure that the community can sustain what we've built going forward. And I think we did a good job of that.
+
+00:16:33.460 --> 00:16:49.500
+Yeah, excellent. Well, that's good to hear. From what I've seen on discuss.python.org or whatever the URL is, it seems like people just sort of figure out how to reorganize and keep going. It's not like, well, that was that. It's just, well, now how do we keep going, but with different structures and supports?
+
+00:16:49.820 --> 00:16:50.180
+Exactly.
+
+00:16:50.580 --> 00:16:50.640
+Yeah.
+
+00:16:50.960 --> 00:16:55.300
+Okay. Good to hear. So looking forward to Python being faster still.
+
+00:16:56.920 --> 00:16:59.660
+This portion of Talk Python To Me is brought to you by Sentry.
+
+00:17:00.620 --> 00:17:08.640
+Over at Talk Python, Sentry has been incredibly valuable for tracking down errors in our web apps, our mobile apps, and other code that we run.
+
+00:17:09.339 --> 00:17:17.959
+I've told you the story how more than once I've learned that a user was encountering a bug through Sentry and then fixed the bug and let them know it was fixed before they contacted me.
+
+00:17:18.420 --> 00:17:19.240
+That's pretty incredible.
+
+00:17:19.920 --> 00:17:26.180
+Let me walk you through the few simple steps that you need to add error monitoring and distributed tracing to your Python web app.
+
+00:17:26.780 --> 00:17:34.420
+Let's imagine we have a Flask app with a React front-end, and we want to make sure there are no errors during the checkout process for some e-commerce page.
+
+00:17:35.200 --> 00:17:39.700
+I don't know about you, but anytime money and payments are involved, I always get a little nervous writing code.
+
+00:17:40.640 --> 00:17:43.060
+We start by simply instrumenting the checkout flow.
+
+00:17:43.460 --> 00:17:49.980
+To do that, you enable distributed tracing and error monitoring in both your Flask backend and your React front-end.
+
+00:17:51.000 --> 00:17:57.400
+Next, we want to make sure that you have enough context that the front-end and back-end actions can be correlated into a single request.
+
+00:17:58.600 --> 00:18:00.800
+So we enrich a Sentry span with data context.
+
+00:18:01.520 --> 00:18:06.880
+In your React checkout.jsx, you'd wrap the submit handler in a Sentry start span call.
+
+00:18:07.360 --> 00:18:09.400
+Then it's time to see the request live in a dashboard.
+
+00:18:09.800 --> 00:18:11.420
+We build a real-time Sentry dashboard.
+
+00:18:12.160 --> 00:18:21.420
+You spin up one using span metrics to track key attributes like cart size, checkout duration, and so on, giving you one pain for both performance and error data.
+
+00:18:22.400 --> 00:18:22.780
+That's it.
+
+00:18:22.980 --> 00:18:30.020
+When an error happens, you open the error on Sentry and you get end-to-end request data and error tracebacks to easily spot what's going on.
+
+00:18:31.000 --> 00:18:36.000
+If your app and customers matter to you, you definitely want to set up Sentry like we have here at Talk Python.
+
+00:18:36.600 --> 00:18:41.920
+Visit talkpython.fm/sentry and use the code TALKPYTHON, all caps, just one word.
+
+00:18:42.400 --> 00:18:46.620
+That's talkpython.fm/sentry, code TALKPYTHON.
+
+00:18:46.960 --> 00:18:48.700
+Thank you to Sentry for supporting the show.
+
+00:18:49.600 --> 00:18:50.260
+What do you think?
+
+00:18:50.760 --> 00:18:57.520
+I mean, I know you can't say exactly probably, but the JIT stuff is in, it's in beta format now, right?
+
+00:18:57.570 --> 00:18:57.880
+I mean,
+
+00:18:57.960 --> 00:18:59.240
+it's somewhat
+
+00:18:59.240 --> 00:18:59.880
+baked.
+
+00:19:00.220 --> 00:19:06.800
+Yeah, so basically in 3.13, you had the option of compiling Python with a JIT compiler.
+
+00:19:07.800 --> 00:19:10.620
+And the JIT compiler supports kind of all the most popular platforms.
+
+00:19:10.840 --> 00:19:15.140
+So Window, macOS, Linux, on ARM, Intel, kind of.
+
+00:19:15.320 --> 00:19:18.540
+If you're using consumer hardware, then it works for you.
+
+00:19:19.600 --> 00:19:28.460
+And so in 3.13, if you were compiling your own Python, you had the option to actually compile the JIT as well when you're building it.
+
+00:19:28.800 --> 00:19:34.940
+And actually, a couple of different downstream distributors already started building the JIT, but just off by default.
+
+00:19:35.780 --> 00:19:40.620
+So I think that included Fedora for their 3.13 builds, and I think uv was doing it as well for everything except macOS.
+
+00:19:41.580 --> 00:19:51.480
+And so basically, if you set the Python underscore JIT environment variable with any of those builds, it will go from disabled by default to enabled and you can try it out.
+
+00:19:51.980 --> 00:20:04.440
+In 3.14, basically, we got the JIT in a place where we felt it was stable enough and kind of ready for wider testing that the official macOS and Windows release binaries now include the JIT also disabled by default.
+
+00:20:04.700 --> 00:20:14.840
+So if you go to python.org and you download 3.14 for either of those platforms, then basically you can set the python underscore jit environment variable and test it out for yourself.
+
+00:20:15.250 --> 00:20:23.780
+Again, I wouldn't necessarily use it in production, but we are interested in getting the feedback, whether it speeds up your code dramatically or slightly or no change or even makes it
+
+00:20:23.940 --> 00:20:24.540
+slower or
+
+00:20:24.540 --> 00:20:26.600
+leads to memory bloat or whatever like
+
+00:20:26.600 --> 00:20:26.720
+that.
+
+00:20:26.860 --> 00:20:26.980
+Okay.
+
+00:20:27.380 --> 00:20:27.440
+Yeah.
+
+00:20:27.660 --> 00:20:28.080
+Very interesting.
+
+00:20:28.800 --> 00:20:31.160
+So off by default, how do I turn
+
+00:20:31.160 --> 00:20:31.460
+it on?
+
+00:20:31.740 --> 00:20:32.700
+Just the environment variable.
+
+00:20:33.080 --> 00:20:38.140
+So if you set the Python underscore jit environment variable, the jit will be enabled and it'll do its thing.
+
+00:20:38.340 --> 00:20:39.300
+Set it to what?
+
+00:20:39.510 --> 00:20:40.020
+True one?
+
+00:20:40.340 --> 00:20:40.540
+Oh,
+
+00:20:40.780 --> 00:20:41.120
+yeah.
+
+00:20:41.800 --> 00:20:44.640
+I think it works with anything, but I would just
+
+00:20:44.640 --> 00:20:45.200
+set it to one.
+
+00:20:45.540 --> 00:20:45.740
+Anything
+
+00:20:45.740 --> 00:20:47.660
+that's not
+
+00:20:47.660 --> 00:20:48.820
+a zero, I think.
+
+00:20:49.580 --> 00:20:50.340
+I would just set it to one.
+
+00:20:50.420 --> 00:20:51.340
+I think we checked for one.
+
+00:20:51.640 --> 00:20:54.640
+So I would set it to one, but I haven't actually, I forget.
+
+00:20:55.740 --> 00:20:55.900
+Yeah.
+
+00:20:56.160 --> 00:20:57.100
+I'm going to have to look at the code.
+
+00:20:57.400 --> 00:20:57.520
+Yeah.
+
+00:20:57.660 --> 00:20:59.380
+So let's talk about how it works.
+
+00:20:59.610 --> 00:21:03.220
+But before we do, I can tell that the audience is ready to go into the weeds with us.
+
+00:21:03.580 --> 00:21:03.800
+All right.
+
+00:21:04.660 --> 00:21:08.340
+So Black LLM asks, Python integers are relatively slow.
+
+00:21:08.700 --> 00:21:12.300
+Does this affect JIT performance when working with integers or maybe reverse it?
+
+00:21:12.420 --> 00:21:15.840
+Like, how does the JIT affect integer performance and those kinds of things?
+
+00:21:15.960 --> 00:21:18.920
+And was asking, like, how does this work with PyObjects and so on?
+
+00:21:19.180 --> 00:21:19.520
+Yeah.
+
+00:21:19.620 --> 00:21:22.980
+So kind of there were two questions that flashed across the screen there.
+
+00:21:23.120 --> 00:21:26.940
+One of them was about tagging pointers with reference counts, and then the other was about integers.
+
+00:21:27.180 --> 00:21:47.920
+So the integer question is kind of hinting at this optimizations that a lot of JIT compilers and VMs do called integer unboxing, which is the idea that instead of having a full-size arbitrary precision Python integer object that's reference counted and heap allocated, you instead, in the place of that pointer, you just store a single 64-bit value or 63-bit value.
+
+00:21:48.880 --> 00:21:51.440
+And so that isn't something that the JIT does currently.
+
+00:21:52.180 --> 00:21:57.140
+It is actually something that in 3.14 we do in limited situations in the interpreter.
+
+00:21:58.300 --> 00:21:59.460
+Is that with a specialized interpreter?
+
+00:22:00.140 --> 00:22:02.100
+No, this is actually completely different.
+
+00:22:02.610 --> 00:22:02.760
+So
+
+00:22:02.760 --> 00:22:03.520
+basically in
+
+00:22:03.520 --> 00:22:14.020
+3.14, Mark Shannon wanted to basically sort of prepare people, especially people who are poking around the internals, that we want to do integer unboxing in the future.
+
+00:22:14.460 --> 00:22:22.340
+And so there are some situations where an exception is raised and we have basically a line number integer on the stack.
+
+00:22:22.780 --> 00:22:26.480
+And in those situations, what we're doing now is we're putting an unboxed integer.
+
+00:22:27.300 --> 00:22:36.700
+So it's kind of very low impact, like just making sure that, okay, this works and it won't break too much stuff when we start doing this kind of more widely.
+
+00:22:37.240 --> 00:22:45.040
+But that is something that we do have planned for 3.15 is to start for integers where it fits, both in the JIT and possibly in the interpreter.
+
+00:22:45.150 --> 00:22:46.100
+We're not quite sure yet.
+
+00:22:47.220 --> 00:22:49.200
+storing those values directly in the pointer size.
+
+00:22:49.420 --> 00:22:53.880
+And we may also do something with floating point values as well, since those also fit in 64 bits.
+
+00:22:54.250 --> 00:22:55.280
+The other thing that was kind
+
+00:22:55.280 --> 00:22:59.500
+of coming through in the other question was tagging the pointers to avoid reference counting.
+
+00:23:00.100 --> 00:23:05.000
+That's something that is already being done in, I believe, 3.14.
+
+00:23:05.460 --> 00:23:06.700
+I don't know if it's in 3.13.
+
+00:23:07.300 --> 00:23:09.680
+The free-threaded build, this is something that we kind of inherited from them.
+
+00:23:10.540 --> 00:23:13.240
+Basically, they wanted to avoid reference count contention on certain objects.
+
+00:23:13.860 --> 00:23:23.680
+And so for certain objects that are being manipulated a lot, we actually just embed the reference count in the pointer itself rather than touching the object.
+
+00:23:23.960 --> 00:23:29.240
+And that actually led to kind of decent performance boosts on our end when we did that in the non-free-threaded build.
+
+00:23:29.420 --> 00:23:29.700
+Okay.
+
+00:23:30.060 --> 00:23:30.480
+Very interesting.
+
+00:23:30.680 --> 00:23:30.760
+Yeah.
+
+00:23:30.860 --> 00:23:37.540
+One of the challenges of the free-threaded Python is without free-threading, you could just read whatever the reference count is.
+
+00:23:37.800 --> 00:23:43.400
+But with reference counting, all of a sudden, everybody has to start locking contacts, like thread locking.
+
+00:23:43.800 --> 00:23:50.400
+to get at the reference count, even if you're not doing threading because who knows when the thread could just come to life and go out, right?
+
+00:23:50.620 --> 00:23:57.120
+So that significantly can hurt the performance if you're taking a lock every time you interact with something.
+
+00:23:57.540 --> 00:23:58.420
+Yeah, and I've
+
+00:23:58.420 --> 00:24:06.920
+been really impressed with the free threaded team and meta, the work that they've done to kind of overcome a lot of the performance gap that we saw kind of in 3.13 with the pre-threaded build.
+
+00:24:07.100 --> 00:24:53.120
+I think it was originally something like 30, 40, 50% slower on average, which is like almost a total non-starter right for actually landing this thing longer term um but uh matt page did a lot of work uh to make the specializing adaptive interpreter thread safe because self-mutating bytecode is a very thread unsafe thing to do um and so uh that was a huge part of the performance win but then it's all just these other little things like you were saying like locks are expensive and they're tricky to get right um a lot of the time under the hood where this kind free threaded performance is coming from is from avoiding locking in situations where we can so having two reference counts one for a thread that's heavily using an object and another reference count for everything else um and uh and all
+
+00:24:53.120 --> 00:24:55.900
+these kind of clever lock free algorithms and stuff yeah
+
+00:24:55.900 --> 00:25:18.420
+for like depending things to lists and resizing lists um that's i believe that's lock free or it's very very lightweight it leads to some kind of we like as someone who's maintaining Python, it definitely leads to some mental overhead under the hood for something like a list that used to be a very simple data structure. But, you know, I can manage. That's part of being the core dev team, right? We leverage our pain for everyone else's benefit.
+
+00:25:20.860 --> 00:25:25.160
+It's like all the TypeScript, JavaScript developers making Jupyter work for Python people.
+
+00:25:26.140 --> 00:25:26.240
+Exactly.
+
+00:25:26.820 --> 00:25:28.160
+You guys do it down at the C level.
+
+00:25:29.640 --> 00:25:31.280
+Even more intense, I would say.
+
+00:25:31.680 --> 00:25:35.080
+Yes. We hide all the unsafe code from you so you can have a safe language.
+
+00:25:35.700 --> 00:25:39.700
+Yeah, so when will I not set environment variables and get this to happen?
+
+00:25:40.000 --> 00:25:40.680
+For the JIT?
+
+00:25:40.880 --> 00:25:41.280
+For the JIT.
+
+00:25:41.700 --> 00:25:53.820
+I would say don't set this in any sort of production workload, anything where, like, basically we're confident that the JIT, we haven't observed any crashes that are currently happening.
+
+00:25:55.680 --> 00:26:00.660
+We haven't observed any huge memory blowup or anything that would cause significant problems.
+
+00:26:00.940 --> 00:26:03.320
+But part of that is just because it hasn't had very wide use.
+
+00:26:03.520 --> 00:26:09.240
+So while we're confident in sort of what we've seen, we want to see it in wider use so we can know if there are crashes and things that we don't know about.
+
+00:26:09.640 --> 00:26:09.740
+Another
+
+00:26:09.740 --> 00:26:10.740
+situation is
+
+00:26:10.740 --> 00:27:05.600
+there are just certain sorts of things that the JIT doesn't handle very well right now. So like kind of the most pressing example is native profilers and debuggers. So while tools like PDB and IPDB for or like coverage or any of these Python level profilers and debuggers, the JIT handles all of those just fine. Everything will work. The problem is, is that it starts to kind of explode in complexity once you want to start supporting things like gdb or perf or any of these other tools that are unwinding basically through c code like at a c level um and so that's something that we kind of need to support if we actually want the jit to be in wide use because a lot of these like actual production environments are going to be using a lot of this kind of ability to walk through c frames and inspect local variables and things like that um it's just really tricky because there are lots of different tools that we need to support All of them have slightly different APIs.
+
+00:27:05.930 --> 00:27:08.860
+And a lot of the APIs are very heavy to use for JIT compilers.
+
+00:27:08.910 --> 00:27:15.880
+And so, again, it keeps coming back to, like, if this was just something that we were maintaining inside of Microsoft, like, we know what we need to do.
+
+00:27:16.740 --> 00:27:24.560
+We could just land a ton of code that does everything but is hopelessly complex and, you know, just thousands and thousands of lines maintained by a few domain experts.
+
+00:27:24.670 --> 00:27:26.840
+But, again, this is something we want the community to maintain.
+
+00:27:27.400 --> 00:27:27.580
+So it's
+
+00:27:27.580 --> 00:27:28.000
+kind of finding
+
+00:27:28.000 --> 00:27:29.920
+that balance of, like, what tools do we want to support?
+
+00:27:30.080 --> 00:27:38.580
+Is there a way we can do it that's both fast and also if something breaks in the future or if there's a bug reported that someone other than me could fix it?
+
+00:27:39.280 --> 00:27:40.860
+That's kind of what I'm building towards.
+
+00:27:41.060 --> 00:27:42.140
+And that person can't be Pablo.
+
+00:27:42.280 --> 00:27:43.880
+Someone other than Pablo or I could fix it.
+
+00:27:45.000 --> 00:27:46.100
+Yeah, that's fantastic.
+
+00:27:46.480 --> 00:27:47.860
+Sure, it's all those little edge cases.
+
+00:27:48.340 --> 00:27:48.580
+But
+
+00:27:48.580 --> 00:27:48.980
+if I use
+
+00:27:48.980 --> 00:27:55.640
+it with this tool and we look inside and we assume that this happens during execution or this byte means this other thing.
+
+00:27:56.160 --> 00:27:59.920
+Another situation too where the JIT doesn't currently support is the free-threaded build.
+
+00:28:00.780 --> 00:28:12.580
+this is just sort of like no one's really gotten around to doing the work yet the JIT was turned off as part of the free threaded build because it's not entirely thread safe right now and so that's something that we're hoping to work towards in 3.15.
+
+00:28:14.060 --> 00:28:18.060
+It's like take two experimental things and collide them together and see what happens right?
+
+00:28:18.320 --> 00:28:32.260
+Yeah the act of like JIT compiling code itself so when the JIT runs and it spits out machine code that isn't super hard to make thread safe It's just kind of going through and finding all the little bits and pieces and putting locks around stuff.
+
+00:28:32.960 --> 00:28:35.700
+The tricky part is going to be the optimizations that the JIT performs.
+
+00:28:36.420 --> 00:28:45.660
+So the JIT currently does lots of optimizations to remove dynamic type checks and avoid certain amounts of kind of overhead and other work.
+
+00:28:46.500 --> 00:28:52.560
+We've kind of made a lot of those optimizations under the assumption that there are no other threads that are mutating stuff behind our back.
+
+00:28:52.700 --> 00:29:24.640
+Because like the way a JIT is fast is by saying, let's assume that no one's mutating the global or no one's like, you know, getting this object's dictionary from another thread or whatever. But as soon as those things are possible, we need to start being very, very conservative about what we're doing or coming up with, you know, increasingly complex lock-free algorithms or solutions to make that work. So that'll kind of be the long tail of getting the JIT turned back on will not be very hard, I don't think, for 3.15, but there will be a lot of time spent figuring out what is still safe to do and if not, how can we do it?
+
+00:29:24.720 --> 00:29:35.220
+Excellent. So another aspect of my of question i was getting i was like when is this going to be the default when is when do i need to turn it off if i don't want it rather than turn it on if i do where are we
+
+00:29:35.220 --> 00:29:35.900
+where's
+
+00:29:35.900 --> 00:29:37.780
+the shipping story here yeah
+
+00:29:37.780 --> 00:29:44.000
+so uh on by default um i mean obviously the soonest that that could possibly happen is 315 um
+
+00:29:44.000 --> 00:29:44.860
+it's really
+
+00:29:44.860 --> 00:30:34.720
+tricky to say just given like the massive change in resources towards these projects that have kind of taken place recently um i definitely think 315 is still possible because essentially kind of what we need to do is we need to a be confident that it's stable b be confident that it's maintainable um it needs to support the kind of features that we don't support now which are things like native profilers and debuggers um but then kind of last we need to make sure that uh it's actually faster like it's actually worth turning on so right now if you turn on the jit um the results kind of vary on average it's about one or two percent faster um but kind of the extremes of that are we've observed on our benchmarks up to 20 or 30 percent faster or even up to 10 percent slower depending on the workload so obviously we want to make sure that we're not slowing down code especially if we're turning it on by default but
+
+00:30:34.720 --> 00:30:35.180
+if we can
+
+00:30:35.180 --> 00:30:50.840
+bump that up average up and make the high higher and the low also higher again if if if I had to bet on it I would say that definitely by 316 I think 315 is doable it just depends kind of like how we're actually able to maintain our
+
+00:30:50.840 --> 00:31:05.760
+progress going forward. Excellent. Yeah. Okay. I guess it also, that performance side of things, a lot of the work that you all are doing, it sounds like you're kind of setting the foundation for what could be possible, right? Like you said that you're not really using unboxed math
+
+00:31:05.760 --> 00:31:06.640
+on
+
+00:31:06.640 --> 00:31:11.140
+floats and ints, and that can make a tremendous performance difference, right?
+
+00:31:11.360 --> 00:31:11.840
+So
+
+00:31:11.840 --> 00:31:16.920
+what you've done is going to maybe make those optimizations possible, but they're not in there yet right
+
+00:31:16.920 --> 00:31:17.500
+exactly
+
+00:31:17.500 --> 00:31:20.840
+how much do you see it like there's stuff in the future to work towards
+
+00:31:21.040 --> 00:31:22.660
+and how much of it is present um
+
+00:31:22.660 --> 00:31:50.460
+i think that like obviously there's always going to be little tweaks that we can make to stuff that we've already landed and like i think that like medium size refactorings are healthy to do going forward just to make sure that we're not you know just kind of bolting stuff on and letting it grow too organically and get you know helplessly complex um but again it comes back to like, let's do the engineering work with kind of these full-time teams and then let the community drive it forward. So we first saw this with the specializing adaptive interpreter.
+
+00:31:50.940 --> 00:32:01.860
+Once we had the hard part figured out of how to specialize by code and have these inline caches and stuff, we saw tons of external contributors, well, maybe not tons, but like a dozen or so external contributors actually
+
+00:32:01.860 --> 00:32:03.800
+adding new specializations. Exactly,
+
+00:32:04.130 --> 00:32:04.840
+right? Like people
+
+00:32:04.890 --> 00:32:05.400
+who weren't
+
+00:32:05.400 --> 00:32:20.940
+us adding specializations, which is super cool to see, and people still add new specializations. And with the JIT compiler, it's no different. We have kind of a optimizer that does a lot of the kind of more interesting optimizations on the machine code before it goes out the door.
+
+00:32:21.560 --> 00:32:28.860
+But it doesn't actually operate on the machine code. It operates on something that looks a lot like our existing bytecode instructions. And that's very much an intentional design decision.
+
+00:32:29.640 --> 00:32:43.180
+And so what we've found, and I actually have a tracking issue on GitHub where I'm just saying, hey, for people who have maybe a little bit of experience with the optimizer or haven't worked on it at all, let's add support for more and more of these instructions over time.
+
+00:32:43.230 --> 00:32:54.240
+And so what I've been seeing is a lot of people who have not really worked on a compiler before able to make these sorts of optimizations in the JIT code.
+
+00:32:54.480 --> 00:32:59.380
+So for one example, at the sprints, I was working with Thomas Rohn, who's one of our triagers.
+
+00:33:00.020 --> 00:33:08.860
+And he was able to land like three or four different optimizations for the JIT compiler without even touching machine code once.
+
+00:33:09.700 --> 00:33:15.060
+And by kind of the end of the week, we got in a place where if you do an is instance check.
+
+00:33:15.090 --> 00:33:21.080
+So if I say like, if is instance X stir, that the JIT compiler removes that check completely.
+
+00:33:21.360 --> 00:33:27.200
+And we can just basically, if we already know the type of X, then you don't even load the name as instance.
+
+00:33:27.270 --> 00:33:28.560
+You don't even call the function or whatever.
+
+00:33:28.780 --> 00:33:33.680
+And that's just what someone was able to accomplish at the sprint again without touching machine code or necessarily.
+
+00:33:34.450 --> 00:33:39.760
+I mean, I don't know too much about Tomas, but I don't know if he considers himself an expert in JIT compilers.
+
+00:33:39.940 --> 00:33:51.680
+Right. And so that's been like a really cool thing to see and something that we absolutely kind of want to maintain going forward is this idea of like, let's build the platform and let other people build on top of it.
+
+00:33:52.000 --> 00:34:00.300
+Okay. And letting as much of the operations and optimizations happen in bytecode means people with Python experience kind of work.
+
+00:34:00.470 --> 00:34:02.700
+They don't have to be JIT people, which is a whole nother level.
+
+00:34:02.990 --> 00:34:05.660
+Yeah. And it's not only just the sorts of optimizations.
+
+00:34:05.980 --> 00:34:09.700
+Like you've probably heard about template strings or t-strings, which are a new feature of 3.14.
+
+00:34:11.399 --> 00:34:12.760
+The JIT compiler supports those.
+
+00:34:13.240 --> 00:34:22.300
+Not because anyone added JIT compiler support for it, but just because the JIT compiler automatically supports any new bytecodes with a few, you know, kind of exceptions to that rule.
+
+00:34:22.350 --> 00:34:28.760
+And so when the new bytecodes were added to support template strings, they just picked them up and now it works, right?
+
+00:34:28.919 --> 00:34:32.740
+Like maybe we could optimize them further through work like what Thomas was doing.
+
+00:34:32.850 --> 00:34:40.600
+But like, that's really, really cool to see is when, you know, with a two-line code change, you can actually support template strings, which are not a
+
+00:34:40.600 --> 00:34:41.280
+trivial feature.
+
+00:34:41.580 --> 00:34:42.659
+Yeah, no, they're definitely not.
+
+00:34:42.840 --> 00:34:43.200
+That's fantastic.
+
+00:34:43.679 --> 00:34:49.720
+So basically it's just the new bytecodes that are not optimized, they just pass kind of pass through and do whatever they would have done
+
+00:34:50.159 --> 00:34:50.500
+before and
+
+00:34:50.500 --> 00:34:51.120
+they don't get optimized.
+
+00:34:51.639 --> 00:34:51.720
+Yep.
+
+00:34:51.980 --> 00:34:52.040
+Yeah.
+
+00:34:53.860 --> 00:34:56.240
+This portion of Talk Python To Me is brought to you by us.
+
+00:34:56.639 --> 00:34:57.300
+I'll keep this short.
+
+00:34:57.820 --> 00:35:02.800
+The best way you can support the podcast is to purchase one or more of our courses at Talk Python.
+
+00:35:03.400 --> 00:35:06.580
+Just visit talkpython.fm and click on courses at the top.
+
+00:35:07.080 --> 00:35:10.200
+We just published two new courses you might be interested in.
+
+00:35:10.680 --> 00:35:13.920
+Polars for Power Users, Transform Your Data Analysis Game.
+
+00:35:14.600 --> 00:35:19.440
+Here you'll learn how to master's polars, the blazing fast data frame library for Python.
+
+00:35:19.900 --> 00:35:23.120
+You'll clean, transform, and analyze big data more efficiently.
+
+00:35:24.040 --> 00:35:35.240
+And LLM building blocks for Python, where you'll integrate LLMs into your Python code with vendor agnostic libraries, reactive Marimo notebooks, and async and cached pipelines.
+
+00:35:36.200 --> 00:35:40.360
+And if you're thinking of getting more than a course or two, you'll save big time with a whole library bundle.
+
+00:35:40.880 --> 00:35:44.260
+Check out all the courses at talkpython.fm/courses.
+
+00:35:45.740 --> 00:35:49.480
+There's some bytecode instructions that the JIT will actually refuse to compile.
+
+00:35:49.780 --> 00:35:55.920
+So many of the specialized, basically all of the specialized instructions, the JIT will compile them, the specialized form.
+
+00:35:56.260 --> 00:35:59.740
+Many of the unspecialized instructions, the JIT will also compile them.
+
+00:36:00.060 --> 00:36:02.440
+There are some instructions that very rarely occur.
+
+00:36:02.470 --> 00:36:10.340
+So these would be things like, I think, like imports or certain exception handling opcodes and things like that, where they do kind of subtle things.
+
+00:36:10.470 --> 00:36:15.880
+And so it's actually tricky to handle in the JIT, but we don't find that they're blocking too many of the hot code paths in general.
+
+00:36:16.220 --> 00:36:22.720
+But again, that's the sort of thing where it's just a matter of someone doing the work to rework those bytecode instructions so that the JIT can handle them.
+
+00:36:22.960 --> 00:36:25.200
+Maybe someday we'll have parallel import statements.
+
+00:36:25.370 --> 00:36:25.800
+We never know.
+
+00:36:26.380 --> 00:36:29.620
+Yeah, for when you put your imports in a hot loop, you can JIT your imports.
+
+00:36:30.400 --> 00:36:30.760
+Exactly.
+
+00:36:31.180 --> 00:36:31.340
+Yeah.
+
+00:36:31.620 --> 00:36:31.920
+All right.
+
+00:36:32.720 --> 00:36:37.280
+I want to dive into the micro ops and all those sorts of things of it.
+
+00:36:37.400 --> 00:36:43.920
+But before I do, since you also worked on the specializing adaptive interpreter, do these things cooperate?
+
+00:36:44.240 --> 00:36:48.720
+Does the JIT supersede the need for the adaptive interpreter?
+
+00:36:49.360 --> 00:36:50.980
+They absolutely build
+
+00:36:50.980 --> 00:36:51.680
+on top of each other.
+
+00:36:51.690 --> 00:36:55.420
+So the whole reason the JIT is able to optimize well is because of specialization.
+
+00:36:55.780 --> 00:37:07.320
+So specialization, by rewriting the bytecode instructions into text specialized ones, not only are we able to run that bytecode faster, But just by looking at the bytecode, we have profiling info.
+
+00:37:07.550 --> 00:37:10.620
+I can say, oh, over here, this is two integers being added together.
+
+00:37:10.960 --> 00:37:12.000
+I know the result is an it.
+
+00:37:12.270 --> 00:37:15.200
+And I know that both the things going into it were integers from this point forward.
+
+00:37:16.979 --> 00:37:18.880
+And you can kind of see how it goes from there.
+
+00:37:19.140 --> 00:37:24.620
+By looking at how we've specialized attribute lookups, as part of that, we guard against the type of the class.
+
+00:37:24.820 --> 00:37:27.940
+So every time you look up an attribute, we now know the class of that object going forward.
+
+00:37:28.780 --> 00:37:34.600
+And so we can remove the checks for that class from all the following attribute loads going forward as part of that JIT code.
+
+00:37:34.840 --> 00:37:38.420
+So we would not be able to do what we're doing without the specializing interpreter.
+
+00:37:39.040 --> 00:37:47.220
+Everything from knowing where the code is hot to knowing the types to knowing the different operations, like all of that absolutely builds on top of it.
+
+00:37:47.640 --> 00:37:52.620
+And the JIT code itself is actually implemented as a specialization.
+
+00:37:53.340 --> 00:37:53.720
+So basically,
+
+00:37:54.660 --> 00:37:55.280
+we have
+
+00:37:55.280 --> 00:38:00.820
+bytecode instructions that will detect hot code because they increment a counter and eventually that counter will hit some threshold.
+
+00:38:01.280 --> 00:38:08.780
+We JIT the code and then we replace that bytecode instruction with one that enters the JIT code. And so we literally use specialization to get in and out of the JIT compiler.
+
+00:38:08.960 --> 00:38:20.120
+Yeah, nice. I think this comment by Kyra, may typing help JIT work better? If not, like how could you use typing for optimizations? And you know, a lot of what the JIT does does
+
+00:38:20.120 --> 00:38:20.880
+have
+
+00:38:20.880 --> 00:38:29.300
+to do with this type information, maybe not in the way that they're proposing it, right? Like the code has argument colon int, Not necessarily
+
+00:38:29.300 --> 00:38:29.600
+that
+
+00:38:29.600 --> 00:38:33.740
+way, but it's more of a, I don't care what you say, I'm going to pay attention to what you do.
+
+00:38:34.060 --> 00:38:35.640
+And then we'll use that type of information, right?
+
+00:38:35.740 --> 00:38:39.300
+Like we'll see what's actually being passed in and maybe compile that.
+
+00:38:39.400 --> 00:38:39.500
+Yeah.
+
+00:38:39.920 --> 00:38:40.320
+Yeah, exactly.
+
+00:38:40.500 --> 00:38:43.820
+We, we completely ignored type annotations, at runtime.
+
+00:38:44.280 --> 00:38:53.480
+and the reason is, is that we have better information available rather than trying to figure out what you meant by L I S T open bracket, I N T close bracket, right?
+
+00:38:53.680 --> 00:38:58.100
+Like we can instead, like that's the nature of JIT compilers is they happen at runtime.
+
+00:38:58.600 --> 00:39:06.020
+And so versus the annotations, which are really helpful to a static ahead of time compiler, like a more traditional C compiler or something like Cython.
+
+00:39:06.500 --> 00:39:13.340
+For a Jig compiler, I don't need to figure out what your annotation means or whatever, like what this generic nonsense is.
+
+00:39:13.500 --> 00:39:14.900
+I have the pointer right there.
+
+00:39:14.900 --> 00:39:17.180
+I can look at it and say, this is a list and it looks like it's full of it.
+
+00:39:17.420 --> 00:39:22.920
+And so we have information that we know is correct, that we know is up to date, and it's much richer too.
+
+00:39:23.280 --> 00:39:29.360
+So like, for example, you may tell me that the argument to this function is of a given class, right?
+
+00:39:29.360 --> 00:39:30.240
+An instance of a class.
+
+00:39:30.660 --> 00:39:32.120
+But you've just told me the name of the class.
+
+00:39:32.340 --> 00:39:38.780
+What's actually useful to me is to know, okay, what keys do or what attributes do instances of this class usually have?
+
+00:39:39.060 --> 00:39:46.300
+Like, what is the internal version counter of that class that we can use to kind of share optimization information across traces?
+
+00:39:46.760 --> 00:39:48.080
+Has the class been mutated lately?
+
+00:39:48.560 --> 00:39:56.980
+All this stuff are things that you can't express in annotations, but they're extremely useful for even the most basic JIT compiler optimizations.
+
+00:39:57.880 --> 00:39:58.500
+Another example
+
+00:39:58.500 --> 00:39:59.620
+would be unboxing integers.
+
+00:39:59.940 --> 00:40:01.480
+It's not enough to know that something's an int.
+
+00:40:02.340 --> 00:40:06.700
+We need to know whether it's an int and it fits in 63 bits because otherwise we can't unbox it.
+
+00:40:06.880 --> 00:40:07.760
+Yeah, yeah, sure.
+
+00:40:08.520 --> 00:40:10.020
+You try to put a huge number.
+
+00:40:10.380 --> 00:40:11.740
+That always impressed me about Python.
+
+00:40:12.700 --> 00:40:17.900
+Coming from a C++, C# background, I'm like, numbers have sizes.
+
+00:40:18.460 --> 00:40:20.540
+there are consequences if you overdo
+
+00:40:20.540 --> 00:40:21.000
+the sizes.
+
+00:40:21.540 --> 00:40:21.940
+Somehow
+
+00:40:21.940 --> 00:40:25.480
+there's an int that fills the entire screen and I didn't do anything in Python.
+
+00:40:25.720 --> 00:40:27.380
+You know, it just, it can take it.
+
+00:40:27.520 --> 00:40:30.700
+But when you get down to the machine level and registers, it doesn't like it.
+
+00:40:30.880 --> 00:40:43.500
+Yeah, well, and that's what's beautiful about the J compiler and about dynamic languages like Python is if we're able to jit the code and handle small integers or medium-sized integers, then you get to benefit from all that speed.
+
+00:40:43.580 --> 00:40:58.020
+But the second that we see something that's 65 bits or even larger, some huge number, we don't crash or wrap or raise an exception or anything like that like the code just does the right thing it's just not happening in the jit anymore or it is happening in the jit it's just not unboxed anymore
+
+00:40:58.020 --> 00:40:59.560
+right like the
+
+00:40:59.560 --> 00:41:04.060
+jit is just as dynamic as your code is which is what kind of makes it magical yeah amazing
+
+00:41:04.060 --> 00:41:08.420
+so the jit as you pointed out is a runtime thing
+
+00:41:08.420 --> 00:41:09.320
+i
+
+00:41:09.320 --> 00:41:16.920
+think it's it's a little bit different than maybe some people who are familiar with more static language jits you C#, Java, those types of things.
+
+00:41:17.300 --> 00:41:19.980
+The way those work is I try to run some code.
+
+00:41:20.300 --> 00:41:22.280
+It's either JIT compiled or not JIT compiled.
+
+00:41:22.460 --> 00:41:26.180
+And if it's not, it has to compile it until the next step can be taken.
+
+00:41:27.020 --> 00:41:31.300
+This is a little more like this JIT compiler gets brought into the mix.
+
+00:41:31.940 --> 00:41:38.840
+Once you've seen that there's enough effort being put into a part of a program, like enough loops or enough calls or something, you're like, okay, this could probably benefit.
+
+00:41:39.120 --> 00:41:40.200
+Now we'll kick in the JIT.
+
+00:41:40.460 --> 00:41:51.700
+So this is a little bit more of a transition or a spectrum from traditional CPython to JIT compiled CPython, unlike other languages that are static that literally they just have to be compiled to run, right?
+
+00:41:52.020 --> 00:41:54.740
+Yeah, this is a lot closer to something like you'd see in a JavaScript JIT.
+
+00:41:55.270 --> 00:42:01.160
+And actually, we've shamelessly stolen many of the ideas that have been proven to work very, very well in JavaScript JITs.
+
+00:42:01.960 --> 00:42:05.400
+And so just to kind of give you an example, like we don't compile an entire function.
+
+00:42:05.510 --> 00:42:08.320
+We'll compile parts of a function or several parts of a function.
+
+00:42:08.580 --> 00:42:18.360
+So if there's one path through a function that goes into another function that comes out, rather than compiling both of those entire functions, we'll just compile that hot path where you're actually spending its time.
+
+00:42:18.660 --> 00:42:24.420
+And doing that allows us to make a lot of really helpful simplifications under the hood that make optimization easier and stuff.
+
+00:42:24.720 --> 00:42:30.540
+But it also means that we're not spending time trying to reason about and compile code that you're never executing.
+
+00:42:31.300 --> 00:42:39.760
+And again, that's just due to the dynamic nature of since we're running your code, we can see exactly where it's going, exactly what it's doing, and we can benefit from that information.
+
+00:42:40.140 --> 00:42:40.240
+Yeah.
+
+00:42:40.620 --> 00:42:43.900
+Well, people might think, why would I write a bunch of code that's not executing?
+
+00:42:45.000 --> 00:42:53.360
+But pip install a thing, you might do that for one or two functions, and it's a massive library that has a bunch of libraries it depends upon.
+
+00:42:54.320 --> 00:42:57.820
+You can just leave all that stuff alone, except for the little part that they're working with, right?
+
+00:42:58.040 --> 00:43:04.320
+Yeah, or just an example of where you have a function that does some kind of setup work and then has a hot loop and then does some kind of teardown work.
+
+00:43:05.200 --> 00:43:09.340
+Probably it's only worth compiling just that hot loop, and that's actually what our JIT does.
+
+00:43:09.660 --> 00:43:13.260
+it will ignore the parts where your program isn't actually spending most of its time.
+
+00:43:13.660 --> 00:43:20.120
+Another place this helps is if there are parts of the code that we actually can't JIT compile for one reason or another.
+
+00:43:21.080 --> 00:43:27.660
+For example, another kind of benefit of specialization is that it means we can do much faster profiling and debugging.
+
+00:43:28.540 --> 00:43:45.740
+So this new feature of, it was either 3.12 or 3.13, sys.monitoring, basically inserts, rather than basically checking on every bytecode instruction, whether we need to fire profiling or debugging hooks, we just specialize the bytecode in order to fire those hooks.
+
+00:43:45.760 --> 00:44:03.700
+And so what that means is that if you're running a coverage tool and we have these kind of line events inserted in the bytecode all over your function, basically once we've hit all those line events for the first time, they can be disabled and we can jit all the code that's actually running.
+
+00:44:04.180 --> 00:44:08.540
+And maybe there's a couple of branches that aren't being covered and those will show up in your coverage report.
+
+00:44:08.790 --> 00:44:17.900
+But the JIT can completely ignore those instead of saying like, oh, I can't touch this function because it has one, you know, instrumentation event on this cold branch or something like that.
+
+00:44:18.160 --> 00:44:19.700
+Yeah, that's very interesting.
+
+00:44:20.100 --> 00:44:26.640
+Yeah. Is this one of the things when I first saw that it's this it's called a tracing JIT, not a
+
+00:44:26.640 --> 00:44:27.140
+whole
+
+00:44:27.140 --> 00:44:27.760
+function JIT.
+
+00:44:28.040 --> 00:44:32.260
+Yeah. There's a tracing JIT that sort of eventually kicks in after enough behavior or
+
+00:44:32.260 --> 00:44:32.980
+enough activity.
+
+00:44:33.380 --> 00:45:03.320
+is what if you really want it how long does it take to kick in i guess what i'm trying to think through is like what if i want it to right away use the jit adversion is there ways to make the jit more aggressive like set some thresholds like you can with gc uh to say you know collect less often or more often based on you know these these numbers for the gen one gen two and so on yeah or can you can you say once it's run for all can you save the profile like into the dendrpy cache and And then like it loads up.
+
+00:45:03.320 --> 00:45:04.780
+It's like, all right, we already saw how this works.
+
+00:45:05.040 --> 00:45:05.780
+We're going to keep going.
+
+00:45:06.060 --> 00:45:06.300
+Yeah.
+
+00:45:06.580 --> 00:45:14.420
+So probably in the future, I imagine that we'll have some way of tuning sort of the aggressiveness of the JIT, just like the GC that you said.
+
+00:45:14.540 --> 00:45:19.060
+But one thing that we want to make sure is that we don't JIT things too early.
+
+00:45:19.360 --> 00:45:22.340
+It may be very tempting to say like, oh, I want everything to be JITed immediately.
+
+00:45:22.780 --> 00:45:32.280
+But chances are you actually don't want to JIT most stuff that's only running for the first, you know, a quarter second of your program's execution, especially if that's kind of setup code that's never going to run again.
+
+00:45:32.480 --> 00:45:32.780
+Like, for
+
+00:45:32.780 --> 00:45:33.540
+example, module-level
+
+00:45:33.540 --> 00:45:35.680
+code for imports and things like that.
+
+00:45:36.580 --> 00:45:46.560
+Currently, our JIT threshold is pretty high, so you need to run a given section of code at least a few thousand times before we try to JIT it.
+
+00:45:46.980 --> 00:46:05.520
+But that's more just because we're trying to kind of ease into the JIT rather than just trying to JIT compile everything because what we don't want is kind of these performance cliffs where we JIT compile everything and your code is like 50% slower by the time the JIT actually finished compiling everything your program was done running.
+
+00:46:06.100 --> 00:46:07.940
+And so it's kind of finding that balance.
+
+00:46:08.440 --> 00:46:11.580
+It might be a bad choice to even mess with it, right?
+
+00:46:11.820 --> 00:46:16.020
+And if it is a long-running app, then the higher threshold isn't really going to hurt too much.
+
+00:46:16.840 --> 00:46:22.860
+Again, it's finding opportunities where we can speed things up and avoiding opportunities where we would inadvertently slow things down.
+
+00:46:23.000 --> 00:46:27.040
+But I do think that having some sort of tunable parameter would help in the future.
+
+00:46:27.700 --> 00:46:32.600
+I just don't know if we necessarily need to add one right now just because we can.
+
+00:46:32.800 --> 00:46:33.040
+Yeah.
+
+00:46:33.280 --> 00:46:34.540
+Yeah, it makes sense.
+
+00:46:34.920 --> 00:46:36.320
+You don't want people to mess with it and
+
+00:46:36.320 --> 00:46:36.920
+make
+
+00:46:36.920 --> 00:46:39.980
+it worse and then say, I'm never using the JIT, see how bad it is.
+
+00:46:40.280 --> 00:46:43.440
+Yeah, another reasonable thing too
+
+00:46:43.720 --> 00:46:47.480
+would be having some way of controlling the amount of memory that's being used.
+
+00:46:47.880 --> 00:46:52.840
+So setting some threshold where you say, I don't want more than a meg of JIT code to use like an extreme example
+
+00:46:53.820 --> 00:46:54.940
+or something like that.
+
+00:46:55.160 --> 00:46:56.080
+What about MicroPython?
+
+00:46:56.360 --> 00:46:57.760
+Could something like this be in MicroPython?
+
+00:46:58.160 --> 00:47:04.260
+I really doubt it, given how resource constrained MicroPython is, I think they need every byte of memory that they can get.
+
+00:47:05.000 --> 00:47:12.680
+I certainly think it would be cool if they had a JIT, but I'm not holding my breath that they would have one anytime soon or that it would be super beneficial to them, given just
+
+00:47:12.680 --> 00:47:13.700
+how heavy
+
+00:47:13.700 --> 00:47:14.660
+JIT compilers are.
+
+00:47:15.320 --> 00:47:16.640
+What do you think about WebAssembly?
+
+00:47:17.660 --> 00:47:18.700
+I think WebAssembly is cool.
+
+00:47:19.800 --> 00:47:20.140
+Do
+
+00:47:20.140 --> 00:47:24.620
+you think it would be possible for PyScript and friends and Pioxide?
+
+00:47:25.060 --> 00:47:26.360
+That wouldn't be the MicroPython variant.
+
+00:47:26.440 --> 00:47:26.720
+That would be
+
+00:47:26.720 --> 00:47:28.180
+the Pioxide
+
+00:47:28.180 --> 00:47:29.420
+higher order one.
+
+00:47:29.600 --> 00:47:29.780
+Well,
+
+00:47:30.260 --> 00:47:37.080
+so Python, I mean, I haven't looked at this in a while, but Python does support WebAssembly as sort of a platform that we do
+
+00:47:37.080 --> 00:47:37.400
+support.
+
+00:47:38.050 --> 00:47:38.200
+Yeah.
+
+00:47:38.740 --> 00:47:47.640
+The JIT cannot work on WebAssembly, mostly because WebAssembly is sort of this highly constrained sandbox environment that doesn't allow dynamic code generation.
+
+00:47:48.340 --> 00:47:56.060
+So the only reason that we're allowed to JIT is because we can allocate data, fill that data with random bytes, ideally not random, but like, in theory, random.
+
+00:47:56.180 --> 00:47:57.980
+Arbitrary. What do you ever come up with?
+
+00:47:58.000 --> 00:47:58.340
+Exactly.
+
+00:47:58.640 --> 00:48:06.560
+Just say, you know, here's some bytes, put them in this array and then set the array to be executable and jump into it. Like that goes against everything that WebAssembly stands for. Right.
+
+00:48:07.260 --> 00:48:07.980
+And I feel
+
+00:48:07.980 --> 00:48:23.840
+like I haven't been following it too closely, but I feel like there have been a couple of proposals or ideas where people have kind of worked around this limitation by more or less instead of JIT compiling like an array, you JIT compile an entire WebAssembly module and then you load that.
+
+00:48:23.940 --> 00:48:24.780
+And so it can be
+
+00:48:24.780 --> 00:48:25.480
+verified in
+
+00:48:25.480 --> 00:48:27.680
+everything the same way that any WebAssembly code is.
+
+00:48:28.480 --> 00:48:32.960
+And then you start running that current WebAssembly standard, I don't think, allows for that.
+
+00:48:33.060 --> 00:48:34.820
+But it is a possible extension in the future.
+
+00:48:34.920 --> 00:48:43.040
+And if we wanted to do JIT for WebAssembly, it wouldn't be a very hard thing to do given the current architecture of our JIT compiler.
+
+00:48:43.680 --> 00:48:44.340
+It makes supporting
+
+00:48:44.340 --> 00:48:45.380
+new platforms very easy.
+
+00:48:45.700 --> 00:48:49.360
+So you almost would have to ahead-of-time compile instead of just-in-time compile.
+
+00:48:50.040 --> 00:48:50.700
+Sort of, yeah.
+
+00:48:50.720 --> 00:48:51.060
+You could put
+
+00:48:51.060 --> 00:48:57.020
+that into WebAssembly, which is really hard if you're using tracing to understand what you're doing.
+
+00:48:57.430 --> 00:49:07.140
+Yeah, and especially because tracing, you tend to have lots of small portions of JIT code that all get stitched together rather than these giant whole functions.
+
+00:49:07.240 --> 00:49:23.720
+but I've seen some crazy hacks where people do things like freezing the state of the entire program basically emitting the new JIT code for WebAssembly and then like recombining everything and running that new program in place of the old one and just weird things like that.
+
+00:49:23.760 --> 00:49:31.060
+Like that's not something I think that if we're going to JIT then we should do it in a way that the standard allows and the standard just doesn't allow that for right now.
+
+00:49:31.300 --> 00:49:31.460
+Right.
+
+00:49:31.880 --> 00:49:37.920
+Well, and you also don't want it to become a huge impediment to adding new features like you said about adding new bytecodes Yeah, exactly.
+
+00:49:38.460 --> 00:49:38.640
+Interesting.
+
+00:49:39.110 --> 00:49:43.900
+So I feel like in order to stay true to the title a little bit, we should talk about some gotchas.
+
+00:49:44.260 --> 00:49:46.660
+That's what your PyCon talk was about,
+
+00:49:46.990 --> 00:49:47.100
+right?
+
+00:49:47.320 --> 00:49:47.640
+You
+
+00:49:47.640 --> 00:49:51.520
+want to give a quick shout out to your talk because it just came out on YouTube.
+
+00:49:52.040 --> 00:49:52.100
+Yep.
+
+00:49:52.320 --> 00:49:57.060
+Which at the time of recording, now the time of shipping, remember time travel, all that kind of stuff.
+
+00:49:57.560 --> 00:49:58.320
+But what are we?
+
+00:49:58.450 --> 00:50:00.420
+We're talking May 27th.
+
+00:50:01.179 --> 00:50:03.480
+They actually got the videos out really quick this year.
+
+00:50:03.800 --> 00:50:05.640
+Yeah, I think I gave the talk on the 17th.
+
+00:50:05.740 --> 00:50:07.920
+So it was like 10 days or something like that.
+
+00:50:08.510 --> 00:50:08.760
+It's nice.
+
+00:50:08.770 --> 00:50:11.600
+I think part of it was they didn't have an online option this year for the conference.
+
+00:50:11.830 --> 00:50:17.740
+And so they were able to put up the videos a little sooner to avoid kind of diluting the value of the online tickets like in past years.
+
+00:50:18.400 --> 00:50:18.700
+But yeah,
+
+00:50:18.950 --> 00:50:22.080
+my talk was called What They Don't Tell You About Building a JIT Compiler for CPython.
+
+00:50:22.600 --> 00:50:28.920
+I gave a similar talk last year called Building a JIT Compiler for CPython, where I went over how the JIT compiler kind of works under the hood.
+
+00:50:30.040 --> 00:50:40.420
+And kind of the premise for this talk was, well, my talk from last year and a lot of JIT compiler talks that I've seen gloss over a lot of the stuff that I actually spend a lot of my day doing.
+
+00:50:41.579 --> 00:50:46.460
+And a lot of the things that are kind of interesting and not necessarily intuitive about JIT compilers.
+
+00:50:46.760 --> 00:50:48.860
+And so I covered a few of those in my talk.
+
+00:50:48.960 --> 00:50:57.980
+So one of them was, we kind of already touched on, the difference between a whole function or sometimes called method at a Titan JIT and a tracing JIT.
+
+00:50:58.500 --> 00:51:00.280
+We currently have a tracing JIT architecture.
+
+00:51:00.680 --> 00:51:09.040
+A lot of other JIT compilers have a whole function, especially if you've used like Numba where you decorate a function with at JIT or something like that.
+
+00:51:09.090 --> 00:51:13.460
+Like a lot of these kind of DSL-based JITs also do the whole function thing.
+
+00:51:14.070 --> 00:51:19.660
+And so that's something that when you think about compilers, you think about like a C compiler, which is ahead of time and compiles entire functions.
+
+00:51:20.600 --> 00:51:24.540
+And so sometimes the switch to tracing can be a little unintuitive for people.
+
+00:51:24.730 --> 00:51:29.860
+And so I walked through some examples to show kind of how that works for us and what the trade-offs are.
+
+00:51:30.090 --> 00:51:32.020
+I also touched on memory management.
+
+00:51:32.130 --> 00:51:37.540
+So how you actually go about allocating executable memory and getting into it, which is mind-bending to think about.
+
+00:51:38.620 --> 00:51:39.460
+It literally
+
+00:51:39.460 --> 00:51:46.080
+is just what I said earlier of allocate some bytes, fill them with some stuff, and then jump into the bytes and cross your fingers.
+
+00:51:46.540 --> 00:51:49.540
+Yeah, a lot of people who don't do low-level programming might not
+
+00:51:49.540 --> 00:51:49.860
+realize
+
+00:51:49.860 --> 00:51:53.720
+that the OS treats certain parts of memory differently.
+
+00:51:53.900 --> 00:51:56.220
+Here you can read and write from, but you can't execute it.
+
+00:51:56.420 --> 00:51:59.580
+Here you can execute, but you can't read and write to it because you don't want it to go.
+
+00:51:59.720 --> 00:52:00.560
+And here goes the virus.
+
+00:52:00.910 --> 00:52:01.460
+You know what I mean?
+
+00:52:01.740 --> 00:52:02.720
+Or the Trojan or whatever.
+
+00:52:03.740 --> 00:52:09.740
+But you guys have to basically rewrite your executable code, which is tricky, right?
+
+00:52:09.980 --> 00:52:11.180
+Yeah, it's really tricky.
+
+00:52:11.400 --> 00:52:14.440
+And I've kind of said this, but at best, it's a foot gun.
+
+00:52:14.620 --> 00:52:20.080
+And at worst, it's a major security vulnerability to have code that is both executable and writable.
+
+00:52:20.779 --> 00:52:25.080
+Because the foot gun is, oh, you're mutating code while it's being executed.
+
+00:52:25.820 --> 00:52:43.020
+That's just a recipe for disaster unless you're being very careful, which a lot of Jig compilers actually do mutate code while they're executing it in order to keep information in their caches and to specialize things in a way that we're relying on the specializing interpreter to do so we don't have that need.
+
+00:52:43.940 --> 00:52:54.000
+But it can also be an issue because if you think about it, what we have is data that's from an arbitrary user program possibly operating on arbitrary untrusted input.
+
+00:52:54.140 --> 00:52:59.340
+But we're taking that data and we're using it to produce machine code at runtime that's being executed.
+
+00:52:59.620 --> 00:53:05.160
+And so if we're not very careful about how we're doing that, that can lead to security vulnerabilities.
+
+00:53:06.280 --> 00:53:14.060
+And if the code that we're jitting is capable of self-modifying, then that's just kind of opening the door to all sorts of trouble if we're not extremely careful.
+
+00:53:14.280 --> 00:53:15.180
+I'm not a security expert.
+
+00:53:15.260 --> 00:53:24.220
+I know what the best practices are for JIT compilers, and I've read a lot about how to avoid these things and what the issues are with them.
+
+00:53:24.420 --> 00:53:26.820
+And so we're definitely erring on the side of caution.
+
+00:53:27.820 --> 00:53:39.700
+I know I keep repeating this, but in the interest of maintainability, I want to know that I can trust that when people are making bug fixes or whatever in the JIT compiler that are not accidentally introducing vulnerabilities that can be exploited.
+
+00:53:39.760 --> 00:53:47.020
+One of the things that over the years has been really impressive to me is how few significant security issues Python's ever had.
+
+00:53:47.880 --> 00:53:54.300
+There's a lot of runtimes, a lot of systems where it's like, yep, and there's another three CVEs patched this month.
+
+00:53:55.560 --> 00:54:01.440
+There's only been a handful of things that I can remember, and most of them are quite minor edge case sort of things.
+
+00:54:02.060 --> 00:54:08.780
+But ability to start, you run a bad Python program and you get full machine instruction, that would be on the list.
+
+00:54:08.980 --> 00:54:09.160
+something
+
+00:54:09.160 --> 00:54:09.440
+bad.
+
+00:54:09.680 --> 00:54:10.480
+And that's why we're being
+
+00:54:10.480 --> 00:54:38.360
+incredibly cautious here is because a lot of those vulnerabilities that you're speaking about come from things like JavaScript runtimes or Java runtimes that do have JIT compilation. So JIT compilers are kind of notorious CVE magnets, and we don't want ours to become one as well. And so a big part of that is, well, our JIT compiler is a lot simpler than a lot of other JIT compilers, especially right now. And the more complicated it is and the more of that kind of cheating that you do, the more opportunities there to actually miss something and cause some issues.
+
+00:54:40.240 --> 00:54:47.660
+But it's not only kind of a function of our simplicity, but it's also just a very conscious effort to make sure that what we're doing follows best practices.
+
+00:54:48.200 --> 00:55:00.300
+And I've been actively working with security researchers to fuzz the JIT and to audit it for security vulnerabilities and stuff, just because I want to make sure that if we're doing this, we're going to do it right.
+
+00:55:00.500 --> 00:55:04.440
+Yeah, fuzzing being sending kind of randomly varying input.
+
+00:55:04.740 --> 00:55:13.000
+And if something like a crash happens, like the thing completely stops, like it might be a crash at first, but a carefully constructed one could be, you know, buffer, overrun, execute.
+
+00:55:13.360 --> 00:55:14.320
+Exactly, that sort of thing.
+
+00:55:14.540 --> 00:55:17.820
+Or even just simpler things like differences in behavior.
+
+00:55:18.040 --> 00:55:21.440
+If with the JIT turned on, something different happens than with the JIT turned off.
+
+00:55:22.080 --> 00:55:28.860
+Like the last thing that we would want to do is for you to have like a, if user authenticated, do one thing, otherwise do something else, and then we take the wrong branch, right?
+
+00:55:29.080 --> 00:55:29.720
+Like that's a
+
+00:55:29.720 --> 00:55:30.340
+nightmare scenario.
+
+00:55:30.510 --> 00:55:33.180
+And that's a very hard thing to catch because it's not a crash.
+
+00:55:33.500 --> 00:55:34.660
+It's just wrong behavior.
+
+00:55:35.060 --> 00:55:35.120
+Right.
+
+00:55:35.220 --> 00:55:45.840
+Like theoretically, you could optimize away that check because actually one of the performance things you all do a lot is like, we now know about this information so we can remove these other checks and just index into the
+
+00:55:45.840 --> 00:55:46.640
+type to
+
+00:55:46.640 --> 00:55:53.960
+get its attribute or to not verify that it is this derived class before you assume that it's this particular function and all that kind of stuff, right?
+
+00:55:54.160 --> 00:55:54.380
+Right.
+
+00:55:54.600 --> 00:55:57.460
+I mean, going back to sort of optimizations that we already performed today.
+
+00:55:57.840 --> 00:56:02.960
+So like removing is instance checks when we can prove certain qualities about the things that we're checking.
+
+00:56:03.400 --> 00:56:15.520
+if we remove an if is instance user, authenticated user, or, you know, a spam user or whatever, like if we remove that check, we need to be absolutely certain that what we're doing is 100% correct, which
+
+00:56:15.520 --> 00:56:16.180
+to
+
+00:56:16.180 --> 00:56:19.880
+my knowledge it is, but it's also just something that we need to be very careful about doing, right?
+
+00:56:20.100 --> 00:56:20.280
+Yeah.
+
+00:56:20.960 --> 00:56:23.680
+It's one thing to say, I wrote my program and I checked it to work.
+
+00:56:23.760 --> 00:56:28.400
+It's another to say, I wrote a program that executes all other programs and it still works.
+
+00:56:28.760 --> 00:56:33.320
+And doing all of this in the presence of multiple threads is even more fun.
+
+00:56:34.020 --> 00:56:40.960
+yeah and malicious input and on and on and on crazy all right what other gotchas or surprises did you find there before we wrap things up
+
+00:56:40.960 --> 00:56:43.600
+um like gotchas and surprises for us or
+
+00:56:44.540 --> 00:56:47.080
+no like the what people didn't tell you about building the oh
+
+00:56:47.080 --> 00:57:10.920
+yeah kind of the last one was again something we already touched on which is uh the uh kind of support for profilers and debuggers this was something that was just kind of a blind spot for me because i don't use those tools on my python code that extensively and in fact like um like pablo reached out to me Galindo, who maintains several of these tools and knows a lot about them, reached out to me and was like, hey, this is something that we need to figure out.
+
+00:57:10.960 --> 00:57:22.960
+And he actually did a really good kind of write up in one of the issues about like sort of all the tools that we want to support, how different options for supporting them, kind of what different paths forward we have.
+
+00:57:23.040 --> 00:57:27.240
+And so it's more just kind of a matter of figuring out what makes the most sense for us.
+
+00:57:27.720 --> 00:57:58.640
+That's just something where, you know, if you're writing a J compiler and you're not using something like LVM to generate all this stuff for you, it's just kind of a pain to have to handwrite or even generate this debugging information so that someone can figure out that this variable's in that register and this was my caller. And it's so subtle and it's so easy to get wrong and multiply that by the number of tools that you want to support, the number of platforms you want to support and all that. It makes an already complicated piece of software like a JIT compiler even more complicated.
+
+00:57:58.800 --> 00:58:01.320
+I can imagine. Yeah. Using the tools is tricky.
+
+00:58:01.680 --> 00:58:07.140
+to make sure that all the pieces are in the binary so those tools work.
+
+00:58:07.440 --> 00:58:08.640
+There is so much magic
+
+00:58:08.640 --> 00:58:10.280
+that happens under the hood so that you can
+
+00:58:10.280 --> 00:58:13.720
+start a GDB session and do up, up, and then print a local variable.
+
+00:58:14.660 --> 00:58:15.220
+There's
+
+00:58:15.220 --> 00:58:22.440
+a massive amount of engineering and possible bugs just for that most basic of debugger behavior, right?
+
+00:58:22.700 --> 00:58:23.140
+Incredible.
+
+00:58:23.700 --> 00:58:23.860
+Yeah.
+
+00:58:24.700 --> 00:58:29.500
+What about the debuggers and PyCharm and VS Code and the real common?
+
+00:58:29.960 --> 00:58:30.020
+Yes,
+
+00:58:30.200 --> 00:58:44.200
+so if they're not a native debugger, so if they're just attaching to the Python process and using sys.monitoring or something like that, or if you're launching the process under sys.monitoring, then all of that works completely fine.
+
+00:58:44.440 --> 00:58:52.380
+Basically, we don't JIT compile any bytecode instructions that have those instrumented instructions that are firing tracing or profiling events.
+
+00:58:52.720 --> 00:58:53.100
+I see.
+
+00:58:53.140 --> 00:58:56.160
+So if the debugger effectively is attached, you're just like, all right, just leave it alone.
+
+00:58:56.560 --> 00:58:56.900
+Yeah, exactly.
+
+00:58:57.080 --> 00:59:02.140
+And so it's a matter of we don't JIT compile code that is currently in a debugger.
+
+00:59:02.460 --> 00:59:15.500
+The really tricky thing is, oh, what if we've got some JIT compiled code and then that calls some more Python code that starts a debugger and they start messing with local variables and changing globals and changing the type of our authenticated user to unauthenticated user and all those sorts of things.
+
+00:59:15.600 --> 00:59:19.820
+Like how do we make sure we do the right thing when that debugger continues and the function returns?
+
+00:59:20.140 --> 00:59:25.640
+I mean, you can even, in a debugger, you can jump from the body of one for loop to another, whatever that means, right?
+
+00:59:25.940 --> 00:59:35.580
+And so making sure that when we return to the JIT code and that we are doing the right thing and that we basically detect that our optimizations are no longer valid and bail out.
+
+00:59:35.760 --> 00:59:38.940
+That's also something that we've had to spend some time figuring out.
+
+00:59:39.200 --> 00:59:40.680
+Basically, we just have...
+
+00:59:41.290 --> 00:59:46.920
+You keep like a copy of the original and you're like, if things go crazy, we're just going to let that stuff pick up again, the
+
+00:59:46.920 --> 00:59:47.700
+original bytecode
+
+00:59:47.700 --> 00:59:48.480
+and original interpreter.
+
+00:59:48.960 --> 00:59:51.140
+Yep, so the original bytecode is always going to be there.
+
+00:59:51.720 --> 00:59:54.480
+And we do need it because we're only compiling parts of a function anyways.
+
+00:59:54.690 --> 01:00:09.980
+And for whatever reason, we may choose to throw away our JIT code because it's not being used very much, or in this case, because someone messed with the world in a way that invalidates our optimizations, we basically keep one bit of state on the JIT code and we check that whenever it could have possibly been invalidated.
+
+01:00:10.820 --> 01:00:17.720
+And so anytime you could have entered a debugger, basically upon returning to JIT code, we check that bit, which is a very cheap check to do.
+
+01:00:18.080 --> 01:00:24.080
+And if that bit is set, then we basically just leave the JIT code and throw it away because
+
+01:00:24.080 --> 01:00:24.840
+we can
+
+01:00:24.840 --> 01:00:25.980
+always create more later, I
+
+01:00:25.980 --> 01:00:26.180
+guess.
+
+01:00:27.579 --> 01:00:28.420
+JIT code is cheap.
+
+01:00:29.200 --> 01:00:32.040
+Yeah, you can just in time compile it a second time.
+
+01:00:32.180 --> 01:00:32.300
+And
+
+01:00:32.300 --> 01:00:39.020
+that's another thing about tracing JITs too, is like when you're throwing it away, you're throwing away one path through one part of the function, not the entire function.
+
+01:00:39.380 --> 01:00:39.600
+Sure.
+
+01:00:39.750 --> 01:00:40.420
+Oh, that's very interesting.
+
+01:00:40.620 --> 01:00:40.720
+Yeah,
+
+01:00:40.940 --> 01:00:41.260
+of course.
+
+01:00:41.460 --> 01:00:41.820
+Of course.
+
+01:00:42.160 --> 01:00:42.460
+All right.
+
+01:00:43.180 --> 01:00:44.500
+Let's close it out with a roadmap.
+
+01:00:44.760 --> 01:00:45.640
+What's coming?
+
+01:00:45.850 --> 01:00:46.840
+What should people expect here?
+
+01:00:47.160 --> 01:00:51.900
+Yeah, so I mean, for 3.15, we've got a lot of things that we want to do.
+
+01:00:51.930 --> 01:00:54.500
+How much of it we'll actually get to, not so sure.
+
+01:00:55.260 --> 01:00:58.000
+But for right now, kind of the obvious things that we already talked about.
+
+01:00:58.040 --> 01:01:01.180
+So like integer and float unboxing are really attractive optimizations.
+
+01:01:02.440 --> 01:01:05.980
+We want to make better use of hardware registers in the JIT compiler.
+
+01:01:06.840 --> 01:01:22.100
+So currently, we're kind of, it's a little tricky to explain verbally, but basically, when you're operating on two values in a Python program, if they're being used frequently, we sort of want to keep those in registers.
+
+01:01:22.480 --> 01:01:29.900
+or if they're being used by one bytecode instruction, and then they're going to be used by the subsequent bytecode instructions, we want to make sure that that's in a machine register somewhere.
+
+01:01:30.640 --> 01:01:33.120
+Right. And that's not necessarily expressed in the bytecode.
+
+01:01:33.400 --> 01:01:33.540
+Nope.
+
+01:01:33.830 --> 01:01:34.160
+Straight from
+
+01:01:34.160 --> 01:01:34.820
+Python, right?
+
+01:01:34.920 --> 01:01:37.500
+It's just like load this thing, do some, load it again, right?
+
+01:01:37.820 --> 01:01:41.620
+Yeah. That's what's tricky is that the bytecode that we're compiling uses a stack, right?
+
+01:01:41.980 --> 01:01:48.000
+But the actual machine, even though it does have like a stack of memory, like what's actually happening is in registers.
+
+01:01:48.200 --> 01:01:50.640
+And the registers are where you want to keep all the stuff that you're actually using.
+
+01:01:51.000 --> 01:01:56.660
+And so getting smarter about how we're using the registers is definitely something that we want to be smarter about.
+
+01:01:56.720 --> 01:01:58.140
+And I mean, this compounds, right?
+
+01:01:58.300 --> 01:02:09.800
+Like if you're unboxing things and you're putting them in registers, then now rather than having a Python integer out in memory that's being referenced from some other memory location, you've now got an integer in a register.
+
+01:02:10.120 --> 01:02:11.840
+And, you know, adding that together is trivial.
+
+01:02:12.700 --> 01:02:16.840
+Other things that we want to do are, I said already, support for debugging.
+
+01:02:17.740 --> 01:02:20.340
+Thread safety is another thing that's kind of interesting.
+
+01:02:20.400 --> 01:02:23.400
+So there are a couple people, I'm not necessarily an expert
+
+01:02:23.400 --> 01:02:24.060
+on
+
+01:02:24.060 --> 01:02:26.680
+all the work to make CPython thread safe.
+
+01:02:26.870 --> 01:02:35.200
+Like I've definitely worked with some of the idioms and things before, but there are people who are very familiar with how you make code thread safe and they want to learn more about the JIT.
+
+01:02:35.460 --> 01:02:40.420
+And also people who know a lot about the JIT but want to learn more about how Python is being made thread safe under the hood.
+
+01:02:40.570 --> 01:02:44.680
+And so this is a good opportunity for kind of cross pollination of those two kind of domains of expertise.
+
+01:02:44.760 --> 01:02:53.840
+And so I think it's a good opportunity for other people to sort of just kind of chipping away at the things that are holding the JIT compiler back from being compatible with the free thread it built.
+
+01:02:54.200 --> 01:02:58.600
+Yeah, well, I definitely definitely feel like those would be multiplying factors.
+
+01:02:58.860 --> 01:03:03.580
+Like you could speed up your code a bunch from free threading and all the codes being sped up by the JIT.
+
+01:03:03.740 --> 01:03:07.940
+So you could kind of if you employ them both, you'll get a multiplicative boost there.
+
+01:03:08.260 --> 01:03:08.460
+Exactly.
+
+01:03:08.650 --> 01:03:09.140
+If the JIT
+
+01:03:09.140 --> 01:03:16.480
+makes your code 50% faster and you spawn eight threads and they're going six times faster, then obviously that's a pretty significant improvement.
+
+01:03:16.860 --> 01:03:25.380
+Yeah, that's good. Also, there's probably ways in which you could leverage threading. I don't know if it even matters if Python itself is free threaded because you can do whatever you want down below.
+
+01:03:25.500 --> 01:03:32.160
+but like you could have a thread that asynchronously JIT compiles and keeps it running so you don't block while that's what's happening
+
+01:03:32.160 --> 01:03:32.660
+and then
+
+01:03:32.660 --> 01:03:40.240
+like at one moment swap it over or do analysis and like further optimization in like an idle thread or yes a lot of interesting that's absolutely
+
+01:03:40.240 --> 01:04:05.580
+something i've been kind of thinking about um where it's like okay now that we have well and this is all assuming that free threading is going to land right like it's still experimental it hasn't been approved all that um but uh like yeah i think it would probably make sense to have the JIT compiler run in another thread or to decompile something quickly and then run the kind of heavier optimizations in another thread. Another thing that might make sense to run another thread is like parts of the GC process, right? Like once you
+
+01:04:05.580 --> 01:04:06.040
+have this
+
+01:04:06.040 --> 01:04:10.320
+capability, that's something that kind of unlocks a lot of doors to experimentation like that.
+
+01:04:10.500 --> 01:04:24.620
+Yeah, I hadn't even thought about the GC, but absolutely, because a lot of it is scanning and figuring out what is still can be referenced. And then you need that one moment where you change the memory and rewrite it, but that analysis period could be concurrent for sure.
+
+01:04:24.880 --> 01:04:28.880
+It's very hard to get right because the graph is changing while you're analyzing it.
+
+01:04:29.540 --> 01:04:32.120
+But if you're careful, I mean, there is priority.
+
+01:04:32.340 --> 01:04:33.360
+It can be done.
+
+01:04:33.680 --> 01:04:39.260
+I'm not saying it should be done or it's easy to do, but it's just something interesting that wasn't even an option before, but possibly is now.
+
+01:04:39.760 --> 01:04:40.120
+Or even
+
+01:04:40.120 --> 01:04:45.260
+just something as simple as running Dunderdell methods or weak ref finalizers in another thread.
+
+01:04:46.100 --> 01:04:47.280
+That's something that we
+
+01:04:47.280 --> 01:04:49.620
+couldn't do before, but we can at least try now.
+
+01:04:49.800 --> 01:05:02.820
+Right. I think the bright spot of running GC concurrently, I think I've only had a moment to consider, but the GC is looking for stuff that basically can be found and it throws away the stuff that isn't found.
+
+01:05:03.190 --> 01:05:12.840
+It would err on finding stuff that really isn't trackable anymore, but it was just a moment ago, but it's not going to find stuff that was undiscoverable and becomes discoverable.
+
+01:05:12.960 --> 01:05:19.040
+Because once it's untracked, there's nothing that points to it anywhere at all. It shouldn't be able to come back into existence.
+
+01:05:19.240 --> 01:05:24.920
+So you might not be as efficient, but you could, from a memory perspective, you should not crash it and throw away.
+
+01:05:25.200 --> 01:05:30.960
+The stuff that's being concurrently mutated by many threads are the part of the large object graph of reachable objects.
+
+01:05:31.160 --> 01:05:31.780
+All those little
+
+01:05:31.780 --> 01:05:32.640
+graphs
+
+01:05:32.640 --> 01:05:35.620
+off to the side of unreachable stuff are actually fairly quiet.
+
+01:05:35.880 --> 01:05:36.160
+They're
+
+01:05:36.160 --> 01:05:37.360
+totally silent, actually.
+
+01:05:37.840 --> 01:05:38.260
+Yeah, exactly.
+
+01:05:38.760 --> 01:05:41.880
+Oh, there's a whole bunch of things we could just spend tons of time going down.
+
+01:05:41.980 --> 01:05:42.140
+Yeah, yeah.
+
+01:05:42.540 --> 01:05:44.680
+We'll have that 24-hour marathon sometime.
+
+01:05:44.700 --> 01:05:45.700
+Yeah, we'll stream it.
+
+01:05:46.140 --> 01:05:46.540
+I
+
+01:05:46.540 --> 01:05:46.780
+don't know.
+
+01:05:46.900 --> 01:05:47.780
+Don't speak that to existence.
+
+01:05:48.060 --> 01:05:49.340
+We might lose our voice for a week.
+
+01:05:49.400 --> 01:05:50.260
+It'll be worse than PyCon.
+
+01:05:50.400 --> 01:05:50.740
+You won't even
+
+01:05:50.740 --> 01:05:51.220
+be able to talk.
+
+01:05:51.360 --> 01:05:51.620
+You just
+
+01:05:51.620 --> 01:05:52.720
+have to lay on the couch.
+
+01:05:53.280 --> 01:05:53.500
+I know.
+
+01:05:53.620 --> 01:06:00.100
+I can't go out to any of the, like, a lot of the companies like Astral or Anaconda host events some of the nights.
+
+01:06:00.160 --> 01:06:03.800
+And I have to be very careful the night before my talk because otherwise my voice gets hoarse.
+
+01:06:04.520 --> 01:06:05.940
+Yes, I've done that at conferences
+
+01:06:05.940 --> 01:06:06.380
+as well.
+
+01:06:06.560 --> 01:06:08.020
+And I've just regretted it so much.
+
+01:06:08.140 --> 01:06:08.720
+I'm like, oh no.
+
+01:06:09.100 --> 01:06:11.740
+The whole reason I came here is to give this talk and I can barely speak.
+
+01:06:11.920 --> 01:06:12.320
+What have I done?
+
+01:06:12.580 --> 01:06:12.860
+All right.
+
+01:06:13.000 --> 01:06:16.200
+Well, I guess with that, let's leave it with this, Brent.
+
+01:06:16.420 --> 01:06:17.640
+People can check out your talk.
+
+01:06:18.100 --> 01:06:19.520
+There's a bunch of stuff that we didn't go into.
+
+01:06:19.730 --> 01:06:26.540
+A lot of animations about how the different layers of the JIT work and the specialized and adaptive interpreter and so on.
+
+01:06:26.660 --> 01:06:29.960
+So there's a lot to get from watching your talk in addition to listening to this show.
+
+01:06:30.280 --> 01:06:31.420
+So I encourage people to go do that.
+
+01:06:31.660 --> 01:06:33.200
+And I just want to say thanks for being here.
+
+01:06:33.400 --> 01:06:34.240
+No, thanks for having me.
+
+01:06:34.250 --> 01:06:37.020
+I love coming on and just geeking out about this stuff.
+
+01:06:37.260 --> 01:06:37.520
+Absolutely.
+
+01:06:37.910 --> 01:06:38.400
+Always a good time.
+
+01:06:38.570 --> 01:06:38.900
+See you later.
+
+01:06:39.300 --> 01:06:39.380
+Bye.
+
+01:06:39.600 --> 01:06:39.900
+Bye, everyone.
+
+01:06:40.900 --> 01:06:43.440
+This has been another episode of Talk Python To Me.
+
+01:06:44.260 --> 01:06:45.200
+Thank you to our sponsors.
+
+01:06:45.740 --> 01:06:46.900
+be sure to check out what they're offering.
+
+01:06:47.140 --> 01:06:48.260
+It really helps support the show.
+
+01:06:49.260 --> 01:06:50.920
+This episode is brought to you by Sentry.
+
+01:06:51.280 --> 01:06:52.640
+Don't let those errors go unnoticed.
+
+01:06:52.920 --> 01:06:54.440
+Use Sentry like we do here at Talk Python.
+
+01:06:54.960 --> 01:06:57.880
+Sign up at talkpython.fm/sentry.
+
+01:06:58.460 --> 01:06:59.340
+Want to level up your Python?
+
+01:06:59.800 --> 01:07:03.440
+We have one of the largest catalogs of Python video courses over at Talk Python.
+
+01:07:03.920 --> 01:07:08.600
+Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:07:08.980 --> 01:07:11.220
+And best of all, there's not a subscription in sight.
+
+01:07:11.640 --> 01:07:14.140
+Check it out for yourself at training.talkpython.fm.
+
+01:07:14.840 --> 01:07:19.020
+Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:07:19.440 --> 01:07:20.340
+We should be right at the top.
+
+01:07:20.860 --> 01:07:29.720
+You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:07:30.380 --> 01:07:32.600
+We're live streaming most of our recordings these days.
+
+01:07:33.000 --> 01:07:40.460
+If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+01:07:41.460 --> 01:07:42.580
+This is your host, Michael Kennedy.
+
+01:07:43.020 --> 01:07:43.860
+Thanks so much for listening.
+
+01:07:44.100 --> 01:07:44.980
+I really appreciate it.
+
+01:07:45.360 --> 01:07:46.940
+Now get out there and write some Python code.
+
+01:07:57.480 --> 01:08:10.940
+Talk Python To Me, and we ready to roll. Upgrade the code, no fear of getting old. We tapped into that modern vibe over in
+
+01:08:10.940 --> 01:08:15.120
+each storm. Talk Python To Me, I-sync is the norm.
+
