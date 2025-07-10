@@ -1,0 +1,3344 @@
+WEBVTT
+
+00:00:00.759 --> 00:00:02.500
+Ben, welcome to Talk Python To Me.
+
+00:00:02.780 --> 00:00:04.220
+So excited to be talking data science with you.
+
+00:00:04.860 --> 00:00:06.300
+Yeah, thanks so much for having me.
+
+00:00:06.440 --> 00:00:08.000
+I'm really excited to talk to you as well.
+
+00:00:08.900 --> 00:00:11.660
+Yes, data science, hardware acceleration,
+
+00:00:12.379 --> 00:00:14.240
+graphics, but not really.
+
+00:00:15.300 --> 00:00:17.360
+So it should be super fun.
+
+00:00:18.340 --> 00:00:19.820
+Yeah, let's dive into it.
+
+00:00:21.260 --> 00:00:26.300
+Before we really get into using GPUs for data science,
+
+00:00:26.380 --> 00:00:28.380
+which I think is going to be super interesting,
+
+00:00:28.660 --> 00:00:31.920
+like, just tell us a bit about yourself. Who's Ben?
+
+00:00:33.160 --> 00:00:37.960
+Yeah, my name is Ben Zaitlin. I am a system software manager, I
+
+00:00:37.960 --> 00:00:42.400
+think is my title at Nvidia. I've been working in the Python
+
+00:00:42.550 --> 00:00:47.580
+Python ecosystem since I left graduate school in like 2006 2005.
+
+00:00:49.100 --> 00:00:52.060
+It's actually unlike I think other people, this is only my
+
+00:00:52.170 --> 00:00:56.900
+second job, I moved from from graduate school to working at
+
+00:00:56.940 --> 00:00:59.660
+at Continuum or Anaconda, and then I came to NVIDIA.
+
+00:00:59.840 --> 00:01:06.020
+I've always been in the space of doing some kind of science with computers.
+
+00:01:08.120 --> 00:01:13.140
+Yeah, Anaconda or Continuum at the time, as it was known, it's been renamed.
+
+00:01:15.000 --> 00:01:17.340
+What a launchpad for this kind of stuff, right?
+
+00:01:17.920 --> 00:01:19.660
+Yeah, it's been crazy.
+
+00:01:20.400 --> 00:01:25.120
+I feel like I'm a little bit older now than obviously I was when I first joined things,
+
+00:01:25.160 --> 00:01:30.740
+But it's nice to be able to reflect and look back at how much was built over the last decade and a half or so.
+
+00:01:32.100 --> 00:01:32.640
+It really is.
+
+00:01:33.140 --> 00:01:33.820
+People use Conda.
+
+00:01:35.080 --> 00:01:35.520
+People use
+
+00:01:35.520 --> 00:01:35.820
+Conda.
+
+00:01:36.070 --> 00:01:37.560
+A bunch of things in pip were fixed.
+
+00:01:39.880 --> 00:01:41.180
+More things need to be fixed.
+
+00:01:41.250 --> 00:01:42.240
+More things are being built.
+
+00:01:42.380 --> 00:01:43.180
+It's really great.
+
+00:01:44.300 --> 00:01:52.300
+Yeah, and not to go too far afield, but Anaconda Inc. is doing interesting stuff to push on different boundaries of Python
+
+00:01:53.200 --> 00:01:55.260
+in addition to the data science and ML side,
+
+00:01:55.800 --> 00:01:58.940
+you know, they're funding a lot of work on PyScript,
+
+00:01:59.900 --> 00:02:01.120
+which I think is really important
+
+00:02:01.400 --> 00:02:03.720
+for the Python in the browser.
+
+00:02:04.880 --> 00:02:08.160
+Yeah, I think one, like many conversations I've had
+
+00:02:08.479 --> 00:02:11.560
+when I was at Anaconda about like how deploying Python
+
+00:02:11.680 --> 00:02:13.320
+can be so challenging and wouldn't be great
+
+00:02:13.320 --> 00:02:15.980
+if we had this deployment vehicle like JavaScript
+
+00:02:16.160 --> 00:02:18.660
+if everything just ran, you didn't need anything set up.
+
+00:02:18.660 --> 00:02:19.700
+It's just all in the browser.
+
+00:02:19.820 --> 00:02:22.280
+And seeing those ideas actually mature
+
+00:02:22.300 --> 00:02:24.140
+to like an existing product is really exciting.
+
+00:02:24.680 --> 00:02:26.460
+I think there's some people that are really even pushing
+
+00:02:26.610 --> 00:02:29.200
+quite hard to see how do you connect like WebGL
+
+00:02:29.560 --> 00:02:32.220
+to getting other parts of your local machine,
+
+00:02:32.400 --> 00:02:33.680
+like obviously the GPU in this case,
+
+00:02:34.660 --> 00:02:36.560
+accessible through the browser,
+
+00:02:36.820 --> 00:02:38.760
+but it's really exciting to see.
+
+00:02:39.080 --> 00:02:41.020
+- All right, now you're just blowing my mind.
+
+00:02:41.110 --> 00:02:45.560
+I didn't connect the WebGL, the OpenGL of the browser
+
+00:02:45.900 --> 00:02:48.320
+to like GPU acceleration, but of course.
+
+00:02:48.819 --> 00:02:49.260
+- You
+
+00:02:49.260 --> 00:02:50.520
+can see a few people in PyScript,
+
+00:02:50.680 --> 00:02:53.720
+Like if you go to the issue tracker, you're like, oh, I want to, how do I use PyTorch?
+
+00:02:53.720 --> 00:02:56.240
+Or how do I use TensorFlow inside of this, inside of my browser?
+
+00:02:56.520 --> 00:02:58.980
+Occasionally you'll see some people will talk about it later.
+
+00:02:59.180 --> 00:03:01.060
+Like how do I use Rapids or other things like that?
+
+00:03:01.940 --> 00:03:02.060
+But
+
+00:03:02.060 --> 00:03:02.280
+once
+
+00:03:02.280 --> 00:03:04.860
+you open the doors, everybody just wants everything there.
+
+00:03:05.100 --> 00:03:05.960
+It's like, oh yes,
+
+00:03:06.300 --> 00:03:06.880
+I understand.
+
+00:03:07.060 --> 00:03:07.420
+I see.
+
+00:03:07.820 --> 00:03:07.920
+Okay.
+
+00:03:08.260 --> 00:03:08.340
+Yeah.
+
+00:03:09.700 --> 00:03:09.780
+Yeah.
+
+00:03:09.920 --> 00:03:17.220
+And, you know, I said multiple areas, not just PyScript, but also they're doing a lot of work to support Russell Keith McGee.
+
+00:03:18.320 --> 00:03:20.120
+And I believe it's Malcolm.
+
+00:03:20.420 --> 00:03:23.740
+sorry if it's not Malcolm, the guy working with him on that,
+
+00:03:24.220 --> 00:03:26.120
+to bring Python to mobile as well.
+
+00:03:26.340 --> 00:03:27.920
+So those are really important initiatives.
+
+00:03:28.780 --> 00:03:29.040
+Yeah.
+
+00:03:30.440 --> 00:03:34.460
+Python is not just a niche language.
+
+00:03:34.520 --> 00:03:39.360
+It's found itself in every bit of computing up and down the stack,
+
+00:03:39.640 --> 00:03:43.020
+from mobile to workstation, HPC, everywhere.
+
+00:03:45.200 --> 00:03:49.519
+So I want to start this conversation and jump into RAPIDS.
+
+00:03:49.560 --> 00:04:00.720
+to rapids with a few comments first of all i recently did an episode on just gpu programming
+
+00:04:01.540 --> 00:04:05.080
+so that was really fun and a quick
+
+00:04:11.260 --> 00:04:19.019
+where was it oh yeah that was with um bryce aldestein lullbach
+
+00:04:19.019 --> 00:04:21.000
+sorry bryce i didn't remember
+
+00:04:21.000 --> 00:04:21.140
+the
+
+00:04:21.140 --> 00:04:25.240
+whole name like i'm gonna screw this up i gotta look it up so and so we talked a little
+
+00:04:25.280 --> 00:04:30.260
+bit about gpus and stuff and not not so much about rapids and the side of things that
+
+00:04:30.340 --> 00:04:36.320
+you're working on although we definitely did touch on it a little bit um so that's another resource
+
+00:04:36.520 --> 00:04:39.839
+for people that really want to go deep into this area but the thing that i want to go and
+
+00:04:39.860 --> 00:04:45.340
+actually talk about is I want to introduce this with a story from when I
+
+00:04:45.340 --> 00:04:53.180
+was in college in the 90s and a question that really surprised me I was working
+
+00:04:53.580 --> 00:05:01.340
+doing this like applied math project using Silicon Graphics mainframes in
+
+00:05:01.500 --> 00:05:07.379
+complex analysis if people know what that is and I was programming with OpenGL
+
+00:05:07.400 --> 00:05:09.080
+to do some visualizations and stuff.
+
+00:05:09.220 --> 00:05:11.360
+And people, I was trying to get some help
+
+00:05:11.400 --> 00:05:14.080
+and someone's like, hey, hey, are you using the GPU
+
+00:05:14.380 --> 00:05:15.740
+for the math calculations?
+
+00:05:16.540 --> 00:05:17.720
+Because I want to hear about that.
+
+00:05:17.720 --> 00:05:20.240
+I'm like, I don't even, that doesn't even make sense to me.
+
+00:05:20.240 --> 00:05:21.340
+Like, why would you even ask me that?
+
+00:05:21.560 --> 00:05:23.280
+GPUs are for pictures and graphics.
+
+00:05:24.020 --> 00:05:26.580
+I like write loops and stuff for the math part, right?
+
+00:05:28.800 --> 00:05:32.520
+But we've come so far and now GPUs really are
+
+00:05:33.820 --> 00:05:36.660
+a huge part of computation, right?
+
+00:05:36.780 --> 00:05:42.360
+And Bryce said, hey, I've worked at NVIDIA for a long, long time, and I know nothing about graphics and 3D programming.
+
+00:05:45.120 --> 00:05:55.560
+Yeah, everybody's journey into this has been somewhat rejecting some popular notions about what GPUs are and are not for, and to really testing those ideas.
+
+00:05:55.610 --> 00:06:02.900
+I think many of us, even still right now, think of GPUs as mostly being for drawing triangles or just linear algebra.
+
+00:06:03.700 --> 00:06:07.240
+And those are best in class of what GPUs are for,
+
+00:06:07.240 --> 00:06:09.620
+but it turns out that they're actually not terrible
+
+00:06:09.800 --> 00:06:10.900
+for doing string processing,
+
+00:06:11.180 --> 00:06:13.380
+where they're not as fast as they are
+
+00:06:13.380 --> 00:06:14.680
+for doing dense linear algebra,
+
+00:06:14.860 --> 00:06:19.320
+but they're really still quite good computing platforms
+
+00:06:19.520 --> 00:06:23.480
+for doing a lot of both processing around all kinds of data
+
+00:06:23.760 --> 00:06:26.980
+that are not typically what you think of as for,
+
+00:06:27.400 --> 00:06:29.360
+or what you think of for GPU processing.
+
+00:06:29.580 --> 00:06:30.500
+But like in data science,
+
+00:06:30.880 --> 00:06:32.219
+so much of what we're seeing now
+
+00:06:32.260 --> 00:06:37.840
+is actually still string based. So how do we get, we don't, we can't just, we can't always just
+
+00:06:38.040 --> 00:06:42.320
+isolate parts of the code to be just for strings or just for compute, we have to do all of it
+
+00:06:42.520 --> 00:06:49.300
+together. Exploring how we can do that all on the device has been really quite, quite revelatory,
+
+00:06:49.420 --> 00:06:55.580
+that it's actually pushing us to tell, maybe how to inform how hardware maybe should be built or
+
+00:06:56.060 --> 00:07:01.100
+where we can actually do some software tricks to make some of these non-standard processing still,
+
+00:07:01.640 --> 00:07:05.820
+still quite um performing i'm sorry i think i cut you off a little bit
+
+00:07:05.820 --> 00:07:08.740
+oh no no it's great if
+
+00:07:10.060 --> 00:07:15.120
+i don't people haven't physically handled some of these gpus lately they might not appreciate just
+
+00:07:15.460 --> 00:07:22.160
+how intense they are right like you know you think oh i've got a little laptop and it's got a gpu in
+
+00:07:22.200 --> 00:07:29.099
+there and it must do a thing but like the desktop high-end ones like i i couldn't put a higher
+
+00:07:29.820 --> 00:07:37.500
+g-force card into my gaming computer because like the power supply was only something like 800 watts
+
+00:07:37.620 --> 00:07:42.360
+or something insane like can i even plug that into the wall without melting it even if i got a bigger
+
+00:07:42.480 --> 00:07:48.300
+power supply like this these things are crazy and that's not even touching on like the h100 h200 type
+
+00:07:48.440 --> 00:07:51.500
+of server things right which is
+
+00:07:51.500 --> 00:07:52.340
+just next
+
+00:07:52.340 --> 00:07:52.660
+level
+
+00:07:52.660 --> 00:07:55.899
+yeah there's uh there's a lot of power consumption
+
+00:07:55.920 --> 00:07:57.300
+for these accelerators.
+
+00:07:57.410 --> 00:07:59.680
+I think what she touched on as well
+
+00:07:59.800 --> 00:08:02.100
+is something that I've seen change
+
+00:08:02.150 --> 00:08:03.040
+over the last 10 years
+
+00:08:03.070 --> 00:08:05.440
+that we thought about GPUs
+
+00:08:05.450 --> 00:08:07.800
+as mostly being for just graphics
+
+00:08:08.020 --> 00:08:10.100
+as these niche computing devices.
+
+00:08:10.750 --> 00:08:13.140
+And they're still not exactly,
+
+00:08:13.600 --> 00:08:14.080
+at least in my mind,
+
+00:08:14.120 --> 00:08:15.300
+not exactly commodity hardware,
+
+00:08:15.370 --> 00:08:16.740
+but they're a lot more commonplace
+
+00:08:16.750 --> 00:08:22.340
+where it's not so revolutionary
+
+00:08:22.530 --> 00:08:23.020
+to think of,
+
+00:08:23.130 --> 00:08:24.220
+oh, what else can I do
+
+00:08:24.540 --> 00:08:25.079
+with the hardware
+
+00:08:25.100 --> 00:08:26.860
+that's in my laptop or in my workstation.
+
+00:08:27.060 --> 00:08:29.240
+And GPUs are definitely part of that narrative.
+
+00:08:29.300 --> 00:08:33.099
+We're becoming very common to think of what are other things that I can do with this device
+
+00:08:33.320 --> 00:08:34.599
+that's just sitting around not doing something.
+
+00:08:35.820 --> 00:08:36.780
+Yeah, absolutely.
+
+00:08:37.020 --> 00:08:44.380
+And I think just coincidentally or just the way it works out, data science type of work
+
+00:08:44.880 --> 00:08:49.959
+and really most significantly the data science libraries, the way that they're built and the
+
+00:08:49.860 --> 00:08:56.420
+way they execute line up perfectly with the way GPUs do their work. And what I'm thinking of
+
+00:08:57.000 --> 00:09:03.220
+is pandas, polars, all the vector type of stuff. So instead of saying, I'm going to loop over and
+
+00:09:03.220 --> 00:09:10.280
+do one thing at a time, you just say, here's a million rows, apply this operation to all million,
+
+00:09:10.600 --> 00:09:15.659
+and then either update it in place or give me a new data frame or whatever. And that is perfect
+
+00:09:15.680 --> 00:09:22.520
+for like, let me load that into a GPU and turn it loose in parallel on all these pieces.
+
+00:09:22.730 --> 00:09:30.560
+Because as a programmer, a data scientist, I don't write the imperative bits of it, right?
+
+00:09:30.650 --> 00:09:31.540
+I just let it go.
+
+00:09:31.590 --> 00:09:37.580
+And it's easy for things like Rapids to grab that and parallelize it without me having to
+
+00:09:37.700 --> 00:09:39.060
+know about parallelism, right?
+
+00:09:39.940 --> 00:09:42.840
+Yeah, I think the same is also true in the CPU world as well.
+
+00:09:43.040 --> 00:09:51.420
+I don't know a lot about BLAS or LEPAC or these linear algebra libraries that have been in existence for 30 or 40 years.
+
+00:09:51.980 --> 00:09:58.340
+Those have been tuned to the gills to work on CPU, but I'm just the inheritor of all of that academic research.
+
+00:09:58.860 --> 00:10:01.600
+I don't need to know about caching algorithms or tiling algorithms.
+
+00:10:02.000 --> 00:10:04.680
+I just write my NumPy or my Pandas or my pullers.
+
+00:10:05.360 --> 00:10:07.060
+And generally, I'm pretty happy.
+
+00:10:07.170 --> 00:10:11.880
+Like year after year after year, things generally get better for me without having to go very
+
+00:10:12.220 --> 00:10:16.960
+deep into computer science or even computer hardware design.
+
+00:10:17.230 --> 00:10:24.800
+I can still focus on boring business things or exciting business things or whatever particular
+
+00:10:25.280 --> 00:10:26.740
+vertical I'm in, whether it's
+
+00:10:26.740 --> 00:10:28.040
+genomics
+
+00:10:28.040 --> 00:10:30.700
+or selling ads or whatever it may be.
+
+00:10:31.440 --> 00:10:32.900
+There's a lot of layers to that, right?
+
+00:10:33.020 --> 00:10:37.780
+we've got the layers of like you're talking about the libraries or like the CPU operations,
+
+00:10:38.160 --> 00:10:43.300
+but just the pip install or conda install type of layers that you can add on.
+
+00:10:43.350 --> 00:10:47.320
+They honestly don't need to know too much about what even they're doing, right?
+
+00:10:48.440 --> 00:10:53.200
+Yeah, I think that the demands of the user have definitely gone up and really pushed,
+
+00:10:53.510 --> 00:10:57.220
+I think, all of the library developers to meet those demands.
+
+00:10:57.940 --> 00:11:02.900
+When I was first starting in computing, you'd read two or three pages worth of,
+
+00:11:03.040 --> 00:11:08.740
+you know, change this little bit of XML, compile this thing, do something else. Now the expectation
+
+00:11:09.140 --> 00:11:14.440
+really is like single button, if not single button data science, single button deployment
+
+00:11:14.680 --> 00:11:16.320
+of whatever it is I'm trying to work on.
+
+00:11:16.680 --> 00:11:19.600
+Yeah. Yeah. I want to write six lines of code in a
+
+00:11:19.740 --> 00:11:23.900
+notebook and have it do stuff that was previously impossible, basically. Right.
+
+00:11:24.600 --> 00:11:25.140
+Or I
+
+00:11:25.140 --> 00:11:25.500
+just want to
+
+00:11:25.720 --> 00:11:31.860
+express like math and then have it work. Or I mean, even now in some AI systems, I just want to
+
+00:11:31.720 --> 00:11:36.540
+express text and some agent takes care of everything for me.
+
+00:11:37.140 --> 00:11:38.080
+Yeah, it's absolutely.
+
+00:11:38.100 --> 00:11:39.540
+The AI stuff is absolutely crazy.
+
+00:11:39.760 --> 00:11:46.700
+And we'll come back to some of the integrations with like vector embeddings and vector search
+
+00:11:46.700 --> 00:11:48.820
+and all that kind of stuff at the end.
+
+00:11:49.940 --> 00:11:59.559
+But for now, let's maybe, I want to talk a bit about open source at NVIDIA and why you
+
+00:11:59.580 --> 00:12:02.220
+we all decided to open source Rapids,
+
+00:12:02.230 --> 00:12:05.700
+and then we could maybe talk about how it came to be as well.
+
+00:12:06.040 --> 00:12:10.780
+So people probably think of NVIDIA mostly, obviously,
+
+00:12:11.100 --> 00:12:15.080
+there's a lot of audience bias by listening to the show.
+
+00:12:15.470 --> 00:12:18.500
+But a lot of people think of NVIDIA as the gaming company,
+
+00:12:18.800 --> 00:12:20.380
+or maybe just the GPU company.
+
+00:12:21.620 --> 00:12:24.300
+What's the software story and the open source story there?
+
+00:12:26.080 --> 00:12:30.120
+I think software is very important to NVIDIA, obviously,
+
+00:12:30.140 --> 00:12:32.740
+like CUDA is one of its primary vehicles
+
+00:12:33.060 --> 00:12:34.380
+to interact with the GPU.
+
+00:12:35.800 --> 00:12:39.200
+But NVIDIA has been exploring software
+
+00:12:39.520 --> 00:12:42.500
+in a more concentrated way over the last,
+
+00:12:42.740 --> 00:12:43.960
+I don't know, five, six years,
+
+00:12:44.100 --> 00:12:46.120
+at least since I've been there, probably it predates,
+
+00:12:46.460 --> 00:12:48.180
+maybe I can't speak for all of NVIDIA in this way.
+
+00:12:48.860 --> 00:12:51.320
+But software becomes quite critical
+
+00:12:51.420 --> 00:12:56.040
+that if you want to deliver a full platform
+
+00:12:56.040 --> 00:13:02.100
+people and have them use it. You need the software to be as good, if not better than just the
+
+00:13:02.220 --> 00:13:06.460
+hardware. Everything, probably everything needs to work. I don't need to disparage any group or
+
+00:13:07.060 --> 00:13:16.100
+elevate any one group over another. And Rapids kicks off probably in late 2018, but it predates
+
+00:13:16.500 --> 00:13:23.699
+my time there with a thesis of, well, we see a lot of, there's a lot of signal out in the world of
+
+00:13:23.760 --> 00:13:28.980
+whatever it is that i'm doing right now how do i make it go 10x faster and i think that's like a
+
+00:13:29.120 --> 00:13:35.760
+very natural response to any time frame whether it's the 60s or 70s and having them search for
+
+00:13:36.720 --> 00:13:40.740
+whatever whatever the hardware was doing back then faster cores or multi i don't know as they
+
+00:13:41.270 --> 00:13:45.360
+approached i think the first like multi-core thing comes out in the early 80s but we
+
+00:13:45.360 --> 00:13:45.700
+have
+
+00:13:45.700 --> 00:13:46.300
+this desire
+
+00:13:46.520 --> 00:13:51.140
+to do whatever it is that's happening right now it can always be faster there's actually this a
+
+00:13:51.160 --> 00:13:56.440
+really great uh grace hopper quote that i like from where she's reflecting on some things from
+
+00:13:56.440 --> 00:14:02.160
+the 70s that not only is data going to increase but the demand for access to that data is going to
+
+00:14:02.200 --> 00:14:07.380
+increase and i've heard a lot about like data data sizes increasing but it was the first time i
+
+00:14:07.960 --> 00:14:12.740
+really saw somebody even back then saying like oh the demand for access was going to increase so
+
+00:14:12.800 --> 00:14:20.180
+it's really it's really it's like innate for us to just always go go faster um and then rapid's
+
+00:14:20.200 --> 00:14:26.320
+approach to this problem was, well, these libraries have really become like canon for how you do
+
+00:14:26.900 --> 00:14:34.400
+data science in the Python world. The NumPy, Pandas, NetworkX, Matplotlib become the underlying
+
+00:14:34.720 --> 00:14:43.360
+pillars for this huge explosion of Python and PyData libraries. And we want to join that effort.
+
+00:14:43.960 --> 00:14:49.540
+How do we take a bunch of knowledge around writing very fast GPU kernels
+
+00:14:49.560 --> 00:14:54.120
+and bring it to this very large community and there's a whole bunch of strategies that we
+
+00:14:54.690 --> 00:14:59.980
+try to employ to make that to make it attractive to make it possible and to actually like deliver
+
+00:15:00.200 --> 00:15:05.720
+something that ultimately will benefit what you did today versus what didn't happen yesterday
+
+00:15:08.420 --> 00:15:16.819
+yeah you know you're talking about the grace hopper quote i know way back in in the early mainframe
+
+00:15:16.840 --> 00:15:24.400
+days before they all had many computers or whatever that were still huge but
+
+00:15:24.800 --> 00:15:29.800
+every one of those like the early history of Cray and and the places that
+
+00:15:30.060 --> 00:15:34.100
+you know gave birth to that company every one of those computers those big
+
+00:15:34.320 --> 00:15:39.100
+computers had its own programming style its own basically assembly language and
+
+00:15:39.280 --> 00:15:42.459
+the way that it worked and if you got a new computer you have to rewrite your
+
+00:15:42.900 --> 00:15:47.600
+software to run on this new computer. We've come a long ways. So we have these nice building blocks
+
+00:15:47.740 --> 00:15:49.780
+like pandas and numpy and pullers and so on.
+
+00:15:50.580 --> 00:15:53.200
+Yeah. So I love that period of time just because
+
+00:15:53.250 --> 00:15:59.700
+it seemed like so bonkers where, you know, like I think in like the later 2000s when LVM really kind
+
+00:15:59.700 --> 00:16:05.020
+of becomes popular, there's a lot of languages. I think in like the 60s and 70s, that time period
+
+00:16:05.180 --> 00:16:10.839
+was also this like Cambrian explosion of languages that, you know, very niche things, many of them
+
+00:16:11.240 --> 00:16:13.700
+with like the Defense Department, but also business things
+
+00:16:13.880 --> 00:16:16.580
+like the rise of COBOL comes around, so does FORTRAN,
+
+00:16:16.780 --> 00:16:20.920
+but wonderful languages like the stepped Reckoner,
+
+00:16:21.080 --> 00:16:23.060
+like a harking back to like Leibniz things.
+
+00:16:23.260 --> 00:16:25.040
+There's a bunch of really cool, I don't know,
+
+00:16:25.120 --> 00:16:27.420
+if you have a minute, you can look up this cool image
+
+00:16:27.680 --> 00:16:32.120
+from Gene Samet who built this Tower of Babel-like image
+
+00:16:32.700 --> 00:16:34.680
+showing all these languages stacked on top of each other
+
+00:16:35.280 --> 00:16:37.040
+and kind of like highlighting that problem
+
+00:16:37.140 --> 00:16:40.019
+that you were just describing that if you moved
+
+00:16:40.040 --> 00:16:45.380
+between the IBM 360 to the Omdahl 720 or something.
+
+00:16:45.620 --> 00:16:47.400
+Like you had to rewrite your whole stack
+
+00:16:47.580 --> 00:16:50.160
+even though the math didn't change.
+
+00:16:50.360 --> 00:16:51.640
+Or what you were working with,
+
+00:16:51.680 --> 00:16:53.000
+the problem that you were actually trying to solve
+
+00:16:53.160 --> 00:16:53.860
+didn't really change.
+
+00:16:54.819 --> 00:16:57.200
+- Yeah, what an insane time that was.
+
+00:16:57.360 --> 00:16:58.060
+But so interesting.
+
+00:16:58.600 --> 00:17:00.540
+There's actually a really good YouTube video
+
+00:17:00.780 --> 00:17:02.740
+if people wanna check it out called Cray,
+
+00:17:03.000 --> 00:17:05.579
+what is it, "The Rise and Fall of the Cray Supercomputer
+
+00:17:05.720 --> 00:17:07.160
+by Asianometry."
+
+00:17:07.220 --> 00:17:07.980
+I'll put a link to that.
+
+00:17:08.280 --> 00:17:09.480
+That goes a lot into it.
+
+00:17:09.839 --> 00:17:10.699
+It's really neat.
+
+00:17:11.699 --> 00:17:11.920
+Cool.
+
+00:17:12.540 --> 00:17:13.620
+Yeah, absolutely.
+
+00:17:14.160 --> 00:17:15.500
+So let's talk about Rapids.
+
+00:17:16.860 --> 00:17:18.740
+There's a bunch of cool stuff right on the home page
+
+00:17:18.780 --> 00:17:19.920
+that are like little announcements
+
+00:17:20.020 --> 00:17:21.819
+that I think are going to be really fun to dive into.
+
+00:17:22.780 --> 00:17:26.920
+But the H2 here is GPU accelerated data science.
+
+00:17:29.060 --> 00:17:32.500
+And Rapids is a Python package that you can install.
+
+00:17:33.020 --> 00:17:34.240
+But it's not just--
+
+00:17:35.600 --> 00:17:38.080
+it's kind of a-- I guess you call it a meta package, right?
+
+00:17:38.300 --> 00:17:41.960
+Like when you install it, you get a bunch of things that work together.
+
+00:17:42.130 --> 00:17:44.400
+So you tell us what is RAPIDS?
+
+00:17:45.280 --> 00:17:50.040
+Yeah, so RAPIDS is a suite of very popular data science libraries
+
+00:17:50.380 --> 00:17:51.960
+that have been GPU accelerated.
+
+00:17:52.110 --> 00:17:55.620
+So we've been exploring the space of how you do, again,
+
+00:17:55.670 --> 00:17:57.900
+those libraries that I was describing before
+
+00:17:58.140 --> 00:18:00.200
+that make the pillars of the PyData stack,
+
+00:18:01.020 --> 00:18:03.600
+NumPy, Pandas, Polars, like it keeps,
+
+00:18:03.860 --> 00:18:05.540
+it has grown since we first started,
+
+00:18:06.320 --> 00:18:08.200
+and have GPU equivalents of them.
+
+00:18:10.600 --> 00:18:14.280
+But maybe I can wax on for a little bit longer, if that's okay.
+
+00:18:14.820 --> 00:18:15.140
+- Yeah, please.
+
+00:18:15.460 --> 00:18:17.700
+- The world has changed since we first started these things.
+
+00:18:17.840 --> 00:18:21.440
+So when Rapids first kicks off, we say,
+
+00:18:22.840 --> 00:18:25.560
+I think many people actually, not just Rapids,
+
+00:18:26.280 --> 00:18:28.640
+says, well, how do I make pandas go faster?
+
+00:18:28.790 --> 00:18:30.260
+How do I make scikit-lin go faster?
+
+00:18:30.920 --> 00:18:33.320
+And there's a lot of products that are built
+
+00:18:33.340 --> 00:18:40.380
+that are import foo as PD or import X as SK Learn.
+
+00:18:42.900 --> 00:18:44.960
+And that's where we start off as well.
+
+00:18:45.160 --> 00:18:49.580
+So we build QDF, which is as close to a one-to-one mapping
+
+00:18:49.710 --> 00:18:53.140
+of the pandas API and we build QML that's a similar strategy.
+
+00:18:53.720 --> 00:18:55.640
+It's as close as possible to a one-to-one mapping
+
+00:18:55.820 --> 00:18:59.760
+and same thing with QGraph and NetworkX.
+
+00:19:00.260 --> 00:19:03.300
+And what you have here on the screen is QSPatial
+
+00:19:04.820 --> 00:19:08.200
+and parts of SciPySignal.
+
+00:19:09.280 --> 00:19:12.980
+And QSIM is also related to scikit image.
+
+00:19:13.650 --> 00:19:15.240
+But when you, I don't know,
+
+00:19:15.790 --> 00:19:16.720
+your experience may differ,
+
+00:19:16.920 --> 00:19:20.040
+but when you go to actually import Foo as PD
+
+00:19:20.280 --> 00:19:22.440
+or import QPy as NP,
+
+00:19:23.010 --> 00:19:27.560
+it doesn't work out as well as you might want it to.
+
+00:19:27.960 --> 00:19:30.320
+There's still like enough edge cases there.
+
+00:19:30.360 --> 00:19:33.280
+There's enough sharp edges that it actually prevents you
+
+00:19:34.000 --> 00:19:37.460
+having it just magically work as much as you might want it to.
+
+00:19:37.980 --> 00:19:39.920
+That can be very frustrating to just move on.
+
+00:19:39.930 --> 00:19:40.060
+Right.
+
+00:19:40.470 --> 00:19:47.960
+So what you're saying is a lot of times people say things like import pandas as PD.
+
+00:19:48.980 --> 00:19:52.000
+A trick somebody might want to try or a technique would be like,
+
+00:19:52.160 --> 00:19:54.060
+well, if it's kind of a one-to-one mapping,
+
+00:19:54.250 --> 00:19:59.600
+could we just say import QDF as PD and see if it just keeps going?
+
+00:20:00.720 --> 00:20:02.960
+It's a really great first starting point.
+
+00:20:03.360 --> 00:20:06.000
+But there are some subtle differences.
+
+00:20:06.120 --> 00:20:09.040
+And if you go to the Kudyat documentation page,
+
+00:20:09.500 --> 00:20:10.460
+you can see a lot of these,
+
+00:20:10.900 --> 00:20:12.200
+a lot of that we've tried to highlight
+
+00:20:12.440 --> 00:20:13.240
+where things differ.
+
+00:20:13.480 --> 00:20:16.460
+So like on joins or value counts
+
+00:20:16.880 --> 00:20:17.560
+or group buys,
+
+00:20:18.080 --> 00:20:20.820
+pandas guarantees some ordering
+
+00:20:21.020 --> 00:20:22.960
+that Kudyat by default doesn't.
+
+00:20:23.600 --> 00:20:26.060
+And we care deeply about performance.
+
+00:20:26.120 --> 00:20:29.200
+So we could probably meet those API expectations,
+
+00:20:29.400 --> 00:20:30.300
+but we're trying to balance
+
+00:20:31.100 --> 00:20:32.800
+both ergonomics and performance.
+
+00:20:34.880 --> 00:20:39.160
+I think even in the case of like Kooppy and NumPy, there's going to be differences on
+
+00:20:39.420 --> 00:20:45.660
+indexing behavior. There's going to be some behavior where it won't allow you to do an
+
+00:20:45.860 --> 00:20:51.100
+implicit device to host calls. It will prevent you from doing things in a way that, again,
+
+00:20:51.140 --> 00:21:00.440
+it's a good starting point, but it's not enough to actually deliver on the magic of what I have
+
+00:21:01.260 --> 00:21:03.040
+have this one-to-one mapping that perfectly works.
+
+00:21:04.490 --> 00:21:05.300
+So what should you--
+
+00:21:05.880 --> 00:21:05.960
+Yeah.
+
+00:21:06.020 --> 00:21:07.960
+Yeah, well, what's the likelihood it works?
+
+00:21:09.360 --> 00:21:13.800
+If I have a simple problem, if I'm, say, a biology student
+
+00:21:14.480 --> 00:21:18.480
+and I've written 20 lines of Panda-related code
+
+00:21:19.250 --> 00:21:22.140
+and it's kind of slow, but could I just get away with it?
+
+00:21:22.170 --> 00:21:24.520
+Or is it-- like, where are these rough edges?
+
+00:21:25.180 --> 00:21:28.020
+Yeah, I think the rough edges come when you--
+
+00:21:28.020 --> 00:21:29.960
+again, with some of the assumptions that we've made
+
+00:21:29.980 --> 00:21:32.620
+are usually around some of these ordering problems
+
+00:21:32.800 --> 00:21:33.520
+that I described before.
+
+00:21:34.650 --> 00:21:36.500
+I think probably 20 lines of code, yeah,
+
+00:21:36.620 --> 00:21:38.180
+you're probably safe doing it.
+
+00:21:38.800 --> 00:21:39.140
+It's
+
+00:21:39.140 --> 00:21:40.420
+not that big.
+
+00:21:40.420 --> 00:21:42.440
+But as you get into enterprise code,
+
+00:21:42.450 --> 00:21:44.580
+things that are maybe using Pandas as a library,
+
+00:21:44.840 --> 00:21:50.000
+where you have a lot of all the different kinds of ways
+
+00:21:50.180 --> 00:21:52.900
+that Pandas is delightful and sometimes complex,
+
+00:21:53.360 --> 00:21:57.080
+that makes all these guarantees hard.
+
+00:21:58.540 --> 00:22:02.380
+it makes it more and more challenging to make sure that we have like met that.
+
+00:22:06.120 --> 00:22:09.820
+We've like delivered with what the tins, what we say on the tin.
+
+00:22:10.150 --> 00:22:10.940
+Yeah, it's harder to meet
+
+00:22:10.940 --> 00:22:11.320
+those things.
+
+00:22:11.650 --> 00:22:11.980
+Yeah, whatever.
+
+00:22:12.240 --> 00:22:12.740
+Yeah, I can.
+
+00:22:13.760 --> 00:22:16.700
+Well, the farther into the edge cases you go, the more that's true, right?
+
+00:22:17.160 --> 00:22:17.220
+Yeah.
+
+00:22:17.880 --> 00:22:21.540
+So there's so there's since this is where we start and and
+
+00:22:23.420 --> 00:22:24.940
+that's not like where we finished.
+
+00:22:25.220 --> 00:22:31.320
+So maybe I can also back up and say like part of what how Rapids has been interacting with this
+
+00:22:31.500 --> 00:22:36.860
+broader open source ecosystem is, well, this is what we've done. But the ecosystem also wants to
+
+00:22:36.860 --> 00:22:41.660
+do these things. They are interested. The community, the much broader community is interested in
+
+00:22:41.720 --> 00:22:48.500
+exploring how to use these APIs that people have grown to love and depend on and have them dispatch
+
+00:22:48.680 --> 00:22:54.200
+or be used by other kinds of engines. So it's not just Rapids pushing something out into the world,
+
+00:22:54.220 --> 00:22:55.780
+is also working with this broader community.
+
+00:22:55.960 --> 00:22:58.920
+So you see this in like the array API standard
+
+00:22:59.030 --> 00:23:02.060
+of how scikit-learn or how NumPy can dispatch
+
+00:23:02.460 --> 00:23:06.180
+to not just Kupi and NumPy, but also to Jax
+
+00:23:06.250 --> 00:23:07.800
+or to Desk or Xarray.
+
+00:23:08.240 --> 00:23:10.780
+And same thing with scikit-learn as they explore the space
+
+00:23:10.980 --> 00:23:12.680
+of how to do GPU things.
+
+00:23:15.060 --> 00:23:16.300
+Yeah, super interesting.
+
+00:23:16.350 --> 00:23:19.980
+You know, one thing that I think as I look through this list
+
+00:23:20.140 --> 00:23:23.059
+here, as you see, you know, OK, here's
+
+00:23:23.080 --> 00:23:28.920
+all the ways in which all the different aspects all the different libraries that work you're
+
+00:23:29.180 --> 00:23:38.180
+compatible with right pandas scikit-learn network x and you know scikit-image and so on those things
+
+00:23:38.280 --> 00:23:39.600
+are moving targets right
+
+00:23:39.600 --> 00:23:42.500
+so how
+
+00:23:42.500 --> 00:23:49.539
+much of your job is to chase changes to those libraries to keep up
+
+00:23:49.400 --> 00:23:52.100
+up what it says on the 10 that you're compatible with it?
+
+00:23:52.620 --> 00:23:54.720
+Yeah, it's a lot of work.
+
+00:23:55.310 --> 00:23:58.940
+So we try to adhere to NumPy deprecation cycles,
+
+00:23:59.520 --> 00:24:01.920
+making sure that we're within some kind of range
+
+00:24:02.060 --> 00:24:05.060
+of which version of NumPy we're supporting.
+
+00:24:05.620 --> 00:24:08.580
+But we do spend a lot of time trying to go back in time
+
+00:24:09.460 --> 00:24:12.460
+as much as possible to the older versions that we support,
+
+00:24:12.510 --> 00:24:17.040
+but also still keep up with the bleeding edge
+
+00:24:17.060 --> 00:24:17.840
+of the newest release.
+
+00:24:19.780 --> 00:24:22.620
+The way that we have tried to also solve this problem
+
+00:24:23.220 --> 00:24:25.320
+has been in a set of newer developments
+
+00:24:25.750 --> 00:24:28.780
+where we have these zero code change experiences.
+
+00:24:29.500 --> 00:24:34.880
+So while QDF and QML and QGraph provide as close
+
+00:24:35.020 --> 00:24:36.280
+to possible one-to-one mappings,
+
+00:24:37.000 --> 00:24:38.100
+we've been pushing on,
+
+00:24:39.800 --> 00:24:41.480
+I think the marketing term that we have for this
+
+00:24:41.600 --> 00:24:43.320
+is really is truly zero code change.
+
+00:24:43.880 --> 00:24:45.660
+So for QDF, for example,
+
+00:24:45.880 --> 00:24:47.720
+we have QDF.pandas.
+
+00:24:48.190 --> 00:24:52.140
+And this is a different product on top of QDF
+
+00:24:53.480 --> 00:24:58.220
+where we really try no code change,
+
+00:24:58.540 --> 00:25:00.460
+no import, no changes of imports.
+
+00:25:01.660 --> 00:25:04.560
+And it's a bunch of really amazing code
+
+00:25:04.570 --> 00:25:07.060
+that has gone into what might be kind of considered
+
+00:25:07.070 --> 00:25:08.360
+a giant try accept.
+
+00:25:09.340 --> 00:25:12.740
+So you try and we'll take whatever code you have,
+
+00:25:13.320 --> 00:25:17.840
+We'll do some, you know, Python lets you kind of muck around with all sorts of fun things under the hood.
+
+00:25:18.340 --> 00:25:18.940
+We do that.
+
+00:25:19.580 --> 00:25:20.920
+And we'll try and run that on the GPU.
+
+00:25:20.920 --> 00:25:23.920
+And if it doesn't work, we'll fall back to the CPU library.
+
+00:25:24.520 --> 00:25:30.360
+And that has been really fun and exciting to see that work for lots of reasons.
+
+00:25:30.620 --> 00:25:33.860
+One is because the engineering to make that happen has been really fun to get.
+
+00:25:33.940 --> 00:25:36.380
+Like, you have to go into the depths of Python because
+
+00:25:36.380 --> 00:25:37.160
+it's
+
+00:25:37.160 --> 00:25:40.380
+not just using Pandas directly, but using Pandas as a library.
+
+00:25:40.800 --> 00:25:44.340
+How do you make sure that you actually have a pandas object?
+
+00:25:44.790 --> 00:25:47.440
+Or when a third party library is using pandas,
+
+00:25:48.020 --> 00:25:50.160
+we don't do something crazy.
+
+00:25:50.330 --> 00:25:51.220
+We don't do something wrong.
+
+00:25:51.300 --> 00:25:54.480
+Somebody says, is instance, or
+
+00:25:54.480 --> 00:25:55.820
+especially
+
+00:25:55.820 --> 00:25:56.720
+a third party library
+
+00:25:57.520 --> 00:25:58.720
+is doing something, right?
+
+00:25:58.920 --> 00:26:00.080
+And there's a lot of that.
+
+00:26:00.150 --> 00:26:03.600
+A lot of these Mappot Live and Xray and Seaborn
+
+00:26:03.670 --> 00:26:06.140
+and a whole bunch of other folks, or all these other libraries
+
+00:26:06.380 --> 00:26:07.500
+do a bunch of instance checking.
+
+00:26:07.820 --> 00:26:09.480
+We need to make sure that that's guaranteed.
+
+00:26:10.040 --> 00:26:13.360
+So we built this for QDF pandas,
+
+00:26:13.710 --> 00:26:16.700
+did something similar for QML and scikit-learn,
+
+00:26:17.410 --> 00:26:19.260
+but each community is actually different.
+
+00:26:19.560 --> 00:26:20.740
+The NetworkX community instead
+
+00:26:21.320 --> 00:26:22.940
+has built a dispatching mechanism.
+
+00:26:23.190 --> 00:26:26.080
+So it's an environment variable that you can set to,
+
+00:26:26.310 --> 00:26:31.240
+instead of using NetworkX, it will dispatch to QGraph.
+
+00:26:31.870 --> 00:26:34.740
+And I think the NetworkX community did that as part of,
+
+00:26:34.880 --> 00:26:37.140
+like they have other ideas of different
+
+00:26:38.280 --> 00:26:40.120
+accelerated network X experiences like
+
+00:26:40.120 --> 00:26:41.200
+X parallel or
+
+00:26:41.200 --> 00:26:41.240
+something.
+
+00:26:41.590 --> 00:26:41.720
+Yeah.
+
+00:26:45.799 --> 00:26:47.740
+So let's talk about this.
+
+00:26:48.090 --> 00:26:51.160
+Just maybe talk through a little bit of code with a qdf.pandas.
+
+00:26:51.780 --> 00:26:57.860
+So if I'm in a notebook, I can say %loadextqdf.pandas.
+
+00:26:58.380 --> 00:27:00.140
+And then you just import pandas as PD.
+
+00:27:00.290 --> 00:27:03.200
+But you must be overriding the import hooks
+
+00:27:03.370 --> 00:27:06.360
+to actually change what that means.
+
+00:27:08.780 --> 00:27:09.800
+First of all, let me take a step back.
+
+00:27:09.870 --> 00:27:11.460
+And what if I'm writing a Python script?
+
+00:27:11.630 --> 00:27:14.060
+I don't have like these percent magic things.
+
+00:27:14.840 --> 00:27:17.280
+Yeah, so you can use a module.
+
+00:27:17.490 --> 00:27:23.640
+So you can say Python dash M load kudf.pandas as well.
+
+00:27:23.710 --> 00:27:24.680
+I think there's instructions.
+
+00:27:25.570 --> 00:27:26.000
+Yeah, I see.
+
+00:27:26.000 --> 00:27:28.940
+And then like execute, give it an argument of your script or something like that.
+
+00:27:30.140 --> 00:27:32.560
+Okay, so all right, that's interesting.
+
+00:27:32.760 --> 00:27:35.680
+The other part here is it's a, there's a comment,
+
+00:27:35.980 --> 00:27:38.000
+pandas API is now at GPU accelerate rate.
+
+00:27:38.920 --> 00:27:42.620
+The first thing you've got here is pd.readcsv
+
+00:27:43.180 --> 00:27:45.360
+and it says hash uses the GPU.
+
+00:27:47.620 --> 00:27:51.560
+How can you read a CSV faster using the GPU?
+
+00:27:51.740 --> 00:27:52.520
+Like help me understand this.
+
+00:27:53.500 --> 00:27:58.060
+- Yeah, so actually the QDF CSV reader
+
+00:27:58.240 --> 00:27:59.860
+was one of the first things that we,
+
+00:28:00.380 --> 00:28:01.819
+one of the earlier things that we tackled
+
+00:28:01.840 --> 00:28:14.340
+And it forced, it's a very, actually very broad problem because you immediately need to tackle, you don't have to tackle compression and decompression, but you do have to tackle string parsing on the device
+
+00:28:14.340 --> 00:28:15.780
+and
+
+00:28:15.780 --> 00:28:19.380
+formatting issues and a whole bunch of other fun IO tasks.
+
+00:28:20.080 --> 00:28:37.220
+And it turns out that as like you can get an op reading CSV is depending as they get much larger, typically in the like, multiple gigabytes to 10s of gigabytes is a lot faster on GPU compared to the Panda CSV reader because you're doing so much of that.
+
+00:28:37.500 --> 00:28:42.820
+So much of that parsing can be parallelized as you convert a one to an int.
+
+00:28:44.240 --> 00:28:50.840
+Yeah, because like the quote one to the 000001 in binary, right?
+
+00:28:51.010 --> 00:28:51.460
+That sort of thing.
+
+00:28:51.500 --> 00:28:51.640
+Yeah.
+
+00:28:52.640 --> 00:28:52.860
+Yeah.
+
+00:28:53.670 --> 00:28:55.260
+Okay, yeah, I guess I didn't really think of it,
+
+00:28:55.310 --> 00:28:58.800
+but especially with pandas and pullers as well,
+
+00:28:59.140 --> 00:29:02.480
+it'll potentially try to guess the data type
+
+00:29:02.510 --> 00:29:06.840
+and then do like conversion to date times or conversions to numbers.
+
+00:29:07.030 --> 00:29:09.620
+And then that could actually be the slow part, right?
+
+00:29:10.320 --> 00:29:10.940
+That's right, yeah.
+
+00:29:12.120 --> 00:29:12.260
+Okay.
+
+00:29:12.480 --> 00:29:14.360
+Well, I guess using the GPU for that makes sense.
+
+00:29:14.400 --> 00:29:19.660
+You just jam a bunch of text in there and you tell it to go wild on it and see what it can do.
+
+00:29:21.280 --> 00:29:21.800
+Yeah, that's right.
+
+00:29:24.260 --> 00:29:29.960
+I should also say, sorry, I forgot to mention it, that Kudief Polar is also a relatively new offering.
+
+00:29:30.460 --> 00:29:37.220
+And that we've been working very closely with the Polarist community to not have, we're not, this mechanism,
+
+00:29:37.580 --> 00:29:45.680
+Working closely with the Polars community allowed us to just say instead of on your collect call, you can you can define a particular engine type.
+
+00:29:46.320 --> 00:29:47.640
+So whether it's streaming
+
+00:29:47.640 --> 00:29:48.020
+or
+
+00:29:48.020 --> 00:29:53.820
+whether it's GPU, now we can we have a similar kind of very easy button for these worlds.
+
+00:29:53.830 --> 00:30:01.000
+So it's not like we're trying to dogmatically dictate what each experience has to be, but work with all these,
+
+00:30:01.870 --> 00:30:06.880
+the community at large or each individual library communities and what what best works for them.
+
+00:30:08.860 --> 00:30:09.560
+Yeah, super neat.
+
+00:30:09.840 --> 00:30:12.560
+One of the things that I saw, where did I see it?
+
+00:30:12.720 --> 00:30:16.220
+Somewhere, I don't know, one of these levels here.
+
+00:30:16.530 --> 00:30:26.440
+I saw that with, here we go, on the QDF top level bit, it says that it's built on Apache
+
+00:30:26.760 --> 00:30:29.180
+Arrow, a commoner memory format.
+
+00:30:32.240 --> 00:30:34.840
+is also built on Apache Arrow.
+
+00:30:36.259 --> 00:30:40.320
+And Pandas now supports that as a possible back end
+
+00:30:40.340 --> 00:30:40.980
+instead of NumPy.
+
+00:30:41.060 --> 00:30:43.620
+But as Pandas 3 is coming out, it's
+
+00:30:43.620 --> 00:30:45.480
+going to be the default as well.
+
+00:30:46.060 --> 00:30:50.040
+So something I've heard a lot when I was reading about Rapids
+
+00:30:50.040 --> 00:30:54.460
+and stuff is zero copy interop with other parts
+
+00:30:54.460 --> 00:30:55.260
+of the ecosystem.
+
+00:30:56.840 --> 00:30:58.760
+And I asked you about the--
+
+00:30:59.180 --> 00:31:00.940
+like staying API compliant.
+
+00:31:01.180 --> 00:31:04.520
+but staying in memory shape compliant.
+
+00:31:04.640 --> 00:31:06.680
+So you can take one thing and just go here,
+
+00:31:06.760 --> 00:31:09.120
+have this instead you don't have to transform it
+
+00:31:09.200 --> 00:31:11.280
+or marshal it over to a different format.
+
+00:31:11.400 --> 00:31:12.480
+You can just pass it over.
+
+00:31:12.840 --> 00:31:13.780
+Like that's pretty neat, right?
+
+00:31:14.520 --> 00:31:15.260
+Yeah, that's been,
+
+00:31:17.460 --> 00:31:19.380
+yeah, we are definitely big.
+
+00:31:19.660 --> 00:31:22.600
+Many of us in Rapids have wear open source badges
+
+00:31:22.720 --> 00:31:24.340
+very proudly and push these,
+
+00:31:24.880 --> 00:31:26.680
+push ourselves to do these kinds of things
+
+00:31:27.700 --> 00:31:30.099
+because it only works if you get interop
+
+00:31:30.120 --> 00:31:31.860
+like throughout the much broader community.
+
+00:31:32.050 --> 00:31:34.920
+So it's not just that we built a very fast merge
+
+00:31:35.140 --> 00:31:36.200
+that doesn't work with anybody else
+
+00:31:36.400 --> 00:31:37.800
+or that we have a GPU accelerated library
+
+00:31:37.980 --> 00:31:39.920
+that you have to stop what you're doing
+
+00:31:39.990 --> 00:31:42.900
+in order to do some viz, that it works everywhere.
+
+00:31:42.970 --> 00:31:46.440
+And that means like relying on Arrow
+
+00:31:47.000 --> 00:31:48.840
+as a data form, in memory data format,
+
+00:31:49.040 --> 00:31:53.660
+or even things like array function dispatching from NumPy
+
+00:31:53.940 --> 00:31:56.680
+or the CUDA array interface, things like DLPack.
+
+00:31:57.460 --> 00:32:02.540
+All these things have to actually work in some amount of harmony to actually help
+
+00:32:03.300 --> 00:32:04.900
+the end user do what they're trying to do.
+
+00:32:05.140 --> 00:32:07.480
+It's all about the user at the end of the day.
+
+00:32:07.940 --> 00:32:09.940
+Yeah, it's a pretty wild initiative to say,
+
+00:32:10.280 --> 00:32:14.860
+let's try to replicate the most important data science libraries into
+
+00:32:14.960 --> 00:32:21.360
+a cohesive whole that does a lot of what Pandas and scikit-learn and stuff do,
+
+00:32:21.460 --> 00:32:22.700
+but just on GPUs.
+
+00:32:25.000 --> 00:32:25.880
+That's a big undertaking.
+
+00:32:26.440 --> 00:32:26.820
+And still
+
+00:32:26.820 --> 00:32:27.380
+also
+
+00:32:27.380 --> 00:32:28.360
+interoperate with them, yeah.
+
+00:32:30.280 --> 00:32:31.580
+Yeah, it's really big.
+
+00:32:32.140 --> 00:32:36.260
+It's a bit grand, more than a bit grand.
+
+00:32:38.620 --> 00:32:40.900
+But I think we've seen a lot of success.
+
+00:32:41.340 --> 00:32:43.840
+I mean, there's definitely some trials and tribulations along the way.
+
+00:32:44.020 --> 00:32:55.060
+But I think we're ultimately pushing something and exploring the space in a way that gives users something that they can try out right this minute and actually get some benefit right now.
+
+00:32:55.160 --> 00:33:04.480
+So we have a lot of actually paying customers that want to use these libraries or that are deriving a lot of value from it in helping them accelerate what they were doing yesterday, today.
+
+00:33:06.340 --> 00:33:11.280
+There is what I really like about this world, though, is that it's still a bit of research.
+
+00:33:11.660 --> 00:33:16.800
+I mean, sorry, maybe more than grand thing to say is that there's not a whole lot of people that explore this space.
+
+00:33:17.520 --> 00:33:24.860
+And not only are we exploring it, but we're also putting it, we're putting it into production or we're writing, we're making, we're not writing a white paper.
+
+00:33:25.340 --> 00:33:26.120
+Our success
+
+00:33:26.120 --> 00:33:28.260
+is building a wheel, building a conda package.
+
+00:33:28.960 --> 00:33:29.440
+Yeah.
+
+00:33:30.520 --> 00:33:31.500
+Yeah, that's super neat.
+
+00:33:32.180 --> 00:33:37.100
+So building this stuff as an open source library, which is pretty cool.
+
+00:33:37.340 --> 00:33:40.200
+So for example, QDF is Apache 2 license.
+
+00:33:42.120 --> 00:33:45.540
+It's great doing it on GitHub, really nice.
+
+00:33:46.700 --> 00:33:50.640
+It allows people who are using this to say, not just go, please, please add a feature,
+
+00:33:50.820 --> 00:33:57.020
+but maybe they can look and suggest how to add the feature or they can do a PR or whatever.
+
+00:33:57.680 --> 00:34:04.360
+So what's the breakdown of NVIDIA people contributing versus other contributors?
+
+00:34:06.900 --> 00:34:07.800
+What's the story there?
+
+00:34:07.800 --> 00:34:10.240
+I see there's 12,000 closed PRs for
+
+00:34:10.240 --> 00:34:11.000
+QDX.
+
+00:34:12.600 --> 00:34:19.679
+The far majority of PRs that are being committed are by people that work at NVIDIA
+
+00:34:19.700 --> 00:34:21.060
+or work closely with LibQDF.
+
+00:34:21.379 --> 00:34:24.600
+We've seen other companies that have gotten involved
+
+00:34:26.460 --> 00:34:27.679
+in some niche cases.
+
+00:34:27.919 --> 00:34:30.200
+We've also seen a number of academics from other,
+
+00:34:30.919 --> 00:34:35.280
+usually from like a GPU CS kind of oriented lab
+
+00:34:35.600 --> 00:34:36.760
+that will get involved here.
+
+00:34:37.879 --> 00:34:41.240
+But what we see actually more open source interactions,
+
+00:34:41.679 --> 00:34:43.700
+it's like the best thing in the world for any library.
+
+00:34:43.740 --> 00:34:45.240
+It's when somebody says, oh, I have a problem.
+
+00:34:46.379 --> 00:34:47.139
+That's so wonderful.
+
+00:34:47.220 --> 00:34:49.340
+We see a lot of issues from our users.
+
+00:34:50.860 --> 00:34:59.960
+which is so great. When we were doing things as like import library as PD or scikit-learn,
+
+00:35:00.620 --> 00:35:04.900
+the users would probably not say anything. But now that we've built these zero code change
+
+00:35:05.120 --> 00:35:10.040
+experiences and thought more about profiling and how to actually inform the user whether something
+
+00:35:10.240 --> 00:35:14.400
+is or is not happening, when something doesn't meet their expectations, they now have this
+
+00:35:14.580 --> 00:35:18.580
+opportunity to tell us something didn't go quite right or not getting the acceleration that I want.
+
+00:35:18.600 --> 00:35:20.020
+And please help me.
+
+00:35:20.560 --> 00:35:26.100
+And that happens on GitHub issues and that happens on our GoAI Slack channel.
+
+00:35:26.660 --> 00:35:27.780
+It's really great to see.
+
+00:35:28.340 --> 00:35:33.060
+But for day-to-day contributions, yeah, the majority of them are happening at NVIDIA.
+
+00:35:33.260 --> 00:35:34.880
+But suggestions can...
+
+00:35:35.080 --> 00:35:41.980
+It's open source, so you can please come commit if you want to learn about GPU data science.
+
+00:35:43.460 --> 00:35:45.340
+Or if you have a feature request, please--
+
+00:35:45.680 --> 00:35:47.580
+we try to stay as responsive as possible
+
+00:35:47.840 --> 00:35:51.720
+to all the community interactions that--
+
+00:35:51.720 --> 00:35:53.600
+or community vectors that we're a part of.
+
+00:35:54.700 --> 00:35:55.880
+Yeah, super neat.
+
+00:35:57.619 --> 00:35:59.340
+It's really cool that it's out there like that.
+
+00:35:59.360 --> 00:36:07.880
+So let's talk about the effect of choosing something
+
+00:36:08.020 --> 00:36:11.600
+like Rapids over NumPy-backed pandas.
+
+00:36:14.380 --> 00:36:16.040
+I've read a bunch of stuff about
+
+00:36:17.200 --> 00:36:18.500
+that used to take a week
+
+00:36:19.080 --> 00:36:20.040
+and now it takes minutes.
+
+00:36:21.400 --> 00:36:23.780
+You know, like that's an insane
+
+00:36:25.280 --> 00:36:27.540
+that's an insane sort of speed up.
+
+00:36:28.180 --> 00:36:30.540
+And, you know, I was talking about the power
+
+00:36:30.640 --> 00:36:32.660
+just kind of like, yeah, these things are crazy
+
+00:36:32.860 --> 00:36:34.020
+like the power consumption and stuff.
+
+00:36:35.360 --> 00:36:38.320
+But the other angle that, you know, people say like,
+
+00:36:38.520 --> 00:36:39.980
+oh, this uses so much energy.
+
+00:36:40.460 --> 00:36:44.620
+One consideration, though, is it might use a ton of energy for this compute,
+
+00:36:44.660 --> 00:36:48.880
+but it might do it for minutes instead of for a week on a cluster of CPUs, right?
+
+00:36:49.120 --> 00:36:50.700
+So it's
+
+00:36:50.700 --> 00:36:52.860
+not as
+
+00:36:52.860 --> 00:36:54.620
+insanely far out as you think.
+
+00:36:54.720 --> 00:36:57.620
+But there's a lot of stuff that makes sort of like scaling up, scaling down,
+
+00:36:57.720 --> 00:36:59.720
+I think pretty interesting that I want to talk to you about.
+
+00:37:00.860 --> 00:37:08.819
+But first of all, just maybe give us some examples of what are data scientists
+
+00:37:08.840 --> 00:37:13.800
+and people doing computational stuff seen by adopting this or what's become possible that
+
+00:37:13.800 --> 00:37:16.060
+used to be unreasonable yeah
+
+00:37:16.060 --> 00:37:20.460
+so our an internal goal at least for many of the people that i work
+
+00:37:20.460 --> 00:37:26.520
+with is usually we're trying to get to like five to ten x performance speed up of versus what
+
+00:37:26.580 --> 00:37:32.740
+already exists out there whether that's uh yeah for typically comparing against some cpu equivalent
+
+00:37:35.140 --> 00:37:39.960
+There are definitely cases where we're trying to push into that area.
+
+00:37:40.010 --> 00:37:42.380
+There are definitely cases where it's not as performed,
+
+00:37:42.380 --> 00:37:44.240
+where you're getting like one and a half or two.
+
+00:37:44.880 --> 00:37:48.100
+Generally, our metric for success here is like
+
+00:37:48.100 --> 00:37:48.920
+in the 5
+
+00:37:48.920 --> 00:37:49.480
+to 10x range.
+
+00:37:50.140 --> 00:37:53.900
+You will definitely come across these absolutely bonkers speedups
+
+00:37:54.060 --> 00:37:55.320
+that's a thousandx faster,
+
+00:37:55.600 --> 00:37:59.520
+and they're not fabricating those speedups.
+
+00:37:59.680 --> 00:38:03.360
+Usually that's because they're doing some single-threaded Python thing
+
+00:38:03.380 --> 00:38:10.160
+And now the GPU has just unlocked this unreal performance that they were doing before.
+
+00:38:10.180 --> 00:38:14.400
+You can go and find a bunch of NVIDIA blog posts that make those claims.
+
+00:38:14.640 --> 00:38:19.180
+I think there's been some on climate science and writing some Numba GPU kernels.
+
+00:38:21.360 --> 00:38:24.940
+But we typically see this like where you get these benefits.
+
+00:38:25.880 --> 00:38:31.020
+If you're comparing QDF to Pandas, you're comparing this incredibly parallel,
+
+00:38:31.320 --> 00:38:37.640
+very powerful gpu machine to what might mostly be a single core in some cases of
+
+00:38:37.640 --> 00:38:38.220
+a little bit
+
+00:38:38.220 --> 00:38:38.360
+of
+
+00:38:38.480 --> 00:38:46.020
+multi-core interactions on cpu um and you can get it's very easy to to to get these very very
+
+00:38:46.120 --> 00:38:53.120
+large speedups where uh i think the same is also true the same can be true for for scikit-learn as
+
+00:38:53.200 --> 00:38:57.840
+well where we're model training and just running such especially like hyper parameter searching
+
+00:38:57.860 --> 00:39:02.600
+where you're just doing the training over and over and over again with different parameters.
+
+00:39:02.820 --> 00:39:11.160
+You can get very powerful, very large speedups comparing scikit-learn to QML or just CPU to GPU.
+
+00:39:12.819 --> 00:39:19.460
+But what I also find exciting is that the CPU world and the Python world is not sitting on their hands.
+
+00:39:19.680 --> 00:39:25.860
+There's all these other scikit-learn developers are pushing into doing more multi-core things.
+
+00:39:25.960 --> 00:39:33.360
+and Polars has actually come come out with like a bunch of very, very powerful multi core native
+
+00:39:34.000 --> 00:39:38.200
+tooling that that's very exciting. So you won't so when you compare Kudyak to pandas, you can see
+
+00:39:38.220 --> 00:39:43.160
+these very powerful speed ups. You pair GPU Polars to CP Polars, the speed ups are definitely still
+
+00:39:43.280 --> 00:39:47.680
+there. But they're a little, they're somewhat diminished because Polars itself CPU Polars itself
+
+00:39:48.260 --> 00:39:50.160
+is very is quite, quite powerful.
+
+00:39:50.480 --> 00:39:54.420
+Yeah, just to give people a sense, you know, I'm speaking to
+
+00:39:54.440 --> 00:40:02.400
+you all right now on my Mac Mini M2 Pro which has 10 CPUs or CP cores and if I
+
+00:40:02.470 --> 00:40:08.140
+go and run Python computational Python code it's single threaded so it's one
+
+00:40:08.250 --> 00:40:13.960
+tenth of my machine right but if there's nothing stopping people like Richie Vink
+
+00:40:14.060 --> 00:40:18.720
+from re you know adding internal parallelism to certain important
+
+00:40:18.940 --> 00:40:24.400
+operations inside pullers right and just by that virtue it's ten times faster
+
+00:40:24.460 --> 00:40:26.580
+on my machine so well ish
+
+00:40:26.580 --> 00:40:27.020
+right
+
+00:40:27.020 --> 00:40:31.740
+you know uh it's in on the scale of 10 times more compute resources
+
+00:40:31.980 --> 00:40:40.540
+anyway um so if you said you know the rapid stuff was 100 times faster before well now maybe it's 10
+
+00:40:40.620 --> 00:40:45.200
+times faster and that might sound not as impressive but that's just progress in other areas right
+
+00:40:45.850 --> 00:40:48.960
+yeah i think it's it's great all around i think um
+
+00:40:51.940 --> 00:40:57.520
+yeah it's fun to see i mean even though i'm here talking about gpu data science i think it's just
+
+00:40:57.620 --> 00:41:03.880
+like really great to see more of the python data science ecosystem really leveraging and
+
+00:41:04.140 --> 00:41:08.940
+understanding more about the hardware whether that's like the multi-core nature of all the
+
+00:41:09.020 --> 00:41:15.920
+machines that we have now or even i think it like uh you know a decade ago people were like oh there's
+
+00:41:15.940 --> 00:41:19.140
+there's these L1, L2, L3 caches that we can take advantage of.
+
+00:41:19.280 --> 00:41:20.620
+We should target that.
+
+00:41:21.240 --> 00:41:21.760
+How do I do that?
+
+00:41:21.880 --> 00:41:23.480
+How do I expose that in Python?
+
+00:41:24.700 --> 00:41:26.480
+It's not already baked in.
+
+00:41:26.920 --> 00:41:32.460
+Your work isn't baked into BLOS or these vector code bases that have existed for a long time.
+
+00:41:33.140 --> 00:41:33.620
+Yeah.
+
+00:41:34.240 --> 00:41:39.540
+I hadn't even thought about specifically trying to address the L1, L2, L3 cache sort of deals.
+
+00:41:40.840 --> 00:41:44.160
+Those caches are hundreds of times faster than
+
+00:41:44.160 --> 00:41:45.220
+main memory.
+
+00:41:45.900 --> 00:41:46.900
+It really
+
+00:41:46.900 --> 00:41:48.640
+is a big difference.
+
+00:41:48.800 --> 00:41:54.760
+And if you structure, it's like, well, what if we aligned our data structures that are allocated them this way in memory?
+
+00:41:55.200 --> 00:41:59.700
+Then maybe we would be able to hit the cache a lot more, the L2 cache or whatever.
+
+00:41:59.940 --> 00:42:00.400
+It's crazy.
+
+00:42:01.820 --> 00:42:01.900
+Yeah.
+
+00:42:02.660 --> 00:42:07.540
+Working at NVIDIA, when we think about RAPIDS, we think about that entire pipeline as well.
+
+00:42:07.720 --> 00:42:14.160
+How do we move data as efficiently as possible from disk to memory to GPU memory, do some compute?
+
+00:42:15.320 --> 00:42:19.120
+and try and take advantage of all of the bits of hardware in between them.
+
+00:42:20.300 --> 00:42:20.820
+Yeah.
+
+00:42:22.980 --> 00:42:27.300
+What do you think about Python T, as in free-threaded Python?
+
+00:42:27.660 --> 00:42:32.500
+The big news is just a week or two ago, it was officially accepted.
+
+00:42:32.670 --> 00:42:35.720
+You know, like, was that PEP 703, I think it was,
+
+00:42:35.890 --> 00:42:40.680
+that got accepted in Python 3.13 as sort of experimentally accepted?
+
+00:42:40.790 --> 00:42:43.420
+And I've never heard of something being added to Python as like,
+
+00:42:43.460 --> 00:42:45.720
+well, we'll give it a try, but we might take it out.
+
+00:42:46.230 --> 00:42:46.600
+But that's
+
+00:42:46.600 --> 00:42:47.240
+how it was added.
+
+00:42:47.730 --> 00:42:50.860
+And it kind of got the, all right, you're going to the next stage.
+
+00:42:51.960 --> 00:42:54.700
+You're more likely to not be kicked out.
+
+00:42:55.420 --> 00:42:56.960
+I'm not sure if it's 100% guarantee,
+
+00:42:57.070 --> 00:43:00.200
+but that's going to have a lot of knock-on effects as well.
+
+00:43:00.430 --> 00:43:02.380
+It especially affects the data science space
+
+00:43:02.570 --> 00:43:07.420
+because if you're writing extensions through the C APIs or Rust,
+
+00:43:08.500 --> 00:43:10.360
+you've got to think more about thread safety
+
+00:43:10.540 --> 00:43:13.160
+because Python all of a sudden can become concurrent.
+
+00:43:13.220 --> 00:43:14.800
+like it didn't used to be able to?
+
+00:43:16.090 --> 00:43:20.220
+Yeah, it opens up a big door.
+
+00:43:20.360 --> 00:43:21.600
+I think in the initial PEP,
+
+00:43:21.920 --> 00:43:24.840
+one of their highlighted use cases was,
+
+00:43:25.140 --> 00:43:26.500
+actually the problem we were just talking about,
+
+00:43:26.600 --> 00:43:31.880
+how do you pipeline efficiently across multiple devices?
+
+00:43:32.540 --> 00:43:33.540
+So in the PyTorch case,
+
+00:43:33.880 --> 00:43:37.240
+you need to maybe spin up a bunch of different,
+
+00:43:38.200 --> 00:43:38.660
+at the moment,
+
+00:43:38.750 --> 00:43:40.480
+you need to spin up a bunch of Python processes
+
+00:43:40.480 --> 00:43:44.080
+in order to efficiently load data from disk
+
+00:43:44.530 --> 00:43:47.340
+into your PyTorch or your deep learning pipeline.
+
+00:43:48.640 --> 00:43:52.960
+Doing that with multiprocessing is not a wonderful world.
+
+00:43:53.560 --> 00:43:55.260
+And we could probably be a lot better.
+
+00:43:55.410 --> 00:43:57.840
+Free threading maybe opens up that door.
+
+00:43:59.180 --> 00:43:59.320
+Yeah.
+
+00:44:00.120 --> 00:44:03.200
+I also see it adding possible challenges, not just benefits.
+
+00:44:03.980 --> 00:44:08.460
+Like, for example, if I go and write a bunch of multithreaded code
+
+00:44:08.480 --> 00:44:13.780
+that's truly multi-threaded like C and C# and other languages have been for a while,
+
+00:44:14.200 --> 00:44:14.700
+pretty much forever.
+
+00:44:16.880 --> 00:44:18.060
+And I start interacting with it.
+
+00:44:19.800 --> 00:44:21.920
+We talked about L2 cache and keeping it active.
+
+00:44:22.520 --> 00:44:23.340
+What about the GPU?
+
+00:44:23.660 --> 00:44:29.260
+Does that potentially open up a case where the GPU gets loaded up with tons of data and
+
+00:44:29.280 --> 00:44:32.560
+gets dropped because a thread context switch happened and it thrashes?
+
+00:44:35.960 --> 00:44:37.480
+It's possible that that could happen.
+
+00:44:38.460 --> 00:44:41.460
+Sorry, this line of questioning also opens the door for me
+
+00:44:41.520 --> 00:44:44.180
+to just briefly talk about these larger systems
+
+00:44:44.380 --> 00:44:46.600
+that Nvidia, but other folks have been building as well,
+
+00:44:46.940 --> 00:44:47.280
+like where you
+
+00:44:47.280 --> 00:44:48.080
+have your memory.
+
+00:44:48.900 --> 00:44:53.040
+Yeah, so in this new architecture,
+
+00:44:53.900 --> 00:44:55.400
+Grace Hopper or Grace Blackwell,
+
+00:44:56.020 --> 00:44:58.540
+there's a specific communication channel
+
+00:44:58.840 --> 00:44:59.900
+between device and host.
+
+00:45:00.460 --> 00:45:03.400
+It can, I think it's called chip to chip technology
+
+00:45:03.800 --> 00:45:08.420
+or NVLink C2C, and you can move data back and forth
+
+00:45:08.440 --> 00:45:10.740
+and host at around 900 gigabytes per second.
+
+00:45:11.700 --> 00:45:13.880
+That's basically free, right?
+
+00:45:14.200 --> 00:45:15.200
+Or sometimes
+
+00:45:15.200 --> 00:45:16.220
+it's fun to think about it.
+
+00:45:16.300 --> 00:45:18.040
+- I'm pretty sure it's faster than my RAM
+
+00:45:18.180 --> 00:45:19.120
+on my Apple Silicon.
+
+00:45:19.780 --> 00:45:22.340
+- Yeah, so thrashing is not good.
+
+00:45:23.040 --> 00:45:27.980
+But if you're for whatever reason in that scenario
+
+00:45:29.000 --> 00:45:31.800
+for a pipeline, you might not feel it
+
+00:45:32.160 --> 00:45:34.580
+in these new coherent memory systems.
+
+00:45:36.120 --> 00:45:37.080
+- Yeah, that's wild.
+
+00:45:37.680 --> 00:45:41.740
+I also think you probably just, you know, it might be one of those things where it's like,
+
+00:45:42.300 --> 00:45:44.400
+doctor, my leg hurts when I bend it this way.
+
+00:45:44.450 --> 00:45:45.980
+And they said, well, don't bend it that way.
+
+00:45:46.160 --> 00:45:46.620
+You know what I mean?
+
+00:45:46.690 --> 00:45:52.520
+Like, it hurts when I try to run like 10 concurrent jobs on the GPU on the same computer.
+
+00:45:52.570 --> 00:45:53.860
+Like, well, don't do that.
+
+00:45:54.090 --> 00:45:54.620
+You know what I mean?
+
+00:45:55.840 --> 00:45:56.080
+Sure.
+
+00:45:57.400 --> 00:45:58.860
+That might be the way.
+
+00:45:58.970 --> 00:46:01.740
+Like, use a lock and don't let that stuff run in parallel.
+
+00:46:02.340 --> 00:46:02.480
+Right.
+
+00:46:02.630 --> 00:46:02.760
+Yeah.
+
+00:46:02.790 --> 00:46:05.180
+The answer for probably these things is probably don't do it.
+
+00:46:05.230 --> 00:46:07.080
+You shouldn't just absorb that problem.
+
+00:46:07.680 --> 00:46:14.280
+Dr. Hirsch, like no, don't do that. But there are ways to scale up and I got all this convert this,
+
+00:46:15.140 --> 00:46:18.400
+this is kind of what I was leaning towards is like there's interesting ways to scale up
+
+00:46:19.720 --> 00:46:26.540
+across like multi GPU. I know that Dask has an interesting interop story and Dask has
+
+00:46:26.930 --> 00:46:34.540
+super interesting grid computing ways to scale. So like Dask can kind of do pandas but larger than
+
+00:46:34.540 --> 00:46:40.820
+memory on your machine and it can take advantage of the multiple CPUs, cores, and it can even scale
+
+00:46:40.980 --> 00:46:46.320
+out and across clusters, right? And so there's some integration with Dask and other things.
+
+00:46:46.370 --> 00:46:48.800
+Do you want to talk about that side of the story?
+
+00:46:49.680 --> 00:46:52.340
+Yeah. Yeah. So very, so maybe very briefly,
+
+00:46:52.620 --> 00:47:00.200
+Dask is trying to scale Python data science as well. So I think actually, if I can just get into
+
+00:47:00.140 --> 00:47:00.960
+into a little bit of the history.
+
+00:47:01.920 --> 00:47:03.100
+There's lots of people, I think,
+
+00:47:03.940 --> 00:47:08.740
+just before a bunch of people are importing library as PD,
+
+00:47:09.320 --> 00:47:11.540
+there's a lot of people, I think even historical people
+
+00:47:11.660 --> 00:47:15.640
+that have been exploring, how do I do distributed NumPy
+
+00:47:15.780 --> 00:47:18.840
+or distributed memory array applications,
+
+00:47:19.380 --> 00:47:20.620
+like both in the HPC world
+
+00:47:20.760 --> 00:47:21.920
+and also in the enterprise world.
+
+00:47:22.660 --> 00:47:24.840
+And they're rewriting the entire,
+
+00:47:25.020 --> 00:47:26.980
+they're rewriting a library from scratch.
+
+00:47:27.780 --> 00:47:29.440
+And Dask comes along with the idea of,
+
+00:47:29.640 --> 00:47:33.440
+Well, I'll just take the, I'll build some block,
+
+00:47:33.620 --> 00:47:36.500
+I'll build some distributed version of NumPy,
+
+00:47:36.640 --> 00:47:38.860
+but still keep NumPy or still keep pandas
+
+00:47:39.000 --> 00:47:41.800
+as the central compute engine for what's happening.
+
+00:47:41.820 --> 00:47:44.400
+And I'll build orchestration mechanisms around that
+
+00:47:44.480 --> 00:47:47.060
+and build distributed algorithms around pandas
+
+00:47:47.180 --> 00:47:47.880
+or around NumPy.
+
+00:47:48.600 --> 00:47:48.860
+And there's
+
+00:47:48.860 --> 00:47:50.740
+a way for you to both scale out horizontally
+
+00:47:51.080 --> 00:47:53.740
+and also scale up because you could get pandas now
+
+00:47:53.940 --> 00:47:54.840
+as a multi-core thing.
+
+00:47:54.920 --> 00:48:00.000
+and you could get NumPy as this distributed scale-out solution.
+
+00:48:02.699 --> 00:48:07.660
+And much of the Dask world actually evolved with Rapids as well
+
+00:48:07.690 --> 00:48:09.559
+in the last five years,
+
+00:48:11.230 --> 00:48:15.520
+where because we were building a pandas-like library in Rapids,
+
+00:48:15.570 --> 00:48:21.480
+like Kudieff, we could get Dask to also do our scale-out mechanism.
+
+00:48:21.740 --> 00:48:24.420
+So we built some hooks for Desk to,
+
+00:48:25.350 --> 00:48:28.080
+or we tried to generalize what is a data frame.
+
+00:48:28.880 --> 00:48:32.120
+If it meets these things, I can use Pandas,
+
+00:48:32.130 --> 00:48:34.100
+I can use QDF, I can use the next data frame
+
+00:48:34.240 --> 00:48:35.020
+and library after that.
+
+00:48:35.360 --> 00:48:37.400
+We also built some specific hooks inside of Desk
+
+00:48:37.400 --> 00:48:39.520
+to take advantage of accelerated networking
+
+00:48:40.760 --> 00:48:43.180
+and making sure that GPU buffers got shipped around
+
+00:48:43.360 --> 00:48:44.580
+to all the different workers.
+
+00:48:47.580 --> 00:48:48.660
+- That's pretty wild.
+
+00:48:48.880 --> 00:48:56.980
+So could I have, I guess I could probably have multiple GPUs on one workstation, right?
+
+00:48:57.760 --> 00:49:01.560
+When I say that, I know you can have multiple GPUs and you can link them in hardware.
+
+00:49:03.300 --> 00:49:03.580
+Could
+
+00:49:03.580 --> 00:49:07.960
+I just literally plug in multiple GPUs and take advantage of them as well?
+
+00:49:08.820 --> 00:49:15.380
+Yeah, you can have, underneath my desk, I have a two GPU workstation that does have
+
+00:49:15.380 --> 00:49:15.680
+an
+
+00:49:15.700 --> 00:49:15.840
+and V
+
+00:49:15.840 --> 00:49:17.060
+-linked bridge between the two.
+
+00:49:17.480 --> 00:49:19.500
+But you could also just have them work.
+
+00:49:22.760 --> 00:49:25.160
+Many workstations just have two GPUs plugged
+
+00:49:25.260 --> 00:49:26.240
+into the PCIe board.
+
+00:49:26.660 --> 00:49:27.080
+- Right, yeah.
+
+00:49:27.280 --> 00:49:27.600
+- And things
+
+00:49:27.600 --> 00:49:28.440
+will work there as well.
+
+00:49:28.880 --> 00:49:29.000
+Yeah.
+
+00:49:29.820 --> 00:49:32.000
+There are some performance considerations there
+
+00:49:32.280 --> 00:49:32.400
+where
+
+00:49:32.400 --> 00:49:33.280
+if you want
+
+00:49:33.280 --> 00:49:33.900
+to move,
+
+00:49:35.200 --> 00:49:38.080
+if you're communicating data between those two devices,
+
+00:49:39.080 --> 00:49:40.720
+you'll have to, you pay a bit of a cost.
+
+00:49:40.980 --> 00:49:43.260
+You have to move data from device to host.
+
+00:49:43.960 --> 00:49:45.540
+You then have to serialize it across the network
+
+00:49:46.090 --> 00:49:48.160
+and then move data from host to device.
+
+00:49:48.720 --> 00:49:52.040
+This is why having that NVLink bridge is so powerful
+
+00:49:52.480 --> 00:49:54.540
+if you have it in your system.
+
+00:49:56.480 --> 00:49:56.920
+- Okay.
+
+00:49:58.880 --> 00:50:01.440
+So if people are already using Dask,
+
+00:50:02.150 --> 00:50:06.060
+like how easy is it to adopt the setup?
+
+00:50:06.110 --> 00:50:07.340
+Or do you even have to think about it?
+
+00:50:07.360 --> 00:50:10.460
+Is this Dask storage just underneath the covers of the API?
+
+00:50:11.420 --> 00:50:12.680
+- If you're already using Dask,
+
+00:50:13.580 --> 00:50:16.920
+you can already use desk.cudf or desk.coupy.
+
+00:50:18.000 --> 00:50:18.520
+Those things work.
+
+00:50:20.519 --> 00:50:21.940
+Where I've done some experiments
+
+00:50:22.130 --> 00:50:23.260
+and I've not had as much success,
+
+00:50:23.550 --> 00:50:25.260
+but people are still pushing quite hard
+
+00:50:25.290 --> 00:50:27.700
+as using desk as a third party library.
+
+00:50:28.250 --> 00:50:29.520
+So inside of, so you might want to,
+
+00:50:29.520 --> 00:50:31.820
+how do I make a GPU version of X-Ray?
+
+00:50:32.280 --> 00:50:33.860
+Well, that actually takes a bit more work
+
+00:50:33.940 --> 00:50:35.400
+and there are people that are pushing quite hard,
+
+00:50:35.500 --> 00:50:36.060
+as I was saying before,
+
+00:50:36.700 --> 00:50:39.280
+but X-Ray, at least when I attempted it
+
+00:50:39.360 --> 00:50:40.400
+like three or four years ago,
+
+00:50:40.980 --> 00:50:45.940
+It has a lot of mixture of desk, of pandas calls, of NumPy calls.
+
+00:50:45.980 --> 00:50:52.280
+And it was hard, at least at my attempt, to perfectly articulate all the GPU mechanisms
+
+00:50:52.500 --> 00:50:56.520
+that needed to be satisfied to make it work seamlessly or get any performance benefit.
+
+00:50:57.080 --> 00:51:01.040
+I'm not as up to date on it. Maybe there's been some recent developments there.
+
+00:51:02.600 --> 00:51:05.780
+Yeah, there's a lot of moving parts and they're all moving.
+
+00:51:05.860 --> 00:51:10.340
+And what used to be impossible now is no problem.
+
+00:51:10.480 --> 00:51:13.040
+but you haven't tested that combination, right?
+
+00:51:13.660 --> 00:51:13.900
+Yeah.
+
+00:51:14.300 --> 00:51:17.960
+I'm very encouraging of anybody who wants to work on that problem
+
+00:51:18.040 --> 00:51:19.440
+or explore that space.
+
+00:51:19.440 --> 00:51:23.160
+I think geospatial, geoscience things definitely need
+
+00:51:24.140 --> 00:51:27.520
+all the attention they can get in an ever-changing climate
+
+00:51:27.780 --> 00:51:29.680
+or climate science kind of problems
+
+00:51:29.800 --> 00:51:31.300
+that we are all experiencing as humans.
+
+00:51:32.160 --> 00:51:32.960
+Yeah, absolutely.
+
+00:51:34.100 --> 00:51:37.400
+So we talked earlier about the challenge of staying in touch
+
+00:51:37.640 --> 00:51:39.240
+with all these different APIs
+
+00:51:39.240 --> 00:51:40.960
+and staying consistent with them.
+
+00:51:43.380 --> 00:51:45.280
+Do you have really interesting test cases?
+
+00:51:45.820 --> 00:51:51.680
+Do you have some mother-of-all-pi test execution sort of thing
+
+00:51:52.320 --> 00:51:56.740
+where do you maybe take the pandas unit tests
+
+00:51:57.040 --> 00:51:58.980
+and try to run them on QDF
+
+00:51:59.140 --> 00:52:02.080
+and similarly with scikit-learn and so on?
+
+00:52:02.920 --> 00:52:04.960
+Yeah, that should have been my first answer
+
+00:52:05.000 --> 00:52:05.800
+now that I think about it.
+
+00:52:05.960 --> 00:52:07.380
+That's exactly what we do do.
+
+00:52:07.940 --> 00:52:08.700
+For KUDIF
+
+00:52:08.700 --> 00:52:10.720
+Pandas, we run the...
+
+00:52:11.270 --> 00:52:12.660
+So for the KUDIF Pandas product,
+
+00:52:12.870 --> 00:52:15.140
+we do run the Pandas unit test.
+
+00:52:15.860 --> 00:52:18.380
+And we see that's the goal,
+
+00:52:19.500 --> 00:52:21.320
+to have this run perfectly across it.
+
+00:52:21.400 --> 00:52:23.280
+It's not necessarily to accelerate all the APIs,
+
+00:52:23.500 --> 00:52:24.000
+but making sure
+
+00:52:24.000 --> 00:52:24.420
+that we
+
+00:52:24.420 --> 00:52:25.480
+never fail.
+
+00:52:26.070 --> 00:52:27.600
+There is another - They fall back to CPU if
+
+00:52:27.600 --> 00:52:28.040
+they have to.
+
+00:52:28.580 --> 00:52:28.760
+- They
+
+00:52:28.760 --> 00:52:31.200
+fall back to CPU if they have to, exactly. We're
+
+00:52:31.200 --> 00:52:34.560
+also recording where we aren't using the GPU. So it
+
+00:52:34.560 --> 00:52:36.880
+gives us some directional information
+
+00:52:36.900 --> 00:52:39.560
+about the kinds of things that aren't accelerated.
+
+00:52:39.710 --> 00:52:42.960
+So maybe there's some niche date time features
+
+00:52:43.050 --> 00:52:45.080
+or some niche extension D type things
+
+00:52:45.260 --> 00:52:47.420
+that we aren't handling or can't be handled.
+
+00:52:48.220 --> 00:52:51.500
+And the same thing is also true for scikit-learn and QML.
+
+00:52:52.240 --> 00:52:53.940
+I think there are some known, actually at the moment,
+
+00:52:54.020 --> 00:52:56.620
+there are some known failures for QML and scikit-learn,
+
+00:52:56.650 --> 00:52:59.380
+but we do, that is the easiest thing that we could do
+
+00:52:59.500 --> 00:53:00.360
+and we do that.
+
+00:53:00.800 --> 00:53:04.180
+- Yeah, and they're pretty much all running.
+
+00:53:04.480 --> 00:53:06.540
+I know you talked a little bit about QML and stuff,
+
+00:53:07.110 --> 00:53:07.220
+but
+
+00:53:07.220 --> 00:53:08.300
+how much pytest
+
+00:53:08.300 --> 00:53:10.080
+.ignore is in there?
+
+00:53:11.980 --> 00:53:12.860
+- There's not as much as you,
+
+00:53:13.110 --> 00:53:14.600
+I think for Kudia Pandas,
+
+00:53:14.820 --> 00:53:19.740
+we are at like 99.x% passing for it.
+
+00:53:20.300 --> 00:53:22.100
+For QML itself, I have to look it up,
+
+00:53:22.540 --> 00:53:25.480
+but I think we still have pretty good coverage
+
+00:53:25.700 --> 00:53:27.740
+of the entire scikit-learn code base
+
+00:53:28.130 --> 00:53:30.040
+in terms of not falling back correctly,
+
+00:53:30.680 --> 00:53:32.020
+not necessarily accelerating it.
+
+00:53:32.200 --> 00:53:34.260
+There's a lot of classifiers there.
+
+00:53:35.120 --> 00:53:35.520
+OK.
+
+00:53:36.460 --> 00:53:37.600
+Yeah, I'm sure there are.
+
+00:53:38.120 --> 00:53:39.220
+That might be interesting.
+
+00:53:39.460 --> 00:53:42.100
+I don't know if this is documented somewhere or whatever,
+
+00:53:42.980 --> 00:53:46.640
+but that might be interesting as a way for people who
+
+00:53:46.640 --> 00:53:49.860
+are considering adopting it to go like, well,
+
+00:53:49.960 --> 00:53:51.460
+let's see what the failing or ignored tests are.
+
+00:53:51.660 --> 00:53:53.000
+No, these don't seem to apply to me.
+
+00:53:53.260 --> 00:53:53.880
+We're probably OK.
+
+00:53:55.080 --> 00:53:55.460
+Or not.
+
+00:53:55.580 --> 00:53:55.860
+I think
+
+00:53:55.860 --> 00:53:58.500
+actually on the Kumail documentation page,
+
+00:53:58.660 --> 00:54:02.160
+there's a known limitation section that outlines
+
+00:54:02.160 --> 00:54:07.840
+of estimators that are not are not accelerated uh and some edge cases that are not supported at
+
+00:54:07.840 --> 00:54:12.580
+the moment but they're working and the team is quite motivated to like keep on as you've mentioned
+
+00:54:12.680 --> 00:54:16.140
+before it's never changing world we're not we're going to keep on working on these problems
+
+00:54:17.780 --> 00:54:23.560
+my now admittedly pretty old g-force card in my gaming computer i got in 2020
+
+00:54:26.080 --> 00:54:30.380
+I don't know how much RAM it has, four gigs, eight gigs, something like that.
+
+00:54:31.080 --> 00:54:34.780
+But I know there are data problems that are certainly bigger than four or eight gigs of data.
+
+00:54:35.720 --> 00:54:42.960
+What happens if I try to read CSV and the CSV is 12 gigs and I've got eight gigs of available?
+
+00:54:43.440 --> 00:54:48.360
+I love that you asked this question because it's been a focus of our group for like the last year
+
+00:54:48.380 --> 00:54:57.600
+and a half. A lot of very fun engineering problems have to be solved when you want to do out-of-core
+
+00:54:57.660 --> 00:55:04.540
+processing. And there's a lot of tools that we can deploy to solve this problem. So for single GPU,
+
+00:55:05.570 --> 00:55:11.620
+there already is a solution that was available to us that we needed to improve upon, but still could
+
+00:55:11.680 --> 00:55:18.340
+largely just deploy. And that's a CUDA memory type. CUDA has a bunch of different kinds of memory that
+
+00:55:18.360 --> 00:55:24.340
+use. So within there's not just CUDA malloc but there's an asynchronous malloc and there's also
+
+00:55:26.380 --> 00:55:31.140
+there's also a larger pool that you can build and then pull memory from this larger pool to help
+
+00:55:31.340 --> 00:55:37.580
+speed things up. There's also the something called UVM or unified virtual memory and in this case
+
+00:55:38.300 --> 00:55:45.220
+the driver the CUDA driver itself is going to try and allocate some memory on the GPU and if it
+
+00:55:45.080 --> 00:55:51.560
+can't it will spill it will page data from the gpu onto the cpu and the driver just takes care of
+
+00:55:51.660 --> 00:56:00.140
+all that for me so if you have a 12 gigabyte data set and you're trying to read in uh and you're
+
+00:56:00.140 --> 00:56:03.540
+trying sorry if you and you're trying to read it into a car that only has eight gigabytes you could
+
+00:56:03.660 --> 00:56:09.860
+probably get by with with just uvm uh some a question that you still should ask yourself is
+
+00:56:09.960 --> 00:56:14.380
+whether you received any performance benefit i really want to be very very clear like if you're
+
+00:56:14.280 --> 00:56:18.820
+trying to do something on CPU and it's faster and everything just works, you should stay there. You
+
+00:56:18.960 --> 00:56:19.320
+shouldn't bend
+
+00:56:19.320 --> 00:56:19.840
+over backwards.
+
+00:56:20.080 --> 00:56:23.060
+We're really working hard to make sure that you get a benefit from
+
+00:56:23.240 --> 00:56:31.120
+using these devices. The other thing that you can do is batch. So there's this exotic memory type
+
+00:56:31.360 --> 00:56:36.120
+that is like the default. Most users don't ever have to think about it or worry about it, especially
+
+00:56:36.180 --> 00:56:44.240
+in the case of QDF pandas. But the other thing that you can do is sip data out. You can batch
+
+00:56:44.260 --> 00:56:50.640
+it. So for pandas, that's a lot of work to write a lazy framework on top of it. But for Polars,
+
+00:56:51.070 --> 00:56:52.960
+that already exists. I
+
+00:56:52.960 --> 00:56:54.140
+was just thinking that's the default,
+
+00:56:54.230 --> 00:56:56.240
+that kind of how Polars works. Right.
+
+00:56:56.400 --> 00:56:59.140
+So we already have this mechanism to push to
+
+00:56:59.580 --> 00:57:04.560
+higher than memory, larger than memory limits, or do this out of core kind of processing,
+
+00:57:04.760 --> 00:57:10.460
+because it's native to the Polars experience. I think we've also been seeing that more with some
+
+00:57:13.140 --> 00:57:19.260
+of our machine learning algorithms. So if you look at the 3.0 release of XGBoost has this external
+
+00:57:19.620 --> 00:57:25.480
+memory allocator where you can use host memory to batch data in before you start processing on GPU.
+
+00:57:25.820 --> 00:57:36.220
+And the same thing is also true for UMAP as well, where you can use host memory to
+
+00:57:36.940 --> 00:57:42.480
+store data temporarily as you start processing it on GPU. And it allows you to like really push
+
+00:57:42.560 --> 00:57:47.120
+much higher than what this resource-constrained GPU environment is offering.
+
+00:57:49.800 --> 00:57:56.560
+If I want to run this stuff in the cloud, what are some good options? Do I go to DigitalOcean and
+
+00:57:56.660 --> 00:58:04.060
+just pick a GPU-enabled droplet? Or is there super heavy-duty things I can get? Or maybe you're like
+
+00:58:04.140 --> 00:58:08.240
+me and you have a Mac Mini, but you want to play with this stuff and you don't have an NVIDIA GPU
+
+00:58:08.260 --> 00:58:10.500
+on this computer yeah
+
+00:58:10.500 --> 00:58:15.140
+unfortunately for for the mac mini there aren't a lot of options that while
+
+00:58:15.380 --> 00:58:20.940
+all this is open source and the code is can be read and can be contributed to it from anybody
+
+00:58:21.680 --> 00:58:28.560
+these these only work on nvidia on nvidia hardware so yeah you can go get a a a droplet
+
+00:58:28.980 --> 00:58:36.080
+spin up a a docker image i think we not only have pip and kind of packages but also have docker docker
+
+00:58:36.100 --> 00:58:37.900
+containers or you can go to AWS.
+
+00:58:38.430 --> 00:58:43.400
+You can get, I think, on this page, maybe not the page that you're on, but there's a
+
+00:58:43.940 --> 00:58:50.920
+deploy page where we have a lot of recommendations about how to deploy rapids in a variety of
+
+00:58:51.340 --> 00:58:51.560
+environments.
+
+00:58:52.560 --> 00:58:55.700
+Some things like some of the MLOps tools like SageMaker.
+
+00:58:55.890 --> 00:58:56.720
+Yeah, that's the page.
+
+00:58:58.760 --> 00:59:02.860
+Yeah, I probably could do something like Google CoLab or something like that in my MacBennie,
+
+00:59:02.960 --> 00:59:03.060
+right?
+
+00:59:03.740 --> 00:59:04.720
+That's the best.
+
+00:59:05.280 --> 00:59:08.060
+Actually, that's the best place to get started.
+
+00:59:08.220 --> 00:59:09.660
+That's where we direct a lot of our users.
+
+00:59:11.360 --> 00:59:15.020
+Google Colab has a free tier offering where you can just select a different backend.
+
+00:59:15.540 --> 00:59:16.840
+I think for Kaggle users,
+
+00:59:17.120 --> 00:59:18.820
+there's now even like L4s or
+
+00:59:18.940 --> 00:59:20.960
+multi-GPU L4s that they can get access to.
+
+00:59:22.020 --> 00:59:29.840
+Nice. Then one other thing before we wrap it up is, let's see.
+
+00:59:32.880 --> 00:59:34.140
+I just go to Rapids.
+
+00:59:34.280 --> 00:59:44.120
+I know at the beginning here it says we you got the new polar CPU engine what we talked about and it's pre installed on Google Co lab and things like that.
+
+00:59:44.120 --> 00:59:49.500
+But you also have vector search now with QVS, which is going with less I'm told otherwise.
+
+00:59:49.800 --> 01:00:02.960
+But if you're not using AI, you're not using LMS, but you're literally building LMS or your augmenting LMS, this vector search stuff and embeddings and whatnot is what you need.
+
+01:00:03.020 --> 01:00:09.240
+So I know you're not a super expert in vector embedding and stuff, and neither am I, but
+
+01:00:09.360 --> 01:00:11.900
+maybe tell people quick about this library, this aspect.
+
+01:00:12.480 --> 01:00:20.080
+Yeah, this actually grows out of the QVS, or QD Accelerated Vector Search, grows out
+
+01:00:20.080 --> 01:00:22.460
+of the ML world that you have.
+
+01:00:22.490 --> 01:00:32.060
+In the ML world, for UMAP or clustering algorithms, you need neighborhood algorithms to help you
+
+01:00:32.080 --> 01:00:37.340
+do regular data science. And it turns out that doing taking a bunch of strings and doing math
+
+01:00:37.460 --> 01:00:43.040
+on them, which is what a vector, which is what an embedding is, I have I have some text, I need to
+
+01:00:43.140 --> 01:00:47.740
+do some math on it. And then I need to understand how that text relates to other things with even
+
+01:00:47.880 --> 01:00:54.640
+more math, be something like cosine distance or to card similarity or min hash, whatever it is.
+
+01:00:55.280 --> 01:01:01.780
+And I need to do that across a very large corpus of text. So vector search and vector rag,
+
+01:01:01.840 --> 01:01:07.700
+become this go-to tool for the LLM space, which is, as I was just saying, a lot of math on text.
+
+01:01:08.940 --> 01:01:13.300
+How do I make that go faster? How do I build an index? How do I re-index faster and faster and
+
+01:01:13.400 --> 01:01:14.640
+faster? Is the corpus
+
+01:01:14.640 --> 01:01:16.200
+changes or has an
+
+01:01:16.200 --> 01:01:16.380
+update?
+
+01:01:16.800 --> 01:01:19.060
+Yeah, you think geospatial is an interesting
+
+01:01:19.320 --> 01:01:24.280
+query. The number of dimensions of this kind of stuff is unimaginable, right?
+
+01:01:24.560 --> 01:01:25.160
+That's right.
+
+01:01:27.680 --> 01:01:30.340
+I don't know that as many day-to-day--
+
+01:01:30.340 --> 01:01:33.500
+like if you're in the LLM space, LLM building space,
+
+01:01:33.760 --> 01:01:36.240
+or in the retrieval space, QVS is definitely
+
+01:01:36.410 --> 01:01:38.780
+going to be something you should take a look at.
+
+01:01:39.100 --> 01:01:40.960
+For the rest of the broader data science community,
+
+01:01:40.970 --> 01:01:43.560
+I don't think QVS is as relevant to that, just
+
+01:01:43.640 --> 01:01:43.840
+as a
+
+01:01:43.840 --> 01:01:45.320
+small clarification.
+
+01:01:45.720 --> 01:01:48.800
+All right, like how many people are using vector databases
+
+01:01:49.760 --> 01:01:51.260
+that are not using LLMs?
+
+01:01:51.380 --> 01:01:52.040
+Probably not too many.
+
+01:01:52.200 --> 01:01:53.640
+Right, probably not too many.
+
+01:01:54.320 --> 01:01:54.440
+Yeah.
+
+01:01:55.039 --> 01:01:57.640
+All right, let's wrap this up with one final
+
+01:01:57.660 --> 01:01:59.560
+question, where do you go from here?
+
+01:02:01.420 --> 01:02:01.780
+What's next?
+
+01:02:02.960 --> 01:02:04.520
+What's next for Rapids?
+
+01:02:04.520 --> 01:02:05.000
+For Rapids,
+
+01:02:05.060 --> 01:02:09.180
+yeah, Rapids and basically Python plus NVIDIA.
+
+01:02:11.100 --> 01:02:17.560
+I think what's next for Rapids is it's always going to be some bit of like
+
+01:02:18.010 --> 01:02:21.500
+maintenance of what we currently have pushing more and more performance.
+
+01:02:22.110 --> 01:02:26.760
+And then trying to always encourage people to try out what we have and
+
+01:02:26.680 --> 01:02:34.160
+really deliver something that is ultimately providing value for them. I think that there's
+
+01:02:34.200 --> 01:02:38.540
+a lot of really cool things that are happening on the hardware side, as I mentioned before,
+
+01:02:38.800 --> 01:02:46.240
+like Blackwell has some pretty cool things that I don't know that the users will feel,
+
+01:02:46.380 --> 01:02:49.300
+but I don't know that they're going to have to interact with. So there's this very fancy
+
+01:02:49.500 --> 01:02:55.780
+decompression inside of Blackwell. There's also, again, as I mentioned before, in this coherent
+
+01:02:55.800 --> 01:03:01.600
+memory world where there's just memory or i can can i treat the system as just memory what how
+
+01:03:01.600 --> 01:03:07.760
+does software look if i i want to like we're posing these questions to ourselves but if there was just
+
+01:03:07.920 --> 01:03:13.940
+malloc in the world and that happened seamlessly between host and device in it what what kind of
+
+01:03:14.000 --> 01:03:19.460
+software would i be running how would i try and architect that code i think those pose a lot of
+
+01:03:19.520 --> 01:03:25.760
+like very interesting computer science and also computer engineering questions i think for like
+
+01:03:25.780 --> 01:03:32.360
+in Python is the guest that you had him before Bryce was describing, exposing all these ideas
+
+01:03:32.680 --> 01:03:38.820
+to Python developers is really exciting. They might not maybe move into the C++ world. But
+
+01:03:38.820 --> 01:03:45.140
+I think a lot of Python developers want to understand how this device works and how they
+
+01:03:45.240 --> 01:03:49.420
+can manipulate it through their language of choice. We've seen that as we were actually
+
+01:03:49.580 --> 01:03:54.040
+just describing earlier, like, I want to get access to the different cache levels. Well,
+
+01:03:54.140 --> 01:03:58.060
+We see Python core developers made that available to us.
+
+01:03:58.280 --> 01:03:59.200
+That's really wonderful.
+
+01:03:59.400 --> 01:04:01.660
+The whole world isn't just vector computing.
+
+01:04:02.890 --> 01:04:05.400
+I want to take advantage of the entire system.
+
+01:04:05.830 --> 01:04:06.200
+So I think
+
+01:04:06.200 --> 01:04:10.380
+a lot of it is going to be exposure, education, and more and more performance.
+
+01:04:11.460 --> 01:04:11.620
+Awesome.
+
+01:04:12.250 --> 01:04:15.580
+Any concrete releases coming up that people should know about?
+
+01:04:16.960 --> 01:04:19.040
+Rapids does releases every two months.
+
+01:04:19.340 --> 01:04:25.680
+You can see some announcements of what we're planning in the next release.
+
+01:04:25.870 --> 01:04:33.140
+I think that will be coming out 2508 should be baking right now, and then we'll have 2510 and
+
+01:04:33.460 --> 01:04:41.800
+812. We just announced a few months ago a multi-GPU Polaris experience. You can scale,
+
+01:04:41.930 --> 01:04:48.680
+not just have scale up, but scale out with the Polaris front end. We're doing a lot of good work
+
+01:04:48.700 --> 01:04:53.620
+around Kumail Excel, as I was mentioning before, getting more algorithms, trying to push to higher
+
+01:04:53.650 --> 01:05:00.260
+and higher data sets that UMAP works with. And we're also looking at, we're trying to spend some
+
+01:05:00.370 --> 01:05:04.340
+time looking at particular verticals, I think, especially in like the bioinformatics space as well.
+
+01:05:04.940 --> 01:05:05.300
+But,
+
+01:05:06.000 --> 01:05:09.380
+you know, really excited to hear from anybody if they have a problem that they need,
+
+01:05:09.570 --> 01:05:13.359
+that they need more, more power, more performance, you know, please, please raise your hand and come
+
+01:05:13.340 --> 01:05:13.800
+talk to us.
+
+01:05:14.100 --> 01:05:20.940
+Awesome. Yeah, I'll put your some link to you somehow in the show notes that people
+
+01:05:20.980 --> 01:05:26.620
+can reach out. But you mentioned Slack earlier. Is there Slack Discord? What are the GitHub issues?
+
+01:05:27.020 --> 01:05:27.780
+What are the ways? Yeah,
+
+01:05:27.920 --> 01:05:32.220
+there's a couple Slack channels. One of them is called GoAI.
+
+01:05:33.020 --> 01:05:39.720
+There's a CUDA Slack channel. And then there's also a community-based GPU mode Slack channel that's
+
+01:05:40.180 --> 01:05:43.120
+a little bit more deep learning oriented.
+
+01:05:43.360 --> 01:05:46.940
+But the Go AI Slack channel is something that is specific to Rapids.
+
+01:05:47.420 --> 01:05:48.920
+Yeah. Awesome.
+
+01:05:50.500 --> 01:05:51.640
+All right, Ben, this has been really fun.
+
+01:05:53.260 --> 01:05:54.940
+People out there listening, maybe they want to get started.
+
+01:05:54.980 --> 01:05:55.460
+What do you tell them?
+
+01:05:55.860 --> 01:05:57.340
+What do they do to try out Rapids?
+
+01:05:58.720 --> 01:06:02.820
+Go to CoLab and just import QDF Pandas.
+
+01:06:02.920 --> 01:06:05.720
+Import KUM LXL, import NX KUGRAF.
+
+01:06:06.760 --> 01:06:07.760
+Everything is baked in.
+
+01:06:07.860 --> 01:06:11.440
+We worked really hard with Google to make sure that that environment was set up from the
+
+01:06:11.450 --> 01:06:11.760
+get-go.
+
+01:06:13.059 --> 01:06:13.420
+Awesome.
+
+01:06:14.300 --> 01:06:14.480
+All right.
+
+01:06:14.970 --> 01:06:18.900
+Well, it's been great to chat GPUs and data science with you.
+
+01:06:19.030 --> 01:06:19.660
+Thanks for being on the show.
+
+01:06:20.279 --> 01:06:21.360
+Thanks so much for having me.
+
+01:06:21.650 --> 01:06:21.860
+I really
+
+01:06:21.860 --> 01:06:22.320
+appreciate it.
+
+01:06:22.500 --> 01:06:22.860
+Yeah.
+
+01:06:22.860 --> 01:06:22.980
+You bet.
+
+01:06:23.200 --> 01:06:23.300
+Bye-bye.
+
+01:06:23.940 --> 01:06:24.300
+Bye.
+
