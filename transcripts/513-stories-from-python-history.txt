@@ -1,0 +1,1528 @@
+00:00:00 Why do people listen to this podcast?
+
+00:00:01 Sure, they're looking for technical exploration of new libraries and ideas, but often it's to hear the stories behind them.
+
+00:00:09 If that speaks to you, then I have the perfect episode lined up for you here.
+
+00:00:14 We have Barry Warsaw, Paul Everett, Carol Willing, and Brett Cannon all back on the show to share stories from the history of Python.
+
+00:00:22 You'll hear how Import This came to be and how the first PyCon had around 30 attendees, two of whom are guests on this episode. Sit back and enjoy the humorous stories from Python's past.
+
+00:00:34 This is Talk Python To Me, episode 513, recorded June 6th, 2025.
+
+00:00:53 to unite. We started in pyramid cruising.
+
+00:00:56 Welcome to Talk Python To Me, a weekly podcast on Python.
+
+00:00:59 This is your host, Michael Kennedy. Follow me on Mastodon where I'm @mkennedy and follow the podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is sponsored by Posit Connect from the makers of Shiny. Publish, share, and deploy all of your data projects that you're creating using Python. Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs. Posit Connect supports all of them. Try Posit Connect for free by going to talkpython.fm/posit, B-O-S-I-T. And it's brought to you by Agency. Discover agentic AI with Agency. Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+00:01:59 Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+
+00:02:06 Brett, Carol, Paul, Barry, welcome to all of you to Talk Python To Me. So
+
+00:02:11 happy to have you back.
+
+00:02:12 Hi, Michael.
+
+00:02:13 Thanks. Yeah.
+
+00:02:14 Great to see you.
+
+00:02:14 Good to see you.
+
+00:02:15 I will tell you what, if the backstage pre-show is any indication of how much fun we're going to be having here,
+
+00:02:23 it's going to be a good time.
+
+00:02:24 I hope everyone here is ready for some fun stories, some fun history, and some unexpected things out there.
+
+00:02:32 And as I was doing this research, I see lots of your names popping up in these places.
+
+00:02:39 Oh, there were 30 people doing Python.
+
+00:02:41 And Barry and Paul happened to be there, like in the world.
+
+00:02:45 sort of thing or maybe at the conference but pretty pretty early days i think and so i'm very excited
+
+00:02:52 to talk about just these stories history of python inspired somewhat by the upcoming documentary
+
+00:02:59 repo i believe it is that's putting it together what a fun fun thing there was an april fool's joke that people may have seen but there's also a serious documentary coming right
+
+00:03:08 yeah there's a There was a trailer shown at PyCon just recently.
+
+00:03:13 It was really good, too.
+
+00:03:14 It was. It got a good reception.
+
+00:03:16 The people actually showed up at 830 in the morning, which doesn't happen a lot at PyCon.
+
+00:03:21 I'll tell you what, that's my kind of stuff.
+
+00:03:23 People say, what's your favorite movie, Michael?
+
+00:03:25 I'm like, hmm, how am I going to answer this one?
+
+00:03:27 How about I watch programming and other types of documentaries on YouTube?
+
+00:03:31 Is that kind of like, no, I don't want to talk to you anymore about this.
+
+00:03:34 But it's going to be so good.
+
+00:03:36 Is that how you extract yourself out of a conversation you want to be a part of at parties now, Michael?
+
+00:03:41 I'm just like, let me tell you about this cool documentary.
+
+00:03:43 No, I watch programming documentaries on YouTube.
+
+00:03:46 Oh, that was nice to meet you, Michael.
+
+00:03:48 Hobbies include.
+
+00:03:49 What is it?
+
+00:03:50 Four o'clock?
+
+00:03:50 We got to shut this down.
+
+00:03:52 Exactly.
+
+00:03:53 I imagine, though, the podcast listeners will be much more in line with being in the group that would care to pay attention to that.
+
+00:04:00 So let's just do a super quick round of introductions.
+
+00:04:03 I know most people know you because, as I said, you all have been doing this for a super long time.
+
+00:04:06 But for those who are new listeners, we have many, many new listeners all the time.
+
+00:04:11 People getting into Python.
+
+00:04:12 Biggest group, as we learned from the survey, which is very interesting.
+
+00:04:15 So maybe we'll go around the Brady Bunch squares.
+
+00:04:17 Brett, you go first.
+
+00:04:18 My name is Brett Cannon.
+
+00:04:19 I am the person Paul Everett is chasing to become the second most frequent guest on this podcast.
+
+00:04:24 I've been a Python core developer since April of 2003.
+
+00:04:29 I've been using Python since fall of 2000.
+
+00:04:33 I feel very lucky to be part of this disservice group of people I think that's a good quick summary and I know if you scroll up Anthony Shaw beats me oh and Brian actually beats me as well I don't count Brian
+
+00:04:45 he's an insider you're leading but now we have you two on here at the same time so it's just going to asymptotically like the limit at infinity will be the same but right now that's fine I think that's fair to me it's been a little while since we had you on the show Brad awesome to have you back
+
+00:05:01 Yes, thanks. Lock files took a bit longer than I expected.
+
+00:05:04 Carol, hello.
+
+00:05:05 Hi, I'm Carol Willing.
+
+00:05:06 Brett, your lock files got lots of love at PyCon, just so you know.
+
+00:05:10 I am the baby of this group.
+
+00:05:12 I started using Python in 2012 and 2017 became a core developer and had some fun on the steering council with some of these cool folks.
+
+00:05:23 And so these days I spend a third of my time working and often in the open science, data science space with open source projects there, sit on some boards, do some angel investing.
+
+00:05:38 The other happy third is I donate a whole lot of time, not just to open source, but actually to mentoring individuals one-on-one who are trying to get more involved in open source or learn things.
+
+00:05:53 And that is probably my biggest joy in life.
+
+00:05:56 And then the third of my Python-y kind of life is being able to dig deep and to whatever projects rock my world and get a little time, hopefully, to play with some open hardware, blanky, wearable electronics stuff.
+
+00:06:11 So I just love Python.
+
+00:06:13 I love the community.
+
+00:06:14 And whatever the other third, Paul is going to share with us later.
+
+00:06:17 Paul has many thirds, many thirds.
+
+00:06:19 I didn't realize, Carol, our Python age is almost the same exactly.
+
+00:06:23 Oh, good.
+
+00:06:24 Well, you can join me in the toddlerdom of Python.
+
+00:06:27 Yeah, exactly.
+
+00:06:28 We'll have to stay home while the grownups like Paul go out who've been at this for a little while.
+
+00:06:32 Paul, what, five years now, is it?
+
+00:06:34 Five in dog years?
+
+00:06:36 That's not even it either.
+
+00:06:37 You got to...
+
+00:06:38 We need a log scale.
+
+00:06:39 We need a log scale.
+
+00:06:41 Yeah, Carol's right.
+
+00:06:42 There is another third.
+
+00:06:43 The bonus third of this episode will be a discussion of Sphinx talk trees, their implementation.
+
+00:06:49 It kind of ends in like a biker horror movie mashup.
+
+00:06:53 So stay tuned.
+
+00:06:55 Hi, I'm Paul. Barry and I met in 1994 at a workshop on this irrelevant, no chance to succeed project called Python.
+
+00:07:05 Fun fact, just before that, I was a Navy officer. I had the white uniform.
+
+00:07:11 I was wearing the white uniform when I started Python.
+
+00:07:14 Yeah, wow. Wow.
+
+00:07:16 I run developer advocacy at JetBrains, and I get to spend my Friday with the four people that I just love the most.
+
+00:07:24 This is so cool being with you.
+
+00:07:26 This trailer and the documentary has just reminded me of all the joy that we get to be a part of and we get to give.
+
+00:07:33 And so this is just really joyful.
+
+00:07:35 It is always awesome to have you here, Paul.
+
+00:07:37 Thanks for that.
+
+00:07:37 Great to be here.
+
+00:07:38 With you, Barry.
+
+00:07:39 Hello, hello.
+
+00:07:39 Hey, good to see everyone, of course.
+
+00:07:42 Saw some of you at PyCon just recently.
+
+00:07:44 Barry Warsaw, yeah, Paul, a long time ago.
+
+00:07:47 Worked together for a while.
+
+00:07:49 And I was very lucky because I had worked at NIST in Gaithersburg, Maryland.
+
+00:07:56 Sort of my first gig, actually high school, college, and then my first gig coming out of college.
+
+00:08:01 And so I knew people at NIST.
+
+00:08:03 And I had actually seen mention of Python before that because I was a Usenet, if anybody remembers.
+
+00:08:10 All the gray hairs will remember Usenet.
+
+00:08:12 And Complank Python came up and I was like, oh, cool.
+
+00:08:15 I was into languages, checked it out.
+
+00:08:17 And it was all Monty Python jokes, which was awesome because I loved Monty Python.
+
+00:08:22 But I was like, why is this in Complank?
+
+00:08:24 What does it have to do with computer programming languages?
+
+00:08:28 And sort of ignored it for a little while and then got an email from a friend of ours, Mike McClay and Ken Manheimer, who I think were still there at NIST.
+
+00:08:38 And I knew them from my time there.
+
+00:08:39 And so we went up for the workshop and met Guido and a bunch of other people who were like, yeah, okay, this is kind of a fun little hobby thing.
+
+00:08:49 And then we decided we were going to try to take over the world.
+
+00:08:51 And 30 years later, I guess we have.
+
+00:08:55 In some actual real literal senses, I would say the number one programming language in a lot of ways and the number one language for AI, which is trying to take over the world in
+
+00:09:05 its own right.
+
+00:09:05 So actually, I was at the European Space Museum in the Netherlands and I saw the Mars rover and we're not taking over just this world, baby.
+
+00:09:15 That's right.
+
+00:09:17 Flask, it flies.
+
+00:09:19 Well, no, we're actually on the rover.
+
+00:09:21 That's what I mean.
+
+00:09:22 Yeah, that's what I mean.
+
+00:09:23 It's not just the flight plan.
+
+00:09:25 Yeah, the flask for planning the helicopter.
+
+00:09:27 I can't remember the name of it on my head, but you can go to GitHub and get the code.
+
+00:09:31 You can.
+
+00:09:31 Yeah, Python was actually used to process the video on the landing of the latest Marge rover.
+
+00:09:35 I mean, it's pretty mind-blowing because like the story I tell is that we had people at that first workshop who explicitly said, you cannot tell people that we're here and that we're using Python because it's our competitive advantage.
+
+00:09:47 And I mean, that was like, that was amazing that here we are fans of the language and just really just loved the way it kind of expressed our thoughts in a very direct manner.
+
+00:10:00 And yet we couldn't tell people who was there because of that fact.
+
+00:10:06 But that's not true today.
+
+00:10:08 Everybody uses Python.
+
+00:10:09 But that actually lasted a long time.
+
+00:10:11 I remember when I was at JupyterCon.
+
+00:10:15 Do you remember when that was in New York?
+
+00:10:17 Was that 2016?
+
+00:10:19 I think 2017, 18, 19.
+
+00:10:22 17?
+
+00:10:23 Yeah.
+
+00:10:24 Somewhere around.
+
+00:10:24 So maybe it was 2017.
+
+00:10:26 Yeah.
+
+00:10:26 The one I gave a little keynote at.
+
+00:10:28 I can't remember which one it was.
+
+00:10:29 I think that was 2017.
+
+00:10:30 But I was there and work had me go talk to a bank, but I can't name the bank because they viewed Python as a competitive advantage still.
+
+00:10:38 And so it's still, I don't know, in my timeframe of Python, a recent development that everyone can just say they use Python because it's no longer a competitive advantage because it's literally everyone's advantage.
+
+00:10:50 So it kind of washes out.
+
+00:10:52 But yeah, it lasted for a long time as that.
+
+00:10:55 And now it's like you could name 20 banks in New York that use Python as their competitive advantage, all in different ways.
+
+00:11:02 And it's not a secret anymore either, right?
+
+00:11:05 Like Capital One being that big sponsor at PyCon US every year, it's just like, yeah.
+
+00:11:09 I remember when that started, I came back from being in Europe for a few years and went to my first PyCon and I saw this big booth with Capital One on top and I'm like, what the absolute bleep?
+
+00:11:20 Capital One is here and these consulting firms are here.
+
+00:11:24 What happened to you, Python?
+
+00:11:26 What's in your compiler?
+
+00:11:27 that. That's good.
+
+00:11:31 Thank you. Or should it be JIT? I mean, JIT is really where it's at these days.
+
+00:11:34 They actually were sponsors of Talk Python. And I'm like, I don't really, I mean, as much fun as that was to say, I don't really want to just advertise credit cards. I want stuff that's relevant to listeners. And they're like, no, no, no. We want to advertise for our data science team. I'm like, okay, that's really cool. Yeah. Yeah. Richmond,
+
+00:11:48 Virginia, they got a big team.
+
+00:11:50 Just for the international audience, who's not from North America, Capital One has a very famous tagline in their ads that says, what's in your wallet? Hence the, what's in your compiler line.
+
+00:11:57 And they say kind of in that, that gruff way.
+
+00:12:00 Yes. Yeah, exactly. Like I think they dealt with Vikings and all sorts of different ways of pitching that line. Yeah.
+
+00:12:06 Speaking of pop culture, one thing I wanted to talk about in this sort of history, anything that you see and Barry, you touched on this. I'm going to put a holy hand grenade scene with the killer rabbit up on up here just to look out, which is such an amazing thing. But if you look at all the logos and slogans and all this kind of stuff, it's all about snakes, right? Snake icons, snake logos.
+
+00:12:31 But the original motivation for the language is actually Monty Python, not ball pythons, right?
+
+00:12:37 I remember when the O'Reilly book was about to be published and I think we saw an early copy of it or something like that.
+
+00:12:45 And they, O'Reilly, obviously, because they were animal themes, they wanted to put a snake on the front.
+
+00:12:51 And I remember distinctly, maybe misremember, everything I say could be totally misremembered.
+
+00:12:57 But I remember Guido saying, I don't want a snake on the front of it because people have a, some people have a diversion to snakes.
+
+00:13:05 And I mean, it was just inevitable that that was going to happen anyway.
+
+00:13:08 So I have a vaguer, similar recollection of, yeah, I mean, at least at the PyCon in 2000, like on US in 2003 was, yeah, I remember that comic going around too.
+
+00:13:18 Cause learning Python's got the little mouse on it, but yeah, program Python has the snake.
+
+00:13:22 And that's, I think.
+
+00:13:23 If I give you a search for the worst book cover, internet programming with Python.
+
+00:13:27 And so Guido joined with, oh, Aaron, what's his name?
+
+00:13:31 Yeah, there we go.
+
+00:13:32 Right there.
+
+00:13:33 So zoom in a little.
+
+00:13:35 It's a snake around a can of spam with glasses, with Guido's glasses on it.
+
+00:13:40 And our graphic designer at Digital Creations at the time came up with this.
+
+00:13:45 And I'm not sure if I'm proud of this story or not.
+
+00:13:48 I think the story...
+
+00:13:49 That's a fine looking snake.
+
+00:13:51 Although it does bear a resemblance to a more frequently used emoji these days, honestly.
+
+00:13:57 But you can imagine her face when I said, okay, what I want is a snake around a can of spam with European glasses.
+
+00:14:05 And she did it.
+
+00:14:07 So I have a question for the old timers in the group.
+
+00:14:11 When did it become TwoSnakes?
+
+00:14:13 I was actually part of the web, back when we called them webmasters, the web team for Python.org when the redesign was done, because that was also when they redid the backend, right?
+
+00:14:24 Because that was the whole, we want to keep all the files static and all
+
+00:14:28 that.
+
+00:14:28 There's always an episode, isn't there, Michael?
+
+00:14:30 There you go.
+
+00:14:31 Right, that was one of the requirements Oz had, actually, because he was the big driver of the website back then.
+
+00:14:35 It's like, I don't want to have a CMS back thing.
+
+00:14:39 He wanted old files and was all like, literally with make files to generate it.
+
+00:14:43 But yeah, I can't, I think there's literally just, they hired a graphic designer who also redid the backend at the same time and they went with it.
+
+00:14:50 Because I mean, if you go back to that logo, I mean, that was back when there was a little pixelated snake as the icon, I think Windows was it.
+
+00:14:57 So we were already kind of going with it at that point.
+
+00:15:00 What year was that around?
+
+00:15:01 Long ago.
+
+00:15:03 This is all long ago.
+
+00:15:05 That'd be like the rise of the PyCon.
+
+00:15:08 So PSF was 2001.
+
+00:15:10 PyCon was 2003.
+
+00:15:12 So it was probably around that time of PyCon.
+
+00:15:14 Yeah, probably the knots.
+
+00:15:16 I think it was sometime during the knots, maybe.
+
+00:15:19 This portion of Talk Python To Me is brought to you by the folks at Posit.
+
+00:15:23 Posit has made a huge investment in the Python community lately.
+
+00:15:27 Known originally for RStudio, they've been building on a suite of tools and services for Team Python.
+
+00:15:32 Today, I want to tell you about a new way to share your data science assets.
+
+00:15:36 Posit Connect Cloud.
+
+00:15:38 Posit Connect Cloud is an online platform that simplifies the deployment of data applications and documents.
+
+00:15:44 It might be the simplest way to share your Python content.
+
+00:15:47 Here's how it works in three easy steps.
+
+00:15:49 One, push your Python code to a public or private GitHub repo.
+
+00:15:54 Two, tell Posit Connect Cloud which repo contains your source code.
+
+00:15:58 Three, click Deploy.
+
+00:15:59 That's it.
+
+00:16:00 Posit Connect Cloud will clone your code, build your asset, and host it online at a URL for you to share.
+
+00:16:06 Best of all, Posit Connect Cloud will update your app as you push code changes to GitHub.
+
+00:16:11 If you've dreamed of Git-based continuous deployment for your projects, Posit Connect Cloud is here to deliver.
+
+00:16:18 Any GitHub user can create a free Posit Connect Cloud account.
+
+00:16:21 You don't even need a special trial to see if it's a good fit.
+
+00:16:24 So if you need a fast, lightweight way to share your data science content, try Posit Connect Cloud.
+
+00:16:30 And as we've talked about before, if you need these features, but on-prem, check out Posit Connect.
+
+00:16:36 Visit talkpython.fm/connect-cloud.
+
+00:16:40 See if it's a good fit.
+
+00:16:42 That's talkpython.fm/connect-cloud.
+
+00:16:45 The link is in your podcast player's show notes.
+
+00:16:47 Thank you to Posit for supporting Talk Python To Me.
+
+00:16:51 By the way, I'm already scared about the documentary about being wrong on so many dates.
+
+00:16:56 Yes, I can imagine.
+
+00:16:57 Because everything is related in my head to PyCons and where they physically were held.
+
+00:17:02 And this is why if you watch the documentary, the opener is me asking Google, when was PyCon held in Montreal?
+
+00:17:09 Because that's when I know I did something.
+
+00:17:11 And it said 2015.
+
+00:17:12 And I go like, what the?
+
+00:17:14 Well, that was the deal.
+
+00:17:15 That's why I went, what?
+
+00:17:16 Because I realized I always started on even numbers at that point after we did the first three years in DC.
+
+00:17:21 And we went to two years after that.
+
+00:17:23 And I was like, what?
+
+00:17:24 Anyway, I'm just waiting to find out multiple times in the documentary.
+
+00:17:28 I said the year wrong because I got the date wrong.
+
+00:17:31 So when it was, I know exactly which Python at what location, but I got the year wrong for when it was in that
+
+00:17:36 location.
+
+00:17:36 All right. So you're a Python attendees.
+
+00:17:37 I already apologize.
+
+00:17:39 There's a lightning talk opportunity.
+
+00:17:41 Find all the errors that Brett had and make it into a lightning talk.
+
+00:17:45 Yeah.
+
+00:17:45 Wonderful.
+
+00:17:46 If he just gets cut from the documentary entirely, it's just like it was just too much work to correct it.
+
+00:17:50 You know what?
+
+00:17:51 Yeah, there's too many asterisks in what Brett just said to throw up on screen.
+
+00:17:54 We used up all the letters on corrections.
+
+00:17:56 We can't do it.
+
+00:17:56 Find all of Brett's errors so you won't look at ours.
+
+00:18:00 Right?
+
+00:18:00 Like Greg Paul.
+
+00:18:04 There you go.
+
+00:18:06 No, I think you guys were awesome.
+
+00:18:07 And at least the trailer and the April 1st sort of thing.
+
+00:18:10 That was really great.
+
+00:18:12 So here, I want to throw this out here.
+
+00:18:13 And you all tell me about the history of it.
+
+00:18:15 Because I know it gets used all the time.
+
+00:18:17 And I think it might be close to home.
+
+00:18:19 I came for the language, stayed for the community.
+
+00:18:21 That's probably why I was asking Google.
+
+00:18:23 when Montreal was. Because yeah, that was 2014, as Carol just made sure I remembered correctly.
+
+00:18:30 In Montreal, Diana Clark was the chair that year of PyCon. And she basically had a little bit of stage fright and just asked if, as a fellow Canadian, if I was willing to do the opening address. And I said, sure. I mean, she's just going to read slides. It's no big deal. And I was like, yeah, yeah, sure, sure. But I realized how much time they gave me. And I also realized how fast I talk because Thomas Hooters every year almost reminds me how fast I talk during my presentations. And I knew I was going to have some extra time at the end. And I was like, I'm going to say some stuff. I don't know what I'm going to say. I'm going to say some stuff.
+
+00:19:05 Because like how often you get to, I mean, at that point, I hadn't given a keynote at PyCon.
+
+00:19:09 So I was like, okay, cool. This is going to be like the largest stage I'm probably ever going to have. So I'm going to take advantage. So I did the opening and got through it. I had like, I can't remember five or 10 minutes to kill. And so I just started talking.
+
+00:19:21 And as I was talking, that line came out of my mouth just to try to, yeah, thank goodness.
+
+00:19:27 Yeah, to just express how I felt about the community, right?
+
+00:19:30 And it was my way of kind of just saying thank you to the audience.
+
+00:19:32 Because I also wanted to portray personal appreciation for what everyone had come represent to me.
+
+00:19:37 And what hopefully the whole room represented to each other was.
+
+00:19:41 The room is what makes Python and Python in general, not just the little piece of technology full of bits that we ship around the world and to Mars.
+
+00:19:52 So, yeah.
+
+00:19:52 So that's how that all came about.
+
+00:19:53 That's awesome.
+
+00:19:54 Yeah.
+
+00:19:54 Just visit PyCon once and you realize how much humanity and how much people care and how much just
+
+00:20:01 it is a community.
+
+00:20:02 Yeah.
+
+00:20:02 Barbara and Katie, I think Katie was involved, organized a workshop for kids and Barry's kid and my kid were there.
+
+00:20:09 Oh, my goodness.
+
+00:20:10 That's right.
+
+00:20:11 That's right.
+
+00:20:12 That's right.
+
+00:20:12 I think about that, that community thing, it's really unique. And I think it comes from Guido, right? Like he brings this humanity to a cold technology, so to speak, right? But it's, it's something that I have felt, and I'm sure Paul has felt that since the first day, that first workshop, it just felt like we're just like hanging out and talking about computers and programming and stuff like that.
+
+00:20:40 And I, some of my best friends still today in certainly in technology have been from Python community.
+
+00:20:47 So yeah, I think it's definitely driven by Guido.
+
+00:20:49 I mean, I have a very distinct memory from PyCon in Cleveland.
+
+00:20:54 I've seen Guido get down on his knees to talk to a 12 year old saying, Hey, you, what have you been working on?
+
+00:21:00 You want to show me like, oh, that's so cool.
+
+00:21:02 Like, I mean, it's the creative of the language and he's just getting down to some little 12 year old.
+
+00:21:06 just doing something. It just wants to just connect with that kid and just like have that conversation and just have that little one-on-one time and just, oh yeah, just show this grown-up what you've done and just show off and be cool and all that. And I think that really has Guido's approach to all this has really led to all this because I think Guido's approach made people similar to him, Paul and Barry and all of us on this call, gravitate towards this community and this language because of it. And it just becomes a bit effectively self-sustaining, right? Because the people who are not into this leave, right? They just don't like it. It doesn't match their view. And either they stay and stay quiet or they get vocal and leave because it just doesn't work the way they want it to work. And that's totally fine. Like I'm not no shade to anyone who's just not into the way the community functions, but I think it just becomes a center of gravity here.
+
+00:21:59 to just bring more and more people who think and operate this way and becomes a thing.
+
+00:22:04 And I think we've luckily hit a critical point here where we're able to self-sustain this kind of feeling because we have gotten large enough, but we also put in the effort because the people who get drawn in are to try to keep it feeling small and somewhat intimate and just this wonderful community we have.
+
+00:22:20 So I think it's lovely that it's ended up turning out this way.
+
+00:22:23 I've done some keynotes about Python and learning.
+
+00:22:27 And I think it was baked into the language at the start, like the influence that ABC had and the, in particular, how readable the language is and the intention that, hey, you write code once, but you maintain it for a long time after.
+
+00:22:46 And I think the language itself on some level is much more welcoming than a lot of programming languages.
+
+00:22:53 And I think that coupled with the strength of the community and the education focus of the community, like you were saying, the kids workshops and stuff at PyCon, it's pretty cool.
+
+00:23:06 And it makes it more inclusive by design.
+
+00:23:09 On that point, Carol, I was reading, Michael put together show notes for us, and it reminded me of you winning the Frank Willison Award, richly deserved, and a wonderful guy he was.
+
+00:23:20 And so I was doing some reading on that, and I came across an interview with Justin McKellar, and she was talking about her phase, which we might get to a little bit later, and that Guido showed up in 2015 on stage with Python is for Girls, a t-shirt saying Python is for Girls.
+
+00:23:36 And he's done things like that repeatedly, like the call for a CPython core contributor.
+
+00:23:42 And you leave from the front.
+
+00:23:44 And the outcome is predictable when you see the origin.
+
+00:23:49 I remember the first conversation I had one-on-one with Guido was actually he was on stage.
+
+00:23:55 And I was like, will you sprint with PyLadies?
+
+00:23:58 After Selina Dekelman kind of said, you need to tell people that I was actually at the language summit.
+
+00:24:04 I just had to leave early because my baby needed to be picked up from childcare.
+
+00:24:09 And I'm like, okay, this is exactly what I want to do.
+
+00:24:13 Like tell the creator of Python, oops, you made a mistake.
+
+00:24:16 And oh, by the way, will you sprint with PyLadies?
+
+00:24:19 And he had that nice pause.
+
+00:24:21 And then he was like, yes, I will.
+
+00:24:24 And then I promptly went to the bathroom, was in tears, had a talk like the next talk schedule.
+
+00:24:31 And Brett, do you mind if I tell the story?
+
+00:24:33 No, no, no.
+
+00:24:34 Okay.
+
+00:24:34 So a few of the core developers came because I was giving a talk about how to contribute to core development, but not being a core developer. And after all of that happened, I was so nervous. So Brett was on stage wishing me well. And I'm like, can you just stand up here for a while just till it gets going? And then like the nerves were getting higher and higher. And I was like, will you hold my hand? And he said yes. And he's like, how long do you want me to stay up here?
+
+00:25:03 I said, well, about five slides in, I have this young man who was my son in a bathrobe playing trombone. If I give you the thumbs up, you can sit down. If not, please stay. And fortunately, I was able to do the thumbs up, but I wouldn't have gotten to that place had it not been for Brett's kindness and support.
+
+00:25:21 And it's something that, you know, it shows, A, who Brett is.
+
+00:25:26 But, you know, there have been many, many things where people have given selflessly in different ways to so many different people.
+
+00:25:33 And I think that's what I love about Python.
+
+00:25:36 I think that also shows, I mean, thank you for the kind words.
+
+00:25:41 I will say, I mean, I did that because, I mean, it's hard to talk in front of an audience.
+
+00:25:45 And I learned that through my talks at PyCon.
+
+00:25:48 And I think that also shows through the way conferences typically handle new first-time speakers too, right?
+
+00:25:53 Like all the effort that goes in to try to have like open office hours and tutorials and letting people come in and putting an emphasis to let first-time speakers come and do all that stuff, right?
+
+00:26:03 And I think that also kind of is a good showing of how the community, once again, really does try to lead based on how we set us off moving forward of trying to be welcoming and open and just great place.
+
+00:26:17 I will also say, though, I think the humor of the language also has really helped.
+
+00:26:22 And I think the Fluffle could probably speak well to that.
+
+00:26:25 We're going to have a performance.
+
+00:26:26 We're going to have a performance that remixes some awesome programming and some humor.
+
+00:26:30 And it's really good.
+
+00:26:31 Actually, before we get to that, though, I want to focus on a different story, which I just delighted me to no end.
+
+00:26:38 And that's when I first got into Python.
+
+00:26:40 And that's you can open up the REPL, or I guess you could write it in a Python file, but I'm not sure why you would do it.
+
+00:26:44 But you can type import antigravity.
+
+00:26:47 And I heard about import this.
+
+00:26:49 I'm like, what is this anti-gravity?
+
+00:26:50 So first of all, there's this XKCD joke comic that said, there's a person flying and says, how are you flying?
+
+00:26:57 It says, Python.
+
+00:26:58 I learned it last night.
+
+00:26:59 Everything's so simple.
+
+00:27:00 Hello world is just print.
+
+00:27:02 Hello world.
+
+00:27:02 I know.
+
+00:27:04 I don't know.
+
+00:27:05 Dynamic typing, white space.
+
+00:27:07 Come join us.
+
+00:27:07 The programming's fun again.
+
+00:27:08 It's a whole new world.
+
+00:27:09 But how are you flying?
+
+00:27:10 I just typed import anti-gravity.
+
+00:27:12 I think it's the Python, right?
+
+00:27:13 Well, there's the comic.
+
+00:27:15 And then there's, well, actually, let's just add that as a feature to the language, right?
+
+00:27:19 Imagine getting that into Java.
+
+00:27:20 No, if we could just make that to be the most popular Python XKCD comic again, and not the one about environment management.
+
+00:27:26 It's funny because fun is such a big part of programming.
+
+00:27:30 I think that gets under-recognized and play.
+
+00:27:33 And I've been programming since I was a fifth grader, growing up in the shadow of Bell Labs on a mainframe, and got to program on some of the first Apple computers, which was absolutely mind-blowing because it was all this exploration. And Luciano Romulo, he and I have had lots of conversations on this. But Python, fast forward many, many years till 2012, because that was probably 1977 or so when I was using the Apple. Python gave me that same fun and exploration. And I'm like, this is so cool. And it's a joy to program in. And I'd have done C, C++, and I love C, C++ not so much, and Java and other languages list. But Python was the one that it was like, this just gets out of my way and lets me create. And I think that's fun
+
+00:28:26 at whatever level you are as a developer. That translates into the development of the language itself and the fact that you can, and this comes back to the whole community thing as well.
+
+00:28:37 You can't have a language that is not only vibrant for 30 years, but in some ways at its peak 30 years after its inception and will probably be so for another 10 or 15, 20 years.
+
+00:28:52 Because it's so welcoming to bring people into the development of the language itself.
+
+00:28:57 And you can choose how to be involved in Python and move it forward.
+
+00:29:03 It's not some nameless, faceless committee that is pushing Python forward.
+
+00:29:09 It's just people like everybody else who have their own itch, want to have some fun and dive in.
+
+00:29:15 And that was something that Guido was always very adamant about, is that the implementation was very approachable, just like the language and just like the community.
+
+00:29:24 So it's what keeps it alive for everybody.
+
+00:29:28 This portion of Talk Python To Me is brought to you by Agency.
+
+00:29:31 The agency, spelled A-G-N-T-C-Y, is an open source collective building the internet of agents.
+
+00:29:38 We're all very familiar with AI and LLMs these days, but if you have not yet experienced the massive leap that agentic AI brings, you're in for a treat. Agentic AI takes LLMs from the world's smartest search engines to truly collaborative software. That's where agency comes in. Agency is a collaboration layer where AI agents can discover, connect, and work across frameworks. For developers, this means standardized agent discovery tools, seamless protocols for interagent communication, and modular components to compose and scale multi-agent workflows. Agency allows AI agents to discover each other and work together regardless of how they're built, who built them, or where they run. And they just announced several key updates, including interoperability with Anthropics, Model Context Protocol, MCP, a new observability data schema enriched with concepts specific to multi-agent systems, as well as new extensions to the OpenAgentic Schema Framework, OASF.
+
+00:30:40 So are you ready to build the internet of agents? Get started with Agency and join Crew AI, LangChain, Llama Index, BrowserBase, Cisco, and dozens more. Visit talkpython.fm/agency to get started today. That's talkpython.fm/agency. The link is in your podcast player's show notes and on the episode page. Thank you to the agency for supporting Talk Python To Me.
+
+00:31:03 I'll give a case in point from a couple of hours ago involving Barry.
+
+00:31:09 Some interpreters which have taken the most circuitous path in history possibly, and Barry gets to announce the proclamation a couple of hours ago.
+
+00:31:20 I don't know if you've noticed, but when the steering council comes out with an acceptance, it's always me.
+
+00:31:26 And when it's a rejection, it's always somebody else.
+
+00:31:29 So it's like, I only do the fun.
+
+00:31:31 I'm kidding, but it's kind of fun.
+
+00:31:34 I was just thinking about the fact that girl's comment about how she got to work on the early Apples.
+
+00:31:39 And I got started on Apple IIs and Apple Basic.
+
+00:31:44 And I remember Windows 3.1 shipping with QBasic in and having the Gorillaz game shipping.
+
+00:31:49 oh, I can play with the gravity constant and make the bananas do crazy stuff, right?
+
+00:31:54 And I think we were fairly lucky, as Barry says, the language is old, but it's hitting its prime, you could argue now, or it's perpetually always hitting more of its prime as time goes on.
+
+00:32:05 But I think we also were very lucky in terms of timing because I think the language had a certain level of maturity when the internet had its maturity, right?
+
+00:32:13 And because it was also one of these languages that's easy to pick up and get going with, we were at the right place at the right time for when oh yeah programming you can get into it and kids and other people just wanted to start trying out this whole programming thing and it wasn't just that weird corner of the bookstore that had like five books about programming at the time and so i think we just yeah really lucked out with the timing here where it's like oh yeah you want to learn programming yeah there's this thing called python go install it it's got its own little editor and blah, blah, blah. Before, like, downloading an editor wasn't just called Borland or whatever.
+
+00:32:48 And so I think, yeah, the timing just was perfect for us to land right when we did and have the maturity level that we did in order to be useful to people but so easily accessible and to carry us forward to where we are now where it's like you still have a plethora of options. You can download a bunch of different editors whether it's PyCharm or what have you.
+
+00:33:06 You can get what you need, but the point is the language is still there and still available. And I think it's allowed us to continue to be very accessible to people. And that's, I think, also played into this.
+
+00:33:15 I have a theory of the case that features the three of you. How convenient. So I divide Python into three thirds. And as I was joking backstage, Python has many thirds. Brett says we'll get to nine thirds. The first third was like Guido opens a file.
+
+00:33:29 I'm curious, was it Emacs? Did Guido open YOLO.C in Emacs?
+
+00:33:35 Yeah, he was an Emacs user.
+
+00:33:38 Guido opens the file, and then I'll say the first third for me ends, we'll say, 2002.
+
+00:33:45 Why?
+
+00:33:45 Dot-com bubble bursts, and so it's kind of the end of an era.
+
+00:33:49 And it is the beginning of the PSF, which started in 2001.
+
+00:33:55 And the end of that episode we'll refer to as the Python software activity.
+
+00:34:03 And for me, it's also personal.
+
+00:34:06 Well, it's when I left my company and moved to Europe.
+
+00:34:08 Now this next third, the first third is interesting 'cause that's Barry was there at the beginning of the first third.
+
+00:34:14 Second third is the rise of the PSF gave the ability to have the rise of PyCon and PyCon became this engine of change and growth and money.
+
+00:34:27 And I'd say the end of the second third, I'll put it at 2012, 2013, and it finishes with the rise of diversity.
+
+00:34:36 And I was reading up about Jessa McKellar and the years that that all went down.
+
+00:34:40 It went from 1% speakers to 3% speakers to 10% speakers to 38% of the speakers were women.
+
+00:34:47 And she was a director 2012 to 2014.
+
+00:34:52 And Carol was a director in that time frame.
+
+00:34:55 And I think from history, she got you kind of hooked into the world of Python organizing.
+
+00:35:01 She absolutely did.
+
+00:35:03 We were both volunteering on a project, which was a nonprofit called OpenHatch that helped people make their first contributions to open source before there were guides on GitHub or anything else.
+
+00:35:16 What I think people don't see with that rise is the amount of effort Jessica put in behind the scenes, because there were a few of us one year when she was really busy that we kind of filled the gap for her.
+
+00:35:28 But she sent hundreds and hundreds of personal emails out to many, many people across the ecosystem. Have you thought about talking about doing a poster, doing a lightning talk, doing the we'll help coach you? And some of it happened on the PyLadies Slack. Some of it happened on IRC with OpenHatch. And it was very intentional.
+
+00:35:51 And I think the thing that she did was she measured the impact that she was trying to make.
+
+00:35:57 And I think that really, I think it gave that momentum.
+
+00:36:01 So I blame her for anything that I have done in Python, because that's where I learned Django.
+
+00:36:08 And I just adore her.
+
+00:36:10 I've conveniently chosen the second, third to kick off with Brett.
+
+00:36:14 So around 2002, 2003 was when you started entering the scene and you got involved in the PSF.
+
+00:36:21 And I'd say that the finishing with the diversity in that third, it wasn't just gender diversity. Python became a globally diverse outfit with things like PyLadies Drive and stuff like that. And then that became the engine for the third third, which was data science and then AI.
+
+00:36:38 Before you go on to your third third, I think the second third also, it should be pointed out the diversity technically as well, because Jake Vander Plaats gave a great Python as a mosaic keynote. And people are, yeah, people are coming from all different places, data science, also brought in a bunch of scientists and just programmer curious people. You wouldn't get that at like a C++ conference. And I think that happened as part of the 2012 revolution and stuff.
+
+00:37:05 So if we say to 2013, 2014, 2015 is the start of the next third and the start of data science and then Jupyter
+
+00:37:12 arrives on the scene as this great democratizing force.
+
+00:37:16 Carol becomes PSF board director and then things just really take off from there.
+
+00:37:21 And it kind of needed the diversity from the second third to be the engine to bring in this group of people called data scientists who didn't think there were programmers.
+
+00:37:30 So it's the entire new class of Python community.
+
+00:37:34 Hey, what do you think? Did the three of you buy my thirds?
+
+00:37:36 I think we're into a fourth third.
+
+00:37:38 I'm curious what the next third is going to be.
+
+00:37:41 Yeah. What's the fourth third going to be there, Paul?
+
+00:37:44 In reading about Jessica, she got into Python because it twisted.
+
+00:37:47 And it just turns out Glyph wrote a blog post today about AI.
+
+00:37:52 So AI and Python are a interesting and contradictory, complimentary frenemy.
+
+00:37:58 I don't know. You call it.
+
+00:38:00 Surely.
+
+00:38:01 It's one of those things. I've seen lots of paradigm shifts in tech. And I talked about this when I keynoted EuroPython. But I think AI is here to stay. Now, granted, AI was also here when I was in grad school in 1988. But we never had the compute power that we have today.
+
+00:38:18 So I think I'm sort of in the camp of there's bad and there's good, which is the same thing when the internet sort of and the web sort of started. There was those feelings of bad and good. And over time, you kind of settle into, okay, what are these innovative ways we can use it that don't cause harm? And how do people benefit? Because I think it is a pretty good brainstorming partner.
+
+00:38:45 Would I want to give it all of my security credentials and say, go deploy this application for me? No, not today. Maybe not ever. But I think there's going to be exciting stuff to come out of it. And I think it's going to be that tension between, hey, this is great or, oh, what about maybe not so much. And that will finally propel us forward to better things. So stay tuned.
+
+00:39:11 Totally. And people forget, or they maybe never knew, there was a time in the internet where people would not put their credit card on to buy stuff because they were freaked out about it. And now I can hardly find stuff at a store. I have to buy it online because it's the only place it exists anymore. And there was Super Bowl ads with just weird dot coms, just burning money, just with no business model whatsoever. Like unlike, even unlike today, it was just completely crazy like monkeys dancing and stuff
+
+00:39:39 i read today pets.com did their ipo and went out of business nine months later i
+
+00:39:45 remember when java had super bowl ads oh wow the old sundays maybe of course it would be ibm i
+
+00:39:51 very distinctly remember they had an ad where they had like a big like sphere in the middle of a conference room table with a dot and dot com and it's like somehow like activated like blew all the people back from their in their chairs from the table and it's just like it was a wild time.
+
+00:40:07 This is not a history.
+
+00:40:08 This is the future.
+
+00:40:09 Yeah.
+
+00:40:10 The last three words of every prompt.
+
+00:40:12 It's going to be interesting.
+
+00:40:13 Like, I think that's the crazy thing about all this is not only is Python being used to help derive this AI stuff, but the AI is also being used to generate Python code.
+
+00:40:22 And actually it's a benchmark now for these things, which also plays into the whole, how does Python keep going forward and keep reaching its prime?
+
+00:40:29 Well, you have the new tech actually literally make it for you now.
+
+00:40:33 But yeah, it's going to be interesting.
+
+00:40:34 And I think this is going to be a good example of how this tech is going to keep up.
+
+00:40:40 But we also don't need to go down the AI rabbit hole.
+
+00:40:42 The thing that makes me confident and excited and exhilarated is the stuff Carol's doing and Sarah Boyce and other people.
+
+00:40:49 Where in order to stay healthy, Python's a hundred year project at this point.
+
+00:40:53 Python's going to be around for a long damn time.
+
+00:40:55 And so you need the next generation and the generation after that.
+
+00:40:59 And Barry and I mean, there are multiple generations of heroes after us represented in this call.
+
+00:41:06 And then Carol's help raising the next generation.
+
+00:41:08 I meet some of these people at PyCon, obviously Dawn, but then meeting Velda and Abigail and some of these other people.
+
+00:41:15 And my goodness, you can just see, wow, there's some energy here.
+
+00:41:20 It all goes back to the start and things propagate out.
+
+00:41:25 And I think Python, much like a network or a web, has really exploded in all different directions.
+
+00:41:33 And I think some of the work that Barry's been doing with packaging, I have a lot of strong feelings that that's going to make it propagate out even more.
+
+00:41:42 And apologies because my network decided today would be the day it was going to be super flaky.
+
+00:41:48 So I've missed a bunch of the conversation.
+
+00:41:51 But what I think is super important is that those new generations, those younger generations that are coming into Python are going to make Python part of their vision.
+
+00:42:02 What Python is today is sort of like what myself and Brett and Carol and Paul, like our generation made Python to solve the problems that we had and to be part of our vision.
+
+00:42:16 And if nothing else is true 10 years from now, five years from now, two years from now, Python will be something else.
+
+00:42:23 And there will be other people coming in making Python what they envision it to be.
+
+00:42:30 And I think that's actually what keeps it alive and keeps it vibrant.
+
+00:42:33 Like you said, Paul, it's a hundred year project and every generation is going to come into Python and say, and it's always been that way.
+
+00:42:40 It's always been a grassroots thing.
+
+00:42:42 Like you think about like async, async, right?
+
+00:42:45 First, we just needed yield.
+
+00:42:47 And then we needed sort of co-routines.
+
+00:42:50 And then those became async.
+
+00:42:51 And so that didn't come from the top.
+
+00:42:55 It didn't come from some committee.
+
+00:42:56 It came from somebody who sort of said, I see what Python is today.
+
+00:43:00 And we could just do this little thing and move it in that direction.
+
+00:43:04 And it'll be really cool.
+
+00:43:05 And that's what keeps it alive.
+
+00:43:08 So I'm super excited to see what the next generation comes up with.
+
+00:43:12 I'm as well.
+
+00:43:13 And I think those kinds of things you're pointing out, Barry, I think it's the choice of do I go to and do I give up on working here in this community, in this language and go to another technology because I need something else somewhere else?
+
+00:43:26 Or do I somehow add it to Python so that I can stay here and keep building with this language?
+
+00:43:31 Right. And I think that's really nice.
+
+00:43:33 Keeps it healthy.
+
+00:43:33 Yes.
+
+00:43:34 I think this is a key point that I think some people miss is to why do we keep evolving the language?
+
+00:43:39 Why can't we be nice and stable like some of the languages?
+
+00:43:42 At least that's how some of you like to phrase it.
+
+00:43:44 Like, why aren't we more of a go or more of a Java where we evolve slower or make fewer changes?
+
+00:43:49 It's like, well, our flexibility in moving with the times is, I think, helped keep us relevant.
+
+00:43:55 And hence why we have this baked into the community of like, no, we all evolve.
+
+00:43:59 We all grow.
+
+00:44:00 We all continue to learn new things and language goes along with it.
+
+00:44:04 Gary, I think Larry Wall has a quote.
+
+00:44:06 Pearl is unreadable and ugly because people wanted it that way.
+
+00:44:10 I call it a write-only language.
+
+00:44:13 I got a phone.
+
+00:44:13 Let's talk the Xenopython here, because I think that that comes up a lot.
+
+00:44:18 I mentioned import this, and if you're in a REPL and you type import this, then you get the Xenopython by Tim Peters.
+
+00:44:25 We also have someone in the audience who's musically inclined and has done something pretty awesome with this.
+
+00:44:31 So somebody tell us the story of import this and the Xenopython, and then I'll play a little song, a song version of it for everyone that buried it. There
+
+00:44:41 are definitely blog posts. I think Quido did one and I did one about how import this came to be. I think we were looking, I can't remember what year it was, but we were looking for a motto or catchphrase for a PyCon at one point or it might, yeah, I think it was a PyCon.
+
+00:44:59 And so we actually solicited input from the community. And I think we literally got 500 entries, probably 98% of which were just terrible. But we had no way of choosing from that list.
+
+00:45:18 And I remember Tim Peters. So this had to be Python Labs timeframe. But Tim Peters said, here's what we're going to do. We're going to take that list. I'll split it in half, and then I'll pass it on to somebody else. And then you split it in half and pass it on to to somebody else. And I think Tim and I were the only ones left that actually wanted to participate.
+
+00:45:40 And we got down to the last couple and we, and import this had gotten pretty far down, but it wasn't one of the last choices. And when we ended up with the last choice, we said, oh, that's, that's really bad. We're going with import this. So, so that's how, that's how the import this thing. And then of course, once we came up with that, we're like, oh, well, we've got to add a this module.
+
+00:46:04 What's the, this module going to print when you actually import it.
+
+00:46:07 And so it was, we had to come up with the Xenopython, but we had to obfuscate it just a little bit.
+
+00:46:14 So it was rot 13.
+
+00:46:16 And I think we actually may have turned off some version notifications.
+
+00:46:23 And then because we wanted it to be an Easter egg.
+
+00:46:25 So we committed it and didn't, didn't notify anybody and then turned it back on and just waited to see who would, when, when somebody would find it.
+
+00:46:34 So that was kind of the story of Import This.
+
+00:47:03 Beautiful is better than ugly Explicit is better than implicit.
+
+00:47:09 Simple is better than complex.
+
+00:47:14 Complex is better than complicated.
+
+00:47:19 Flat is better than nested.
+
+00:47:22 Sparse is better than dense.
+
+00:47:28 Readability counts.
+
+00:47:34 Special cases aren't special enough to break the rules Although practicality meets purity Errors should never pass silently Unless explicitly silenced In the face of ambiguity Refuse the temptation to guess There should be one,
+
+00:48:03 preferably only one, obvious way to do it Although that way may not be obvious at first, unless you're Dutch Now is better than never Although never is often better
+
+00:48:34 than lying down If the implementation is hard to explain It's a bad idea
+
+00:48:51 If the implementation is easy to explain, it may be a good idea.
+
+00:49:05 Namespaces are one.
+
+00:49:08 Aren't they a great idea?
+
+00:49:12 Let's do more of those.
+
+00:49:19 Very nice.
+
+00:49:20 I love it.
+
+00:49:21 That was awesome.
+
+00:49:22 That's really good.
+
+00:49:23 It reminds me of the band Tribe, who played this song called Super Collider, about the Super Collider being built in Texas out in the 90s.
+
+00:49:30 And I just, I love that song.
+
+00:49:31 It brings back some memories.
+
+00:49:33 Oh, thank you.
+
+00:49:34 That was supposed to be done for, so the idea.
+
+00:49:36 Did you do the vocals?
+
+00:49:38 Yeah, I did do the vocals.
+
+00:49:41 Yes, I did.
+
+00:49:42 I did.
+
+00:49:43 Well, thanks.
+
+00:49:45 They were good.
+
+00:49:46 I did the whole thing in my little studio.
+
+00:49:48 I have my liner notes up on my web webpage. But, you know, we were supposed to do that, so we have a lot of very musically inclined Pythonistas, and so the idea was we were going to produce a record, like an actual vinyl, for PyLadies. And so we all kind of went off on our own and worked on stuff, and I agreed to do it and had promptly forgotten about it until I think like 10 days before it was due. So then scrambled and stole Tim's Zen of Python for the lyrics. And of course, that was the year of the pandemic. So there was no PyLadies. And we were all so sad because I thought it was going to be really cool. I mean, everyone came up with some really great music for it. So anyway.
+
+00:50:36 That was good. We'll put it on the podcast. How about that? It'll get out there in the world.
+
+00:50:40 Thank you. Thank you.
+
+00:50:42 We're getting short on time here. We're coming up, honestly, if we all had the time and maybe snacks and a beer or something or coffee. We could do this for hours, but we are getting in probably the time where we should wrap it up a bit. And I think we would be remiss if we didn't talk about Python 2 to 3. What are you guys saying? It was a tough story for a time, but I think it's in the past. I think we're all good. Everyone's rowing in the same direction. But I think just as an important historical note in the evolution of Python, that was one of the bigger challenges as it turned out to be. Who wants to riff on this? I
+
+00:51:19 think we actually, maybe we did it a little late, but like we couldn't do it today. There's just too much Python code out there today. So in a sense, I think we did it at just the right time, as painful as it was and as long as it took.
+
+00:51:32 I'm certainly super glad that we did because we got rid of a lot of warts and we really improved the implementation, the language, but we had to do it. And if we had done it any later, I don't think Python would be what it is today.
+
+00:51:47 It would be impossible to do it today.
+
+00:51:49 So yeah, mostly I think in hindsight, we can now say it was a success, but.
+
+00:51:56 Yeah, I was, I, especially on my other podcast, Python Bytes, I really tried to carry the water for it.
+
+00:52:03 I referred to Python 2 as a legacy Python for years.
+
+00:52:07 So much so people gave me bad comments about it.
+
+00:52:09 I'm like, I don't care.
+
+00:52:09 I'm still doing it.
+
+00:52:10 They're like, don't make me feel bad about it and working in.
+
+00:52:12 Like, I understand what you're saying, but let's all get together and like, let's just get this forward.
+
+00:52:17 Go forward.
+
+00:52:18 Come on.
+
+00:52:18 Barry's words are also slightly colored as the release manager for Python 3.0.
+
+00:52:22 So take everything he just said.
+
+00:52:24 Oh, five, I think.
+
+00:52:26 I think we were two six.
+
+00:52:27 I don't remember, but we did them at the same time.
+
+00:52:29 And then then we told people don't use Python 3.0.
+
+00:52:32 We were like, I think that was like the shortest length of time before the next release.
+
+00:52:38 I feel worse for six months.
+
+00:52:40 I feel worse for Benjamin Peterson because he showed up.
+
+00:52:45 Oh, bless his heart.
+
+00:52:46 He showed up on the scene and online.
+
+00:52:49 He was like so smart and he communicated really well.
+
+00:52:54 And then he showed up at PyCon in Chicago.
+
+00:52:57 I think he was 15 and his mom had to drive him to the conference.
+
+00:53:01 And we gave him Python 2.7, not knowing that he didn't have to do it for 10 years.
+
+00:53:08 But he did it great.
+
+00:53:09 He was absolutely a superstar for that.
+
+00:53:13 One of the interesting things of 2 to 3 is probably like 2012, I started seeing Scientific Python and I was working on Django and Scientific Python.
+
+00:53:26 And the more I started working with it, the harder it was because if you're trying to teach it to somebody, you had to do it.
+
+00:53:34 Well, if you use 3, you do this.
+
+00:53:35 And if you use 2, if you do this.
+
+00:53:38 And oh, by the way, if you're using Windows with 3 or, and it became just super complex as an instructor.
+
+00:53:46 And then I think it was around the latest part of 2014, the scientific Python community sort of put a stake into the ground and said, we are moving to Python 3 exclusively and kind of had a deprecation of we will no longer support 2.
+
+00:54:06 And I think that that I think was a catalyst plus the growth of the whole scientific and data science ecosystem and notebooks and things like that kind of pushed us up.
+
+00:54:19 But I know Brett, I think, was the one that made the tracker of how many Python packages
+
+00:54:26 still or the top 300 or something.
+
+00:54:28 Was it you or was it somebody else?
+
+00:54:30 It was somebody else.
+
+00:54:31 I didn't do the website, but I wrote, can I use Python 3?
+
+00:54:34 the tool that you could use to do the calculation that it used behind the scenes. I didn't do the website. Yeah.
+
+00:54:40 But that was super helpful because you'd get up on talks and say, okay, we used to be here and now we're almost got it completely green.
+
+00:54:50 I had a similar kind of educational rough spot with two to three as well, because while I was at my alma mater, while I was doing my PhD at University of British Columbia, they were also looking at changing their intro language and they're considering Python, but it was during the transition.
+
+00:55:04 So they didn't know, should we be teaching Python 2?
+
+00:55:06 Should we be teaching Python 3?
+
+00:55:07 Well, we don't want to teach the old stuff that the new stuff's coming, but the new stuff was still a little too rough.
+
+00:55:12 So they went to Racket.
+
+00:55:13 So we missed out on that one.
+
+00:55:15 But I agree with Barry.
+
+00:55:16 I think it was worth it, right?
+
+00:55:18 I think switching to Unicode and all that was the right call.
+
+00:55:21 I think that's definitely helped probably with our international reach and allowing people internationally to use the language in a better way and allowing people to use Unicode in their variable names, right?
+
+00:55:33 That's a Python 3 thing that you can just do that innately without having to declare the little coding cookie, which I'm willing to bet most people don't know what is anymore because you don't care because it's all just UTF 8 now. And if you're not laughing now, I can tell you're too young to know what the heck I'm talking about. But I think that's the other thing too, is also we're all starting to meet core devs who never use Python 2. They don't know what the heck it is. They're literally people who are joining us like, I've never written Python 2 in my life. I just know it's a thing.
+
+00:55:57 They hear stories and whispers in the back dark corners of conferences of what the transition was like.
+
+00:56:03 I don't know what you're talking about.
+
+00:56:05 I never used Python 2.
+
+00:56:06 I jumped straight to 3 when I started.
+
+00:56:08 And either they knew 2 existed but didn't worry about it before EOL'd or they didn't use Python until after Python 2 reached the end of its life in 2020.
+
+00:56:17 And they just don't know what the heck we're talking about.
+
+00:56:20 So it was rough.
+
+00:56:21 I think it was, as Barry said, it was worth it.
+
+00:56:23 I have a different perspective.
+
+00:56:25 Python 3000 started right at the moment that my company's project was killing itself in a two to three transition.
+
+00:56:33 And so I hear about horror stories.
+
+00:56:35 I'm like, you call that a horror story?
+
+00:56:37 Come on.
+
+00:56:38 I coded uphill both ways to school.
+
+00:56:41 It was below zero.
+
+00:56:45 I had to write two different ways in the same code base.
+
+00:56:49 There's another thing that's kind of funny because I have a slide deck that I've given this talk a few times and it goes through like the Python.
+
+00:56:57 I think it starts at like 096 or 098 or something like that.
+
+00:57:01 And I downloaded every tarball I could find.
+
+00:57:04 Couldn't build a single one on a modern system without changes.
+
+00:57:08 But I dug out all the change logs and news files and things like that and all the announcements.
+
+00:57:14 And you find such really super interesting nuggets in there.
+
+00:57:18 Like Guido just changed operators, the quality and comparison operator, and just said, fix your code.
+
+00:57:26 No backwards compatibility.
+
+00:57:27 no from from future thing just like plus i i've changed a bunch of other things it's up to you to figure it out so like those are things that we could get away with way back then or guido could at least you can get away with that stuff today you got to think about it's going to take five years for this to get through the community and there's backwards compatibility and we can't deprecate this thing
+
+00:57:47 hey carol on barry's point about timing is it safe to say that when ipython notebooks were really ramping up around 2016, 2017, that they were all Python 3 by then, that that whole audience. The
+
+00:58:00 code base was, but I think the kernels, there was still a language kernel for two and a language kernel for three. And I think it was shortly after that, that we dropped the two kernel. There was a transition period and I'm not quite sure on the dates now, but I mean, that was where the benefit of JupyterHub and later Binder came because we could kind of easily push out three to students and research institutions and not have to deal with two at all because they didn't need to set up their own environment.
+
+00:58:35 They could have a backwards compatibility.
+
+00:58:37 Four-letter word for you all.
+
+00:58:39 Painful.
+
+00:58:41 Yeah.
+
+00:58:41 For those of you who don't know the story, Google's word for added keywords in a bug fix release.
+
+00:58:48 Yeah.
+
+00:58:49 Basically, Guido went, oh, how hard can it be?
+
+00:58:51 who's using true and false with capital letters as their constants anywhere?
+
+00:58:55 It'll be fine.
+
+00:58:56 And so in a bug fix release, we made it a keyword.
+
+00:59:00 And obviously the world kind of blew up a bit at the time.
+
+00:59:04 I was assigning true to one and false to zero.
+
+00:59:08 I think it was made a keyword in 2.3.
+
+00:59:10 Michael's going to start flicking the lights and getting the band to play the game.
+
+00:59:14 We were adding it to what was to become 2.3 and said, we'll just backport it as symbols in built-ins.
+
+00:59:21 literally true equals one and false equals zero.
+
+00:59:25 And it was like, man, that'll be fine.
+
+00:59:27 Yeah, that wasn't fine.
+
+00:59:29 But it was an important lesson.
+
+00:59:31 We all learned an important lesson.
+
+00:59:33 How to break all the software in the world at once.
+
+00:59:36 I'm glad we're on the other side, though.
+
+00:59:37 We all did learn lessons from the two to three transition that we will never repeat ever again.
+
+00:59:41 Just a final thought.
+
+00:59:42 I'll let Paul go first this time.
+
+00:59:44 How's that?
+
+00:59:44 As this rollicking episode showed, episode one of a hundred in the series, Python is full of great software, but it's also full of great stories and great people, different timelines and periods.
+
+00:59:59 And it's going to keep going on forever.
+
+01:00:01 You be one of those stories.
+
+01:00:03 If you're sitting out there listening, get involved.
+
+01:00:06 It's the most joyful thing you could ever do to start participating.
+
+01:00:11 And then after a few years, you find that you're someone like Carol, who's raising up the next group.
+
+01:00:17 Get involved.
+
+01:00:18 It'll be the best thing you ever did.
+
+01:00:19 Great advice.
+
+01:00:20 You start nervous and feeling out of place.
+
+01:00:21 And then all of a sudden people are looking up to you and you're like, how'd that happen?
+
+01:00:24 Yeah.
+
+01:00:25 All right, Carol, I feel like that's a perfect pass over to you.
+
+01:00:28 Yeah, it was like everything that was in my head just went out of my head.
+
+01:00:31 So thank you, Paul.
+
+01:00:32 Good job, Paul.
+
+01:00:33 Yeah, good job.
+
+01:00:33 The biggest thing that I would like to say is express my gratitude to Guido for having the inspiration to begin a language and everybody else who has participated in creating it, evolving it, using it, it's really truly changed how people learn around the world and how they do research. And that's incredibly rewarding to see. And if I'm going to shill something for the next generation, there are people like Mariota and others that are really working hard on High Ladies Con. I was fortunate enough to sponsor it the first two, and I will again the third.
+
+01:01:16 But I highly encourage other people, sponsor, attend.
+
+01:01:21 It really is fantastic content and really lets you see how it's being used globally.
+
+01:01:27 And thank you, Michael, for having all of us.
+
+01:01:29 Oh, yeah, you're very welcome.
+
+01:01:30 That's my pleasure.
+
+01:01:31 Barry.
+
+01:01:32 I would say, A, always have fun.
+
+01:01:35 C, always be curious.
+
+01:01:37 And if you follow your joy, you will not go wrong.
+
+01:01:41 As Paul and Carol and all of us, I am so deeply grateful for having tripped into Python 30 years ago. And it gave me a life. It gave me a career. It gave me unbelievable friends and community.
+
+01:01:58 And to anybody thinking about getting involved in Python, not just using it, but moving it forward and getting involved and contributing back, you can do it. You don't have to be a C guru. You don't have to know. You can get into the Python side of things. You can get into the governance side.
+
+01:02:14 You can get into the documentation side, the community side. There are so many avenues into the world of Python. You can do it. And there are people who will help you and guide you, the wonderful people here. So don't feel like it's something unattainable. We're all just kind of like normal people who just kind of like add some fun so you can do it too.
+
+01:02:37 I think one of the really inspirational and maybe unexpected things, as you guys were touching on before, is there's not a big company behind this.
+
+01:02:45 It's just people who are doing something funky and different and loved it.
+
+01:02:49 And it's taken over the world.
+
+01:02:51 And how incredible is that?
+
+01:02:53 Who would have seen that coming?
+
+01:02:54 Before open source was like, obviously, the thing of the day.
+
+01:02:58 All right, Brett, final word.
+
+01:02:59 Yeah, this is hard.
+
+01:03:00 Jeez, I didn't want to go last after all those phrases because you all stole the ideas one by one.
+
+01:03:05 Yeah, I mean, really.
+
+01:03:07 kind of what Barry just touched on, but I think everyone's touched on is just the thanks to the community for making this what it is. I mean, I know we all played our part, but so did a whole bunch of other people and all the millions of users of Python, which still blows my mind to say, and no, I'm not off in that measurement. I've all played their part in making the community what it is. And I became a dad last year and it, I mean, all the parents will say it changes how you view things. But for me, the way it's changed my view of Python is, A, I can say when my kid comes across Python, not if, and it won't be my doing, it'll be school, which still once again blows my mind. But that if they were to come to me and say, A, I want to try participating in the Python community, I feel extremely luckily and privileged to be a part of a community where I could say, okay and not have to think twice about it right i don't think we all quite realize how lucky we are to have that in this world especially the way things are today and so a big thank you to all of you for giving my kid a place hopefully i don't know maybe 10 years i don't know how long it takes for for the kids to get into python these days but for them to have a place to come and i can not have to watch over their shoulders about what they're dealing with online in that community so thanks to all of you and that as i said that includes all the millions not just the people
+
+01:04:27 Very well put. Thank you all for sharing the history. Oh, well, you know what?
+
+01:04:31 Let's make you be the last person for once.
+
+01:04:33 Okay. Okay.
+
+01:04:34 Okay. I see how this works. No, I appreciate that. Well, first of all, I can tell you that I've had a similar experience, Brett, with my kid, and that was not with the Python community, and it didn't go as well as you would think. And I've told Carol the still story, but I haven't talked a lot about it. I'm not going to go into it because we're out of time, but that story connects with me. Let's say that. I'll close it out with this. I don't know if it makes sense or if it's fair, but I do think it does to imbue human characteristics into languages.
+
+01:05:03 But I think Python is a compassionate language. I think it welcomes beginners. I think it doesn't try to scare you or its community is not full of people who try to impress you with how hard the thing they did is to understand, right? Like, yeah, yeah, that's a void star star, but we're cast into this other thing at runtime. You know what I mean? Like, cause it's templated. Like, No, no, it welcomes people.
+
+01:05:28 It's built to be welcoming, but it doesn't stop once you get started, right?
+
+01:05:32 You can just keep growing into it.
+
+01:05:33 And I think that's honestly the magic of it.
+
+01:05:35 I think, Michael, you deserve credit for so many years stewarding so many different people, how they're using Python, sharing them, giving them a voice.
+
+01:05:48 Because when I first came into Python, it was like, yeah, the language is really cool and gets out of my way.
+
+01:05:54 But it was this playground of thousands and thousands of packages that you could do anything.
+
+01:06:03 And I used to say, hey, folks at this community makerspace and five lines of code or less, you can do all these cool things.
+
+01:06:11 And I think you're highlighting those cool things means a lot and contributes a lot to the health of the community.
+
+01:06:16 So for that, I thank you.
+
+01:06:18 Thank you very much, Carol.
+
+01:06:19 Thank you, everyone.
+
+01:06:20 It's honestly an honor to do it.
+
+01:06:21 It's cool.
+
+01:06:21 Cool.
+
+01:06:22 With that, let's say goodbye.
+
+01:06:24 Bye, everyone. Thanks for being here.
+
+01:06:25 Bye, everybody.
+
+01:06:26 Bye.
+
+01:06:28 This has been another episode of Talk Python To Me.
+
+01:06:32 Thank you to our sponsors.
+
+01:06:33 Be sure to check out what they're offering.
+
+01:06:34 It really helps support the show.
+
+01:06:36 This episode is sponsored by Posit Connect from the makers of Shiny.
+
+01:06:41 Publish, share, and deploy all of your data projects that you're creating using Python.
+
+01:06:45 Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+01:06:52 Posit Connect supports all of them.
+
+01:06:54 Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+01:07:00 And it's brought to you by Agency.
+
+01:07:03 Discover agentic AI with Agency.
+
+01:07:05 Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+01:07:10 Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+
+01:07:16 Want to level up your Python?
+
+01:07:18 We have one of the largest catalogs of Python video courses over at Talk Python.
+
+01:07:22 Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:07:27 And best of all, there's not a subscription in sight.
+
+01:07:29 Check it out for yourself at training.talkpython.fm.
+
+01:07:33 Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:07:37 We should be right at the top.
+
+01:07:39 You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:07:48 We're live streaming most of our recordings these days.
+
+01:07:51 If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+01:07:59 This is your host, Michael Kennedy.
+
+01:08:01 Thanks so much for listening.
+
+01:08:02 I really appreciate it.
+
+01:08:03 Now get out there and write some Python code.
+
+01:08:22 *music*
+
