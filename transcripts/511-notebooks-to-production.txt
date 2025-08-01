@@ -1,0 +1,1264 @@
+00:00:00 If you're doing data science and have mostly spent your time doing exploratory or just local development, this could be the episode for you.
+
+00:00:08 We're joined by Catherine Nelson to discuss techniques and tools to move your data science game from local notebooks to full-on production workflows.
+
+00:00:17 And O'Reilly and Catherine are giving away five copies of her book, Software Engineering for Data Scientists.
+
+00:00:24 If you want to be in the running, just enter your email and the Google Forms link in the links section below.
+
+00:00:30 This is Talk Python To Me, episode 511, recorded May 12th, 2025.
+
+00:00:51 Welcome to Talk Python To Me, a weekly podcast on Python.
+
+00:00:54 This is your host, Michael Kennedy.
+
+00:00:56 Follow me on Mastodon where I'm @mkennedy and follow the podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is brought to you by Sentry. Don't let those errors go unnoticed, use Sentry like we do here at Talk Python. Sign up at talkpython.fm/sentry.
+
+00:01:30 And it's brought to you by Agntcy. Discover agentic AI with Agntcy. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/Agntcy, spelled A-G-N-T-C-Y. It's once again new course time at Talk Python.
+
+00:01:49 This time, the topic is a little-known one called AI and LLMs.
+
+00:01:55 Seriously, though, it's a great new course by Vincent Warmerdam called LLM Building Blocks for Python.
+
+00:02:01 The idea of this course is that you would like to use LLMs in your Python code.
+
+00:02:05 This could be from OpenAI's APIs or Anthropics or even local LLMs running on your machine.
+
+00:02:12 So how do you get programmable structured data rather than just text from these LLMs?
+
+00:02:18 How do you test whether a prompt is succeeding or another prompt would be better?
+
+00:02:22 When is it better to just use traditional machine learning?
+
+00:02:25 What libraries and toolkits are good for these types of apps?
+
+00:02:28 How do you save money and speed up your apps when you're working with these LLMs?
+
+00:02:33 These are the types of questions this concise course will answer for you.
+
+00:02:37 We're already getting reviews in and people love the course.
+
+00:02:40 It's for sale now for just $19 over at Talk Python.
+
+00:02:44 Just visit talkpython.fm and click on Courses in the nav bar.
+
+00:02:48 The link is also in your podcast player's show notes.
+
+00:02:52 Dr. Catherine Nelson, welcome to Talk Python To Me.
+
+00:02:55 Awesome to have you here.
+
+00:02:56 So excited to talk about notebooks and production and all these things.
+
+00:03:00 It's been fantastic.
+
+00:03:01 Yeah, it's great to be here.
+
+00:03:02 Thank you for inviting me on the show.
+
+00:03:04 I'm a big fan of the podcast.
+
+00:03:05 Oh, thank you so much.
+
+00:03:06 Yeah.
+
+00:03:06 Yeah, I'm happy to have you on the show.
+
+00:03:08 I really am a fan of helping data scientists move beyond just the playing around with the data science tools.
+
+00:03:15 And by playing around, I mean like exploring data or building stuff just for yourself.
+
+00:03:19 I don't know how many people know.
+
+00:03:20 I'm going to talk about it a little bit, but not very much.
+
+00:03:23 My very first programming job was writing software in C++ of all languages for a scientific research lab and company.
+
+00:03:31 And so I would talk to a lot of scientists and cognitive scientists mostly who would be working in MATLAB.
+
+00:03:38 and they go, here's what I have in MATLAB, make that a C++ program that integrates with this other thing or implement this algorithm in this other tool or whatever.
+
+00:03:47 And it was always an amazing experience, but also like, oh, if it was just written a little bit better, you could iterate on this a lot more.
+
+00:03:55 You could experiment with this a lot more.
+
+00:03:56 You could try this in different situations instead of just this, it wasn't a notebook at the time, but the MATLAB, whatever those things are called, those projects, they're similar in style to that, I think.
+
+00:04:07 I've actually been on a similar journey because before I was a data scientist, I was a geologist.
+
+00:04:13 And my first programming experience was in MATLAB.
+
+00:04:16 And I've taken that journey.
+
+00:04:19 But it was thanks to a really nice conversation I had early in my career.
+
+00:04:25 I was the only data scientist working on a team of developers, designers, and so on.
+
+00:04:30 And I had a conversation with a teammate where I was like, do I really need to learn all this stuff?
+
+00:04:36 I can write code that gets the job done.
+
+00:04:38 But he was like, if you write better code, you can do more data science faster.
+
+00:04:44 And that comment really started me on the journey I've taken towards writing my book, towards feeling that I wanted to help data scientists write better code.
+
+00:04:55 It's interesting to live it, right?
+
+00:04:56 Not just read about, oh, we should be probably using Git or whatever, but be down in it.
+
+00:05:02 It sounds like you've sort of come from this non-rigorous background and working more towards that.
+
+00:05:08 You've probably seen and experienced a lot of things like, oh, now I see why people care about source control or now I see why people care about single responsibility functions or whatever.
+
+00:05:18 It's a different type of rigor.
+
+00:05:20 So there's the scientific rigor where you're going through that process and testing your hypothesis, but you're not necessarily writing scalable codes to do that.
+
+00:05:31 The scientific rigor is there, but then there's the software principles that are a different type of standardization.
+
+00:05:38 Before we dive into moving from exploratory data to production data science and scaling notebooks, give us a quick bit of background on yourself.
+
+00:05:47 I was a data scientist for about 10 years from 2015.
+
+00:05:52 I've always had a strong focus on the machine learning side of things.
+
+00:05:56 Until 2023, I worked for SAP Concur as a principal data scientist and dealing with production NLP models there.
+
+00:06:05 I left there to finish writing my second book, which is Software Engineering for Data Scientists.
+
+00:06:12 And now I'm self-employed doing a whole mix of things from developer relations contracting work through AI consultancy startups, some writing work and also continuing my personal journey from data science towards software engineering. So I don't even know whether I'd call myself a data scientist at the moment.
+
+00:06:35 Yep, doing a whole mix of things.
+
+00:06:37 I don't know what you would call it either, but it sounds super interesting. Like one of the problems with working at large companies is you kind of get pigeonholed, not just into one thing, but one part of one thing. And it sounds like you You get to explore a lot of the very exciting and rapidly changing parts of the industry.
+
+00:06:55 So super cool.
+
+00:06:56 I'm not great at specializing in any particular one thing.
+
+00:07:00 And I used to see that as a downside.
+
+00:07:02 But now I see that as like a huge strength to be able to generalize and pick up new things.
+
+00:07:08 And like I alluded to in the intro, before I was a data scientist, I was a geologist.
+
+00:07:13 So I did an undergrad and PhD in geology.
+
+00:07:17 I worked in the oil industry for a little bit and then transitioned to data science in 2015 when I was struggling to find good jobs in geology.
+
+00:07:29 Machine learning, data science were just becoming a big thing.
+
+00:07:32 There were a ton of good options for transitioning from one to the other, so many good courses and so on.
+
+00:07:39 So I improved my Python programming.
+
+00:07:41 I learned a bunch about machine learning and I made that jump into tech.
+
+00:07:45 And it was just a great move.
+
+00:07:47 It's worked out.
+
+00:07:49 I really, really enjoy what I do.
+
+00:07:51 Oh, that's fantastic.
+
+00:07:52 And one drawback, less outside work, right?
+
+00:07:56 You don't get to go to Greenland or wherever.
+
+00:07:59 I do miss that.
+
+00:08:00 But living in the Pacific Northwest, I do get outdoors a lot of the time.
+
+00:08:04 So that's pretty great.
+
+00:08:05 Let's talk PyCon first.
+
+00:08:07 Because, yes, you just had your talk.
+
+00:08:11 Do you know this is up on YouTube yet?
+
+00:08:13 Have you seen this?
+
+00:08:14 I do.
+
+00:08:15 It just came up a couple of days ago.
+
+00:08:16 Yeah, absolutely.
+
+00:08:17 Such a quick turnaround because when we're recording this late May, PyCon was finished 10 days ago, so it's super fresh.
+
+00:08:27 Yeah, this is a lot better than previously because I think last year, maybe the year before, it was three or four months until the talks came out.
+
+00:08:34 We talked to people, oh, it was a great talk, but we can't really share it with anyone who didn't already go to it.
+
+00:08:39 So I saw your talk and I thought, oh, this sounds super interesting.
+
+00:08:43 I want to talk to Catherine about it.
+
+00:08:44 And I think there's a lot of interesting stories around it.
+
+00:08:48 But before we get into the topic of what you're covering there, let's just talk PyCon.
+
+00:08:54 How was the experience?
+
+00:08:55 Oh, PyCon is the best.
+
+00:08:56 It is just like one of the friendliest conferences I go to.
+
+00:09:02 I was so happy to get a talk accepted this time around.
+
+00:09:06 I had previously got a talk accepted in 2020.
+
+00:09:10 So I got the notification in January, February 2020.
+
+00:09:15 And I was like, oh, great.
+
+00:09:16 I can't wait to stand up on stage and meet all the people.
+
+00:09:20 And then obviously it was all virtual.
+
+00:09:23 I sat in my home office.
+
+00:09:26 I recorded my talk.
+
+00:09:28 So nice to finally be able to have that experience.
+
+00:09:32 It's just such a supportive environment.
+
+00:09:35 Everyone's very friendly.
+
+00:09:37 The questions that I had at the end of the talk were really good questions, really positive.
+
+00:09:43 And then a bunch of people came up to me after the talk and they're like, oh, yeah, I really enjoyed that.
+
+00:09:49 And just that kind of atmosphere, you really don't get at every conference.
+
+00:09:53 No, it's really different to do it in person.
+
+00:09:56 You really get a lot more gratifying to do it, I think, because you can see the effect you have on people.
+
+00:10:05 When you're doing some sort of Zoom presentation or a podcast, you're speaking to zero or one people in effect, right?
+
+00:10:13 And you don't realize the reach it has, right?
+
+00:10:15 But that's great.
+
+00:10:17 What a weird time 2020 was, huh?
+
+00:10:19 So weird.
+
+00:10:19 I'm so glad that we're back to meeting people in person and getting to go to all the other talks at PyCon.
+
+00:10:26 And I think for me, the advantage of it is I tend to go to a bunch of talks there that I don't know very much about.
+
+00:10:34 So there's such a huge range of things to learn about.
+
+00:10:38 So everything from like what visualizations you can do in a browser with Python to improvements that are being made right at the deep levels of the language, like improving the speed and so on.
+
+00:10:51 Yeah, and just to be there with the people creating Python and creating the libraries and so on, seeing with the maintainers and the companies creating all this stuff, it's a super neat experience.
+
+00:11:00 Yeah.
+
+00:11:00 Let's talk about your books a bit.
+
+00:11:02 So this talk sort of comes from your newer book.
+
+00:11:06 Absolutely.
+
+00:11:06 Maybe 2020 is great.
+
+00:11:08 Let's go back to 2020.
+
+00:11:10 Tell us about this one first.
+
+00:11:12 Some people buy your book.
+
+00:11:12 First book is Building Machine Learning Pipelines that I co-authored with Hannah's Hapke.
+
+00:11:18 And we released that in 2020.
+
+00:11:19 And it's all about how to build production machine learning systems with TensorFlow.
+
+00:11:25 So how you go from, you've done the experiments, you have a working machine learning model.
+
+00:11:31 How do you deploy that in a way that's standardized, scalable, reproducible, and automated?
+
+00:11:39 So it's based on TensorFlow Extended, which is a project from Google that helps you to basically one button, press one button, and then your machine learning model would import the data.
+
+00:11:52 You'd check that the data was what you expected to be, train that model, and then deploy it into production.
+
+00:11:58 And at the time we wrote this book, that was really the only technology that lets you do that.
+
+00:12:03 Since then, there's a lot more have come along.
+
+00:12:04 Like AWS has their own solution.
+
+00:12:07 MLflow is a big one.
+
+00:12:08 But 2020, this was a really new thing.
+
+00:12:11 So we wanted to explain the principles of this.
+
+00:12:14 Very neat.
+
+00:12:15 Well, that's the thing with good ideas.
+
+00:12:17 They catch on.
+
+00:12:18 That's book number one.
+
+00:12:19 Now, to be fair, I think TensorFlow is still a super important library, right?
+
+00:12:25 It's still relevant.
+
+00:12:26 100%.
+
+00:12:26 Yeah, yeah, absolutely.
+
+00:12:27 Okay, on to software engineering for data scientists.
+
+00:12:31 Tell us about this.
+
+00:12:32 This is where this idea of this talk came from, right?
+
+00:12:35 The notebooks talk is an expansion of one of the chapters in this book.
+
+00:12:39 So software engineering for data scientists is based on advice that I was giving my mentees in my previous job.
+
+00:12:48 And it's also the book I wanted to read when I was transitioning into data science myself.
+
+00:12:53 So it tries to answer questions like, what is a test? Why should I use one? How do I make my code more efficient? What even is an API? Like all these things that I, as someone not coming from any kind of software engineering background, was facing as I was transitioning into a job in the tech industry.
+
+00:13:17 And it's something that's often missed in data science intro courses or degrees.
+
+00:13:24 There is so much to learn in data science.
+
+00:13:26 You go from data analysis, statistics, data visualization, you pick up some SQL, you pick up machine learning.
+
+00:13:35 It feels like this fire hose of dozens and dozens of things you need to learn.
+
+00:13:40 And then someone's like, oh, by the way, you need to integrate this into a piece of software as well.
+
+00:13:46 So I felt like this was a real pain point for a lot of people.
+
+00:13:51 And there wasn't anything that really served them from when I started to read around about code quality.
+
+00:13:57 I'd very quickly get into examples in Java.
+
+00:14:01 I'd be looking at web development examples.
+
+00:14:04 There wasn't anything that I could relate to in my job.
+
+00:14:07 So I decided to write it.
+
+00:14:10 This portion of Talk Python To Me is brought to you by Sentry.
+
+00:14:13 Over at Talk Python, Sentry has been incredibly valuable for tracking down errors in our web apps, our mobile apps, and other code that we run.
+
+00:14:22 I've told you the story how more than once I've learned that a user was encountering a bug through Sentry and then fixed the bug and let them know it was fixed before they contacted me.
+
+00:14:31 That's pretty incredible.
+
+00:14:32 Let me walk you through the few simple steps that you need to add error monitoring and distributed tracing to your Python web app.
+
+00:14:39 Let's imagine we have a Flask app with a React front end, and we want to make sure there are no errors during the checkout process for some e-commerce page.
+
+00:14:48 I don't know about you, but anytime money and payments are involved, I always get a little nervous writing code.
+
+00:14:53 We start by simply instrumenting the checkout flow.
+
+00:14:56 To do that, you enable distributed tracing and error monitoring in both your Flask backend and your React front end.
+
+00:15:03 Next, we want to make sure that you have enough context that the front-end and back-end actions can be correlated into a single request.
+
+00:15:11 So we enrich a Sentry span with data context.
+
+00:15:14 In your React checkout.jsx, you'd wrap the submit handler in a Sentry start span call.
+
+00:15:20 Then it's time to see the request live in a dashboard.
+
+00:15:22 We build a real-time Sentry dashboard.
+
+00:15:25 You spin up one using span metrics to track key attributes like cart size, checkout duration, and so on, giving you one pain for both performance and error data.
+
+00:15:35 That's it.
+
+00:15:36 When an error happens, you open the error on Sentry and you get end-to-end request data and error tracebacks to easily spot what's going on.
+
+00:15:43 If your app and customers matter to you, you definitely want to set up Sentry like we have here at Talk Python.
+
+00:15:49 Visit talkpython.fm/sentry and use the code TALKPYTHON, all caps, just one word.
+
+00:15:55 That's talkpython.fm/sentry, code TALKPYTHON.
+
+00:16:00 Thank you to Sentry for supporting the show.
+
+00:16:02 I think this is really, really valuable.
+
+00:16:04 I think as much as we can do to help people come into the data science side and software side and just feel like they belong because it's so easy to just feel like you're banging your head against the wall.
+
+00:16:16 And you're like, what do you mean?
+
+00:16:18 Dependencies are incompatible.
+
+00:16:20 What do you mean?
+
+00:16:22 Like there's a Git merge conflict.
+
+00:16:24 I didn't even want to use Git.
+
+00:16:25 What is this horrible thing, right?
+
+00:16:26 And just battling against it.
+
+00:16:28 So putting something out there to sort of be the roadmap for people to follow.
+
+00:16:32 Great.
+
+00:16:33 Even though the title is data scientists, I think it will be useful to a much broader set of people than that.
+
+00:16:39 Because what I ended up writing, it has some things that are specific to data science, like how you write a test for machine learning.
+
+00:16:47 But I could also probably title it a friendly introduction to software engineering.
+
+00:16:52 So like anyone who's not a software engineer is their job title, but wants to learn more about those principles would probably benefit from it.
+
+00:16:59 I think a lot of that stuff's not really taught in universities either.
+
+00:17:03 I know there's computer science degrees, obviously, but a lot of times it's more theoretical and it doesn't really end up with like, this is how you do a pull request type of conversations rather than, here's how you implement a database in Lisp.
+
+00:17:16 That's your homework.
+
+00:17:17 Like, great.
+
+00:17:18 That was my CS experience from my CS class.
+
+00:17:21 Okay, so let's talk notebooks. And I think I want to start where you started with your talk, in that before we talk about the challenges with notebooks, things you need to do to move maybe beyond notebooks in certain circumstances, how about we give some love to notebooks?
+
+00:17:39 And you talk about how great they are and how useful they are in the circumstances they're supposed to be used, right? I
+
+00:17:43 love notebooks for exploring for the very initial stages of a project, particularly a data-driven project where you want to take a look at some data, you want to play around with it, you don't know exactly where you're going to end up with that project at all.
+
+00:18:01 You want the flexibility of being able to play and explore. And notebooks are fantastic for this because you have that instant feedback from the code you're writing to what effect has that had on the data and you can make whatever visualizations you want.
+
+00:18:18 You can look at whatever piece of data you feel like.
+
+00:18:21 So they're fantastic for that initial stage where you don't know where you're going to end up, but you want to look around.
+
+00:18:28 But they do have some challenges and that makes them difficult to reuse, kind of like I opened this show with, right?
+
+00:18:38 Like you've got all the stuff in one file, potentially, effectively, Jupyter Notebooks particular suffer from order of operations variability, right? You can run them top to bottom or you can kind of bump around. I changed that cell and re-ran it. Then I ran two more down.
+
+00:18:54 I went down a ways and wrote a new one, but something in the middle didn't take those changes, right? Things like this.
+
+00:18:59 They're a fantastic tool, but they're not the right tool for everything.
+
+00:19:03 If you want something that you're going to run repeatedly and in automated fashion, That's not what they're designed for.
+
+00:19:11 People, there are sometimes moves to put notebooks in production.
+
+00:19:17 And there's a few projects all about this, like NB Dev is one.
+
+00:19:21 Netflix make a huge thing out of putting notebooks in production.
+
+00:19:25 But I'm going to say I'm not a fan of that.
+
+00:19:29 I'm not either.
+
+00:19:29 I think it's the right tool for the right job.
+
+00:19:32 And they just weren't designed for that.
+
+00:19:35 There are some attempts to rethink how some of this goes.
+
+00:19:39 Like, for example, I had the folks from Marimo on.
+
+00:19:42 It tries to resist being run out of order, right?
+
+00:19:46 You can either set it up so you can't run stuff out of order because it'll understand cell dependencies and rerun them if needed.
+
+00:19:52 Or at least it'll show you, if you say, like, that's going to be too slow, it'll at least show you stuff is stale and so on.
+
+00:19:58 Yeah.
+
+00:19:59 That's cool.
+
+00:19:59 I think it's going to be interesting.
+
+00:20:00 But the truth is people are using Jupyter almost entirely these days, right?
+
+00:20:05 I just learned about Marimo and Picon.
+
+00:20:07 It sounds really cool.
+
+00:20:09 I had a quick look into that.
+
+00:20:11 I think that's a great option.
+
+00:20:13 And another option is refactoring from a notebook into a regular Python script.
+
+00:20:20 That's the final skill, right?
+
+00:20:21 And that lets you work more closely as a data scientist person, work more closely with software engineering and so on if you're integrating with a larger team.
+
+00:20:30 Rather than like, here's our notebook, you guys figure out how to run it.
+
+00:20:33 Like, oh, this is a new fancy notebook that runs slightly better.
+
+00:20:35 But still, how do I work with this again?
+
+00:20:37 right? But you kind of work more at the Python script level and so on. Okay. So I want to maybe talk a bit about what are some of the software engineering concepts that you feel like data scientists should be paying attention to? Because you use the phrase like the firehose of information sort of thing. And I think when you're coming into this, you're like, well, okay, I realize I need to up my game to be a little more software side rigorous with things, but I can't do everything.
+
+00:21:06 I can't boil the ocean and learn all the advanced programming concepts and all the DevOps and all these things. So what are the few things that people should really start paying attention to first?
+
+00:21:17 I'm going to break this down into tools that you want to be aware of. And let's call it the mindset, the strategies and how you want to think about things. I'll talk about the strategies first because that's going to inform the tools. So a lot of people in a data scientist role, their job is to explore and discover and come up with new ideas, test hypotheses. So like, oh, what happens if we do this? Can we test? In what way will our users react if we change this thing? But when you're moving more towards code that's going to go into production, that's going to be run and used repeatedly.
+
+00:22:01 You've got to think about how to standardize that and how to automate that, how to make it efficient, how to make it run well in a big system.
+
+00:22:13 So that's a real change in mindset that you have to go through.
+
+00:22:17 Software engineers have a ton of tools that will help you write that code that is more robust, more reproducible.
+
+00:22:24 A huge one is learning how to test your code.
+
+00:22:28 to make sure that your code is doing what you want it to do.
+
+00:22:32 Learning to use version control so that you can share your code so that other people can pick it up and use it.
+
+00:22:40 And also learning to refactor your code and being happy with that process.
+
+00:22:45 And obviously tests are going to play into this as well so that you can be sure that when you change your code, it didn't break something that you were relying on.
+
+00:22:53 I totally agree with that.
+
+00:22:55 Let's talk to those backwards.
+
+00:22:56 So one challenge that I see that I think would be tricky.
+
+00:23:01 So I have this notebook and it's all just top to bottom immediate execution code and I want to test it.
+
+00:23:07 Right. It seems challenging to me.
+
+00:23:10 Like, how do I run that in a unit test?
+
+00:23:13 Is a unit test even the right thing?
+
+00:23:16 Yeah.
+
+00:23:17 If your notebook is carrying out many tasks in one go, do you want to break out those tasks first rather than test the whole thing in one go?
+
+00:23:27 I think you almost have to because otherwise, how do you test it enough to
+
+00:23:31 make sure?
+
+00:23:32 I mean, I guess you could say, what's the final answer?
+
+00:23:34 27.
+
+00:23:35 Okay.
+
+00:23:35 Long as we keep getting 27 for the final answer, we could just keep it.
+
+00:23:38 That's not necessarily catching all the details there, right?
+
+00:23:41 As long as there's only one way of getting to 27, then you're sorted.
+
+00:23:44 You're fine.
+
+00:23:45 Or it's a true or false at the end or something like that.
+
+00:23:48 Buy the company, don't buy the company.
+
+00:23:51 Not always the same.
+
+00:23:52 So I guess that stepping back a bit, then that means we need to break our code, break our notebook, code within the notebook, and break it into pieces, sort of assess what is going on there and going, well, what are the actual steps, right?
+
+00:24:06 And in your talk, you're like, here's, you go through actually an example with penguins, right?
+
+00:24:12 And you're like, okay, what is this notebook actually doing in its steps?
+
+00:24:16 Because it's doing not just one thing.
+
+00:24:18 It's doing everything needed to get penguin classification running, right?
+
+00:24:21 Yeah, that's right.
+
+00:24:22 I did a little example of giving a data set to predict the penguin species.
+
+00:24:27 The notebook in that talk goes from downloading the data to cleaning the data, feature engineering for a machine learning model, training that machine learning model, and then making a prediction on new code.
+
+00:24:41 That you can really break down into those steps. And I love just drawing diagrams and flowcharts if I have a big complex notebook to figure out what all the steps are. And this ends up being kind of backwards from what you might do in the engineering world because they probably start from knowing what steps you're going to do and then writing the code accordingly.
+
+00:25:03 But in the data world, you don't necessarily know what the outcome of your project is going to be.
+
+00:25:09 And a lot of projects will not produce a result that you even want to use and deploy into production.
+
+00:25:16 So you don't need to go through the process of making well-engineered code until you know that the project has legs.
+
+00:25:24 It's going to go somewhere.
+
+00:25:25 It's almost like the reverse.
+
+00:25:28 You play around, you play around, and it evolves, and you iterate, and then you're like, okay, this.
+
+00:25:32 Yes.
+
+00:25:33 As you point out in the talk, it's not just a matter of going, okay, we'll take that and we'll put that into functions.
+
+00:25:38 It's like there might be parts that are irrelevant or little exploratory pieces that aren't actually germane to the thing you hear about productizing and so on.
+
+00:25:47 Right.
+
+00:25:47 So it's kind of an assessment you have to go through.
+
+00:25:51 Right.
+
+00:25:51 You really have to go away and take a step back and then come back and take a fresh look at your code.
+
+00:25:57 And then because you might have this like incredibly complex notebook.
+
+00:26:01 But then you have to be like, oh, what is this actually doing here?
+
+00:26:04 How do I start to break that down?
+
+00:26:06 So I think what I did in the talk was I gave a checklist for how to do that.
+
+00:26:11 That feels like a useful way to start thinking about it, to go from that amorphous mass of code to something that you can then vector into functions and then start building that up.
+
+00:26:23 And I like to go through and then just decide what all the functions are going to be based on that code in the notebook before I actually transfer the code over.
+
+00:26:35 And that helps me think through what steps are going to be happening.
+
+00:26:39 And then I think about the inputs and the outputs of each of those functions to make sure that the data is taking the correct journey, that the types of the inputs and outputs are going to match, that it's all going to work together as one bigger system.
+
+00:26:54 One of the things that would make that easier or a lot harder is how well structured your notebook is, right?
+
+00:27:00 Are you using the little headers to say, here's what I'm doing in the next three cells, and then another markdown header that says, okay, now we're cleaning the data, and here's the various operations and why, or is it just lots of stuff, or even maybe multiple things per cell, right?
+
+00:27:15 There's a lot of ways in which good data science practices will aid you, prepare you for this process, right?
+
+00:27:22 This kind of thing is also hugely useful if you're going to hand your notebook over to someone else at any point or if someone else is going to work on this notebook.
+
+00:27:31 Just having that little bit of documentation to give those hints for what it's doing.
+
+00:27:36 The original vision, as I remember it being described for notebooks, is sort of literate programming where the code is like storytelling and then there's the code and describing what's happening.
+
+00:27:48 But I think in practice, a lot of people just use it as a scratch pad.
+
+00:27:53 You know what I mean?
+
+00:27:53 You'll definitely see that style of programming if people are writing tutorials in notebooks or they're deliberately setting them out as documentation.
+
+00:28:01 And that works great.
+
+00:28:03 That's another fantastic use for a notebook.
+
+00:28:05 Yeah, it definitely does.
+
+00:28:06 Okay, so what you're recommending is, and what you just show in your talk, is like actually go and create a Python file,.py file, and put just stub functions in there for each thing, each category of things or each step of things that you've identified in the notebook.
+
+00:28:23 And not actually move the code.
+
+00:28:24 Just put pass.
+
+00:28:26 If you want to confuse people, put triple dot, dot, dot, dot, and that actually serves the same function.
+
+00:28:31 Whatever, right?
+
+00:28:31 Just leave them empty so that you get all that structure laid out.
+
+00:28:34 and then when you're happy with it, start moving your code over.
+
+00:28:37 Yes. And this seems like a manual, time-consuming process.
+
+00:28:41 It's like, why can't we automate this?
+
+00:28:45 But I feel like going through that process really helps me change hats from my exploratory hats to my production hats so that I'm really thinking about what this code is going to do.
+
+00:28:59 So I think baking that into your project, that you're going to spend the time to actually think through what your code is going to do when it's run repeatedly in the production setting is key to success here.
+
+00:29:13 What do you think about multiple Python files for different sections of the code or just one? What's your rule of thumb there?
+
+00:29:20 It's going to depend very much on the project for that.
+
+00:29:23 If it's small and simple, one file seems fine.
+
+00:29:27 If there's an obvious hierarchy, If there's like some functions that are associated together, then putting those into their own separate file seems helpful.
+
+00:29:36 If there's like helper functions that are going to get called in multiple places, then breaking those out into their own separate Python file.
+
+00:29:45 That seems like a good strategy.
+
+00:29:46 It definitely does.
+
+00:29:47 I guess you want to keep in mind, well, what's the goal, right?
+
+00:29:50 Is it just to make it something I can run in another, in the context of, say, an API call?
+
+00:29:56 Or are you trying to create a library that someone else can reuse this code throughout different places?
+
+00:30:02 Right?
+
+00:30:03 That's probably part of the consideration.
+
+00:30:04 Definitely.
+
+00:30:04 What are your goals with this code?
+
+00:30:07 In your example, we talked about some of the tools, right?
+
+00:30:11 You talked about, let's see.
+
+00:30:14 I guess it's worth pointing out this example you talked about.
+
+00:30:16 It's actually available on GitHub.
+
+00:30:18 Slides, code, and so on.
+
+00:30:19 So I'll link to that.
+
+00:30:20 But you talked about two tools in particular to help do this conversion.
+
+00:30:25 Although it sounds to me like maybe you almost want to just manually do it, but maybe one is a step towards another.
+
+00:30:31 But you talked about NB convert and Jupytext.
+
+00:30:35 These are definitely helpful because they're very simple to use.
+
+00:30:41 You can install them and run them with just one line in the command line, and then they will convert your Jupyter Notebook to a script and strip out all the JSON that's in the back of the notebook file.
+
+00:30:57 So if you have a really simple notebook and you do just want to run the whole thing, then you're pretty much done with these tools.
+
+00:31:06 And that also helps you with the manual copying and pasting process that I'm talking about.
+
+00:31:12 So they're a good halfway house between the notebook and a refactored script.
+
+00:31:19 This portion of Talk Python To Me is brought to you by Agntcy.
+
+00:31:23 Agntcy, spelled A-G-N-T-C-Y, is an open-source collective building the internet of agents.
+
+00:31:30 We're all very familiar with AI and LLM these days.
+
+00:31:33 But if you have not yet experienced the massive leap that agentic AI brings, herein for a treat.
+
+00:31:40 Agentic AIs take LLMs from the world's smartest search engine to truly collaborative software.
+
+00:31:46 That's where Agntcy comes in.
+
+00:31:48 Agntcy is a collaboration layer where AI agents can discover, connect, and work across frameworks.
+
+00:31:55 For developers, this means standardized agent discovery tools, seamless protocols for interagent communication, and modular components to compose and scale multi-agent workflows.
+
+00:32:06 Agntcy allows AI agents to discover each other and work together regardless of how they were built, who built them, or where they run.
+
+00:32:14 Agntcy just announced several key updates as well, including interoperability for Anthropics Model Contacts Protocols, MCP, across several of their key components.
+
+00:32:24 A new observability data schema enriched with concepts specific to multi-agent systems, as well as new extensions to the Open Agentic Schema Framework, OASF.
+
+00:32:36 Be ready to build the future of multi-agent software.
+
+00:32:39 Get started with Agntcy and join Crew AI, LangChain, Llama Index, BrowserBase, Cisco, and dozens more.
+
+00:32:46 Build with other engineers who care about high-quality multi-agent software.
+
+00:32:51 Visit talkpython.fm/Agntcy to get started today.
+
+00:32:55 That's talkpython.fm/Agntcy.
+
+00:32:57 The link is near podcast players, show notes, and on the episode page.
+
+00:33:01 Thank you to Agntcy for supporting Talk Python To Me.
+
+00:33:05 I feel like it might be easier to just export everything to a Python file, at the top of it write those stub functions,
+
+00:33:12 and then go and just move the pieces in, rather than trying to copy out of cells and then mark down sections, and then, you know what I mean, like trying to reformat plus.
+
+00:33:21 Like this will get it into the destination format, I guess.
+
+00:33:25 And talking about copying and pasting, it leads us on to talking about why you might want to write tests at the same time as this.
+
+00:33:33 You want to know that each of these new functions that you're making is doing what you expect it to do.
+
+00:33:38 So it's a pretty nice workflow to just write the unit tests for each of these functions at the same time as you're copying and pasting that code over.
+
+00:33:47 And then you know when you've left a line behind.
+
+00:33:49 I'm going to go back a little bit on my earlier statement.
+
+00:33:51 I said I think it's really difficult to take this imperative immediate execution code from notebooks and test them.
+
+00:33:57 But I think you could probably do something like put an assert cell into the notebook right after the step you want to take.
+
+00:34:05 So if you're like, these three cells are going to be basically this function, just do a B, put a cell below it, and then write the assert that you would have in your unit test there, and then move them over to the test.
+
+00:34:16 I think you could actually make that work.
+
+00:34:18 Yeah, that's nice.
+
+00:34:18 And that's also really helping you break things down into the steps that you want to put into your functions because you're thinking about, like, here is a point where I want to stop and see what's happened.
+
+00:34:29 I suppose it's worth pointing out that nbconvert is not just to get Python as an executable script, but you can get markdown, restructured text, reveal.js for presentation, LaTeX, PDFs.
+
+00:34:41 Like, this is just one of its features, but it's a tool that applies here, right?
+
+00:34:44 Similar with Jupytext, but with that one you can also, you can pair your notebook and your export so that when you update the notebook, the linked script also updates, which is really neat.
+
+00:34:58 I see there's a certain type of comment, I guess, comment percent percent type of thing, which comes out of Jupytext.
+
+00:35:06 Is that understood by VS Code and PyCharm?
+
+00:35:08 I feel like it is.
+
+00:35:10 It almost treats those as cells or something.
+
+00:35:13 You talked about these paired notebooks.
+
+00:35:14 So in addition to just getting the Python script, you can set it up to be paired.
+
+00:35:19 So if you go into JupyterLab and say pair notebook with something, then as the notebook changes, it'll basically probably just overwrite the output Python file, something like that.
+
+00:35:29 They sync with each other.
+
+00:35:31 So the Python script updates when you update the notebook.
+
+00:35:35 That's a super cool feature.
+
+00:35:36 So if you're, I guess it only really applies if you're willing to kind of live with that output.
+
+00:35:43 right? You don't want to restructure and completely change the Python file, but you're like, I just need this thing to have a Python version.
+
+00:35:49 Yeah, exactly. They're really neat tools that I wasn't aware of until I started researching for this talk. Where
+
+00:35:55 do you see AI in this process?
+
+00:35:59 Because I, you know what I mean? Like you're working, doing a lot of how do I build tools that use LLMs and
+
+00:36:07 so on. A ton of the data science and software development space is like, How do I use LLMs to write code for me?
+
+00:36:15 So, for example, one of the things you show a lot of is, here's your stub functions, and let's put some nice documentation for it, and then write your code for it.
+
+00:36:23 Could you, say, have some kind of copilot type thing, look at just the code you copied and go, document this for me, right?
+
+00:36:32 Write me Python doc strings for this function or whatever.
+
+00:36:35 I think that's like with many LLM questions.
+
+00:36:39 It's how do you know what to ask for unless you've actually gone through that process yourself and you know why it's valuable.
+
+00:36:48 So if you're coming to this fresh without having previous, more engineering experience, how do you know that you should ask it for documentation?
+
+00:36:59 How do you know that doc strings exist?
+
+00:37:01 This can work if you're in the situation where it's quite obvious what your documentation should be.
+
+00:37:08 There's no caveats.
+
+00:37:10 There's no special cases that you need to actually communicate to someone.
+
+00:37:15 So it's definitely useful, but it's also very easy to generate a lot of these things and then not go back and actually check that it's communicating what you want it to.
+
+00:37:26 It's easy to have it just tell you how it's doing things instead of why.
+
+00:37:31 It doesn't necessarily always get that right.
+
+00:37:33 For me, it's definitely a help, but then I have to kind of force myself to go back and check that it is actually the point that I want to make in this documentation or that it's test if I ask an LLM to write a test for me.
+
+00:37:48 Is it actually testing what I care about in this function or is it just writing some generic test so that I can say, well, there's a test, but it doesn't test anything that's actually a useful input that's actually a potential thing that could go wrong with this code.
+
+00:38:04 And there's always the danger if you have the LLM write the code and the test together.
+
+00:38:08 It'll just make it so the tests pass, not necessarily so the tests are testing the thing you care about, right?
+
+00:38:13 You said the tests have to pass, so now they pass.
+
+00:38:16 You didn't notice they actually changed in a way that no longer validates what you care about, yeah.
+
+00:38:21 Yeah, just update the test until it passes, yes.
+
+00:38:23 I do fear that this kind of stuff is going to create an expertise gap, chasm or whatever, where there's the people who were forced to do it because these tools didn't exist, will have this tribal knowledge of here's how you do this and here's why you do it.
+
+00:38:38 And a lot of people who are in a hurry, especially, I'm not a programmer.
+
+00:38:43 I'll just have this tool help me write the tests because I'm worried about the science or worried actually about the code or whatever.
+
+00:38:49 And then five years down in your career, you're like, well, I've never actually written the tests.
+
+00:38:54 And I think it's going to be a challenge.
+
+00:38:56 It's not just a challenge for programming or data science.
+
+00:38:58 It's a challenge for education.
+
+00:39:00 It's a challenge for so many aspects of society.
+
+00:39:03 But while we're on the topic of data science.
+
+00:39:05 It's a huge challenge.
+
+00:39:06 How do you know what to ask it for if you haven't lived that process yourself?
+
+00:39:11 And how do you know whether the answers are correct if you haven't gone through it yourself?
+
+00:39:16 So for senior people, it's a hugely powerful tool and you can get a lot more done.
+
+00:39:21 But how you gain that expertise, like you say, without going through that, that's a challenge.
+
+00:39:26 It is a challenge.
+
+00:39:28 People often make the analogy, comparison of calculators and math.
+
+00:39:33 There's some similarities, but I think it's a different scale.
+
+00:39:36 if we might see different interfaces to LLMs that help with this.
+
+00:39:41 So just having chat is not necessarily what we want to, the best interface for an LLM to write code.
+
+00:39:49 I have no idea what.
+
+00:39:50 I would love someone to invent something that kind of helps you review and helps you to learn that process, but still have the increase in speed and productivity that you can get within LLM.
+
+00:40:02 Whatever, it's going to be an interesting time.
+
+00:40:05 That's for sure, isn't it?
+
+00:40:06 It's going to be a very interesting time.
+
+00:40:08 Another thing that strikes me as that there's going to be a tension here has to do with what makes notebooks special in the first place, right?
+
+00:40:17 Notebooks are about exploring data and like sort of free form and just let me try this.
+
+00:40:23 Let me try that.
+
+00:40:24 Being experimental and fluid.
+
+00:40:26 And this process, while not completely removing that, does solidify it quite a bit.
+
+00:40:31 Like we're down to these five steps.
+
+00:40:33 It takes these arguments.
+
+00:40:35 And maybe as an experienced software developer, you're ready to just refactor this code and keep working on it.
+
+00:40:40 But I can see earlier stage people this being a challenge.
+
+00:40:44 Like, well, now I can no longer just play with the data and just I can't do like df.head and see what the heck it is.
+
+00:40:49 Like, it's lost to me.
+
+00:40:50 So what do you think about this tension between the notebook freedom and the more rigorous software side of things?
+
+00:40:58 I would see it as different phases of a data science project.
+
+00:41:02 And not all data science projects will even make it to this stage.
+
+00:41:07 So some, the exploratory process, that might give you your answers.
+
+00:41:13 That might be your project is done while you're still in notebook land.
+
+00:41:18 In some situations, you'll hand over to a development team to go through the process of taking your code into a production environment.
+
+00:41:27 But there's going to be, so depending on the makeup of the team and your exact job role, you might not, you're going to break out of this process at a different point.
+
+00:41:40 Sure.
+
+00:41:40 I think thinking about it in terms of a different phase of the project is useful.
+
+00:41:46 So you go through the exploratory process and you've done all that you need to do of viewing the data, of exploring the data.
+
+00:41:54 What is in your data set?
+
+00:41:56 You're really familiar with it.
+
+00:41:59 And then hopefully you can move to that stage where you don't need to be looking at it in quite the same way.
+
+00:42:05 But you should also be using your tests and your debugger to check that your data is what it needs to be when you move to this next step.
+
+00:42:14 But you probably need to do that less because you've done that exploratory work to figure out what there is and what you need to use in the final project.
+
+00:42:22 I phrase it as a negative, like you're giving up the stuff.
+
+00:42:25 Maybe we should rethink about it as like a positive.
+
+00:42:29 I was listening to you talk and I'm like, well, when you get to this stage, it's kind of like your project has succeeded.
+
+00:42:35 In the sense like you've done all you need to do.
+
+00:42:37 Now it's ready to put it to use.
+
+00:42:39 Let's put this in the hands of some users.
+
+00:42:41 Let's put it on prime time.
+
+00:42:42 Let's share it with different teams.
+
+00:42:44 Yeah, exactly.
+
+00:42:45 So see it as a celebration, not like I'm losing my freedom or whatever to just keep exploring.
+
+00:42:52 That's pretty cool.
+
+00:42:53 Similar to maybe legacy code.
+
+00:42:55 I know people lament like, oh, I've got this thing and it's so, so badly written and it's so convoluted.
+
+00:43:02 And it's, but we still, it's so important.
+
+00:43:04 We have to still use it like, well, that's also kind of like a success story, even if it's a bit of a hassle in some of the ways.
+
+00:43:10 If your code has that much longevity, it's clearly doing something right.
+
+00:43:14 Exactly.
+
+00:43:15 Celebrate that.
+
+00:43:16 Celebrate it.
+
+00:43:16 Okay.
+
+00:43:17 Let's talk DevOps, ML Ops a little bit.
+
+00:43:21 Like, what are your thoughts on later?
+
+00:43:23 Right.
+
+00:43:24 So I've written this code, maybe I've trained some models or put in some algorithms in place.
+
+00:43:28 How do you keep it working, keep it running, monitor it?
+
+00:43:32 What are your thoughts around this?
+
+00:43:34 I'm a big proponent of standardization.
+
+00:43:37 So if your company has many machine learning models, then picking some kind of standardized framework, putting them into production is huge.
+
+00:43:46 It's so easy to just have ad hoc code for each model and then it becomes extremely hard to maintain.
+
+00:43:54 You can't keep track of what many models are doing.
+
+00:43:58 So picking one of the popular frameworks and putting it into production is key here.
+
+00:44:04 And those will come with things like validating your data to make sure that your new training data has the same statistics as the old one.
+
+00:44:12 you can set up automated analysis so that you know that if your production model has ditched below some certain threshold, you can trigger a retraining loop.
+
+00:44:23 Being able to automate it and sort of step back from the manual process of training and deploying the model is huge here, I think.
+
+00:44:32 Yeah. Observability.
+
+00:44:34 Yes.
+
+00:44:34 And those sorts of things.
+
+00:44:35 So when you say picking one of the frameworks, what frameworks are we talking?
+
+00:44:38 TensorFlow Extended, MLflow, AWS, SageMaker.
+
+00:44:44 There may well be others these days as well.
+
+00:44:46 Yeah, something that comes with this all built in.
+
+00:44:48 So the ML ops side of things basically becomes operating TensorFlow Extended or operating SageMaker.
+
+00:44:56 And then if something goes wrong, then you can maybe go back to the data scientists.
+
+00:44:59 It looks like it's not relevant to the data that we're working with, right?
+
+00:45:04 Or something along those lines, right?
+
+00:45:06 It's drifted or...
+
+00:45:07 If it's sort of a simple, oh, our data has changed slightly, then you can hopefully just trigger a retraining loop.
+
+00:45:14 But then other times you might be like, oh, our customers have suddenly decided to behave totally differently because of some external event.
+
+00:45:22 We need to go back to the drawing board with this.
+
+00:45:25 Or we've decided to add in a new feature that this feature isn't quite what we wanted.
+
+00:45:29 Let's change this up a bit.
+
+00:45:31 One of the biggest tools in the MLOps toolkit is just being, just remaining cynical about your machine learning model is doing and expecting it to fail in unexpected ways and give examples, give answers that you have no idea that have failed in ways that you never even thought of.
+
+00:45:51 It's going to keep happening.
+
+00:45:52 What about understanding code running in Linux or in containers or stuff like that?
+
+00:45:58 I can easily see a lot of folks coming from non-software backgrounds going, I already didn't know what the terminal was.
+
+00:46:05 How am I supposed to work with containers inside of Linux machines or something like that?
+
+00:46:10 Assume that these things are learnable.
+
+00:46:12 There's going to be, you might have to play around with these things and read three different types of documentation before it starts to make sense.
+
+00:46:20 But there are a lot of resources out there to get you from not knowing how these things work, them seeming like magic, to being able to use them in the way that you want to.
+
+00:46:30 Good advice.
+
+00:46:31 I think I would say to folks something to the effect of if you see other people who look like they understand this really well and you're like, well, those people just know it.
+
+00:46:39 And I'm always confused or whatever.
+
+00:46:42 Almost all those people got there by taking little steps, failing, reading the documentation, adding one more little skill.
+
+00:46:48 Okay, now I can figure out what the size of files over an SSH.
+
+00:46:52 Okay, next.
+
+00:46:53 And you just slowly, you just work your way through like little periods of frustration until you get there.
+
+00:47:00 You look down the road at people who have made the whole transition or they really understand that all well.
+
+00:47:06 And it's like, well, how do they?
+
+00:47:07 There's no way I can do that.
+
+00:47:08 I just, that's beyond.
+
+00:47:10 It's not.
+
+00:47:11 It's just you've got to be willing to take the little steps and embrace the frustration because on the other side is a new skill.
+
+00:47:18 I think if you are one of these people with that expertise, then remembering that you didn't used to have that knowledge and being open to answering the questions of people who are just getting into that, it would be great if more people would be able to remember that.
+
+00:47:33 Yeah, I absolutely agree. Don't say it's a dumb question. I'm not answering it.
+
+00:47:37 There are no dumb questions.
+
+00:47:39 Remember that you had that same dumb question 10 years ago or something like that. Absolutely. You talked about these different frameworks and potentially others. How do you pick?
+
+00:47:48 sometimes there's not even a choice because your company is already using aws for storing the data
+
+00:47:54 that's fair because you you said like if you're going to standardize on one if they've already standardized like well you pick that one that's
+
+00:48:00 probably the simplest way of choosing but i think you've got to involves putting some thought into the project at the at the start and being like okay what's going to be the scope of our machine learning in this company are we expecting to have like 50 different models doing different things. But a lot of the time, you don't know this is going to be successful until you start doing it. So you get to a situation where you already have a few models, they're starting to become successful, then you suddenly need to transfer them all onto some framework. I think sort of checking that they do all the things that are important in your use case. So if you expect to be needing to retrain your model very frequently, then something that makes that easy. If it's really important that your model gives some specific answers in some specific case, then good observability is very important.
+
+00:48:58 I'm a huge fan of awesome lists. I'm kind of a sucker for listicles in general, but awesome lists are cool. I just found an awesome ML Ops list.
+
+00:49:10 And I'll put that in the show notes.
+
+00:49:11 People can go around and it looks really cool.
+
+00:49:14 I mean, I just found it, so I don't know, but I'll put that in there as a resource.
+
+00:49:18 People can use that to start the research journey, I guess.
+
+00:49:22 What do you think?
+
+00:49:22 Yeah, definitely.
+
+00:49:23 I'd also recommend the ML Ops community, which is a big Slack workspace of people talking about all things ML Ops.
+
+00:49:31 That's a good place to get into.
+
+00:49:32 Did you want to give away a copy of your book?
+
+00:49:34 We're trying tentatively, maybe?
+
+00:49:36 Yes, I will have some copy, some ebook copies of software engineering for data scientists to give away to listeners of this show.
+
+00:49:44 I guess we'll put out the details with the podcast version.
+
+00:49:48 Yeah, we'll figure it out. And I'll put it in the show notes, which will eventually find their way to the YouTube live stream once I get that turned around.
+
+00:49:56 But yeah, if you want to get a free copy of the book, I imagine there's limited copies, so you'll have to act soon when you hear this episode come out. But I'll put in some kind of instructions into the show notes and you can check that out.
+
+00:50:06 put the names into a hat and pick out however many copies I'm able to give out.
+
+00:50:10 Exactly.
+
+00:50:10 So here's what I propose. I think what we're going to do is we're going to create a notebook, figure out how to pick all the names. We're going to then productize it, put it into TensorFlow Extended, train an LLM, and then we're going to let it pick the winners. How's that sound?
+
+00:50:25 Reasonable?
+
+00:50:26 That sounds perfect.
+
+00:50:27 Totally. Totally easy. I love it. All right. Well, let's close things out with maybe a little advice for people who are coming into the space, they've been using notebooks for exploratory type of work generally. What do you tell them to maybe take their notebooks to the next level or take their code out of notebooks into the Python to do the next thing?
+
+00:50:49 I think my message here is please share your code with other people, share what your code can do with the world and make your code so that it is easy for other people to use, so that it is robust, so that it's reproducible and just encouraging people to put that time in to refactor and improve their codes because it is very worthwhile and it's not as hard as you think it's going to be.
+
+00:51:15 I think that's great advice. And I would just throw out also that if you're not familiar with it, if you've been working in notebooks a lot of times, the more software-oriented editors are often very good at algorithmically refactoring your code. You highlight a bet and go make that a function and it'll do it without making mistakes it might not be the result you ended up actually wanted but it will do it without mistakes and so you can leverage some of these tools to sort of keep it to be make it less error
+
+00:51:42 that's a great strategy and can prompt some ideas for how you might want to move from one to the other and you can accept those or you can be like oh no actually i wanted it to do this so yeah great starting point exactly
+
+00:51:53 control z no i don't want that anymore I changed my mind.
+
+00:51:57 That looks bad.
+
+00:51:58 At least you don't waste time on it.
+
+00:51:59 All right.
+
+00:51:59 Well, Catherine, thank you so much for being here, sharing your ideas.
+
+00:52:03 I will link to your talk if people want to see PyCon version as well.
+
+00:52:08 So thanks for the excellent ideas and thanks for being here.
+
+00:52:11 Thanks.
+
+00:52:11 This has been a lot of fun.
+
+00:52:12 Great conversation.
+
+00:52:13 Yeah.
+
+00:52:13 Bye-bye.
+
+00:52:14 Bye.
+
+00:52:15 This has been another episode of Talk Python To Me.
+
+00:52:19 Thank you to our sponsors.
+
+00:52:20 Be sure to check out what they're offering.
+
+00:52:21 It really helps support the show.
+
+00:52:23 Take some stress out of your life.
+
+00:52:25 Get notified immediately about errors and performance issues in your web or mobile applications with Sentry.
+
+00:52:31 Just visit talkpython.fm/sentry and get started for free.
+
+00:52:36 And be sure to use the promo code talkpython, all one word.
+
+00:52:40 And it's brought to you by Agntcy.
+
+00:52:42 Discover agentic AI with Agntcy.
+
+00:52:45 Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+00:52:49 Start building the Internet of Agents at talkpython.fm/Agntcy, spelled A-G-N-T-C-Y.
+
+00:52:56 Want to level up your Python?
+
+00:52:57 We have one of the largest catalogs of Python video courses over at Talk Python.
+
+00:53:01 Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+00:53:06 And best of all, there's not a subscription in sight.
+
+00:53:09 Check it out for yourself at training.talkpython.fm.
+
+00:53:12 Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+00:53:17 We should be right at the top.
+
+00:53:18 You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+00:53:28 We're live streaming most of our recordings these days.
+
+00:53:30 If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+00:53:39 This is your host, Michael Kennedy.
+
+00:53:40 Thanks so much for listening.
+
+00:53:41 I really appreciate it.
+
+00:53:43 Now get out there and write some Python code.
+
+00:54:09 I think is the norm.
+

@@ -1,0 +1,2261 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:06.540
+If you've heard the phrase, automate the boring things for Python, this episode starts with that idea and takes it to a whole nother level.
+
+00:00:07.160 --> 00:00:11.820
+We have Glyph back on the podcast to talk about programming your computer with Python.
+
+00:00:12.600 --> 00:00:19.000
+We dive into a bunch of tools and frameworks and especially spend some time on integrating with existing platform APIs.
+
+00:00:19.800 --> 00:00:29.640
+For example, macOS's browser kit in Windows, Calm object model, all of this to build desktop apps in Python that make you happier and more productive.
+
+00:00:30.180 --> 00:00:35.720
+Let's dive in. This is Talk Python To Me, episode 508, recorded May 6th, 2025.
+
+00:00:37.040 --> 00:00:37.260
+Are
+
+00:00:37.260 --> 00:00:38.700
+you ready for your host, please?
+
+00:00:39.520 --> 00:00:42.360
+You're listening to Michael Kennedy on Talk Python To Me.
+
+00:00:42.980 --> 00:00:46.080
+Live from Portland, Oregon, and this segment was made with Python.
+
+00:00:49.320 --> 00:00:52.200
+Welcome to Talk Python To Me, a weekly podcast on Python.
+
+00:00:52.680 --> 00:00:54.440
+This is your host, Michael Kennedy.
+
+00:00:54.600 --> 00:01:22.260
+Follow me on Mastodon where I'm @mkennedy and follow the podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is sponsored by Posit and Posit Workbench.
+
+00:01:23.100 --> 00:01:30.280
+Posit Workbench allows data scientists to code in Python within their preferred environment without any additional strain on IT.
+
+00:01:31.040 --> 00:01:40.560
+It gives data scientists access to all the development environments they love, including Jupyter Notebooks, JupyterLab, Positron, and VS Code, and helps ensure reproducibility and consistency.
+
+00:01:40.960 --> 00:01:45.140
+If you work on a data science team where consistency matters, check out Posit Workbench.
+
+00:01:45.780 --> 00:01:48.220
+Visit talkpython.fm/workbench for details.
+
+00:01:48.800 --> 00:01:50.800
+And it's brought to you by Agency.
+
+00:01:51.220 --> 00:02:07.340
+Discover agentic AI with agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y. Bliff, welcome back to Talk Python To Me. Great to have you here.
+
+00:02:07.420 --> 00:02:08.100
+It's great to be back.
+
+00:02:08.300 --> 00:02:18.260
+Yes, indeed. We are going to bring it home for everyone. Personal computing right on their computer. Like we're going to program like it's 1997, but better.
+
+00:02:18.300 --> 00:02:26.580
+It's weird how you say that, and I totally know what you mean, but also, believe it or not, computers are way better than they were in 1997.
+
+00:02:27.360 --> 00:02:28.800
+Better than my Pentium? Are you serious?
+
+00:02:30.120 --> 00:02:34.440
+Not only are they better, there's just a lot more of them in front of you in a much smaller space.
+
+00:02:34.680 --> 00:02:38.540
+Yeah, I have a ridiculous number of computers in my office. It's almost out of control.
+
+00:02:39.000 --> 00:02:42.240
+What do you do with the old ones? You turn them into servers. Come on. Home servers.
+
+00:02:42.580 --> 00:02:43.900
+That's a topic for a different day.
+
+00:02:44.780 --> 00:03:09.940
+Yeah, it sure is. I'm super excited to talk about programming a computer. We're going to talk a little bit of Mac, a little bit of Linux, a little bit of Windows, and more broadly, other things. Most of it with Python, not 100% necessarily, but almost all of it. And it's going to be a great time. Now, before we dive into it, though, I'm sure there's some folks out there like, Cliff, that's the guy that just is so unique. He gets to go by a single name. How awesome is that? But who is he anyway? Who are you?
+
+00:03:10.020 --> 00:03:10.220
+Who
+
+00:03:10.220 --> 00:03:14.740
+am I? That's a good question. I've had a varied and eclectic career, I guess.
+
+00:03:15.360 --> 00:03:38.560
+Right now, I am an independent software developer. I do some consulting here and there. I do a bunch of open source development. I've got a Patreon for my own independent stuff. I'm sure we'll get into some of it because some of it is directly relevant to today's topic. I'm doing some Mac desktop app development. I've got some secret projects, which I hope that I will eventually actually finish and release.
+
+00:03:38.760 --> 00:03:40.260
+It's awesome you're here to announce those today.
+
+00:03:41.720 --> 00:03:44.640
+Unfortunately, I don't think we're going to be making any news just now.
+
+00:03:45.620 --> 00:03:48.800
+Yeah, so I do, and I do a bunch of open source project development.
+
+00:03:48.900 --> 00:03:54.540
+So my own Patreon and my own GitHub sponsors is mostly about kind of different stuff that I'm doing.
+
+00:03:55.100 --> 00:04:14.860
+And this talk that we're going to be discussing today that I did give a couple of years back, and I'm giving a refreshed version of at the upcoming PyCon, I did release a couple of packages when I first gave it, and that's the kind of stuff that I do with my personal backing that folks sign up for.
+
+00:04:14.860 --> 00:04:26.380
+But I'm also doing, I suppose I should say for any new listeners, I am the founder of the Twisted project, kind of precursor to AsyncIO in the standard library.
+
+00:04:27.240 --> 00:04:37.640
+And nowadays, now that AsyncIO is kind of standard in the standard library, it's a collection of protocol implementations and testing tools and whatnot for event-driven programming.
+
+00:04:37.980 --> 00:04:42.480
+And that is a member project of the PSF, which has its own GitHub sponsors.
+
+00:04:42.920 --> 00:04:48.200
+And I also am going to be doing some contract development to do maintenance on that.
+
+00:04:48.460 --> 00:04:51.860
+So we can actually make use of some of the funding that we've collected over the years, do some more fundraising.
+
+00:04:52.880 --> 00:04:57.940
+Just a couple hours ago, I was doing our first party WebSockets integration.
+
+00:04:58.180 --> 00:04:59.760
+So I do a lot of different things, is what I'm saying.
+
+00:05:00.000 --> 00:05:01.220
+It's just got a lot going on.
+
+00:05:01.820 --> 00:05:02.460
+That's awesome.
+
+00:05:02.810 --> 00:05:03.160
+I love it.
+
+00:05:03.380 --> 00:05:07.440
+How does one get their project to become a member project of the PSF?
+
+00:05:07.660 --> 00:05:12.400
+Technically speaking, Twisted is a, the PSF is the Twisted Project's fiscal sponsor.
+
+00:05:13.180 --> 00:05:21.300
+We got there via the circuitous route of really not wanting to make a nonprofit 501c3 25 years ago.
+
+00:05:22.280 --> 00:05:27.820
+And in the course of trying to avoid that, we signed up with the Software Freedom Conservancy.
+
+00:05:28.700 --> 00:05:36.740
+The SFC and Twisted weren't quite aligned because Twisted was like a really liberally licensed project that was mostly focused on infrastructure.
+
+00:05:37.400 --> 00:05:44.280
+And we were not particularly interested in like the free software movement-y aspects of things.
+
+00:05:44.680 --> 00:05:53.460
+And the SFC was largely about like GPL license enforcement, creating like a consistent legal environment under which the free software movement can operate.
+
+00:05:53.720 --> 00:05:56.140
+Make sure people copy left everything, that sort of thing.
+
+00:05:56.300 --> 00:05:59.640
+Let's try to get everybody to copy left everything, although they do do a little bit of that.
+
+00:06:00.080 --> 00:06:03.740
+And I'm sure they would certainly prefer it, but more about like enforcing it once you have.
+
+00:06:03.940 --> 00:06:04.000
+Yeah,
+
+00:06:04.120 --> 00:06:04.420
+that's what I mean.
+
+00:06:04.940 --> 00:06:05.380
+They have a
+
+00:06:05.380 --> 00:06:06.620
+number of projects like Inkscape.
+
+00:06:06.800 --> 00:06:14.340
+And I believe they, well, they do work with a bunch of different projects to kind of litigate and try to, you know, get people to obey the GPL.
+
+00:06:15.180 --> 00:06:36.940
+and so since we had a little bit of a you know differing goals and the psf is more interested in like promoting python as infrastructure we moved over our fiscal sponsorship to to the psf so mostly i think you know the way that you do it is you just ask but the psf is taking on a lot right now so you may be you may be in a long queue if you were to try to sign up now
+
+00:06:36.940 --> 00:06:45.520
+i'm sure it's a hard process and they filter a lot of stuff out that doesn't really fit obey the gpl i feel like that's a good conference shirt or maybe a hat.
+
+00:06:46.500 --> 00:06:47.160
+You know what I mean?
+
+00:06:47.340 --> 00:06:49.020
+Once again, a topic for a different day.
+
+00:06:49.100 --> 00:06:51.480
+I have enough feelings on that to fill a couple hours.
+
+00:06:52.520 --> 00:06:53.980
+Well, moving right along then.
+
+00:06:54.240 --> 00:07:08.000
+I first became aware of your talk sitting in the sunshine in San Francisco at PyBay two years ago, I suppose, coming up a year and a half, something like that, when you gave a variation of this talk, programming your computer with Python.
+
+00:07:08.360 --> 00:07:09.060
+That was a great talk.
+
+00:07:09.200 --> 00:07:10.280
+That's one of my favorites from the conference.
+
+00:07:10.780 --> 00:07:12.680
+Then I saw you're giving it again at PyCon.
+
+00:07:13.440 --> 00:07:15.480
+And so I thought, you know, you're still into this stuff.
+
+00:07:15.620 --> 00:07:16.660
+Let's talk about some more about it.
+
+00:07:16.740 --> 00:07:29.560
+What really inspired this talk in the first place, and it's pretty much, it's like as relevant now, I think, as it was back when I first thought to give it, was just like, Python is really popular in a bunch of different contexts.
+
+00:07:31.240 --> 00:07:32.920
+But particularly at PyBay, right?
+
+00:07:32.970 --> 00:07:33.880
+Like there's different audiences.
+
+00:07:34.050 --> 00:07:43.680
+And PyBay and PyCon, I think, have a kind of similar audience in that you get a lot of people doing the typical stuff with Python, which is to say backend development and web development.
+
+00:07:44.050 --> 00:07:44.200
+A
+
+00:07:44.200 --> 00:07:46.440
+lot of APIs, a lot of AIs, a lot of Jupyter.
+
+00:07:46.600 --> 00:07:46.920
+Jupyter
+
+00:07:46.920 --> 00:08:02.940
+is like starting to edge a little bit closer to what I'm talking about here, but it is still fundamentally kind of backend-y, like you kind of expect the code to run on a big cluster or something, and there's just not a ton of local compute, right?
+
+00:08:03.060 --> 00:08:07.200
+Like your typical data scientist is doing kind of batch stuff.
+
+00:08:07.380 --> 00:08:15.760
+It's not, Jupyter has little, and Jupyter is in a way like a microcosm of Python itself, in that there are interactive widgets in Jupyter.
+
+00:08:15.940 --> 00:08:19.580
+You could be programming stuff kind of quasi locally, right?
+
+00:08:19.700 --> 00:08:22.000
+Like you could be interacting with your own file system.
+
+00:08:22.360 --> 00:08:27.600
+You could be building stuff that you can directly manipulate the data, but like you probably aren't.
+
+00:08:27.640 --> 00:08:35.440
+You probably just, you know, loading up some data frames and, you know, some NumPy arrays or whatever, and then doing a bunch of batch computations on them.
+
+00:08:35.539 --> 00:08:54.560
+And so we build all these skills that about just generalized software development, like most of the skills that you build while working on Python do generalize. And then we kind of staple those general skills to this very specific, like a couple of very specific use cases when Python is like a super general tool.
+
+00:08:54.840 --> 00:09:01.020
+And there exist all these libraries and all these tools to help you put Python in all kinds of places to solve all kinds of problems.
+
+00:09:01.480 --> 00:09:06.400
+And then when we need to do like we solve some other problem, we end up just picking some other tool.
+
+00:09:06.780 --> 00:09:08.620
+And this is in a way, right?
+
+00:09:08.660 --> 00:09:11.740
+We're talking about this one talk that I've put together.
+
+00:09:12.080 --> 00:09:14.580
+I've delivered a few times and we'll be delivering again.
+
+00:09:15.000 --> 00:09:21.660
+But there's kind of a through line through a lot of my public speaking and a lot of the topics that I've covered that are different aspects of this.
+
+00:09:22.100 --> 00:09:25.240
+Right. We've got there's this one, which is like programming your own local computer.
+
+00:09:25.280 --> 00:09:29.280
+But there's also desktop development and there's also mobile development.
+
+00:09:29.480 --> 00:09:31.600
+And I've talked about front end. I gave a presentation.
+
+00:09:32.040 --> 00:09:36.580
+I don't even know when maybe PyCon 2009 or something about like using.
+
+00:09:36.940 --> 00:09:39.760
+But before there was PyScript, there was Pyjamas, right?
+
+00:09:40.060 --> 00:09:45.440
+PyJS, these like front end frameworks where you could build whole front ends with Python in the browser.
+
+00:09:45.700 --> 00:09:49.660
+And like, you know, because there's Python's the second best language for everything.
+
+00:09:50.000 --> 00:09:51.860
+That's really, really powerful.
+
+00:09:52.060 --> 00:09:54.380
+It's kind of better than being the best language for something.
+
+00:09:55.020 --> 00:09:59.000
+Because the best language for making a Mac app is Swift, right?
+
+00:09:59.140 --> 00:10:02.760
+Like you just get the first party thing from Apple and it's a really easy onboarding experience.
+
+00:10:03.360 --> 00:10:06.740
+But the problem with that is that it's the best language for Mac app development.
+
+00:10:07.180 --> 00:10:11.120
+So everything else is like a second class citizen in the Swift world.
+
+00:10:11.420 --> 00:10:14.100
+Or a complete foreigner where it doesn't work at all.
+
+00:10:14.260 --> 00:10:14.360
+I
+
+00:10:14.360 --> 00:10:19.780
+do say a second class citizen because there is a Swift backend ecosystem and you can kind of use it for that stuff.
+
+00:10:19.980 --> 00:10:24.280
+and there is a bunch of open source work, but it's very clearly deprioritized.
+
+00:10:24.450 --> 00:10:30.380
+Even as Apple itself invests resources into it, it's just clearly never going to be the thing because they have a strategic vision.
+
+00:10:30.600 --> 00:10:34.580
+They're all about moving miles and miles of capacitive touchscreen glass.
+
+00:10:34.750 --> 00:10:40.380
+And if you're not in the critical path of doing that, then fundamentally the market is just not going to prioritize that.
+
+00:10:40.740 --> 00:10:46.440
+Even within the Apple ecosystem, the Mac desktop is deprioritized compared to iOS.
+
+00:10:46.820 --> 00:10:46.900
+The
+
+00:10:46.900 --> 00:10:49.360
+Mac is doing very, very well right now, right?
+
+00:10:49.380 --> 00:10:52.320
+It's not a dire situation, but you can still tell.
+
+00:10:53.140 --> 00:10:57.280
+There's still hints there about how that kind of financial destiny shapes things.
+
+00:10:58.160 --> 00:11:01.540
+And in the Python world, people just kind of do stuff.
+
+00:11:01.760 --> 00:11:04.640
+And we don't have a roadmap or a set of priorities.
+
+00:11:05.220 --> 00:11:07.220
+There are certainly economic pressures.
+
+00:11:07.700 --> 00:11:13.600
+AI is certainly distorting the landscape a little bit right now in terms of what gets interest and hype.
+
+00:11:13.740 --> 00:11:19.940
+But if you're doing something cool with Python, like Blender has Python in it, And you can just use that.
+
+00:11:20.160 --> 00:11:21.300
+And it's been there for years and years.
+
+00:11:21.480 --> 00:11:22.420
+It's not going anywhere, right?
+
+00:11:22.560 --> 00:11:24.020
+Like it's not getting deprioritized.
+
+00:11:24.100 --> 00:11:29.300
+The people who put Python into Blender and do stuff with that have their reasons for doing it.
+
+00:11:29.310 --> 00:11:30.320
+And they're going to keep doing it.
+
+00:11:31.120 --> 00:11:39.820
+There's no email they're going to get from an executive that says, ah, never mind, you know, Python really needs to focus on AI now.
+
+00:11:40.000 --> 00:11:41.640
+So Blender's an LLM today, right?
+
+00:11:41.780 --> 00:11:43.820
+Like, no, they have their own stuff that they're working
+
+00:11:43.820 --> 00:11:43.900
+on.
+
+00:11:43.940 --> 00:11:47.960
+You probably get it to render the words LLM, but that's not what they mean.
+
+00:11:48.200 --> 00:11:59.500
+All that said, Python being the second best language for everything means that if you're going to do a desktop thing with Python, you still have access to all of those libraries and all those tools that you could bring with you.
+
+00:11:59.580 --> 00:12:18.240
+If you're going to do desktop automations in Python instead of like AppleScript, you've got all the libraries that come from the world of Python that allow you to have access to all of this power, all that expertise that you've built up over the course of your career doing back end stuff or data analysis that you can then just do on your own computer.
+
+00:12:18.820 --> 00:12:23.580
+And so there's a few aspects to this, which are there's like the kind of personal automation stuff.
+
+00:12:24.060 --> 00:12:25.400
+There's the user interface stuff.
+
+00:12:25.960 --> 00:12:28.760
+So yeah, so how would you like to approach this?
+
+00:12:28.860 --> 00:12:29.660
+What would you like to talk about?
+
+00:12:29.920 --> 00:12:38.320
+Let's start with riffing a bit on why local computing matters or maybe why it shouldn't be as overlooked as it is.
+
+00:12:38.420 --> 00:12:38.580
+I
+
+00:12:38.580 --> 00:12:42.560
+talked a lot about the library ecosystem and all these different tools and functionalities, whatever.
+
+00:12:42.850 --> 00:12:44.820
+But bring it back down to fundamentals.
+
+00:12:45.500 --> 00:12:48.520
+Your computer is probably really, really fast.
+
+00:12:48.720 --> 00:13:09.160
+Even if you don't have the best top-of-the-line machine, and a lot of us as developers do have a lot of privilege to have access to extremely powerful hardware, Like a laptop that you can get right now for kind of a middle of the road, affordable laptop price is like hundreds of times more powerful than the most powerful server from a couple of decades ago.
+
+00:13:09.230 --> 00:13:11.920
+Right. Like there's you have so much power at your fingertips.
+
+00:13:12.540 --> 00:13:15.320
+And not only that, but there's a latency issue, too.
+
+00:13:15.500 --> 00:13:22.280
+Right. Like even if your computer weren't that powerful, even a few years ago when computers didn't have as much CPU and as much RAM.
+
+00:13:22.660 --> 00:13:26.820
+And, you know, there's kind of a slope that goes upwards over time where there's always more of those things.
+
+00:13:26.940 --> 00:13:29.880
+So like anytime you go backwards a few years, you'll have less of it.
+
+00:13:29.880 --> 00:13:37.680
+But there's persistently throughout the history of computing, you pretty much always get better latency if you're doing something locally.
+
+00:13:38.100 --> 00:13:58.000
+And so if you are trying to, you know, get something done and you're, if you have a workflow that you're executing many, many times a day and you want to get it done quickly, your local computer is probably faster than any remote server you have access to just to like get the task kicked off, get all the data resident.
+
+00:13:58.200 --> 00:14:10.360
+I have an eight core server for all the infrastructure at Talk Python with the eight core, 16 gigs or something like that. It's plenty. I'm pretty sure my M4 Mac mini on a single core operation is faster than it. It's
+
+00:14:10.360 --> 00:14:36.820
+interesting how you phrase that, right? Like you don't even know, right? You're not even sure how much compute you have locally because you're not, you're not stressing it, right? Like you're not using it up. Not to mention the fact that those Talk Python infrastructure, you know, running the most popular podcast in the Python space. I'm sure that it's all very heavily loaded, right? There's stuff happening to it all the time. Every time you post anything on the Fediverse, it's got to be fetched, you know, a hundred million times or whatever the hug of death is these days.
+
+00:14:37.480 --> 00:14:40.460
+It's like a DDoS that you do to yourself every time you post something.
+
+00:14:40.600 --> 00:15:33.080
+You have all of your local compute is also, in addition to being probably way more powerful than you initially would give it credit for, because you think of it as like a desktop or a mobile device as opposed to like a really powerful computer. In addition to being super low latency, it's also probably just idle all the time, right? Like it's not doing anything. And if you're plugged in and you're at a desk, right? Like if you're not literally mobile on battery all the time, that's free real estate, right? Like you can just use it for whatever you need. You got lots of RAM, you got lots of disk, you got lots of CPU overhead. To some extent, this is also kind of my secret motivation for doing this. Over the years in the industry, and you can kind of see this with that push towards iOS and iPads and mobile devices and web front ends. There's always this push for the industry as overall to say, maybe you don't need so much power locally. Maybe we should take that away and put it in the cloud. Wouldn't it be more convenient if it was all in the cloud?
+
+00:15:33.520 --> 00:15:43.700
+And there's no nefarious individual or group that's doing this, but it's just a constant economic pressure. And my personal feeling is like, no, no, give it to me. You put all the compute locally.
+
+00:15:43.840 --> 00:16:01.780
+I want to have it. I don't know what you're doing with it. I don't want it multi-tenanted in the cloud where I have like fewer security guarantees and fewer privacy guarantees and if I want things to be fast I have to like move them away to be like less secure I want it to be local so I want people to do things that require it to be local and so I want to encourage them
+
+00:16:01.960 --> 00:16:40.540
+and I'm with you and there's a lot of interesting technologies these days that make that possible from local LLMs to Docker to a bunch of things this portion of talk Python to Me is brought to you by the folks at Posit Posit has made a huge investment in the Python community lately, known originally for RStudio, they've been building down a suite of tools and services for Team Python. Have you ever thought of all the things that go into a Python data science project? You need your notebook or IDE, sure. Also a server or cloud environment to run it, a version of Python, packages, access to your databases, and internal APIs. That's a lot of setup.
+
+00:16:41.180 --> 00:16:55.480
+And if you change any of these things, when you return to your projects a month down the road, you might get different results. Wouldn't it be nice to have all of this set up for you in one easy to access place whenever you want to get work done? That's the goal of Posit Workbench.
+
+00:16:56.200 --> 00:17:11.020
+Posit Workbench allows data scientists to code in Python within their preferred environment without an additional strain on IT. It gives data scientists access to all the development environments they love, including Jupyter Notebooks, JupyterLab, Positron, and VS Code.
+
+00:17:11.339 --> 00:17:13.800
+and yet it helps ensure reproducibility.
+
+00:17:14.220 --> 00:17:14.839
+Here's how it works.
+
+00:17:15.220 --> 00:17:30.640
+You or your IT team set up Posit Workbench on a powerful, dedicated server within your organization or on the same cloud service that is hosting your most important data sources, such as AWS, SageMaker, Azure, GCP, Kubernetes, or pretty much anywhere.
+
+00:17:31.220 --> 00:17:35.140
+There, you create dedicated, pre-configured environments to run your code and notebooks.
+
+00:17:35.660 --> 00:17:40.780
+And importantly, you also configure access to proprietary databases and internal APIs.
+
+00:17:41.560 --> 00:17:50.360
+When it's time to onboard a new data scientist or start a new project, you just fire it up in Workbench and it's fully configured and ready to go, including on the infrastructure side of things.
+
+00:17:50.940 --> 00:17:53.940
+All of this is securely administered by your organization.
+
+00:17:54.580 --> 00:18:00.220
+If you work on a data science team where consistency matters, you owe it to you and your org to check out Posit Workbench.
+
+00:18:00.520 --> 00:18:05.780
+Visit talkpython.fm/workbench today and get a three-month free trial to see if it's a good fit.
+
+00:18:06.080 --> 00:18:08.280
+That's talkpython.fm/workbench.
+
+00:18:08.820 --> 00:18:10.780
+The link is in your podcast player's show notes.
+
+00:18:11.380 --> 00:18:34.120
+thank you deposit for supporting talk python to me i don't know how you feel about it it sounds like we might be on the same page to me it's also a bit of agency just i don't want the only place that my code can run is on a bespoke cloud from one of the hyperscalers i want to be able to at maximum complexity say docker compose up and then run my code at more likely just run my code there's
+
+00:18:34.120 --> 00:19:03.940
+a scaling issue there too if you try to make sure that you can run we'll get to like uis and interactivity in a bit, but even if you're just running your backend batch code, if you can run your full deployed cloud-based web application on your local computer, and you can have an equivalent environment that you can bring up with Docker Compose or whatever, or I forget what the tiny Kubernetes is, the K some number.
+
+00:19:04.000 --> 00:19:04.460
+Kube control.
+
+00:19:04.560 --> 00:19:07.820
+There's also like a, there's K7S, I think.
+
+00:19:08.340 --> 00:19:10.960
+There's some tool that like, you know, scales everything down for you.
+
+00:19:11.320 --> 00:19:16.840
+If you can run it on your laptop, then you can run it on an alternate host, right?
+
+00:19:16.980 --> 00:19:28.380
+Like speaking now, now kind of stepping out of my weird hippie activist, individual activism frame of reference and into my, I'm actually a consultant that does business for, you know, corporations kind of role.
+
+00:19:28.780 --> 00:19:55.800
+They're actually pretty aligned value wise, because you, if the only place that you can run your cloud application is in a hyperscaler's cloud, then you have no price pressure driving the competitive landscape in a way that benefits you as the application developer. I won't say a brand name, but your cloud provider will ratchet up your costs and then you'll just have to pay more costs.
+
+00:19:56.000 --> 00:20:04.420
+There's no way that you have any leverage against them to say, well, because you can't credibly say, I'll move somewhere else because moving somewhere else becomes this huge migration cost.
+
+00:20:04.600 --> 00:20:06.520
+Now, there's limits to that, right?
+
+00:20:06.520 --> 00:20:10.400
+Like there are applications that you really can't run just fully on a laptop.
+
+00:20:10.760 --> 00:20:19.760
+But like there's a way larger proportion of our listeners today who can totally just do that than think they can, right?
+
+00:20:19.940 --> 00:20:23.100
+Like there are most applications can actually just run on a laptop.
+
+00:20:23.220 --> 00:20:24.280
+I don't know what number you'd put on it.
+
+00:20:24.340 --> 00:20:27.200
+I would say it's got to at least be 95%.
+
+00:20:27.220 --> 00:20:27.460
+It's
+
+00:20:27.460 --> 00:20:41.560
+tough to put like a number on it like that, but it is also the kind of thing where if it's not 95%, there's also like a lot of the ones that really can't because they're architected around like cloud native or, you know, branded technologies that have like these very specific APIs.
+
+00:20:42.200 --> 00:20:45.640
+It's not clear to me that that's bringing a lot of benefits in a lot of cases, right?
+
+00:20:45.680 --> 00:20:55.000
+Like, you know, having it, especially because like whenever you're running something locally, you also have, especially if you can like make sure that it's easy to be portable, right?
+
+00:20:55.000 --> 00:21:00.040
+Like, and you can run it locally on your Mac, locally on your, in WSL, right?
+
+00:21:00.120 --> 00:21:04.400
+Not just in Docker, but like kind of in the same environment that your dev tools live.
+
+00:21:04.420 --> 00:21:22.720
+If you can maintain that level of portability, the increase in operational costs that you have when you have to go and do complicated stuff to get the reliability and the elasticity that your cloud provider might give you, you actually get a huge amount in just like, you can run a debugger on it.
+
+00:21:22.940 --> 00:21:24.320
+You can single step through the code.
+
+00:21:24.420 --> 00:21:25.540
+The ability
+
+00:21:25.540 --> 00:21:27.060
+to do that is really overlooked.
+
+00:21:27.920 --> 00:21:36.660
+And that's not to denigrate debugging and production, using tools like Honeycomb that can give you traces and help you really understand what's happening at scale.
+
+00:21:37.460 --> 00:21:41.180
+There's a lot of logical abstractions which you don't need to scale up to understand what's going on with them.
+
+00:21:41.270 --> 00:21:54.120
+And single-stepping and debugging and being able to run in a kind of in-vitro environment is really, really a useful feature that it doesn't seem like you're giving up anything, but you are when you don't have that ability to run it locally.
+
+00:21:54.280 --> 00:22:23.700
+Absolutely. And if you can run it locally or in Docker, the chances that you can just say, you know what, I don't want to be in this cloud anymore. Some new opportunities opened up. Hetzner has a new local data center. DigitalOcean has something amazing and it's a fifth the price and just as fast or faster. Let's just move. You know what I mean? And if it's, well, we move our dockers and docker containers and our little system just goes over. That's one thing. If you got to rework serverless and queuing and all, like all of a sudden it's like, yeah, yeah, but no.
+
+00:22:23.740 --> 00:22:23.960
+You
+
+00:22:23.960 --> 00:22:26.900
+can still make use of technologies like serverless, right?
+
+00:22:26.970 --> 00:22:38.700
+Like if you develop all your code as if it's a library that you're just like, and most of your logic is in kind of a neutral form factor where you can use it from a desktop app or a Docker container or a serverless container.
+
+00:22:39.220 --> 00:22:49.240
+That's the, I like, it may not be worth investing that much in making that possible if that's not really your core competency and you don't need it, but it's not worth nothing.
+
+00:22:49.410 --> 00:22:50.720
+And it's worth investing a little bit.
+
+00:22:50.780 --> 00:22:57.400
+And often one of the points that I try to make in the talk is it's not actually that hard.
+
+00:22:57.780 --> 00:22:59.760
+It seems really, really challenging.
+
+00:22:59.960 --> 00:23:07.640
+But a lot of the times it's just because the desktop tools and the local development tools are not quite as well documented.
+
+00:23:07.820 --> 00:23:15.280
+It's not as easy to Google for something and get immediate result for an error message just because not as many people are using them.
+
+00:23:15.400 --> 00:23:16.840
+So there's a collective action thing here.
+
+00:23:17.200 --> 00:23:24.440
+It's a call to action to get more folks involved in doing things locally because it makes the whole process easier for everybody else.
+
+00:23:24.680 --> 00:23:25.420
+I 100% agree.
+
+00:23:25.990 --> 00:23:30.080
+Before we jump too far from this whole server aspect you were talking about, are you familiar with Coolify?
+
+00:23:30.440 --> 00:23:30.880
+I am not.
+
+00:23:31.040 --> 00:23:32.060
+This is the first I'm hearing of it.
+
+00:23:32.140 --> 00:23:43.020
+This is a pretty interesting open source project that is basically, I'll use their H2, an open source and self-hostable Heroku Netlify Vercel alternative.
+
+00:23:43.300 --> 00:23:53.100
+So basically it's like some kind of Docker compose up sort of thing, but then it gives you the platform to get push into and host all your things, kind of like those places I named.
+
+00:23:53.260 --> 00:23:54.460
+Oh, I might have to check that out.
+
+00:23:54.540 --> 00:23:55.660
+Yeah, it looks pretty interesting.
+
+00:23:56.190 --> 00:24:02.140
+And, you know, if you're thinking, well, we have more requirements, we got like we need continuous deployment and all these things.
+
+00:24:02.250 --> 00:24:03.060
+Like look around.
+
+00:24:03.090 --> 00:24:04.960
+I think there's a lot of interesting options.
+
+00:24:05.130 --> 00:24:09.840
+And then this could go on EC2 or it could go on Hetzner or it could go on DigitalOcean or Linode or whatever, right?
+
+00:24:09.920 --> 00:24:11.260
+There's a lot of interesting options here.
+
+00:24:11.360 --> 00:24:11.480
+Just
+
+00:24:11.480 --> 00:24:23.220
+one more thing on the whole local compute power part of this, which is that, because all of these alternatives that they're talking about have famously had drama with their free tiers and with the amount of compute that you get.
+
+00:24:23.780 --> 00:24:31.820
+One of the other things, one of the examples I bring up in the talk is Twisted's test suite and just how much faster it can be if you run it locally.
+
+00:24:32.400 --> 00:24:36.340
+And this is particularly of interest to the open source part of the Python community.
+
+00:24:36.840 --> 00:24:43.080
+And the reason I'm raising it here is because free tiers are one of the places that you see this, right?
+
+00:24:43.200 --> 00:25:02.080
+Like if you actually go all in in a kind of server-first workflow and you have a for-profit company and you're developing software that you have customers for, the local compute power argument does start to fall apart a little bit because it's like, well, you really can get like very, very powerful servers that can run your CI really, really fast.
+
+00:25:02.980 --> 00:25:08.720
+But also you're not getting those for free in the GitHub Actions tier that open source projects have access to.
+
+00:25:08.940 --> 00:25:13.900
+And particularly if you need to test on macOS and Windows, you're going to be paying for that.
+
+00:25:14.600 --> 00:25:22.940
+If you are trying to subsist on free resources, you will often find they're very slow and heavily contended with a lot of other projects.
+
+00:25:23.700 --> 00:25:59.640
+And so having the ability to run your tests locally to decrease the pressure on your free tier trial test host or your free tier GitHub Actions or CircleCI or whatever, The difference in speed there is huge because you're like way, way over provisioned in your local compute. And these providers who would really like you to pay a pretty penny for like the really fast stuff, a lot of us just like open source projects for logistical reasons often have to, even if the project does have some resources, we still need to stay in the like free tier of these things.
+
+00:25:59.760 --> 00:26:12.640
+because like if your, you know, library has a big budget for CI, but all of your downstreams that are actually using it have to use the GitHub Actions free tier, you really want to be living there anyway, even if you could afford to live elsewhere.
+
+00:26:12.980 --> 00:26:26.520
+Right. Otherwise it gets out of sync and things don't work. So yeah. Yeah. Cool. All right. Well, let's talk, let's talk desktop apps a bit. So give us some of the benefits of desktop first development. I mean, hotkeys, notifications, What else?
+
+00:26:26.820 --> 00:26:26.900
+Those
+
+00:26:26.900 --> 00:26:27.720
+are the big ones.
+
+00:26:28.220 --> 00:26:30.340
+And there are, well, okay.
+
+00:26:30.600 --> 00:26:31.900
+And there are other things.
+
+00:26:32.280 --> 00:26:33.880
+Hotkeys, notifications, sounds.
+
+00:26:34.540 --> 00:26:34.980
+Geolocation.
+
+00:26:35.520 --> 00:26:37.340
+Geolocation, HUD overlays, right?
+
+00:26:37.420 --> 00:26:39.980
+The ability to like put a window onto the screen.
+
+00:26:41.000 --> 00:26:43.600
+The fact that you can do all of those things, right?
+
+00:26:43.680 --> 00:26:53.040
+Like the presence of any one of those features, the ability to like pop up a window or whatever, like many of these things can kind of be emulated in web apps, right?
+
+00:26:53.080 --> 00:26:55.940
+The browser is a really powerful deployment platform these days.
+
+00:26:56.640 --> 00:27:02.580
+But the way that you develop something, if it is running locally, like case in point.
+
+00:27:02.610 --> 00:27:08.840
+So there's this app that I'm developing called Pomodoro Boros, which I'm running right now.
+
+00:27:09.000 --> 00:27:15.720
+It is a Pomodoro timer, and it puts a big old HUD overlay over your whole screen so that you do not get distracted.
+
+00:27:15.920 --> 00:27:19.920
+Because I have ADHD, and if it's not in my visual field, it might as well not exist.
+
+00:27:20.640 --> 00:27:29.880
+And so an app like that, not only can it remain running in the background, which like if you quit your browser, you close browser tab, it can go away.
+
+00:27:30.080 --> 00:27:33.880
+And there's like no, you can summon it back if you intentionally want to.
+
+00:27:34.620 --> 00:27:41.700
+If you as the user remember to relaunch that tab and repin it and put it in the right place and everything, like you can do it.
+
+00:27:42.140 --> 00:27:46.860
+But first of all, speaking as a person of ADHD, I don't want to be doing that all the time.
+
+00:27:46.920 --> 00:27:48.180
+And I physically can't sometimes.
+
+00:27:48.740 --> 00:27:54.300
+But also just like even for, you know, neurotypical people with plenty of executive function, that's the computer's job.
+
+00:27:54.570 --> 00:27:56.900
+Like the computer's job is to remember to run stuff, right?
+
+00:27:57.040 --> 00:28:00.200
+Like, and you can have the app relaunch itself.
+
+00:28:00.390 --> 00:28:01.880
+It can launch it login, right?
+
+00:28:02.160 --> 00:28:04.620
+Like having a browser launch it login is a whole rigmarole.
+
+00:28:04.760 --> 00:28:10.660
+It's like not impossible, but it requires lots of weird little hacks and it tends to be kind of fragile.
+
+00:28:11.120 --> 00:28:17.600
+Whereas, you know, you can make an app that doesn't have a command Q or like Alt F4 quit, right?
+
+00:28:17.660 --> 00:28:20.360
+Like you can have it go into the background and run by itself.
+
+00:28:20.480 --> 00:28:21.880
+It can schedule cron jobs.
+
+00:28:22.020 --> 00:28:33.580
+It can just generally keep itself running and automating away in such a way that if it needs to grab your attention again via a notification, via a geolocation hook, right?
+
+00:28:33.580 --> 00:28:42.240
+Like you can not just do geolocation to geofence yourself, but also to like schedule your app to launch when crossing a geolocation fence.
+
+00:28:42.440 --> 00:28:44.860
+That's a little trickier, but like it is definitely a thing you can do.
+
+00:28:45.240 --> 00:29:16.020
+all of those things make it so that you can have code that runs when it needs to run and that you can interact with immediately right like you can have a cloud service like send you a push notification and like or a text message or whatever and try to remind you that you should do something but with a desktop app with something that's running locally even if it's running locally in your terminal right like one of the other things that i i have um i have a different app called PinPal, which is all about helping you memorize new passwords.
+
+00:29:17.100 --> 00:29:29.320
+PinPal can actually run, I'm working on the desktop app version, but the other thing it can do is you just set it up in your PS1 so that if it's time to rehearse your passwords, it puts a little badge in your command prompt.
+
+00:29:29.770 --> 00:29:45.900
+And so even if you're not going for the full high-touch desktop API integration, just the fact that it's running in my local shell on every time it displays the prompt, that allows it to be like much more present and something that I'm not going to forget.
+
+00:29:46.340 --> 00:29:53.920
+And certainly for things that involve my development workflow, I'm not going to forget something that can be sensitive to what my working directory is, right?
+
+00:29:54.080 --> 00:30:01.000
+Like it can activate things and deactivate things and make it so that like anything that I need to do, the local computation has already happened, right?
+
+00:30:01.120 --> 00:30:04.460
+Like it's already done by the time I as the user am thinking that I need it.
+
+00:30:06.520 --> 00:30:08.840
+This portion of Talk Python To Me is brought to you by Agency.
+
+00:30:09.480 --> 00:30:15.440
+The agency, spelled A-G-N-T-C-Y, is an open source collective building the internet of agents.
+
+00:30:16.420 --> 00:31:17.400
+We're all very familiar with AI and LLMs these days, but if you have not yet experienced the massive leap that agentic AI brings, you're in for a treat. Agentic AI takes LLMs from the world's smartest search engines to truly collaborative software. That's where agency comes in. Agency is a collaboration layer where AI agents can discover, connect, and work across frameworks. For developers, this means standardized agent discovery tools, seamless protocols for interagent communication, and modular components to compose and scale multi-agent workflows. Agency allows AI agents to discover each other and work together regardless of how they're built, who built them, or where they run. And they just announced several key updates, including interoperability with Anthropics, Model Context Protocol, MCP, a new observability data schema enriched with concepts specific to multi-agent systems, as well as new extensions to the OpenAgentic Schema Framework, OASF.
+
+00:31:18.240 --> 00:32:00.200
+So are you ready to build the internet of agents? Get started with agency and join Crew AI, LangChain, Llama Index, BrowserBase, Cisco, and dozens more. Visit talkpython.fm/agency to get started today. That's talkpython.fm/agency. The link is in your podcast player's show notes and on the episode page. Thank you to the agency for supporting Talk Python To Me. And you can probably do automation accessibility things. Like you could have it run on a schedule or something when you're in your email or something like that. Like, hey, you're in your email. Remember that these two things need to be done now, but not, you know, not hassle you at seven or 8 a.m. or whenever you said to hassle you, but like when you're already doing the thing, right?
+
+00:32:00.360 --> 00:32:25.600
+That's another thing you can do. I'm not even sure if I mentioned this one in the talk, but there are two things that the word notifications means in the macOS world, at least. There's a UN user notification center, which is where you send notifications to the user. But there's also notifications, which are, or NS notification center, which is like, just stuff is happening on the computer. Is your battery empty, like past a certain threshold?
+
+00:32:26.600 --> 00:32:28.960
+Like you said, you're in your email, right?
+
+00:32:29.050 --> 00:32:35.680
+You can ask the operating system, not just what's the front most window, but tell me when the front most window changes, right?
+
+00:32:35.800 --> 00:32:37.340
+Like, send me an event.
+
+00:32:37.900 --> 00:32:39.660
+And there are different operating systems.
+
+00:32:41.060 --> 00:32:45.080
+Unfortunately, a lot of this kind of breaks down on Windows because Windows is, and
+
+00:32:45.080 --> 00:32:45.360
+I say
+
+00:32:45.360 --> 00:32:48.120
+this as unbiasedly as I can, kind of a misery.
+
+00:32:48.390 --> 00:32:50.980
+Like there's so many just terrible APIs on Windows.
+
+00:32:51.200 --> 00:32:53.040
+Everything's possible, but nothing is easy.
+
+00:32:53.520 --> 00:33:03.520
+And so, unfortunately, some of the talk that can very quickly show these rapid examples on Mac and Linux is like, and then on Windows, here's this 900-page book that was published 20 years ago.
+
+00:33:03.760 --> 00:33:05.680
+It's probably the way you have to go learn how to do it.
+
+00:33:06.180 --> 00:33:07.700
+Calm in particular is really a challenge.
+
+00:33:07.760 --> 00:33:07.900
+Let
+
+00:33:07.900 --> 00:33:12.280
+me introduce you to the Win32 API and D column, and you're going to have a good time.
+
+00:33:12.460 --> 00:33:12.620
+You
+
+00:33:12.620 --> 00:33:19.540
+keep thinking like, oh, didn't they get rid of all that when they upgraded to the WinRT API?
+
+00:33:19.780 --> 00:33:23.000
+It's like, nope, Windows is a sedimentary operating system.
+
+00:33:23.120 --> 00:33:23.560
+There's just
+
+00:33:23.560 --> 00:33:26.620
+layers, one on top of another.
+
+00:33:27.240 --> 00:33:28.100
+Layers are formed.
+
+00:33:28.480 --> 00:33:29.220
+They are not removed.
+
+00:33:29.440 --> 00:33:33.620
+I don't want this to be like a trash-talking Windows thing because there's definitely ways to do a lot of this on Windows too.
+
+00:33:33.860 --> 00:33:40.760
+There's message pumps that you can get from like, you open an HWIN in a foreign executable and you can kind of tell what it's doing.
+
+00:33:41.040 --> 00:33:41.140
+Yeah,
+
+00:33:41.140 --> 00:33:45.840
+you can hook into some interesting things there to like track other applications and so on.
+
+00:33:46.200 --> 00:33:52.300
+You know, just to, I don't know if this will appease folks or not, to put a good word out there for Windows.
+
+00:33:53.000 --> 00:33:54.460
+You know, you won't program your own stuff.
+
+00:33:54.740 --> 00:34:02.160
+Like VB6 and some of these rapid GUI tools were ridiculous back in the day, even though they're not, I'm sure you could still build with them.
+
+00:34:02.240 --> 00:34:04.540
+They're just like, I need a button here, a text box there.
+
+00:34:04.640 --> 00:34:06.640
+And when I click this, I need that to become a web browser.
+
+00:34:07.160 --> 00:34:07.280
+Click,
+
+00:34:07.520 --> 00:34:09.940
+you know, and that's like two, two, three minutes and you're good to go.
+
+00:34:10.040 --> 00:34:19.120
+Honestly, a lot of the stuff that is good about the Windows API, you end up kind of going through that portal back in time where you're like, how would I have done this in VB6?
+
+00:34:19.639 --> 00:34:32.980
+And then you like, and unfortunately, as I'm not a heavy Windows user, one of the problems is that like the really good automation targets for Windows are frequently the things like Excel and Word.
+
+00:34:33.419 --> 00:34:35.020
+And I don't have Excel or Word.
+
+00:34:35.200 --> 00:34:41.120
+I got Steam and, you know, Windows Mail and a couple of, you know, open source applications in my Windows install.
+
+00:34:41.800 --> 00:34:50.899
+But if you have, you know, there's also things like Excel wings and like, you know, people who are like heavy Windows users who have more concrete automation use cases for doing things locally.
+
+00:34:51.320 --> 00:34:58.020
+There are a ton of ways that you can get really deep into a really rich API in a lot of the Microsoft first party applications.
+
+00:34:58.510 --> 00:35:04.200
+Which again, this is one of those places where they're kind of like they're pushing people to kind of the web based Office 365 stuff.
+
+00:35:04.420 --> 00:35:08.040
+And like they still have a big investment local desktop platform.
+
+00:35:08.660 --> 00:35:11.220
+But a lot of people are kind of not using it as much.
+
+00:35:11.520 --> 00:35:16.300
+If you get in there and you build a lot of workflows around that desktop stuff, Microsoft will notice.
+
+00:35:16.490 --> 00:35:18.280
+They will want to support you in doing that.
+
+00:35:18.600 --> 00:35:24.160
+And so, yeah, there are lots of tools there for getting what you need to do done.
+
+00:35:24.510 --> 00:35:26.640
+The problem with Windows is really it's not as generalized.
+
+00:35:27.180 --> 00:35:28.800
+Everything has its own API on Windows.
+
+00:35:29.050 --> 00:35:33.780
+So you have to, on the Mac, I can tell you, there's a general way you can learn about an application.
+
+00:35:34.420 --> 00:35:36.840
+And many applications have kind of a half-hearted implementation of it.
+
+00:35:36.980 --> 00:35:43.960
+On Windows, it's much harder for a talk like mine to go and give a cursory level of like, hey, look at this Wonderland.
+
+00:35:44.010 --> 00:35:46.160
+You can kind of get into lots of different things.
+
+00:35:46.230 --> 00:35:47.080
+And here's some brief examples.
+
+00:35:47.320 --> 00:35:49.360
+It's more like, no, no, on Windows, you have to kind of know what you want to do.
+
+00:35:49.799 --> 00:35:58.840
+Once you know and you're willing to dig in really hard on a specific automation target, there's lots there, but it may be somewhat different from system to system.
+
+00:35:59.120 --> 00:36:18.580
+Yeah, I haven't tried it, but a lot of the stuff that you would reach out and interact with for that stuff is in the com bunch of com objects component object model which are tremendously hard to build and get right but once they're there you can i think you can use them pretty easily you can probably use that from python pretty easily and then just look at the documentation for that thing this
+
+00:36:18.580 --> 00:37:02.940
+is the tricky thing this is one of the things i'm enhancing for the next iteration of the talk is that is i dug in a little deeper on those tools there's a tool called called olay view which is an ancient tool if you bring that up and you start digging around in your local system, you can find a lot of these APIs. Win32.com is the, like, from PyWin32, gives you direct access to all that legacy stuff. And this is actually a kind of a great way of illustrating the Python's the second best language for everything. You know, like, older, if you're doing stuff with C# these days, like the modern Microsoft tool chain, they push you really hard towards WinRT and, like, the new way of doing things. And it's really difficult to get into the older, you know, com stuff because they're like, ah, that's deprecated.
+
+00:37:03.040 --> 00:37:05.940
+It's not really, you know, it's not something you're using with.NET.
+
+00:37:06.260 --> 00:37:07.360
+Like, you know, forget about that.
+
+00:37:07.540 --> 00:37:15.760
+Whereas in Python, you can pip install WinRT, pip install PyWin32 right next to each other and be calling both different kinds of APIs.
+
+00:37:16.040 --> 00:37:17.540
+And it's, you know, perfectly easy.
+
+00:37:17.840 --> 00:37:18.440
+Yeah, yeah.
+
+00:37:18.660 --> 00:37:18.840
+Again,
+
+00:37:19.140 --> 00:37:21.320
+because nobody's setting out a roadmap for the Python community.
+
+00:37:21.520 --> 00:37:26.100
+You know, those, and this is kind of what the, why I like giving talks about stuff like this.
+
+00:37:26.420 --> 00:37:30.220
+If you're going to a conference and taking a tutorial, you could learn a whole new thing.
+
+00:37:30.390 --> 00:37:35.540
+You can do a ton of learning in a three-hour tutorial.
+
+00:37:35.800 --> 00:37:39.300
+If you're going to a conference talk, you're getting the...
+
+00:37:39.300 --> 00:37:42.640
+Also, okay, can folks see this screen on the live stream, by the way?
+
+00:37:42.720 --> 00:37:44.460
+On the live stream, they can't, not on the recording.
+
+00:37:44.640 --> 00:37:52.120
+I do have to mention that Michael just brought up the Pi Win 32 page, and there are three maintainers, and the top one is me.
+
+00:37:52.880 --> 00:38:06.280
+Because as much as I'm not a Windows guy, I'm on that list, actually, because when at the advent of binary wheels, I was the one who kind of went in and said, like, PyWin32 has got to have, like, downloadable wheels for every version of Python.
+
+00:38:06.370 --> 00:38:11.060
+I built my own, like, fork of it because I couldn't get access for a while called PyPIWin32.
+
+00:38:11.310 --> 00:38:21.640
+It was just, like, no code changes, just it's built and it has a bunch of hacks to get the paths right so that you could just import it without, like, changing your Windows path or manually opening DLLs.
+
+00:38:22.200 --> 00:38:22.400
+So, yeah.
+
+00:38:22.830 --> 00:38:23.940
+So I've been doing this for a long time.
+
+00:38:24.560 --> 00:38:26.360
+That definitely does this calm stuff.
+
+00:38:26.440 --> 00:38:28.000
+as well. So that's super cool. The
+
+00:38:28.000 --> 00:38:49.900
+reason that I like giving talks about stuff like this is that you can give these pointers out to things where people have been toiling away, building all of this stuff for you in Python for years and years. There's PyWid32. There's Py, I think it's called, is it? Now I'm forgetting which one's the current one, but there's WinRT, the WinRT module on PyPI.
+
+00:38:50.400 --> 00:39:28.960
+There's the Python D-Bus. There's like all of these different tools that people have built integrations for your desktop and your operating system and they're almost all like pretty recently maintained pyg object right like if you want to build new applications with the native toolkit for gnome pyobjc maybe yep pyobjective c and the pyobjective c is also a great example of like there are if you go if you search pypi for pyobjc dash framework you will find a zillion frameworks that are like all the things that have been wrapped so
+
+00:39:28.960 --> 00:39:30.140
+that... Did I search the right thing?
+
+00:39:30.260 --> 00:39:31.880
+Pi OBJC? Pi
+
+00:39:31.880 --> 00:39:32.560
+OBJC.
+
+00:39:32.760 --> 00:39:34.060
+Yeah, you dropped
+
+00:39:34.060 --> 00:39:34.440
+the C.
+
+00:39:34.720 --> 00:39:35.440
+Autonomous driving.
+
+00:39:37.380 --> 00:39:40.680
+If you add a C to the end of the search, you will...
+
+00:39:40.680 --> 00:39:43.220
+Yeah, and if you scroll down, there's like a ton of... Pi
+
+00:39:43.220 --> 00:39:52.760
+OBJC core, mass shortcut, CF network. These are the accounts, these are the important subsystems of macOS, for example, right?
+
+00:39:52.880 --> 00:39:54.180
+Right, and there are...
+
+00:39:54.200 --> 00:39:56.040
+Dozens and dozens of them, right?
+
+00:39:56.150 --> 00:39:58.420
+Yeah, like just scroll and scroll and scroll.
+
+00:39:58.540 --> 00:39:59.960
+We're only to the Bs now.
+
+00:40:01.140 --> 00:40:02.600
+Go with the 14 pages, let's go.
+
+00:40:02.700 --> 00:40:02.940
+There's
+
+00:40:02.940 --> 00:40:07.260
+tons and tons of stuff, like this whole universe that's available to you in Python.
+
+00:40:07.850 --> 00:40:39.940
+And this is why this is like a kind of a, as much as we were talking about very generalized, like, oh, you know, local compute is really powerful and everything, like there's a general aspect to this, but there's a really Python specific aspect to this, which is there's all these libraries and tools that were not just developed as a proof of concept, but are consistently maintained and used pretty heavily in some niche areas where people really are using them in production, but they're not really talking about them all that much because they don't think they're of interest to the broader community.
+
+00:40:40.820 --> 00:40:42.100
+They're not getting out there as much.
+
+00:40:42.280 --> 00:40:46.640
+Nobody's excited about Browser Engine Kit, which is just that thing built into macOS.
+
+00:40:46.920 --> 00:40:48.180
+And then, oh, I'm talking to it from Python.
+
+00:40:48.340 --> 00:40:49.560
+Oh, okay, good for you.
+
+00:40:50.080 --> 00:40:52.980
+It's not like I invented a new async web framework or anything, right?
+
+00:40:52.980 --> 00:40:53.120
+Or
+
+00:40:53.120 --> 00:41:08.120
+like here's my new system for integrating AI, you know, LLMs with cloud image generation and, you know, to defraud parking attendants or whatever the most recent, you know, hot startup is.
+
+00:41:08.860 --> 00:41:16.480
+Or super high scale, you know, numerical computing or GP, it's not even called GP, GPU anymore.
+
+00:41:16.720 --> 00:41:19.260
+It's just like parallel compute.
+
+00:41:19.940 --> 00:41:31.340
+Not all these things make great individualized demos, but the infrastructure, there is a rich soil for you to plant all kinds of different applications in.
+
+00:41:31.600 --> 00:41:44.060
+And actually, this is something that I have not brought up in the talk, but that is something that I would love to kind of get out there as an idea, which is I said like some of these tools, you use them, you get these weird error messages, and you kind of get stuck.
+
+00:41:44.200 --> 00:41:56.840
+And a lot of people get stuck and bounce off attempting to use desktop stuff or local compute stuff because it's not as popular, so there's not as many resources, so people can't easily figure out how to use them.
+
+00:41:57.560 --> 00:42:04.060
+But quite often it's worth doing that little extra bit of work to dig in and figure out what the problem is.
+
+00:42:04.170 --> 00:42:23.740
+Because as frustrating and confusing as it can be to kind of trace through a traceback in somebody else's library that was like supposed to work and just isn't for some reason, doing that debugging and maybe contributing a little bit upstream to some open source thing that's a wrapper for the thing that you want to use is often not nearly as hard as like, oh, well, there's a really good Rust library for this.
+
+00:42:23.770 --> 00:42:25.880
+Let me just switch the whole project over to Rust.
+
+00:42:26.020 --> 00:42:32.600
+They're like, oh, this is really a Unity thing that I'm trying to do, so I'll just report all of my code to C#.
+
+00:42:33.660 --> 00:42:40.880
+It's straightforward because there's tutorials for how to do that, and you don't have to go off by yourself to do this investigation.
+
+00:42:41.460 --> 00:43:02.500
+But it ends up being a lot harder in many cases to go into a completely new ecosystem, redo all of the work that you've had to do, understanding the problem domain, debugging, getting some high quality code to do whatever your primary thing is just to access some new like binding to some library that is available somewhere else.
+
+00:43:02.630 --> 00:43:04.920
+Yeah, those are definitely fraught with the danger.
+
+00:43:05.380 --> 00:43:09.780
+I don't know if you've heard the big rewrite by Dylan Beatty, but I'll put it in the show notes.
+
+00:43:11.020 --> 00:43:15.060
+It's a To the American Pie parody, which is like a six minute song.
+
+00:43:15.170 --> 00:43:17.460
+And he goes through all the generations of rewriting.
+
+00:43:17.660 --> 00:43:18.500
+It's incredible.
+
+00:43:19.420 --> 00:43:20.980
+So just I'll put that as a warning to folks.
+
+00:43:21.050 --> 00:43:22.140
+I haven't heard it, but I've
+
+00:43:22.140 --> 00:43:22.840
+experienced it.
+
+00:43:23.060 --> 00:43:23.160
+Yeah.
+
+00:43:23.580 --> 00:43:24.760
+Then this song will connect with.
+
+00:43:24.990 --> 00:43:40.080
+You know, one of the things when I'm looking at this PyPI listing here, it seems to me that as you're venturing out into these new areas that you're not super experienced with, like I know to do Python, but Objective-C, like didn't even macOS stop doing that?
+
+00:43:40.410 --> 00:43:42.420
+I thought they did Swift, right?
+
+00:43:42.960 --> 00:43:45.200
+There's still routes down to the same stuff, I'm pretty sure.
+
+00:43:45.860 --> 00:43:55.220
+But you could go to your favorite chat coding assistant and say, how would I accomplish this thing accomplish in straight Swift.
+
+00:43:55.860 --> 00:43:57.640
+It can give you the answers using some of these APIs.
+
+00:43:58.200 --> 00:44:02.160
+And then you can say, now imagine there's a compatibility layer, rewrite it in Python.
+
+00:44:02.340 --> 00:44:04.260
+I bet you would be pretty darn close, right?
+
+00:44:04.460 --> 00:44:07.400
+As opposed to if you ask how to do it in Python, it might just go
+
+00:44:07.400 --> 00:44:07.760
+haywire,
+
+00:44:07.920 --> 00:44:10.540
+make up some crazy wrapper, right?
+
+00:44:10.760 --> 00:44:16.640
+This is a place, so I personally have had just a series, like I am an, I guess, an AI skeptic.
+
+00:44:16.780 --> 00:44:22.360
+One of my, the most popular articles on my blog is the grand unified theory of the AI hype cycle.
+
+00:44:23.240 --> 00:44:42.740
+and there are i have concerns about the you know the energy use and the training data provenance the copyright issues and all kinds of you know social stuff like that but fundamentally i am trying to educate myself about these technologies i am trying to use them and like learn what they're good at i see some folks like simon willison having great success
+
+00:44:42.740 --> 00:44:44.640
+yeah he's leading the way for sure stuff
+
+00:44:44.640 --> 00:45:03.820
+and i try to do some of this stuff and they just face plant for me really hard all the time. I have never had an LLM successfully do something that I want to do, possibly because the stuff that the LLMs are good at, I can do in my sleep. And so I just like, I've already typed all the code the LLM would type for me faster than it could get it out.
+
+00:45:04.060 --> 00:45:23.900
+And then I hit a problem like, oh, how do I do a business chat integration on macOS with, you know, PyOpC framework business chat. And it has no idea because there's no example code. It LLM is really good at doing a particular kind of thing with code.
+
+00:45:23.990 --> 00:45:36.160
+Like if you're getting a lot of really solid, like quick, accurate, correct implementations, that probably means that there's just a ton of open source code that already does what you need.
+
+00:45:36.240 --> 00:45:36.420
+Right.
+
+00:45:36.540 --> 00:45:37.440
+And libraries and examples.
+
+00:45:37.690 --> 00:45:37.840
+Yeah.
+
+00:45:38.240 --> 00:45:38.300
+Right.
+
+00:45:38.460 --> 00:45:40.900
+You'd probably be better off just using a library that did that.
+
+00:45:41.150 --> 00:45:53.280
+And not to say that there's no cases where it can integrate two things, but it can integrate two things that are already kind of speaking the same language that are largely in the same area of the token vector space in the model, right?
+
+00:45:53.410 --> 00:46:13.440
+Like there's overlap between the way that these things are expressed and being off the beaten path with some of these libraries that are less frequently used and that do require you to like know the Objective-C API, know the C# API, know the translation rule, and then express the thing in terms of the translation rule.
+
+00:46:14.220 --> 00:46:20.360
+Like, yeah, it can be really, like you're definitely much better off in terms of both if you're using LLMs, using LLMs.
+
+00:46:20.540 --> 00:46:26.300
+But also, even if you're just looking for reference material, learn the translation rules because they're often quite simple.
+
+00:46:26.920 --> 00:46:31.200
+And then look for the example in the other language, even if you don't know the other language.
+
+00:46:31.370 --> 00:46:32.920
+Like, I don't really know Objective-C.
+
+00:46:33.170 --> 00:46:37.020
+I don't really, like, I mean, I know C and I, like, can kind of read it.
+
+00:46:37.260 --> 00:46:38.920
+There's not actually all that much to Objective-C.
+
+00:46:39.320 --> 00:46:40.460
+I definitely don't know C#.
+
+00:46:41.180 --> 00:46:44.340
+And I've gone from, and C# definitely has some syntax.
+
+00:46:44.700 --> 00:46:46.960
+Like, there's at signs and square brackets all over the place.
+
+00:46:47.150 --> 00:46:47.820
+Yeah, a lot of symbols.
+
+00:46:47.960 --> 00:46:48.140
+I
+
+00:46:48.140 --> 00:46:53.620
+don't really know what this means, but it is nevertheless pretty straightforward to look up an example.
+
+00:46:53.980 --> 00:47:02.720
+Because most of the examples for demos of doing the thing that you need to do with an API are going to be a flat sequence of method calls.
+
+00:47:03.100 --> 00:47:05.060
+Or just do this, then do this, then do this, then do this.
+
+00:47:05.340 --> 00:47:10.160
+And you're like, okay, well, I know it's dash greater, greater question mark for some reason.
+
+00:47:10.220 --> 00:47:12.720
+I don't know why they're doing that, but that's the symbol in this language.
+
+00:47:13.620 --> 00:47:19.560
+But I know that when I see that, that means I have to use two pairs of parentheses in Python or whatever.
+
+00:47:20.020 --> 00:47:24.580
+That is a made-up example from a fake language, but there are lots of very straightforward translation rules.
+
+00:47:24.770 --> 00:47:34.740
+And just as an example, there's pyobjective-c uses the objective-c runtime, which Swift also has its own stuff that isn't necessarily always exposed to this.
+
+00:47:34.750 --> 00:47:41.020
+But the core of the frameworks is all exposed via the objective-c runtime to Swift in the same way that it's exposed to Python.
+
+00:47:41.520 --> 00:47:48.520
+If you look at a method name, there's a rule, you replace all the colons with underscores, and then that's kind of the method name that you would use.
+
+00:47:49.320 --> 00:47:54.780
+Rubicon, which is a different Objective-C bridge that works on iOS, has a similar set of rules.
+
+00:47:54.810 --> 00:48:00.300
+They're not exactly the same, but once you know what they are, you can just apply them over and over again.
+
+00:48:00.480 --> 00:48:08.700
+And if you can find an example of the C version, you can work out the Python version for yourself pretty straightforwardly.
+
+00:48:08.800 --> 00:48:18.640
+Yeah, and I agree with you about the farther afield you go, the harder it gets, which is why I imagine like you try to get it to do it in the one language and you try to get it to help you convert that quick.
+
+00:48:18.790 --> 00:48:19.300
+You know what I mean?
+
+00:48:19.380 --> 00:48:22.220
+It's going to have a better chance than some super niche thing, I imagine.
+
+00:48:22.420 --> 00:48:22.580
+Although
+
+00:48:22.580 --> 00:48:34.720
+ironically, there, well, and, you know, in the PyJC docs, you get the same kind of like click on this tab for Python, this tab for Objective-C as you get in Apple's official docs where it's click on this tab for Objective-C, this tab for Swift.
+
+00:48:35.040 --> 00:48:36.560
+It's a similar type of translation.
+
+00:48:36.680 --> 00:48:37.420
+That's pretty handy, yeah.
+
+00:48:37.500 --> 00:48:37.760
+But
+
+00:48:37.760 --> 00:48:43.960
+when you have one of the things, so like at first it seems like, oh, this must be such a pain in Python.
+
+00:48:44.200 --> 00:48:47.360
+You're constantly having to jump back and forth and do all this mental translation.
+
+00:48:47.570 --> 00:48:55.360
+And while that is true, there's also the fact that if you're like writing a Swift app, like I've done relatively little of this type of development.
+
+00:48:55.470 --> 00:48:58.380
+But like I have run through the kind of like Swift tutorials and whatnot.
+
+00:48:58.540 --> 00:48:59.760
+So I understand I use Xcode.
+
+00:49:00.440 --> 00:49:04.060
+I've done a bunch of stuff with code signing and like reverse engineering how to do that.
+
+00:49:04.120 --> 00:49:08.140
+sometimes involves watching what Xcode would do and then trying to figure out what happened.
+
+00:49:08.720 --> 00:50:32.400
+So I have done the kind of happy path version. And the thing is, you don't get a REPL with Objective-C or with Swift or C#, right? And the fact that you can, even though you do have to do this tedious translation sometimes for these types of APIs, it's almost the same thing as like, if you're just doing regular web development and you're reading a JSON API and the SDK is in JavaScript, right? You don't typically think of that as being like a laborious, difficult translation step. You just look at the JavaScript and if the JavaScript is not telling you what you need, you go and you just look at the HTTP underlying it, right? Like, and you know how to parse JSON and you know how to deal with HTTP resources. And it's the same kind of mental translation. This is a pretty straightforward thing that programmers do all the time without even thinking about it. And one of the things that makes Python a lovely language to do that, if you're working in a web context, is you, Python-M async.io or you run Python as a REPL and you just start fiddling around with some example data. You load it up and you start calling the APIs. And for a lot of these APIs, the difficulty of the extra translation step, the absence of a specific tutorial, is easily eclipsed and then some from the fact that you can do all of this development kind of iteratively and interactively in not necessarily even just a REPL, but also like a Jupyter Notebook.
+
+00:50:32.650 --> 00:50:40.360
+Like a lot of these things, open up a Jupyter Notebook, start calling the APIs that you need to call, you know, record the output, have a look at what the OS is telling you.
+
+00:50:40.440 --> 00:50:41.740
+There are exceptions to that.
+
+00:50:42.200 --> 00:50:55.300
+In particular, in like, if you're doing like full-on desktop app development, sometimes you get into these weird places where like you really need like an app bundle on the Mac or you need like some registry keys set on Windows that point at a particular executable.
+
+00:50:55.430 --> 00:51:02.540
+And so you do sometimes get into these places where like, okay, you kind of need to participate as if you're, living in the native developer ecosystem.
+
+00:51:02.660 --> 00:51:14.060
+But even then, you can write yourself a little, you know, like write a Jupyter kernel that like you can connect to that just has that little stub executable on the side or has the app bundle that you can connect to.
+
+00:51:15.140 --> 00:51:29.580
+And because there's lots of ways to programmatically create a REPL in Python, or even just if you don't even want to get that fancy, just a text field that'll eval some Python to interactively discover whatever it is that you need to learn about the API.
+
+00:51:29.920 --> 00:51:31.780
+So you got a lot of powerful tools.
+
+00:51:32.500 --> 00:51:36.660
+But again, once you've kind of determined like, okay, I'm just going to use Python for this.
+
+00:51:36.820 --> 00:51:39.420
+I have this problem that I want to solve locally on my computer.
+
+00:51:39.900 --> 00:51:47.820
+You can bring all of, you have to kind of bridge these gaps to do some things that would be a little bit easier if you were using the native tools.
+
+00:51:48.340 --> 00:51:55.560
+But what you get for paying that cost is you get to bring all of your Python tools along with you and do all of this cool stuff that you already know how to do.
+
+00:51:55.720 --> 00:52:00.780
+And on top of talking about the different ways to check it out, We've got really nice IDEs, right?
+
+00:52:01.360 --> 00:52:05.380
+Especially PyCharm and VS Code and 100 variants of that thing.
+
+00:52:06.560 --> 00:52:10.400
+You have really nice debuggers to go through and understand stuff on top of it.
+
+00:52:10.450 --> 00:52:13.880
+And sometimes you do in other places, but sometimes you don't.
+
+00:52:13.980 --> 00:52:16.060
+And maybe they cost money and you don't have that thing.
+
+00:52:16.360 --> 00:52:16.440
+And
+
+00:52:16.440 --> 00:52:26.600
+that process of having to learn a whole new debugger and a whole new way of getting your code to run, not to mention learning a new programming language, that's a big cost.
+
+00:52:27.260 --> 00:52:29.640
+And it may not feel like it Again, it's straightforward.
+
+00:52:30.050 --> 00:52:33.300
+It doesn't involve a lot of hard thinking to do all those tutorials.
+
+00:52:34.200 --> 00:52:37.600
+But it does mean that, you know, you don't get to bring your superpowers with you.
+
+00:52:37.700 --> 00:52:40.260
+Well, there's also a Node.js type of argument to make.
+
+00:52:40.600 --> 00:52:49.060
+And that is, if you can write your desktop app in Python, and it happens to be talking to services you own, you can keep it in the same language.
+
+00:52:49.380 --> 00:52:52.800
+Maybe not the same frameworks, because you're talking NS object sort of deals.
+
+00:52:53.040 --> 00:52:57.080
+But still, it's closer to one unified programming language.
+
+00:52:57.340 --> 00:52:57.760
+And
+
+00:52:57.760 --> 00:52:59.820
+you can do it as much as makes sense, right?
+
+00:52:59.940 --> 00:53:05.480
+Like you can have your, maybe it makes sense to use Positron, right?
+
+00:53:05.880 --> 00:53:09.100
+Which is the Beware browser-based tool.
+
+00:53:09.200 --> 00:53:16.620
+It's like Electron, but it uses Python instead of like the Chromium electron shell.
+
+00:53:17.180 --> 00:53:24.060
+And so what that means is that you can say, well, I'm going to write like a Django app and I'm going to do everything kind of a plain vanilla backend way.
+
+00:53:24.130 --> 00:53:27.120
+But I want this one thing from a local desktop app.
+
+00:53:27.860 --> 00:54:01.140
+and so I'll write it mostly that way and then I'll use Positron and now I've got all the power of Python in addition to all the power of the web stuff that I was using and you can move that seamlessly from the back end to the local compute as you need it it's really that agility, that portability of you're not going to tell me where I can run my code that's the spirit that I would like to inculcate in anybody who hears this talk Because like, if you can run Python anywhere, nobody can tell you no.
+
+00:54:02.380 --> 00:54:05.820
+I'm trying to think of the conference hat or t-shirt slogan for that one.
+
+00:54:06.540 --> 00:54:08.320
+We're going to put down our Obey the GPO.
+
+00:54:08.880 --> 00:54:09.560
+I'm going to put that one on.
+
+00:54:09.900 --> 00:54:15.140
+Let's take just a couple of moments and talk about maybe three quick libraries that we could use.
+
+00:54:15.280 --> 00:54:18.120
+And then I want to talk about LLMs actually just a little bit.
+
+00:54:18.120 --> 00:54:24.240
+But let's talk about NotifyPy and then your two projects, QuickMac Hotkey and QuickMac App.
+
+00:54:24.360 --> 00:54:27.580
+I'm not as familiar with Notify.py.
+
+00:54:27.760 --> 00:54:29.220
+I've played with it a tiny bit.
+
+00:54:30.660 --> 00:54:42.380
+I actually recently added, because macOS has some weird restrictions on the way notifications work, I actually just added a bunch of stuff to QuickMac app relatively recently to do notifications there.
+
+00:54:43.440 --> 00:54:48.380
+But yeah, Notify.py, if what you need is a background notification, Notify.py is a much better place to start.
+
+00:54:48.430 --> 00:54:48.560
+Yeah,
+
+00:54:48.650 --> 00:54:50.020
+so it looks like a pretty simple API.
+
+00:54:50.140 --> 00:54:51.560
+I haven't really done much with it either.
+
+00:54:51.710 --> 00:55:00.080
+The one that I've used, which I had on the screen for a minute, but we never got to it is Rump's ridiculously uncomplicated macOS Python status bar apps that just live.
+
+00:55:00.240 --> 00:55:03.320
+I've got one running right up in the status bar of my app right now.
+
+00:55:03.360 --> 00:55:03.900
+And I love it.
+
+00:55:03.980 --> 00:55:04.160
+Cool.
+
+00:55:04.300 --> 00:55:04.760
+What does it do?
+
+00:55:04.920 --> 00:55:24.120
+I find myself very often having to take things like, you know, over on Talk Python or for course recordings or whatever, like I have to take this title, developer trends in 2025 or whatever it is, and then turn it into kind of this, the slug that you might have up here, like lowercase, no symbol.
+
+00:55:24.380 --> 00:55:26.840
+Something could be a file or a URL or something like that.
+
+00:55:27.260 --> 00:55:28.780
+So it does a bunch of operations around that.
+
+00:55:28.880 --> 00:55:38.300
+Like it'll, whatever is in the clipboard, it'll trim it, lowercase it, uppercase it, turn it to this slug type thing, or even make it pastable into Excel if it comes out of HTML, stuff like that.
+
+00:55:38.400 --> 00:55:43.780
+That is exactly the kind of thing, like you just rattled off like nine different things that you need to do.
+
+00:55:43.800 --> 00:55:45.640
+And it's such a simple thing.
+
+00:55:45.740 --> 00:55:47.920
+I'm sure you did it probably a thousand times.
+
+00:55:48.920 --> 00:55:49.400
+Oh, yeah.
+
+00:55:50.120 --> 00:55:51.560
+It's so brutal to type it out.
+
+00:55:51.680 --> 00:55:53.100
+And I'm like, oh, are you serious again?
+
+00:55:53.400 --> 00:55:59.260
+You put that little status bar app in there and it just takes a whole element of pain out of your day.
+
+00:55:59.440 --> 00:55:59.640
+Absolutely.
+
+00:55:59.940 --> 00:56:03.020
+It uses rumps and it uses Piperclip and that's it.
+
+00:56:03.050 --> 00:56:05.420
+And it's, but it's, it's not that advanced what it does.
+
+00:56:05.530 --> 00:56:11.080
+I mean, some of them are literally one line return, string lower, string upper, string trim, but it's so good.
+
+00:56:11.200 --> 00:56:14.300
+And you get to express it in a language you already know, right?
+
+00:56:14.420 --> 00:56:17.380
+Like string lower, string upper, string trim, string, you know, title case, whatever.
+
+00:56:17.720 --> 00:56:22.600
+Like there's so many things you can do in Python that are just one method that you just already know how to do, so it seems trivial.
+
+00:56:23.280 --> 00:56:31.360
+But the number of keystrokes and motions on your keyboard and mouse movements to replicate that incredibly simple thing is like a lot, especially if you're doing it all the time.
+
+00:56:31.450 --> 00:56:34.980
+So yeah, I guess Rumps would be a competitor to QuickMac app, probably.
+
+00:56:35.280 --> 00:56:36.680
+It's really, really limited.
+
+00:56:36.770 --> 00:56:38.420
+I think yours is more capable.
+
+00:56:38.800 --> 00:56:41.800
+It's good if that's what you want, but you cannot ask much of it.
+
+00:56:42.080 --> 00:56:42.440
+I mean.
+
+00:56:42.560 --> 00:56:54.280
+One of the things that I'm doing, this is kind of veering off into a different talk and like other stuff that I'm doing, but I have also been trying really hard to do more of this stuff for real in a way to ship to other users.
+
+00:56:54.960 --> 00:57:05.020
+This talk is more, what I'm going to be talking about at PyCon is more about doing exactly the kind of thing that you just said, like solving problems for yourself, using your local compute resources for you.
+
+00:57:05.620 --> 00:57:11.740
+But I am simultaneously trying to productionize this stuff to provide examples of like, and you can take it further.
+
+00:57:12.120 --> 00:57:15.660
+And because there are examples out there, like Dropbox was a Python app for 15
+
+00:57:15.660 --> 00:57:16.060
+years.
+
+00:57:16.600 --> 00:57:21.940
+And so clearly, if you want to, you can make pretty successful Python desktop apps.
+
+00:57:22.660 --> 00:57:33.260
+But there are so few examples, and they're so far between, and they're so specialized that nobody's talking about the Python-ness of Dropbox.
+
+00:57:33.420 --> 00:57:33.880
+That's not like a
+
+00:57:33.880 --> 00:57:34.520
+talking point.
+
+00:57:34.520 --> 00:57:37.860
+You may have the only desktop talk at PyCon, for example.
+
+00:57:38.000 --> 00:57:38.460
+Not true.
+
+00:57:39.080 --> 00:57:43.820
+But the one other that I'm sure is there is Russell, who's in the slot right against me.
+
+00:57:44.820 --> 00:57:47.780
+That one time, I guess, is the desktop time.
+
+00:57:48.450 --> 00:57:50.440
+But there is so much code out there.
+
+00:57:51.240 --> 00:57:53.340
+I maintain hardly any of these libraries.
+
+00:57:53.970 --> 00:57:57.940
+I have my two things, which are wrappers around other things that already exist.
+
+00:57:58.180 --> 00:57:59.680
+All my stuff is higher level.
+
+00:58:00.640 --> 00:58:04.500
+And I think you've probably used the phrase dark matter developers in the past.
+
+00:58:04.780 --> 00:58:06.220
+Yes, I haven't thought about that for a while.
+
+00:58:06.220 --> 00:58:08.000
+But yes, I love that phrase so much.
+
+00:58:08.140 --> 00:58:08.300
+One
+
+00:58:08.300 --> 00:58:19.220
+kind of dark matter developer are just the folks doing kind of workaday stuff in banks that don't go to, and insurance companies are not blogging or tweeting or xing or whatever about it, right?
+
+00:58:19.380 --> 00:58:22.260
+They're just doing a job with some code and we never hear from them.
+
+00:58:22.370 --> 00:58:24.340
+And they're like most Python programmers.
+
+00:58:24.880 --> 00:58:25.480
+Case in point, right?
+
+00:58:25.600 --> 00:58:26.420
+Like most of them use Windows.
+
+00:58:27.040 --> 00:58:41.400
+But there's another version of that, which is like, there's a huge part of the open source community that's maintaining all kinds of packages to do all kinds of esoteric things with Python that we also don't, that aren't like plugged into the core development ecosystem that we don't necessarily see at conferences.
+
+00:58:41.960 --> 00:58:48.040
+And those folks who are doing more specialized open source infrastructure deserve more celebration.
+
+00:58:48.420 --> 00:58:51.520
+And desktop apps or desktop integrations are one part of that.
+
+00:58:51.520 --> 00:58:58.500
+But there's lots of other signal processing things and other esoteric areas that not everybody needs.
+
+00:58:58.680 --> 00:59:00.780
+And so they just have less of an audience.
+
+00:59:01.320 --> 00:59:08.120
+But again, the fact that Python is the second best language for everything means that anytime you need to do two things at once, it's the best language.
+
+00:59:08.920 --> 00:59:13.020
+And it's all those second tier folks that are out there doing the specialized libraries.
+
+00:59:13.700 --> 00:59:22.420
+Like the generalized libraries, the, you know, Django's and Flasks and SQL alchemies of the world, like that stuff is super important.
+
+00:59:22.580 --> 00:59:24.940
+And the language would absolutely not be what it is without that.
+
+00:59:25.220 --> 00:59:27.320
+But we're all kind of aware of that stuff.
+
+00:59:27.510 --> 00:59:31.600
+And it's that second tier that really makes Python like turbocharged powerful.
+
+00:59:31.800 --> 00:59:34.780
+Right. You come to it in your little weird space of the world.
+
+00:59:34.960 --> 00:59:36.180
+They already have libraries for that.
+
+00:59:36.340 --> 00:59:37.960
+And we've all got something like that, right?
+
+00:59:38.040 --> 00:59:42.620
+Like no matter what industry you work in, you're using some set of libraries for doing that stuff.
+
+00:59:42.810 --> 00:59:50.600
+Even if you're working in like mass market social media or whatever, you're still probably using some cluster management tools or something that like not everybody is using.
+
+00:59:51.230 --> 00:59:56.140
+That is that type of more specialized open source that's like still super important.
+
+00:59:56.240 --> 00:59:58.900
+Let me riff on one more thing here real quick and see what you think about this.
+
+00:59:58.980 --> 01:00:01.540
+So I'll tell you about an app that I wrote last week.
+
+01:00:01.690 --> 01:00:02.260
+I think it was last week.
+
+01:00:02.640 --> 01:00:03.900
+It must have been the beginning of last week.
+
+01:00:04.060 --> 01:00:04.920
+It's been a little while.
+
+01:00:05.220 --> 01:00:19.460
+is I want a program that when I'm working in a project in a Git repository, I can ask an LLM, do a better job than Michael's four words to summarize the commit I'm about to make to Git.
+
+01:00:20.380 --> 01:00:25.440
+I want to say updated dependencies or more error checking, right?
+
+01:00:25.460 --> 01:00:27.580
+But not what I did, why I did it, right?
+
+01:00:28.060 --> 01:00:31.060
+I should do better, but I find in real life I don't.
+
+01:00:31.460 --> 01:00:33.060
+And so I said, well, okay, what can I do?
+
+01:00:33.160 --> 01:00:44.420
+well, I'm going to use this thing called LM Studio, which is cool because it lets you download stuff from Hugging Face, like most of the models that you know about, the llamas and the mistrals and so on, right?
+
+01:00:44.780 --> 01:00:52.980
+But it also, the second tab that looks like a terminal, it runs a OpenAI compatible server on your local machine.
+
+01:00:53.420 --> 01:00:55.920
+I have my Mac Mini that has the most RAM.
+
+01:00:55.960 --> 01:00:56.940
+I just leave it running there.
+
+01:00:57.320 --> 01:01:00.940
+And then anywhere on my local network, I can just use it to run code against.
+
+01:01:01.020 --> 01:01:13.640
+And so I wrote maybe 100 lines of code that'll go through a git diff, take all those pieces, put a good prompt in front of it and send it over there and then get it back in a structured way that has like a title, but then a description below it.
+
+01:01:13.640 --> 01:01:17.740
+If you go into detail, like GitHub supports and so on and cost nothing.
+
+01:01:18.320 --> 01:01:23.600
+It doesn't really hurt the environment very much because it's just running for like four seconds on my local machine.
+
+01:01:23.780 --> 01:01:29.660
+And my iStats menu says it uses seven watts for four seconds, which is like a LED light bulb for four seconds.
+
+01:01:30.460 --> 01:01:34.040
+It's not nothing, but it's not melting the earth level of GPU usage.
+
+01:01:34.200 --> 01:01:34.720
+You know what I mean?
+
+01:01:35.300 --> 01:01:38.280
+So, and it's also local, so it's not sharing your data, right?
+
+01:01:38.480 --> 01:01:42.380
+So I think that this, for people who are like, I want to build something local, but it kind of needs an LLM.
+
+01:01:43.120 --> 01:01:44.460
+I think this is a pretty neat thing.
+
+01:01:44.660 --> 01:01:48.540
+Whatever models you have installed, if you ask for them, it'll load them up and just answer your question with it.
+
+01:01:48.640 --> 01:01:49.540
+It's pretty neat.
+
+01:01:49.640 --> 01:02:05.380
+I do feel like there's still a pretty big, like one of the things that has stopped me from doing more stuff like that is really the, and this is really frustrating, attempting to like search around on Hug and Face, Because I feel like there are no what Simon termed vegan models that I can find.
+
+01:02:05.930 --> 01:02:08.400
+The ones that are like all the data was collected consensually.
+
+01:02:10.660 --> 01:02:15.260
+But if we could square that circle, and I think some people are working on that.
+
+01:02:16.480 --> 01:02:19.180
+Again, like you said, seven watts for a few seconds.
+
+01:02:20.160 --> 01:02:27.380
+That level of power utilization, not only is it less, but also you can know if you're, for example, I've got solar.
+
+01:02:27.800 --> 01:02:32.000
+And so I know when it's basically free in terms of environmental impact.
+
+01:02:32.320 --> 01:02:32.440
+Yeah.
+
+01:02:32.640 --> 01:02:33.120
+And
+
+01:02:33.120 --> 01:02:34.920
+I can run it at those times.
+
+01:02:35.560 --> 01:02:43.420
+There's also the fact that if we could square the training data problem, you get the privacy concerns because it's not actually...
+
+01:02:43.420 --> 01:02:46.460
+A lot of the privacy concerns with LLMs are just, it's a server.
+
+01:02:46.900 --> 01:02:47.920
+Nothing to do with LLMs, right?
+
+01:02:48.560 --> 01:02:51.860
+You're giving this data to another place and who knows.
+
+01:02:52.120 --> 01:02:54.520
+You are giving it to Sam Altman, personally.
+
+01:02:54.810 --> 01:02:55.920
+You can do what he wants with it.
+
+01:02:56.460 --> 01:03:03.000
+The other part that's bad about LLMs is they could turn around and be turned into training data, which then gets turned as a result.
+
+01:03:03.120 --> 01:03:08.140
+Not just they have it, but it might become the way that the thing speaks to others, which is even worse.
+
+01:03:08.260 --> 01:03:11.220
+By doing local compute, you still have to worry about the training data.
+
+01:03:11.360 --> 01:03:15.700
+You still have to worry a little bit about the environmental usage, but you can keep your own eye on it.
+
+01:03:15.820 --> 01:03:18.700
+You can measure it and decide whether it's useful.
+
+01:03:20.080 --> 01:03:23.100
+You're probably doing transparency effects on your desktop.
+
+01:03:24.660 --> 01:03:25.560
+Yeah, just give people a sense.
+
+01:03:25.820 --> 01:03:27.280
+Right now I'm doing a live stream.
+
+01:03:27.360 --> 01:03:33.160
+So I'm doing screen sharing and you and I are talking and it's running at 17 watts on my Mac Mini.
+
+01:03:33.340 --> 01:03:34.800
+So yeah, it's pretty mellow.
+
+01:03:35.100 --> 01:03:37.840
+I think this solves two of the three problems, Glyph.
+
+01:03:37.840 --> 01:03:45.360
+I think it solves or avoids pretty much the environmental effect, at least from running the questions, not training the models in the first place.
+
+01:03:45.760 --> 01:03:46.640
+And it solves the privacy.
+
+01:03:47.180 --> 01:03:53.980
+It certainly doesn't address what I generally consider to be more or less copyright theft that these things constitute.
+
+01:03:54.040 --> 01:03:55.340
+but they already exist.
+
+01:03:55.500 --> 01:03:58.100
+And you're saying like, I dislike that.
+
+01:03:58.180 --> 01:03:59.440
+It's not going to make it go away.
+
+01:03:59.440 --> 01:04:04.120
+It just means you're somewhat disadvantaged, which is a tough place to be, I think, honestly.
+
+01:04:04.480 --> 01:04:15.840
+Another thing that I find LLMs often teach us this interesting lesson and this local models can actually make it clearer because they're worse, like because they're quantized down to be less powerful.
+
+01:04:16.440 --> 01:04:20.480
+You can see this a little bit more, which is like that generating the commit message thing.
+
+01:04:20.740 --> 01:04:24.040
+Like if that is being useful to you, than no shade or anything.
+
+01:04:24.120 --> 01:04:29.460
+I think that's definitely better than just typing TK, TK, TK or whatever, which is probably what I'd do.
+
+01:04:30.440 --> 01:04:31.320
+Just the letter A.
+
+01:04:32.320 --> 01:04:39.240
+But it does also kind of highlight, well, the thing you really want to do in a commit message is you really want to say why, not what.
+
+01:04:39.620 --> 01:04:46.140
+Because the what, the thing that the LLM can extract from the summary is always the less interesting thing.
+
+01:04:46.500 --> 01:04:52.180
+And so quite often when you're asking an LLM to do something, that's a good hint that the interesting part is somewhere else.
+
+01:04:52.820 --> 01:04:58.340
+and so it's useful to take a step back and on the commit message thing just say like why am I doing this?
+
+01:04:58.580 --> 01:04:59.160
+Yes, absolutely.
+
+01:04:59.900 --> 01:05:07.460
+So you know if I don't use the result when I ask the question it might at least remind me what I did with great detail so I can write a better message.
+
+01:05:08.120 --> 01:05:17.260
+Sometimes it goes because we were no longer checking for the user possibly not being logged in which would have caused a crash I'm like dang, it figured that out.
+
+01:05:17.440 --> 01:05:19.240
+Brilliant, that's the commit message you know what I mean?
+
+01:05:19.840 --> 01:05:25.600
+But it's still, it's an interesting tool in the toolbox And being local, I think it counts as part of this story.
+
+01:05:25.610 --> 01:05:28.240
+So I just thought I'd throw that out there because I've had a lot of success with that lately.
+
+01:05:28.660 --> 01:05:47.400
+If we do figure out the training data thing, which again, there are people working on that, we will still need the local compute part of the story to have like a fully, like if we solve the training data thing and somebody does like a good fully consensual, like everybody's on board with the training data model, and then it's just running remotely and it's still a cloud service and you're still sending all your training data to it.
+
+01:05:47.460 --> 01:05:53.320
+But like, well, so yeah, so having that, the power to run these things locally and leverage the power of local compute.
+
+01:05:53.660 --> 01:06:23.400
+And as you said, right, like hook it in with an automation that you wrote again in Python, it having that agency and that power at your fingertips is super useful and a super important part of the puzzle, not just for like, like, and a lot of the complaints about LLMs are really just complaints about like automation and some of the problems with the computing industry and the internet more broadly and bringing your compute local and taking full control over and responsibility for it can really address a lot of those problems.
+
+01:06:23.650 --> 01:06:26.260
+And I think it's something that we need to be thinking about all the time, right?
+
+01:06:26.340 --> 01:06:31.080
+In the same way that when you're talking about, you know, a lot of the stuff we started off talking about with cloud compute, right?
+
+01:06:31.200 --> 01:06:34.820
+Like, do you need to have, you know, all this, these esoteric services?
+
+01:06:35.030 --> 01:06:40.140
+Do you need to have so many resources deployed if you're not even getting particularly good latency?
+
+01:06:40.480 --> 01:06:40.980
+Could it
+
+01:06:40.980 --> 01:06:41.140
+just
+
+01:06:41.140 --> 01:06:45.280
+be in Funk Tools LRU cache decorator instead of a whole other service, right?
+
+01:06:45.420 --> 01:06:46.520
+Could you just do it locally?
+
+01:06:46.740 --> 01:06:48.480
+Could you do it radically more simply?
+
+01:06:48.660 --> 01:06:50.900
+What if it was just a Python module?
+
+01:06:51.280 --> 01:06:52.720
+Could you just make it a Python module?
+
+01:06:53.240 --> 01:06:58.500
+And there's so many places, not everywhere, but there are so many places where the answer to that is yes, it could.
+
+01:06:58.800 --> 01:07:00.940
+And in those cases where you can answer yes, you
+
+01:07:00.940 --> 01:07:01.640
+should totally do it.
+
+01:07:01.720 --> 01:07:03.240
+Well, very inspiring talk.
+
+01:07:03.680 --> 01:07:08.980
+I will give a two-part call to action at the end of this, maybe three.
+
+01:07:09.400 --> 01:07:14.300
+One, if you catch this on the YouTube live stream, go see Glyph's talk at PyCon.
+
+01:07:14.820 --> 01:07:15.220
+That'd be great.
+
+01:07:15.520 --> 01:07:21.300
+If you listen to this in the recorded version, edited and shipped to the podcast players, PyCon will be in the rearview mirror.
+
+01:07:21.520 --> 01:07:25.040
+So look for the recording of his talk coming down to PyCon.
+
+01:07:25.580 --> 01:07:27.560
+Or worst case scenario, check out the PyBay one.
+
+01:07:28.000 --> 01:07:28.520
+What do you want to add?
+
+01:07:28.640 --> 01:07:29.700
+People want to program their own computers.
+
+01:07:29.960 --> 01:07:31.060
+You've been very inspirational.
+
+01:07:31.260 --> 01:07:40.720
+They should follow me, glyph at mastodon.social, where I'm constantly talking about programming my own computer and all of the misery that comes along with it. And I also do some streaming.
+
+01:07:40.720 --> 01:07:41.320
+You mean character
+
+01:07:41.320 --> 01:07:41.560
+building?
+
+01:07:42.580 --> 01:07:51.620
+Yes, yes. Character building. Learning. We're all, we're learning and growing. That's what we're doing. And yeah, I've got a couple of libraries. You mentioned QuickMac Hotkey, QuickMac App.
+
+01:07:52.030 --> 01:07:55.840
+I've got a tool called Encrust, which is for code signing Mac
+
+01:07:55.840 --> 01:07:56.300
+applications.
+
+01:07:56.620 --> 01:08:03.140
+That is not to be underestimated. That is a huge roadblock to going from programming my computer to programming other people's computer.
+
+01:08:03.400 --> 01:08:05.480
+I am using it in real life.
+
+01:08:06.040 --> 01:08:13.940
+Speaking of, you know, we were talking earlier about people who like other folks in niche areas who are doing things with Python that you may not hear about as much.
+
+01:08:14.280 --> 01:08:23.140
+One of my favorite things about Incrust is that Just Van Rossum uses it to ship some kind of app that has something to do, I'm pretty sure, with fonts.
+
+01:08:23.600 --> 01:08:25.220
+That's about as much as I know about it.
+
+01:08:25.779 --> 01:08:30.859
+But he is like actually shipping an app to users and I am using Incrust to ship a couple different apps.
+
+01:08:31.359 --> 01:08:39.940
+They're still kind of alpha quality, but they're the sort of alpha quality that does like, and Crust also nowadays not only does the Mac App Store, or no, sorry, not Mac App Store.
+
+01:08:40.100 --> 01:08:41.620
+So it still has yet to do the App Store stuff.
+
+01:08:42.020 --> 01:08:48.060
+It does Mac notarization and it does code signing, but it also does Sparkle, which if you're not
+
+01:08:48.060 --> 01:08:48.359
+familiar.
+
+01:08:48.359 --> 01:08:48.440
+Oh, yeah.
+
+01:08:49.060 --> 01:08:49.940
+This app has an update.
+
+01:08:50.120 --> 01:08:51.000
+Would you like to install it?
+
+01:08:51.100 --> 01:08:52.620
+Click enter to restart and install.
+
+01:08:52.799 --> 01:08:52.900
+It
+
+01:08:52.900 --> 01:08:54.759
+will generate and publish those.
+
+01:08:55.279 --> 01:08:58.480
+Like it integrates the tooling to set that up for you.
+
+01:08:58.759 --> 01:09:04.319
+And I did all the testing to make sure that you can ship an actual Python app and it installs properly and all that stuff.
+
+01:09:04.420 --> 01:09:05.440
+And crusty, you don't say.
+
+01:09:05.660 --> 01:09:06.240
+Sounds very cool.
+
+01:09:06.420 --> 01:09:06.540
+Okay.
+
+01:09:06.720 --> 01:09:06.859
+I've
+
+01:09:06.859 --> 01:09:14.080
+been very Mac focused lately just because that's the platform that I use, but there's stuff in the works for Linux for some of those apps as well.
+
+01:09:14.920 --> 01:09:21.140
+So yeah, I will hopefully have more to say and make it easier for folks to publish on their platform of choice.
+
+01:09:22.040 --> 01:09:27.960
+But as much as I would love to point people at the one great project, once again, it kind of depends what you want to do.
+
+01:09:28.299 --> 01:09:39.980
+You got to find that weird niche in the Python world, weird niche in the world that you care about the most, and then find the folks making it happen in Python because there's probably at least a few of them.
+
+01:09:40.140 --> 01:09:42.700
+Get together, upgrade some of these tools, get them totally working.
+
+01:09:42.960 --> 01:09:43.080
+Yep.
+
+01:09:43.299 --> 01:09:44.540
+Then encrust your apps and ship them out.
+
+01:09:44.600 --> 01:09:44.900
+Please do.
+
+01:09:45.319 --> 01:09:47.440
+And let me know if there are bugs because there almost certainly are.
+
+01:09:47.540 --> 01:09:48.319
+Thanks for being here as always.
+
+01:09:48.520 --> 01:09:49.240
+Awesome to have you back.
+
+01:09:49.440 --> 01:09:50.339
+Thank you so much for having me.
+
+01:09:50.460 --> 01:09:50.560
+Bye.
+
+01:09:51.779 --> 01:09:54.120
+This has been another episode of Talk Python To Me.
+
+01:09:54.940 --> 01:09:55.980
+Thank you to our sponsors.
+
+01:09:56.360 --> 01:09:57.580
+Be sure to check out what they're offering.
+
+01:09:57.800 --> 01:09:59.000
+It really helps support the show.
+
+01:09:59.680 --> 01:10:02.620
+This episode is sponsored by Posit and Posit Workbench.
+
+01:10:03.400 --> 01:10:10.580
+Posit Workbench allows data scientists to code in Python within their preferred environment without any additional strain on IT.
+
+01:10:11.340 --> 01:10:20.880
+It gives data scientists access to all the development environments they love, including Jupyter Notebooks, JupyterLab, Positron, and VS Code, and helps ensure reproducibility and consistency.
+
+01:10:21.200 --> 01:10:28.540
+If you work on a data science team where consistency matters, check out Posit Workbench, Visit talkpython.fm/workbench for details.
+
+01:10:29.320 --> 01:10:31.280
+And it's brought to you by Agency.
+
+01:10:31.920 --> 01:10:33.700
+Discover agentic AI with Agency.
+
+01:10:34.200 --> 01:10:38.280
+Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+01:10:38.960 --> 01:10:44.980
+Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+
+01:10:45.740 --> 01:10:46.620
+Want to level up your Python?
+
+01:10:47.050 --> 01:10:50.720
+We have one of the largest catalogs of Python video courses over at Talk Python.
+
+01:10:51.200 --> 01:10:55.880
+Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:10:56.220 --> 01:10:58.400
+And best of all, there's not a subscription in sight.
+
+01:10:58.910 --> 01:11:01.420
+Check it out for yourself at training.talkpython.fm.
+
+01:11:02.140 --> 01:11:06.300
+Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:11:06.720 --> 01:11:07.620
+We should be right at the top.
+
+01:11:08.120 --> 01:11:16.980
+You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:11:17.640 --> 01:11:19.880
+We're live streaming most of our recordings these days.
+
+01:11:20.280 --> 01:11:27.740
+If you want to be part of the show and have your comments featured on the air, Be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+01:11:28.740 --> 01:11:29.860
+This is your host, Michael Kennedy.
+
+01:11:30.300 --> 01:11:31.140
+Thanks so much for listening.
+
+01:11:31.310 --> 01:11:32.280
+I really appreciate it.
+
+01:11:32.580 --> 01:11:34.220
+Now get out there and write some Python code.
+

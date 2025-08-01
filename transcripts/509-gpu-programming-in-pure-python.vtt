@@ -1,0 +1,1931 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:09.220
+If you're looking to leverage the insane power of modern GPUs for data science and machine learning, you might think you'll need to use some low-level programming language, such as C++.
+
+00:00:10.010 --> 00:00:19.420
+But the folks over at NVIDIA have been hard at work building Python SDKs, which provide near-native level of performance when doing Pythonic GPU programming.
+
+00:00:19.980 --> 00:00:25.300
+Bryce Adelstein-Lelbach is here to tell us about programming your GPU in pure Python.
+
+00:00:26.080 --> 00:00:31.080
+This is Talk Python To Me, episode 509, recorded May 13th, 2025.
+
+00:00:32.419 --> 00:00:32.599
+Are
+
+00:00:32.599 --> 00:00:34.140
+you ready for your host, please?
+
+00:00:34.780 --> 00:00:37.680
+You're listening to Michael Kennedy on Talk Python To Me.
+
+00:00:38.320 --> 00:00:41.400
+Live from Portland, Oregon, and this segment was made with Python.
+
+00:00:44.660 --> 00:00:47.520
+Welcome to Talk Python To Me, a weekly podcast on Python.
+
+00:00:48.000 --> 00:00:49.780
+This is your host, Michael Kennedy.
+
+00:00:50.110 --> 00:01:03.020
+Follow me on Mastodon, where I'm @mkennedy, and follow the podcast using @talkpython, both accounts over at Fostadon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm.
+
+00:01:03.600 --> 00:01:07.480
+If you want to be part of our live episodes, you can find the live streams over on YouTube.
+
+00:01:08.000 --> 00:01:13.780
+Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows.
+
+00:01:14.700 --> 00:01:18.400
+This episode is sponsored by Posit Connect from the makers of Shiny.
+
+00:01:18.880 --> 00:01:22.760
+Publish, share, and deploy all of your data projects that you're creating using Python.
+
+00:01:23.560 --> 00:01:29.420
+Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+00:01:30.360 --> 00:01:31.980
+Posit Connect supports all of them.
+
+00:01:32.280 --> 00:01:37.580
+Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+00:01:38.340 --> 00:01:40.320
+And it's brought to you by Agency.
+
+00:01:40.860 --> 00:01:42.720
+Discover agentic AI with Agency.
+
+00:01:43.160 --> 00:01:47.300
+Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+00:01:47.960 --> 00:01:54.000
+Start building the internet of agents at talkpython.fm/agency spelled A-G-N-T-C-Y.
+
+00:01:55.120 --> 00:01:59.140
+I want to share an awesome new resource with you all before we talk GPUs with Bryce.
+
+00:02:00.180 --> 00:02:05.540
+You may have seen the episode deep dives on the episode pages at talkpython.fm.
+
+00:02:06.140 --> 00:02:10.160
+These are roughly 1,250 word write-ups about the episode.
+
+00:02:10.840 --> 00:02:12.660
+It's not just a summary or list of topics.
+
+00:02:13.180 --> 00:02:20.160
+These cover additional study materials you might focus on to get the most out of the episode as well as related tools and topics to explore.
+
+00:02:20.730 --> 00:02:27.020
+The reason we're talking about these now is that I just finished the very last deep dive write-up for the entire back catalog.
+
+00:02:27.680 --> 00:02:34.280
+That's 510 episodes resulting in 600,000 words of extra detailed information for our podcasts.
+
+00:02:35.020 --> 00:02:46.840
+These are only available online on the website and not in the podcast player feeds because podcast players are already complaining that our RSS feed is too big for them as if it's 1993 or something.
+
+00:02:47.380 --> 00:02:49.840
+adding the deep dives would surely cause more trouble.
+
+00:02:50.740 --> 00:02:54.460
+So be sure to visit the episode page for each episode to check out the deep dive.
+
+00:02:55.020 --> 00:03:03.860
+I did a write-up on how these were created, why, and more at the Talk Python blog over at talkpython.fm/blog, creative I know.
+
+00:03:04.320 --> 00:03:07.040
+I'll put the link to the blog post in the show notes.
+
+00:03:07.640 --> 00:03:11.820
+These deep dives were a big effort, but I really think they add a lot of value to the show.
+
+00:03:12.580 --> 00:03:14.680
+Thanks as always. Let's talk GPUs.
+
+00:03:15.600 --> 00:03:18.780
+Bryce, welcome to Talk Python To Me. Awesome to have you here.
+
+00:03:18.980 --> 00:03:22.440
+Thrilled to be here. It's my first appearance on a podcast, actually.
+
+00:03:22.660 --> 00:03:33.080
+Okay, very cool, very cool. Well, we're going to talk a lot about GPUs and not that much about graphics, which is ironic, but, you know, that's the world we live in these days, right? It's amazing.
+
+00:03:33.280 --> 00:03:38.860
+It's funny, I've worked at NVIDIA for eight years now. I know next to nothing about graphics.
+
+00:03:39.220 --> 00:03:51.880
+That's pretty funny. I do on my gaming PC have a 2070 RTX, but I don't do any programming. I probably should. It's just so loud when that thing is turned on. It's like it's going to take off.
+
+00:03:52.120 --> 00:03:52.660
+But they
+
+00:03:52.660 --> 00:03:57.180
+sure are powerful. They sure are powerful, these GPUs. So it's going to be exciting to talk about it, what you can do with them.
+
+00:03:57.260 --> 00:03:59.860
+That's true. I remember when we launched the 27 day.
+
+00:04:00.180 --> 00:04:00.580
+I'm
+
+00:04:00.580 --> 00:04:13.180
+trying to think what my first GPU was, but because when I used to play video games when I was a kid, I didn't play video games. I played text-based games, MUDs. So I never really needed a graphics card because it was all just command my interface.
+
+00:04:13.680 --> 00:04:24.680
+The modem is the limiting factor or whatever for your MUD, right? I'm presuming it's on the internet. I used to play a MUD called Shadow's Edge. I don't know if people heard of this one out there in the world, but
+
+00:04:24.680 --> 00:04:26.240
+I don't think I've heard of that one. This
+
+00:04:26.240 --> 00:04:28.760
+is early 90s, early 90s.
+
+00:04:28.900 --> 00:04:30.360
+That was a little before my time.
+
+00:04:30.450 --> 00:04:35.240
+I used to play like a lot of Star Wars MUDs and I played a pretty popular one that was called Avatar.
+
+00:04:35.850 --> 00:04:36.740
+That was one of the big ones.
+
+00:04:37.170 --> 00:04:39.060
+And that's actually how I got started programming.
+
+00:04:39.240 --> 00:04:42.140
+Yeah, I actually know a friend who got started that way as well.
+
+00:04:42.540 --> 00:04:44.000
+All right, just acronym police here.
+
+00:04:44.160 --> 00:04:45.080
+What is a MUD?
+
+00:04:45.300 --> 00:04:48.140
+So it stands for Multi-User Dungeon.
+
+00:04:48.560 --> 00:04:54.920
+And it's like a very weird little corner of the gaming world because MUDs are largely not run for profit.
+
+00:04:55.360 --> 00:05:01.140
+It's like somebody creates it, and for the most part, they host it, and then they build a little community around it.
+
+00:05:01.450 --> 00:05:03.440
+And so they're little multiplayer games.
+
+00:05:03.900 --> 00:05:10.200
+Some of them are like a role-playing theme to them, and it's usually coded by volunteers, run by volunteers.
+
+00:05:10.960 --> 00:05:13.400
+And I always found it a very pure form of gaming.
+
+00:05:13.490 --> 00:05:14.500
+I really like them as well.
+
+00:05:14.860 --> 00:05:20.440
+Just take your time, you build a little community of friends, and a little world, and you just go live in it.
+
+00:05:20.500 --> 00:05:28.120
+It's been a long time since I played it, and I recently played Something Like a Mud, but it wasn't multiplayer with my daughter, and she thought it was the coolest thing.
+
+00:05:28.340 --> 00:05:32.080
+So there's hope for the new generation to carry on the torch.
+
+00:05:32.360 --> 00:05:44.940
+I've played some text-based games powered by large language models where you're basically just interacting with a large language model recently, and it kind of reminded me of the MUDs from back in the day because it's all just textual interaction.
+
+00:05:45.200 --> 00:05:53.060
+I think as the LLMs get better and the tools for building these things get better, there'll probably be some really interesting stories that are powered by them.
+
+00:05:53.520 --> 00:05:54.240
+Really interesting stories.
+
+00:05:54.440 --> 00:05:56.960
+interesting games. Yeah, it's an exciting future ahead of us.
+
+00:05:57.040 --> 00:06:02.900
+Yeah, I'm kind of looking forward to it. And that brings us kind of to our topic a little bit. Like, how do those LLMs get trained?
+
+00:06:03.220 --> 00:06:08.040
+Well, probably on NVIDIA things. Before we jump into that, though, give us a quick introduction.
+
+00:06:08.540 --> 00:06:09.520
+Who are you? I got
+
+00:06:09.520 --> 00:06:40.360
+my start at programming, teaching myself how to program a MUD. And that was when I was about 19. And from there, I got involved in open source working on the Boost C++ plus libraries. And I was a college dropout at that point and was looking for a job. And so I just asked somebody who I knew through the open source communities, through the Boost community, like, hey, I need a job. And this guy said, you should come down to Louisiana, come work for me at my supercomputing research center. And I was like, sure, like I'm a college dropout, why not?
+
+00:06:40.810 --> 00:07:11.200
+My parents didn't think this was such a good idea, but I managed to convince them. So I went down there. And I worked there for about four years working on HPX, which is a distributed C++ runtime for HPC or high performance computing. And I sort of learned under this professor, Hartman Kaiser, who was my first mentor. And he kind of tricked me into going back to college. And so I completed my degree when I was there. And we started and ran. What was your
+
+00:07:11.200 --> 00:07:11.480
+degree
+
+00:07:11.480 --> 00:07:30.140
+in? It was applied mathematics. I figured if I tried to get a degree in computer science, I knew that I was an arrogant teenager and I figured I'd clash with my professors. So I was like, I got to get my major in a field where I don't know anything so that I'll respect the professors and I won't get in trouble in school. So that's the math
+
+00:07:30.140 --> 00:07:34.120
+degree. It's easy to feel like you don't know too much doing math. I've been there. When
+
+00:07:34.120 --> 00:07:48.280
+I was there, we started this research group. We developed this the HPX runtime together. And then after that, I went to work at Lawrence Berkeley National Lab in California, which is a part of the US Department of Energy research apparatus.
+
+00:07:48.660 --> 00:07:53.700
+And I was there for about two years, also doing high performance computing stuff and C++ stuff.
+
+00:07:54.220 --> 00:07:58.340
+And around that time, I got involved in the C++ Standards Committee. And then I went to NVIDIA.
+
+00:07:58.580 --> 00:08:03.200
+And I've been at NVIDIA for, I think, eight years now, 2017.
+
+00:08:04.060 --> 00:08:10.160
+And at NVIDIA, what I primarily do is I work on programming language evolution.
+
+00:08:10.740 --> 00:08:17.700
+So that means thinking about how should languages like C++, Python, and Rust evolve.
+
+00:08:18.180 --> 00:08:24.940
+And in particular, because it's NVIDIA, my focus is thinking about concurrency, parallelism, and GPU acceleration.
+
+00:08:25.400 --> 00:08:33.479
+So how do we make it easier and more accessible to write parallel and GPU accelerated code in these programming languages?
+
+00:08:33.979 --> 00:08:35.200
+And it's not just programming languages.
+
+00:08:35.390 --> 00:08:39.360
+I also work a lot on library design, interface design.
+
+00:08:40.039 --> 00:08:45.460
+I started the CUDA C++ core libraries team here at NVIDIA.
+
+00:08:45.900 --> 00:08:53.120
+But I spent maybe the first six or seven years of my career at NVIDIA almost exclusively doing C++ stuff.
+
+00:08:53.460 --> 00:09:00.120
+And then the last one, two years, I've been getting ramped up on Python things, learning more about Python.
+
+00:09:00.460 --> 00:09:07.920
+And now I'm involved in a lot of NVIDIA's Python efforts, although I am by no means a Python expert, I would say.
+
+00:09:08.000 --> 00:09:09.240
+Interesting. That's quite the background.
+
+00:09:10.040 --> 00:09:11.540
+A couple of things I want to ask you about.
+
+00:09:11.540 --> 00:09:12.480
+I guess start from the beginning.
+
+00:09:12.730 --> 00:09:13.920
+I'm less likely to forget them.
+
+00:09:14.180 --> 00:09:19.340
+So you were doing high performance computing and grid computing type stuff in the early days.
+
+00:09:19.560 --> 00:09:23.920
+I mean, these are like SETI at home and protein folding days and all that kind of stuff.
+
+00:09:24.010 --> 00:09:28.520
+I know that's not exactly the same computers, but what were some of the cool things you were working on?
+
+00:09:28.570 --> 00:09:32.740
+Did you come across some neat projects or have some neat stories to share from there?
+
+00:09:33.060 --> 00:09:40.520
+I came in, you can sort of break up the HPC era into the like what scale of compute we were at.
+
+00:09:40.630 --> 00:09:46.940
+And so I came in after TeraScale, TeraFlops, right at the advent of the Petaflop era.
+
+00:09:46.960 --> 00:09:52.700
+And there was sort of this big question of how do we go from petaflop to exaflop.
+
+00:09:53.000 --> 00:09:59.560
+And at the time, we thought it was going to be really, really hard because this was before accelerators were a thing.
+
+00:09:59.770 --> 00:10:07.000
+And so the plan for going from petaflops to exaflops was just to scale it up with CPUs.
+
+00:10:07.440 --> 00:10:30.000
+And to scale from petaflops to exaflops and CPUs, to be able to do an exaflop of compute with CPUs, you would need millions of processors and cores. And the mean time to failure for hardware components was very low. Like if you're running something on a million CPUs, a million nodes, a hard drive is going to fail every two to three minutes on average.
+
+00:10:30.140 --> 00:10:32.020
+Yeah, something's breaking all the time, right?
+
+00:10:32.220 --> 00:10:32.400
+And
+
+00:10:32.400 --> 00:11:07.760
+the computing modalities that we had at the time, we didn't think that they were going to be resilient at that scale. And so there was this big challenge of how do we come up with new computing modalities. The main modality at the time was what's called MPI message passing interface plus X, where X is your on-node solution for parallelism, you know, how you're going to use the threads on your system. And so what I worked on was HPX, which was this sort of one of a variety of different competing research runtimes that were exploring new parallel computing models.
+
+00:11:08.060 --> 00:11:14.560
+And HPX was this fine-grained tasking model, so you could launch tasks that were very, very lightweight.
+
+00:11:15.220 --> 00:11:18.280
+And it also had what we'd call an active address space.
+
+00:11:18.460 --> 00:11:28.040
+So it could dynamically load balance work, and this would give you both load balancing but also resiliency, because if a node went down, you could move the work to another node.
+
+00:11:28.300 --> 00:11:36.400
+And I mostly worked on the thread scheduling system and the migration and global address space system.
+
+00:11:36.660 --> 00:11:57.220
+But what ended up happening in this push to the exascale era is that GPUs came onto the scene, accelerators came onto the scene. And it turned out that we could get to an exaflop of compute with 10,000 nodes that had GPUs in them or 20,000 nodes that had GPUs in them. And so we were able to scale up a different way.
+
+00:11:57.540 --> 00:12:05.980
+And so it ended up that the existing modalities, the existing ways that we did parallel computing, they were basically good enough.
+
+00:12:06.360 --> 00:12:09.520
+Like the way that we did the distributed computing was more or less good enough.
+
+00:12:09.540 --> 00:12:11.660
+We just had to add the GPU programming aspect.
+
+00:12:12.020 --> 00:12:14.520
+Right. Get a whole lot more parallels than per node, right?
+
+00:12:14.760 --> 00:12:15.240
+Yep, exactly.
+
+00:12:15.580 --> 00:12:23.600
+Today, obviously, there's huge clusters of very powerful GPUs like H100, H200 sort of processors that you all are making, right?
+
+00:12:23.640 --> 00:12:31.460
+And our new, the Blackwell processors, which somebody can get their hands on. I don't know who. It's hard for me to get my hands on them, but they're out there somewhere.
+
+00:12:31.620 --> 00:12:34.900
+What are your thoughts on ARM in the data center or supercomputers?
+
+00:12:35.120 --> 00:12:35.220
+I
+
+00:12:35.220 --> 00:12:46.820
+think that ARM is ultimately going to take over everything for the very simple reason that the software world loves simplicity and consistency.
+
+00:12:47.200 --> 00:12:53.160
+And if we can support one type of CPU instead of two types of CPUs, that's so great.
+
+00:12:53.280 --> 00:12:54.100
+It's like a 10x win.
+
+00:12:54.260 --> 00:12:57.380
+That's what I often like to say with programming languages.
+
+00:12:57.940 --> 00:13:03.820
+For a new programming language to be successful, to gain inertia, it needs to be 10x better in some way.
+
+00:13:04.220 --> 00:13:08.700
+And for hardware, it's probably more like 20X or maybe 100X better.
+
+00:13:09.000 --> 00:13:12.840
+And so like what is the 10X or 100X advantage that ARM has?
+
+00:13:13.260 --> 00:13:15.540
+There's lots of like actual advantages.
+
+00:13:15.640 --> 00:13:17.680
+We could talk about the merits of the hardware itself.
+
+00:13:18.340 --> 00:13:25.580
+But at the end of the day, the only thing that matters is that ARM is the architecture that's in your phones and in your tablets.
+
+00:13:26.140 --> 00:13:31.360
+And so naturally, but like x86 doesn't really scale down to the phone and the tablets.
+
+00:13:31.740 --> 00:13:33.580
+People have tried, not really a good option.
+
+00:13:33.800 --> 00:13:38.100
+not a good architecture for going at the low end of computing for a variety of reasons.
+
+00:13:38.500 --> 00:13:49.660
+And so because x86 can't survive at the low scale of computing, then even if it's a better processor at the high end of computing, naturally ARM is going to push it out of the high end of computing.
+
+00:13:49.760 --> 00:13:55.280
+And so I think that ARM is the inevitable future for CPU architectures.
+
+00:13:55.700 --> 00:14:00.480
+Eventually something will come around to disrupt, but we tend to like uniformity.
+
+00:14:00.700 --> 00:14:03.840
+And so I think that ARM will be dominant for a while.
+
+00:14:04.020 --> 00:14:04.820
+Yeah, very interesting.
+
+00:14:05.300 --> 00:14:09.680
+I also think ARM has a massive energy benefit or advantage, right?
+
+00:14:09.940 --> 00:14:15.140
+And data centers are almost limited by energy these days more than a lot.
+
+00:14:15.460 --> 00:14:16.100
+Energy and cooling.
+
+00:14:16.380 --> 00:14:17.940
+In video, we also make CPUs.
+
+00:14:17.940 --> 00:14:20.700
+We make ARM processors for both data center and mobile.
+
+00:14:21.180 --> 00:14:24.500
+And our ARM processors are, yes, very energy efficient.
+
+00:14:24.940 --> 00:14:28.140
+And that's one of the big advantages for us in picking that architecture.
+
+00:14:28.400 --> 00:14:36.900
+Yeah, when you hear headlines like, Microsoft is starting up Three Mile Island again for a data center, you realize, oh, that's a lot of energy they need.
+
+00:14:37.000 --> 00:14:38.380
+It is becoming the limiting factor
+
+00:14:38.380 --> 00:14:39.720
+on compute.
+
+00:14:41.400 --> 00:14:44.160
+This portion of Talk Python To Me is brought to you by the folks at Posit.
+
+00:14:44.600 --> 00:14:47.500
+Posit has made a huge investment in the Python community lately.
+
+00:14:48.080 --> 00:14:53.300
+Known originally for RStudio, they've been building out a suite of tools and services for Team Python.
+
+00:14:54.020 --> 00:14:57.260
+Over the past few years, we've all learned some pretty scary terms.
+
+00:14:57.900 --> 00:15:19.240
+hypersquatting, supply chain attack, obfuscated code, and more. These all orbit around the idea that when you install Python packages, you're effectively running arbitrary code off the internet on your dev machine, and usually even on your servers. But thought alone makes me shudder, and this doesn't even touch the reproducibility issues surrounding external packages.
+
+00:15:20.020 --> 00:15:24.700
+But there are tools to help. Posit Package Manager can solve both problems for you.
+
+00:15:25.560 --> 00:15:28.820
+Think of Posit Package Manager as your personal package concierge.
+
+00:15:29.140 --> 00:15:33.560
+Use it to build your own package repositories within your firewall that keep your project safe.
+
+00:15:33.730 --> 00:15:38.800
+You can upload your own internal packages to share or import packages directly from PyPI.
+
+00:15:39.480 --> 00:15:44.840
+Your team members can install from these repos in normal ways using tools like pip, Poetry, and uv.
+
+00:15:45.460 --> 00:15:51.840
+Posit Package Manager can help you manage updates, ensuring you're using the latest, most secure versions of your packages.
+
+00:15:52.440 --> 00:15:59.640
+but it also takes point-in-time snapshots of your repos, which you can use to rerun your code reproducibly in the future.
+
+00:16:00.180 --> 00:16:06.260
+Posit Package Manager reports on packages with known CVEs and other vulnerabilities so you can keep ahead of threats.
+
+00:16:06.880 --> 00:16:12.240
+And if you need the highest level of security, you can even run Posit Package Manager in air-gapped environments.
+
+00:16:12.860 --> 00:16:18.820
+If you work on a data science team where security matters, you owe it to you and your org to check out Posit Package Manager.
+
+00:16:19.420 --> 00:16:25.240
+Visit talkpython.fm/ppm today and get a three-month free trial to see if it's a good fit.
+
+00:16:25.520 --> 00:16:27.700
+That's talkpython.fm/ppm.
+
+00:16:28.240 --> 00:16:29.960
+The link is in your podcast player's show notes.
+
+00:16:30.420 --> 00:16:31.960
+Thank you to Posit for supporting the show.
+
+00:16:33.400 --> 00:16:43.400
+The other thing I want to talk to you about is, before we get into the topic exactly, is with all of your background in C++, working with the standards, give people a sense of how has C++ evolved.
+
+00:16:43.580 --> 00:16:49.840
+When you're talking to me, you're talking to a guy who did some professional C++, but stopped at the year 2000.
+
+00:16:50.560 --> 00:16:50.980
+You know what I mean?
+
+00:16:51.060 --> 00:16:55.540
+Like there's one view of C++ and there's probably something different now.
+
+00:16:55.900 --> 00:17:02.540
+C++ is, the evolution of C++ is managed by an international standards organization, ISO.
+
+00:17:03.040 --> 00:17:12.020
+And ISO has a very interesting stakeholder model where the stakeholders in ISO are national delegations or national bodies as we call them.
+
+00:17:12.300 --> 00:17:16.560
+So each different country that participates in ISO can choose to send a national delegation.
+
+00:17:17.300 --> 00:17:20.540
+And each different country has different roles for how their national delegations work.
+
+00:17:20.770 --> 00:17:25.300
+In the U.S., membership in the national delegation is by company.
+
+00:17:25.819 --> 00:17:29.000
+And there's no real requirement other than that you have to pay a fee.
+
+00:17:29.300 --> 00:17:30.960
+It's like 2.5K a year.
+
+00:17:31.400 --> 00:17:35.160
+And you can join the C++ committee if you're a U.S.-based organization.
+
+00:17:35.660 --> 00:17:40.400
+In other countries, like in the U.K., it's a panel of experts.
+
+00:17:41.100 --> 00:17:44.860
+And you're invited by the panel of experts to join the panel of experts.
+
+00:17:45.560 --> 00:17:48.280
+And there's different, like some other countries have different models.
+
+00:17:48.320 --> 00:17:51.680
+In some countries, the standards body is actually run by the government.
+
+00:17:52.120 --> 00:17:58.000
+And so you have all these experts, these national delegates that come together, and then they all work on C++.
+
+00:17:58.680 --> 00:18:06.100
+And there's a lot of bureaucracy and procedure, and it's sort of like a model UN, but for a programming language.
+
+00:18:06.380 --> 00:18:07.840
+But yeah, for angle brackets and
+
+00:18:07.840 --> 00:18:08.780
+semicolons,
+
+00:18:08.920 --> 00:18:09.160
+got it.
+
+00:18:09.300 --> 00:18:09.380
+A
+
+00:18:09.380 --> 00:18:13.720
+lot of people on the committee love to talk about all the details of how the committee works.
+
+00:18:14.220 --> 00:18:16.460
+I don't really think that it's particularly important.
+
+00:18:16.670 --> 00:18:21.140
+I think that the key thing to understand is that it's sort of got an odd stakeholder model.
+
+00:18:21.680 --> 00:18:27.400
+It's not a stakeholder model where it's like, oh, let's get the major implementations together or let's get the major users together.
+
+00:18:27.830 --> 00:18:32.620
+For the most part, it's like anybody who can figure out how to join a national body can participate.
+
+00:18:33.080 --> 00:18:47.940
+And if you happen to live from some small country where you're the only delegate, then you get the same vote as the entire United States national body because at the end of the day, votes on the C++ standard are by national body.
+
+00:18:48.260 --> 00:18:52.460
+And so there's some people that have an outsized influence in the C++ committee.
+
+00:18:52.750 --> 00:18:56.180
+The C++ committee itself is organized into a number of subgroups.
+
+00:18:56.600 --> 00:18:58.140
+There's one for language evolution.
+
+00:18:58.640 --> 00:19:02.580
+There's one for library evolution, which I chaired for about three years.
+
+00:19:03.100 --> 00:19:07.160
+And then there are core groups for both language and library.
+
+00:19:07.860 --> 00:19:13.500
+And so the evolution groups, they work on the design of new features and proposals.
+
+00:19:13.720 --> 00:19:17.960
+And then the core groups sort of vet those designs and make sure that they're really solid.
+
+00:19:18.220 --> 00:19:21.960
+And then there's a bunch of study groups that there's one for concurrency.
+
+00:19:22.320 --> 00:19:26.260
+There's one for particular features like ranges or reflection.
+
+00:19:26.740 --> 00:19:33.960
+And those groups develop those particular features or represent a particular interest area, like game developers, for example.
+
+00:19:34.360 --> 00:19:39.760
+And proposals flow from those study groups to those evolution groups and then through the core groups.
+
+00:19:40.240 --> 00:19:43.600
+And then eventually they go into the standard and then the national bodies vote on the standard.
+
+00:19:43.680 --> 00:19:44.400
+Sounds pretty involved.
+
+00:19:44.700 --> 00:19:51.180
+I guess the main thing I was wondering about is like, how different is C++ today versus 20, 30 years ago?
+
+00:19:51.340 --> 00:19:51.440
+I
+
+00:19:51.440 --> 00:19:53.600
+think it's a radically different language.
+
+00:19:54.220 --> 00:20:00.860
+C++ 11 completely changed the language in many ways and really revitalized it after a very long period.
+
+00:20:01.360 --> 00:20:04.420
+after the first standard, which was C++98.
+
+00:20:04.840 --> 00:20:09.780
+And then after C++11, C++ began shipping new versions every three years.
+
+00:20:10.460 --> 00:20:11.940
+Whatever features were ready would ship.
+
+00:20:11.960 --> 00:20:14.480
+So we adopted a consistent ship cycle.
+
+00:20:14.940 --> 00:20:18.940
+And the next big revision after C++11 was C++20.
+
+00:20:19.360 --> 00:20:22.360
+Not as transformative, I think, as C++11, but pretty close.
+
+00:20:23.000 --> 00:20:28.840
+And then we're just about to finish C++26, which will also be a pretty substantial release.
+
+00:20:29.360 --> 00:20:37.780
+And probably by the time that this goes out to your podcast audience, we'll be right around when we finalize the feature set for C++ 26.
+
+00:20:38.140 --> 00:20:38.440
+Interesting.
+
+00:20:38.630 --> 00:20:41.740
+So if I want to do more C++, I probably need to start over and learn it again.
+
+00:20:41.920 --> 00:20:42.080
+If
+
+00:20:42.080 --> 00:20:46.780
+you learned it before C++ 11, yeah, you'd have to relearn some patterns.
+
+00:20:47.140 --> 00:20:47.280
+Yeah.
+
+00:20:47.400 --> 00:20:47.500
+We
+
+00:20:47.500 --> 00:20:52.060
+like to talk about modern C++ versus old C++.
+
+00:20:52.300 --> 00:20:56.460
+C++ 11 is sort of like a Python 2 to Python 3 sort of jump,
+
+00:20:57.020 --> 00:20:57.400
+except...
+
+00:20:57.440 --> 00:20:58.240
+Yeah, I was thinking maybe.
+
+00:20:58.420 --> 00:21:00.220
+without as much breaking behavior.
+
+00:21:00.330 --> 00:21:02.060
+There was very little breaking behavior.
+
+00:21:02.500 --> 00:21:09.780
+But the best practices changed drastically from the pre-C++11 era to the modern era.
+
+00:21:09.860 --> 00:21:10.680
+Yeah, super interesting.
+
+00:21:11.110 --> 00:21:12.940
+I honestly could talk to you for a long time about this.
+
+00:21:13.100 --> 00:21:16.060
+But this is not a C++ show, so let's move on to Python.
+
+00:21:16.170 --> 00:21:26.360
+But I've been focused a little bit on C++ because traditionally that's been one of the really important ways to program GPUs and work with CUDA and things like that, right?
+
+00:21:26.420 --> 00:21:34.900
+And now one of the things that you all have announced, released, or are working on is CUDA-Python, right?
+
+00:21:35.000 --> 00:21:36.140
+How long has this been out here for?
+
+00:21:36.840 --> 00:21:37.300
+Five months?
+
+00:21:37.740 --> 00:21:38.260
+Something like that?
+
+00:21:38.520 --> 00:21:39.240
+Not terribly long.
+
+00:21:39.260 --> 00:21:39.400
+I
+
+00:21:39.400 --> 00:21:43.000
+don't know how long the repo's been out, but the CUDA-Python effort's been around for about a year or two.
+
+00:21:43.420 --> 00:21:53.560
+And you're absolutely right that for a long time, C++ was the primary interface to not just our compute platform, but to most compute platforms.
+
+00:21:54.140 --> 00:21:55.380
+And so what changed?
+
+00:21:55.580 --> 00:22:00.880
+Well, the two big things is that data science and machine learning happened.
+
+00:22:01.420 --> 00:22:18.260
+Both fields that tend to have a lot of domain experts, computational scientists, who are not necessarily interested in writing low-level code in C++ and learning the best practices of software engineering in a systems language like C++.
+
+00:22:18.840 --> 00:22:24.060
+They just want to be able to do their domain expertise, to do their data science, or to build their machine learning models.
+
+00:22:24.420 --> 00:22:30.180
+So naturally they gravitated towards a more accessible and user-friendly language, Python.
+
+00:22:30.860 --> 00:22:39.260
+And it became apparent a couple of years ago within NVIDIA that we needed to make our platform language agnostic.
+
+00:22:39.480 --> 00:22:41.920
+And that's really what we've been focusing on the last year or two.
+
+00:22:42.180 --> 00:22:47.200
+And CUDA Python is not just us saying, let's add another language.
+
+00:22:47.520 --> 00:22:49.340
+Let's, okay, now we're going to do Python and C++.
+
+00:22:49.520 --> 00:22:53.160
+It really reflects our overall goal of making the platform more language agnostic.
+
+00:22:53.500 --> 00:23:10.820
+And you'll see that in our focus more and more on exposing things at the compiler level, exposing ways for other languages, other compilers, other DSLs to target our platform via things like MLIR dialects, which we've announced a bunch of recently.
+
+00:23:11.340 --> 00:23:15.080
+But CUDA Python obviously was the place where we needed to start.
+
+00:23:15.280 --> 00:23:24.500
+So the goal of CUDA Python is to provide the same experience with more or less the same performance that you would get in C++.
+
+00:23:25.180 --> 00:23:34.060
+And when I say more or less, I mean that there are some higher level parts of CUDA Python that don't necessarily map directly to C++ things.
+
+00:23:34.560 --> 00:23:43.540
+But the parts of CUDA Python that have direct counterparts in CUDA C++, we expect that you will get the same performance.
+
+00:23:44.240 --> 00:23:52.020
+And we think that's really important because we don't want users to have to sacrifice performance to be able to do things natively within Python.
+
+00:23:52.140 --> 00:23:53.420
+That's pretty impressive, honestly.
+
+00:23:53.900 --> 00:24:04.340
+I think a lot of times when people think about doing stuff with Python, they're shown or they discover some kind of benchmark that is 100% Python or 100% the other language.
+
+00:24:04.820 --> 00:24:10.080
+Like, oh, here's the three-body problem implemented in Python, and here it is implemented in Rust.
+
+00:24:10.340 --> 00:24:12.740
+And look, it's 100 times slower or something.
+
+00:24:13.160 --> 00:24:23.940
+But much of this work, much of the data science work especially, but even in the web, a lot of times what you're doing is you take a few pieces together in Python and you hand it off to something else, right?
+
+00:24:24.180 --> 00:24:29.460
+In this case, you're handing it off to the GPU through the CUDA bindings, the C bindings.
+
+00:24:29.780 --> 00:24:33.200
+And once it's in there, it's off to the races internally, right?
+
+00:24:33.280 --> 00:24:42.900
+And yeah, and when I think of like the web, you very likely are taking a little bit of data, a little bit of string stuff, doing some dictionary things, handing it to a database or handing it to a third-party API.
+
+00:24:43.000 --> 00:24:45.660
+And again, it doesn't matter what you're doing.
+
+00:24:45.860 --> 00:24:49.620
+Like it's off into this, whatever that's written in C or whatever for the database.
+
+00:24:50.120 --> 00:24:52.540
+Tell me a bit about like the work you had to do to sort of juggle that.
+
+00:24:52.660 --> 00:24:54.540
+Sometimes people think of Python as being
+
+00:24:54.540 --> 00:24:55.220
+a slow language.
+
+00:24:55.460 --> 00:25:03.240
+I actually will make the claim that Python is a great language for doing high performance work.
+
+00:25:03.580 --> 00:25:07.640
+And the reason for that is because Python, it's very easy.
+
+00:25:08.260 --> 00:25:11.640
+Python's a very flexible language where it's very easy to do two things.
+
+00:25:11.980 --> 00:25:12.860
+One, to
+
+00:25:12.860 --> 00:25:13.600
+make,
+
+00:25:13.820 --> 00:25:18.160
+to optimize the fast path to either through JIT or through Cython extensions.
+
+00:25:18.880 --> 00:25:20.060
+It's very amenable to that.
+
+00:25:20.280 --> 00:25:31.860
+And two, the language semantics are flexible enough that it's in the AST and the parsing is accessible enough that it's super, super easy to build a DSL in Python.
+
+00:25:32.260 --> 00:25:46.340
+And because the language semantics are flexible, it's very easy to build a DSL where it's like, okay, well, our DSL, you write the syntax of Python, and there's some caveats here where some of the things that you know about Python are maybe a little bit different in this DSL.
+
+00:25:46.780 --> 00:25:49.700
+But with those relaxations, we can give you super fast code.
+
+00:25:49.980 --> 00:26:07.100
+And that's how things like Numba and things like Numbacuda and things like CoupyX and things like Triton, LANG, that's how those things all work, is they build the DSL where they take Python-like syntax, they follow most of the rules of Python with a couple relaxations, restrictions, et cetera.
+
+00:26:07.660 --> 00:26:10.360
+And then they give you super fast code that has native performance.
+
+00:26:10.960 --> 00:26:25.060
+And if you look at other languages that have tried to deliver on this, that have tried to have a managed runtime, tried to give you portability and high level ease of use and also performance, a lot of the other ones have failed.
+
+00:26:25.420 --> 00:26:34.300
+I remember seeing a talk a couple of years ago from one of the lead engineers on, I forget which JVM, but of a particular JVM implementation.
+
+00:26:34.770 --> 00:26:42.880
+And he was talking about everything that goes into making a native call from Java, like the protocol for Java to call a C function.
+
+00:26:43.420 --> 00:26:49.480
+And he was showing us an assembly, like the call convention, and like you have to do all this stuff and save and restore all this stuff.
+
+00:26:49.920 --> 00:26:53.680
+And he was like, and we have to do all this work to be able to make this fast.
+
+00:26:54.140 --> 00:26:57.120
+And because Java doesn't have as flexible
+
+00:26:57.120 --> 00:26:57.760
+semantics,
+
+00:26:58.020 --> 00:26:58.920
+you have to do all that.
+
+00:26:59.170 --> 00:27:00.580
+But in Python, it's so much easier.
+
+00:27:01.000 --> 00:27:12.480
+And this is, I think, one of the reasons why Python has succeeded as a language because it's so easy when you need to put something in production, if it is slow, it's so easy to make that slow thing fast.
+
+00:27:12.680 --> 00:27:13.620
+It's a really interesting take.
+
+00:27:13.630 --> 00:27:20.660
+I hadn't really thought of that because it's a more malleable language that can be shaped to adapt to something underlying that's faster.
+
+00:27:20.860 --> 00:27:21.140
+Exactly.
+
+00:27:21.460 --> 00:27:25.880
+How much does Numba or Cython or things like that factor into what's happening here?
+
+00:27:25.880 --> 00:27:32.400
+I see it's 16% Cython according to GitHub, but I don't know, Yeah, those stats are sometimes crazy.
+
+00:27:32.620 --> 00:27:35.940
+We use Cython in a lot of places on fast paths.
+
+00:27:36.600 --> 00:27:40.540
+Now, with CUDA, there's a couple different types of things that you do with CUDA.
+
+00:27:40.700 --> 00:27:49.540
+The first with CUDA is when you're writing code that runs on your CPU, that is managing and orchestrating GPU actions.
+
+00:27:50.140 --> 00:27:52.040
+That could be allocating GPU memory.
+
+00:27:52.700 --> 00:27:55.660
+That could be launching and waiting on CUDA kernels.
+
+00:27:56.200 --> 00:27:58.400
+It could be that sort of thing.
+
+00:27:58.720 --> 00:28:11.120
+making work, making memory, transferring work in memory, waiting on things, setting up dependencies, et cetera. For the most part, a lot of those tasks are not going to be performance critical.
+
+00:28:11.210 --> 00:28:29.000
+And the reason for that is because the limiting factor for performance is typically around like synchronization costs. If your major cost is like acquiring a lock or allocating memory, that whether you call Cuda Malic from C++ or Python, it
+
+00:28:29.000 --> 00:28:29.360
+doesn't really
+
+00:28:29.360 --> 00:28:31.480
+matter what language you're calling it from.
+
+00:28:31.820 --> 00:28:35.400
+Cuda Malic is going to take a little while because it's got to go and get storage.
+
+00:28:35.960 --> 00:28:38.660
+Now, one of the exceptions to this is when you're launching a kernel.
+
+00:28:38.940 --> 00:28:41.240
+That's a thing that we want to be very, very fast.
+
+00:28:41.840 --> 00:28:47.480
+So some of our frameworks have their kernel launch paths sithonized.
+
+00:28:48.000 --> 00:28:50.400
+Numba we use pretty extensively.
+
+00:28:50.940 --> 00:28:54.020
+So we use Numba for the other piece.
+
+00:28:54.280 --> 00:28:58.920
+So I just talked about the orchestration and management of GPU work and memory.
+
+00:28:59.380 --> 00:29:03.860
+But how do you actually write your own algorithms that run on the GPU?
+
+00:29:04.280 --> 00:29:09.740
+So you don't have to do this frequently because we provide a whole huge library of existing algorithms.
+
+00:29:10.360 --> 00:29:14.160
+And generally, we advise you should try to use the existing algorithms.
+
+00:29:14.280 --> 00:29:18.360
+We got a lot of top people, spend a lot of time making sure that those algorithms are fast.
+
+00:29:18.540 --> 00:29:21.800
+So you should try really hard to use the algorithms that we provide.
+
+00:29:22.180 --> 00:29:23.440
+But sometimes you've got to write your own algorithm.
+
+00:29:23.780 --> 00:29:37.500
+If you want to do that natively in Python, you need some sort of JIT compiler that's going to know how to compile some DSL that's going to JIT compile it down to native code that can run on the device.
+
+00:29:37.720 --> 00:29:38.820
+We use Numba for that.
+
+00:29:39.240 --> 00:29:48.600
+There's a Numba backend called CUDA that allows you to write CUDA kernels in Python with the same speed and performance that you'd get out of writing those kernels in CUDA C++.
+
+00:29:49.180 --> 00:29:55.520
+And then we have a number of libraries for the device-side programming that you can use in Numba CUDA.
+
+00:29:55.680 --> 00:30:02.120
+That sounds pretty useful, like a pretty good library to start with instead of trying to just straight talk to it, the GPUs directly.
+
+00:30:03.700 --> 00:30:06.460
+This portion of Talk Python To Me is brought to you by Agency.
+
+00:30:07.060 --> 00:30:13.140
+Agency, spelled A-G-N-T-C-Y, is an open-source collective building the internet of agents.
+
+00:30:14.120 --> 00:30:49.620
+We're all very familiar with AI and LLMs these days But if you have not yet experienced the massive leap that agentic AI brings, herein for a treat Agentic AIs take LLMs from the world's smartest search engine to truly collaborative software That's where agency comes in Agency is a collaboration layer where AI agents can discover, connect, and work across frameworks For developers, this means standardized agent discovery tools, seamless protocols for interagent communication, and modular components to compose and scale multi-agent workflows.
+
+00:30:50.540 --> 00:30:58.040
+Agency allows AI agents to discover each other and work together regardless of how they were built, who built them, or where they run.
+
+00:30:58.660 --> 00:31:08.120
+Agency just announced several key updates as well, including interoperability for Anthropics Model Contacts Protocols, MCP, across several of their key components.
+
+00:31:08.940 --> 00:31:19.940
+a new observability data schema enriched with concepts specific to multi-agent systems, as well as new extensions to the Open Agentic Schema Framework, OASF.
+
+00:31:20.560 --> 00:31:23.220
+Are you ready to build the future of multi-agent software?
+
+00:31:23.760 --> 00:31:30.000
+Get started with Agency and join Crew AI, LangChain, Llama Index, BrowserBase, Cisco, and dozens more.
+
+00:31:30.400 --> 00:31:34.660
+Build with other engineers who care about high-quality multi-agent software.
+
+00:31:35.260 --> 00:31:38.800
+Visit talkpython.fm/agency to get started today.
+
+00:31:39.240 --> 00:31:41.060
+That's talkpython.fm/agency.
+
+00:31:41.720 --> 00:31:44.860
+The link is in your podcast players, show notes, and on the episode page.
+
+00:31:45.680 --> 00:31:48.460
+Thank you to agency for supporting Talk Python To Me.
+
+00:31:49.900 --> 00:31:58.240
+So how much do people need to understand GPUs, GPU architecture and compute, especially Python people, to work with it?
+
+00:31:58.390 --> 00:32:00.580
+I see a bunch of things like you talked about kernels.
+
+00:32:02.360 --> 00:32:04.580
+warps, memory hierarchies, threads?
+
+00:32:05.570 --> 00:32:09.520
+Give us a sense of some of these definitions and then which ones we need to pay attention to.
+
+00:32:09.760 --> 00:32:12.240
+Most people need to know very little of this.
+
+00:32:12.700 --> 00:32:33.880
+When we teach CUDA programming, when we teach it in C++ even these days, we start off by teaching you how to use the CUDA algorithms, how to use CUDA accelerated libraries, how to use kernels or GPU code that people have already written where you just plug in operators in the data that you want and how to use that.
+
+00:32:34.300 --> 00:32:41.520
+And then we teach you about the notion of different kinds of memory, memory that the CPU can access and that the GPU can access.
+
+00:32:42.220 --> 00:32:47.140
+And then like we teach you about like how to optimize using those algorithms and that memory.
+
+00:32:47.580 --> 00:33:02.380
+And it's like only after like hour three or four of the education do we introduce to you the idea of writing a kernel because we don't want you to have to write your own kernels and because it's not the highest productivity thing and oftentimes it's not going to be the highest performance thing.
+
+00:33:02.800 --> 00:33:20.020
+Writing GPU kernels has gotten more and more complex as GPUs have matured because the way that we get more and more perf out of our hardware today because we can no longer just get more as well scaling is that we have to expose more and more of the complexity of the hardware to the programmer.
+
+00:33:20.320 --> 00:33:28.920
+And so writing a good GPU kernel today is in some ways easier but in some ways more challenging than it was 5 to 10 years ago.
+
+00:33:29.260 --> 00:33:34.680
+Because five to 10 years ago, there were a lot less tools to help you out in writing a GPU algorithm.
+
+00:33:35.100 --> 00:33:36.980
+But the hardware was a bit simpler.
+
+00:33:37.580 --> 00:33:44.060
+Most people, I would say 90 to 95% of people, do not need to write their own kernels.
+
+00:33:44.400 --> 00:33:49.280
+And if you don't need to write your own kernels, you don't have to understand the CUDA thread hierarchy.
+
+00:33:49.700 --> 00:33:53.380
+And the CUDA thread hierarchy is what warps and blocks are.
+
+00:33:53.830 --> 00:33:56.760
+So on the GPU, you've got a bunch of different threads.
+
+00:33:57.340 --> 00:34:02.420
+And those threads are grouped into subsets that are called blocks.
+
+00:34:03.020 --> 00:34:05.800
+And the blocks all run at the same time.
+
+00:34:06.180 --> 00:34:09.700
+So all the threads in the block run at the same time, rather.
+
+00:34:10.139 --> 00:34:14.659
+And all the threads within the block have fast ways of communicating to each other.
+
+00:34:15.100 --> 00:34:18.600
+And they have fast memory that they can use to communicate to each other.
+
+00:34:18.980 --> 00:34:21.120
+This scratchpad memory that we call shared memory.
+
+00:34:21.540 --> 00:34:30.200
+And blocks are further divided into warps, which are smaller subsets of threads that are executed as one.
+
+00:34:30.520 --> 00:34:37.080
+Like they do the same operations on the same particular physical piece of hardware at a time.
+
+00:34:37.340 --> 00:34:42.040
+They do each have an individual state, so they can be at different positions.
+
+00:34:42.200 --> 00:34:46.540
+They essentially each have their own thread, but they're executed in lockstep.
+
+00:34:46.879 --> 00:34:51.899
+But you don't need to know most of that if you're looking to use CUDA.
+
+00:34:52.050 --> 00:34:58.120
+What you need to understand is some of the basics of parallel programming and how to use algorithms.
+
+00:34:58.720 --> 00:35:04.840
+And there are, I would say, three main generic algorithms that matter.
+
+00:35:05.170 --> 00:35:08.500
+And the first is just like four, it's just a for loop.
+
+00:35:09.060 --> 00:35:25.700
+And the for loop that we most often think about is the one that we call transform, where you've got an input of an array of some shape and an output of an array of some shape. And you just apply a function to every element of the input, and then that produces the output for you.
+
+00:35:25.910 --> 00:35:26.840
+The second algorithm
+
+00:35:27.140 --> 00:35:30.780
+Sounds a little like pandas or something like that, right? The vectorized math and so on.
+
+00:35:30.940 --> 00:36:40.280
+That's exactly right. Or in Numba, it's like the notion of a generalized universal function or like a ufunk from NumPy or something like that. Just an element-wise function. The next algorithm is reduction. So this is like doing a sum. It's just a generalized version of doing a sum over something. And a reduction is a basis operation that you can use to implement all sorts of things like counting, any form of counting, any form of searching. If you're looking for the maximum of something, you can do that with a reduction. And the last algorithm is a scan, which is also known in some circles as a partial sum. So a scan works somewhat similar to a reduction, but it gives you the intermediate sums. So if you're scanning an array of length n, the output of that scan is the sum of the first element and the second element, the first element, the second element, and the third element, the first element, the second element, the third element, and the fourth element, et cetera, through to the end. And scans are very useful for anything that has position-aware logic.
+
+00:36:40.720 --> 00:37:08.340
+Like if you want to do something where you want to reason about adjacent values, or if you want to do something like a copy if, or like a filter, something like that, that's what you'd use a scan for. And those three, I think, are the basis of programming with parallel algorithms. And you would be surprised at how often a parallel programming problem will break down into calling some combination of those three
+
+00:37:08.340 --> 00:37:20.560
+algorithms. With this version of Python 3.13, we kind of have no more gil. Right. How much does that matter? It sounds like it might not actually really make much difference for this project. This
+
+00:37:20.560 --> 00:37:23.540
+is a question I get asked a lot internally. I do think it matters.
+
+00:37:23.940 --> 00:37:32.740
+One of the reasons it matters is that these days you don't normally have just one GPU in like a high-end system.
+
+00:37:32.940 --> 00:37:34.960
+You tend to have multiple GPUs.
+
+00:37:35.120 --> 00:37:37.400
+Multiple being two or four or 20?
+
+00:37:37.600 --> 00:37:37.760
+Two,
+
+00:37:37.800 --> 00:37:40.380
+four, or like eight. Eight is what you typically see.
+
+00:37:40.380 --> 00:37:48.200
+You typically see like two CPUs and eight GPUs in like your default like high-end compute
+
+00:37:48.200 --> 00:37:48.840
+notes.
+
+00:37:48.880 --> 00:37:54.580
+Yeah, but even if you just serialize one of those, that's only 16% of the GPU processing, right?
+
+00:37:54.780 --> 00:37:55.320
+Like one eighth.
+
+00:37:55.460 --> 00:37:55.980
+Oftentimes
+
+00:37:55.980 --> 00:38:02.820
+to feed all the GPUs, you need to have parallelism on the CPU.
+
+00:38:03.120 --> 00:38:08.580
+It's oftentimes not sufficient to just have one thread in the CPU, launch everything.
+
+00:38:08.930 --> 00:38:13.460
+And there's also like, GPUs are not the answer for everything.
+
+00:38:13.880 --> 00:38:20.420
+Like people often have ideas of what they think a GPU is, But I'll tell you my definition of what a GPU is.
+
+00:38:20.420 --> 00:38:23.100
+A GPU is just a bandwidth optimized processor.
+
+00:38:23.480 --> 00:38:25.820
+It's a general purpose processor, just like a CPU.
+
+00:38:26.240 --> 00:38:28.900
+But a CPU is optimized for latency.
+
+00:38:29.460 --> 00:38:31.980
+It's optimized for the single threaded case.
+
+00:38:32.160 --> 00:38:35.900
+It's optimized for getting you an answer for every operation as quickly as possible.
+
+00:38:36.200 --> 00:38:38.380
+A GPU is optimized for bandwidth.
+
+00:38:38.900 --> 00:38:41.820
+If you ask a GPU to load from memory, it's going to take a while.
+
+00:38:42.200 --> 00:38:45.140
+If you ask a GPU to add something, it's going to take a while.
+
+00:38:45.460 --> 00:38:48.240
+but it will have a higher bandwidth of doing those things.
+
+00:38:48.640 --> 00:38:55.680
+And so for some tasks, a lot of like data loading, storing and ingestion tasks, the CPU might be the better fit.
+
+00:38:55.880 --> 00:39:02.100
+And also the CPU is generally the better thing to talk to disk and to talk to network directly.
+
+00:39:02.460 --> 00:39:09.800
+And so for a lot of applications, the CPU has got to do work to get data ready and then to communicate that data to the GPU.
+
+00:39:10.200 --> 00:39:21.580
+And oftentimes the highest performance architectures are going to be ones where that data prep and loading and command and control work is being done in parallel.
+
+00:39:22.140 --> 00:39:34.400
+And a gill-less Python will enable us to be able to express those efficient command and control architectures directly in Python and to be able to have Python efficiently communicate with the GPU.
+
+00:39:34.520 --> 00:39:39.960
+Yeah, maybe make a thread per GPU or something like that and send them all off the...
+
+00:39:39.980 --> 00:39:41.680
+Or even multiple threads per GPU
+
+00:39:41.680 --> 00:39:42.860
+you may need in some cases.
+
+00:39:43.120 --> 00:39:45.580
+Probably depends on how many threads your CPU has also.
+
+00:39:45.880 --> 00:39:46.360
+Yes, definitely.
+
+00:39:46.740 --> 00:39:47.740
+That all sounds super interesting.
+
+00:39:47.960 --> 00:39:49.560
+I want to dive into the different building blocks.
+
+00:39:49.700 --> 00:40:09.520
+There's all these, like CUDA Python is at least in its current and ongoing, maybe future form, what's called a meta package in the sense that it is not itself a thing that has a bunch of functionality, but it sort of claims dependency on a bunch of things and does an import of them and centralizes that to like sort of bundle a bunch of pieces, right?
+
+00:40:09.660 --> 00:40:11.120
+So I want to talk about all of those.
+
+00:40:11.680 --> 00:40:19.500
+But before we do, give people out there who maybe have Python, I guess, mostly data science problems, maybe AI, email problems.
+
+00:40:20.240 --> 00:40:28.200
+Or it'd be interesting if there was something that didn't fit either of those that is good to solve with CUDA and GPU programming.
+
+00:40:28.420 --> 00:40:31.220
+Like, maybe give us some examples of what people build with this.
+
+00:40:31.320 --> 00:40:36.980
+The more important question is usually what order of magnitude of data do you have to work with?
+
+00:40:37.120 --> 00:40:42.360
+If you don't have a large enough problem size, you're not going to get a benefit out of using a GPU.
+
+00:40:42.480 --> 00:40:43.680
+Okay, define large.
+
+00:40:44.140 --> 00:40:46.320
+That means different things for different people, right?
+
+00:40:46.500 --> 00:40:46.880
+Measured
+
+00:40:46.880 --> 00:40:48.680
+in gigabytes of memory footprint.
+
+00:40:48.880 --> 00:40:49.020
+Okay.
+
+00:40:49.220 --> 00:40:53.320
+You typically will need to have, well, it's a little more nuanced than that.
+
+00:40:53.560 --> 00:41:09.920
+If the compute that you're doing is linear in your problem size, that is, if you're doing like ON operations, like you're doing some linear number of operations, like per element your data size, then you need gigabytes.
+
+00:41:10.600 --> 00:41:31.100
+If you're doing more than that per element, if you've got something that's like n squared or exponential or n log in, something like sorting, where it's not going to scale linearly with the number of elements, where it's going to be worse than that, then you might have a smaller problem size that will make sense to run on the GPU.
+
+00:41:31.540 --> 00:41:36.520
+But the majority of people who have a compute task have things that fall into the ON regime.
+
+00:41:37.040 --> 00:41:43.460
+It's like, oh, I've got a set of in things and I want to apply this function to each one of them.
+
+00:41:43.800 --> 00:41:45.820
+And in that case, you normally need gigabytes.
+
+00:41:46.240 --> 00:41:53.220
+If you're sorting things, if you're sorting 100 megabytes of ints, you'll probably see a speedup on a GPU.
+
+00:41:53.540 --> 00:42:02.340
+If you're just adding a million ints to a million ints, that's probably about the cutoff point for seeing a benefit from using the GPU.
+
+00:42:02.680 --> 00:42:09.680
+The types of workloads, I think generally, It's sort of hard to say because it's so broad in what you can do.
+
+00:42:10.050 --> 00:42:12.880
+You need to have something that has some amount of parallelism.
+
+00:42:13.210 --> 00:42:17.280
+So there needs to be some data parallel aspect to your problem.
+
+00:42:17.600 --> 00:42:20.080
+If you can't parallelize it, you're not going to benefit from the GPS.
+
+00:42:20.140 --> 00:42:27.900
+Right. Maybe I have questions about all the, I don't know, sales or some sort of prediction per state for all 50 states in the U.S.
+
+00:42:28.020 --> 00:42:29.100
+or all countries in the world.
+
+00:42:29.210 --> 00:42:32.020
+You could just break it up by country or state and let it rip.
+
+00:42:32.160 --> 00:42:34.600
+Yeah. And those are definitely the easiest, the easiest.
+
+00:42:34.860 --> 00:42:40.460
+When it's completely embarrassingly parallel, that's usually a good sign that it's something that will fit well in GPU.
+
+00:42:40.900 --> 00:42:54.720
+But also if you have something like, I want to add up, I want to take the sum of every integer in this huge data set or something like that, that's also a task that GPUs can be good for, even though it's not embarrassingly parallel, even though there are data dependencies.
+
+00:42:55.280 --> 00:42:56.260
+Where's a good place to run it?
+
+00:42:56.380 --> 00:43:04.740
+Something I've been fascinated with is this thing you guys announced but have not yet shipped, the home AI computer, This little golden box.
+
+00:43:05.070 --> 00:43:05.200
+So
+
+00:43:05.200 --> 00:43:13.900
+the DGX Spark, great entry-level platform, but there is no reason to have to buy something if you want to play around with CUDA.
+
+00:43:14.260 --> 00:43:19.380
+One of the best places to play around with CUDA Python, I think, is Google CoLab.
+
+00:43:19.660 --> 00:43:28.200
+Google CoLab, it's a Jupyter notebook environment, and they have three GPU instances with T4 GPUs.
+
+00:43:28.480 --> 00:43:36.200
+It's not there by default, but if you go in, If you go to runtime, you can change to use a GPU environment.
+
+00:43:36.580 --> 00:43:39.740
+And then you can play around with Python in the Colab environment.
+
+00:43:40.020 --> 00:43:45.340
+There is also Compiler Explorer, which is an online platform.
+
+00:43:45.940 --> 00:43:48.460
+It's godbolt.org is the link.
+
+00:43:48.680 --> 00:43:54.940
+It's an online compiler sandbox, and it has GPU environments.
+
+00:43:55.440 --> 00:44:04.200
+And it does also have Python support, although I think they're still working on getting Python packaging to be available here.
+
+00:44:04.580 --> 00:44:17.600
+But for something like CUDA C++, you can use this to write code and then see what the assembly is that you'd get, make sure that your code compiles, and then also run that code, and you can even run the code on a GPU.
+
+00:44:18.060 --> 00:44:25.340
+So I think if you want to get started, there's a lot of different places where you can do GPU development without having to have your own GPU.
+
+00:44:25.640 --> 00:44:28.940
+Another couple possibilities, it's not too bad.
+
+00:44:29.120 --> 00:44:36.540
+It's not that cheap, but if you don't leave it on all the time, it's not too bad to get a cloud Linux machine that's got some GPU component.
+
+00:44:37.030 --> 00:44:39.480
+But if you leave it on all the time, they do get expensive.
+
+00:44:39.740 --> 00:44:39.820
+So
+
+00:44:39.820 --> 00:44:40.300
+set
+
+00:44:40.300 --> 00:44:41.740
+yourself a reminder to turn it off.
+
+00:44:42.620 --> 00:44:46.060
+Another one that's interesting, which I was just thinking about with my Mac Mini here.
+
+00:44:46.380 --> 00:44:52.760
+I don't know that you've said it yet, but I'm pretty sure it's still true, that CUDA requires NVIDIA GPUs, not just a GPU, right?
+
+00:44:52.840 --> 00:44:53.580
+That is true, yes.
+
+00:44:53.760 --> 00:44:56.320
+So it's not going to work super well on my Apple Silicon.
+
+00:44:56.620 --> 00:44:57.060
+That is true.
+
+00:44:57.340 --> 00:45:00.180
+For that reason, amongst possibly others, but certainly that's one of them.
+
+00:45:00.660 --> 00:45:05.640
+But I have like a gaming PC, or you might have a workstation with a really good GPU.
+
+00:45:06.100 --> 00:45:15.340
+You could set up things like change your Docker host on your computer, and anything you run on Docker will run over there on that machine or build on that machine and so on.
+
+00:45:15.660 --> 00:45:23.240
+So that's a pretty interesting way to say, well, everybody in the lab, we're changing your Docker host to like the one big machine that's got the NVIDIA GPU.
+
+00:45:23.760 --> 00:45:24.700
+I think there's a lot of flexibility.
+
+00:45:25.000 --> 00:45:25.120
+You
+
+00:45:25.120 --> 00:45:30.260
+don't even need to have the highest-end GPU to get started with CUDA programming.
+
+00:45:30.710 --> 00:45:40.880
+And there are a lot of people who have use cases that would benefit from GPU acceleration where an everyday commodity gaming GPU would be fine.
+
+00:45:41.180 --> 00:45:42.580
+Not going to be true for every application.
+
+00:45:42.650 --> 00:45:52.240
+And of course, if you scale up, what usually happens when people start with GPU acceleration is first they take their existing thing and then they add the GPU acceleration.
+
+00:45:52.440 --> 00:45:53.560
+and now it runs a lot faster.
+
+00:45:53.650 --> 00:45:58.340
+And then they start thinking, aha, now that it runs faster, I can increase my problem size.
+
+00:45:58.540 --> 00:45:59.680
+I no longer have these constraints.
+
+00:46:00.210 --> 00:46:01.720
+And then they end up needing a bigger GPU.
+
+00:46:02.280 --> 00:46:08.560
+But for that initial speed up, you're usually fine to start prototyping and developing on your everyday monody GPU.
+
+00:46:08.920 --> 00:46:11.740
+Not usually going to be the thing that makes sense to take to production.
+
+00:46:12.240 --> 00:46:21.640
+And one of the biggest downsides to the GPU that's in your gaming box is that you're going to have greater latency between the CPU and the GPU.
+
+00:46:22.340 --> 00:46:25.960
+And you're not going to have as much memory compared to what you get in a server GPU.
+
+00:46:26.060 --> 00:46:28.780
+It's a step on the staircase maybe of getting started.
+
+00:46:29.160 --> 00:46:29.380
+Yes.
+
+00:46:29.620 --> 00:46:30.980
+Prototyping and so on.
+
+00:46:31.300 --> 00:46:31.400
+Okay.
+
+00:46:31.920 --> 00:46:37.700
+We don't have too much time left, but maybe let's dive into each of these pieces here that make up CudaPython.
+
+00:46:37.960 --> 00:46:38.960
+There's some that are listed here.
+
+00:46:39.080 --> 00:46:43.560
+Let me give people the overview of what parts of CudaPython you've created started with.
+
+00:46:43.680 --> 00:46:46.840
+The first one isn't even listed here, and that is Coupy.
+
+00:46:46.920 --> 00:46:47.060
+Okay.
+
+00:46:47.200 --> 00:46:50.740
+So it's not listed here because it's not part of that CudaPython meta package.
+
+00:46:51.060 --> 00:46:57.960
+So QPY is a NumPy and SciPy-like library that is GPU accelerated.
+
+00:46:58.540 --> 00:47:02.880
+So it's the interface that you know from NumPy and SciPy.
+
+00:47:03.280 --> 00:47:06.400
+When you invoke the operations, they run on your GPU.
+
+00:47:06.750 --> 00:47:10.220
+So this is by far where everybody should start.
+
+00:47:10.220 --> 00:47:13.900
+Could I get away with even saying import QPY as NP?
+
+00:47:14.520 --> 00:47:15.400
+Is it that compatible?
+
+00:47:15.540 --> 00:47:15.720
+You
+
+00:47:15.720 --> 00:47:23.580
+could get away with that, but there are certainly going to be cases where the semantics may not 100% line up.
+
+00:47:23.710 --> 00:47:31.900
+I think for the most part, you would be fine doing that, but there is no way to make a 100% fully compatible drop and replacement.
+
+00:47:32.370 --> 00:47:37.820
+And so it's important to read the docs and make sure you understand where there may be little subtle differences.
+
+00:47:38.040 --> 00:47:39.740
+But yeah, definitely think of it as drop and replace.
+
+00:47:39.900 --> 00:47:43.940
+Yeah, the reason I was asking is maybe that's a super simple way to experiment, right?
+
+00:47:44.080 --> 00:47:47.840
+I've got something written in Pandas, NumPy, and so on.
+
+00:47:48.200 --> 00:47:53.940
+Could I just change the import statement what happens without like completely rewriting it. That's kind of what's getting at. Yeah,
+
+00:47:54.090 --> 00:48:01.360
+you can definitely do that. I mean, it's, I think the docs even say right there that, yeah, it's meant to be a drop and replacement. So yeah, that's definitely how you could get started.
+
+00:48:01.700 --> 00:48:15.960
+The one thing to keep in mind is that if you're running in a single thread on the CPU, the problem size that you're running with may not be large enough to see an impact. So you may have to think about you running with a larger problem size than, than it makes sense with NumPy.
+
+00:48:16.020 --> 00:48:17.780
+It might even be slower, right? Because of the overhead
+
+00:48:17.780 --> 00:48:18.740
+of CPU
+
+00:48:18.740 --> 00:48:19.460
+and stuff.
+
+00:48:19.560 --> 00:48:21.400
+If you do like a sum of like
+
+00:48:21.400 --> 00:48:22.040
+three elements.
+
+00:48:22.780 --> 00:48:29.620
+Although I would hope and assume that that path we maybe don't dispatch to GPU translation, but I suspect we still do.
+
+00:48:30.140 --> 00:48:30.540
+Kupi
+
+00:48:30.540 --> 00:48:33.320
+is sort of the foundational thing that I'd say everybody should get started with.
+
+00:48:33.400 --> 00:48:34.700
+Okay, let me ask you a follow-up question.
+
+00:48:34.940 --> 00:48:36.440
+So this is like NumPy.
+
+00:48:36.800 --> 00:48:40.400
+NumPy is the foundation mostly, starting to change a little bit.
+
+00:48:40.520 --> 00:48:46.760
+But for pandas, is there a way to kind of pandify my GPU programming?
+
+00:48:47.020 --> 00:48:47.800
+Yes, there is.
+
+00:48:47.880 --> 00:48:52.380
+We have QDF, libqdf, which is a part of Rapids.
+
+00:48:52.860 --> 00:48:58.560
+And libqdf has a, it's a data frame library and it has a panda mode.
+
+00:48:59.000 --> 00:49:04.620
+I think the module is just like qdf.pandas that aims to be a drop and replacement.
+
+00:49:05.140 --> 00:49:11.960
+And then it also has its own like data frame interface that's, I think, a little bit different than pandas in some ways.
+
+00:49:12.290 --> 00:49:16.140
+It allows it to be more efficient for GPU in parallel.
+
+00:49:16.840 --> 00:49:23.780
+And there's a whole bunch of other libraries that are a part of the Rapids frameworks for doing accelerated data science.
+
+00:49:24.120 --> 00:49:28.160
+Yeah, I'm going to probably be doing an episode on Rapids later as well.
+
+00:49:28.210 --> 00:49:29.180
+So diving more into that.
+
+00:49:29.300 --> 00:49:32.260
+But OK, it's good to know that that kind of is the parallel there.
+
+00:49:32.440 --> 00:49:36.820
+That was actually the next piece I was going to mention was going to be Rapids and Kudia.
+
+00:49:37.200 --> 00:49:46.000
+Now, the next two most frequent things that you might need is the like a Pythonic interface to the CUDA run plan.
+
+00:49:46.320 --> 00:49:52.740
+So the CUDA runtime is the thing that you use to do that command and control, that orchestration of NVIDIA GPUs.
+
+00:49:53.170 --> 00:50:10.820
+Things like managing configurations and settings in the GPUs, loading programs, compiling and linking programs, doing things like launching work on the GPU, allocating memory, creating queues of work, creating dependencies, etc.
+
+00:50:11.340 --> 00:50:14.880
+Cuda.core is a Pythonic API to all of those things.
+
+00:50:15.100 --> 00:50:19.860
+And that's what almost everybody should be using for doing those sorts of management tasks.
+
+00:50:20.320 --> 00:50:28.520
+It pretty much one-to-one maps to things, to ideas, concepts from the CUDA C++ runtime.
+
+00:50:28.980 --> 00:50:36.900
+And then the final piece would be Numba CUDA, which is the thing that you would use to write your own CUDA kernels.
+
+00:50:37.300 --> 00:50:42.400
+And when you're writing those CUDA kernels, there are some libraries that can help you with that.
+
+00:50:42.530 --> 00:50:48.820
+And one of them is CUDA Cooperative, which is going to be the thing I'll probably talk about the most in my Python talk.
+
+00:50:49.110 --> 00:50:55.220
+And so CUDA Cooperative provides you with these algorithmic building blocks for writing CUDA kernels.
+
+00:50:55.660 --> 00:51:09.420
+And we also have a package called NVMath Python, which provides you with more, CUDA Cooperative is generic algorithmic building blocks for things like loading and storing or doing a sum or a scan.
+
+00:51:09.760 --> 00:51:17.840
+NVMath Python provides you with building blocks for things like a matrix multiply or random numbers or a Fourier transform, etc.
+
+00:51:18.120 --> 00:51:23.340
+And NVMath Python also has host side APIs, so you can use it.
+
+00:51:23.800 --> 00:51:35.340
+For the most part, you can access those with Kupi's SciPy packages, but you can also go directly through NVMath Python if you want to get to the slightly lower level APIs that give you a little bit more control.
+
+00:51:35.560 --> 00:51:40.860
+I've heard the docs talk about host side operations versus not.
+
+00:51:40.920 --> 00:51:41.580
+What does that mean?
+
+00:51:41.760 --> 00:51:57.180
+Host side operations means things that you call from the CPU so that your Python program calls just as a regular Python program would, and then it runs some work on the GPU, and then when it's done, it reports back to the CPU.
+
+00:51:57.500 --> 00:52:03.460
+And typically, in a lot of cases, like Kupi, these operations are synchronous.
+
+00:52:03.800 --> 00:52:10.100
+So like you call like Kupi sum, it launches the work on the GPU, the work on the GPU finishes.
+
+00:52:10.800 --> 00:52:14.880
+And this whole time, the Kupi sum has been waiting for that work by default.
+
+00:52:15.240 --> 00:52:16.660
+And so it gives you this sequential.
+
+00:52:16.860 --> 00:52:19.200
+So real simple distributed programming model, right?
+
+00:52:19.460 --> 00:52:23.080
+It looks like you're just calling local functions, but it's kind of distributed computing.
+
+00:52:23.320 --> 00:52:26.040
+Distributed in the sense of it's distributed from the host to the device.
+
+00:52:26.620 --> 00:52:31.800
+Device side operations are things that you're calling from within a CUDA kernel.
+
+00:52:32.240 --> 00:52:43.300
+And a CUDA kernel is a function that gets run by every thread on the GPU or every thread within the collection that you tell it to run on.
+
+00:52:43.470 --> 00:52:45.740
+For simplicity, let's just assume every thread on the GPU.
+
+00:52:46.050 --> 00:52:58.660
+And so those operations are what we call cooperative operations in that a cooperative sum is a sum where every thread is expected to call the sum function at the same time.
+
+00:52:59.040 --> 00:53:06.100
+and they all cooperate together, communicate amongst themselves to compute the sum across all the threads.
+
+00:53:06.360 --> 00:53:07.480
+We're just about out of time.
+
+00:53:07.760 --> 00:53:12.840
+You mentioned it in passing, but you're going to have a talk coming up at PyCon.
+
+00:53:13.120 --> 00:53:13.200
+Yes.
+
+00:53:13.520 --> 00:53:16.580
+Which, if people are watching the YouTube live stream, starts in just a couple days.
+
+00:53:17.020 --> 00:53:19.980
+If they're listening to the podcast, maybe you can catch the video now.
+
+00:53:20.080 --> 00:53:20.840
+It's about time enough.
+
+00:53:21.700 --> 00:53:23.860
+But it's called GPU Programming in Pure Python.
+
+00:53:24.560 --> 00:53:26.000
+You want to give a quick shout out to your talk?
+
+00:53:26.180 --> 00:53:45.580
+In this talk, we're going to look at how you write CUDA kernels or how you can write CUDA kernels in Python without having to go to CUDA C++ and how you have access to all the tools that you have in CUDA C++ and you can get the same performance that you would have in CUDA C++.
+
+00:53:45.860 --> 00:53:52.540
+Sounds like a good hands-on, not exactly hands-on, but at least concrete code version of a lot of the stuff we talked about here.
+
+00:53:52.740 --> 00:53:52.820
+Yeah.
+
+00:53:52.940 --> 00:53:53.300
+Yeah, great.
+
+00:53:53.620 --> 00:53:56.720
+And now people are excited, they're interested in this.
+
+00:53:57.260 --> 00:53:57.720
+What do you tell them?
+
+00:53:57.760 --> 00:53:58.300
+How do they get started?
+
+00:53:58.500 --> 00:53:58.800
+What do they do?
+
+00:53:58.860 --> 00:53:59.000
+I
+
+00:53:59.000 --> 00:54:04.160
+would say they should go to the Accelerated Computing Hub, which is another GitHub repo that we have.
+
+00:54:04.500 --> 00:54:11.660
+And on the Accelerated Computing Hub, we have open source learning materials and courses, self-guided courses.
+
+00:54:12.060 --> 00:54:14.520
+And one of them is a GPU Python tutorial.
+
+00:54:15.060 --> 00:54:16.620
+So you just go to Accelerated Computing Hub.
+
+00:54:16.740 --> 00:54:17.120
+It's on GitHub.
+
+00:54:17.600 --> 00:54:19.200
+Click on GPU Python tutorial.
+
+00:54:19.820 --> 00:54:23.900
+And it takes you to a page with a whole bunch of Jupyter Notebooks.
+
+00:54:24.600 --> 00:54:27.000
+And you start with the first one.
+
+00:54:27.180 --> 00:54:28.160
+It opens up in CoLab.
+
+00:54:28.580 --> 00:54:34.880
+It uses those Colab GPU instances, and you can start learning there.
+
+00:54:35.780 --> 00:54:41.900
+There's other resources available on Accelerated Computing Hub, and that is that we're always working on new stuff.
+
+00:54:42.580 --> 00:54:45.240
+So that is a good place to look.
+
+00:54:45.380 --> 00:54:55.800
+There's also, I think, a PyTorch tutorial there, and we have Accelerated Python User Guide, which has some other useful learning material.
+
+00:54:56.080 --> 00:54:57.000
+Thanks for being here, Bryce.
+
+00:54:57.300 --> 00:54:57.680
+I love you.
+
+00:54:57.800 --> 00:54:58.500
+Good luck with your talk.
+
+00:54:58.720 --> 00:55:02.520
+And yeah, thanks for giving us this look at GPU programming in Python.
+
+00:55:02.700 --> 00:55:02.880
+Thank
+
+00:55:02.880 --> 00:55:03.000
+you.
+
+00:55:03.220 --> 00:55:03.980
+It was great being here.
+
+00:55:04.280 --> 00:55:10.980
+Oh, I should also, I should plug my podcast, ADSP, the podcast, Algorithms Plus Data Structures Equals Programming.
+
+00:55:11.100 --> 00:55:12.460
+We talk about parallel programming.
+
+00:55:13.060 --> 00:55:22.340
+We talk about those three algorithms that I mentioned, transform, reduce, and scan, and how you can use them to write the world's fastest GPU-excited code.
+
+00:55:22.390 --> 00:55:26.200
+And we talk a lot about array programming languages and all sorts of fun stuff.
+
+00:55:26.460 --> 00:55:26.920
+So check it out.
+
+00:55:27.040 --> 00:55:27.220
+Excellent.
+
+00:55:27.380 --> 00:55:28.800
+Yeah, I'll link to it in the show notes for people.
+
+00:55:28.980 --> 00:55:29.100
+Thanks.
+
+00:55:29.220 --> 00:55:29.760
+Thanks for being here.
+
+00:55:30.200 --> 00:55:30.380
+See you later.
+
+00:55:31.480 --> 00:55:33.860
+This has been another episode of Talk Python To Me.
+
+00:55:34.640 --> 00:55:35.600
+Thank you to our sponsors.
+
+00:55:36.060 --> 00:55:37.300
+Be sure to check out what they're offering.
+
+00:55:37.400 --> 00:55:38.700
+It really helps support the show.
+
+00:55:39.460 --> 00:55:43.140
+This episode is sponsored by Posit Connect from the makers of Shiny.
+
+00:55:43.620 --> 00:55:47.600
+Publish, share, and deploy all of your data projects that you're creating using Python.
+
+00:55:48.200 --> 00:55:54.200
+Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+00:55:55.060 --> 00:55:56.720
+Posit Connect supports all of them.
+
+00:55:57.000 --> 00:56:02.340
+Try Posit Connect for free by going to talkpython.fm/posit, B-O-S-I-T.
+
+00:56:02.920 --> 00:56:04.880
+And it's brought to you by Agency.
+
+00:56:05.520 --> 00:56:07.300
+Discover agentic AI with Agency.
+
+00:56:07.800 --> 00:56:11.860
+Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+00:56:12.540 --> 00:56:18.580
+Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+
+00:56:19.080 --> 00:56:19.940
+Want to level up your Python?
+
+00:56:20.390 --> 00:56:24.060
+We have one of the largest catalogs of Python video courses over at Talk Python.
+
+00:56:24.520 --> 00:56:29.200
+Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+00:56:29.530 --> 00:56:31.740
+And best of all, there's not a subscription in sight.
+
+00:56:32.210 --> 00:56:34.740
+Check it out for yourself at training.talkpython.fm.
+
+00:56:35.460 --> 00:56:39.620
+Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+00:56:40.030 --> 00:56:40.940
+We should be right at the top.
+
+00:56:41.460 --> 00:56:50.320
+You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+00:56:50.960 --> 00:56:53.220
+We're live streaming most of our recordings these days.
+
+00:56:53.660 --> 00:57:01.060
+If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+00:57:02.060 --> 00:57:03.200
+This is your host, Michael Kennedy.
+
+00:57:03.620 --> 00:57:04.460
+Thanks so much for listening.
+
+00:57:04.640 --> 00:57:05.600
+I really appreciate it.
+
+00:57:05.940 --> 00:57:07.560
+Now get out there and write some Python code.
+
