@@ -1,0 +1,3863 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:04.740
+What if your code was crash-proof? That's the value prop for a framework called Temporal.
+
+00:00:05.260 --> 00:00:09.000
+Temporal is a durable execution platform that enables developers to build
+
+00:00:09.440 --> 00:00:13.300
+scalable applications without sacrificing productivity or reliability.
+
+00:00:14.130 --> 00:00:19.460
+The Temporal server executes units of application logic called workflows in a resilient manner that
+
+00:00:19.760 --> 00:00:25.340
+automatically handles intermittent failures and retries failed operations. We have Mason Egger
+
+00:00:25.360 --> 00:00:32.080
+from Temporal on to dive into durable execution in Python. This is Talk Python To Me, episode 515,
+
+00:00:32.470 --> 00:00:53.480
+recorded June 19th, 2025. Welcome to Talk Python To Me, a weekly podcast on Python.
+
+00:00:54.080 --> 00:00:59.320
+This is your host, Michael Kennedy. Follow me on Mastodon where I'm @mkennedy and follow the
+
+00:00:59.510 --> 00:01:05.620
+podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and
+
+00:01:05.630 --> 00:01:11.100
+listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes,
+
+00:01:11.470 --> 00:01:15.780
+you can find the live streams over on YouTube. Subscribe to our YouTube channel over at
+
+00:01:15.920 --> 00:01:21.899
+Talk Python.fm slash YouTube and get notified about upcoming shows. This episode is sponsored by
+
+00:01:21.980 --> 00:01:27.040
+Posit Connect from the makers of Shiny. Publish, share, and deploy all of your data projects that
+
+00:01:27.120 --> 00:01:33.560
+you're creating using Python. Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports,
+
+00:01:33.880 --> 00:01:39.800
+Dashboards, and APIs. Posit Connect supports all of them. Try Posit Connect for free by going to
+
+00:01:39.820 --> 00:01:46.779
+talkpython.fm/posit, P-O-S-I-T. The PyBay Conference is returning to the UCSF Mission Bay
+
+00:01:46.800 --> 00:01:53.560
+Conference Center in San Francisco, California on October 18th, 2025. Get your ticket and pick up a
+
+00:01:53.650 --> 00:01:59.000
+free conference course bundle from Talk Python. Get started at talkpython.fm/PyBay.
+
+00:02:00.070 --> 00:02:03.560
+Big announcement, we have a brand new course for you all data science types out there.
+
+00:02:04.180 --> 00:02:09.539
+Just Enough Python for Data Scientists. Data scientists get things done in notebooks,
+
+00:02:09.979 --> 00:02:14.899
+but production quality work needs more than ad hoc scripts. Just Enough Python for Data
+
+00:02:14.920 --> 00:02:19.960
+scientist gives you the essential Python and software engineering habits to level up your
+
+00:02:20.140 --> 00:02:24.820
+analysis without drowning in theory. In a few focused hours, you'll tighten up your core Python,
+
+00:02:25.320 --> 00:02:30.520
+write clean and reasonable functions, organize code into importable modules, track work with
+
+00:02:30.550 --> 00:02:36.160
+Git and GitHub, debug confidently, and make your results reproducible with pinned environments and
+
+00:02:36.300 --> 00:02:42.940
+Docker. You'll also see how modern agentic AI tools can accelerate data exploration, bug detection,
+
+00:02:43.220 --> 00:02:48.600
+refactoring, and documentation. The outcome is simple. You keep your notebook speed while gaining
+
+00:02:48.630 --> 00:02:54.920
+the reliability, collaboration, and professionalism your projects deserve. Just visit talkpython.fm
+
+00:02:55.100 --> 00:02:59.260
+and click on courses in the nav bar. The link to the course is also in your podcast player show
+
+00:02:59.400 --> 00:03:05.060
+notes. And if you'd rather focus purely on building with LLMs, check out Vincent Warmerdam's
+
+00:03:05.300 --> 00:03:10.520
+LLM building blocks for Python course we just recently released as well. Now on to that interview.
+
+00:03:11.480 --> 00:03:14.160
+Mason, welcome to Talk Python To Me. Fantastic to have you here.
+
+00:03:14.450 --> 00:03:15.800
+It's great to be here. Long time listener.
+
+00:03:16.200 --> 00:03:19.980
+Oh, wonderful. I'm definitely a fan of stuff I've seen you doing online as well.
+
+00:03:20.090 --> 00:03:24.280
+And it's super cool to get together here and, you know, share it with a couple of people.
+
+00:03:24.720 --> 00:03:25.940
+Yeah, definitely excited.
+
+00:03:26.420 --> 00:03:28.860
+Temporal. Wow, what a cool topic. Durable execution.
+
+00:03:29.620 --> 00:03:33.860
+What a neat idea that I've seen in other places, but I've seen less of it in Python.
+
+00:03:34.130 --> 00:03:35.840
+So I'm real excited to dive into this.
+
+00:03:35.960 --> 00:03:37.760
+This is something I learned about recently.
+
+00:03:37.930 --> 00:03:41.260
+We'll go into that in a bit, but there's a lot here.
+
+00:03:41.340 --> 00:03:44.920
+Let's just leave it like this could be a two hour show and we'd still be going easy.
+
+00:03:45.520 --> 00:03:45.800
+Definitely.
+
+00:03:46.040 --> 00:03:46.100
+Yeah.
+
+00:03:46.220 --> 00:03:49.400
+I, I spend a lot of my time educating people about durable execution.
+
+00:03:49.730 --> 00:03:51.000
+that's, that's what my role is.
+
+00:03:51.060 --> 00:03:52.880
+I'm a develop, one of the developer educators at temporal.
+
+00:03:53.620 --> 00:03:57.700
+and definitely you could spend hours on this and we would, we could be going forever.
+
+00:03:58.060 --> 00:03:58.520
+So yeah.
+
+00:03:59.000 --> 00:03:59.140
+Yeah.
+
+00:03:59.310 --> 00:04:00.100
+And we definitely could.
+
+00:04:00.400 --> 00:04:03.020
+Well, before we do go on for hours, who are you?
+
+00:04:03.300 --> 00:04:03.660
+It was Mason.
+
+00:04:04.200 --> 00:04:04.480
+Oh yeah.
+
+00:04:04.840 --> 00:04:05.960
+my name is Mason Egger.
+
+00:04:06.180 --> 00:04:08.900
+I am a developer educator at temporal, as I mentioned.
+
+00:04:09.060 --> 00:04:12.280
+And I also help run the PyTexas conference.
+
+00:04:13.440 --> 00:04:18.799
+So PyTexas is one of the oldest, actually the oldest regional Python conference in the
+
+00:04:18.880 --> 00:04:19.920
+world that we know of.
+
+00:04:20.780 --> 00:04:22.480
+No one else has come to claim that spot yet.
+
+00:04:22.540 --> 00:04:28.140
+We started in the late fall of 2007, like right after PyCon US would have started.
+
+00:04:28.300 --> 00:04:31.620
+We'll be experiencing our 20th year this upcoming year, which is exciting.
+
+00:04:31.980 --> 00:04:34.360
+And I also am the president of the PyTexas Foundation.
+
+00:04:34.600 --> 00:04:46.200
+So PyTexas has its own 501c3 organization that is used to basically act as a sheltering organization for all of the Python meetups and events that go on within the state of Texas, which is really nice.
+
+00:04:46.680 --> 00:04:49.860
+So I was elected president of that back in 2002.
+
+00:04:50.540 --> 00:04:53.520
+I've been helping run and build the Python community there ever since.
+
+00:04:53.560 --> 00:04:55.340
+And it's a lot of work, but it's a lot of fun.
+
+00:04:55.360 --> 00:04:56.940
+And I really enjoy my community work.
+
+00:04:57.320 --> 00:05:00.020
+Yeah, it sounds extremely fun, although also challenging.
+
+00:05:00.140 --> 00:05:04.780
+You say for the entire state of Texas, Texas is a big place.
+
+00:05:05.110 --> 00:05:08.020
+It's like countries as well, if you look at the size of Texas.
+
+00:05:09.060 --> 00:05:09.740
+It really is.
+
+00:05:09.860 --> 00:05:15.320
+Texas has some unique issues with it when it comes to running community stuff.
+
+00:05:17.040 --> 00:05:22.280
+We founded our own virtual meetup for basically anyone in Texas, and anyone else can join,
+
+00:05:22.500 --> 00:05:22.800
+obviously, too.
+
+00:05:22.880 --> 00:05:25.080
+We don't say, oh, no, no Texans can join it.
+
+00:05:25.120 --> 00:05:37.520
+But we did it because the amount of feedback we would get, it's like, oh, I live in, say, the DFW area, the Dallas-Fort Worth area, and I would love to go to the meetup, but I live two hours away from the meetup because of how large the Texas cities are.
+
+00:05:37.720 --> 00:05:39.900
+Texas cities are sprawling metroplexes.
+
+00:05:40.340 --> 00:05:47.220
+I grew up in the Houston area, and the joke when you grew up in Houston is you're always three hours away by car from every other part of Houston.
+
+00:05:48.000 --> 00:05:48.960
+And that really is the case.
+
+00:05:49.240 --> 00:05:55.400
+So it does have its own set of unique challenges, trying to coordinate four major cities across,
+
+00:05:55.960 --> 00:05:57.640
+you know, technically two time zones.
+
+00:05:57.720 --> 00:06:03.600
+If we can, if we include El Paso, the very, very edge, the very west part of Texas is
+
+00:06:03.620 --> 00:06:04.380
+in the mountain time zone.
+
+00:06:05.539 --> 00:06:07.580
+So it's an interesting bit of work.
+
+00:06:07.580 --> 00:06:11.500
+And we've been doing a really good job of expanding and like adding more and more offerings
+
+00:06:11.660 --> 00:06:13.800
+that we can offer to the community year over year.
+
+00:06:13.900 --> 00:06:16.140
+And it's been a lot of fun and I really enjoy it.
+
+00:06:16.320 --> 00:06:16.920
+It keeps me busy.
+
+00:06:17.080 --> 00:06:17.480
+That's for sure.
+
+00:06:17.860 --> 00:06:19.040
+Yeah, I could say.
+
+00:06:19.640 --> 00:06:22.780
+is that why people drive so fast in Texas? They've got so far to go.
+
+00:06:23.460 --> 00:06:28.420
+Exactly. Yes. I mean, the fastest speed limit in the United States is on the highway next to my
+
+00:06:28.530 --> 00:06:32.540
+house. It's 85 miles an hour and it's on the toll road next to my house because you're right. Like
+
+00:06:32.580 --> 00:06:36.700
+if you're trying to get from Austin to San Antonio, that's, I think it's about a hundred miles
+
+00:06:37.240 --> 00:06:41.120
+down. And like, if you're going 55, you'll get there in, you know, two and a half hours,
+
+00:06:41.210 --> 00:06:44.960
+but I can make it in an hour and a half hour and 15 minutes. If you just let me fly,
+
+00:06:45.160 --> 00:06:49.520
+I had no idea that the speed limit were that high.
+
+00:06:49.550 --> 00:06:50.980
+I knew they were high, but not that high in Texas.
+
+00:06:51.620 --> 00:06:51.700
+Yep.
+
+00:06:52.020 --> 00:06:52.980
+Wild, you know.
+
+00:06:53.240 --> 00:06:54.740
+You guys in Germany, come on.
+
+00:06:55.060 --> 00:06:58.400
+Yeah, it is the Southern Autobahn, basically.
+
+00:06:59.340 --> 00:06:59.700
+Fantastic.
+
+00:07:00.090 --> 00:07:03.480
+So you've had a bit of a tougher challenge, I suppose,
+
+00:07:04.060 --> 00:07:07.540
+or more challenges than a lot of people with this whole Pi Texas thing,
+
+00:07:07.880 --> 00:07:09.260
+which I've always thought was super cool.
+
+00:07:09.650 --> 00:07:10.460
+I'd love to go sometime.
+
+00:07:10.860 --> 00:07:12.780
+It's far from Oregon, but still would be really lovely.
+
+00:07:13.240 --> 00:07:16.920
+That said, you started working on this COVID time, right?
+
+00:07:17.060 --> 00:07:19.520
+Which for conferences is the kiss of death.
+
+00:07:19.890 --> 00:07:21.420
+You want to talk us through how that went?
+
+00:07:21.700 --> 00:07:24.180
+Yeah, I could definitely talk about that for a while.
+
+00:07:24.230 --> 00:07:29.840
+So I got involved in conference organizing, as most people do, by first speaking at the
+
+00:07:29.990 --> 00:07:30.100
+conference.
+
+00:07:30.330 --> 00:07:31.880
+So I spoke at the conference in 2019.
+
+00:07:32.750 --> 00:07:35.060
+I had been a PyCon attendee prior to that.
+
+00:07:35.370 --> 00:07:41.280
+My first PyCon attendance was the last Portland one, which I believe was 2017.
+
+00:07:42.820 --> 00:07:47.160
+and then spoke at Pitexas in 2019 and volunteered to help for the 2020 conference.
+
+00:07:47.360 --> 00:07:50.620
+And that was really interesting because, you know, we had planned to do it in person.
+
+00:07:50.620 --> 00:07:55.420
+I think everybody had planned, was planning in person 2020, you know, because you, for
+
+00:07:55.500 --> 00:07:59.220
+those that don't know, when you start planning a conference, you start planning about eight,
+
+00:07:59.580 --> 00:08:00.320
+10 months prior.
+
+00:08:00.840 --> 00:08:05.600
+So if you're a spring conference as Pitexas is, we were planning, you know, Pitexas 2020
+
+00:08:05.980 --> 00:08:07.360
+in about summer of 2019.
+
+00:08:07.860 --> 00:08:08.860
+No one knew what was coming.
+
+00:08:09.580 --> 00:08:11.540
+We were so innocent then.
+
+00:08:11.720 --> 00:08:11.840
+Yes.
+
+00:08:12.720 --> 00:08:17.660
+We really were. So we were planning that. And then, you know, the events that we know of happened
+
+00:08:18.060 --> 00:08:21.720
+and we kept chasing it. We kept pushing it back. I think a lot of conferences at that time kept
+
+00:08:21.920 --> 00:08:25.380
+pushing back thinking, Oh, we'll be out of this in two weeks. We'll be out of this in three months.
+
+00:08:26.300 --> 00:08:30.520
+We ended up going virtual. And then in 2021, we made the conscious decision to just not have a
+
+00:08:30.690 --> 00:08:36.419
+conference. The virtual conference for us in 2020 wasn't overly successful. And we've, at that time,
+
+00:08:36.430 --> 00:08:39.719
+we were feeling there was just a lot of virtual conference fatigue and we didn't have a really
+
+00:08:39.740 --> 00:08:47.820
+good story on how to like make it work and dedicate the time. Everybody was also struggling
+
+00:08:48.000 --> 00:08:53.260
+to handle the world at that time. So being able to put more resources into it was difficult.
+
+00:08:53.950 --> 00:08:58.220
+So we pushed that off and then we came back in 2022. We made a very conscious decision about it.
+
+00:08:58.320 --> 00:09:01.460
+Like we were like, we're going to come back in the safest way possible. PyCon US had announced
+
+00:09:01.490 --> 00:09:05.359
+they were coming back. We decided we were going to come back. We had, we have a venue that has
+
+00:09:05.580 --> 00:09:10.260
+custom air filtration. We instilled mask mandates and vaccine mandates and all of that stuff.
+
+00:09:10.600 --> 00:09:15.420
+And we had 76 people return. But we knew that if we didn't come back, if we let this kind of like
+
+00:09:16.040 --> 00:09:20.120
+continue on, that the likelihood of getting the community to come back, that the memory
+
+00:09:20.820 --> 00:09:26.620
+is short, that if we didn't come back, we might lose it forever. And having run this for 18 years,
+
+00:09:26.700 --> 00:09:30.479
+we were concerned about losing it at that point. I think that's totally valid. A lot of this
+
+00:09:30.560 --> 00:09:35.940
+conference attending is it's habit. You form, you've gone a bunch of times. You really enjoy
+
+00:09:36.000 --> 00:09:38.780
+it. Like, yeah, of course I'm going to go. You don't even question like, well, when is it? I'm
+
+00:09:38.780 --> 00:09:43.300
+just going to sign up when it comes out. But you know, if you stop going, then I think that does
+
+00:09:43.520 --> 00:09:48.620
+make a big change. So it definitely does. So in 22, we, we did it and then we kept coming back.
+
+00:09:48.780 --> 00:09:53.400
+And then, you know, every year prior after that, we, we continue to grow. it took us three
+
+00:09:53.560 --> 00:09:59.380
+years to get back to above, what, what I would consider pre-pandemic normals. and the,
+
+00:09:59.460 --> 00:10:03.600
+the fun fact about that is, and the thing that I think that really kind of helped us out is like,
+
+00:10:03.660 --> 00:10:07.940
+we didn't really start seeing the growth back in the conference attendance until us as the
+
+00:10:08.120 --> 00:10:15.100
+foundation turned our inwards local or sorry, our vision local or our site to start focusing on the
+
+00:10:15.120 --> 00:10:19.840
+local meetups, because the local meetup scene had not returned. And that was the vast majority of
+
+00:10:19.960 --> 00:10:24.940
+our of our of our marketing was that we would send out these emails and stuff or the local meetups
+
+00:10:24.990 --> 00:10:29.420
+would promote us. And these are huge meetups. I mean, the Python, the some of the Python meetups
+
+00:10:29.440 --> 00:10:33.540
+are some of the oldest meetups that I know of. I mean, like they started in the early,
+
+00:10:33.960 --> 00:10:38.480
+in the late aughts in the early teens. Yeah, I would say they probably were not even called
+
+00:10:38.680 --> 00:10:42.900
+meetups when they started, right? The user groups or something. They predate meetup. Yeah,
+
+00:10:43.040 --> 00:10:47.400
+meetup.com and all that. Yeah, I think the PyHouston meetup group is called,
+
+00:10:47.740 --> 00:10:55.200
+like their tag on meetup.com is Python-14. So I'm assuming it was the 14th Python meetup when it was
+
+00:10:55.200 --> 00:11:01.040
+created in the world on meetup.com. so, and you know, large groups, but these meetups had
+
+00:11:01.050 --> 00:11:05.680
+gone dormant. So what I did as, as foundation president at that time was I was like, okay,
+
+00:11:05.800 --> 00:11:09.040
+I'm going to spend all of my effort while my organizers are helping get the conference going.
+
+00:11:09.160 --> 00:11:12.600
+I'm going to spend all of my effort finding organizers and rebuilding these meetups in
+
+00:11:12.600 --> 00:11:16.700
+these areas. so I would connect with people that I knew in the area. I would reach out to
+
+00:11:16.920 --> 00:11:22.220
+friends. I would put out all calls and after time of rebuilding the ecosystem, then we basically
+
+00:11:22.240 --> 00:11:25.760
+everything came back to life. And that's kind of where a little, you know, the things that I have
+
+00:11:25.880 --> 00:11:30.060
+learned is that if your, if your meetup ecosystem is not healthy, then your regional Python conference
+
+00:11:30.240 --> 00:11:36.060
+ecosystem will not be healthy because it has to feed up into it. Yeah. Yeah. I think it's,
+
+00:11:36.160 --> 00:11:42.940
+it's such a challenge to run like a conference or podcast or whatever to draw in new people.
+
+00:11:43.270 --> 00:11:46.840
+I mean, you can do all the amazing mailing lists and announcements and everything,
+
+00:11:47.120 --> 00:11:51.360
+but you're speaking to your existing people that know about you and finding new ones is really
+
+00:11:51.360 --> 00:11:56.200
+interesting and this cultivating like user groups to sort of be the foundation. It's a very
+
+00:11:56.380 --> 00:12:00.760
+interesting idea. Definitely. User groups work. I think we also started the PyTexas meetup,
+
+00:12:01.120 --> 00:12:05.380
+which was a virtual meetup that we do monthly that we allow anyone to join. And we cultivated
+
+00:12:05.660 --> 00:12:10.220
+amongst our network of friends and social media and word of mouth. And then we all know what
+
+00:12:10.400 --> 00:12:14.520
+happened with the social media situation, which really did not help. I mean, there was a lot of
+
+00:12:14.540 --> 00:12:20.079
+just a lot of things that have happened with like the dissolution of Twitter really did not help
+
+00:12:20.160 --> 00:12:24.220
+the conference and the tech ecosystem. Basically, we've all fractured now. We're all in like six
+
+00:12:24.340 --> 00:12:30.120
+different places. Like the move to Mastodon is not complete. Blue Sky had its moment, but I honestly
+
+00:12:30.320 --> 00:12:36.040
+get less engagement on Blue Sky than anything else. LinkedIn has surprisingly been our most successful
+
+00:12:36.580 --> 00:12:40.640
+social media platform. It seems like a lot of people have moved there for some reason or another.
+
+00:12:41.899 --> 00:12:46.459
+But basically, it means that you just have to reapply your marketing strategies. And the fun
+
+00:12:46.480 --> 00:12:51.180
+thing that I've had the benefit of is that as my work as a developer advocate, all the roles that
+
+00:12:51.180 --> 00:12:55.360
+I have done, they tend to sit in marketing. Developer advocacy tends to either sit in
+
+00:12:55.500 --> 00:12:59.480
+product or marketing. All the roles that I have taken sit in marketing. And I've had the benefit
+
+00:12:59.600 --> 00:13:04.520
+of like, whenever this has started going weird, I can ask all of my marketing friends, hey, what
+
+00:13:04.640 --> 00:13:08.020
+would you do in this situation? How would you approach this? So I've got to learn through
+
+00:13:08.240 --> 00:13:12.720
+osmosis kind of how marketing stuff works and being able to apply that to conference organizing
+
+00:13:12.780 --> 00:13:16.280
+and meetup organizing has actually been substantially beneficial to us.
+
+00:13:16.580 --> 00:13:16.680
+Yeah.
+
+00:13:17.180 --> 00:13:22.180
+Certainly, I think companies that are turned on enough to have developer advocates have
+
+00:13:22.779 --> 00:13:25.360
+developer intelligent marketing teams, and that's a real resource.
+
+00:13:25.920 --> 00:13:26.100
+Definitely.
+
+00:13:26.340 --> 00:13:26.480
+Yeah.
+
+00:13:26.500 --> 00:13:29.220
+It's been really useful to be able to get other people's opinions.
+
+00:13:29.520 --> 00:13:32.080
+And then, you know, just ask other conference organizers, what are they doing?
+
+00:13:32.160 --> 00:13:36.720
+I think that, you know, finding out what works and telling other people about it.
+
+00:13:36.780 --> 00:13:40.180
+I mean, we, I haven't had a chance to write this year's blog post yet, unfortunately,
+
+00:13:40.260 --> 00:13:40.880
+for this year's conference.
+
+00:13:41.120 --> 00:13:46.880
+But whenever I became conference chair and then president, I was like, we're going to be as transparent as possible.
+
+00:13:47.100 --> 00:13:49.560
+Every misstep we make, we're going to blog about it.
+
+00:13:50.220 --> 00:13:51.120
+We talk about our budget.
+
+00:13:51.200 --> 00:13:53.900
+I mean, we're also a 501c3, so that's kind of like part of our bylaws.
+
+00:13:54.440 --> 00:13:56.640
+But at the same time, it's like this is everything that we do.
+
+00:13:57.000 --> 00:13:58.140
+You can find it on all of our websites.
+
+00:13:59.380 --> 00:14:00.080
+And this is what worked.
+
+00:14:00.220 --> 00:14:00.720
+This is what didn't.
+
+00:14:00.860 --> 00:14:07.780
+Because there's so many first-time conference organizers who may want to start a conference who don't know how to achieve these goals or whatever they're trying to do.
+
+00:14:08.840 --> 00:14:11.180
+And we have 20 years of experience doing it.
+
+00:14:11.500 --> 00:14:15.300
+And like it, we need to help each other out and make sure that we distill this, this knowledge
+
+00:14:15.660 --> 00:14:15.780
+outward.
+
+00:14:16.260 --> 00:14:17.500
+I don't have 20 years of experience.
+
+00:14:17.680 --> 00:14:20.620
+So I'm only doing it for four, but you know, institutional knowledge.
+
+00:14:20.750 --> 00:14:24.640
+There are, there are Google docs with like years of back data that I can go and look
+
+00:14:24.780 --> 00:14:30.480
+at and be like, oh yeah, in 2009, we ordered way too many meals because we, you know, didn't
+
+00:14:30.630 --> 00:14:32.400
+charge enough for, we didn't charge anything for tickets.
+
+00:14:32.890 --> 00:14:34.240
+Like PipeSex used to be a free conference.
+
+00:14:34.820 --> 00:14:37.759
+And basically when you don't charge anything for tickets, one of the lessons that we learned
+
+00:14:37.780 --> 00:14:40.080
+is that people will just sign up for a ticket and then not show up.
+
+00:14:40.080 --> 00:14:42.300
+And then your catering gets all kind of out of whack.
+
+00:14:42.780 --> 00:14:45.000
+So even charging just a little bit of money, like five bucks,
+
+00:14:45.000 --> 00:14:47.080
+I think we charge like five dollars for our network event.
+
+00:14:47.340 --> 00:14:48.640
+It's not because I need the five dollars.
+
+00:14:48.760 --> 00:14:50.800
+I mean, I've told I've told my we spend, I think,
+
+00:14:50.920 --> 00:14:52.200
+thirty dollars per person on the food.
+
+00:14:52.440 --> 00:14:55.880
+It's like it's to make sure that you have a little bit of like skin in the game
+
+00:14:55.920 --> 00:14:58.240
+to make sure that you show up so I can get an accurate headcount
+
+00:14:58.420 --> 00:14:59.680
+for the for the for the catering.
+
+00:15:00.040 --> 00:15:01.960
+So we don't blow the budget by ten thousand dollars.
+
+00:15:02.200 --> 00:15:03.720
+Like I'm not envious of that.
+
+00:15:04.320 --> 00:15:06.760
+I certainly it's easy to just check a checkbox.
+
+00:15:07.180 --> 00:15:07.980
+Yeah, I'm interested in food.
+
+00:15:07.980 --> 00:15:08.360
+Why not?
+
+00:15:08.560 --> 00:15:09.020
+Yeah.
+
+00:15:09.340 --> 00:15:10.140
+If I come.
+
+00:15:10.480 --> 00:15:10.540
+Yeah.
+
+00:15:10.960 --> 00:15:11.100
+Exactly.
+
+00:15:13.120 --> 00:15:15.920
+This portion of Talk Python To Me is brought to you by the folks at Posit.
+
+00:15:16.500 --> 00:15:19.500
+Posit has made a huge investment in the Python community lately.
+
+00:15:20.100 --> 00:15:25.540
+Known originally for RStudio, they've been building out a suite of tools and services for Team Python.
+
+00:15:26.760 --> 00:15:31.160
+Today, I want to focus on hosting your Python-based data science workloads.
+
+00:15:31.560 --> 00:15:37.860
+This includes dashboards, reports, plots, interactive web apps, all the way to custom Flask and Django apps.
+
+00:15:38.500 --> 00:15:39.780
+Their service is Posit Connect.
+
+00:15:40.600 --> 00:15:45.220
+Posit Connect makes it easy for data scientists to share work built with Python code.
+
+00:15:46.040 --> 00:15:52.760
+If you have a streamlet app, Dash, dashboard, Plotly interactive plot, a FastAPI service, or even a Quarto report,
+
+00:15:53.380 --> 00:15:58.760
+just give Posit Connect the code it needs to maintain the asset and Connect automatically does the rest.
+
+00:15:59.320 --> 00:16:02.760
+Connect will manage your APIs and serve your interactive apps for you.
+
+00:16:03.280 --> 00:16:07.340
+And if you want, you can update your reports and dashboards on a scheduled basis.
+
+00:16:07.820 --> 00:16:08.260
+That's right.
+
+00:16:08.600 --> 00:16:13.500
+No need to explain to the stakeholders why that dashboard or plot stopped updating last week.
+
+00:16:14.260 --> 00:16:18.900
+You get a focus on your data science and leveraging your skill set while Connect makes you look good,
+
+00:16:19.380 --> 00:16:20.820
+keeping your code running and private.
+
+00:16:21.640 --> 00:16:24.660
+With Connect, you get a private URL on your Connect server,
+
+00:16:25.220 --> 00:16:28.200
+ensuring that your asset is continuously available to your shareholders.
+
+00:16:29.080 --> 00:16:32.280
+And you can control which users have access to the asset.
+
+00:16:32.860 --> 00:16:36.740
+Let Posit Connect handle the delivery and DevOps involved in sharing your work.
+
+00:16:37.180 --> 00:16:38.560
+You focus on what you do best.
+
+00:16:39.420 --> 00:16:44.600
+So if you work on a data science team, you owe it to you and your org to check out Posit Connect.
+
+00:16:45.200 --> 00:16:51.140
+Visit talkpython.fm/connect today and get a three-month free trial to see if it's a good fit.
+
+00:16:51.660 --> 00:16:53.660
+That's talkpython.fm/connect.
+
+00:16:54.140 --> 00:16:55.860
+The link is in your podcast player's show notes.
+
+00:16:56.560 --> 00:16:58.820
+Thank you to Posit for supporting Talk Python To Me.
+
+00:16:59.960 --> 00:17:00.480
+out in the audience.
+
+00:17:01.060 --> 00:17:01.820
+Toon Army says,
+
+00:17:02.360 --> 00:17:02.440
+yay,
+
+00:17:02.620 --> 00:17:03.380
+PyTexas Foundation.
+
+00:17:03.620 --> 00:17:04.240
+That's pretty awesome.
+
+00:17:04.640 --> 00:17:04.780
+Yeah.
+
+00:17:05.120 --> 00:17:05.380
+All right.
+
+00:17:05.740 --> 00:17:05.900
+Well,
+
+00:17:06.300 --> 00:17:07.040
+let's talk.
+
+00:17:07.480 --> 00:17:07.839
+Emporal.
+
+00:17:08.199 --> 00:17:08.360
+Now,
+
+00:17:08.660 --> 00:17:09.480
+I came across this
+
+00:17:09.490 --> 00:17:10.140
+a few weeks ago
+
+00:17:10.720 --> 00:17:11.120
+from this,
+
+00:17:11.900 --> 00:17:12.040
+you know,
+
+00:17:12.140 --> 00:17:12.520
+I think this,
+
+00:17:12.699 --> 00:17:12.880
+ironically,
+
+00:17:12.930 --> 00:17:13.600
+I think this might be
+
+00:17:13.699 --> 00:17:14.120
+the blue sky
+
+00:17:14.270 --> 00:17:15.319
+that I came across it on.
+
+00:17:15.740 --> 00:17:16.100
+Interesting.
+
+00:17:17.680 --> 00:17:17.880
+No.
+
+00:17:18.160 --> 00:17:18.280
+Okay.
+
+00:17:18.380 --> 00:17:18.819
+It was on X.
+
+00:17:19.120 --> 00:17:19.839
+There's still apparently
+
+00:17:19.949 --> 00:17:20.740
+stuff that happens on there.
+
+00:17:22.100 --> 00:17:23.100
+I miss Twitter.
+
+00:17:23.500 --> 00:17:23.839
+I do too.
+
+00:17:23.920 --> 00:17:24.160
+And, you know,
+
+00:17:24.439 --> 00:17:25.740
+people like post weird
+
+00:17:26.579 --> 00:17:27.280
+comments on,
+
+00:17:27.530 --> 00:17:28.860
+like reviews
+
+00:17:28.880 --> 00:17:35.640
+like oh you know they said they don't like twitter so they must be whatever like no just that used to
+
+00:17:35.640 --> 00:17:39.780
+be so active and it's not so active like put put aside everything else it used to be like you could
+
+00:17:39.780 --> 00:17:43.940
+have great conversation you still can but it's so much less than it used to it's an easy it's an easy
+
+00:17:44.140 --> 00:17:49.000
+explanation the signal to noise ratio is completely messed up now yes it used to be such a much better
+
+00:17:49.140 --> 00:17:52.740
+place because everybody was posting there and there wasn't as much noise and now the signal to noise
+
+00:17:52.880 --> 00:17:57.440
+ratio makes it almost unintelligible to be able to find anything of any use and that's the number
+
+00:17:57.460 --> 00:18:01.120
+one problem with it. And you pay for attention and there's six other places like you said. So anyway,
+
+00:18:01.190 --> 00:18:08.000
+so I found this post from, we'll work it backwards, from Pietro. It says, people aren't talking enough
+
+00:18:08.220 --> 00:18:14.160
+about how most of OpenAI's tech stack runs on Python, which I thought was a super cool post.
+
+00:18:14.190 --> 00:18:20.520
+It comes from the Pragmatic Engineer newsletter and it talks about how most of the product's code
+
+00:18:20.520 --> 00:18:26.280
+is written in Python, uses FastAPI, C for certain parts. And then, so all that stuff made, I'm like,
+
+00:18:26.460 --> 00:18:32.180
+yep, yep. Temporal, use for asynchronous workflows. I'm like, what is Temporal? And then I think you
+
+00:18:32.320 --> 00:18:36.320
+sent me a message and said, hey, I would love to talk to you about Temporal. And I looked at him,
+
+00:18:36.440 --> 00:18:42.160
+yeah, this is super cool. So that's how I learned about you guys, which I thought was pretty neat.
+
+00:18:42.680 --> 00:18:51.240
+And yeah, let's talk about it. What is Temporal? Yeah. So Temporal is essentially what we call a
+
+00:18:51.260 --> 00:18:57.440
+durable execution platform. And it's durable execution is kind of a new term or a new like,
+
+00:18:57.620 --> 00:19:03.160
+like field within the zeitgeist, as you would call it. And we're kind of going with like what
+
+00:19:03.220 --> 00:19:07.720
+we're calling crash proof execution. And the way that we kind of talk about it now is like,
+
+00:19:08.160 --> 00:19:13.660
+essentially, it handles the failure state of your of your applications and ensures that your code
+
+00:19:13.660 --> 00:19:20.340
+will continue execution regardless of the failures that it encounters. So say, for example, you have
+
+00:19:20.360 --> 00:19:25.620
+a application that's making a couple calls out to a microservice. Okay. And that microservice goes
+
+00:19:25.800 --> 00:19:30.780
+temporarily down. You as the developer would have to traditionally write a whole bunch of logic
+
+00:19:31.380 --> 00:19:34.860
+around handling that failure. Okay. So we have to detect that the failure has happened.
+
+00:19:35.460 --> 00:19:41.100
+What type of error did we receive? Now, what do we do? Do we back off and retry? Do we decide that
+
+00:19:41.140 --> 00:19:44.520
+this failure is non-retriable and we just don't do it? Like the difference between we're not
+
+00:19:44.760 --> 00:19:49.720
+authenticated versus a 404, those are completely different failure handling modes. And then,
+
+00:19:49.860 --> 00:19:52.680
+So there's all of this kind of logic that you have to build in to handle failure.
+
+00:19:53.660 --> 00:19:56.340
+Temporal basically abstracts this away from you.
+
+00:19:56.340 --> 00:19:58.920
+So whenever you have like a function call or a method call in Python,
+
+00:19:59.440 --> 00:20:04.120
+when implemented with Temporal, you automatically get like retries, for example, by default.
+
+00:20:04.400 --> 00:20:08.580
+So you get this like declarative policy that happens as a default policy,
+
+00:20:08.860 --> 00:20:13.880
+and it will automatically retry your application or your call until eventually it comes back online.
+
+00:20:14.100 --> 00:20:16.800
+Because let's be honest, in most distributed systems like this,
+
+00:20:17.160 --> 00:20:18.900
+those are most of the time intermittent failures.
+
+00:20:19.440 --> 00:20:22.300
+Like a microservice going offline, are you being rate limited?
+
+00:20:22.800 --> 00:20:27.040
+Those are usually fixable with a little bit of time and some retries.
+
+00:20:27.440 --> 00:20:30.400
+Now, there are other cases where they're not, but that's like the default policy.
+
+00:20:30.600 --> 00:20:34.240
+That's the default use case or the default for retries alone.
+
+00:20:34.680 --> 00:20:35.800
+And then there's a lot of other cases.
+
+00:20:36.000 --> 00:20:41.100
+So Temporal maintains the application state of your application.
+
+00:20:41.360 --> 00:20:46.360
+And so say you have like a Python application that has 10 steps in it and you get through
+
+00:20:46.340 --> 00:20:51.000
+step five and then the python application were to crash for some reason out of memory uh maybe
+
+00:20:51.460 --> 00:20:55.500
+your kubernetes pod got descheduled something like this and production happens happens all the time
+
+00:20:55.640 --> 00:21:02.280
+this is as a former sre this was this was the life that i lived for years um yeah even hey
+
+00:21:02.640 --> 00:21:07.000
+there's a security patch for the Linux server that's the yeah running this and we got to restart
+
+00:21:07.240 --> 00:21:13.940
+it and like uh we have to reboot yeah and now yes it's not wrong but like stuff is going on exactly
+
+00:21:14.080 --> 00:21:18.740
+So now when you have to deal with that, you're like, okay, so do we let everything get through and risk the attack surface?
+
+00:21:19.270 --> 00:21:21.780
+Or then you have to make the calculus.
+
+00:21:21.870 --> 00:21:26.480
+Do we just kill all the processes and then wait for, and then restart them?
+
+00:21:26.600 --> 00:21:28.340
+What's the cost on the restart?
+
+00:21:28.430 --> 00:21:29.860
+And then redoing all of that logic.
+
+00:21:29.910 --> 00:21:31.340
+Did they make any rights to the database?
+
+00:21:31.700 --> 00:21:33.480
+Do we have to worry about cleaning all that?
+
+00:21:33.680 --> 00:21:35.140
+There's all of this conversation.
+
+00:21:35.480 --> 00:21:39.760
+Since Temporal maintains that application state, that becomes a lot simpler.
+
+00:21:39.890 --> 00:21:42.560
+Because as we, I think we kind of alluded to it, but I'll state it outright.
+
+00:21:42.960 --> 00:21:47.600
+when that when you when that application crashes, and in a typical application, you have to start
+
+00:21:47.670 --> 00:21:51.920
+back over from the beginning. And you have to replay every you basically re execute everything
+
+00:21:51.930 --> 00:21:56.400
+you did unless you were have some like advanced sort of like event sourcing style model where you
+
+00:21:56.460 --> 00:22:00.960
+are keeping track of it. Temporal does this by default. So it maintains the event history and
+
+00:22:01.140 --> 00:22:05.820
+what's called an event history of your application. And what that does is every time a basically
+
+00:22:06.020 --> 00:22:10.920
+creates checkpoints, every time a function executes, it stores the result of it. And if that application
+
+00:22:10.940 --> 00:22:14.940
+were to crash, it will reschedule it onto another worker. That's what they're called in temporal.
+
+00:22:15.040 --> 00:22:19.920
+And we'll get into that in a minute within your fleet, re reconstruct the state of that application
+
+00:22:20.320 --> 00:22:24.340
+up into that point of failure, and then continue onward as if the failure had never happened.
+
+00:22:24.740 --> 00:22:29.140
+And more often than not, this happens without the developer even being aware of it. Like no,
+
+00:22:29.340 --> 00:22:33.180
+no alarms will go off unless you personally do them, because this is the design of the system.
+
+00:22:33.400 --> 00:22:37.260
+It's to ensure that in spite of failure, your application will continue executing.
+
+00:22:37.640 --> 00:22:42.120
+Yeah, that's awesome. And there's a bunch of neat ways in which that happens, which we'll talk about.
+
+00:22:42.520 --> 00:22:53.780
+But I think one mental model people should maybe think about when they consider these is it centralizes a lot of the error handling and the retry code and all of that stuff.
+
+00:22:54.080 --> 00:22:57.980
+So a lot of your application becomes simpler, not more complex.
+
+00:22:58.640 --> 00:23:03.680
+Exactly. Yes. That's actually one of the main feedback things that we get from people is, you know, all of this.
+
+00:23:04.220 --> 00:23:04.980
+There's so many mechanisms.
+
+00:23:05.200 --> 00:23:06.720
+There's so many actually like patterns
+
+00:23:06.950 --> 00:23:10.280
+that we have now built to handle all of these kind of things.
+
+00:23:11.100 --> 00:23:12.700
+Event sourcing, event-driven architecture,
+
+00:23:12.960 --> 00:23:15.360
+saga pattern, all of these different like CQRS,
+
+00:23:15.520 --> 00:23:17.140
+like all of these different distributed systems patterns
+
+00:23:17.740 --> 00:23:19.840
+that exist to handle all of these things.
+
+00:23:20.080 --> 00:23:22.760
+And Temporal basically abstracts away a lot of them
+
+00:23:23.100 --> 00:23:24.400
+and you get them basically for free
+
+00:23:24.410 --> 00:23:25.320
+out of the box with the project.
+
+00:23:25.800 --> 00:23:27.620
+And it does make your code a lot simpler.
+
+00:23:27.730 --> 00:23:29.860
+It makes it a lot more contained
+
+00:23:30.280 --> 00:23:32.100
+so you can walk through it straight down.
+
+00:23:32.780 --> 00:23:37.220
+Basically, as like almost as like it's a workflow, you know, the core primitive of temporal is called a workflow.
+
+00:23:37.430 --> 00:23:41.400
+We don't tend to like to refer to ourself as a workflow engine, but some people will say that.
+
+00:23:41.450 --> 00:23:43.460
+And I typically don't correct them on it.
+
+00:23:44.080 --> 00:23:46.800
+If that's if that's what it takes for people to understand, that's what it is.
+
+00:23:46.940 --> 00:23:48.920
+Fine. But durable execution is the actual phrase.
+
+00:23:50.220 --> 00:23:54.260
+It's a meaty topic. It's a it's kind of hard for people to like kind of wrap their heads around it.
+
+00:23:54.400 --> 00:23:59.140
+So I'm like, let's get you to understanding it and then we'll correct the little the little tidbits here and there.
+
+00:23:59.560 --> 00:23:59.960
+Yeah, excellent.
+
+00:24:00.360 --> 00:24:07.060
+So, you know, people are probably familiar with Hennick's stamina or with tenacity, which
+
+00:24:07.060 --> 00:24:12.320
+is interesting, where you might put a decorator onto a function and say, hey, if this fails,
+
+00:24:12.760 --> 00:24:14.540
+instead of just crashing, try it again.
+
+00:24:15.180 --> 00:24:15.360
+Yeah.
+
+00:24:15.580 --> 00:24:18.240
+Maybe a few times, maybe with exponential back off.
+
+00:24:18.620 --> 00:24:25.100
+And this is kind of a single thread of execution type of form of durability a little bit, right?
+
+00:24:25.240 --> 00:24:36.360
+Where it's like this function now becomes somewhat more reliable based on like maybe the service comes back or maybe your network comes back or whatever it happened to be that caused this particular example.
+
+00:24:36.860 --> 00:24:40.200
+But with temporal, it's a lot broader, right?
+
+00:24:40.200 --> 00:24:45.140
+Like every step, it saves the state.
+
+00:24:45.500 --> 00:24:48.780
+If something goes wrong, it can basically resume.
+
+00:24:48.910 --> 00:24:52.800
+I guess maybe this resumable idea is like one of the big difference, right?
+
+00:24:52.940 --> 00:24:56.300
+It's like, let's take our reboot the server example.
+
+00:24:56.700 --> 00:25:00.540
+Let's suppose we got some service that we work on that our app depends upon.
+
+00:25:00.910 --> 00:25:01.700
+We had to reboot it.
+
+00:25:01.960 --> 00:25:02.180
+Now what?
+
+00:25:02.460 --> 00:25:02.820
+It happens.
+
+00:25:03.500 --> 00:25:03.580
+Yeah.
+
+00:25:03.770 --> 00:25:06.620
+So, I mean, yeah, you have a service that our app depends on.
+
+00:25:06.720 --> 00:25:07.240
+We had to reboot it.
+
+00:25:07.250 --> 00:25:13.300
+So if the service, so we're assuming our service is on in like an external machine and it's
+
+00:25:13.480 --> 00:25:13.700
+calling out.
+
+00:25:13.700 --> 00:25:14.260
+Yeah, for some reason.
+
+00:25:14.680 --> 00:25:14.820
+Yeah.
+
+00:25:14.830 --> 00:25:18.380
+Or maybe it's a Docker container and we rebuilt the Docker container.
+
+00:25:18.430 --> 00:25:19.560
+It takes five seconds to start.
+
+00:25:19.700 --> 00:25:20.020
+Something like that.
+
+00:25:20.100 --> 00:25:20.200
+Yeah.
+
+00:25:20.430 --> 00:25:22.220
+So our service is, you know, calling out to it.
+
+00:25:22.300 --> 00:25:24.380
+it will basically retry until that comes back online.
+
+00:25:24.590 --> 00:25:27.160
+Now, if we were to reboot our service,
+
+00:25:27.190 --> 00:25:28.220
+say our service was running
+
+00:25:28.250 --> 00:25:30.080
+and we rebooted the container that contained it,
+
+00:25:30.810 --> 00:25:33.120
+it would basically, if we're in a Kubernetes system,
+
+00:25:33.190 --> 00:25:36.220
+the Kubernetes scheduler would probably reschedule it
+
+00:25:36.380 --> 00:25:39.020
+onto another node within the pod.
+
+00:25:39.840 --> 00:25:41.580
+And then it would reconstruct it.
+
+00:25:41.580 --> 00:25:42.600
+And what happens is there's actually,
+
+00:25:43.400 --> 00:25:45.360
+the Temporal exists as a kind of
+
+00:25:47.040 --> 00:25:49.380
+orchestrator executor model, like a service worker model.
+
+00:25:50.100 --> 00:25:51.480
+So the service maintains the history.
+
+00:25:51.940 --> 00:25:54.580
+So what will happen is whenever that new service comes online,
+
+00:25:55.000 --> 00:25:56.780
+or whenever the new execution comes online,
+
+00:25:57.760 --> 00:25:59.960
+we've rebooted it, it got rescheduled, it comes online,
+
+00:26:00.080 --> 00:26:02.480
+it will stream the old history from the service
+
+00:26:02.940 --> 00:26:03.860
+and then reconstruct it,
+
+00:26:04.140 --> 00:26:05.520
+basically going step by step through it.
+
+00:26:06.840 --> 00:26:10.240
+And so like the function A that was executed,
+
+00:26:10.640 --> 00:26:13.140
+the input and output values are stored in that event history.
+
+00:26:13.400 --> 00:26:14.480
+So the output value, it's like,
+
+00:26:14.480 --> 00:26:17.060
+oh, we've successfully completed execution of function A,
+
+00:26:17.480 --> 00:26:20.560
+store that in variable foo, and then continue onward.
+
+00:26:20.640 --> 00:26:27.740
+And then we can continue reconstructing that service up until it gets to the point where it's like, okay, we have no more events in the history about what happened.
+
+00:26:27.990 --> 00:26:31.040
+So now we know we've, you know, we have reconstructed successfully.
+
+00:26:31.410 --> 00:26:35.100
+Now we continue forward and execute as if nothing had happened.
+
+00:26:35.420 --> 00:26:35.500
+Yeah.
+
+00:26:35.790 --> 00:26:42.520
+So in your non-durable execution code, you might have try, accept, do something else.
+
+00:26:42.930 --> 00:26:48.380
+You might have stuff like stamina or tenacity where you're like, okay, we're going to try this again.
+
+00:26:48.840 --> 00:26:51.080
+There's a lot of that kind of code that you write.
+
+00:26:51.460 --> 00:26:53.760
+And in this world, you could just say like top to bottom,
+
+00:26:54.380 --> 00:26:57.100
+write the happy path, which is great.
+
+00:26:57.180 --> 00:26:59.420
+And then what happens is temporal says,
+
+00:26:59.540 --> 00:27:01.040
+okay, I tried to run this, it failed.
+
+00:27:01.160 --> 00:27:03.640
+So we'll reschedule it with a back off
+
+00:27:03.940 --> 00:27:05.780
+or something along those lines, right?
+
+00:27:06.060 --> 00:27:09.120
+So you can basically not deal with a lot of this
+
+00:27:09.240 --> 00:27:11.560
+and get visibility into the errors and the state of flow
+
+00:27:12.000 --> 00:27:14.200
+by letting the orchestrator manage that, right?
+
+00:27:14.540 --> 00:27:14.840
+Yes.
+
+00:27:15.100 --> 00:27:19.540
+And I'm covering like the top 10% of all the different features.
+
+00:27:19.780 --> 00:27:24.780
+There are so many interesting other features that Temporal provides as an ecosystem.
+
+00:27:25.250 --> 00:27:28.580
+So like one of the other really neat ones is that we provide a really simple way for
+
+00:27:28.630 --> 00:27:31.000
+things to do a human in the loop interaction.
+
+00:27:31.470 --> 00:27:33.780
+So you can very easily send in what's called a signal.
+
+00:27:34.170 --> 00:27:38.860
+So basically sending in data into a running execution and then basically doing some processing
+
+00:27:38.930 --> 00:27:39.200
+on it.
+
+00:27:39.200 --> 00:27:43.660
+So you're waiting on a confirmed signal from someone like your application is doing something
+
+00:27:43.740 --> 00:27:44.440
+you're waiting on to confirm.
+
+00:27:44.820 --> 00:27:47.120
+you can send that in directly into the workflow.
+
+00:27:47.490 --> 00:27:48.820
+And then that will basically be,
+
+00:27:49.180 --> 00:27:50.760
+that's persisted again within the events,
+
+00:27:50.950 --> 00:27:52.060
+within the event history.
+
+00:27:52.560 --> 00:27:54.540
+So if it crashes after that confirmation,
+
+00:27:54.820 --> 00:27:57.000
+that confirmation is stored as well.
+
+00:27:57.280 --> 00:27:58.140
+So you have that,
+
+00:27:58.170 --> 00:28:00.020
+you have the ability to do long running schedules.
+
+00:28:00.800 --> 00:28:02.280
+So there's some cron syntax,
+
+00:28:02.500 --> 00:28:04.180
+like what are called schedules in Temporal.
+
+00:28:04.320 --> 00:28:06.380
+There's so many different features in Temporal
+
+00:28:07.180 --> 00:28:08.340
+that are just really neat
+
+00:28:09.200 --> 00:28:10.640
+and can solve a lot of the problems
+
+00:28:11.100 --> 00:28:12.040
+that you're trying to do.
+
+00:28:12.440 --> 00:28:13.940
+And scaling becomes super easy as well.
+
+00:28:14.080 --> 00:28:16.340
+So like you want to scale, just add more workers to the fleet.
+
+00:28:16.820 --> 00:28:21.780
+That's the easiest thing you can do is just add more of these workers and they basically
+
+00:28:21.890 --> 00:28:23.940
+can be executed across all of your different fleets.
+
+00:28:23.940 --> 00:28:27.040
+So the scaling story is super awesome as well.
+
+00:28:28.440 --> 00:28:30.940
+This portion of Talk Python To Me is brought to you by PyBay.
+
+00:28:31.420 --> 00:28:36.160
+PyBay is an annual conference gathering of Pythonistas put on by the Bay Area Python
+
+00:28:36.480 --> 00:28:36.900
+Association.
+
+00:28:37.440 --> 00:28:42.400
+This year is returning to the UCSF Mission Bay Conference Center in San Francisco, California.
+
+00:28:43.000 --> 00:28:46.860
+It's a one-day conference on October 18th, 2025.
+
+00:28:47.580 --> 00:28:50.040
+I've spoken there previously and had a great time attending.
+
+00:28:50.740 --> 00:28:51.660
+And there's a bonus.
+
+00:28:52.340 --> 00:28:54.160
+Talk Python is sponsoring the conference.
+
+00:28:54.660 --> 00:29:00.060
+Every attendee gets a special conference bundle of paid courses for free as a conference gift.
+
+00:29:00.640 --> 00:29:06.060
+Plus, we'll be giving away a complete set of training materials for a dev team of some lucky attendees.
+
+00:29:06.660 --> 00:29:09.159
+So if you want to connect with the Python people of San Francisco
+
+00:29:09.160 --> 00:29:12.120
+and go home with courses from Talk Python,
+
+00:29:12.440 --> 00:29:13.060
+check out PyBay.
+
+00:29:13.840 --> 00:29:14.620
+Please use our link.
+
+00:29:14.800 --> 00:29:16.780
+It's talkpython.fm/PyBay.
+
+00:29:16.980 --> 00:29:18.720
+The link is your podcast player show notes.
+
+00:29:19.040 --> 00:29:20.540
+Thanks to PyBay for supporting the show.
+
+00:29:21.380 --> 00:29:21.860
+We'll get into it.
+
+00:29:21.920 --> 00:29:25.080
+There's definitely some examples of large scale use cases,
+
+00:29:25.400 --> 00:29:28.200
+you know, high frequency use cases of these things.
+
+00:29:28.640 --> 00:29:29.980
+But going back to the timing,
+
+00:29:30.420 --> 00:29:33.540
+you know, what if your user onboarding looks more like,
+
+00:29:33.800 --> 00:29:34.820
+I guess you could be real simple.
+
+00:29:34.840 --> 00:29:36.760
+You could say in order to create a user account,
+
+00:29:36.960 --> 00:29:42.200
+I have to first have them create and enter their username and email or their email and their
+
+00:29:42.370 --> 00:29:46.640
+password. And then I'm going to send them an email and they got to take an action based on that,
+
+00:29:46.860 --> 00:29:51.440
+right? That would be pretty common, like a long running type of thing you could consider. But
+
+00:29:51.720 --> 00:29:56.540
+for some of these systems, it's like, and prove who you are and upload a document.
+
+00:29:57.660 --> 00:30:01.120
+That's a picture of your ID and somebody will look at it and go, yeah, that looks real enough.
+
+00:30:01.720 --> 00:30:05.940
+And they check a box or, you know, those kinds of much longer onboarding things,
+
+00:30:06.120 --> 00:30:08.120
+Something like that could be modeled with temporal pretty easily.
+
+00:30:08.150 --> 00:30:08.700
+It sounds like.
+
+00:30:09.020 --> 00:30:09.120
+Yeah.
+
+00:30:09.230 --> 00:30:12.200
+So long running workflows are the other, that, that was the feature I couldn't
+
+00:30:12.210 --> 00:30:12.920
+remember, which was timers.
+
+00:30:12.950 --> 00:30:14.300
+And I have no idea why that left my mind.
+
+00:30:14.360 --> 00:30:15.200
+It's one of my favorite features.
+
+00:30:15.650 --> 00:30:19.980
+long running workflows are one of the like amazing use cases of, of temporal.
+
+00:30:20.050 --> 00:30:24.420
+So because everything is maintained in this, in that state and basically crashing
+
+00:30:24.660 --> 00:30:27.540
+doesn't really matter because we can just reconstruct the state, you can have
+
+00:30:27.860 --> 00:30:32.960
+workflows or you can have your executions that can last for days, weeks, years.
+
+00:30:33.500 --> 00:30:36.840
+This is kind of what we know, we kind of known as the entity workflow pattern.
+
+00:30:37.030 --> 00:30:41.060
+So essentially like a user who's going through an onboarding process, you know, like you just
+
+00:30:41.060 --> 00:30:45.800
+said, I think the identity workflow process is actually one of our exact sample applications.
+
+00:30:46.280 --> 00:30:49.680
+So, you know, like you're right, they lay sign up and they have to upload some forms of
+
+00:30:49.790 --> 00:30:49.880
+ID.
+
+00:30:50.100 --> 00:30:51.160
+Someone has to check it.
+
+00:30:51.210 --> 00:30:53.640
+It has to go through maybe a background check process and all of that.
+
+00:30:54.640 --> 00:30:55.860
+That's a long running workflow.
+
+00:30:55.890 --> 00:30:56.760
+That could take days.
+
+00:30:56.890 --> 00:30:59.680
+That could take weeks, depending on what kind of background check you're getting done.
+
+00:31:00.500 --> 00:31:07.020
+Temporal can suspend its state for however long it wants, you know, and we can guarantee that it will come back online.
+
+00:31:07.250 --> 00:31:13.020
+So the interesting thing, and whenever you ever, if you ever see Temporal at a booth at a conference, we were at PyCon this year, for example.
+
+00:31:13.310 --> 00:31:21.320
+Our code sample on our booth has a really interesting statement that always catches people's eye, and it's a little mini workflow, and it's sending emails.
+
+00:31:21.570 --> 00:31:23.500
+And what it does is it says sleep for 30 days.
+
+00:31:24.040 --> 00:31:30.320
+And nobody in their right mind would actually write a sleep for 30 days in code and expect it to actually function.
+
+00:31:30.660 --> 00:31:33.740
+100% works exactly the way you would expect it to in Temporal.
+
+00:31:33.740 --> 00:31:37.080
+And we can guarantee that it works because of the way that Temporal is architected.
+
+00:31:37.160 --> 00:31:41.360
+Those timers basically exist on the servers on this on this temporal service side.
+
+00:31:41.660 --> 00:31:46.260
+And they just get basically your workflow just gets scheduled to resume after the timer has fired.
+
+00:31:46.700 --> 00:31:51.440
+So you can guarantee that long running workflows will complete exactly the way that you expect them to.
+
+00:31:52.160 --> 00:31:54.740
+So, yeah, long running workflows, amazing use case for Temporal.
+
+00:31:55.020 --> 00:31:55.760
+Yeah, it sounds incredible.
+
+00:31:56.080 --> 00:31:57.540
+Now, I do want to dive actually in.
+
+00:31:57.660 --> 00:32:00.360
+It's super interesting how y'all made this happen in Python.
+
+00:32:00.470 --> 00:32:03.400
+But I do want to just maybe talk about the scale.
+
+00:32:03.980 --> 00:32:07.200
+Like if I were to run Temporal, now you guys have a cloud.
+
+00:32:07.380 --> 00:32:09.420
+So I guess stepping just a bit back.
+
+00:32:09.720 --> 00:32:10.880
+This is MIT licensed.
+
+00:32:11.340 --> 00:32:11.420
+Yes.
+
+00:32:11.500 --> 00:32:13.300
+But you also have pricing.
+
+00:32:13.840 --> 00:32:14.060
+Yes.
+
+00:32:14.400 --> 00:32:18.820
+Before we go into what I was going to talk about, let's talk about that difference there, that contrast.
+
+00:32:18.940 --> 00:32:19.060
+Yeah.
+
+00:32:19.200 --> 00:32:19.720
+What's the story?
+
+00:32:20.200 --> 00:32:21.840
+So Temporal is 100% open source.
+
+00:32:22.660 --> 00:32:23.120
+MIT licensed.
+
+00:32:23.200 --> 00:32:26.100
+And so there's the temporal service and there's the temporal SDKs.
+
+00:32:26.380 --> 00:32:31.460
+Every single one of our temporal SDKs are and the service and everything is MIT licensed
+
+00:32:32.420 --> 00:32:36.580
+forever and always that our founders are big, big fans of that.
+
+00:32:36.780 --> 00:32:40.560
+The only SDK that is not is the Java SDK, which is Apache 2.
+
+00:32:40.960 --> 00:32:44.500
+And if you know anything about open source licensing, there is basically a dependency
+
+00:32:44.940 --> 00:32:46.880
+further up the tree that was Apache 2.
+
+00:32:47.000 --> 00:32:50.560
+And you're not allowed to downgrade licensing if you ever make a derivative.
+
+00:32:50.820 --> 00:32:52.200
+So that's the only reason that one is.
+
+00:32:52.240 --> 00:32:54.880
+but every one of our other licenses is MIT licensed.
+
+00:32:55.020 --> 00:32:57.940
+So you could run Temporal open source and be fine.
+
+00:32:58.120 --> 00:33:00.480
+The thing that we have found is that at scale,
+
+00:33:00.700 --> 00:33:03.380
+the service itself is challenging
+
+00:33:03.440 --> 00:33:05.460
+and requires large SRE teams to run.
+
+00:33:06.800 --> 00:33:07.880
+Because essentially what we're doing
+
+00:33:08.000 --> 00:33:10.480
+is we're offering distributed systems as a service.
+
+00:33:10.720 --> 00:33:12.360
+We're offering reliability as a service.
+
+00:33:12.820 --> 00:33:14.100
+Just because we have abstracted
+
+00:33:14.240 --> 00:33:16.640
+these problems away from someone
+
+00:33:16.860 --> 00:33:17.640
+does not mean that the price
+
+00:33:17.740 --> 00:33:18.880
+does not have to be paid by someone.
+
+00:33:18.920 --> 00:33:20.200
+And I'm talking about the metaphorical price,
+
+00:33:20.340 --> 00:33:21.000
+not the dollar price.
+
+00:33:22.440 --> 00:33:27.360
+someone still has to ensure that that database stays up essentially and that your things are
+
+00:33:27.390 --> 00:33:32.940
+still getting scheduled and that the network is up and all of these. So it's super complex to do
+
+00:33:33.080 --> 00:33:37.340
+that. And you can run it. So you can run the temporal service locally. You can run the temporal
+
+00:33:37.480 --> 00:33:41.960
+workers locally. Everything you run is still local. The pricing model for temporal is just the temporal
+
+00:33:42.200 --> 00:33:47.580
+service part, which is run in temporal cloud. So there's a weird misnomer around cloud, which is
+
+00:33:47.560 --> 00:33:51.340
+like cloud always assumes that we run everything for you. Temporal cloud is different. Temporal
+
+00:33:51.620 --> 00:33:57.040
+cloud only runs the temporal service, your workers, where your code executes is always run,
+
+00:33:57.500 --> 00:34:01.280
+at least by for now until who knows if another product will ever come out. I don't know.
+
+00:34:02.120 --> 00:34:06.960
+Is run by you on you in your data center on your machines. So your code, your execution run by you,
+
+00:34:07.300 --> 00:34:11.460
+that service, that brain, the orchestrator, that's the part you could pay temporal cloud for.
+
+00:34:12.260 --> 00:34:15.439
+Right. That's the part that does the orchestration, the part that handles the
+
+00:34:15.460 --> 00:34:18.780
+the failure and retries and that kind of stuff, right?
+
+00:34:18.909 --> 00:34:22.260
+Yeah. Well, Ted, it's the part that actually the failure retries is handled by the state
+
+00:34:22.370 --> 00:34:26.080
+machines that are built in the SDK. It's the part that basically maintains the event history. It
+
+00:34:26.139 --> 00:34:31.960
+maintains the communication mechanisms and it is the orchestrator. Yeah. So, but.
+
+00:34:32.399 --> 00:34:37.780
+So if we use the cloud, I could like reboot my local data center machine or even my local data
+
+00:34:37.870 --> 00:34:43.760
+center. I mean, my version of the cloud, you know, wherever digital ocean or whatever. And when it
+
+00:34:43.620 --> 00:34:49.220
+comes back it'll sort of resume along like you guys will see that it's back and then yeah start
+
+00:34:49.379 --> 00:34:53.500
+running work on something like that that's what i was getting at technically yes so fun fun
+
+00:34:53.879 --> 00:34:58.380
+fun fact about it temporal the again the architecture of this is so brilliant and we could
+
+00:34:58.380 --> 00:35:02.220
+get so touched in the weeds about the temporal service does not actually know about any of the
+
+00:35:02.300 --> 00:35:07.100
+workers that are running it's always a call out model so your your your machines would come back
+
+00:35:07.300 --> 00:35:11.359
+online know that they have things they need to do they would basically start listening back
+
+00:35:11.380 --> 00:35:13.800
+Everything that happens in Temporal listens across task queues.
+
+00:35:14.180 --> 00:35:15.260
+So they would all come back online.
+
+00:35:15.480 --> 00:35:16.540
+They would start listening again.
+
+00:35:17.000 --> 00:35:19.660
+And then they would see that there's still work in the task queues, which the service
+
+00:35:19.940 --> 00:35:20.040
+maintains.
+
+00:35:20.320 --> 00:35:23.940
+But all the service does, it goes, oh, someone requested that I do something.
+
+00:35:24.020 --> 00:35:25.220
+And then it puts it on the task queue.
+
+00:35:25.300 --> 00:35:26.320
+And then the workers handle it.
+
+00:35:26.640 --> 00:35:31.480
+The true magic of Temporal lies within the state machines that are built within the SDKs.
+
+00:35:31.840 --> 00:35:33.900
+But they cannot function without that orchestrator service.
+
+00:35:34.720 --> 00:35:38.440
+I remember when I first started working on the courses.
+
+00:35:38.720 --> 00:35:42.540
+like my primary role is writing courses for Temporal.
+
+00:35:42.540 --> 00:35:44.440
+And if you go on to our Temporal Learn site,
+
+00:35:44.550 --> 00:35:46.200
+you can find a lot of our,
+
+00:35:46.940 --> 00:35:48.360
+I think it's learn.temporal.io.
+
+00:35:48.800 --> 00:35:49.920
+You can find a lot of our courses.
+
+00:35:50.720 --> 00:35:52.020
+I wrote the Java and the Python ones.
+
+00:35:53.480 --> 00:35:54.920
+I remember when I was first writing them,
+
+00:35:54.930 --> 00:35:56.440
+I kept asking the SDK engineers like,
+
+00:35:56.440 --> 00:35:57.520
+well, how does the server do this?
+
+00:35:57.520 --> 00:35:58.260
+How does the server do this?
+
+00:35:58.260 --> 00:35:59.260
+And one of the engineers was like,
+
+00:35:59.280 --> 00:36:00.740
+Mason, you're giving the server too much credit.
+
+00:36:00.900 --> 00:36:01.560
+It's not that smart.
+
+00:36:02.660 --> 00:36:05.220
+It's really the state machines within the workers
+
+00:36:05.680 --> 00:36:06.760
+that are doing all the heavy lifting
+
+00:36:06.870 --> 00:36:08.060
+and the service just maintains it.
+
+00:36:08.140 --> 00:36:10.160
+but with the long way around,
+
+00:36:10.300 --> 00:36:12.200
+what the cloud service does is it maintains that database.
+
+00:36:12.680 --> 00:36:14.900
+So the history, without that event history,
+
+00:36:15.220 --> 00:36:16.120
+that is the magic piece.
+
+00:36:16.760 --> 00:36:18.400
+The event history is the single source of truth
+
+00:36:18.480 --> 00:36:19.580
+of all things that have happened,
+
+00:36:19.820 --> 00:36:21.660
+and that's what the service provides and maintains.
+
+00:36:22.080 --> 00:36:23.920
+So whether you use the cloud version of that
+
+00:36:24.060 --> 00:36:26.020
+or you self-host that, that is up to you.
+
+00:36:26.160 --> 00:36:27.180
+Now, again, if you self-host it,
+
+00:36:27.240 --> 00:36:28.780
+you are now responsible for maintaining it.
+
+00:36:28.960 --> 00:36:30.820
+You are now responsible for upgrading it,
+
+00:36:30.860 --> 00:36:32.220
+security patches, all of that.
+
+00:36:33.200 --> 00:36:34.640
+And there are multiple case studies.
+
+00:36:34.800 --> 00:36:37.359
+There are multiple YouTube videos on our channel
+
+00:36:37.380 --> 00:36:39.180
+of people who have gone the self-hosted route
+
+00:36:39.300 --> 00:36:41.000
+and have found that the cloud route is easier
+
+00:36:42.040 --> 00:36:43.100
+once they've reached a certain scale.
+
+00:36:44.120 --> 00:36:45.240
+So yeah, it's pretty neat.
+
+00:36:45.500 --> 00:36:46.300
+- Yeah, yeah, cool.
+
+00:36:46.740 --> 00:36:49.380
+More and more, that's the business side
+
+00:36:49.410 --> 00:36:51.360
+of what works for open source, right?
+
+00:36:51.660 --> 00:36:51.740
+- Yeah.
+
+00:36:51.900 --> 00:36:53.540
+- 'Cause there's something that you wanna do,
+
+00:36:53.880 --> 00:36:55.240
+and then there's another requirement
+
+00:36:55.520 --> 00:36:56.680
+that you're probably not good at,
+
+00:36:57.300 --> 00:36:58.600
+and you guys would be really good at, right?
+
+00:36:58.680 --> 00:37:00.720
+Like for example, making sure that Temporal itself
+
+00:37:01.599 --> 00:37:04.400
+is reliable and fast and keeps running
+
+00:37:04.510 --> 00:37:05.540
+and that kind of thing, right?
+
+00:37:05.980 --> 00:37:06.700
+- Exactly, yes.
+
+00:37:06.940 --> 00:37:11.120
+And I think it does also come down to, and this is one of the interesting lessons that
+
+00:37:11.200 --> 00:37:14.480
+I've learned throughout my career, is that like, what is your core business?
+
+00:37:14.720 --> 00:37:18.580
+Is your core business to run and maintain a temporal service or is your core business
+
+00:37:18.740 --> 00:37:20.140
+to provide a service to your customers?
+
+00:37:20.860 --> 00:37:24.440
+And whenever the price of running your own services outweighs what you could have just
+
+00:37:24.560 --> 00:37:28.840
+paid someone else to do it for, then at that point, you have to take a look at something
+
+00:37:28.890 --> 00:37:33.240
+and go, maybe I should just pay the provider who has the expertise, who literally all they
+
+00:37:33.250 --> 00:37:33.780
+do all day long.
+
+00:37:34.200 --> 00:37:39.400
+Because usually someone's SRE team doesn't doesn't full time dedicate to learning the ins and outs of a single product.
+
+00:37:39.760 --> 00:37:40.540
+Like I was an SRE.
+
+00:37:40.610 --> 00:37:45.060
+I managed a cloud platform for VRBO for Virgo.
+
+00:37:45.840 --> 00:37:48.280
+I knew there was like 12 different applications in that stack.
+
+00:37:48.390 --> 00:37:51.260
+And the way that I learned about each one was the one that went down that day.
+
+00:37:51.620 --> 00:37:55.680
+So you're constantly like figuring out with like you're learning about it as it's on fire.
+
+00:37:55.800 --> 00:37:56.640
+It's a terrible way to learn.
+
+00:37:58.060 --> 00:38:01.580
+And that's not a great way to run it to to like live your life.
+
+00:38:01.980 --> 00:38:08.280
+i found right why i moved into developer education um exactly there's fewer uh midnight calls in
+
+00:38:08.360 --> 00:38:16.180
+developer education that is the primary reason why i do this now is i i like there is a point when
+
+00:38:16.180 --> 00:38:20.360
+the p when pager duty goes off like one too many times and you become a developer advocate and i'm
+
+00:38:20.400 --> 00:38:25.800
+living proof of that you just know yeah you take it off a space style you just take it out put on
+
+00:38:25.780 --> 00:38:33.400
+some uh gangster music just exactly right exactly if you don't know the reference you need to make
+
+00:38:33.500 --> 00:38:38.200
+sure you put watching office space yeah the movie right i've driven by the list i've driven by the
+
+00:38:38.240 --> 00:38:41.860
+area where it was filmed it was filmed out here in austin where i live was it incredible yes
+
+00:38:42.400 --> 00:38:46.080
+incredible okay so why did i sort of start in that path what i want to talk about is what is
+
+00:38:46.520 --> 00:38:51.439
+so you guys have a cloud version which obviously does stuff in massive scale you talk about a fleet
+
+00:38:51.440 --> 00:38:57.780
+of these things. And by the way, at the execution level, we're probably mostly talking Go and Rust,
+
+00:38:57.970 --> 00:39:03.420
+just so people know, it's kind of like fast, fast innards. But Rakesh asks, like, it seems to be
+
+00:39:03.610 --> 00:39:07.940
+resource insensitive. Is there a lightweight option? Like what is a, what is a minimal temporal
+
+00:39:08.330 --> 00:39:14.400
+rather than a, you know, what Uber does or what, you know, ChatGPT does? Because those things,
+
+00:39:14.550 --> 00:39:18.359
+you just can't compare them, right? It's like, you're not Microsoft, you're not Google, you're
+
+00:39:18.280 --> 00:39:24.160
+not LinkedIn, you're not Netflix. Don't try to be them most. Yeah, it depends on what you're
+
+00:39:24.360 --> 00:39:27.260
+trying to accomplish. So I mean, like, I think when it comes to so there's, there's always there's
+
+00:39:27.280 --> 00:39:30.520
+the service and then there's the worker fleet. So let's talk. I'll talk about the service first,
+
+00:39:30.590 --> 00:39:33.940
+and then we'll talk about the workers. So the service comes in a handful of different flavored
+
+00:39:34.120 --> 00:39:40.340
+offerings. There's a local development binary that is meant to be used for development. And
+
+00:39:40.500 --> 00:39:46.260
+that's what I use on my local laptop all the time. It's also more than suitable for home lab stuff.
+
+00:39:46.400 --> 00:39:50.340
+So if you're wanting to play with this in your home lab, use the use that single binary.
+
+00:39:50.760 --> 00:39:54.800
+It can it's got an in memory data store, but you can have it persist to it to a SQLite database
+
+00:39:55.340 --> 00:39:59.860
+will get you very, very far on home lab stuff. Non prod use cases. Totally fine.
+
+00:40:00.040 --> 00:40:06.440
+Speaker 1: SQLite is underappreciated. People see it as like a toy thing or like I can use this while
+
+00:40:06.480 --> 00:40:10.760
+I'm developing like a sample, but then I don't really like you can put millions of records in
+
+00:40:10.860 --> 00:40:14.880
+SQLite. You can go a very long way. Speaker 1: Oh yeah. Yeah, it is. Yeah,
+
+00:40:14.940 --> 00:40:19.860
+it is an amazing tool it's one of my favorite tools um and then there so in reality what the
+
+00:40:19.900 --> 00:40:23.340
+way that the temporal service is actually built is it's actually just a single binary um but the
+
+00:40:23.420 --> 00:40:27.480
+thing is there are the temporal service is a conglomerate when i say the service i mean like
+
+00:40:27.640 --> 00:40:31.800
+all of the things together it's a conglomerate of multiple microservices that when you put them
+
+00:40:31.940 --> 00:40:36.100
+together they they connect with they interact with each other and there's like four back-end services
+
+00:40:36.720 --> 00:40:40.839
+no three services and a front-end service then there's like a web ui and that's the service but
+
+00:40:40.860 --> 00:40:44.000
+but then you also have to build in a data storage.
+
+00:40:44.420 --> 00:40:45.860
+So for when you get to that point,
+
+00:40:46.020 --> 00:40:48.020
+that's when you either need MySQL, Postgres, or Cassandra.
+
+00:40:48.320 --> 00:40:49.920
+You could probably get away with SQLite on that one,
+
+00:40:50.000 --> 00:40:51.320
+but I've never actually tried it.
+
+00:40:52.420 --> 00:40:55.200
+But we recommend MySQL, Postgres, or Cassandra.
+
+00:40:55.580 --> 00:40:57.040
+And then you can add in other things
+
+00:40:57.240 --> 00:40:59.240
+like Elastic for visibility.
+
+00:40:59.300 --> 00:41:01.660
+You can add Prometheus and Grafana for being able to see.
+
+00:41:02.020 --> 00:41:03.060
+But this is when you're starting to scale up.
+
+00:41:03.100 --> 00:41:07.060
+So if you were doing this on small, itty-bitty scale,
+
+00:41:07.200 --> 00:41:08.480
+you could probably deploy it onto, say,
+
+00:41:08.520 --> 00:41:09.459
+a DigitalOcean droplet
+
+00:41:09.780 --> 00:41:11.040
+and be fine with a single binary.
+
+00:41:11.220 --> 00:41:12.500
+We have tutorials on our learn site
+
+00:41:12.520 --> 00:41:13.620
+on exactly how to do this.
+
+00:41:14.960 --> 00:41:15.600
+And then it scales.
+
+00:41:15.840 --> 00:41:17.500
+So like there's a Docker Compose file.
+
+00:41:17.520 --> 00:41:18.380
+So like once you want to see
+
+00:41:18.440 --> 00:41:19.780
+what all these microservices are doing,
+
+00:41:20.000 --> 00:41:21.440
+like in multiple areas,
+
+00:41:21.840 --> 00:41:23.620
+like you can see how we've deployed all of them
+
+00:41:23.680 --> 00:41:24.280
+and you can play it.
+
+00:41:24.380 --> 00:41:26.840
+There's multiple different Docker Compose files
+
+00:41:26.960 --> 00:41:28.440
+to be like, oh, I want it with this database
+
+00:41:28.660 --> 00:41:29.200
+and these options.
+
+00:41:29.380 --> 00:41:31.200
+And that allows you to kind of like tune it
+
+00:41:31.200 --> 00:41:32.380
+and tweak it to your liking.
+
+00:41:32.840 --> 00:41:34.200
+And then once you get to prod scale,
+
+00:41:34.420 --> 00:41:35.860
+we have Helm charts that we support
+
+00:41:36.620 --> 00:41:37.940
+and you can deploy it directly into Kubernetes.
+
+00:41:38.360 --> 00:41:39.880
+Now, if you're self-hosting in production,
+
+00:41:40.360 --> 00:41:42.540
+Kubernetes tends to be what we see in the wild
+
+00:41:42.720 --> 00:41:44.820
+as the most popular deployment.
+
+00:41:45.180 --> 00:41:46.540
+Now, again, these are single binaries.
+
+00:41:46.880 --> 00:41:48.120
+You can deploy it however you want.
+
+00:41:48.360 --> 00:41:50.840
+So it has a, from development to prod,
+
+00:41:50.840 --> 00:41:52.600
+it has a very nice scaling story.
+
+00:41:53.640 --> 00:41:55.240
+Or the other option is just go to Temporal Cloud.
+
+00:41:55.960 --> 00:41:59.380
+The thing is Temporal Cloud has a minimum pricing structure
+
+00:41:59.740 --> 00:42:01.380
+for it, which we're constantly updating.
+
+00:42:02.840 --> 00:42:06.120
+And that's really useful once you get to actual production
+
+00:42:06.200 --> 00:42:08.320
+use cases and you have people paying you
+
+00:42:08.340 --> 00:42:09.740
+use that money to pay for the temporal cloud.
+
+00:42:10.060 --> 00:42:10.600
+It's not a lot.
+
+00:42:10.700 --> 00:42:12.100
+The temporal cloud pricing is super,
+
+00:42:13.740 --> 00:42:16.020
+I think it's really super interestingly well done
+
+00:42:16.200 --> 00:42:17.660
+because it's based on what we call actions.
+
+00:42:18.090 --> 00:42:20.360
+So like anything that basically causes a right
+
+00:42:20.440 --> 00:42:21.220
+to that durable database,
+
+00:42:21.640 --> 00:42:23.880
+you get billed on like fractions of a penny.
+
+00:42:24.190 --> 00:42:25.180
+So it's consumption based.
+
+00:42:26.340 --> 00:42:28.160
+The main thing is making sure you have enough traffic
+
+00:42:28.360 --> 00:42:30.600
+to cover, basically there's a minimum support cost
+
+00:42:31.600 --> 00:42:33.720
+that you have to pay for like a minimum bill requirement
+
+00:42:33.840 --> 00:42:34.780
+and then you get billed on the actions
+
+00:42:35.520 --> 00:42:36.780
+and making sure you have enough traffic
+
+00:42:36.800 --> 00:42:38.000
+and workload to handle that.
+
+00:42:38.780 --> 00:42:40.400
+I know, and then you get a lot of other cool features
+
+00:42:40.520 --> 00:42:43.860
+in cloud that, I have to make sure I say this carefully,
+
+00:42:44.240 --> 00:42:47.540
+that you don't get on the open source version,
+
+00:42:47.640 --> 00:42:49.300
+but those are all deployment options.
+
+00:42:49.880 --> 00:42:52.200
+So when it comes to feature to feature option,
+
+00:42:52.400 --> 00:42:54.220
+as right now, it's a one-to-one comparison.
+
+00:42:54.580 --> 00:42:57.880
+What runs in open source is what is deployed in cloud.
+
+00:42:58.100 --> 00:43:01.480
+Like, if I built all of my stuff on the open source stuff,
+
+00:43:02.060 --> 00:43:03.580
+I deployed to cloud on occasion to test it,
+
+00:43:03.800 --> 00:43:05.980
+but I'm constantly building on the open source version
+
+00:43:06.000 --> 00:43:07.000
+And all of my stuff runs in cloud.
+
+00:43:07.380 --> 00:43:10.100
+What you get when you go to cloud is you get those production features.
+
+00:43:10.480 --> 00:43:11.640
+You get single sign-on.
+
+00:43:11.900 --> 00:43:13.360
+You get role-based access control.
+
+00:43:13.860 --> 00:43:17.160
+You get more advanced metrics and things of that nature.
+
+00:43:17.220 --> 00:43:20.480
+You get all of these things that really matter at a large-scale production,
+
+00:43:20.760 --> 00:43:22.420
+things that large enterprises care about.
+
+00:43:23.320 --> 00:43:27.340
+And there are ways you can get those in the open source as well,
+
+00:43:27.940 --> 00:43:31.600
+but they come as first-class citizens in the cloud product.
+
+00:43:31.700 --> 00:43:35.359
+Maybe you got to run your own single sign-on identity server
+
+00:43:35.380 --> 00:43:43.920
+or something like that yeah yeah um so over here if i go to the temporal github repo there's docker
+
+00:43:44.360 --> 00:43:50.620
+which has got a docker compose think something yeah there's actually a docker repo repo yeah
+
+00:43:51.100 --> 00:43:54.920
+is there okay so i could even i think it would be like temporal and then doc like in the search i
+
+00:43:54.920 --> 00:43:59.260
+would just search or in the org i would search for docker compose yeah it might be there somewhere
+
+00:43:59.820 --> 00:44:04.040
+uh there we go are you right yeah i'll put that in the links as well i'm a huge fan of docker
+
+00:44:04.060 --> 00:44:08.460
+compose. I think it opens up a bunch of great options. And if you go in here, you can see that
+
+00:44:08.560 --> 00:44:15.220
+there's like the doctor compose my sequel to Docker compose postgres, and then just a bare bones one,
+
+00:44:15.540 --> 00:44:18.760
+right? So if you wanted to self host it, is this a pretty good way to go?
+
+00:44:19.120 --> 00:44:21.560
+Yeah, I think it's a great place to start. I think it always depends on your scale.
+
+00:44:22.600 --> 00:44:27.840
+Like if you if you are good at Docker compose, and you know, you think like, the thing with Docker
+
+00:44:28.020 --> 00:44:31.599
+compose is like, and I believe this is all going to deploy it on a single service. So is like our
+
+00:44:31.580 --> 00:44:36.400
+single server. So like we always talk about like, you know, depends on the level of reliability you
+
+00:44:36.520 --> 00:44:40.860
+need of the service because if the database of the service goes away, then your reliability goes away.
+
+00:44:41.180 --> 00:44:45.560
+Like, you know, but that's kind of like the truth here is with that database being the single source
+
+00:44:45.640 --> 00:44:50.680
+of truth, if that database magically disappears, you don't have it. Now you could, you know, what
+
+00:44:50.840 --> 00:44:54.840
+you could do like an RDS or like a digital ocean managed database and connect that in this.
+
+00:44:55.180 --> 00:44:59.120
+Yeah, run just basically set a room, an off server database connection.
+
+00:44:59.180 --> 00:45:04.640
+string. Yeah, exactly. Right. Of any form that's then, then it's matching the reliability of that
+
+00:45:04.780 --> 00:45:09.280
+database. Yeah, exactly. Yeah. Yeah. So another thing, whenever I hear durable, and actually I see
+
+00:45:09.620 --> 00:45:13.780
+a bit about this in the show notes as well, and you say retry, like if something goes wrong,
+
+00:45:13.860 --> 00:45:17.940
+which we tried and it'll probably resume. Like sometimes it won't. Sometimes there's a poison,
+
+00:45:18.260 --> 00:45:23.600
+what's called a poison message. Like it's cursed to always fail for whatever reason. Like it's
+
+00:45:23.720 --> 00:45:28.559
+trying to get to a service. The domain is gone or it's not coming back. Right. Yep. One of those
+
+00:45:28.580 --> 00:45:32.620
+sorts of things. Three months ago, it was there. Then you said sleep for three months and it woke
+
+00:45:32.720 --> 00:45:37.480
+up and said, wait, it's like Planet of the Apes. You're like, yeah, what have they done? You wake
+
+00:45:37.560 --> 00:45:41.380
+up, you're like, the world is not what I thought, right? How do you deal with that kind of stuff?
+
+00:45:42.320 --> 00:45:49.180
+Yeah. So in the retry policy, so the default retry policy, what is, is it, its default is just retry
+
+00:45:49.660 --> 00:45:55.160
+on a specific time limit forever until it's either canceled or it succeeds. Now, if you expect that
+
+00:45:55.180 --> 00:45:59.620
+something could happen like that. Essentially what you would do is there's something what's
+
+00:45:59.620 --> 00:46:05.500
+known or non-retriable error types. So certain HTTP error codes, you know, might, you might would be
+
+00:46:05.600 --> 00:46:10.900
+like, Hey, you know, this is just not going to come back. 500 is fine, but maybe 404 is like
+
+00:46:11.200 --> 00:46:16.940
+404 might never come back, but 500 very likely could or cannot connect. I don't know. Is that
+
+00:46:17.080 --> 00:46:20.800
+404? I don't think so. I think it does. I don't remember. Yeah. I remember, but there's probably
+
+00:46:20.820 --> 00:46:26.120
+a code that like i i can't connect to the server versus like i got there and it said not here yeah
+
+00:46:26.230 --> 00:46:30.260
+so there's non-retriable error codes and i mean like what we do with the core temporal primitives
+
+00:46:30.400 --> 00:46:34.700
+is more of like um i often tell people it's like yeah like things that can retry let them retry but
+
+00:46:34.760 --> 00:46:39.700
+like say i do a divide by zero error no amount of retries is going to change the laws of physics
+
+00:46:40.380 --> 00:46:44.180
+um you know it's like holding your breath until something changes you're just going to pass out
+
+00:46:44.540 --> 00:46:47.900
+um same thing with these retries so you have to have what are called non-retriable errors and you
+
+00:46:47.860 --> 00:46:51.400
+essentially say, hey, whenever you experience this error, you should just fail. And basically,
+
+00:46:51.600 --> 00:46:55.200
+you would bubble it up and then you have to let the next layer of execution handle it.
+
+00:46:55.440 --> 00:46:59.140
+So yeah, totally a good story for that. Okay. Yeah. But you kind of got to think a little bit
+
+00:46:59.200 --> 00:47:03.580
+about it, right? Just yes. Yes. You still have to think it doesn't take away all the thinking for
+
+00:47:03.960 --> 00:47:08.480
+when it comes to like, what potentially could go wrong, but at least like with all of like the weird,
+
+00:47:08.800 --> 00:47:12.620
+like, you know, okay, this service might go down DNS, someone messed with DNS. It's always DNS.
+
+00:47:13.040 --> 00:47:17.820
+I had I had an it's always DNS moment the other day. And I'm like, I need a sticker for my laptop
+
+00:47:17.840 --> 00:47:19.260
+says this because it got me again.
+
+00:47:19.760 --> 00:47:20.920
+I can't remember what took me out.
+
+00:47:21.620 --> 00:47:23.480
+I suffered something with that as well.
+
+00:47:23.540 --> 00:47:24.740
+And it wasn't even directly me,
+
+00:47:24.820 --> 00:47:26.880
+but it was something that I was subjected to.
+
+00:47:27.000 --> 00:47:27.080
+Yeah.
+
+00:47:27.340 --> 00:47:28.040
+It is always DNS.
+
+00:47:28.600 --> 00:47:29.340
+It's always DNS.
+
+00:47:29.820 --> 00:47:30.940
+Except for when it's the database.
+
+00:47:31.440 --> 00:47:31.540
+Yeah.
+
+00:47:32.040 --> 00:47:34.560
+Or except for when you accidentally deploy
+
+00:47:34.600 --> 00:47:37.240
+the walrus operator on Python 3.7 on the server.
+
+00:47:37.420 --> 00:47:38.440
+That also is not good.
+
+00:47:38.720 --> 00:47:39.260
+And it's not doing,
+
+00:47:39.380 --> 00:47:42.020
+which I took down Talk Python for 20 minutes.
+
+00:47:42.080 --> 00:47:42.740
+I'm like, what?
+
+00:47:43.060 --> 00:47:43.880
+Why won't it run?
+
+00:47:43.880 --> 00:47:44.620
+It was running perfect.
+
+00:47:45.180 --> 00:47:46.780
+Oh, this was like, you know, years ago
+
+00:47:46.800 --> 00:47:48.320
+when those things were like new, right?
+
+00:47:48.720 --> 00:47:48.880
+Yeah.
+
+00:47:49.380 --> 00:47:49.940
+Oh my goodness.
+
+00:47:50.920 --> 00:47:52.660
+So one thing I want to talk about here,
+
+00:47:52.720 --> 00:47:54.480
+let me get back to, that's the right spot.
+
+00:47:54.820 --> 00:47:58.200
+Let's talk about the programming execution model.
+
+00:47:58.800 --> 00:48:00.940
+Let's see, is there a quick start?
+
+00:48:01.100 --> 00:48:02.820
+Let's maybe, let's talk through the quick start.
+
+00:48:02.860 --> 00:48:05.580
+And I think there's just some super interesting
+
+00:48:06.240 --> 00:48:08.840
+modern Python ideas that you got here, right?
+
+00:48:09.000 --> 00:48:10.620
+So maybe talk us through like,
+
+00:48:10.920 --> 00:48:12.880
+how do we get started bringing this in?
+
+00:48:13.200 --> 00:48:14.700
+Does it have to be a from scratch?
+
+00:48:15.020 --> 00:48:19.680
+Or can I take some part of my application, like a particular API endpoint and go, this
+
+00:48:19.860 --> 00:48:21.100
+thing needs, needs some help.
+
+00:48:21.540 --> 00:48:22.460
+And Temporal can help it.
+
+00:48:22.720 --> 00:48:24.180
+Let's just plug it in on this one bit.
+
+00:48:24.460 --> 00:48:27.940
+That's actually how we recommend a lot of people get started with Temporal is like, we
+
+00:48:28.040 --> 00:48:31.280
+don't, we never tell people like do like a whole ground up rewrite of like everything
+
+00:48:31.320 --> 00:48:31.720
+you have.
+
+00:48:32.240 --> 00:48:38.700
+We, I've often told people find something that, like find, find a service that annoys
+
+00:48:38.740 --> 00:48:43.180
+you, that pages you because it's constantly going down because it's unreliable and maybe
+
+00:48:43.200 --> 00:48:47.160
+do a like it's a small service and do a small rewrite of that in temporal and just see how your
+
+00:48:47.360 --> 00:48:51.580
+life makes uh makes a difference so the way that you do it with temporal is like you have to use
+
+00:48:51.680 --> 00:48:55.960
+the temporal sdks so the way that you build temporal applications is you build them using sdks
+
+00:48:56.230 --> 00:49:01.520
+um typically with other workflow-esque engines or other durable execution engines um some of the
+
+00:49:01.520 --> 00:49:05.380
+more modern durable execution engines have kind of followed suit with us but some of the earlier ones
+
+00:49:05.620 --> 00:49:11.440
+didn't we're code-based um we're not dag based we're not yaml based we don't have our own structured
+
+00:49:11.460 --> 00:49:17.180
+DSL, we are 100% code based. And there's a lot of advantages to that. So not XML based. No,
+
+00:49:18.820 --> 00:49:26.260
+no XML. So yeah, so we build you build basically what's called a workflow. Workflow is you can kind
+
+00:49:26.260 --> 00:49:29.800
+of think of a workflow is like your application. It's it's the it's the blueprint of your
+
+00:49:29.980 --> 00:49:34.020
+entire application. And what we'd say about workflows is that they have to be deterministic,
+
+00:49:34.260 --> 00:49:38.560
+like the code within a workflow must be deterministic, and you execute it line by line going
+
+00:49:38.580 --> 00:49:43.100
+down. And then anything within your workflow that potentially could be non-deterministic or
+
+00:49:43.640 --> 00:49:49.020
+could potentially fail. So calling out to a microservice is both of those. It's non-deterministic
+
+00:49:49.240 --> 00:49:52.540
+because you don't know what you're going to get back. And it's potentially going to fail because
+
+00:49:52.550 --> 00:49:56.000
+the service could be down. That goes in what's called an activity. An activity is that thing that
+
+00:49:56.260 --> 00:50:01.720
+automatically gets the retries. Now you implement activities as functions or as methods in Python.
+
+00:50:02.160 --> 00:50:08.540
+You can actually do them as both. And as you were saying in the readme, yeah, we use a lot of
+
+00:50:08.560 --> 00:50:13.160
+Python tooling. So that's actually something that I think that our SDK engineers, we have an entire
+
+00:50:13.360 --> 00:50:17.920
+team whose entire job is to build and maintain our SDKs. They're super proud of. It's one of the
+
+00:50:17.920 --> 00:50:23.300
+things I love talking about. Temporal is not built off of what you would say like an open API spec
+
+00:50:23.580 --> 00:50:28.320
+for a good reason. So it's built basically, I mean, Temporal itself is built in Go. So as you
+
+00:50:28.320 --> 00:50:33.220
+can imagine, everything's built in protobufs. There is a spec on what we build off of, but open API
+
+00:50:33.240 --> 00:50:38.500
+specs generate stuck stub client libraries. And like I've worked with a handful of them. They don't,
+
+00:50:38.600 --> 00:50:42.200
+they're not very idiomatic to the language. Like it kind of looks like someone bolted a C library
+
+00:50:42.310 --> 00:50:48.940
+on top of Python. Like it works, but it doesn't feel like Python. Our SDK engineers spend months
+
+00:50:49.360 --> 00:50:53.400
+studying the programming language, learning out what is idiomatic of the language, what actually
+
+00:50:53.660 --> 00:50:58.260
+makes sense. And then they build into it. So the interesting thing about this is like, you can see
+
+00:50:58.340 --> 00:51:03.200
+here when we define our decorate, our workflows, we define them by decorating classes. And then we
+
+00:51:03.220 --> 00:51:07.000
+the entry point by decorating it with an at workflow.run. So that's how we know where the
+
+00:51:07.090 --> 00:51:13.480
+entry point is. We're using asyncio inside of this to do it. Our activities, when you want to
+
+00:51:13.710 --> 00:51:18.780
+turn a method into an activity, you are a function in an activity, you just decorate it at activity.defin.
+
+00:51:19.060 --> 00:51:25.140
+And now you have an activity. We've done a lot of those kinds of things. We're using context
+
+00:51:25.320 --> 00:51:32.060
+managers very, very a lot or, you know, rigorously within the code base. The really interesting thing
+
+00:51:32.080 --> 00:51:36.240
+is, and I can only talk a teensy bit about this because it's super complex, but there's a really
+
+00:51:36.360 --> 00:51:41.700
+great talk track from it at the PyTexas conference from this year. We built a custom async event loop
+
+00:51:41.920 --> 00:51:46.380
+for this. This runs in a durable asynchronous event loop. And the SDK engineer who built it
+
+00:51:46.740 --> 00:51:51.460
+gave a talk at PyTexas this year, and it's on the PyTexas 2025 website. And I can provide a link to
+
+00:51:51.580 --> 00:51:57.500
+that later. And it's really neat because essentially we had to build a custom event loop to handle
+
+00:51:57.680 --> 00:52:00.280
+all of the way that we expect Temporal to work.
+
+00:52:01.110 --> 00:52:02.640
+And I don't think that building a custom event loop
+
+00:52:02.840 --> 00:52:04.360
+is a very common thing for people to do.
+
+00:52:05.480 --> 00:52:06.740
+So there's a lot of lessons learned there.
+
+00:52:07.480 --> 00:52:08.640
+I think there should be more of it though.
+
+00:52:08.650 --> 00:52:10.780
+I think it's a really interesting story.
+
+00:52:11.740 --> 00:52:13.080
+Yeah, I'll put this in the show notes.
+
+00:52:13.480 --> 00:52:14.760
+Yeah, that's Chad's talk.
+
+00:52:14.900 --> 00:52:15.480
+It's amazing.
+
+00:52:15.550 --> 00:52:17.480
+So like he talks about all the things that he had to do
+
+00:52:17.620 --> 00:52:20.100
+when he was building out a custom event loop
+
+00:52:22.239 --> 00:52:23.800
+for Temporal's AsyncIO event loop.
+
+00:52:24.270 --> 00:52:27.240
+Yeah, so for people for whom this is super new,
+
+00:52:27.460 --> 00:52:32.820
+this idea. You need places in your code to execute to say, okay, we can stop, maybe save some state.
+
+00:52:33.120 --> 00:52:38.840
+And then you talked about like replaying behaviors and so on. So you can write code like await sleep
+
+00:52:39.140 --> 00:52:46.020
+a day, you know, asyncio dot sleep one day. And that goes into this, as you said, durable asyncio
+
+00:52:46.380 --> 00:52:51.360
+execution. So instead of just saying, well, we're going to let the thread do other stuff. It's like,
+
+00:52:51.580 --> 00:52:56.200
+no, save it and then resume it. Right. That's pretty wild. It's pretty great actually. Yeah.
+
+00:52:56.320 --> 00:52:59.760
+And I mean, those, those, and that's one of the great things about the workflows and like
+
+00:53:00.160 --> 00:53:02.440
+that, those you'd have to definitely write as workflows, but yeah.
+
+00:53:02.490 --> 00:53:06.760
+And it takes up no, no energy or it doesn't jam up a CPU thread by sleeping.
+
+00:53:06.940 --> 00:53:09.420
+Like it's usually if you sleep something, that thread is kind of sitting there and it's
+
+00:53:09.560 --> 00:53:09.820
+stuck.
+
+00:53:09.960 --> 00:53:13.960
+this a hundred percent because it's all event sourced under the hood, essentially.
+
+00:53:14.339 --> 00:53:18.920
+the event, basically the timer started event gets recorded into the service and then
+
+00:53:19.050 --> 00:53:19.900
+it gets descheduled.
+
+00:53:20.070 --> 00:53:23.100
+And then that worker, that, that executor can continue performing other tasks.
+
+00:53:23.260 --> 00:53:28.080
+And then once that timer fires, the next task for it to continue execution gets put on the task queue.
+
+00:53:28.380 --> 00:53:30.980
+The worker consumes it, knows, oh, I need to resume.
+
+00:53:31.340 --> 00:53:31.820
+And it resumes.
+
+00:53:31.900 --> 00:53:33.240
+And that can happen whenever.
+
+00:53:33.680 --> 00:53:36.280
+That can happen, you know, a day from now, three days from now, three months from now.
+
+00:53:36.280 --> 00:53:36.760
+It doesn't matter.
+
+00:53:36.940 --> 00:53:39.140
+Eventually it gets put on the queue and it gets executed as if nothing happened.
+
+00:53:39.360 --> 00:53:39.980
+Yeah, that's wild.
+
+00:53:40.400 --> 00:53:41.860
+So interesting question out of the audience.
+
+00:53:42.519 --> 00:53:45.660
+If people went with your cloud option, where does that run?
+
+00:53:45.720 --> 00:53:46.440
+Is that AWS?
+
+00:53:46.940 --> 00:53:47.760
+Is that DigitalOcean?
+
+00:53:48.499 --> 00:53:50.980
+Currently it's in AWS and GCP.
+
+00:53:51.260 --> 00:53:51.420
+Okay.
+
+00:53:51.780 --> 00:53:52.720
+So those are the two clouds.
+
+00:53:52.740 --> 00:53:54.120
+Pick different availability zones.
+
+00:53:54.310 --> 00:53:55.640
+Like if I were in Virginia,
+
+00:53:56.260 --> 00:53:57.300
+US East one or whatever,
+
+00:53:57.370 --> 00:53:58.860
+I could say I want to use that one.
+
+00:53:59.340 --> 00:53:59.500
+Exactly.
+
+00:53:59.780 --> 00:54:00.800
+There's different availability zones
+
+00:54:00.830 --> 00:54:02.360
+and we even have multi-region failover.
+
+00:54:03.060 --> 00:54:04.660
+So if you needed multi-region availability
+
+00:54:04.920 --> 00:54:06.160
+for super, super high availability,
+
+00:54:07.220 --> 00:54:09.140
+which we do have definitely have large customers
+
+00:54:09.230 --> 00:54:10.480
+who need that level of availability.
+
+00:54:11.359 --> 00:54:12.740
+And you can totally do that.
+
+00:54:13.020 --> 00:54:13.120
+Cool.
+
+00:54:13.700 --> 00:54:15.240
+And that doesn't mean you got to be in AWS.
+
+00:54:15.780 --> 00:54:16.260
+No, no.
+
+00:54:16.270 --> 00:54:18.620
+We have people who are running on their own private,
+
+00:54:18.760 --> 00:54:20.060
+they were running on their own infrastructure
+
+00:54:20.270 --> 00:54:22.460
+on their on-prem and they're calling into it.
+
+00:54:22.540 --> 00:54:30.280
+So that's the niftiest thing about temporal cloud is like the security model is super simple because temporal cloud or the temporal service.
+
+00:54:30.320 --> 00:54:31.200
+It doesn't have to be temporal cloud.
+
+00:54:31.260 --> 00:54:33.900
+It's the service, whether you self-host it or whether it's on the cloud.
+
+00:54:34.360 --> 00:54:35.780
+It never connects to you.
+
+00:54:36.100 --> 00:54:39.300
+The workers always do an outbound connection into the temporal service.
+
+00:54:39.780 --> 00:54:45.600
+So if you're using temporal cloud, the only firewall rule you have to allow is a single outbound connection off of a single port.
+
+00:54:45.840 --> 00:54:46.040
+That's it.
+
+00:54:46.340 --> 00:54:46.980
+So it's really awesome.
+
+00:54:47.600 --> 00:54:49.200
+Yeah, I'm impressed with a lot of this.
+
+00:54:49.380 --> 00:54:51.400
+So let's sort of kind of get into that.
+
+00:54:51.580 --> 00:54:53.000
+And I want to maybe close out with two topics,
+
+00:54:53.720 --> 00:54:55.260
+testing and what's next,
+
+00:54:55.580 --> 00:54:58.960
+or like sort of also maybe multi-language stuff
+
+00:54:59.100 --> 00:55:00.080
+we should touch on as well.
+
+00:55:00.180 --> 00:55:02.060
+But let's talk testing first.
+
+00:55:02.480 --> 00:55:05.060
+So there's a couple of interesting challenges here.
+
+00:55:05.300 --> 00:55:07.320
+Like first, if I write code like this
+
+00:55:07.320 --> 00:55:08.460
+and I want to have a unit test,
+
+00:55:08.840 --> 00:55:11.020
+no longer am I like, well, this is complicated.
+
+00:55:11.060 --> 00:55:12.700
+I just have to use pytestAsyncIO.
+
+00:55:12.920 --> 00:55:14.220
+It's like more than that, right?
+
+00:55:14.420 --> 00:55:15.780
+So what's the testing story?
+
+00:55:16.060 --> 00:55:18.120
+Yeah, so the cool thing about the testing story with this
+
+00:55:18.240 --> 00:55:21.100
+is it is technically still pytestAsyncIO.
+
+00:55:21.520 --> 00:55:28.700
+because we're code-based, this is one of the things that I always have to harp, to, to remind people on my courses and everyone's always like, oh, that's so cool.
+
+00:55:29.160 --> 00:55:32.940
+you, because we're code, you have to give up none of your tooling.
+
+00:55:33.280 --> 00:55:35.100
+You don't have to get like, how do you like to package it?
+
+00:55:35.120 --> 00:55:36.000
+Are you a poetry person?
+
+00:55:36.100 --> 00:55:36.820
+Are you a B person?
+
+00:55:36.980 --> 00:55:38.340
+Are you a Pippin person?
+
+00:55:38.720 --> 00:55:40.480
+Whatever you want to use, use it for your testing.
+
+00:55:40.680 --> 00:55:42.400
+Do you want to use a Po the poet?
+
+00:55:42.600 --> 00:55:44.080
+Are you a pie test person?
+
+00:55:44.260 --> 00:55:44.840
+Like, what are you using?
+
+00:55:45.160 --> 00:55:45.420
+Use it.
+
+00:55:45.420 --> 00:55:45.920
+It doesn't matter.
+
+00:55:46.440 --> 00:55:50.000
+Temporal does provide, obviously because these are more complex workflows and stuff.
+
+00:55:50.040 --> 00:55:56.100
+they require a little bit. Every single temporal SDK does provide a testing framework that is built
+
+00:55:56.260 --> 00:56:02.180
+into it. And these integrate natively with all of your testing frameworks. So you can use, you use
+
+00:56:02.280 --> 00:56:07.060
+pytest. I use pytest. Now you could use something else, but all of our courses, I think the temporal
+
+00:56:07.360 --> 00:56:12.920
+102 course, yeah, I wrote that one, has a whole chapter on testing temporal workflows and activities
+
+00:56:13.340 --> 00:56:16.760
+and mocking activities because you have to be able to call them independently because you,
+
+00:56:16.840 --> 00:56:17.920
+Otherwise that's an integration test.
+
+00:56:17.940 --> 00:56:18.620
+It's not a unit test.
+
+00:56:18.900 --> 00:56:19.420
+It is important.
+
+00:56:19.460 --> 00:56:20.900
+I always feel bad about mocking the code.
+
+00:56:20.900 --> 00:56:22.140
+It doesn't seem nice, but you got to.
+
+00:56:22.240 --> 00:56:23.420
+Yeah, it's super easy.
+
+00:56:23.620 --> 00:56:24.400
+It's so nice.
+
+00:56:25.420 --> 00:56:28.140
+The you you basically just read you basically redefine the activity
+
+00:56:28.280 --> 00:56:31.140
+and I just put it in the mocking story in Python is so nice.
+
+00:56:32.400 --> 00:56:34.100
+But you just use our testing framework.
+
+00:56:34.200 --> 00:56:36.640
+And what that does is it basically the testing framework will automatically
+
+00:56:36.920 --> 00:56:39.120
+spin up a temporal service and a worker for you.
+
+00:56:39.260 --> 00:56:42.280
+So because as you can imagine, like the execution part of this is like,
+
+00:56:42.320 --> 00:56:43.720
+you have to have a service running, you have to have a worker
+
+00:56:44.160 --> 00:56:46.180
+and then you have to send like basically use a client
+
+00:56:46.200 --> 00:56:51.060
+to send a request to execute the workflow and it will be executed. The temporal testing service
+
+00:56:51.130 --> 00:56:56.220
+does all of that for you. And it also has basically time skipping. So what you can do is, you know,
+
+00:56:56.440 --> 00:56:59.640
+if I have to test, if I have to test something that sleeps for 30 days, I would actually prefer
+
+00:56:59.800 --> 00:57:05.080
+it to not actually sleep for 30 days. So I can test it. Well, I see I take so long. Yeah. So
+
+00:57:05.280 --> 00:57:08.420
+time skipping is in there and there's a lot of other really neat features in the testing. So
+
+00:57:08.670 --> 00:57:14.280
+every single temporal Python or sorry, sorry, every single temporal SDK has a testing framework
+
+00:57:14.300 --> 00:57:17.740
+built into it that really well enables testing.
+
+00:57:17.980 --> 00:57:21.900
+And it all works natively with the tools that you are already used to using as a developer
+
+00:57:22.060 --> 00:57:23.220
+of whatever language you're already using.
+
+00:57:23.380 --> 00:57:24.360
+Yeah, that sounds great.
+
+00:57:24.430 --> 00:57:28.760
+And you can say things like run this and wait for a week and then resume.
+
+00:57:28.810 --> 00:57:30.640
+And you can just say, and now a week has resumed.
+
+00:57:30.770 --> 00:57:31.660
+You know, a week has passed.
+
+00:57:31.930 --> 00:57:33.240
+Now I see what's happened, right?
+
+00:57:33.400 --> 00:57:34.720
+Like it'll just zip right ahead.
+
+00:57:35.100 --> 00:57:35.240
+Yep.
+
+00:57:35.640 --> 00:57:36.000
+Skips right ahead.
+
+00:57:36.140 --> 00:57:37.100
+Doesn't even, doesn't even worry about it.
+
+00:57:37.320 --> 00:57:38.960
+That's always a fun testing trick.
+
+00:57:39.580 --> 00:57:42.740
+So the other one I want to talk about is when I'm over here,
+
+00:57:43.380 --> 00:57:45.480
+into the GitHub repo, I can scroll down.
+
+00:57:45.550 --> 00:57:49.360
+If I look at the repositories, it's Java SDK, Python SDK,
+
+00:57:49.570 --> 00:57:52.540
+Go SDK,.NET SDK, Ruby SDK, et cetera, et cetera.
+
+00:57:52.900 --> 00:57:55.180
+There's a bunch of interesting things here.
+
+00:57:55.320 --> 00:57:57.660
+Like I can write part of my app in Java,
+
+00:57:58.160 --> 00:58:01.180
+part of the workflow in Java or the workflow items in Java,
+
+00:58:01.540 --> 00:58:04.720
+the queues, and I can do part of it in Python or.NET.
+
+00:58:04.790 --> 00:58:05.940
+And the other part I think is interesting
+
+00:58:06.140 --> 00:58:08.280
+is Python,.NET, Ruby, et cetera,
+
+00:58:08.720 --> 00:58:10.860
+all share a common Rust base.
+
+00:58:10.930 --> 00:58:13.060
+And so it's kind of like they all go in lockstep.
+
+00:58:13.340 --> 00:58:19.600
+Yeah. Yeah. Yeah. So yeah, two great topics there. So the first one I'll start off with is the is the
+
+00:58:19.680 --> 00:58:23.040
+polyglot stuff, because I think it's one of my favorite things. And we don't I don't I don't ever
+
+00:58:23.050 --> 00:58:27.420
+get to talk about it enough. So I'm glad you asked. Underneath the hood, the way that all of this
+
+00:58:27.640 --> 00:58:32.880
+communication happens is it's happening via essentially protobuffs across task cubes to the
+
+00:58:32.940 --> 00:58:36.859
+temporal service back and forth. One of the things that you'll find if you dig into temporal is that
+
+00:58:36.820 --> 00:58:43.060
+we require your input, the inputs and outputs of your functions to be serializable to basically
+
+00:58:43.360 --> 00:58:47.620
+protobufs. Now, if you have something that's not serializable, we obviously, because it's code,
+
+00:58:47.620 --> 00:58:53.880
+we provide you the way to extend the serializer. So as long as you can serialize it, again,
+
+00:58:54.320 --> 00:58:58.540
+it's code, you can do whatever you want with it. But because of that, because everything speaks
+
+00:58:58.920 --> 00:59:03.120
+protobuf, all of these languages can natively speak to each other. So you're right, I can write
+
+00:59:03.140 --> 00:59:08.540
+workflows written in Python and call and have three different activities in that workflow,
+
+00:59:08.740 --> 00:59:12.480
+one written in TypeScript, one written in Java and one written in.NET. And I can call them
+
+00:59:12.720 --> 00:59:16.760
+seamlessly, like basically just by calling execute activity, giving it the name of the function.
+
+00:59:17.120 --> 00:59:21.540
+And then I could actually still then pass in a data class of the data that I have as that
+
+00:59:21.720 --> 00:59:25.660
+parameter, because it's still getting serialized down into a protobuf. It will get deserialized
+
+00:59:25.680 --> 00:59:30.780
+into the other language, execute it and pass back data that I can resume. And then I could call it
+
+00:59:30.800 --> 00:59:37.560
+technically from a client that's written in Go. So this enables Polyglot across all of these
+
+00:59:37.660 --> 00:59:41.280
+languages. And it's amazing. So if you have legacy systems or you have stuff where like you really
+
+00:59:41.320 --> 00:59:46.160
+need something to be written in a whole bunch of different languages, it just gives you this out
+
+00:59:46.200 --> 00:59:50.500
+of the box for free. And I think it's one of the neatest features. And one of the other part that
+
+00:59:50.500 --> 00:59:55.740
+it really does need about this is it's not just like the fact that it can call it, but it also
+
+00:59:56.000 --> 01:00:00.760
+preserves the stack traces as well. So one of the other courses that I developed are Crafting the
+
+01:00:00.780 --> 01:00:06.740
+handling strategy course. There's a demo in there where I am showing like basically that exact
+
+01:00:07.020 --> 01:00:11.740
+workflow, a Go client that's calling a Java workflow that's calling a Python activity.
+
+01:00:12.080 --> 01:00:15.600
+So three different languages. And then I intentionally throw an error in the Python
+
+01:00:15.900 --> 01:00:21.080
+activity and I tell it, do not handle it, do not retry it, let it bubble up. And when I get back to
+
+01:00:21.080 --> 01:00:25.400
+the Go client, I can see the different stack traces in the different languages all the way through.
+
+01:00:25.720 --> 01:00:31.920
+So I get a go basically panic that contains a Java stack trace that contains a, that contains a Python stack trace.
+
+01:00:32.220 --> 01:00:34.780
+And I can, I can, I can see all of this across the line.
+
+01:00:34.900 --> 01:00:41.740
+So not, and, and also the thing, and just to do it for fun, because I like showing off, I have all of these workers running on different machines.
+
+01:00:42.320 --> 01:00:45.760
+So I am, I am running on different, I am crossing process boundaries.
+
+01:00:46.060 --> 01:00:52.740
+I'm crossing literally across the network IP boundaries, and then I'm crossing language boundaries and it happens seamlessly and you'd never know that it happened.
+
+01:00:53.080 --> 01:00:56.640
+So the orchestration layer is the wildest thing ever.
+
+01:00:57.400 --> 01:00:58.940
+And then you asked about the Rust SDK.
+
+01:00:59.540 --> 01:01:00.200
+That's a fun one.
+
+01:01:00.500 --> 01:01:03.700
+So that kind of goes back into the history a little bit of how Temporal was built.
+
+01:01:04.160 --> 01:01:08.260
+And for a crash course in this within two minutes or less,
+
+01:01:09.100 --> 01:01:13.680
+essentially our founders started at AWS together and built out what would become,
+
+01:01:15.340 --> 01:01:19.000
+they built the foundations for SQS and what would become simple workflow service.
+
+01:01:19.440 --> 01:01:24.120
+Then one of the founders left, went to Azure and helped build the Azure Durable Task Framework at Microsoft.
+
+01:01:24.630 --> 01:01:27.520
+They met up back together at Uber and built Uber's Cadence.
+
+01:01:28.340 --> 01:01:34.540
+Cadence was then basically like battle tested for four years, open sourced, and then they got permission to fork it and build Temporal.
+
+01:01:34.570 --> 01:01:38.740
+So Temporal, the company is six years old, but it was a four year old open source project prior.
+
+01:01:39.050 --> 01:01:40.940
+So it's a 10 year old open source project, essentially.
+
+01:01:41.980 --> 01:01:46.400
+But because of that, what happened at Cadence was I think they wrote the Go and the Java SDKs there.
+
+01:01:46.480 --> 01:01:49.120
+So those are very uniquely themselves because they were written independently.
+
+01:01:49.920 --> 01:01:52.080
+And then the PHP SDK is its own story.
+
+01:01:52.900 --> 01:01:55.000
+Someone wrote that in the community because they really wanted it.
+
+01:01:55.200 --> 01:01:56.760
+And it kind of follows its own rules.
+
+01:01:57.020 --> 01:02:03.100
+But when they started building the temporal SDKs, TypeScript was the first one and then Python, if I remember correctly.
+
+01:02:03.680 --> 01:02:06.260
+They wanted a common core, like basically re-implementing this.
+
+01:02:06.400 --> 01:02:12.660
+Because in these SDKs, there are very complex state machines that maintain all of this state of what's going on.
+
+01:02:13.620 --> 01:02:15.940
+And they did not want to keep re-implementing this every single time.
+
+01:02:16.020 --> 01:02:21.680
+So they built a Rust core SDK, or it's not even an SDK. It's not an SDK. It's just the core. And
+
+01:02:22.000 --> 01:02:27.700
+all of the, so the TypeScript, the.NET, the Python, and the Ruby SDKs all have a upper level SDK
+
+01:02:28.260 --> 01:02:33.800
+that wraps this core Rust SDK and call into it. So they share a common theme. So there definitely
+
+01:02:33.940 --> 01:02:37.680
+will sometimes be features or like things that happen in the Go or the Java SDK that you're like,
+
+01:02:37.720 --> 01:02:42.820
+that's a little different because those are not based on Rust core. But yeah, that's how they all
+
+01:02:42.820 --> 01:02:47.280
+call in. So like their PIO3 is basically being used here. We're calling into pot with PIO3 into
+
+01:02:47.280 --> 01:02:53.640
+a rust binding. and that's like a Pydantic and others. Yeah, exactly. Yeah. So, and it's,
+
+01:02:53.700 --> 01:02:57.700
+it's really cool. And that, that makes, adding new SDKs a lot easier because really,
+
+01:02:57.780 --> 01:03:01.360
+and truly the hardest part of building the SDKs is, was like those state machines used to take
+
+01:03:01.360 --> 01:03:05.260
+a long time. And once they got it figured out on the rust core side, it made adding new languages
+
+01:03:05.500 --> 01:03:10.920
+easier. the Ruby SDK is in public preview and will be going generally available here soon. Um,
+
+01:03:11.120 --> 01:03:14.480
+And there may be one or two more SDKs coming out within the future.
+
+01:03:14.940 --> 01:03:17.080
+If you guessed really hard, you could figure out what it is.
+
+01:03:17.260 --> 01:03:17.720
+There's an SDK.
+
+01:03:17.900 --> 01:03:19.360
+There's a core that doesn't have an SDK.
+
+01:03:22.240 --> 01:03:22.920
+There's no secret.
+
+01:03:23.120 --> 01:03:24.460
+There's no secret about that.
+
+01:03:25.140 --> 01:03:25.560
+Yeah, of course.
+
+01:03:25.980 --> 01:03:28.100
+People have been begging for that for years and it's obvious.
+
+01:03:28.350 --> 01:03:29.860
+So yeah, may involve crates.
+
+01:03:30.020 --> 01:03:30.080
+Okay.
+
+01:03:30.320 --> 01:03:33.100
+So what's, what is the, what's the future?
+
+01:03:33.280 --> 01:03:38.560
+Like anything that's worth giving a shout out that's coming or that kind of stuff?
+
+01:03:38.980 --> 01:03:39.140
+Yeah.
+
+01:03:39.260 --> 01:03:44.020
+I mean, I think that like a lot of times people often ask me like, what is Temporal used for?
+
+01:03:44.130 --> 01:03:48.120
+And I would say Temporal is used for anything that like you don't want your code to fail.
+
+01:03:48.720 --> 01:04:02.340
+It like it's it's really interesting to help educate people and work on a product that really does affect nearly every single part of the application of the software development lifecycle and every single part of it, of, of, of the industry.
+
+01:04:03.300 --> 01:04:08.080
+You know, I was used to working on other products that like, yeah, like I worked at a synthetic data company for a little bit.
+
+01:04:08.200 --> 01:04:09.560
+And that had a very niche area.
+
+01:04:09.650 --> 01:04:10.620
+And then I worked at DigitalOcean,
+
+01:04:10.730 --> 01:04:11.620
+which was cloud products,
+
+01:04:12.030 --> 01:04:12.640
+which is still awesome,
+
+01:04:12.790 --> 01:04:14.140
+but like doesn't affect everything.
+
+01:04:14.600 --> 01:04:15.800
+Temporal really does like,
+
+01:04:16.340 --> 01:04:17.140
+are you doing finance?
+
+01:04:17.760 --> 01:04:19.960
+Temporal is great for long running transactions.
+
+01:04:20.140 --> 01:04:21.460
+Are you doing food delivery?
+
+01:04:21.840 --> 01:04:23.200
+Like, are you a fast food industry?
+
+01:04:23.380 --> 01:04:24.180
+Are you doing groceries?
+
+01:04:24.410 --> 01:04:25.900
+Are you doing, what are you doing?
+
+01:04:26.299 --> 01:04:27.580
+Temporal can benefit from it.
+
+01:04:27.740 --> 01:04:29.260
+So there's a lot of really cool things.
+
+01:04:29.820 --> 01:04:30.480
+You can use it for anything.
+
+01:04:30.610 --> 01:04:31.720
+And what we're seeing right now,
+
+01:04:32.440 --> 01:04:32.720
+specifically,
+
+01:04:33.020 --> 01:04:33.800
+and this kind of alludes back
+
+01:04:33.850 --> 01:04:35.360
+to your open AI thing earlier,
+
+01:04:35.840 --> 01:04:38.160
+is that we're seeing a lot of AI companies
+
+01:04:38.180 --> 01:04:44.220
+of value out of this because like when it becomes time to take your agents to production, there's
+
+01:04:44.600 --> 01:04:49.540
+a handful of decent production stories out there, but it turns out these are AI agents in production.
+
+01:04:50.140 --> 01:04:54.220
+This is microservices in production with a fancy label on top of it. These are just distributed
+
+01:04:54.540 --> 01:04:59.560
+systems. Not only are they microservices, they're very slow, long running microservices,
+
+01:05:00.060 --> 01:05:04.980
+which make it harder. Yeah. Yeah. That's exactly what Temporal's model is. Do you have a slow
+
+01:05:05.000 --> 01:05:08.920
+running microservice that can sometimes fail. Great. We have a product that makes all those
+
+01:05:09.120 --> 01:05:13.720
+problems go away. So, you know, like I'll, I'm working on a lot of content right now around
+
+01:05:14.060 --> 01:05:19.440
+showing the benefit of temporal in AI. and we have, we have a handful of customers, who I
+
+01:05:19.660 --> 01:05:25.480
+can't talk about, that are, using us for lots of different AI related things. but there,
+
+01:05:25.580 --> 01:05:28.500
+I mean, you can look on our blog or anything. You can see tons of people that are using it.
+
+01:05:28.800 --> 01:05:31.760
+and it's a really cool thing. So I would definitely say like, if you're, if you're trying
+
+01:05:31.780 --> 01:05:36.680
+to take AI to production, you should be looking into temporal. it's not an AI tool, you know,
+
+01:05:36.760 --> 01:05:39.540
+like we're not, we're not going to like, we're not going to do the thing that every company did is
+
+01:05:39.540 --> 01:05:45.180
+we're not going to suddenly pivot and become an AI tool. because we're not, we just, yeah,
+
+01:05:45.810 --> 01:05:50.360
+we solve everything. And AI is one of the great things we solve. So that's awesome. Yeah. You're
+
+01:05:50.380 --> 01:05:54.900
+not going to vibe code with temporal. Maybe you vibe code, temporal code, but not with temporal.
+
+01:05:55.260 --> 01:05:59.740
+No, I've, I've, I've actually vibe coded a handful of temporal things. And it's interesting because
+
+01:05:59.760 --> 01:06:04.760
+like i'm super picky uh about what what people's temporal code looks like as because i've been
+
+01:06:04.880 --> 01:06:08.980
+teaching people best practices for three years almost three years now and i i'm like no vibe
+
+01:06:09.080 --> 01:06:14.220
+coding that's no claude that's wrong like no no no cursor that's wrong like you can't do that so
+
+01:06:14.430 --> 01:06:18.020
+and the interesting thing about that is the way that i'm looking at it's like oh i need to make
+
+01:06:18.100 --> 01:06:23.040
+more content about this because yes because the llms are not like it's actually funny every now
+
+01:06:23.160 --> 01:06:27.420
+and then the llms spit out some of my content um and i can tell when it's my content because i know
+
+01:06:27.360 --> 01:06:29.360
+So I write comments in a very particular way.
+
+01:06:30.520 --> 01:06:32.000
+And I'm like, oh, okay.
+
+01:06:32.140 --> 01:06:33.880
+So what that ends up telling me is,
+
+01:06:34.480 --> 01:06:36.480
+oh, I need to make more content around this
+
+01:06:36.660 --> 01:06:39.080
+because we're still not vibe coding at 100% capacity.
+
+01:06:39.660 --> 01:06:39.800
+Yeah.
+
+01:06:40.100 --> 01:06:40.280
+Yeah.
+
+01:06:40.700 --> 01:06:40.820
+Yeah.
+
+01:06:41.460 --> 01:06:43.680
+That's a whole discussion we could go down.
+
+01:06:44.020 --> 01:06:46.520
+You know, I was totally wrong when we started.
+
+01:06:46.600 --> 01:06:47.940
+I said we could talk for two hours.
+
+01:06:47.960 --> 01:06:48.920
+I think it's three to four.
+
+01:06:49.320 --> 01:06:49.640
+Yeah.
+
+01:06:49.880 --> 01:06:51.160
+We got so much more we could talk about,
+
+01:06:51.400 --> 01:06:55.500
+but there's only so much time we can dedicate to each episode.
+
+01:06:55.840 --> 01:06:57.400
+So let's go ahead and call it.
+
+01:06:57.400 --> 01:06:59.420
+I say, you know, thanks for being here.
+
+01:06:59.700 --> 01:07:00.740
+The more I looked into this,
+
+01:07:00.760 --> 01:07:02.100
+this is a super interesting product.
+
+01:07:02.380 --> 01:07:04.720
+And there's a lot of neat Python integrations
+
+01:07:04.880 --> 01:07:08.460
+like you program it with async and await
+
+01:07:08.600 --> 01:07:11.760
+rather than some funky SDK bolt-on thing.
+
+01:07:12.040 --> 01:07:13.300
+So people should definitely check it out.
+
+01:07:13.980 --> 01:07:14.560
+Final call to action.
+
+01:07:14.720 --> 01:07:15.080
+They're interested.
+
+01:07:15.700 --> 01:07:16.140
+What do you tell them?
+
+01:07:16.820 --> 01:07:17.960
+Check out, just check out the website.
+
+01:07:18.160 --> 01:07:19.620
+Check out temporal.io
+
+01:07:19.760 --> 01:07:21.640
+or the learn site, learn.temporal.io.
+
+01:07:21.820 --> 01:07:22.880
+It's a great place to get started.
+
+01:07:23.840 --> 01:07:24.820
+You can install Temporal
+
+01:07:24.840 --> 01:07:26.500
+by just running brew install temporal on your Mac,
+
+01:07:26.760 --> 01:07:29.580
+or there's commands for Windows and Linux as well.
+
+01:07:29.860 --> 01:07:30.700
+Curl commands for that.
+
+01:07:31.140 --> 01:07:32.060
+Or Docker compose up.
+
+01:07:32.320 --> 01:07:33.060
+Or Docker compose up.
+
+01:07:33.110 --> 01:07:35.160
+If you want to do that, totally can do that.
+
+01:07:35.760 --> 01:07:37.020
+Just try it out, build a workflow.
+
+01:07:37.380 --> 01:07:39.220
+And then what I tell people is try to break it.
+
+01:07:39.520 --> 01:07:41.520
+Like start a workflow, kill the worker,
+
+01:07:41.880 --> 01:07:42.420
+bring it back online.
+
+01:07:42.640 --> 01:07:45.020
+Like I think it's really magical
+
+01:07:45.210 --> 01:07:47.120
+when you first actually try to like
+
+01:07:47.530 --> 01:07:49.280
+actually break the software and stuff.
+
+01:07:49.820 --> 01:07:52.080
+We've had multiple people that have taken jobs here
+
+01:07:52.090 --> 01:07:53.820
+who have said, I started playing with it.
+
+01:07:53.820 --> 01:07:54.620
+I tried to break it.
+
+01:07:54.720 --> 01:07:56.620
+And when I couldn't, I decided to apply for a job here.
+
+01:07:57.920 --> 01:07:59.040
+So try to break it.
+
+01:07:59.220 --> 01:08:00.240
+See what you can do.
+
+01:08:00.580 --> 01:08:02.460
+And you'll be amazed by it.
+
+01:08:02.940 --> 01:08:03.900
+Just a personal anecdote.
+
+01:08:04.000 --> 01:08:06.320
+I remember when I applied here, I was reading through their docs.
+
+01:08:06.580 --> 01:08:12.300
+And I told myself, I was like, if they can do half of the things they claim they can do in the docs, this is revolutionary.
+
+01:08:12.440 --> 01:08:13.600
+I've never seen anything like this.
+
+01:08:13.600 --> 01:08:15.380
+And it turns out we do all the things we say in our docs.
+
+01:08:16.640 --> 01:08:19.859
+It's probably the most interesting tech product I've ever worked with in my career.
+
+01:08:20.680 --> 01:08:23.440
+And I know that I will be working with it probably for the rest of my career.
+
+01:08:23.540 --> 01:08:26.660
+It fascinates me and I love playing with it.
+
+01:08:26.740 --> 01:08:30.440
+Like I build temporal applications at home for fun just because it's like, oh, look,
+
+01:08:30.440 --> 01:08:32.740
+I don't have to worry about someone's API going down anymore.
+
+01:08:33.100 --> 01:08:33.240
+Yay.
+
+01:08:33.759 --> 01:08:33.880
+Yeah.
+
+01:08:34.680 --> 01:08:35.040
+It's awesome.
+
+01:08:35.319 --> 01:08:36.900
+So I hope you enjoy it as much as I do.
+
+01:08:37.800 --> 01:08:38.500
+I'm pretty impressed.
+
+01:08:39.220 --> 01:08:39.339
+All right.
+
+01:08:39.390 --> 01:08:40.700
+Well, thanks for being on the show.
+
+01:08:41.120 --> 01:08:42.020
+Thanks for coming on and sharing everything.
+
+01:08:42.500 --> 01:08:42.960
+Yeah, it was great.
+
+01:08:43.279 --> 01:08:44.120
+Great to talk with you.
+
+01:08:44.380 --> 01:08:44.839
+Yeah, you as well.
+
+01:08:45.140 --> 01:08:45.240
+Bye bye.
+
+01:08:46.960 --> 01:08:49.339
+This has been another episode of Talk Python To Me.
+
+01:08:50.160 --> 01:08:51.080
+Thank you to our sponsors.
+
+01:08:51.560 --> 01:08:52.759
+Be sure to check out what they're offering.
+
+01:08:52.839 --> 01:08:54.200
+It really helps support the show.
+
+01:08:54.839 --> 01:08:58.500
+This episode is sponsored by Posit Connect from the makers of Shiny.
+
+01:08:58.980 --> 01:09:02.859
+Publish, share, and deploy all of your data projects that you're creating using Python.
+
+01:09:03.480 --> 01:09:09.580
+Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+01:09:10.420 --> 01:09:12.060
+Posit Connect supports all of them.
+
+01:09:12.380 --> 01:09:17.700
+Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+01:09:18.560 --> 01:09:25.779
+The PyBay Conference is returning to the UCSF Mission Bay Conference Center in San Francisco, California on October 18th, 2025.
+
+01:09:26.779 --> 01:09:30.540
+Get your ticket and pick up a free conference course bundle from Talk Python.
+
+01:09:31.200 --> 01:09:33.740
+Get started at talkpython.fm/pybay.
+
+01:09:34.400 --> 01:09:35.279
+Want to level up your Python?
+
+01:09:35.730 --> 01:09:39.380
+We have one of the largest catalogs of Python video courses over at Talk Python.
+
+01:09:39.859 --> 01:09:44.540
+Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:09:44.900 --> 01:09:47.160
+And best of all, there's not a subscription in sight.
+
+01:09:47.240 --> 01:09:50.080
+Check it out for yourself at training.talkpython.fm.
+
+01:09:50.779 --> 01:09:54.960
+Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:09:55.380 --> 01:09:56.280
+We should be right at the top.
+
+01:09:56.780 --> 01:10:01.480
+You can also find the iTunes feed at /itunes, the Google Play feed at /play,
+
+01:10:01.880 --> 01:10:05.660
+and the direct RSS feed at /rss on talkpython.fm.
+
+01:10:06.320 --> 01:10:08.540
+We're live streaming most of our recordings these days.
+
+01:10:08.980 --> 01:10:12.020
+If you want to be part of the show and have your comments featured on the air,
+
+01:10:12.300 --> 01:10:16.400
+be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+01:10:17.440 --> 01:10:20.940
+This is your host, Michael Kennedy. Thanks so much for listening. I really appreciate it.
+
+01:10:21.300 --> 01:10:22.880
+Now get out there and write some Python code.
+
