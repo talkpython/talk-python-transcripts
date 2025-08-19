@@ -1,0 +1,1738 @@
+00:00:00 20 years after a scrappy newsroom team hacked together a framework to ship stories fast, Django remains the Python web framework that ships real apps responsibly.
+
+00:00:09 In this anniversary roundtable with its creators and longtime stewards, Simon Wilson, Adrian Holovaty, Will Vincent, Jeff Triplett, and Tiavod Kolas, we trace the path from the Lawrence Journal world to version 1.0, DjangoCon, and the Django Software Foundation.
+
+00:00:26 Unpack how a BSD license and a culture of docs, tests, and mentorship grew a global community, and revisit lessons from deployments like Instagram.
+
+00:00:35 We talk modern Django too, ASGI and async, HTMX-friendly patterns, building APIs with DRF and Django Ninja, and how Django pairs with React and Serverless without losing its batteries-included soul.
+
+00:00:48 You'll hear about Django Girls, Django Nauts, and the Django Fellowship that keeps momentum going, plus where Django fits in today's AI stacks.
+
+00:00:57 Finally, we look ahead at the next decade of speed, security, and sustainability for Django.
+
+00:01:02 This is Talk Python To Me, episode 518, recorded August 18th, 2025.
+
+00:01:19 It's time to unite. We started in pyramid cruising. Welcome to Talk Python To Me, a weekly podcast
+
+00:01:25 on Python. This is your host, Michael Kennedy. Follow me on Mastodon where I'm @mkennedy and follow the podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is brought to you entirely by Sentry. It's a bit of an episode takeover, if you will. Sentry has two excellent and exciting services to tell you about. Sear, your agentic AI debugging assistant, which takes all the data already gathered by Sentry to help discover the problems and even propose fixes as GitHub PRs. And the other is AI agent monitoring, which adds deep observability to your AI agents in your app. If you're adding AI and LLM features to your Python apps, you'll want to know about AI agent monitoring. I'll tell you more about both of these later in the episode. And remember, however you happen to sign up for Sentry, if you do, use our code TALKPYTHON, one word, all caps.
+
+00:02:37 Let's get to the interview.
+
+00:02:39 Hello, everyone.
+
+00:02:40 Welcome to Talk Python To Me.
+
+00:02:41 I'm so excited to be celebrating Django's 20th birthday.
+
+00:02:46 What a milestone.
+
+00:02:47 We have Will Vincent, we have Adrian, we have Theobald, Jeff, we have Simon.
+
+00:02:52 Many of the original people have the origin of Django here to talk about it.
+
+00:02:56 So, you know, welcome all of you.
+
+00:02:58 Thanks, Michael.
+
+00:02:59 Yeah, you bet.
+
+00:03:00 It's going to be a lot of fun to go back to some stories and maybe also see where things are going after 20 years.
+
+00:03:06 It's still going strong, to be sure.
+
+00:03:09 So what an accomplishment.
+
+00:03:10 Let's just start with a real quick, who am I, introduction from each of you.
+
+00:03:15 Just give us the elevator pitch on you and your Django life.
+
+00:03:18 And we'll go around the Brady Bunches in order, I suppose, here on the screen.
+
+00:03:21 So Will, welcome.
+
+00:03:23 Okay.
+
+00:03:23 So we'll go from least to most important.
+
+00:03:26 So I'm a developer advocate at JetBrains, some Django books, a podcast.
+
+00:03:31 I think that's enough.
+
+00:03:31 We have more important people to come.
+
+00:03:33 All right.
+
+00:03:34 Adrian, welcome.
+
+00:03:35 First time to have you on the show. Happy to have you.
+
+00:03:37 Hi, I'm Adrian, one of the creators of Django many years ago, precisely 20, a long time web developer.
+
+00:03:45 And yeah, it's basically it.
+
+00:03:47 I'm Simon. I'm Adrian's intern, effectively.
+
+00:03:51 We built the first version of Django during my year long paid internship at the Longest Journal World in Kansas.
+
+00:03:56 It was my university had a year in industry thing, which meant I could get a visa.
+
+00:04:01 And yeah, we worked on what we called the CMS at the time.
+
+00:04:05 We didn't know that it was a web framework.
+
+00:04:07 We thought it was a tool for building local newspaper.
+
+00:04:09 Yeah.
+
+00:04:10 Almost got named TPS, which would be amazing.
+
+00:04:13 Well, I'm a...
+
+00:04:14 Oh, go ahead.
+
+00:04:15 Sorry.
+
+00:04:15 I was going to say, Simon, you're almost more well-known for your AI stuff these days.
+
+00:04:20 You've been...
+
+00:04:20 Last couple of years.
+
+00:04:22 Like, last two years.
+
+00:04:23 You've been in the news so much.
+
+00:04:24 I see you everywhere now.
+
+00:04:25 It's like, congratulations on having two...
+
+00:04:28 Yeah.
+
+00:04:29 I mean, that was...
+
+00:04:30 was. The trick there is I have a blog and not everyone else gave up on blogging, but I kept going. And so when AI started up, I was the only person blogging about AI, which turns out gets you invited to all of the weird Silicon Valley mansion parties and things. So yeah, that's been an
+
+00:04:44 interesting little twist over the past couple of years. Yeah. Jeff Triplett, I'm so sorry to cut
+
+00:04:48 you off. Happy to have you. No, no, no. All good. I thought it was pretty free for him, but I came to Lawrence, Kansas two years after these two had left, maybe three years after these two had left To work at the newspaper, I've stuck around.
+
+00:05:00 Probably one of the few people left that stuck around that worked at the journal world.
+
+00:05:03 Me and Frank Wiles, who's over here someplace.
+
+00:05:06 I'm on the Django Software Foundation Board of Directors.
+
+00:05:08 I've helped with DjangoCon US for, I think, 11 years now.
+
+00:05:11 And do a newsletter with Will and a bunch of random Django projects.
+
+00:05:15 So that's me.
+
+00:05:15 Jeff, were you there for the whole of Media for Media?
+
+00:05:18 The commercial arm of the newspaper doing Django stuff?
+
+00:05:22 About three years of it.
+
+00:05:23 It just had moved across the street to the Little Red building they called Little Red.
+
+00:05:27 And so I think I moved when I moved here was within probably like a month or two of that starting in the building.
+
+00:05:33 Awesome. I'd love to I'd love to hear little stories from that era of Django.
+
+00:05:37 I missed that entirely.
+
+00:05:38 I'm on the board with Jeff. I'm the president of the foundation, Django Software Foundation for 2025.
+
+00:05:44 And I've been involved with Django for only 10 years, only 10 years.
+
+00:05:49 So much less than everyone is here.
+
+00:05:51 Yeah. Outside that, I'm a dev.
+
+00:05:53 I'm on the core team for an open source project called Wagtail, which is a CMS as well built on Django.
+
+00:05:59 Yeah, welcome.
+
+00:06:00 And Wagtail is a really cool project.
+
+00:06:03 I think people who are looking to take the CMS idea and level it up even more.
+
+00:06:08 And you know, I've got a little bit of Wagtail related career history.
+
+00:06:13 Wagtail came out of a company called Torchbox.
+
+00:06:15 I worked for Torchbox for about six months to a year quite early on, working on one of the first Django projects that Torchbox worked on.
+
+00:06:23 And it was a carbon calculator that we were building.
+
+00:06:26 I have nothing to do with Wagtail at all.
+
+00:06:27 That was probably 10 years after I left Torchbox.
+
+00:06:29 But I know the Torchbox team really well.
+
+00:06:31 We should also, I mean, Jeff, amongst other things, you run Django packages.org right now.
+
+00:06:36 And I think Wagtail is number one or two with Django REST framework for most downloaded.
+
+00:06:40 It's something like that.
+
+00:06:41 It's one of the top three.
+
+00:06:42 I feel confident saying that.
+
+00:06:44 Maybe you don't.
+
+00:06:44 I do.
+
+00:06:46 Yeah, it's downloaded a lot.
+
+00:06:47 I don't know if it's top 25.
+
+00:06:49 Tebow with it.
+
+00:06:50 I think it's in the top 100.
+
+00:06:50 We did a post, right?
+
+00:06:51 So, you know, you're close.
+
+00:06:52 Okay, Tebow.
+
+00:06:53 Amongst 20,000 or so plus.
+
+00:06:56 But, yeah.
+
+00:06:57 Yeah, yeah, of Django ones.
+
+00:06:58 Wait, of Django ones?
+
+00:07:00 Oh.
+
+00:07:00 What is that?
+
+00:07:01 There's like 4,000 now, Jeff?
+
+00:07:02 Something like that?
+
+00:07:03 I think there's probably like 16,000, 20,000.
+
+00:07:06 But I think we're tracking like the top 4,000 or 5,000.
+
+00:07:09 It's what people...
+
+00:07:11 I never wanted to add code.
+
+00:07:12 They just pulled everything in just to have a lot of numbers.
+
+00:07:14 So, it's still like user submitted and ran.
+
+00:07:18 Oh, it is the most important thing.
+
+00:07:19 But Tebow, GitHub stars.
+
+00:07:20 That's the most important thing.
+
+00:07:21 How many is it for Wagtail?
+
+00:07:22 But yeah, I think we just like almost at 20,000.
+
+00:07:25 I'm pretty sure if you're on here listening to this show, stars right now will be at 20,000 in like a week.
+
+00:07:30 Yeah, it's really high in downloads as well.
+
+00:07:32 But you know, the Django ecosystem is really big these days and CMS only definitely in a smaller portion of it.
+
+00:07:37 Oh, there you go.
+
+00:07:38 Very, very, very popular.
+
+00:07:40 That's amazing.
+
+00:07:41 So let's start at the beginning, folks.
+
+00:07:43 I have on the screen here a picture of the University of Kansas where I also have a connection to.
+
+00:07:50 I actually went here and got my undergraduate degree in math at this school.
+
+00:07:54 And I love my time in Lawrence.
+
+00:07:56 I think it's a lovely town, but it's also the home of Lawrence Journal World, right?
+
+00:08:02 Tell us who wants to start the story.
+
+00:08:05 Like what's the origin story here?
+
+00:08:07 Probably it makes sense for me to start it.
+
+00:08:09 Yeah, I think so.
+
+00:08:10 Let's do it.
+
+00:08:11 Back in 2002 slash 2003, early 2003, I joined that newspaper as a web developer.
+
+00:08:18 There was the guy who ran it was this guy called Rob Curley, who was seen as this big tech innovator in the news industry.
+
+00:08:25 And he was sort of recruited me and put together a great team of awesome, awesome web developers, believe it or not, in this tiny little newspaper in the middle of Kansas.
+
+00:08:35 We were tasked with building interactive database driven apps for the newspaper, which at that time was unheard of.
+
+00:08:43 Even these days, it's kind of weird for a newspaper to have developers on its staff.
+
+00:08:48 And at the time I was using PHP and yeah, fast forward, maybe a year into the job, we had an opening to hire another developer and I posted a job entry on my blog and Simon read it all the way in the UK.
+
+00:09:04 And we followed each other's blogs back when that was like the social media of the day.
+
+00:09:08 To be fair.
+
+00:09:09 Much more interesting than social media of today.
+
+00:09:11 At the time, I felt like there were about 100 people blogging about web development.
+
+00:09:16 And we were two of those.
+
+00:09:17 Yeah, and we all followed everyone.
+
+00:09:20 Did you guys have a blog role?
+
+00:09:22 Oh, yeah, absolutely.
+
+00:09:25 I think we were both massive fans of Mark Pilgrim.
+
+00:09:27 Mark Pilgrim was the web development of Python blogger that we were paying attention to.
+
+00:09:33 Unfortunately, he's not around anyway.
+
+00:09:34 I mean, he's alive, but he stopped blogging many, many years ago.
+
+00:09:38 Yeah, he wrote an online book called Dive into Python.
+
+00:09:41 And we both read that and we're like, oh, what's this Python thing?
+
+00:09:44 And thanks to the kindness or possibly ignorance of our boss, we just started using Python one day.
+
+00:09:52 We didn't really have to get much buy-in or anything.
+
+00:09:54 And we'd started making little bits and pieces in Python, never really with the intent of making a framework.
+
+00:10:00 But over time, at some point, we just decided, okay, we're switching to Python.
+
+00:10:06 No more PHP.
+
+00:10:07 just going to do everything in this new thing. And I remember the key thing for us is how do
+
+00:10:12 you deploy Python? Well, there was modpython, the Apache module, and we were just a little bit nervous about it because not many other people were using it. And so we're thinking, okay, well, we can try modpython, but what if it doesn't work? So, okay, well, if we have an abstraction layer between our code and modpython, like a request and a response object, then if modpython doesn't work out, we can swap it out for something else. We didn't, modpython worked great, But that abstraction layer, I think that was the origins of Django, that tiny little layer between R code and mod python, just in case. Classic thing you shouldn't do in programming, right? You're not going to need it. You don't need the abstraction layer, but we built one anyway. And fast forward 20 years and maybe that was a good idea after all.
+
+00:10:51 Is mod python still around? It's got to be, right?
+
+00:10:54 I don't know. I mean, modwhiskey, it was replaced by modwhiskey many years ago.
+
+00:10:59 But yeah, I don't know actually. I've not checked in on the ModPython project in a while.
+
+00:11:04 It's been last commit eight months ago to ModPython on GitHub.
+
+00:11:08 Oh, very smart.
+
+00:11:08 Yeah, yeah.
+
+00:11:09 That sounds alive.
+
+00:11:10 Yeah, yeah, it's definitely alive.
+
+00:11:12 And now we have WSGI and ASGI and that's sort of carrying on the same theme in a way.
+
+00:11:18 You know, WSGI kind of came out of the work we were doing in that we were working on Django, at the Journal World. The mailing list popped up, the Python web-sig mailing list. This mailing list popped up. We were very active on that initially, trying to pitch our request and response objects.
+
+00:11:38 We did not win with our response request objects, and Whiskey came out of that instead. But yeah, that was definitely... Whiskey came out of that early era of what we were trying to achieve with with the stuff we were doing.
+
+00:11:49 So we built up this series of libraries slash tools slash, I guess it turned into a framework.
+
+00:11:56 And we started thinking, oh, this is kind of interesting.
+
+00:11:59 Personally, speaking for myself, I was like, oh, I'm probably not going to work here forever, but I would love to keep using this.
+
+00:12:04 So that sort of started planting the seed about open sourcing it.
+
+00:12:07 But I think very few people today know that even 20 years ago, there was this meme that there are way too many Python web frameworks.
+
+00:12:15 So we went to PyCon US and it had to have been 2004.
+
+00:12:21 And there was a keynote where the speaker said, she showed a slide that was like a tag cloud of all the Python web framework names.
+
+00:12:29 And there were like 50 of them.
+
+00:12:31 So Simon and I were sitting there like, oh shoot, we made yet another one.
+
+00:12:36 We're fools.
+
+00:12:37 We're so stupid.
+
+00:12:38 We're embarrassed.
+
+00:12:39 But I ended up doing a lightning talk at that PyCon and showed what we had.
+
+00:12:44 It didn't have a name yet.
+
+00:12:46 And, you know, people came up to me afterward and said, oh, please open source.
+
+00:12:50 We're very interested in this.
+
+00:12:51 It looks very promising open source, even though it's yet another Python web framework.
+
+00:12:55 So I guess extrapolating a lesson from that, it's never too late to make stuff.
+
+00:13:01 I think another fact there is that Ruby on Rails had come out maybe six months before that PyCon.
+
+00:13:05 Like Ruby on Rails was the absolute buzz of everything in the web development industry at the time.
+
+00:13:11 And there was an open question like, what's Python's answer to Ruby on Rails?
+
+00:13:15 And so it's possible that the Django timing was really good on that front.
+
+00:13:19 I believe that Rails helped influence the newspaper to open source Django.
+
+00:13:23 Was that part of the conversation then?
+
+00:13:25 Well, I remember making a list of 10 to 20 reasons why we should open source it and really thinking hard about it, probably lost some sleep about it.
+
+00:13:35 And we went into the meeting with Rob to make our pitch.
+
+00:13:39 And we only got to like five reasons.
+
+00:13:42 And finally he was like, yeah, let's do it.
+
+00:13:44 So, I mean, endless, infinite credit to him for being cool.
+
+00:13:48 And I mean, the company took advantage of open source a lot.
+
+00:13:52 And I think the higher ups knew it because it also owned a cable company that did a lot of stuff with Linux and all sorts of crazy cable company software that was open source.
+
+00:14:02 Which was made Frank, right?
+
+00:14:03 That was Frank Wiles at the cable company driving all of that stuff.
+
+00:14:07 Yeah, you know, I think it's worth pointing out as well. One, Adrian, you're making me nostalgic just to think about tag clouds. Okay. They were such a thing back in the early 2000s. It's a usability nightmare. I know. Any kind of data or information out of that thing.
+
+00:14:24 It really is.
+
+00:14:25 I think I use, oh my God, Delicious a lot, and you'll get tag clouds out of it and all sorts of stuff.
+
+00:14:31 But that's not why I'm bringing this up.
+
+00:14:33 More in that timeframe, open sourcing something was not the clear choice it is today.
+
+00:14:39 At least it was really more of a push, I think.
+
+00:14:43 Legal liabilities, giving away our IP.
+
+00:14:45 Like it was a different time.
+
+00:14:46 There was open source, but not like today.
+
+00:14:50 This portion of Talk Python To Me is brought to you by Centuries Seer.
+
+00:14:54 I'm excited to share a new tool from Sentry, Seer.
+
+00:14:58 Seer is your AI-driven pair programmer that finds, diagnoses, and fixes code issues in your Python app faster than ever.
+
+00:15:05 If you're already using Sentry, you are already using Sentry, right?
+
+00:15:10 Then using Seer is as simple as enabling a feature on your already existing project.
+
+00:15:15 Seer taps into all the rich context Sentry has about an error.
+
+00:15:19 Stack traces, logs, commit history, performance data, essentially everything.
+
+00:15:23 Then it employs its agentic AI code capabilities to figure out what is wrong.
+
+00:15:28 It's like having a senior developer pair programming with you on bug fixes.
+
+00:15:32 Sear then proposes a solution, generating a patch for your code and even opening a GitHub pull request.
+
+00:15:38 This leaves the developers in charge because it's up to them to actually approve the PR.
+
+00:15:43 But it can reduce the time from error detection to fix dramatically.
+
+00:15:48 Developers who've tried it found it can fix errors in one shot that would have taken them hours to debug.
+
+00:15:54 SEER boasts a 94.5% accuracy in identifying root causes.
+
+00:15:59 SEER also prioritizes actionable issues with an actionability score, so you know what to fix first.
+
+00:16:06 This transforms sentry errors into actionable fixes, turning a pile of error reports into an ordered to-do list.
+
+00:16:14 If you could use an always-on-call AI agent to help track down errors and propose fixes before you even have time to read the notification, check out Sentry's Seer.
+
+00:16:24 Just visit talkpython.fm/seer, S-E-E-R.
+
+00:16:28 The link is in your podcast player's show notes.
+
+00:16:31 Be sure to use our code, TALKPYTHON.
+
+00:16:33 One word, all caps.
+
+00:16:35 Thank you to Sentry for supporting Talk Pythonemy.
+
+00:16:38 Well, also, the publisher of the newspaper at the time still used a mechanical typewriter to write up his things.
+
+00:16:45 He was legendary for it.
+
+00:16:47 But my understanding is that he got into it.
+
+00:16:49 The argument that was convincing to the newspaper was, "We benefit from this community.
+
+00:16:54 We should give back to this community." That evidently was part of the pitch.
+
+00:17:00 It just took off.
+
+00:17:03 I feel like that newspaper did very well from that one decision that they made back then.
+
+00:17:07 Yeah, I mean, here we are this many years later talking about it on a podcast, right? Like already, a lot of people know about it. And a lot of people, all of you on the call, but many, many, many others have contributed back to Django to make so much better. If that was just an internal CMS that you guys left there, how many external contributors would you have? Right? Not that many.
+
+00:17:27 Well, one thing, actually, I'm curious while the two of you are here, I heard a story that there were some efforts to monetize it that didn't pan out.
+
+00:17:34 Jeff, maybe you were there for that.
+
+00:17:36 Is that true?
+
+00:17:37 Were there some efforts to package it up and sell it to newspapers in some capacity as a premium product, I think?
+
+00:17:43 Am I making that up?
+
+00:17:44 That was after my time, I think.
+
+00:17:46 Are you talking about?
+
+00:17:47 Maybe Frank mentioned that.
+
+00:17:48 I thought there was something around.
+
+00:17:50 Yeah, this was Ellington.
+
+00:17:51 I think we should.
+
+00:17:52 Oh, I guess.
+
+00:17:53 Yeah.
+
+00:17:53 Sorry.
+
+00:17:53 to Jeff who um yeah this is kind of my era I guess then was um and I still feel like I'm new to Django because I felt like and I've been around for 18 years but like I just I saw these guys code so much and then I came into that era so to me it felt like next gen Star Trek versus now the originals um and so yeah when I started we had hundreds of newspapers were buying Ellington which was basically like what was it the first or second Django app ever written and they basically created a CMS to run your newspaper and then they also had something called marketplace which was almost like an online Craigslist or business directory.
+
+00:18:26 And so I came in to kind of help manage some of the inventory and do a lot of data imports and stuff for newspapers.
+
+00:18:32 Like we had all of Massachusetts at one point.
+
+00:18:35 There was a lot of kind of that, they went that direction with it.
+
+00:18:38 And I left before that kind of had shuttered and I think they sold it to a big company to buy it.
+
+00:18:43 And I think Ellington still runs to this day.
+
+00:18:46 At DjangoCon every two or three years, somebody will approach and say, we want to open source Ellington.
+
+00:18:50 Would you like to, could we do this at DjangoCon?
+
+00:18:53 We always say, "Yeah, that'd be really cool." Then six years has gone by and it happens every so often.
+
+00:18:58 I hope that code gets to see the light of day because it was hundreds of apps by the time we worked on it for hundreds of newspapers.
+
+00:19:05 I feel like the product was fantastic and the market was great, but it's a terrible market to be selling into.
+
+00:19:11 In the late 2000s, early 2010s, if you're selling to local newspapers, which are blinking out of existence at a rate of knots.
+
+00:19:21 My hunch is that the marketplace challenges were down to that.
+
+00:19:25 It was selling into a shrinking industry, which is a difficult thing to do.
+
+00:19:29 Yeah, I think they were hitting a brick wall for sure.
+
+00:19:31 You mentioned Rails earlier and PHP.
+
+00:19:34 And two things come to mind.
+
+00:19:35 I have an embarrassing email I sent to Simon at one point because I followed your PHP blog.
+
+00:19:40 And also Matt Croydon, who later became my boss at Media for Media.
+
+00:19:43 And I did not.
+
+00:19:44 I saw a couple of things.
+
+00:19:45 I think you were so into Django, you weren't really posting about Django.
+
+00:19:48 And so I think I emailed you once to say, have you seen this thing called Django?
+
+00:19:52 It looks pretty cool.
+
+00:19:53 Now that you're doing Python, I think you may like it.
+
+00:19:55 And so if you ever check your Gmail, it may be there.
+
+00:19:58 We don't have to do anything live on the air.
+
+00:20:00 But yeah, I to this day think, oh man, that was kind of wild.
+
+00:20:04 What brought me to Django though was I did get the Rails book because they very quickly created a Ruby on Rails book.
+
+00:20:10 It was kind of the main way to learn how to use it because their website kind of sucked as far as documentation went.
+
+00:20:14 And as I was going through it, so much was boilerplate just to get anything running in Rails.
+
+00:20:20 And so the Django admin was just so beautifully designed and well done that to me, it was just this win of like, this looks better than anything I could do by hand.
+
+00:20:28 And it's largely stood the test of time for 20 years.
+
+00:20:31 I remember like Wilson Miner I had met a couple of times had done some of that work or most of that work.
+
+00:20:36 He did all of that design work and he designed the original Django website.
+
+00:20:40 And I think that's one of the main reasons that we got a lot of traction was because the design of the site and the documentation were so good, especially considering the context.
+
+00:20:50 I mean, that back in those times, it was par for the course for an open source project to have to be completely on style, like a normal, like browser default H1 Craigslist background.
+
+00:21:02 This design isn't the one that Wilson did.
+
+00:21:04 The one that's archived that or get to go back.
+
+00:21:07 But it was pretty timeless at the time, though.
+
+00:21:09 It was amazing.
+
+00:21:10 And I feel like the admin has evolved a lot, but it still has that sort of...
+
+00:21:15 It feels like the Wilson minor design today, even 20 years later.
+
+00:21:19 Wilson was there the same time I was at the Journal World, and he then went on to early Facebook.
+
+00:21:25 He was, he's bounced around Silicon Valley.
+
+00:21:27 Yeah.
+
+00:21:28 Redesigned Apple.com, I think too.
+
+00:21:30 He worked with me at EveryBlock for a few years.
+
+00:21:33 He's now working on Apple Music.
+
+00:21:35 I didn't know that.
+
+00:21:35 Excellent.
+
+00:21:37 As of last time we talked to him, which was recent-ish.
+
+00:21:40 Yeah, that's quite neat.
+
+00:21:41 Trying to pull it up here in the Wayback Machine.
+
+00:21:43 We'll see what I can get.
+
+00:21:44 I think the other thing I...
+
+00:21:46 How about this, guys?
+
+00:21:46 Is this the OG?
+
+00:21:47 There we go.
+
+00:21:48 Yep, yep.
+
+00:21:50 That's the one.
+
+00:21:51 And that, to be fair, that looks good by today's standard.
+
+00:21:54 You know, I feel like I would not be at all upset to publish a website look like that in 2025.
+
+00:22:00 Yeah, that is pretty timeless.
+
+00:22:01 That's cool.
+
+00:22:02 Wait, I see the...
+
+00:22:03 Oh, go ahead, Simon.
+
+00:22:04 Oh, it's good. The other thing that's worth mentioning with Django, Django's documentation has always been fantastic. And I think that's basically because it was Jacob Kaplan Moss had a, he was a literature major and you have Adrian, who's a journalism major. And it turns out if you put a journalist and somebody who like put that talent on your documentation, you get really
+
+00:22:23 good documentation. There was, that was a double-edged sword because it took a few years for any publisher to be interested in publishing a book about Django because the standard line was always, oh, the docs are good enough.
+
+00:22:35 Everyone just, there's no market for it.
+
+00:22:38 Well, but at the same time, I wanted to ask, I mean, because there was the link there to the Django book, which I have the URL now and Jeff and I run, it lists all the Django books.
+
+00:22:47 But I mean, the two of you wrote that.
+
+00:22:49 I thought that was a great book.
+
+00:22:50 I think you, it was in print, right?
+
+00:22:52 But it was mainly open source, Adrian?
+
+00:22:54 Yeah, it was both.
+
+00:22:55 It was free online and it was published by A-Press.
+
+00:22:58 There were a couple of editions, yeah.
+
+00:23:00 The interesting question for Paul Everett out there in the audience is, In the first years, did your team also have to admin the newspaper site?
+
+00:23:07 Like, did you DevOps before DevOps was a thing?
+
+00:23:10 Or how did you run it?
+
+00:23:11 The cloud stuff wasn't that big back then.
+
+00:23:13 No, we had our own physical servers.
+
+00:23:15 In the basement.
+
+00:23:16 In the basement.
+
+00:23:17 The team was in the basement.
+
+00:23:18 You could probably hear them.
+
+00:23:19 Your programmers.
+
+00:23:20 And yeah, there was a room in the basement with physical servers.
+
+00:23:24 And oh, I've forgotten their names now.
+
+00:23:25 I think Frank helped.
+
+00:23:27 Well, they were named after characters in Beatles songs.
+
+00:23:30 One was Mr. Mustard.
+
+00:23:31 One was Pam from Polytheon Pam.
+
+00:23:33 Yes. Yep. But yeah, and Frank and Nick from Sunflat Cable helped us wire those up. But yeah, it was a fit. There was an Apple server in there as well. That was the media server,
+
+00:23:46 I think. It was doing like imagery sizing. Yeah, it was like a 2U box or something. I forget. It was actually like a physical server that now, because I'd never seen one before in person.
+
+00:23:55 XServe. It was an XServe. Yeah. Also, I remember that room had a wire that was the AP News wire, Like I didn't realize there was a physical wire that the news came in on from the Associated Press.
+
+00:24:07 And when you hear it came in over the wire, that was the wire?
+
+00:24:10 That was the wire.
+
+00:24:11 We had the actual wire in our basement.
+
+00:24:13 Yeah.
+
+00:24:14 Incredible.
+
+00:24:15 Well, Simon and I were lucky because we didn't really have any sysadmin experience, but there were some really experienced guys, Frank and Nick, who worked at the company and actually did some training with us.
+
+00:24:29 I remember going into their dark room.
+
+00:24:32 All the lights were like turned off.
+
+00:24:34 You could only see like these Unix shells.
+
+00:24:36 I was like, whoa, I'm really learning the good stuff.
+
+00:24:38 And this is the same Frank.
+
+00:24:40 This is Frank Wiles, who he's been president of the Django Software Foundation in the past.
+
+00:24:43 And he's still very heavily involved with Django to this day.
+
+00:24:46 Yeah.
+
+00:24:47 All right.
+
+00:24:47 Let's talk about 2008.
+
+00:24:48 A lot of stuff happened around 2008.
+
+00:24:50 That was the timeframe a little bit before then Django's open source.
+
+00:24:55 But maybe you'll have to tell me, maybe a little bit inspired by Ruby on Rails.
+
+00:25:00 There's a lot of, in Ruby on Rails, a lot of convention over configuration, a lot of magic.
+
+00:25:05 And Django used to have a little more implicit magic.
+
+00:25:09 And there was the, when Django went to, around when it went to 1.0, there was the magic removal.
+
+00:25:14 And it was the first DjangoCon, all those things.
+
+00:25:17 Tell us about that, whoever wants to take it.
+
+00:25:18 I can talk to DjangoCon a little bit, the very first DjangoCon.
+
+00:25:22 I was working for a radio station in London that was doing a big Django project.
+
+00:25:30 One of my co-workers there was this chap, Rob Lofthouse, who very foolishly stepped up and said, "Well, okay.
+
+00:25:36 Everyone says there should be a conference and no one's arranging a conference.
+
+00:25:38 I'll arrange a conference.
+
+00:25:39 How hard can it be?" The answer is everyone in the school understands it's very, very, very hard.
+
+00:25:44 He managed to pull it off.
+
+00:25:46 The big thing there was that Google offered to host it.
+
+00:25:49 We got the venue and the catering and everything was in Google's campus in Mountain View.
+
+00:25:53 Was 2008, was that the year of the first DjangoCon?
+
+00:25:56 I think it was, right?
+
+00:25:57 I think it was.
+
+00:25:58 And yeah, we pulled together a conference.
+
+00:26:03 The videos from that conference were all available on YouTube, actually.
+
+00:26:06 I rewatched one of the panels quite recently, just out of interest.
+
+00:26:11 It was really fascinating seeing there are people on those panels, like Russell Keith mcgee was on the database migrations panel and he was just like one of the people who was trying to solve database migrations back then and of course he's been an enormous fixture in the python and django community ever since um but yeah that was that was really fun that was uh like how many of
+
+00:26:30 us were that jeff were you at the first django conference i was i was barely working at the journal world like maybe six months or a year or something so yeah i just just kind of experienced at all as a nobody. So it was great. And I think my biggest contribution to that conference was,
+
+00:26:47 so I was working on a migration system called demigrations and Andrew Godwin was working on, I think he was calling it South back then. the, like his migration and we had Russell Keith and I got, I managed to, I made the pitch for Andrew, who was just a student at university at time to be flown to California to present at this conference. I think it may have been his first ever conference talk. And he has been to and spoken at every Django and Python conference since.
+
+00:27:13 So I like to think I helped just provide that little spark to get his speaking career started.
+
+00:27:20 But yeah, it was a very, very notable moment, that first DjangoCon.
+
+00:27:24 I had a mind-blowing moment there. A guy from, I think it was Japan, came up to me. He didn't speak a word of English and he gave me his book that he had written about Django whoa and and he just like bowed and and went away and that's I still think about that and it still kind of brings a tear to me it's like what it's it's mind-blowing that people all around the world that you've never met who speak languages you don't speak use your code like it I still it's been 20 years I still can't even like 100% come to terms with it it's really cool yeah I thought
+
+00:28:00 you're gonna go a different direction and you're gonna say when Cal Henderson put that sign up of the unicorn like that was going to forever be the moment but i don't know if you want to expand well
+
+00:28:10 that's the downside of that first jango con there was a q a with me and jacob and i think it was me i said are there any pony requests and that was intended to mean are there any feature ideas sort of open suggestions and evidently that was the um the impetus for the idea of the jango pony which I despise.
+
+00:28:34 I think it's so dumb and I think that's directly related to me retiring from the project, frankly.
+
+00:28:38 Oh no!
+
+00:28:39 I know it's funny in a way but it's also infuriating to me.
+
+00:28:43 I think it's so stupid and unprofessional and the type of humor is just dumb.
+
+00:28:48 No wit at all.
+
+00:28:49 I'll stop my rant.
+
+00:28:50 That'll be on my own.
+
+00:28:51 Whenever I start my own podcast I'm going to have the first episode on why the Django pony sucks.
+
+00:28:56 Wait, what should it be though?
+
+00:28:57 What would you like it to be?
+
+00:28:58 Do you have thoughts?
+
+00:28:59 I think you underestimated.
+
+00:29:02 I would have guessed it would have went like a it should at least be playing a guitar people love
+
+00:29:07 celebrating this for that event and occasion qualified people Timo I have one of your stickers on my fridge
+
+00:29:15 that's one of the things I did for the 20th birthday I designed a new pony
+
+00:29:20 to distribute to people around the world you might have seen one at the Amsterdam event people really like the mascots
+
+00:29:27 a bag of the stickers was passed to me and I passed it along.
+
+00:29:31 To the trash can. No, just kidding.
+
+00:29:35 This portion of Talk Python To Me is brought to you by Sentry's AI agent monitoring.
+
+00:29:39 Are you building AI capabilities into your Python applications?
+
+00:29:43 Whether you're using open AI, local LLMs, or something else, visibility into your AI agent's behavior, performance, and cost is critical.
+
+00:29:52 You will definitely want to give Sentry's brand new AI agent monitoring a look.
+
+00:29:58 AI agent monitoring gives you transparent observability into every step of your AI features so you can debug, optimize, and control the cost with confidence.
+
+00:30:08 You'll get full observability into every step of your AI agents.
+
+00:30:12 That is model calls, prompts, external tool usage, and custom logic steps.
+
+00:30:17 AI agent monitoring captures every step of an AI agent's workflow from the user's input to the final response.
+
+00:30:24 And your app will have a dedicated AI agent's dashboard showing traces and timelines for each agent run.
+
+00:30:32 You'll get alerts on model errors, latency spikes, token usage surges, and API failures protecting both performance and cost.
+
+00:30:41 It's plug-and-play Python SDK integration.
+
+00:30:43 Open AI for now for Django, Flask, and FastAPI apps with more AI platforms coming soon.
+
+00:30:50 In summary, AI agent monitoring turns the often black box behavior of AI in your app into transparent, debuggable processes.
+
+00:30:59 If you're adding AI capabilities to your Python app, give Sentry's AI agent monitoring the look.
+
+00:31:05 Just visit talkpython.fm/sentryagents to get started and be sure to use our code TALKPYTHON, one word, all caps.
+
+00:31:14 The link is in your podcast player's show notes.
+
+00:31:16 Thank you to Sentry for supporting Talk Python and me.
+
+00:31:20 another notable thing that happened in 2008 other than the housing crisis crash that wrecked a bunch of things was the foundation right the jingo software foundation and i think more broadly i think one of the things that makes you know i talked to a lot of different people about different web frameworks and the thing that really makes jingo stick and stand out i think is one the admin thing but the other is the community around jingo and we're talking about the jingo conference the foundation it's just unlike other things there's there's a whole community that you get into when you go into django not just some apis you use you know what i mean so uh who wants to take the
+
+00:32:00 tell us about how the foundation got started so that was i was there uh so the there was the question of who owns the code um it was i think technically owned by the lawrence journal world correct me if I'm wrong. And so that wasn't going to last forever. So we needed to find for legal, you know, ownership reasons, an entity to own it. We didn't want to go the route of Ruby on Rails, copyright David Hennemeyer Hanson. I think that's just really cringe. So it's good to have an organization as part of it. So yeah, we set up 501c3 if that's the right one that we use. I forget.
+
+00:32:36 And yeah, that's basically the origin story. From my perspective, I'm sure there's a lot more
+
+00:32:41 subtlety to it oh gosh do you want to weigh in yeah i was only barely started that time so
+
+00:32:47 like i definitely relate to you know the community around django you were all telling why you got involved and when and how and for me it was it was whacked as a day job but then what got me to stick around is actually django girls and organizing some of those local workshops and you know having organizations like this like alongside the django project not even the main thing is definitely only possible because we've had such a like long running open source foundation. There's lots of aspects of the foundation we could discuss, but definitely, you know, that kind of longevity
+
+00:33:16 for community run open source is rare and to be cherished. Yeah. Maybe you could tell us a little bit like what was it when it started and what is it now? Like how has it changed over the time, over the years? I'm going to put in a plug for the Django Fellows program. I feel like the Django
+
+00:33:33 Fellows program has been an absolutely astonishingly effective part of the mission of the foundation.
+
+00:33:38 For people who aren't familiar with that, the Django Software Foundation employs fellows who are paid contributors who work on the bits of open source maintenance that aren't necessarily so glamorous. They do bug issue, they do code review and handle security incidents and bug triage and all of these different things. And thanks to them, Django has a release schedule that operates like clockwork. Like Django, there's a new release that comes out when they said it was going to come out.
+
+00:34:06 Code gets reviewed, bugs get trashed. It's a wonderful, wonderful thing. It's unique because most open source projects that are run like that have a company behind them. There are people who have a full-time job and there's a company that's commercially supporting that. Django does not have a commercial sponsor in that respect. It has this nonprofit that people fund and that employs these these fellows and the fellows keep everything ticking long. I keep on saying to other open source projects, if you can figure out a pattern to use that's similar to the Django fellows, that's absolutely worth doing. The Python Software Foundation has a developer in residence program now, or several developers in residence, which were inspired by the Django fellows program.
+
+00:34:45 I think it's been really influential. And it's notable because there are very few major open source projects that don't have a company behind them. The other one that comes up a lot is Postgres, Postgres is very much a community-organized program.
+
+00:34:59 If you look at the way Postgres works, a lot of the key maintainers have their own consultancies.
+
+00:35:04 So they've got a good way of financially sustaining the work that they're doing.
+
+00:35:09 I think the Django Fellows Program, which was introduced...
+
+00:35:13 When was that?
+
+00:35:13 That was at least 10 years ago the Fellows Program started.
+
+00:35:16 I think it's been an enormous success.
+
+00:35:18 Yeah, absolutely.
+
+00:35:19 Another thing that I think is really interesting, it's a little bit newer, but is the Django Knots program, right?
+
+00:35:27 And Django Girls as well, shout out to them.
+
+00:35:30 You know, so many people I've talked to are like, I got into Python because I wanted to do Django, which for you all is probably a little bit mind-blowing as well.
+
+00:35:37 Like, they didn't use Django because they were Python, but the other way around.
+
+00:35:40 The first time I met somebody who said, oh yeah, I got into Python because of Django.
+
+00:35:43 And I was absolutely bowled away.
+
+00:35:45 I always assumed you'd have to be a proficient Python programmer before you could start picking up something like Django.
+
+00:35:50 It turns out it was the other way around.
+
+00:35:51 People would get in from, Because partly because the Django documentation was so good.
+
+00:35:56 But yeah, that's so many people got their start in the Python community as web developers who dabbled with Django and then got into Python from there.
+
+00:36:02 Yeah.
+
+00:36:03 Kenneth, love it on the audience because I learned Python through Django.
+
+00:36:06 Very cool.
+
+00:36:06 When I chaired DjangoCon US, I'd always ask the audience.
+
+00:36:09 For one, like I was always a nervous speaker.
+
+00:36:11 And so anytime you ask the audience to do something, it like takes my nerves away.
+
+00:36:14 But I'd always ask who learned Python by learning Django.
+
+00:36:18 And over half the room every year would always raise their hands up.
+
+00:36:20 So it was a heck of a gateway to learn Python.
+
+00:36:23 on. Also, we just hired our third fellow Jacob Walls last week, who I think starts this next Monday. So Django's up to three fellows now. And it's just been, the load is just incredible. So trying to keep up. I think our existing fellows have over a thousand tickets that they're trying to sort through. And if people are watching and want to help fund, contact Tebow and I,
+
+00:36:44 and we will definitely help you in the USF to support more fellows.
+
+00:36:47 We'll give you our annual reports, which details everything the foundation does,
+
+00:36:51 And more on the other side.
+
+00:36:53 Well, I just want to make one point on that because, I mean, T-Bone and Jeff, you know now, but the finances for a long time, like when I was treasurer in 2020 for three years, the total budget was under $200,000.
+
+00:37:04 And that was almost all fellows.
+
+00:37:07 So like the total budget for everything, including grants, legal stuff, hosting.
+
+00:37:11 I think now maybe it's $250,000, $300,000, but it's, you know, to your point, Simon, it's not funded by a corporation.
+
+00:37:17 It's tiny.
+
+00:37:19 And people don't realize that aside from the fellows, everything else is volunteers, right?
+
+00:37:22 Even the conferences.
+
+00:37:23 It's not, you know, PyCon, US, EuroPython have a lot of volunteers, but they also have paid employees.
+
+00:37:28 Like Django Cons are all volunteers.
+
+00:37:31 Yeah, they're all volunteer based.
+
+00:37:32 The PSF runs a staff of about, I used to be on the PSF board.
+
+00:37:35 Simon's on the board.
+
+00:37:36 I'm on the board.
+
+00:37:37 Yeah.
+
+00:37:38 Last time I saw, they probably have about, what, 2 million in salaries a year because of so many people.
+
+00:37:43 You've got like five or six developer in residence, at least probably what, like 12 to 13 people, maybe 14 people on staff.
+
+00:37:50 That's about right.
+
+00:37:50 Yeah.
+
+00:37:52 It's interesting how much the PSF is an accounting organization because it turns out accounting, especially if you're a nonprofit with like with a whole bunch of organizations who use the PSF as their fiscal sponsor to help them with their nonprofit accounting.
+
+00:38:06 There's a lot of there's a lot of accounting and logistical works that goes into an organization like the PSF.
+
+00:38:11 And PyCon US is run by the PSF as well, which is a 2,500 person conference these days.
+
+00:38:17 That gets very complicated.
+
+00:38:19 Yeah, so the DSF runs on shoestring size budget compared to the PSF.
+
+00:38:23 But Django is a pretty good amount of the community, though.
+
+00:38:25 So that's kind of one of the things we're doing is by getting that third fellow.
+
+00:38:29 And part of it, too, is we've ran, not to nerd out on expenses for a while, but the DSF for a long time has ran with over $200,000 in the bank.
+
+00:38:36 And to me, that's just not doing much with our money.
+
+00:38:38 So I know that we're also doing investments and stuff as well.
+
+00:38:42 But I think getting that third fellow was something that was just long overdue for the number of people that we have.
+
+00:38:46 If one fellow goes on vacation for a while and leave, it's just too much for one person to keep the foundation, keep security releases, releases going.
+
+00:38:55 So it was kind of long overdue, but I'm happy we're able to pull it off this year.
+
+00:38:58 Yeah, that's great.
+
+00:38:59 My favorite talk at JaggerCon last year was Jacob Kaplan Mosk gave a keynote about what the DSF would do with a million dollars.
+
+00:39:06 Like if the DSF could go up to a million dollars a year, what would they spend that money on?
+
+00:39:10 As also a pitch for why you should be sponsoring the DSF.
+
+00:39:13 I recommend people watch that if you want to get a feel for how that organization was shaped at least sort of 10 months ago.
+
+00:39:19 I think there's a huge impact that just having one or two people whose full-time job is to go into the corner, the dark corners of some open source project that's just not that interesting.
+
+00:39:30 Nobody really wants to go mess with, but just start hacking away on those and, you know, really putting the polish on stuff that is not as exciting as other pieces.
+
+00:39:39 And so there's not, you know, you said it's not that big relative to the PSF, but put the PSF aside, any other open source Python project, it's a really huge pool that you're working with relative to how many other projects even have fellows.
+
+00:39:56 Not many, if any.
+
+00:39:57 Yeah.
+
+00:39:57 Super, super cool.
+
+00:39:58 So let's talk about some of the more recent things.
+
+00:40:02 I know that at least personally, when the Instagram keynote came out a couple of years ago at PyCon, or maybe more than a couple, it was 2017, I think.
+
+00:40:11 But around that timeframe, just realizing how big some of the deployments of Django were, how much traffic people were serving through them.
+
+00:40:20 When it first came out, you probably didn't think on that scale.
+
+00:40:23 No, Instagram, Pinterest, NASA.
+
+00:40:26 Yeah, no, that was... The goal was to build newspaper websites, right? We wanted to be able to build... I loved Django's original tagline was "Web development on journalism deadlines". That's always been my favorite description of the project.
+
+00:40:41 Nice. Who else wants to chime in on this idea? Like this is just... It blew my mind. I'm like, wow.
+
+00:40:45 One thing I will say is a thread, Instagram's Twitter clone came out what last year or the year before. That's a Django app. I met one of the engineers of mine. It's just a classic Django app that Facebook launched just a few years ago.
+
+00:40:59 I believe technically they have their own fork. They didn't just download Django 4.0.
+
+00:41:04 I feel like at that scale, if you haven't got your own fork, I'd be very surprised.
+
+00:41:08 But yeah. For me, it runs on center. Sorry. I think I'm a brief I mean, one interesting thing.
+
+00:41:14 500 milliseconds behind all of you.
+
+00:41:16 For me, as far as scale, there's also the number of projects out there.
+
+00:41:20 I've been doing the counting to figure out our impacts.
+
+00:41:23 And I think we're at around the 500,000 live Django sites and apps out there from the numbers I could find.
+
+00:41:30 And also specific types of outreach.
+
+00:41:34 So governments, for example, seeing how many central governments of all the countries around the world basically use it.
+
+00:41:41 And when I say use it, it's not just like the one project.
+
+00:41:43 They have teams whose role is just to manage 10, 20, 50.
+
+00:41:47 I think right now, Brazil, of all countries, I don't have a connection there, had like 84 sites I could detect in a single environment using Django.
+
+00:41:54 Just imagine that times all the countries.
+
+00:41:57 Wow.
+
+00:41:58 You know, one of the things that's always fun for me to do is to go to the GitHub repo, right?
+
+00:42:02 And I've got Django with 85,000 stars and 32,000 forks.
+
+00:42:07 That's a really interesting number.
+
+00:42:08 That's way more forks to stars than an average project, by the way.
+
+00:42:13 But if you go down the side here, you can see they now track how many contributors and used by 1.997 million projects.
+
+00:42:23 That is a lot.
+
+00:42:25 Now, that's just on GitHub, right?
+
+00:42:26 That are public repositories that we can know about and stuff.
+
+00:42:29 And used by could be a student project, not a government entity.
+
+00:42:33 But still, that's pretty wild.
+
+00:42:35 Very impressive.
+
+00:42:35 Let's talk about some of the more recent transitions.
+
+00:42:39 I mean, I feel like the speed of major version releases is picking up.
+
+00:42:44 You know, we had the first three years, 2005 to 2008 for one.
+
+00:42:47 Then it was like one for a while, and then two, and then three, then four, then five.
+
+00:42:51 You guys are maybe working on six.
+
+00:42:52 I don't know.
+
+00:42:53 And also adopting some of the lot of changes coming in Python, right?
+
+00:42:57 Like async and await and that kind of stuff.
+
+00:43:00 How has that been?
+
+00:43:01 How did it start?
+
+00:43:01 In some ways, it's really tricky because people really love Django as it is.
+
+00:43:06 And from that standpoint, you have to make sure that such a big group of people agree on what exactly the future of Python means.
+
+00:43:15 So, you know, definitely mentioned AsyncAway. It's one of the big ones.
+
+00:43:18 API, is it in Django Core? Is it not?
+
+00:43:21 Mobile web, how much we get involved with that?
+
+00:43:23 These days, it's like the HTMLX that people really want to see Django support well.
+
+00:43:27 And I guess also AI to some extent. I don't know if we want to get there.
+
+00:43:31 But I guess for us, I think it's also, if it's not in core, we definitely have so many packages out there that we just try and curate a bit more these days, make sure they work well together.
+
+00:43:42 So that also helps a lot.
+
+00:43:43 Yeah.
+
+00:43:43 I think the package curation is really important.
+
+00:43:46 I would actually like to see Python in the standard library smaller and then recommend more stuff to keep the flexibility open so they could move faster, focus more.
+
+00:43:55 So what I find tricky about this one, Django has always been a batteries-included framework, And that's because in 2004, 2005, PyPI and PIPA didn't really exist.
+
+00:44:05 So if you weren't batteries included, then people had to, it was very high friction for people to glue together the pieces that they needed.
+
+00:44:12 And of course, today, I feel like Python packaging is incredibly good shape.
+
+00:44:16 Like you could ship a web framework today that was entirely dependent on other things.
+
+00:44:21 So then the value from the Django thing comes down more to everything being, that there's a Django promise that the stuff in Django core will continue to work. You're not going to have a situation where Python 3.15 comes out and Django templates stop working, but the ORM still works because everything is maintained in the one place by that single team. And I love that. I love that you just know that all of the pieces of Django are going to continue to work together. And the moment you add external packages, there's that little bit of risk. What if that external package that you're using becomes unmaintained in the future? So I'd quite like to see just a little of a sort of adoption of crucial packages under the Django software foundation, but not as part of Django itself. I want separate packages that maintain that promise to be maintained. Because we have fellows, which means that we can actually do that kind of work. But it's also a very big commitment to take on. It's an interesting pattern that I'd like to see explored a little bit more,
+
+00:45:21 I think. Yeah, it's easy to forget that it wasn't always there. Sorry, Will, go ahead.
+
+00:45:26 I was just going to ask Adrian and Simon. I mean, even today, batteries included web frameworks are not that common. It's still the trend, more micro frameworks. I'm curious what your take is on that. I mean, like FastAPI, right? That's a lightweight framework. It seems, I'm always shocked there aren't more batteries included frameworks in PICA language. Maybe it's too difficult to do, but micro frameworks seem more common. There's sort of only one batteries included option for programming language.
+
+00:45:52 I feel like the sales pitch, like you get to pick the best pieces for the components for your project, always sounds great.
+
+00:46:00 Obviously, you don't want one thing that dictates what you're going to use for all of the different things.
+
+00:46:03 You'd much rather pick and choose the things that are most valuable.
+
+00:46:06 But the trade-off that people don't talk about much is the fact that now every single one of those selections is getting you further away from that sort of community standards.
+
+00:46:14 There's more risk of future maintenance problems.
+
+00:46:17 There's more work that you have to do to wire things together.
+
+00:46:20 But I feel like the biggest innovation in the open source world in the past 15 years has been packaging.
+
+00:46:25 Like every programming language has a PyPI style packaging solution of some sort.
+
+00:46:31 You've got cargo and you've got the Ruby gems and all of those kinds of things.
+
+00:46:37 And that pattern mostly works really, really well.
+
+00:46:40 But I just keep on coming back to that feeling that with Django, I know it's all going to work.
+
+00:46:45 And I know it's going to work far into the future.
+
+00:46:47 And that feels really valuable to me.
+
+00:46:49 Good, Adrian.
+
+00:46:50 For my answer, I think I'd have to evaluate it on a case-by-case basis, but the way I would evaluate it is to look at the origin of the project.
+
+00:47:00 Was it extracted from something from the real world or was it built either as an academic or for fun exercise?
+
+00:47:07 What was the reason for its existence?
+
+00:47:10 And generally, I trust stuff that was extracted from real production sites more.
+
+00:47:15 That's just my own preference.
+
+00:47:17 It's also sort of to flip it around. I never really cared whether someone used Django or not. I would evaluate you on your product, not based on like the web framework you use. Who cares really what web framework you use? And I think that kind of ethos may be seeped into Django at some point unintentionally. I mean, I never intentionally sort of made that, had that philosophy communicated, but yeah.
+
+00:47:44 I always felt like one of the most interesting difference between Rails and Django is that Rails was extracted from Basecamp.
+
+00:47:49 They built Basecamp and they pulled the framework out of it.
+
+00:47:52 I feel like Django was kind of reverse extracted from Lawrence.com because we had Lawrence.com.
+
+00:47:57 It was PHP and MySQL.
+
+00:47:58 And the goal with Django was always to get it to a point where it was good enough that it could replace the PHP in Lawrence.com.
+
+00:48:04 So everything that we were building was always like, what would Lawrence.com need in this new thing for us to replace it?
+
+00:48:10 And the end result was a framework that you could build Lawrence.com in.
+
+00:48:13 Lawrence.com was the entertainment website for the newspaper.
+
+00:48:15 It's the best local entertainment website for any city that has ever existed.
+
+00:48:20 I will very confidently state that.
+
+00:48:22 I've never lived in a city with a website as good for figuring out what the things to do in a town are.
+
+00:48:29 And that was Adrian's biggest project, Lawrence Journal World, was always Lawrence.com and evolving Django up to the point where it could power that site.
+
+00:48:37 It's what got me here.
+
+00:48:38 Like I saw that site living 200 miles away and went to San Francisco and kind of looked at Y Combinator and was like, you know, this is only 200 miles.
+
+00:48:45 Like they've got something good going here and that site especially.
+
+00:48:48 I think to a Django's batteries, Django, I think 20 years ago, Django, there was a lot of things that you had to do the Django way.
+
+00:48:56 And I think there's been so much concerted effort, especially the first 12 to 14 years.
+
+00:49:01 It's so much as pluggable that like if you don't like the batteries, I don't know what you're missing.
+
+00:49:05 Like Django is still a really good core.
+
+00:49:07 Don't use the admin if you don't want it.
+
+00:49:09 I think most of the problems I see, the foundation and the community, I think there's like a lot of lore that comes with Django.
+
+00:49:16 And it's like lore of like, maybe it's harder to change certain things on the website than it really needs to be or is.
+
+00:49:22 And I think this last year, we've definitely pushed back on, like, if you do a search on the Django docs now and you look for REST, you wouldn't know that Django is a REST framework or has the ability to do that by looking at the docs.
+
+00:49:32 And so these were just technical challenges of like certain steering council members have written articles and stuff, blog posts saying like, you can do rest with Django.
+
+00:49:40 There's some good third party packages to do it.
+
+00:49:42 In the past, we've kind of been like apprehensive to want to recommend third party packages through docs.
+
+00:49:47 I think that's just one of those.
+
+00:49:49 It sounds weird when I say it out loud.
+
+00:49:50 At least it does to me.
+
+00:49:51 And I think once we have these discussions, then we start like realizing that, well, we have a website that everybody comes to.
+
+00:49:57 There's very specifically doc sections and there's blog, but there's no search that pulls stuff in together.
+
+00:50:03 And so the steering council and different members have been trying to make search work across everything.
+
+00:50:07 And then that way you can get hits from rest and you can get hits for third party packages that the steering council recommends just because they're good packages everybody should use.
+
+00:50:16 And so I think some of the lore and some of the, hey, these things have been done this certain way doesn't mean we want to keep doing them.
+
+00:50:21 It's just probably somebody had an afternoon or a night and they made search work a particular way.
+
+00:50:26 And that was really good for the docs.
+
+00:50:27 but like sometime look up REST and look at PHP.
+
+00:50:30 There's actually more hits for PHP on the Django website than there are REST
+
+00:50:33 unless you get into like Sphinx, you know, restructured text.
+
+00:50:37 So, but those are challenges that until we talk about and we realize, and I think like that's the advent of a FastAPI kind of taking off is I think like Django didn't have a great REST story by looking at the docs and looking at information.
+
+00:50:50 At PyCon US this year, I had dozens of people ask me, how do I use the Django ORM from FastAPI?
+
+00:50:54 And it's like, why?
+
+00:50:55 You don't have to.
+
+00:50:56 Django is async enough that you don't need to do that.
+
+00:50:59 That's hard.
+
+00:51:00 And that kind of sucks to do.
+
+00:51:01 So why?
+
+00:51:03 And those are things we're focusing and talking about internally too.
+
+00:51:06 Yeah.
+
+00:51:07 Talking about search and search across different things, somewhat directly to you, Jeff, but all of you, and maybe Simon as well, is like, what about just like chat.djangoproject.com and do some rag on it and let people have a conversation with Django?
+
+00:51:23 You know what?
+
+00:51:23 We don't even need it because Django is stable enough that every chatbot out there knows Django inside out already. One of the great benefits of having great documentation and lots of examples for 20 years that is stable is, yeah, you can, GPT-5 will spit out a full Django project and just
+
+00:51:40 get it all right. So yeah, I completely disagree. I think we need a big sponsor who can come in, whether it's Anthropic or OpenAI or somebody else. We need a big sponsor, a title sponsor, even in fact that can help give the money for this and donate the chat.
+
+00:51:55 Because even though you're right that it isn't ingrained, you still have that delay between because Django kicks out a new version or two a year.
+
+00:52:01 And so there's always that lag of nine months or a year.
+
+00:52:04 And most of it recommends the most popular version, not the latest version or something like that.
+
+00:52:08 Right.
+
+00:52:09 Exactly.
+
+00:52:09 Yeah.
+
+00:52:10 Because I see a lot of demos where they're actually building Django apps using these, these tools.
+
+00:52:14 And so we're selling AI by virtue of Django and Django's docs being so good.
+
+00:52:18 Or occasionally one of these things will say that Sound Slice has a feature that it doesn't have, and then Adrian has to build the feature.
+
+00:52:25 Oh, God.
+
+00:52:26 Oh, you guys, in the chat, it's coming on here.
+
+00:52:29 We have Frank Wasson, but our chatbot can have a cool personality.
+
+00:52:32 And Kenneth loves to insert a random name every once in a while or something, you know, pony style.
+
+00:52:40 Adrian, what is the story behind that?
+
+00:52:43 Oh, it has nothing to do with Django.
+
+00:52:46 So yeah, just the 30 second version is ChatGPT was telling people about my site, my company sounds like having a feature that doesn't actually exist.
+
+00:52:56 And it was happening like dozens of times per day.
+
+00:52:58 And so we had this inbound set of users who had a wrong expectation.
+
+00:53:03 So we ended up just writing the feature to appease the ChatGPT gods, which I think is the first time that at least to my knowledge of uh yeah product decisions being influenced by
+
+00:53:17 misinformation from llms i just love that it's easier to just build the feature than to get the
+
+00:53:22 misinformation corrected like there is no he's got to backfill it he's got to backfill it
+
+00:53:29 incredible all right um that's crazy i let's let's do two more quick topics like somewhat lightning round, we have about six minutes left for this show. So one, there's been, you guys mentioned it a couple of times, and it's also just kind of going back and forth in the audience here, that the whole REST idea. So we've got, you know, Tom Christie doing amazing work with Django REST framework. We've also, I think, you know, people who do talk about FastAPI and how do I use the ORM with it, like Django Ninja, which is really, really close to FastAPI and so on. That's one side, that's a really positive side of things with Django. And the other side I think is, you know, I'm not a super fan of, but it's, it's something a lot of people do is, well, can we just make the backend a dumb crud API thing? And let me just write everything in JavaScript on the front end, which I'm not as much of a fan of. I think a lot of people choose that because they've been told that's how it's supposed to be. I don't think it needs to be that way.
+
+00:54:25 So what do you all feel about that? And sort of the, how this has an impact for Django, Because if people just see the backend as an API that's just a dumb thing, then a lot of the value that Django brings, I think, starts to vanish.
+
+00:54:38 You've got things like HTML and so on.
+
+00:54:40 So, yeah, what are your thoughts on all this?
+
+00:54:41 I think one of the hardest problems in computer science right now is talking a front-end team out of building everything as a pure JavaScript app, especially if that's developers who onboarded in web development over the past five to ten years.
+
+00:54:54 It's infuriating because my impression is that it just takes longer and you get more bugs and it's harder to build useful software.
+
+00:55:02 The one thing I will say is that HTMX has been a huge breath of fresh air on this front.
+
+00:55:07 HTMX gives you your single page applications.
+
+00:55:11 It's all stuff that's rendered server-side in templates.
+
+00:55:14 It fits really well with Django.
+
+00:55:15 There's a great Django extension for looking into HTMX.
+
+00:55:19 And I feel like that, the pendulum has just started swinging slightly back away from the everything must be rendered in JavaScript thing, partly because of the work that the HTMX people have been doing.
+
+00:55:28 So that I felt pretty good about.
+
+00:55:30 I'm going to point to Adrian now because SoundSlice is a pure JavaScript front-end app, and it should be based on what it does, right?
+
+00:55:39 Yeah, it's interactive sheet music.
+
+00:55:41 So it's sheet music that's rendered entirely in your browser, responsive, blah, blah, blah, with an editor, a lot of crazy JavaScript.
+
+00:55:48 But yeah, I mean, this is a whole other podcast episode about the horribleness of modern web development.
+
+00:55:55 I feel very lucky that I came up 20 years ago when before it got so insane.
+
+00:56:02 But yeah, I have sort of a related comment, which is I would like to see Django be a stronger advocate for the web in general.
+
+00:56:13 It doesn't matter if you're talking to developers or people using tech products.
+
+00:56:18 the expectation has been shifting away from the web to the phone for many, many reasons.
+
+00:56:23 And I don't like that.
+
+00:56:25 I'm pretty sure that most, if not all of the people on this chat don't like that either.
+
+00:56:29 And I don't really see a lot of effort being pushed in that direction.
+
+00:56:34 So just to sprinkle a little idea here.
+
+00:56:39 I personally wish that progressive web apps were more front and center, giving you an option at least like, okay, you have to be on the phone,
+
+00:56:45 but could we package it up a little more?
+
+00:56:47 There's a really exciting development there that's finally beginning to be rolled out.
+
+00:56:51 There's this thing called view transitions in CSS, where you can have a little bit of CSS that says, "And when the user goes from one page to another, keep the navigation bar in the same place and do a quick blur effect for this piece here." It means that...
+
+00:57:05 And it's been supported in Chrome for a few years.
+
+00:57:07 It's finally rolling out through the browsers.
+
+00:57:09 It means you can build something that feels like a slick app with page transitions and so forth, but it's not.
+
+00:57:14 It's just boring old HTML and CSS.
+
+00:57:16 No JavaScript required at all.
+
+00:57:18 Gives you that experience much faster to load.
+
+00:57:20 And I have been itching to see this start showing up.
+
+00:57:24 And I think it's finally this year, I feel, is the year where the browser support is good enough that we can start really depending on this.
+
+00:57:30 And yeah, because it gives you that app-like experience on a boring old website, which is, I feel like, that's the thing that we all want.
+
+00:57:37 So back to part of Adrian's piece, and sorry, Tebow, real quick.
+
+00:57:41 My second thing I have to pitch is because of what Adrian was saying.
+
+00:57:44 I think because systematically we, you know, we are really lucky to be around for 20 years because we've had nothing but volunteer leadership in years.
+
+00:57:51 One thing we want to do is find an executive director, somebody that can run the foundation.
+
+00:57:55 The biggest reason goes back to Adrian's point.
+
+00:57:57 I think that we sometimes don't get a seat at the table when it comes to web standards, when it comes to these conversations, is because it's the cycling of Thibaut being the president now.
+
+00:58:06 It was Frank before.
+
+00:58:07 It was Anna from Africa.
+
+00:58:09 We've had many really good presidents over the years.
+
+00:58:11 But it's really hard to work with foundations and nonprofits when you don't have a set person.
+
+00:58:16 Even our fellows seem to rotate every three to four years.
+
+00:58:19 And so that's part of like Django growing up, which is something I would love to see us do.
+
+00:58:23 And then Thibault, I love the fact that this started off in the middle of like the day.
+
+00:58:26 And now it is like perfectly cycled to like dark.
+
+00:58:28 Yeah, I guess it was high and curve you as president.
+
+00:58:30 Go ahead.
+
+00:58:31 To me, there's a developer experience and like keeping devs happy.
+
+00:58:36 So, you know, when we say our people go to React or whichever like JS heavy, It's also because they think they need it to build whatever complexity that they are after, but also because they think it has good DX, I assume.
+
+00:58:47 So when we say like the REST framework or the Django Ninja, to me, it's this as well, that we have to be aware of what's the evolving standards for what devs want to do with their web.
+
+00:58:57 And I guess how we can make Django meet that, whether it's better types, better CLI, better packaging, more Rust, maybe, whichever.
+
+00:59:06 Will, do you want to get a quick word in on this everything's a front-end thing now before we move on to the last bit?
+
+00:59:12 Oh, sure. I'm just going to say, and this probably goes back to Adrian and Simon, like all of them,
+
+00:59:16 it seems very wise to keep the front-end light because there was certainly 10 years ago a lot of pressure to integrate React or Vue or Angular or something.
+
+00:59:25 But the fact that it's remained just the Django templates means HTMX can rise and we can have more innovation.
+
+00:59:32 And just shout out, Carson Gross of HTMX is giving the keynote at DjangoCon US in three weeks.
+
+00:59:37 So even though he's not a Django developer, he's in fact more of a, he's a professor who does Java and obviously JavaScript.
+
+00:59:43 It still slides into Django in a way that if Django had built out the front end story, we wouldn't be able to.
+
+00:59:49 I love how that also fits.
+
+00:59:50 DjangoCon has had a long tradition of having a keynote from somebody from outside the community, which started in 2008 with Cal Henderson at DjangoCon over in Mountain View.
+
+01:00:00 Was that the why I hate Django?
+
+01:00:02 Because there was that whole history of, I feel like there should be another one of those, you know?
+
+01:00:06 Absolutely, yeah.
+
+01:00:07 But that's great.
+
+01:00:08 That's a fantastic keynote for DjangoCon, I think.
+
+01:00:10 Yeah, and coming up in Chicago, right?
+
+01:00:13 Pretty soon.
+
+01:00:13 So if you are in or would like to be, go check it out, right?
+
+01:00:16 That's part of that community thing I talked about.
+
+01:00:19 And people listening who are not watching, listening, not watching, they don't realize that you did this outside.
+
+01:00:26 And there's a great comment from Kojo saying, It's really cool that you're using in real life dark mode.
+
+01:00:32 It's great.
+
+01:00:34 All right, let's close it out with this, everyone.
+
+01:00:36 We're pretty much out of time.
+
+01:00:37 20 years, you know, amazing, amazing stuff.
+
+01:00:42 We're celebrating Django having its birthday, right?
+
+01:00:45 But it's going to live on for a long time.
+
+01:00:46 There's a ton of code.
+
+01:00:48 There's a ton of things people are doing with Django.
+
+01:00:51 Even if you guys step away at some point, it's still going to be going.
+
+01:00:54 So give me your, you know, going around and starting with Will, I guess.
+
+01:00:57 Give me your forward-looking thoughts on Django.
+
+01:00:59 over the next five, 10 years?
+
+01:01:02 Well, I think it's integrating with AI, broadly defined, however that means, because in a way related to Adrian's point, like the boring old web has never been more relevant, even though we're focused on chatbots right now, you still need all the other things.
+
+01:01:15 And Django can integrate into that.
+
+01:01:16 And I think it's always kind of a marketing problem for Django because we don't have one person in charge or a company behind it.
+
+01:01:22 So telling the story of we've been here, there's still double digit PRs.
+
+01:01:26 It has async in many areas.
+
+01:01:28 And I worry that the next generation of web developers just skip it because they don't know what it already has.
+
+01:01:34 And they have this presumption that it's too hard to learn, which it's not.
+
+01:01:38 Yeah, absolutely.
+
+01:01:39 Is it me?
+
+01:01:40 It is you.
+
+01:01:41 I don't have any.
+
+01:01:41 I hear you're boring about the web.
+
+01:01:43 What's going on now?
+
+01:01:44 Tell us about what do you see for the future?
+
+01:01:46 For the future.
+
+01:01:47 Yeah, I'm actually, perhaps ironically, like the worst person to ask because I have worked on the same app for almost 13 straight years full time now.
+
+01:01:57 I use Django every day and it does everything I need.
+
+01:02:01 So I'm very happy with the current state.
+
+01:02:05 And I think, like I said earlier, if it were up to me, the thing I would focus on is more philosophical or trying to promote the concept of the web versus non-web stuff.
+
+01:02:21 Because if the web goes away, Django goes away.
+
+01:02:23 I mean, it's inherent.
+
+01:02:25 A lot of beautiful things go away, yeah.
+
+01:02:27 A lot of beautiful things go away.
+
+01:02:28 So I think that would be my hope for the next five years.
+
+01:02:32 Yeah, I've done combat with the App Store review people, both Apple and Google, and it is not pretty.
+
+01:02:38 We do not want the web.
+
+01:02:40 There's definitely AI in there and definitely the web.
+
+01:02:43 I really like that you mentioned the view transitions.
+
+01:02:46 I think if web technologies get that much better in the next five years or so, we can match what's possible with a mobile dev, but not only match it, but in terms of accessibility and how many people you can reach with a web app.
+
+01:03:00 We can go far, far beyond.
+
+01:03:03 So I guess to me for that, the other side is having a foundation behind Django that's probably a bit more professional, that takes it a bit more seriously, that we're the people looking after the framework for millions of devs at this point.
+
+01:03:18 And as you said, the people in this room, we come and go, that's very natural.
+
+01:03:22 So just making sure that we have the pipelines.
+
+01:03:25 So hopefully five, 10 more years, you know, the Django node space you mentioned earlier, that's the people who will be the presidents and people having this podcast maybe in 10 years time.
+
+01:03:34 Yeah, absolutely. Jeff?
+
+01:03:36 I'm really curious to see what Rust's impact is.
+
+01:03:38 I think Python is just getting so much faster, so much better.
+
+01:03:41 And I know there's some really smart people working on like WebAssembly and Rust.
+
+01:03:45 And I dream of a day when a Django view can be the same thing in your browser as it is on the server.
+
+01:03:51 And I think when we look at like talking to a query set, your browser, you know, doing data exchange, serialization, JSON, something.
+
+01:03:59 I feel like in the next five years, there's this there's this opportunity that whatever Python is becoming, whatever Django is becoming that like, you know, it's less about how are we going to use React and render?
+
+01:04:09 I hate React, by the way.
+
+01:04:10 You've got to put that plug in.
+
+01:04:11 But I'm just really curious to see like how these things can kind of mold together as, you know, developer experiences have gotten a lot better because of tooling and Rust.
+
+01:04:18 There's just this whole new world that I see as far as these technologies that start to marry the two together in a way that we just haven't been able to do for a while.
+
+01:04:28 But we're starting to see glimpses of it.
+
+01:04:29 For sure.
+
+01:04:30 Simon, final word for...
+
+01:04:31 I'm going to double down a little bit on the WebAssembly stuff is so exciting.
+
+01:04:36 Pyodide, the thing that lets you run Python in your browser, is now at least 10 years old.
+
+01:04:39 It's very, very good.
+
+01:04:42 It's about a two megabyte download.
+
+01:04:43 A few years ago, I'd have said two megabyte downloads is too much.
+
+01:04:46 These days, 2 megabyte download for a web page is hardly anything at all.
+
+01:04:49 But I feel like the thing that I love most about Django these days is it is reliable.
+
+01:04:55 It's so dependable.
+
+01:04:56 Nobody ever picks Django for a project and regrets it because Django, it's mature, it's stable, it's well documented.
+
+01:05:03 It moves at a sensible place.
+
+01:05:04 Long may that continue.
+
+01:05:06 I love the idea that Django becomes...
+
+01:05:08 And Django for many years has been a great default technology for you to use as a project.
+
+01:05:13 And if we double down on that, which I think is what we're doing already, that's fantastic for me.
+
+01:05:17 I love that idea that you can always pick Django.
+
+01:05:20 It will always do what you need it to do.
+
+01:05:22 There will never be any nasty surprises or sort of regrets from working with that.
+
+01:05:26 And if we can tap into things like free-threaded Python is coming along now, which is very well, it means maybe we don't have to rewrite everything as async things just to handle large concurrency.
+
+01:05:35 There's all of that kind of stuff, the WebAssembly stuff.
+
+01:05:38 It feels like the Python ecosystem is in a really good shape.
+
+01:05:41 And Django sits very close to the center of that ecosystem.
+
+01:05:45 And I'm really excited about that.
+
+01:05:46 I love that we can continue to provide the best default option for building great things.
+
+01:05:52 Yeah, totally agree.
+
+01:05:53 All right, everyone.
+
+01:05:54 Thank you so much for being here.
+
+01:05:55 Happy birthday, Django.
+
+01:05:57 Happy birthday, Django.
+
+01:05:59 Thanks, Michael.
+
+01:06:01 This has been another episode of Talk Python To Me.
+
+01:06:04 Thank you to our sponsors.
+
+01:06:06 Be sure to check out what they're offering.
+
+01:06:07 It really helps support the show.
+
+01:06:09 This episode is brought to you entirely by Sentry.
+
+01:06:12 It's a bit of an episode takeover, if you will.
+
+01:06:15 Sentry has two excellent and exciting services to tell you about.
+
+01:06:19 Sear, your agentic AI debugging assistant, which takes all the data already gathered by Sentry to help discover the problems and even propose fixes as GitHub PRs.
+
+01:06:30 And the other is AI agent monitoring, which adds deep observability to your AI agents in your app.
+
+01:06:37 If you're adding AI and LLM features to your Python apps, you'll want to know about AI agent monitoring.
+
+01:06:43 I'll tell you more about both of these later in the episode.
+
+01:06:46 And remember, however you happen to sign up for Sentry, if you do, use our code TALKPYTHON, one word, all caps.
+
+01:06:53 Want to level up your Python?
+
+01:06:55 We have one of the largest catalogs of Python video courses over at TALKPYTHON.
+
+01:06:59 Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:07:04 And best of all, there's not a subscription in sight.
+
+01:07:07 Check it out for yourself at training.talkpython.fm.
+
+01:07:10 Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:07:14 We should be right at the top.
+
+01:07:16 You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:07:25 We're live streaming most of our recordings these days.
+
+01:07:28 If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+01:07:36 This is your host, Michael Kennedy. Thanks so much for listening. I really appreciate it.
+
+01:07:40 Now get out there and write some Python code.
+
+01:07:54 I'm out.
+
