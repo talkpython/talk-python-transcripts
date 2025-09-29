@@ -1,0 +1,2476 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:05.580
+<v Michael Kennedy>Building a UI in Python usually means choosing between quick and limited or powerful and painful.
+
+00:00:06.480 --> 00:00:11.700
+<v Michael Kennedy>What if you could write modern, component-based web apps in pure Python and still keep full control?
+
+00:00:12.500 --> 00:00:25.340
+<v Michael Kennedy>Nice GUI, pronounced NiceGUI, sits on FastAPI with a Vue Quasar front end and gives you real components, live updates over WebSockets, and is running in production at Saubersoig, a German robotic company.
+
+00:00:25.600 --> 00:00:34.520
+<v Michael Kennedy>On this episode, I'm talking with NiceGUIs creators, Radja Trappe and Falco Schindler, about how it works, where it shines, and what's coming next.
+
+00:00:35.340 --> 00:00:42.700
+<v Michael Kennedy>With version 3.0 releasing around the same time as this episode drops, we spend time at the end celebrating the 3.0 release.
+
+00:00:43.720 --> 00:00:48.800
+<v Michael Kennedy>This is Talk Python To Me, episode 525, recorded September 25th, 2025.
+
+00:01:03.559 --> 00:01:09.420
+<v Michael Kennedy>Welcome to Talk Python To Me, a weekly podcast on Python. This is your host, Michael Kennedy.
+
+00:01:09.800 --> 00:01:22.680
+<v Michael Kennedy>Follow me on Mastodon, where I'm @mkennedy, and follow the podcast using @talkpython, both accounts over at Fostadon.org, and keep up with the show and listen to over nine years of episodes at talkpython.fm.
+
+00:01:23.260 --> 00:01:27.140
+<v Michael Kennedy>If you want to be part of our live episodes, you can find the live streams over on YouTube.
+
+00:01:27.560 --> 00:01:33.420
+<v Michael Kennedy>Subscribe to our YouTube channel over at  talkpython.fm/youtube and get notified about upcoming shows.
+
+00:01:34.020 --> 00:01:37.700
+<v Michael Kennedy>This episode is sponsored by Posit Connect from the makers of Shiny.
+
+00:01:38.180 --> 00:01:42.060
+<v Michael Kennedy>Publish, share, and deploy all of your data projects that you're creating using Python.
+
+00:01:42.740 --> 00:01:48.780
+<v Michael Kennedy>Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+00:01:49.640 --> 00:01:51.280
+<v Michael Kennedy>Posit Connect supports all of them.
+
+00:01:51.580 --> 00:01:56.900
+<v Michael Kennedy>Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+00:01:57.580 --> 00:01:59.540
+<v Michael Kennedy>And it's brought to you by Agency.
+
+00:02:00.100 --> 00:02:01.960
+<v Michael Kennedy>Discover agentic AI with Agency.
+
+00:02:02.460 --> 00:02:06.520
+<v Michael Kennedy>Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+00:02:07.260 --> 00:02:13.240
+<v Michael Kennedy>Start building the Internet of Agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+
+00:02:14.260 --> 00:02:17.080
+<v Michael Kennedy>Falco, Raja, welcome to Talk Python To Me.
+
+00:02:17.520 --> 00:02:24.480
+<v Michael Kennedy>I'm so excited to talk about GUIs, maybe even a little hint of a desktop GUI for Python.
+
+00:02:24.700 --> 00:02:25.380
+<v Michael Kennedy>Oh my goodness.
+
+00:02:25.900 --> 00:02:27.120
+<v Michael Kennedy>You all have built something great.
+
+00:02:27.200 --> 00:02:28.460
+<v Michael Kennedy>So welcome to Talk Python To Me.
+
+00:02:28.680 --> 00:02:29.200
+<v Michael Kennedy>Happy to have you here.
+
+00:02:29.340 --> 00:02:30.100
+<v Michael Kennedy>Thank you for having us.
+
+00:02:30.460 --> 00:02:32.060
+<v Michael Kennedy>We're going to talk about NiceGUI.
+
+00:02:33.420 --> 00:02:36.800
+<v Michael Kennedy>Sometimes said nice GUI, but we're going to learn that it's NiceGUI.
+
+00:02:37.240 --> 00:02:47.040
+<v Michael Kennedy>And basically a nice blend of Python plus web plus a possible package in these up as, I don't know what you want to call it.
+
+00:02:47.040 --> 00:02:51.720
+<v Michael Kennedy>I think the name's probably already taken, but I feel like not Electron, but Positron, right?
+
+00:02:51.800 --> 00:02:56.100
+<v Michael Kennedy>Like we got to have something with a P, but that's kind of like Electron for like desktop
+
+00:02:56.360 --> 00:02:56.460
+<v Michael Kennedy>apps.
+
+00:02:57.480 --> 00:03:02.200
+<v Michael Kennedy>Yeah, I believe Posit would already have that taken for their new IDE thing.
+
+00:03:02.500 --> 00:03:03.480
+<v Michael Kennedy>Anyway, welcome.
+
+00:03:03.880 --> 00:03:07.720
+<v Michael Kennedy>Let's get a quick bit of background on both of you all before we dive into the project.
+
+00:03:08.320 --> 00:03:09.020
+<v Michael Kennedy>Falko, you want to go first?
+
+00:03:09.620 --> 00:03:10.120
+<v Michael Kennedy>Tell us about yourself.
+
+00:03:10.420 --> 00:03:11.600
+<v Falko Schindler>Yeah, I'm Falko Schindler.
+
+00:03:12.400 --> 00:03:18.960
+<v Falko Schindler>I'm basically addicted to programming since my childhood, but I only discovered Python around 12 years ago.
+
+00:03:19.100 --> 00:03:22.160
+<v Falko Schindler>It was the time when I finished my PhD at the university.
+
+00:03:22.780 --> 00:03:30.040
+<v Falko Schindler>And that was also the time I met Rodja and I became one of his first employees of the newly founded company, Zauberzeug.
+
+00:03:30.540 --> 00:03:33.360
+<v Falko Schindler>Now I'm a full-stack software developer and robotics engineer.
+
+00:03:33.820 --> 00:03:41.700
+<v Falko Schindler>and have been working on a wide range of projects like mobile apps, web apps, robotics, microcontrollers, basically the full stack.
+
+00:03:42.140 --> 00:03:50.940
+<v Falko Schindler>And yeah, and since 2021, I'm one of the, or we both are the creators of NiceGUI, a Python-based web framework.
+
+00:03:51.220 --> 00:03:53.740
+<v Michael Kennedy>- Awesome, what languages, what tech were you using before?
+
+00:03:54.020 --> 00:03:55.840
+<v Michael Kennedy>You said 12 years ago you got into Python.
+
+00:03:56.250 --> 00:03:57.100
+<v Michael Kennedy>What was before Python?
+
+00:03:57.440 --> 00:04:02.940
+<v Falko Schindler>- I basically was introduced to Python as an alternative to MATLAB, which I was using at the university quite a lot.
+
+00:04:03.660 --> 00:04:16.100
+<v Falko Schindler>But I grew up with Pascal and did other stuff like web development, of course, with HTML, CSS, JavaScript, and some C-based languages, of course.
+
+00:04:16.320 --> 00:04:21.739
+<v Michael Kennedy>Yeah, nice. I did a lot of MATLAB when I was in university and grad school and stuff, and then I escaped.
+
+00:04:22.860 --> 00:04:23.160
+<v Michael Kennedy>Radja.
+
+00:04:23.800 --> 00:04:23.900
+<v Michael Kennedy>Yeah.
+
+00:04:24.240 --> 00:04:24.380
+<v Michael Kennedy>Welcome.
+
+00:04:24.800 --> 00:04:25.420
+<v Rodja Trappe>Welcome. Thank you.
+
+00:04:25.770 --> 00:04:26.680
+<v Rodja Trappe>My name is Rodja Trapper.
+
+00:04:27.060 --> 00:04:31.780
+<v Rodja Trappe>I'm living here in Haviksbeck near Münster, where I founded the company.
+
+00:04:32.260 --> 00:04:34.700
+<v Rodja Trappe>And I've grown up on a horse farm.
+
+00:04:35.140 --> 00:04:40.440
+<v Rodja Trappe>But at 13 years of age or so, there was the first computer in my room.
+
+00:04:40.700 --> 00:04:41.900
+<v Rodja Trappe>And I was really addicted.
+
+00:04:42.380 --> 00:04:43.880
+<v Rodja Trappe>But I started only programming.
+
+00:04:44.260 --> 00:04:48.980
+<v Rodja Trappe>Then in school afterwards, there was a course of study where I needed to program something.
+
+00:04:49.040 --> 00:04:50.440
+<v Rodja Trappe>And I really got into this.
+
+00:04:50.440 --> 00:04:51.500
+<v Rodja Trappe>And I liked it very much.
+
+00:04:51.700 --> 00:04:56.180
+<v Rodja Trappe>I struggled in school normally, but the programming made it all worse, I think.
+
+00:04:56.360 --> 00:05:00.720
+<v Rodja Trappe>And yeah, then after a course of study of computer science, I worked a little bit in Berlin.
+
+00:05:00.800 --> 00:05:05.120
+<v Rodja Trappe>and then moved back to my hometown with my three kids now.
+
+00:05:05.250 --> 00:05:08.500
+<v Rodja Trappe>And yeah, now I founded the company in 2012.
+
+00:05:08.820 --> 00:05:09.740
+<v Rodja Trappe>It's Zauberzeug.
+
+00:05:10.280 --> 00:05:17.860
+<v Rodja Trappe>It's like a company where we do mobile automation, robotics stuff, and also a lot of software development and AI.
+
+00:05:18.500 --> 00:05:19.640
+<v Rodja Trappe>So we bring everything together.
+
+00:05:19.670 --> 00:05:24.340
+<v Rodja Trappe>We have mechanical people and electrical engineers, but a lot of software engineers.
+
+00:05:24.760 --> 00:05:38.160
+<v Rodja Trappe>And yeah, we are doing all the things which are needed to automate stuff, and mainly in the agricultural sector because we are, of course, very close to test grounds there.
+
+00:05:38.690 --> 00:05:39.200
+<v Rodja Trappe>Yeah, it's nice.
+
+00:05:39.500 --> 00:05:40.220
+<v Michael Kennedy>Yeah, very neat.
+
+00:05:40.420 --> 00:05:48.400
+<v Michael Kennedy>A lot of the places that say robotics, they're like kind of toy things or Roomba-like things, but these are serious.
+
+00:05:48.470 --> 00:05:53.580
+<v Michael Kennedy>These go out on farms and are large-scale human assistants.
+
+00:05:53.750 --> 00:05:54.720
+<v Michael Kennedy>Yeah, it's fantastic.
+
+00:05:54.780 --> 00:06:10.880
+<v Rodja Trappe>Yeah, we really, in Soberzeug, we really want to do the hard and the difficult stuff to advance in the field and do the advanced research to find new solutions and automations for the difficult parts where traditionally only human hands can do stuff.
+
+00:06:11.040 --> 00:06:23.660
+<v Rodja Trappe>And we want to be on organic farms and in horse stables and so all the tricky parts where everything needs to be very perfectly suited together to bring a new age into place.
+
+00:06:23.980 --> 00:06:30.360
+<v Michael Kennedy>Yeah, it sounds cool. Did you found Sapozoi right out of school or how did you get to starting this company?
+
+00:06:30.900 --> 00:06:48.560
+<v Rodja Trappe>Yeah, while studying, I was very sure, even in school, I was sure that I wanted to one day found my own company, but I needed to know a little bit about how to run a company.
+
+00:06:48.620 --> 00:06:59.200
+<v Rodja Trappe>And so I moved to Berlin for four years and got into a nice company, Art & Comm, and learned a lot of project work and how things work together.
+
+00:06:59.620 --> 00:07:02.880
+<v Rodja Trappe>And after that, I was very sure I can do that.
+
+00:07:03.140 --> 00:07:06.160
+<v Rodja Trappe>And I did the freelancing and contractual work.
+
+00:07:06.230 --> 00:07:08.680
+<v Rodja Trappe>And then the contracts grew a little bit bigger.
+
+00:07:08.790 --> 00:07:11.180
+<v Rodja Trappe>And then I decided, okay, this is the right time.
+
+00:07:11.480 --> 00:07:22.200
+<v Rodja Trappe>I can hire my first employee and start the company and grow from there just in little steps and basically bootstrap myself.
+
+00:07:22.980 --> 00:07:23.080
+<v Michael Kennedy>Yeah.
+
+00:07:23.330 --> 00:07:23.920
+<v Michael Kennedy>Well, congratulations.
+
+00:07:24.380 --> 00:07:26.920
+<v Michael Kennedy>It's not easy to start or run a business, is it?
+
+00:07:27.130 --> 00:07:27.280
+<v Michael Kennedy>Yeah.
+
+00:07:27.680 --> 00:07:28.400
+<v Rodja Trappe>Yeah, it's true.
+
+00:07:28.580 --> 00:07:33.320
+<v Rodja Trappe>But especially if you really, most things I like is programming.
+
+00:07:33.620 --> 00:07:47.320
+<v Rodja Trappe>So I needed to really think about how to arrange the company and how to do the things that I still can do like 20 to 30 hours a day a week by programming and sitting down and thinking about the cool and nice stuff.
+
+00:07:47.760 --> 00:07:52.200
+<v Michael Kennedy>Yeah, of course. We're going to talk about it.
+
+00:07:53.060 --> 00:08:12.780
+<v Michael Kennedy>Good for you because I think staying grounded in the technology really gives you an edge to, you know, Valco comes to you and says, hey, I'm working on this project and I want to use this tech or should we use FastAPI or whatever? You're like, yeah, of course. I've been working FastAPI or whatever, vice versa, right? Like you're swimming in the waters and it's really good.
+
+00:08:13.320 --> 00:09:05.440
+<v Michael Kennedy>Awesome. All right. Well, you already gave a bit of a shout out to it. Let's talk about NiceGUI and like i like you know we were talking just a little bit before i hit record a lot of the projects it's really i think powerful to talk a bit about how you pronounce things because i don't know i i end up at a lot of conferences or maybe conferences not as much but meet people that are doing programming and they'll they'll tell me that they installed a library from pi pi and it was numpy and i'm like hold on hold on hold on you know the people who make that. They call that PyPI and they call it NumPy. And so just pyx, for example, right? It could have many pronunciations. There's nothing implicit about how you say that one, but Charlie Maher says pyx. And so you guys talk a bit about the naming and the pronunciation. I think it's an interesting
+
+00:09:05.660 --> 00:09:48.800
+<v Falko Schindler>story. We have been looking for a name for a UI framework where the term nice was not on the table yet, but we had a kind of mindset in our minds. And in the end, we played around with the GUI term and ended up wanting to call it a NiceGUI, a pun on the Nice Guy ethos, a guy which is just who tries to be nice to everyone and tries to do things right. And that's a friendly UI framework, right? Exactly. And that's what we had in mind for our UI framework. But the guy with the Y, because then you would Google a NiceGUI and you would never find our framework.
+
+00:09:48.890 --> 00:09:53.900
+<v Michael Kennedy>And that's why we had to find a term that's unique in the internet and it works quite well.
+
+00:09:54.170 --> 00:10:00.760
+<v Falko Schindler>There were other examples where I don't understand until today, why did they call it like that?
+
+00:10:01.320 --> 00:10:13.540
+<v Falko Schindler>You just don't find it. Yeah, that was basically the motivation for the name. And we didn't make that explicit that it should be pronounced NiceGUI but we are fine with NiceGUI as well
+
+00:10:14.000 --> 00:11:07.000
+<v Michael Kennedy>yeah well i think it's i do appreciate that you have something unique in the search in the search both in the search and in these days in the ai like i'm working on a program with NiceGUI like well is he really helpful like no no no i mean there's a framework right you know so it's having something that you can search is super, super important. It's as if Jupyter spelled it the same way as the planet instead of with the Y, right? And you're like, oh no, you're never going to find anything about this. It's like all space. So very cool. I know at some point we're going to talk about version 3.0 and there's already a couple of comments in the chat of excited things about there, but we're going to save that for a little bit later. Let's just start by talking a little bit about you know where did this come from why did you all build this i'm gonna guess robots
+
+00:11:07.200 --> 00:11:35.000
+<v Rodja Trappe>but radia yeah it's um of course it's it's robots uh because a lot of things uh hinge around the robot uh interfaces and interaction with that um basically um i think we did a lot of interface design before and we also invented uh interfaces before and how to write them but um uh one day Falco came into the office and said, OK, I need to control this motor controller and I need to tune it.
+
+00:11:35.240 --> 00:11:38.260
+<v Rodja Trappe>And the robot is driving around. So we only have Wi-Fi.
+
+00:11:38.500 --> 00:11:40.340
+<v Rodja Trappe>We need to have some access to the system.
+
+00:11:40.780 --> 00:11:45.420
+<v Rodja Trappe>And he basically wrote something up where he could write some Python code.
+
+00:11:45.660 --> 00:11:48.440
+<v Rodja Trappe>And there came out some web interface. And it was really nice.
+
+00:11:48.460 --> 00:11:50.820
+<v Rodja Trappe>And I said, well, this is great. Let's do that.
+
+00:11:51.180 --> 00:11:54.040
+<v Rodja Trappe>And maybe, Falco, you can take it from here because, yeah.
+
+00:11:54.700 --> 00:11:58.360
+<v Falko Schindler>Exactly. We had a kind of a moving target and we had to control it.
+
+00:11:58.600 --> 00:12:06.320
+<v Falko Schindler>but just the command line interface is sometimes too weak to control sliders because we had to tune some parameters.
+
+00:12:06.480 --> 00:12:11.080
+<v Falko Schindler>So we wanted some sliders and maybe a joystick and some things like that.
+
+00:12:11.840 --> 00:12:20.840
+<v Falko Schindler>And I think the manufacturer already came with some user interface for it, or they were in the making of such a framework.
+
+00:12:21.240 --> 00:12:39.100
+<v Falko Schindler>And it was very limited, but it gave the idea of, okay, the UI framework could consist of some building blocks that you could somehow arrange, but why do it graphically? Why not writing it? You could simply write the building blocks in Python or in other language, but of course, Python was our choice.
+
+00:12:39.780 --> 00:13:25.600
+<v Falko Schindler>And so in Python, you can quickly create a web server with FastAPI. So this part is basically solved. And then the idea was the building blocks could simply deliver some HTML with corresponding CSS and JavaScript. At that time, I was working in Angular. So the very first commits of NiceGUI was based on FastAPI and Angular. And later we switched to Vue. Yeah. Yeah. And within a few hours, the basic concept was there and was looking promising. Of course, not to the extent that we could imagine it could get that large. It was just meant as an internal tool just for doing some internal things.
+
+00:13:25.900 --> 00:13:32.140
+<v Rodja Trappe>But what we did there is we set a lot on one computer and did wishful programming.
+
+00:13:32.600 --> 00:13:37.940
+<v Rodja Trappe>How did we would like to have written the UI and what should be on the screen there?
+
+00:13:38.230 --> 00:13:42.220
+<v Rodja Trappe>So we wrote it and tested it and then we thought, okay, how to implement this?
+
+00:13:42.460 --> 00:13:48.360
+<v Rodja Trappe>So we have a very, very nice interface for the developer, but how to write it actually the framework behind that?
+
+00:13:48.370 --> 00:13:49.520
+<v Rodja Trappe>And this was the challenge.
+
+00:13:50.020 --> 00:13:55.380
+<v Rodja Trappe>But after we did it a little bit, and then we started the first project with that, and we thought, okay, let's do all the robotic stuff with it.
+
+00:13:55.430 --> 00:13:57.140
+<v Rodja Trappe>And let's do our website with that.
+
+00:13:57.150 --> 00:14:08.280
+<v Rodja Trappe>So the website of sauberzoic.com is also written in NiceGuy, like the full documentation of the NiceGuy webpage and all the things.
+
+00:14:08.410 --> 00:14:14.300
+<v Rodja Trappe>We are doing really a lot of things, big interfaces where we have annotation programs and data pipelines.
+
+00:14:14.660 --> 00:14:24.160
+<v Rodja Trappe>So we really use it now everywhere and it's grown much faster and more robust than only just conductorial motor.
+
+00:14:24.560 --> 00:14:25.440
+<v Michael Kennedy>That's really great.
+
+00:14:26.420 --> 00:14:36.380
+<v Michael Kennedy>You know, even just looking at the UI, it's got this kind of friendly feel to the way the UI looks.
+
+00:14:36.520 --> 00:14:37.020
+<v Michael Kennedy>You know what I mean?
+
+00:14:37.420 --> 00:14:37.540
+<v Rodja Trappe>Yeah.
+
+00:14:37.920 --> 00:14:45.740
+<v Rodja Trappe>We are very happy to have also a professional graphic designer in our team, not only for the robotics, but also for websites.
+
+00:14:46.060 --> 00:14:50.520
+<v Rodja Trappe>And we really are thinking about how to present the things here.
+
+00:14:50.780 --> 00:14:57.840
+<v Rodja Trappe>And you can do basically anything in NiceGUI here because it's just HTML, HTML and JavaScript.
+
+00:14:59.140 --> 00:15:05.620
+<v Rodja Trappe>You can do everything, but most things you can do simply in Python without touching all the underlying infrastructure.
+
+00:15:06.260 --> 00:15:09.380
+<v Michael Kennedy>So you're telling me that those cool robots we saw cruising around,
+
+00:15:10.020 --> 00:15:10.700
+<v Rodja Trappe>They're running NiceGUIs.
+
+00:15:11.459 --> 00:15:13.000
+<v Michael Kennedy>They have a little web.
+
+00:15:13.600 --> 00:15:14.040
+<v Rodja Trappe>Yeah, exactly.
+
+00:15:14.800 --> 00:15:17.340
+<v Michael Kennedy>NiceGUI server cruising on top of them.
+
+00:15:17.580 --> 00:15:17.680
+<v Rodja Trappe>Yeah.
+
+00:15:18.380 --> 00:15:28.000
+<v Michael Kennedy>Sorry, do you give them DNS names, like Marco or whatever, like Marco, HTTP Marco, and start working with them?
+
+00:15:28.020 --> 00:15:28.980
+<v Michael Kennedy>Or how does that work?
+
+00:15:29.200 --> 00:15:34.640
+<v Rodja Trappe>The first few robots, we had some names for it, but right now we are just counting them up.
+
+00:15:34.760 --> 00:15:42.400
+<v Rodja Trappe>So like it's F35 or something, because there are so many and you need to really find the right one, which is running where.
+
+00:15:43.980 --> 00:15:56.280
+<v Rodja Trappe>But we have also in NiceGUI a web interface where we can manage the whole hive of all the robots running around and looking at the battery status and what they have done, the KPIs and so on.
+
+00:15:56.940 --> 00:15:58.580
+<v Rodja Trappe>The F stands for field friend.
+
+00:15:59.540 --> 00:16:01.820
+<v Falko Schindler>So we call them the field friends.
+
+00:16:02.140 --> 00:16:03.200
+<v Michael Kennedy>Yeah, amazing.
+
+00:16:05.400 --> 00:16:08.200
+<v Michael Kennedy>This portion of Talk Python To Me is brought to you by the folks at Posit.
+
+00:16:08.820 --> 00:16:11.780
+<v Michael Kennedy>Posit has made a huge investment in the Python community lately.
+
+00:16:12.500 --> 00:16:17.820
+<v Michael Kennedy>Known originally for RStudio, they've been building out a suite of tools and services for Team Python.
+
+00:16:19.160 --> 00:16:23.420
+<v Michael Kennedy>Today, I want to focus on hosting your Python-based data science workloads.
+
+00:16:23.770 --> 00:16:30.140
+<v Michael Kennedy>This includes dashboards, reports, plots, interactive web apps, all the way to custom Flask and Django apps.
+
+00:16:30.780 --> 00:16:32.060
+<v Michael Kennedy>Their service is Posit Connect.
+
+00:16:32.920 --> 00:16:37.500
+<v Michael Kennedy>Posit Connect makes it easy for data scientists to share work built with Python code.
+
+00:16:37.960 --> 00:16:51.020
+<v Michael Kennedy>If you have a Streamlit app, Dashboard, Plotly interactive plot, a FastAPI service, or even a Quarto report, just give Posit Connect the code it needs to maintain the asset and Connect automatically does the rest.
+
+00:16:51.480 --> 00:16:55.020
+<v Michael Kennedy>Connect will manage your APIs and serve your interactive apps for you.
+
+00:16:55.560 --> 00:16:59.620
+<v Michael Kennedy>And if you want, you can update your reports and dashboards on a scheduled basis.
+
+00:17:00.100 --> 00:17:05.760
+<v Michael Kennedy>That's right. No need to explain to the stakeholders why that dashboard or plot stopped updating last week.
+
+00:17:06.339 --> 00:17:13.100
+<v Michael Kennedy>You get a focus on your data science and leveraging your skill set while Connect makes you look good, keeping your code running and private.
+
+00:17:14.020 --> 00:17:20.480
+<v Michael Kennedy>With Connect, you get a private URL on your Connect server, ensuring that your asset is continuously available to your shareholders.
+
+00:17:21.380 --> 00:17:24.560
+<v Michael Kennedy>And you can control which users have access to the asset.
+
+00:17:25.140 --> 00:17:29.000
+<v Michael Kennedy>Let Posit Connect handle the delivery and DevOps involved in sharing your work.
+
+00:17:29.440 --> 00:17:30.900
+<v Michael Kennedy>You focus on what you do best.
+
+00:17:31.640 --> 00:17:36.860
+<v Michael Kennedy>So if you work on a data science team, you owe it to you and your org to check out Posit Connect.
+
+00:17:37.460 --> 00:17:43.420
+<v Michael Kennedy>Visit talkpython.fm/connect today and get a three-month free trial to see if it's a good fit.
+
+00:17:43.920 --> 00:17:45.940
+<v Michael Kennedy>That's talkpython.fm/connect.
+
+00:17:46.400 --> 00:17:48.140
+<v Michael Kennedy>The link is in your podcast player's show notes.
+
+00:17:48.840 --> 00:17:51.080
+<v Michael Kennedy>Thank you to Posit for supporting Talk Python To Me.
+
+00:17:52.700 --> 00:17:58.140
+<v Michael Kennedy>Let's talk a little bit about building blocks, I guess, and then we could talk a little bit about the API.
+
+00:17:58.520 --> 00:18:05.440
+<v Michael Kennedy>So you chose FastAPI, and you said you considered Angular, but you went with Vue, but maybe through Quasar.
+
+00:18:05.870 --> 00:18:09.180
+<v Michael Kennedy>So let's, why FastAPI?
+
+00:18:09.180 --> 00:18:11.740
+<v Michael Kennedy>I mean, FastAPI is certainly a good choice.
+
+00:18:12.220 --> 00:18:12.360
+<v Michael Kennedy>Yeah.
+
+00:18:13.060 --> 00:18:13.600
+<v Michael Kennedy>But why?
+
+00:18:14.480 --> 00:18:22.400
+<v Rodja Trappe>FastAPI is great because it's, yeah, you can write very good REST interfaces with that.
+
+00:18:22.590 --> 00:18:27.900
+<v Rodja Trappe>And also what you get is this whole async support.
+
+00:18:28.300 --> 00:18:31.480
+<v Rodja Trappe>So you have an ASGI server running there.
+
+00:18:32.150 --> 00:18:43.140
+<v Rodja Trappe>So it's, from our point of view, much better suited for this super large scaling and a single CPU running all the tasks than, for example, Flask or so.
+
+00:18:43.760 --> 00:18:50.880
+<v Rodja Trappe>And so FastAPI was quite natural for us because we switched from Flask to FastAPI a few years before.
+
+00:18:51.300 --> 00:18:54.560
+<v Rodja Trappe>We were very sure that we can work with that.
+
+00:18:54.820 --> 00:19:00.000
+<v Rodja Trappe>this is supporting all the web traffic and server stuff we need.
+
+00:19:00.160 --> 00:19:03.020
+<v Rodja Trappe>And we did also a few big applications with that.
+
+00:19:03.160 --> 00:19:06.220
+<v Rodja Trappe>So this was quite a no-brainer farce.
+
+00:19:07.460 --> 00:19:07.600
+<v Michael Kennedy>Okay.
+
+00:19:08.040 --> 00:19:09.820
+<v Michael Kennedy>And then, Falco, you talked about Angular.
+
+00:19:10.140 --> 00:19:15.500
+<v Michael Kennedy>I don't know if this is Angular 1 or 2, but I know the transition from 1 to 2 was a little rocky.
+
+00:19:17.640 --> 00:19:18.860
+<v Michael Kennedy>It was after 1.
+
+00:19:19.100 --> 00:19:20.400
+<v Falko Schindler>It was 2 or 3.
+
+00:19:20.580 --> 00:19:21.000
+<v Michael Kennedy>I'm not sure.
+
+00:19:21.400 --> 00:19:21.540
+<v Michael Kennedy>Okay.
+
+00:19:21.660 --> 00:19:23.920
+<v Michael Kennedy>So you didn't have to write out that roller coaster.
+
+00:19:24.500 --> 00:19:29.120
+<v Michael Kennedy>But then you chose Vue, and if I got that right, it's actually Quasar.
+
+00:19:29.520 --> 00:19:30.840
+<v Michael Kennedy>That's not Quasar, that's Quasar.
+
+00:19:32.300 --> 00:19:33.800
+<v Michael Kennedy>Tell us a bit about this.
+
+00:19:34.580 --> 00:19:36.660
+<v Falko Schindler>I know Vue pretty well, but I don't know Quasar.
+
+00:19:36.880 --> 00:19:38.000
+<v Falko Schindler>We didn't know it either.
+
+00:19:38.920 --> 00:19:49.140
+<v Falko Schindler>Though I have to mention one important step in the development of the NiceGUIs was when we were thinking about a good name, we brainstormed.
+
+00:19:49.280 --> 00:19:54.460
+<v Falko Schindler>And we thought, yeah, at one point we thought it's basically we are writing everything in Python.
+
+00:19:54.730 --> 00:19:57.640
+<v Falko Schindler>So it's just Python, just Python, just Py.
+
+00:19:58.180 --> 00:20:00.700
+<v Falko Schindler>So we ended up and wanted to use the name just Py.
+
+00:20:01.190 --> 00:20:05.420
+<v Falko Schindler>And we looked up if there's something else called just Py already.
+
+00:20:05.760 --> 00:20:11.540
+<v Falko Schindler>And as it turns out, there was a UI framework, exactly what we were about to do with NiceGUI.
+
+00:20:12.560 --> 00:20:13.740
+<v Falko Schindler>And what was your thought?
+
+00:20:13.840 --> 00:20:16.840
+<v Speaker 5>Were you like, oh no, it's, why am I even doing this?
+
+00:20:17.560 --> 00:20:18.120
+<v Speaker 5>Kind of.
+
+00:20:18.620 --> 00:20:18.980
+<v Speaker 5>Oh, look.
+
+00:20:20.180 --> 00:20:23.800
+<v Falko Schindler>They've been ahead of us pretty much.
+
+00:20:24.160 --> 00:20:26.800
+<v Falko Schindler>They already had a full-fledged UI framework, basically.
+
+00:20:28.100 --> 00:20:31.200
+<v Falko Schindler>But it was a bit low-level for us.
+
+00:20:32.060 --> 00:20:35.080
+<v Falko Schindler>They basically mimicked HTML elements.
+
+00:20:35.740 --> 00:20:38.520
+<v Michael Kennedy>Yeah, I think I've seen this before and talked about it, yeah.
+
+00:20:38.860 --> 00:20:40.120
+<v Falko Schindler>Yeah, maybe.
+
+00:20:40.960 --> 00:20:44.040
+<v Falko Schindler>But they also used Quasar already.
+
+00:20:44.520 --> 00:21:11.420
+<v Falko Schindler>And so we still wanted to build our own framework with our own components and some nicer API in our point of views. But we decided to use JustPy as a foundation. And that's where Vue and Quasar came into NiceGuy as part of the JustPy foundation. And just maybe a year later, we had some issues, some unsolved bugs with just by a bit poor performance.
+
+00:21:12.080 --> 00:21:17.640
+<v Falko Schindler>And there was an effort to save just by and to push it forward.
+
+00:21:18.740 --> 00:21:30.620
+<v Falko Schindler>And though that we can stay relying on it, but in the end we decided to stop it, to remove it from the code base, to reimplement the whole transportation layer and do it ourselves.
+
+00:21:30.940 --> 00:21:32.820
+<v Falko Schindler>And it turned out pretty successful.
+
+00:21:34.000 --> 00:21:38.840
+<v Falko Schindler>I think we turned out, yeah, with less bugs, with a better performance.
+
+00:21:39.520 --> 00:21:46.760
+<v Falko Schindler>And maybe a year later, TrustPy was basically put on hold and isn't developed any longer.
+
+00:21:47.200 --> 00:21:52.560
+<v Falko Schindler>But it was a very important tool for us, a very important foundation.
+
+00:21:52.960 --> 00:22:06.620
+<v Rodja Trappe>It's a great stepping stone to give us some fundament which we could use to show what we want to do with the user interface, how to develop the user interface and what abstraction is the right one.
+
+00:22:07.020 --> 00:22:11.220
+<v Rodja Trappe>And then we could easily swap out the engine after the first release.
+
+00:22:11.660 --> 00:22:12.040
+<v Rodja Trappe>Yeah.
+
+00:22:12.900 --> 00:22:24.980
+<v Michael Kennedy>One thing when I see, this is not a judgment on just Py, people see me this kind of stuff all the time, not all the time, but often enough, like, oh, here's a really cool thing that lets you not use HTML or JavaScript.
+
+00:22:25.130 --> 00:22:26.380
+<v Michael Kennedy>You just do everything in Python.
+
+00:22:26.940 --> 00:22:33.100
+<v Michael Kennedy>And sometimes the examples are just so close to HTML, but the frameworks are so close to HTML.
+
+00:22:33.380 --> 00:22:35.660
+<v Michael Kennedy>It's like, well, why would I not just use HTML?
+
+00:22:36.800 --> 00:22:42.280
+<v Michael Kennedy>If it's like I have to create divs and I've got to create spans.
+
+00:22:42.570 --> 00:22:57.980
+<v Michael Kennedy>And like I've literally, the framework is just the same as HTML, but in Python, like that's interesting and it's a cool framework, but also there's so much tooling for working with styling, et cetera, deploying HTML like that.
+
+00:22:58.070 --> 00:23:01.580
+<v Michael Kennedy>I don't know, I feel like it's maybe too low level, kind of like you were saying.
+
+00:23:02.500 --> 00:23:02.600
+<v Rodja Trappe>Yeah.
+
+00:23:03.040 --> 00:23:13.840
+<v Rodja Trappe>And so, yeah, a little bit higher abstraction where you have a button and you can put a click handler on there and if the button is clicked, then of course the click handler is called.
+
+00:23:14.440 --> 00:23:17.660
+<v Rodja Trappe>That was really the main goal of NiceGUI.
+
+00:23:18.520 --> 00:23:21.520
+<v Rodja Trappe>And I think that works pretty well and it scaled very far.
+
+00:23:21.880 --> 00:23:28.740
+<v Rodja Trappe>So we could also have other UI elements like e-charts or so where we have really diagrams and things like that.
+
+00:23:29.240 --> 00:23:29.680
+<v Michael Kennedy>Yeah.
+
+00:23:29.700 --> 00:23:33.400
+<v Michael Kennedy>Yeah, I think, Ido, you were talking about Vue and Quasar.
+
+00:23:34.080 --> 00:23:40.920
+<v Michael Kennedy>One of the concepts in that world is kind of like components and bigger building blocks than just raw HTML elements.
+
+00:23:41.120 --> 00:23:44.740
+<v Michael Kennedy>You know, here's a card or here's a turnstile
+
+00:23:44.900 --> 00:23:47.260
+<v Michael Kennedy>or here's a panel or whatever, right?
+
+00:23:47.500 --> 00:23:56.000
+<v Michael Kennedy>And I think that that's a much better programming level to talk about these UI building block elements rather than HTML elements.
+
+00:23:56.160 --> 00:24:01.020
+<v Rodja Trappe>It relieves the developer from the plumbing a lot.
+
+00:24:01.540 --> 00:24:07.200
+<v Rodja Trappe>We can think about, okay, what do we want to show at what time and how does it all connect together?
+
+00:24:07.620 --> 00:24:17.060
+<v Rodja Trappe>If it's too fine granular, then it's really this fine-grained stuff is really taking up all your mental energy to think about what you really want to achieve there.
+
+00:24:17.920 --> 00:24:18.500
+<v Michael Kennedy>100% agree.
+
+00:24:18.780 --> 00:24:22.240
+<v Michael Kennedy>Okay, so that brings us back to Quasar a bit.
+
+00:24:22.840 --> 00:24:25.280
+<v Michael Kennedy>So Quasar is kind of these building blocks.
+
+00:24:25.360 --> 00:24:25.860
+<v Falko Schindler>Is that right?
+
+00:24:26.220 --> 00:24:42.760
+<v Falko Schindler>Yeah, right. Exactly. It turned out to be the main UI framework in NiceGuy. Most or many elements are based on Quasar or existing Quasar components. We call them elements in NiceGuy, but there are components in Quasar. It's just a choice.
+
+00:24:43.140 --> 00:24:51.320
+<v Falko Schindler>And other components or elements like eCharts or Acrid or something, they are independent of Quasar.
+
+00:24:52.419 --> 00:25:03.840
+<v Falko Schindler>So you're not tied to using Quasar when using NiceGUI, but it delivers a nice foundation, a basic set of elements you can use.
+
+00:25:04.160 --> 00:25:04.700
+<v Michael Kennedy>Cool.
+
+00:25:05.020 --> 00:25:06.440
+<v Falko Schindler>So another one.
+
+00:25:07.900 --> 00:25:08.700
+<v Michael Kennedy>Let's go with this.
+
+00:25:09.960 --> 00:25:16.840
+<v Michael Kennedy>The AG grid looks like a super cool way to put grids of data, editable grids, sortable grids.
+
+00:25:17.400 --> 00:25:18.220
+<v Michael Kennedy>And tell us about like this.
+
+00:25:18.880 --> 00:25:22.620
+<v Michael Kennedy>It's probably something you do a lot with the analytics coming off the robots and stuff.
+
+00:25:22.780 --> 00:25:25.860
+<v Michael Kennedy>But I know other people do other interesting things.
+
+00:25:25.980 --> 00:25:29.560
+<v Michael Kennedy>An example on their website is like kind of a stock chart that updates live.
+
+00:25:30.000 --> 00:25:34.760
+<v Falko Schindler>Yeah, we learned AG grid also through JustPy.
+
+00:25:34.800 --> 00:25:37.540
+<v Falko Schindler>It was the way to present a table in JustPy.
+
+00:25:37.860 --> 00:25:39.760
+<v Falko Schindler>So we basically adopted it.
+
+00:25:40.880 --> 00:25:48.860
+<v Falko Schindler>Meanwhile, we are also offering a UI table, which is a quasar table.
+
+00:25:49.340 --> 00:26:02.160
+<v Falko Schindler>So you can choose if you want to use UI ag grid or ag grid for an ag grid, or you can use the quasar table, which is a bit different in look and feel and the interface.
+
+00:26:03.440 --> 00:26:11.580
+<v Rodja Trappe>Yeah, but generally what we discovered when NiceGuy grew bigger and bigger that people really are into these tables.
+
+00:26:11.880 --> 00:26:13.540
+<v Michael Kennedy>They really need that a lot.
+
+00:26:13.940 --> 00:26:14.920
+<v Rodja Trappe>And all the features.
+
+00:26:15.200 --> 00:26:17.720
+<v Rodja Trappe>And AG Grid, for example, is really, really powerful.
+
+00:26:18.260 --> 00:26:32.360
+<v Rodja Trappe>And the abstraction we chose at NiceGuy is really great to bring all this into the Python world, where you can simply write something in and you can use it in the web like it would be in the web, but you use it simply in Python.
+
+00:26:32.980 --> 00:26:38.860
+<v Rodja Trappe>And so the interaction with that when you're writing, when you're developing, what do we want to do?
+
+00:26:39.120 --> 00:26:42.360
+<v Rodja Trappe>And so it's quite a good fit together.
+
+00:26:42.790 --> 00:26:47.160
+<v Rodja Trappe>And we could map all the features basically into Python.
+
+00:26:47.940 --> 00:26:54.160
+<v Rodja Trappe>And this is true for all the other elements also, that they are simply just a JavaScript component somewhere.
+
+00:26:54.470 --> 00:26:58.660
+<v Rodja Trappe>And we can write a small layer around that to bring it into the Python world.
+
+00:26:58.780 --> 00:27:00.820
+<v Rodja Trappe>And then you can really instantiate the object.
+
+00:27:00.990 --> 00:27:08.820
+<v Rodja Trappe>And then it automatically connects to, we have a web server and sends the messages over the secure channel to the website.
+
+00:27:09.050 --> 00:27:12.260
+<v Rodja Trappe>And so we have this great user interface at the browser.
+
+00:27:12.680 --> 00:27:17.480
+<v Rodja Trappe>And in Python, it's simply just a Python program running everything you want to run.
+
+00:27:18.060 --> 00:27:18.180
+<v Michael Kennedy>Yeah.
+
+00:27:18.310 --> 00:27:23.500
+<v Michael Kennedy>And I definitely want to dive into the server front-end data exchange.
+
+00:27:23.780 --> 00:27:24.480
+<v Michael Kennedy>This is going to be fun.
+
+00:27:25.320 --> 00:27:28.560
+<v Michael Kennedy>But rounding things out, I guess we also have some really nice charts.
+
+00:27:28.620 --> 00:27:43.780
+<v Michael Kennedy>with eCharts. I guess there's a pretty strong data science story here as well with what you all can build and the tools you got integrated, right? Yeah, of course. There are a lot of data scientists
+
+00:27:43.950 --> 00:28:03.420
+<v Rodja Trappe>out there which really like to use a simple framework to simply show a chart. And there are other kinds of frameworks which can deliver on that, like Streamlit or so. But Streamlit is quite difficult when you come to state management, how to do the database or how to integrate another third-party library.
+
+00:28:03.970 --> 00:28:28.500
+<v Rodja Trappe>You get really stuck into that. This was also one of the motivations behind NiceGuy when we invented it because of course we knew Streamlit and we know how to use it. This also has a lot of charts. NiceGuy is really meant to be very friendly for the programmer to not break the intentions you have and also be very powerful.
+
+00:28:28.720 --> 00:28:34.400
+<v Rodja Trappe>And of course, with eCharts and also other charting libraries, we can very easily integrate.
+
+00:28:34.700 --> 00:28:37.500
+<v Rodja Trappe>We have some powerful tools here for data scientists.
+
+00:28:37.860 --> 00:28:38.960
+<v Michael Kennedy>Yeah, it looks beautiful.
+
+00:28:39.740 --> 00:28:42.440
+<v Michael Kennedy>Now, the final building block that I want to talk about.
+
+00:28:42.720 --> 00:28:53.580
+<v Michael Kennedy>One, and I kind of said this earlier with this looking towards this in mind, is if you do everything in Python and you're just doing HTML, then it gets really hard to style those sorts of things.
+
+00:28:53.680 --> 00:28:57.940
+<v Michael Kennedy>But you all chose Tailwind for your styling, right?
+
+00:28:58.419 --> 00:29:03.640
+<v Michael Kennedy>If you need to, you can actually almost drop into the HTML level and do Tailwind type of stuff.
+
+00:29:03.700 --> 00:29:08.040
+<v Michael Kennedy>But there's also a fluent API in Python to apply Tailwind classes.
+
+00:29:08.700 --> 00:29:11.540
+<v Michael Kennedy>Give people, I don't know how much I've talked about Tailwind.
+
+00:29:11.540 --> 00:29:13.640
+<v Michael Kennedy>I'm sure there's a lot of people that are like, what is Tailwind?
+
+00:29:14.460 --> 00:29:16.900
+<v Michael Kennedy>And then why is it special?
+
+00:29:17.040 --> 00:29:23.480
+<v Michael Kennedy>Why is it especially good for this type of programming where you're interacting with the widgets?
+
+00:29:23.500 --> 00:29:24.880
+<v Michael Kennedy>or the components themselves.
+
+00:29:27.220 --> 00:29:33.640
+<v Falko Schindler>Yeah, Tailwind or Tailwind CSS is basically an abstraction layer for CSS.
+
+00:29:34.040 --> 00:29:39.440
+<v Falko Schindler>CSS is the way you are styling things in the web in HTML.
+
+00:29:40.100 --> 00:29:46.000
+<v Falko Schindler>Plain HTML is pretty dry and has no styling, and you're usually using CSS to style it.
+
+00:29:46.300 --> 00:29:59.500
+<v Falko Schindler>And Tailwind CSS makes it a bit easier, for example, well, they have a good example, It provides many shortcuts by adding classes to your HTML elements.
+
+00:30:00.360 --> 00:30:05.260
+<v Falko Schindler>You're achieving more complicated things or you just can write it shorter.
+
+00:30:06.140 --> 00:30:11.740
+<v Falko Schindler>And so like a P4 is four units padding for an element.
+
+00:30:12.020 --> 00:30:13.360
+<v Michael Kennedy>Right, right, right. All the way around.
+
+00:30:13.510 --> 00:30:19.060
+<v Falko Schindler>Yeah, usually then the fun starts when you can add prefixes like hover.
+
+00:30:19.280 --> 00:31:03.680
+<v Falko Schindler>then this styling only applies when hovering and for certain screen sizes or in dark mode and not in light mode and same things. So it's pretty powerful. And by adding it to NiceGuy, you have an easy way to style your elements. You have been written in Python without having to write plain CSS. It's a bit shorter. In the beginning, we didn't think that it would take off so much, but when you start using it, you do not want to stop. And then you want to write all your styling in Tailwind. Easy and simple. But to address your thought about, well, then you can, I'm assuming that you are thinking then you can just use plain HTML and Tailwind.
+
+00:31:05.060 --> 00:31:23.900
+<v Falko Schindler>We thought about introducing a NiceGUI abstraction, some kind of styling language in NiceGUI, which is on top of Tailwind CSS. But this proves to be very hard. And then you don't win that much that it's worth the effort. And if you are introducing a new abstraction layer,
+
+00:31:24.260 --> 00:31:29.120
+<v Michael Kennedy>then you have to document it, you have to test it, you have to find the right level of abstraction.
+
+00:31:29.620 --> 00:31:35.500
+<v Falko Schindler>And using Tailwind CSS as it is, we just can refer to the documentation, which is great.
+
+00:31:35.940 --> 00:31:38.060
+<v Falko Schindler>and everybody can just look it up.
+
+00:31:38.880 --> 00:31:45.600
+<v Falko Schindler>And while doing, though, learning CSS and styling and tailwind, and that's useful as well.
+
+00:31:46.400 --> 00:31:58.700
+<v Rodja Trappe>I think we had a pull request like four years ago or multiple attempts to create an own layout engine where you can define, okay, how the width and how the height and stuff like that.
+
+00:31:59.100 --> 00:32:04.360
+<v Rodja Trappe>But then you need to think about, okay, this is always the web, what you're talking about, and it's super, super powerful.
+
+00:32:04.420 --> 00:32:07.540
+<v Rodja Trappe>And the language for the web for styling is CSS.
+
+00:32:08.040 --> 00:32:09.300
+<v Rodja Trappe>There's no way around it.
+
+00:32:09.430 --> 00:32:18.640
+<v Rodja Trappe>If you find some other abstraction, it will definitely break at some points and also not allow every mutation and every kind of variance or so.
+
+00:32:19.000 --> 00:32:26.200
+<v Rodja Trappe>And maybe we will introduce something later on or sometime.
+
+00:32:26.640 --> 00:32:34.060
+<v Rodja Trappe>But what we really try to do with NiceGUI is that you can do the simple things very easily and you can do it very quickly.
+
+00:32:34.380 --> 00:32:37.280
+<v Rodja Trappe>But the difficult things should also be doable.
+
+00:32:37.740 --> 00:32:42.920
+<v Rodja Trappe>And so if we have an abstraction, then like in Streamlit, you cannot do it.
+
+00:32:43.200 --> 00:32:44.660
+<v Rodja Trappe>It's just you are locked in.
+
+00:32:45.000 --> 00:32:48.280
+<v Rodja Trappe>And this is not something we would like to have in NiceGUI.
+
+00:32:49.940 --> 00:32:52.820
+<v Michael Kennedy>This portion of Talk Python To Me is brought to you by Agency.
+
+00:32:53.350 --> 00:32:58.480
+<v Michael Kennedy>Build the future of multi-agent software with Agency, spelled A-G-N-T-C-Y.
+
+00:32:59.180 --> 00:33:03.560
+<v Michael Kennedy>Now an open source Linux foundation project, Agency is building the Internet of Things.
+
+00:33:04.200 --> 00:33:10.340
+<v Michael Kennedy>Think of it as a collaboration layer where AI agents can discover, connect, and work across any framework.
+
+00:33:11.200 --> 00:33:12.500
+<v Michael Kennedy>Here's what that means for developers.
+
+00:33:13.120 --> 00:33:18.800
+<v Michael Kennedy>The core pieces engineers need to deploy multi-agent systems now belong to everyone who builds on agency.
+
+00:33:19.150 --> 00:33:25.240
+<v Michael Kennedy>You get robust identity and access management, so every agent is authenticated and trusted before it interacts.
+
+00:33:25.880 --> 00:33:38.300
+<v Michael Kennedy>You get open, standardized tools for agent discovery, clean protocols for agent-to-agent communication, and modular components that let you compose scalable workflows instead of wiring up brittle glue code.
+
+00:33:38.740 --> 00:33:40.180
+<v Michael Kennedy>Agency is not a walled garden.
+
+00:33:40.660 --> 00:33:49.280
+<v Michael Kennedy>You'll be contributing alongside developers from Cisco, Dell Technologies, Google Cloud, Oracle, Red Hat, and more than 75 supporting companies.
+
+00:33:49.840 --> 00:33:50.720
+<v Michael Kennedy>The goal is simple.
+
+00:33:51.160 --> 00:33:58.380
+<v Michael Kennedy>Build the next generation of AI infrastructure together in the open so agents can cooperate across tools, vendors, and runtimes.
+
+00:33:59.060 --> 00:34:02.900
+<v Michael Kennedy>Agencies dropping code, specs, and services with no strings attached.
+
+00:34:03.560 --> 00:34:04.000
+<v Michael Kennedy>Sound awesome?
+
+00:34:04.540 --> 00:34:08.120
+<v Michael Kennedy>Well, visit talkpython.fm/agency to contribute.
+
+00:34:08.659 --> 00:35:03.620
+<v Michael Kennedy>that's talkpython.fm/agntcy the link is in your podcast player show notes and on the episode page thank you as always to agency for supporting talk python to me i think one of the interesting things on tailwind is that you know it's kind of grouped in the utility css frameworks and i don't know that that makes any more sense to people that already know tailwind but it lets you put the css classes right onto the elements and that directly affects them because a lot of CSS frameworks have a kind of a very separated, here's your CSS and style. And then here's your, the effect it has, like if it's in a row, if it's in a container, which is in a row, which then has this property, then it has some effect. And there's a very big separation of ideas. And this is more of a, let's leverage the locality, like right on the element, you can see that it says font dash medium text-2xl.
+
+00:35:03.760 --> 00:35:05.460
+<v Michael Kennedy>Oh, okay, well, that's what the property...
+
+00:35:05.460 --> 00:35:07.480
+<v Michael Kennedy>You don't have to look anywhere else than right there, right?
+
+00:35:08.300 --> 00:35:23.720
+<v Michael Kennedy>And so it still works pretty well, I think, with NiceGUI, because as you're working in Python writing code, when you apply the style, you apply it to the thing in a real similar way to Tailwind, unlike, say, Bootstrap or something more separated.
+
+00:35:24.120 --> 00:35:24.180
+<v Rodja Trappe>Yeah.
+
+00:35:24.540 --> 00:35:31.320
+<v Rodja Trappe>Also, when you look at C# and Samuel also, they wanted to separate the layout from the content, and we decided that it's not good to do this.
+
+00:35:31.840 --> 00:35:52.380
+<v Rodja Trappe>Because when you're writing UI, this is a good example for the with statement, where you open a context to do an intent like, okay, now we have a new row, and inside the row there's another row, but we have always an intent invention so that you can look at it and you see in the code, okay, there's something new going on in Clojure.
+
+00:35:52.660 --> 00:35:59.680
+<v Rodja Trappe>And when you can then put the styling right to it, then you really know, okay, this is the point, there it's going on, and you can simply do it.
+
+00:35:59.940 --> 00:36:02.360
+<v Rodja Trappe>And of course, you can do all the abstractions you can do with Python.
+
+00:36:02.540 --> 00:36:06.980
+<v Rodja Trappe>You can make a class from that and use the component somewhere more abstract.
+
+00:36:07.130 --> 00:36:13.700
+<v Rodja Trappe>You don't need to write like 100 lines of code in UI code right from one step to the other.
+
+00:36:13.840 --> 00:36:18.760
+<v Rodja Trappe>But when you have UI code, you can really look at it and understand very good the structure of it.
+
+00:36:19.100 --> 00:36:20.000
+<v Michael Kennedy>Yeah, 100%.
+
+00:36:20.070 --> 00:36:25.220
+<v Michael Kennedy>Yeah, I'm actually, I don't know if people know, I'm a pretty big fan of C# and.NET and so on.
+
+00:36:25.460 --> 00:36:26.900
+<v Michael Kennedy>Not as much as Python, but for sure.
+
+00:36:27.030 --> 00:36:28.020
+<v Michael Kennedy>But I hate SAML.
+
+00:36:28.300 --> 00:36:29.640
+<v Michael Kennedy>I hate the way they build that.
+
+00:36:29.780 --> 00:36:31.640
+<v Michael Kennedy>It's such a frustrating framework to work in.
+
+00:36:31.900 --> 00:36:32.260
+<v Michael Kennedy>I never.
+
+00:36:33.320 --> 00:36:33.700
+<v Michael Kennedy>Interesting.
+
+00:36:33.940 --> 00:36:36.360
+<v Michael Kennedy>Astro Strongbox out there says, Love NiceGUI.
+
+00:36:36.580 --> 00:36:39.940
+<v Michael Kennedy>Building a battery pack simulation GUI plot.
+
+00:36:40.160 --> 00:36:42.380
+<v Michael Kennedy>UI.plotly.figure.classes.
+
+00:36:42.800 --> 00:36:43.600
+<v Michael Kennedy>W-full.
+
+00:36:44.040 --> 00:36:44.740
+<v Falko Schindler>H-100.
+
+00:36:45.080 --> 00:36:45.180
+<v Michael Kennedy>Boom.
+
+00:36:45.380 --> 00:36:46.080
+<v Michael Kennedy>Just like that.
+
+00:36:46.300 --> 00:36:46.540
+<v Michael Kennedy>Great.
+
+00:36:46.880 --> 00:36:47.320
+<v Falko Schindler>Yeah.
+
+00:36:47.380 --> 00:36:48.720
+<v Michael Kennedy>And that is the NiceGUI code.
+
+00:36:48.840 --> 00:36:55.700
+<v Michael Kennedy>So maybe it's a good time to start talking about, you know, how do we maybe, how do we get started working with this?
+
+00:36:55.780 --> 00:36:56.580
+<v Michael Kennedy>Let me zoom out a little.
+
+00:36:56.960 --> 00:36:58.420
+<v Michael Kennedy>So find some examples.
+
+00:36:59.420 --> 00:37:01.880
+<v Michael Kennedy>Right on the start page of our website, exactly.
+
+00:37:02.550 --> 00:37:06.040
+<v Falko Schindler>There we have basically the most minimal NiceGUI app.
+
+00:37:06.420 --> 00:37:10.760
+<v Falko Schindler>And it was always important to us that this is easy and short.
+
+00:37:11.220 --> 00:37:15.520
+<v Falko Schindler>And the minimal NiceGUI app is basically three lines of code.
+
+00:37:15.530 --> 00:37:19.240
+<v Falko Schindler>You import NiceGUI or you import UI from NiceGUI.
+
+00:37:19.960 --> 00:37:22.800
+<v Falko Schindler>You add some label, maybe UI label, hello.
+
+00:37:23.180 --> 00:37:24.640
+<v Falko Schindler>And then you write UI run.
+
+00:37:24.850 --> 00:37:27.360
+<v Falko Schindler>And this will run the UI for you, start the server.
+
+00:37:28.080 --> 00:37:31.020
+<v Falko Schindler>As a default, it auto-reloads when you change the code.
+
+00:37:31.230 --> 00:37:33.300
+<v Falko Schindler>It automatically opens the browser for you.
+
+00:37:33.640 --> 00:37:35.120
+<v Falko Schindler>So you're right on the right URL.
+
+00:37:35.740 --> 00:37:36.320
+<v Falko Schindler>And that's it.
+
+00:37:36.560 --> 00:37:37.280
+<v Falko Schindler>And your app is running.
+
+00:37:38.340 --> 00:37:38.680
+<v Michael Kennedy>All right.
+
+00:37:39.200 --> 00:37:42.060
+<v Michael Kennedy>Let's talk through what actually happens when this code runs.
+
+00:37:42.220 --> 00:37:43.440
+<v Michael Kennedy>So you run this.
+
+00:37:43.940 --> 00:37:50.560
+<v Michael Kennedy>And then this basically starts a server running UVicorn on the default port for FastAPI, which is 8,000.
+
+00:37:50.740 --> 00:37:52.180
+<v Michael Kennedy>So localhost 8,000.
+
+00:37:52.180 --> 00:37:53.400
+<v Michael Kennedy>You click that, it opens in a browser.
+
+00:37:53.900 --> 00:37:56.260
+<v Michael Kennedy>And you've got a UI element that is a label.
+
+00:37:56.460 --> 00:37:56.700
+<v Michael Kennedy>Excuse me.
+
+00:37:56.760 --> 00:37:57.180
+<v Michael Kennedy>That's a label.
+
+00:37:57.420 --> 00:37:58.400
+<v Michael Kennedy>It says, hello, NiceGUI.
+
+00:37:59.840 --> 00:38:05.940
+<v Rodja Trappe>That's unimpressive, of course, because it's just sending some HTML to the web browser and the web browser is rendering it.
+
+00:38:06.260 --> 00:38:15.140
+<v Rodja Trappe>But in the background, the web page is connecting back to the server with an ID of a client which is created on the server and says, okay, I'm connecting back.
+
+00:38:15.150 --> 00:38:17.120
+<v Rodja Trappe>I now establish a WebSocket connection.
+
+00:38:17.460 --> 00:38:20.020
+<v Rodja Trappe>And from there on, the web browser is connected to the web server.
+
+00:38:20.840 --> 00:38:27.660
+<v Rodja Trappe>And all the events which happen, like when you have a button or so, when you press it, the command is sent through the web socket to the server.
+
+00:38:28.000 --> 00:38:30.380
+<v Rodja Trappe>And then the server can decide, OK, what to do about this?
+
+00:38:30.520 --> 00:38:31.280
+<v Rodja Trappe>What is the command?
+
+00:38:31.320 --> 00:38:32.020
+<v Rodja Trappe>What should be done?
+
+00:38:32.240 --> 00:38:36.980
+<v Rodja Trappe>And then it executes the Python code and sends back the commands for the UI update to the web page.
+
+00:38:37.040 --> 00:38:42.000
+<v Rodja Trappe>And so we have this dynamic interaction very neatly packed into the web socket connection.
+
+00:38:42.780 --> 00:38:44.460
+<v Michael Kennedy>Yeah, and that's where it starts to get interesting.
+
+00:38:44.760 --> 00:38:49.500
+<v Michael Kennedy>So for example, if you pull up the docs for button, it has an on click.
+
+00:38:50.060 --> 00:38:54.320
+<v Michael Kennedy>And the thing you pass to that on click is a Python callable, right?
+
+00:38:54.610 --> 00:38:59.340
+<v Michael Kennedy>And if I go to the button in the page and I click it, stuff happens in HTML.
+
+00:38:59.510 --> 00:39:07.220
+<v Michael Kennedy>But you're telling me that's because there's a web socket that connects some kind of JavaScript trigger to a Python action on the backend.
+
+00:39:07.330 --> 00:39:07.740
+<v Michael Kennedy>Is that right?
+
+00:39:08.120 --> 00:39:08.580
+<v Rodja Trappe>Yeah, exactly.
+
+00:39:08.780 --> 00:39:39.240
+<v Rodja Trappe>In the example here, the onClickHandler is just a Lambda statement calling UINotify and then a message like "You clicked me." And then if the button is clicked, the WebSocket sends to the server that the button is clicked and then the server decides, "Okay, I have a click handler on this button and I will now execute the Python code there." UI notify will then decide, okay, when I execute, I will take the message, pack it into the WebSocket connection and send it to the browser again.
+
+00:39:39.520 --> 00:39:43.040
+<v Rodja Trappe>And the browser then decides, okay, let's show the message here in Quasar.
+
+00:39:43.920 --> 00:39:47.120
+<v Rodja Trappe>And so you see the message appearing on the screen like a pop-up.
+
+00:39:47.280 --> 00:39:54.240
+<v Michael Kennedy>And this runs in the context of a Python executable on the server, I guess, depends on how you connect to it, right?
+
+00:39:54.240 --> 00:39:55.600
+<v Michael Kennedy>It could be a desktop application.
+
+00:39:55.900 --> 00:40:02.300
+<v Michael Kennedy>runs maybe as an invisible server on your machine or in the case you described earlier on the robot
+
+00:40:03.060 --> 00:40:33.060
+<v Rodja Trappe>so on right yeah yeah or simply deployed to the cloud like um with um any framework there are a lot of things like you can simply uh host it behind an apache web server or traffic or even uh use things like uh these um what we are using a lot when we are hosting services like fly io they are hosting it, getting an IP address and the domain registration and then you can simply run all the code there.
+
+00:40:34.300 --> 00:40:34.680
+<v Michael Kennedy>That's awesome.
+
+00:40:35.740 --> 00:40:40.060
+<v Michael Kennedy>Fly.io. Interesting. How about Caddy? Have you checked out Caddy?
+
+00:40:40.240 --> 00:40:41.080
+<v Michael Kennedy>Have you guys played with this?
+
+00:40:41.720 --> 00:41:01.200
+<v Rodja Trappe>I think we have not used it a lot ourselves, but this is something people in the community ask us about or use it even and reported that it's a nice and a great server environment. Yeah. Yeah. And it seems really, it seems really interesting. One of the big selling
+
+00:41:01.400 --> 00:41:52.980
+<v Michael Kennedy>points is it automatically does SSL creation through let's encrypt. So if you set up a server and on a domain and you just access it and it doesn't have SSL yet, it'll just, as part of the first request, just create an SSL certificate, which is pretty cool. I've thought about using it, but I have 2000 lines of Nginx configuration. It's just, it's not time well spent to try to convert all that to work seamlessly with caddy it's just like you know what it works let's just not go down that so very cool all right let's go back to more um more ui elements and more programming models i think it might be fun to take a little bit of a tour of the different things that you can build you know so if i jump over here maybe let's go controls for example We talked about buttons, but you've got little groups of action buttons.
+
+00:41:54.020 --> 00:41:59.460
+<v Michael Kennedy>You've got dropdowns, a lot of different little expanding, what do you call this, floating action buttons.
+
+00:42:01.160 --> 00:42:06.580
+<v Michael Kennedy>Badges that have numbers like in macOS in your dock or on mobile phones.
+
+00:42:06.740 --> 00:42:10.600
+<v Michael Kennedy>You've got like a little icon, but then it gets a little number over it with notifications, those kinds of things.
+
+00:42:11.090 --> 00:42:15.280
+<v Michael Kennedy>Talk about some of the UI elements that you think are good building blocks.
+
+00:42:16.240 --> 00:42:17.460
+<v Falko Schindler>Yeah, you mentioned some.
+
+00:42:17.700 --> 00:42:23.880
+<v Falko Schindler>And most of them, if you check the first line of the documentation, it says based on Quasar's
+
+00:42:24.340 --> 00:42:26.680
+<v Michael Kennedy>Q button toggle or Q chip.
+
+00:42:27.280 --> 00:42:34.060
+<v Falko Schindler>And so right now you're looking at mostly the elements which were borrowed from Quasar.
+
+00:42:34.400 --> 00:42:43.560
+<v Falko Schindler>And they are mostly not that spectacular from the implementation point of view because they've just fit easily into the NiceGUI framework.
+
+00:42:44.400 --> 00:42:47.760
+<v Falko Schindler>We are writing a small wrapper class, and that's mostly it.
+
+00:42:47.760 --> 00:42:57.160
+<v Falko Schindler>We just say, use the tag Q button, and then the rest is done by view, translating the view button tag into a real button.
+
+00:42:58.420 --> 00:43:03.320
+<v Falko Schindler>Other elements need some help from our side where we adjust the front end code.
+
+00:43:04.180 --> 00:43:07.900
+<v Falko Schindler>And then there are elements like the more complex things.
+
+00:43:07.980 --> 00:43:19.300
+<v Falko Schindler>We have 3D views where we use 3JS, which is completely independent of a quasar, which we use for our robots quite a bit.
+
+00:43:20.340 --> 00:43:24.940
+<v Falko Schindler>So we implemented kind of a subset of a tiny subset of three jets.
+
+00:43:25.180 --> 00:43:30.100
+<v Falko Schindler>Three jets is just huge, but some building blocks we are using a lot.
+
+00:43:31.100 --> 00:43:36.420
+<v Falko Schindler>Some 3D objects like cubes, spheres, even 3D meshes
+
+00:43:37.720 --> 00:43:39.940
+<v Michael Kennedy>and some 2D elements.
+
+00:43:40.640 --> 00:43:46.620
+<v Falko Schindler>And you can control the camera and move it around and actively group objects, animate objects.
+
+00:43:47.020 --> 00:43:52.140
+<v Falko Schindler>And it's a quite powerful foundation for what you want to do with your robot maybe.
+
+00:43:53.560 --> 00:44:13.800
+<v Rodja Trappe>And what you can see when you look at the interface and the writing the API or so, you simply say, OK, I get it with a new UI scene. I then have with a group or with some element. And you can then write the scene STL and you load some STL file in 3D.
+
+00:44:14.000 --> 00:44:25.080
+<v Rodja Trappe>And the thing is that we try to make it very, very simple from the API that when you are writing code, that you don't have to think about what to do next and how to arrange it.
+
+00:44:25.560 --> 00:44:37.540
+<v Rodja Trappe>But you simply can write it down and then you have modifiers like.scale 0.3 that you can really say, say, okay, no, it's a little bit smaller, and here you go with auto intention and completion.
+
+00:44:38.100 --> 00:44:39.980
+<v Michael Kennedy>Yeah, you know what I really like about this?
+
+00:44:40.480 --> 00:44:50.440
+<v Michael Kennedy>That the shape of the code mirrors, the hierarchy of the code mirrors the hierarchy of the HTML and the DOM and all those kinds of things.
+
+00:44:50.530 --> 00:44:51.240
+<v Michael Kennedy>That is really nice.
+
+00:44:51.460 --> 00:44:57.560
+<v Michael Kennedy>So you have a width, you have a context manager for the grid, and then you put the things into the grid.
+
+00:44:59.050 --> 00:45:04.760
+<v Michael Kennedy>And it looks visually like the code of the things that are in the grid is indented into that area, right?
+
+00:45:05.000 --> 00:45:11.920
+<v Falko Schindler>Yeah, that's an example for two very important design decisions in our language, basically.
+
+00:45:12.320 --> 00:45:19.060
+<v Falko Schindler>The one is the with statement, which could be read as a within statement, but it's called with, but it's close enough.
+
+00:45:19.800 --> 00:45:30.040
+<v Falko Schindler>So you're saying with a grid, we are arranging these elements like this, and all elements that are nested in the with statement in the grid appear within the grid.
+
+00:45:30.300 --> 00:45:31.000
+<v Falko Schindler>That's one thing.
+
+00:45:31.280 --> 00:45:35.460
+<v Falko Schindler>And as you say, that results in a very visually clear code.
+
+00:45:35.670 --> 00:45:40.880
+<v Falko Schindler>And the other one is the builder pattern, which we strongly encourage and use a lot.
+
+00:45:41.020 --> 00:45:51.960
+<v Falko Schindler>Most modifiers like styling or event registrations or binding can be done with a method which returns the object itself.
+
+00:45:52.070 --> 00:45:58.940
+<v Falko Schindler>So you can chain them like you could scale the teapot and move it and rotate it and all in one line.
+
+00:45:59.340 --> 00:46:08.660
+<v Falko Schindler>And if you break the line, then it still looks visually grouped and you still see, okay, that's one element which is undergoing some transformations.
+
+00:46:08.960 --> 00:46:10.680
+<v Falko Schindler>And it turns out pretty nicely.
+
+00:46:11.120 --> 00:46:27.320
+<v Falko Schindler>In contrast to what we saw at the JustPy example, which was one pain point with JustPy itself, they don't do that, the automatic context switching, but they use classic add functions.
+
+00:46:27.580 --> 00:46:33.300
+<v Falko Schindler>You have to create the object first, and then you can create the container, and then you can add the object to the container.
+
+00:46:33.800 --> 00:46:39.520
+<v Falko Schindler>And in the end, you lose complete control over the structure of the UI.
+
+00:46:40.300 --> 00:46:41.620
+<v Falko Schindler>The code doesn't match the UI.
+
+00:46:42.120 --> 00:46:42.840
+<v Michael Kennedy>And that's what we...
+
+00:46:42.840 --> 00:46:47.360
+<v Michael Kennedy>It's really tough to figure out when it gets to be a complicated UI setup.
+
+00:46:47.640 --> 00:46:55.220
+<v Michael Kennedy>And it's fine for automation to write this kind of code if you had a builder sort of thing, but it's not good to read.
+
+00:46:55.440 --> 00:46:55.940
+<v Rodja Trappe>Yeah, exactly.
+
+00:46:56.520 --> 00:46:56.680
+<v Michael Kennedy>Yeah.
+
+00:46:57.220 --> 00:47:14.020
+<v Rodja Trappe>Another interesting element could be the interactive image, which we came up with because the normal image from Quasar is very powerful, but could not do overlays where you can paint on the object in image coordinates.
+
+00:47:14.600 --> 00:47:35.100
+<v Rodja Trappe>And so now the interactive image where you can simply click and do annotations like drawing circles and getting mouse events back from the image coordinates, which we use for annotating images for AI trainings and so, but also to overlay camera data and things like that.
+
+00:47:35.400 --> 00:47:37.960
+<v Rodja Trappe>Also, the image can be very efficiently updated.
+
+00:47:38.200 --> 00:47:42.400
+<v Rodja Trappe>So we simply update the image content.
+
+00:47:42.880 --> 00:47:50.780
+<v Rodja Trappe>And when we send the data back to the browser, only when the browser really decides, "Okay, now I can load a new image," then it will update the image.
+
+00:47:50.980 --> 00:48:05.900
+<v Rodja Trappe>So if you have a lower bandwidth connection and you send update images 30 times per second and the connection only can do two images per second, then it will only load two images per second And you have automatic frame control with that.
+
+00:48:06.360 --> 00:48:06.780
+<v Michael Kennedy>Very cool.
+
+00:48:07.120 --> 00:48:08.080
+<v Michael Kennedy>Yeah, that's amazing.
+
+00:48:08.540 --> 00:48:14.900
+<v Michael Kennedy>So I think I want to focus a little bit more on some UI elements and some building concepts to drive home a few points.
+
+00:48:15.280 --> 00:48:20.120
+<v Michael Kennedy>And then maybe we can talk some of the deployment, the 3.0 side of things.
+
+00:48:20.500 --> 00:48:23.760
+<v Michael Kennedy>So that's a very interesting question in the chat.
+
+00:48:23.860 --> 00:48:24.940
+<v Michael Kennedy>We'll come to that.
+
+00:48:25.260 --> 00:48:32.440
+<v Michael Kennedy>So one of the things I want to talk about is subpages and building basically how do you build.
+
+00:48:32.640 --> 00:48:35.000
+<v Michael Kennedy>So these are all really interesting building blocks, right?
+
+00:48:35.280 --> 00:48:37.140
+<v Michael Kennedy>Each of these have been super impressive.
+
+00:48:37.740 --> 00:48:43.420
+<v Michael Kennedy>But how do I create something that has the feeling of more than one page?
+
+00:48:43.420 --> 00:48:44.460
+<v Michael Kennedy>How do I navigate around?
+
+00:48:44.620 --> 00:48:48.800
+<v Michael Kennedy>How do I give it like a navigational structure and elements and so on?
+
+00:48:49.460 --> 00:48:51.740
+<v Michael Kennedy>So, yeah, maybe talk a bit about that.
+
+00:48:52.660 --> 00:49:07.280
+<v Rodja Trappe>The basic idea of what comes from FastAPI is simply you send a get request via browser and you get a webpage and then you look at it and when you click on a link, then you send another GET request and you get another page and you show it.
+
+00:49:07.520 --> 00:49:11.620
+<v Rodja Trappe>So this is the normal way and this is what NiceGuy supports from day one.
+
+00:49:12.540 --> 00:49:40.140
+<v Rodja Trappe>But now in preparation for our 3.0 release, we also introduced the sub-page concept where you simply have support for a single page application. You only once connect to the server, get your image, get your website, and then you can say, okay, there's a subpage. And if I click that, then the content will be replaced, cleared, and drawn anew with another function. And so you can
+
+00:49:40.540 --> 00:49:53.240
+<v Michael Kennedy>navigate on the page and it's much, much faster. Yeah, that's, and it's support, it's more spa friendly, single page application friendly, which potentially you could right click on and say,
+
+00:49:53.400 --> 00:50:25.300
+<v Rodja Trappe>install. Yeah, exactly. The single page application sounds so easy from the concept. So we did a few runs and edits to get the API right and to get everything into place. And if you look at the code, it's really demanding from the maintainer point of view because there's a lot going on. You need to rewrite the history of the browser so back and forth buttons are working correctly and nested sub pages so sub pages in sub pages and stuff like that you need to all support that it was really
+
+00:50:25.480 --> 00:50:35.360
+<v Michael Kennedy>you could take a take a grab the url and then like send it to somebody and they have to open it as they go to the right place all these things are hard yeah yeah so is this something sorry go
+
+00:50:35.360 --> 00:51:02.160
+<v Falko Schindler>ahead falker um the documentation page itself uses the sub page uh concept which is basically a single page application um uh our way of writing single page applications so if you uh open the menu and jump from one subject to another. This is all done without reloading, without sending new get requests to the server, just swapping the content, and that's much faster. Yeah, that's cool.
+
+00:51:02.200 --> 00:51:08.000
+<v Michael Kennedy>And if I right-click on it, I can say install page as an app, right? That's pretty awesome.
+
+00:51:08.560 --> 00:51:12.720
+<v Michael Kennedy>I'm actually a huge fan of single-page applications. I think it's really great.
+
+00:51:12.880 --> 00:51:16.320
+<v Michael Kennedy>You know, you can save it into your doc or your taskbar.
+
+00:51:16.860 --> 00:51:18.400
+<v Michael Kennedy>And sure, it's just a web page.
+
+00:51:19.200 --> 00:51:26.940
+<v Michael Kennedy>But it actually, I think it makes a really big difference to have it there just appearing to you as a separate thing.
+
+00:51:26.960 --> 00:51:31.320
+<v Michael Kennedy>You can command tab or alt tab between them easier, all sorts of stuff.
+
+00:51:31.620 --> 00:51:38.760
+<v Rodja Trappe>Yeah, the web is really the most powerful application engine you have ever got.
+
+00:51:38.840 --> 00:51:53.980
+<v Rodja Trappe>So running web pages as desktop applications like Electron or like your Proton idea was that you say, okay, there's something and we support this.
+
+00:51:53.980 --> 00:51:59.360
+<v Rodja Trappe>With NiceGuy, you can simply write, okay, I will have a native true argument in the UI run.
+
+00:51:59.580 --> 00:52:02.840
+<v Rodja Trappe>And then you start it up and it's really enclosed in a window.
+
+00:52:03.710 --> 00:52:06.200
+<v Rodja Trappe>But it's still running the web application there.
+
+00:52:06.280 --> 00:52:11.240
+<v Rodja Trappe>And because the web is so powerful and with NiceGuy, you can get access to all these powerful features.
+
+00:52:11.580 --> 00:52:16.860
+<v Rodja Trappe>You can really write very nice applications right now with all the interaction simply in Python.
+
+00:52:17.200 --> 00:52:17.580
+<v Michael Kennedy>Yeah.
+
+00:52:18.000 --> 00:52:18.160
+<v Michael Kennedy>All right.
+
+00:52:18.600 --> 00:52:24.020
+<v Michael Kennedy>Let's talk a little more deployment before we jump into the 3.0 features.
+
+00:52:24.640 --> 00:52:27.400
+<v Michael Kennedy>So first of all, you've got UI.run.
+
+00:52:27.400 --> 00:52:30.760
+<v Michael Kennedy>And that was even in your three-line example that appears at the end.
+
+00:52:31.080 --> 00:52:36.700
+<v Michael Kennedy>you pass a bunch of commands like reload false and those sorts of things, right?
+
+00:52:37.800 --> 00:53:01.780
+<v Michael Kennedy>In order to give it more of a high performance perspective instead of watching for reloads and that kind of stuff. With that one, I can just go and put it into, you know, like running on my server in a VM point engine X or caddy or whatever at the local host port and set up an SSL certificate get and just turn it into a proper web application, right? Because it's basically FastAPI on that end,
+
+00:53:01.780 --> 00:53:25.400
+<v Rodja Trappe>right? So it's simply starting the server and then it opens support and you can access it however you like and how you want your deployment to be. But I think one of the interesting feature requests from the community was that they have an existing FastAPI application and they want to add some UI to it. And the interesting part is that it's really easy because it's all FastAPI, So we could sub-mount it.
+
+00:53:25.810 --> 00:53:35.180
+<v Rodja Trappe>And there's a UI run with statement where you can say, okay, I want to run this with another FAS API app behind that.
+
+00:53:35.370 --> 00:53:41.920
+<v Rodja Trappe>And then you give a sub-path and then all your application is running on another FAS API app.
+
+00:53:42.540 --> 00:53:43.000
+<v Michael Kennedy>Interesting.
+
+00:53:43.430 --> 00:53:43.580
+<v Michael Kennedy>Okay.
+
+00:53:44.340 --> 00:53:49.500
+<v Michael Kennedy>And I guess because it's running on U of Ecorn, that's already a production Python app server.
+
+00:53:49.960 --> 00:54:02.300
+<v Michael Kennedy>But one of the things that happens frequently when you put stuff into production for more than just a small project is you have a web garden, I guess it's called, where we have multiple workers of UVicorn or something like that.
+
+00:54:02.420 --> 00:54:04.060
+<v Michael Kennedy>And that works okay if you set it up that way.
+
+00:54:04.100 --> 00:54:05.800
+<v Rodja Trappe>It's not some kind of weird issue.
+
+00:54:06.380 --> 00:54:17.980
+<v Rodja Trappe>The main problem is that the NiceGUI architecture demands that the web socket connection comes back to the same server to find the ID.
+
+00:54:18.400 --> 00:54:24.760
+<v Michael Kennedy>And if you have multiple workers, then there's round robin from the unicorn to send it to some of the other workers.
+
+00:54:24.820 --> 00:54:26.900
+<v Rodja Trappe>And maybe the worker doesn't know about it.
+
+00:54:27.620 --> 00:54:41.100
+<v Rodja Trappe>We recently introduced a feature, or maybe it's a year ago already, that we support a storage space where you get access to via Redis.
+
+00:54:41.360 --> 00:54:45.860
+<v Rodja Trappe>So you can get the data stored from the user again or so.
+
+00:54:46.120 --> 00:54:54.740
+<v Rodja Trappe>then you only need a proxy server which can have sticky sessions where you connect to the server and it routes you back to the right server instance.
+
+00:54:55.070 --> 00:54:59.240
+<v Michael Kennedy>And so you can really get a lot of instances running.
+
+00:54:59.950 --> 00:55:03.240
+<v Rodja Trappe>And we do this for the documentation page, which is crazy.
+
+00:55:03.700 --> 00:55:10.940
+<v Rodja Trappe>Also deployed around the world so that in Taiwan, they are also having a nice snappy interface.
+
+00:55:11.150 --> 00:55:17.880
+<v Rodja Trappe>So we need to run, like, it's now 30 servers or so to have really at the edge all the documentation ready.
+
+00:55:18.360 --> 00:55:19.420
+<v Michael Kennedy>Wow, that's amazing.
+
+00:55:19.680 --> 00:55:20.260
+<v Michael Kennedy>That's so cool.
+
+00:55:21.780 --> 00:55:22.740
+<v Michael Kennedy>So you mentioned Redis.
+
+00:55:23.140 --> 00:55:24.200
+<v Michael Kennedy>What about Valkey?
+
+00:55:24.420 --> 00:55:25.220
+<v Michael Kennedy>Are you familiar with Valkey?
+
+00:55:25.220 --> 00:55:27.520
+<v Michael Kennedy>I imagine you could probably just swap it off.
+
+00:55:27.820 --> 00:55:31.060
+<v Rodja Trappe>Yeah, it could work very similar, I guess.
+
+00:55:32.580 --> 00:55:40.480
+<v Rodja Trappe>We have not tested it yet, to be true, but I think from the concept space, it's the same.
+
+00:55:40.620 --> 00:55:45.400
+<v Rodja Trappe>You need to really store the data and get it back to get the synchronization right.
+
+00:55:45.760 --> 00:55:49.740
+<v Michael Kennedy>Yeah, I think Valkeyis basically was forked from Redis.
+
+00:55:49.880 --> 00:55:52.700
+<v Michael Kennedy>So it probably, it might be able to just work.
+
+00:55:53.180 --> 00:55:54.140
+<v Rodja Trappe>Okay, yeah, yeah.
+
+00:55:54.440 --> 00:55:55.440
+<v Rodja Trappe>Could be that too simple.
+
+00:55:55.760 --> 00:56:01.420
+<v Michael Kennedy>Yeah, because I think Redis changed their license in ways that some people were frustrated with or didn't work for them.
+
+00:56:01.780 --> 00:56:05.860
+<v Michael Kennedy>So a group said, okay, well, there was a really permissive license not too long ago.
+
+00:56:06.180 --> 00:56:08.120
+<v Michael Kennedy>We're going to make a version of that basically.
+
+00:56:08.740 --> 00:56:10.140
+<v Rodja Trappe>Yeah, so it could work out of the box.
+
+00:56:10.660 --> 00:56:11.060
+<v Rodja Trappe>Worth a try.
+
+00:56:11.760 --> 00:56:12.620
+<v Michael Kennedy>I have not tried it.
+
+00:56:12.720 --> 00:56:14.680
+<v Rodja Trappe>I mean, let's be sure.
+
+00:56:14.740 --> 00:56:17.700
+<v Michael Kennedy>Okay, a couple other options here that I think are interesting.
+
+00:56:18.180 --> 00:56:20.680
+<v Michael Kennedy>I'm a big fan of Docker and Docker Compose.
+
+00:56:21.940 --> 00:56:26.300
+<v Michael Kennedy>And you all provide a really interesting way to just run it in Docker.
+
+00:56:26.600 --> 00:56:35.600
+<v Michael Kennedy>So a lot of times I find, okay, I'm building, I'm going to deploy an app, so I'm going to copy my code over and set up a, maybe I'd set up UVicorn in that Docker image and then run it.
+
+00:56:35.820 --> 00:56:39.060
+<v Michael Kennedy>But because it's all the, you already have that as a concept of it.
+
+00:56:39.100 --> 00:56:45.640
+<v Michael Kennedy>You guys have a NiceGUI image and you just map to the source and run it, which I think is actually really nice.
+
+00:56:46.080 --> 00:56:46.140
+<v Rodja Trappe>Yeah.
+
+00:56:46.490 --> 00:56:49.180
+<v Rodja Trappe>Yeah, it helps to make deployments a little bit easier.
+
+00:56:50.460 --> 00:57:09.040
+<v Rodja Trappe>And the NiceGUI image we deploy there has also some fancy features like having a non-root environment where you can simply have your group ID and things you normally not want at the first start when you do it.
+
+00:57:09.080 --> 00:57:11.720
+<v Rodja Trappe>but when you are going into production, you really need that.
+
+00:57:12.500 --> 00:57:14.800
+<v Rodja Trappe>And it's all packaged away in the stocker container already.
+
+00:57:14.960 --> 00:57:17.860
+<v Rodja Trappe>So you can simply use that for running and deploying.
+
+00:57:18.520 --> 00:57:20.180
+<v Michael Kennedy>Yeah. Yeah. Yeah. Very cool. All right.
+
+00:57:21.020 --> 00:57:33.880
+<v Michael Kennedy>I do want to leave just at least a little bit of time to talk about the 3.0 direction, but the one that there's one here, that's just, we got to talk about it. It's native. Yeah. This, this is incredible. This is the proton, right? Yeah, exactly.
+
+00:57:34.470 --> 00:57:36.380
+<v Michael Kennedy>You guys tell me about this. This is great.
+
+00:57:37.200 --> 00:58:03.000
+<v Falko Schindler>Yeah, when you run UI run, when you call UI run, you have a parameter native and you will set it to true. And then there is no web browser opening, but a native window. And what used to be a website is now running inside this native window. And yeah, it's behaving like a native app and you don't notice that it's actually a website running.
+
+00:58:03.200 --> 00:58:07.620
+<v Michael Kennedy>Yeah, because it uses PyInstaller, or you can use PyInstaller to package it up.
+
+00:58:07.880 --> 00:58:09.100
+<v Michael Kennedy>That's the next step, yeah, of course.
+
+00:58:09.120 --> 00:58:14.680
+<v Falko Schindler>You can take this app, or you can also use a regular app, which is not native, I guess.
+
+00:58:14.800 --> 00:58:15.340
+<v Falko Schindler>I'm not sure.
+
+00:58:16.340 --> 00:58:21.480
+<v Falko Schindler>But yeah, once you have a native app, you can package it, and then you can distribute it much easier.
+
+00:58:23.240 --> 00:58:24.860
+<v Falko Schindler>Let me throw an idea out there for you.
+
+00:58:26.080 --> 00:58:32.340
+<v Michael Kennedy>With either PIPX or uv, you can basically install something from PyPI, right?
+
+00:58:32.820 --> 00:58:37.280
+<v Michael Kennedy>In there, you can set a entry point, like my app or whatever, right?
+
+00:58:37.300 --> 00:58:37.900
+<v Michael Kennedy>Give it a good name.
+
+00:58:38.280 --> 00:58:45.460
+<v Michael Kennedy>And then, so you could just say uvx space, like the name of your package, you know, run, yeah, uvx space package, right?
+
+00:58:45.560 --> 00:58:50.780
+<v Michael Kennedy>And it'll just run it and it'll download it and run it from the virtual environment like you need.
+
+00:58:50.860 --> 00:58:59.040
+<v Michael Kennedy>I think people could start shipping GUI apps that look like native windows just using uv and uvx.
+
+00:58:59.420 --> 00:58:59.660
+<v Falko Schindler>Yeah.
+
+00:58:59.940 --> 00:59:00.680
+<v Falko Schindler>Have you tried this?
+
+00:59:01.140 --> 00:59:02.220
+<v Falko Schindler>We haven't tried it.
+
+00:59:02.240 --> 00:59:09.940
+<v Falko Schindler>But we're just beginning to work with UE and UEX, but UEX is a really powerful tool.
+
+00:59:10.500 --> 00:59:10.860
+<v Falko Schindler>You're right.
+
+00:59:11.850 --> 00:59:19.880
+<v Michael Kennedy>Yeah, and if you just put an entry point or a script entry into the PyProject.toml, then that would do the launch.
+
+00:59:20.020 --> 00:59:22.200
+<v Michael Kennedy>And then if you run it as native, it would show up without a terminal.
+
+00:59:22.880 --> 00:59:24.520
+<v Falko Schindler>And you wouldn't even need to package it, right?
+
+00:59:25.070 --> 00:59:25.440
+<v Falko Schindler>Yes, exactly.
+
+00:59:26.940 --> 00:59:29.540
+<v Michael Kennedy>Yeah, you wouldn't have to package it at all, and it would be cross-platform.
+
+00:59:30.300 --> 00:59:31.580
+<v Rodja Trappe>That's an intriguing idea.
+
+00:59:31.860 --> 00:59:33.760
+<v Rodja Trappe>Maybe someone has already done it.
+
+00:59:34.160 --> 00:59:36.760
+<v Rodja Trappe>So if so, please leave a comment there.
+
+00:59:38.280 --> 00:59:38.880
+<v Michael Kennedy>Indeed, indeed.
+
+00:59:40.580 --> 00:59:43.640
+<v Michael Kennedy>Okay, let's talk about 3.0.
+
+00:59:43.640 --> 00:59:55.280
+<v Michael Kennedy>So if I go to the GitHub right now, and I unzoom my window and go to releases, we're on 2.24.2, but I know really soon you are going to be releasing 3.0.
+
+00:59:55.280 --> 00:59:56.980
+<v Michael Kennedy>You have plans for some really cool features.
+
+00:59:57.600 --> 01:00:06.280
+<v Michael Kennedy>And sort of the title of this podcast was like, Let's celebrate both NiceGUI and then sort of a milestone of you guys reaching that.
+
+01:00:07.740 --> 01:00:12.000
+<v Michael Kennedy>Most of the people will be listening in like four weeks, so you got a little time before.
+
+01:00:12.800 --> 01:00:15.480
+<v Michael Kennedy>But let's just talk about what's coming in 3.0.
+
+01:00:15.750 --> 01:00:17.440
+<v Falko Schindler>You can scroll a little bit down.
+
+01:00:17.820 --> 01:00:19.280
+<v Falko Schindler>There you'll find the release candidate.
+
+01:00:20.400 --> 01:00:20.620
+<v Michael Kennedy>Ooh.
+
+01:00:21.220 --> 01:00:21.380
+<v Falko Schindler>Around.
+
+01:00:22.060 --> 01:00:22.500
+<v Falko Schindler>There we are.
+
+01:00:22.820 --> 01:00:23.100
+<v Falko Schindler>Yeah.
+
+01:00:23.460 --> 01:00:23.800
+<v Falko Schindler>There it is.
+
+01:00:24.660 --> 01:00:26.820
+<v Falko Schindler>Three weeks ago, we released release candidate one.
+
+01:00:26.870 --> 01:00:29.940
+<v Falko Schindler>That was before I went on vacation for two weeks.
+
+01:00:30.620 --> 01:00:37.460
+<v Falko Schindler>And yeah, we are in the last steps, maybe a few days ahead of releasing 3.0.
+
+01:00:38.120 --> 01:00:45.480
+<v Falko Schindler>And yeah, it started with some housekeeping and basically no big breaking changes.
+
+01:00:45.960 --> 01:00:56.860
+<v Falko Schindler>And we just wanted to update all dependencies like upgrading from, well, the most important thing was upgrading Tailwind, which is on version 4 for a while now.
+
+01:00:56.960 --> 01:00:59.780
+<v Falko Schindler>and we've still been using version 3.
+
+01:01:01.020 --> 01:01:08.740
+<v Falko Schindler>But as it turns out, of course, there are some nasty changes that we have to account for so our users don't have to.
+
+01:01:08.910 --> 01:01:14.500
+<v Falko Schindler>And that's why it takes quite a while to tackle all tiny difficulties.
+
+01:01:15.240 --> 01:01:30.600
+<v Falko Schindler>So that we are trying to release a major version once a year, around once a year, to get all dependencies up to date and that people are not confused on the tailwind documentation, there's a feature which NiceGUI doesn't have.
+
+01:01:30.840 --> 01:01:32.560
+<v Falko Schindler>And of course, it depends on the version.
+
+01:01:34.020 --> 01:01:48.460
+<v Falko Schindler>But at that time, once in the year, we are liberal. We are free to break some things, but we only want to do it once. So we have to be careful to do it right. And we can't change it a few weeks later again.
+
+01:01:49.660 --> 01:02:10.600
+<v Falko Schindler>And we want to have only breaking changes that are okay to migrate. We want to have a migration guide and no nasty things that you only find when you're reading all your code again and with the changes in mind. That's why it can become a bit difficult. Yeah. The new release is really,
+
+01:02:11.160 --> 01:02:56.520
+<v Rodja Trappe>like the major version, is really challenging, but also a good point where we can introduce very great and new features which help the code base and NiceGUI to evolve into the thing we envisioned there. And one of the great things we did there is we have this now a new root parameter where you can say UIRun and then you pass one page like a function, simply a function there, and this will be the main page. So it's much more single page application friendly. You simply have one function and you pass it into the UIRun and this is your page. And then inside you can use UI page, subpages, to create subpages, which are then single pages running.
+
+01:02:56.740 --> 01:02:58.600
+<v Rodja Trappe>And so it makes it much more easier.
+
+01:02:58.890 --> 01:03:07.820
+<v Rodja Trappe>You don't have these boilerplate annotations, at UI page, and then some URL parameters or so, but you can streamline that a little bit.
+
+01:03:07.940 --> 01:03:11.200
+<v Rodja Trappe>And things like that are really nice to have in a framework.
+
+01:03:11.480 --> 01:03:12.580
+<v Michael Kennedy>Yeah, that sounds really great.
+
+01:03:13.140 --> 01:03:15.080
+<v Michael Kennedy>Will it have full spa support?
+
+01:03:15.610 --> 01:03:19.040
+<v Michael Kennedy>If somebody writes an app that way, could they right click and say install page?
+
+01:03:19.440 --> 01:03:24.660
+<v Michael Kennedy>or install this app so it'll have serviceworker.js and all that kind of business?
+
+01:03:24.970 --> 01:04:09.380
+<v Rodja Trappe>Yeah, you can basically do it. We don't have a Python API for the service workers yet, but of course you can always write your special JavaScript or HTML code and pass it along with your Python code and then you can get the data there. But most of the applications when you write them with NiceGUI they rely on this server connection so if you are offline it doesn't make so much sense to to use it and um but still there are if you install something on your desktop um and you connect to it back then of course if you have an internet connection you can load everything and um be right back where you left yeah yeah i think there's two
+
+01:04:09.480 --> 01:04:20.680
+<v Michael Kennedy>parts to single page applications more like pwas i guess is the way i want to say it exactly and I know one of the ideas is it can completely work offline
+
+01:04:20.970 --> 01:04:22.880
+<v Michael Kennedy>and it uses local DB and all.
+
+01:04:22.930 --> 01:04:25.620
+<v Michael Kennedy>And it's just an app that runs locally.
+
+01:04:25.710 --> 01:04:30.540
+<v Michael Kennedy>But I think a lot of apps need the server to be doing anything interesting anyway.
+
+01:04:31.420 --> 01:04:33.760
+<v Michael Kennedy>You've got to have a very complicated app to do.
+
+01:04:33.940 --> 01:04:38.440
+<v Michael Kennedy>If I was building Notion but 100% offline, that's a really complicated app.
+
+01:04:38.700 --> 01:04:43.600
+<v Michael Kennedy>But I think it's also really nice to have an app model for the way you interact with it.
+
+01:04:43.920 --> 01:04:45.620
+<v Michael Kennedy>So you don't have all the Chrome around.
+
+01:04:46.100 --> 01:04:48.240
+<v Michael Kennedy>If you close your browser, you don't necessarily close that.
+
+01:04:48.880 --> 01:04:55.140
+<v Michael Kennedy>But also just the speed of loading, you can cache a bunch of things potentially and then sync them with the server.
+
+01:04:55.320 --> 01:04:59.580
+<v Michael Kennedy>I think there's still a lot of interesting benefits, even if it requires being connected to work.
+
+01:04:59.780 --> 01:05:00.560
+<v Rodja Trappe>Yeah, totally true.
+
+01:05:01.540 --> 01:05:05.920
+<v Michael Kennedy>Okay, a couple of questions real quick, and then we're out of time.
+
+01:05:06.280 --> 01:05:26.500
+<v Michael Kennedy>First, Alan out there says, will 3.0 have LLM-friendly docs in the sense that could I download something that I could put into my project and tell my agentic coding agent, anytime you need to know about it, this is the one, look here, and then not have to have it always searching different parts of the web and so on.
+
+01:05:28.160 --> 01:05:33.400
+<v Falko Schindler>Rodja, remind me, we do have an endpoint for AIs already, right?
+
+01:05:33.740 --> 01:05:33.840
+<v Rodja Trappe>Yeah.
+
+01:05:34.320 --> 01:05:45.020
+<v Falko Schindler>We don't have the rendered documentation in a single page format, but we prepared for AIs.
+
+01:05:45.260 --> 01:05:45.420
+<v Falko Schindler>Yeah.
+
+01:05:45.620 --> 01:05:53.780
+<v Rodja Trappe>When you look at the documentation implementation, it's simply Python code running through our PyDocs and getting all the strings out.
+
+01:05:53.960 --> 01:06:01.760
+<v Rodja Trappe>And the same mechanics is used to build a text version only, dump down version where you simply have a TXT file.
+
+01:06:02.200 --> 01:06:05.100
+<v Rodja Trappe>And I think we provided it a year ago or so already.
+
+01:06:06.900 --> 01:06:11.960
+<v Rodja Trappe>And right now the LLMs not know everything of NiceGuy, but a lot.
+
+01:06:12.120 --> 01:06:17.440
+<v Rodja Trappe>But if you put this URL in there to have a documentation lookup, it's much, much better.
+
+01:06:17.960 --> 01:06:19.140
+<v Michael Kennedy>Okay, that's really awesome.
+
+01:06:19.540 --> 01:06:20.940
+<v Michael Kennedy>What about an MCP server?
+
+01:06:21.420 --> 01:06:22.480
+<v Rodja Trappe>Have you considered this?
+
+01:06:22.560 --> 01:06:24.720
+<v Michael Kennedy>I think it's probably not super different.
+
+01:06:25.180 --> 01:06:27.280
+<v Rodja Trappe>It could be a worthwhile addition.
+
+01:06:27.660 --> 01:06:30.780
+<v Rodja Trappe>We have not taken the time to do it.
+
+01:06:30.920 --> 01:06:35.280
+<v Rodja Trappe>But, of course, contributions in that area would be really nice to make it even better.
+
+01:06:35.720 --> 01:06:44.580
+<v Rodja Trappe>I think there are also two ChatGPT endpoints which are primed to answer questions for that.
+
+01:06:45.250 --> 01:06:45.700
+<v Michael Kennedy>At least two.
+
+01:06:46.960 --> 01:06:47.640
+<v Michael Kennedy>What's the URL?
+
+01:06:47.790 --> 01:06:49.700
+<v Michael Kennedy>How do I find it so I can put it in the show notes?
+
+01:06:50.620 --> 01:06:51.020
+<v Rodja Trappe>Do you know?
+
+01:06:51.050 --> 01:06:51.180
+<v Rodja Trappe>I don't know.
+
+01:06:51.760 --> 01:06:51.940
+<v Michael Kennedy>All right.
+
+01:06:52.430 --> 01:06:53.000
+<v Michael Kennedy>Give it to me later.
+
+01:06:53.050 --> 01:06:53.700
+<v Michael Kennedy>We'll put it in the show notes.
+
+01:06:53.770 --> 01:06:54.460
+<v Michael Kennedy>Yeah, give it to me later.
+
+01:06:54.530 --> 01:06:54.980
+<v Michael Kennedy>Give it to me later.
+
+01:06:55.460 --> 01:06:55.600
+<v Michael Kennedy>Okay.
+
+01:06:55.730 --> 01:07:07.500
+<v Michael Kennedy>And then another one is I have a friend who's building really interesting full-fledged SaaS type of application applications using NiceGuy.
+
+01:07:07.520 --> 01:07:10.300
+<v Michael Kennedy>And it looks so impressive, what they're building.
+
+01:07:10.320 --> 01:07:10.680
+<v Michael Kennedy>It's great.
+
+01:07:11.860 --> 01:07:20.700
+<v Michael Kennedy>But what about authentication, multi-tenants, so certain people can only see their data versus all the data?
+
+01:07:22.140 --> 01:07:26.180
+<v Michael Kennedy>What's the authentication and multi-tenancy, I guess?
+
+01:07:26.780 --> 01:07:32.660
+<v Rodja Trappe>Basically, because we are running FastAPI, you can do anything what FastAPI can do with authentication.
+
+01:07:33.240 --> 01:07:43.280
+<v Rodja Trappe>And we also have quite a few examples on the webpage where you can see, okay, how to do OAuth authentication with Google or Runtab authentications.
+
+01:07:44.140 --> 01:07:49.080
+<v Rodja Trappe>You could simply build a passphrase input and do a login.
+
+01:07:49.510 --> 01:07:54.040
+<v Rodja Trappe>Because when you are looking at it, it's simply a decision what to show the user.
+
+01:07:54.360 --> 01:07:59.140
+<v Rodja Trappe>And you have Python at your hands, so you can decide whatever you want.
+
+01:07:59.640 --> 01:08:09.600
+<v Rodja Trappe>And you can load the right data from a database or use our local storage system where you can ask, okay, for the user, what are the configurations?
+
+01:08:09.830 --> 01:08:11.440
+<v Rodja Trappe>What is he allowed to see?
+
+01:08:11.620 --> 01:08:12.740
+<v Rodja Trappe>What are the permissions?
+
+01:08:12.950 --> 01:08:15.440
+<v Rodja Trappe>And you can store it there and you can retrieve it from there.
+
+01:08:15.440 --> 01:08:26.160
+<v Rodja Trappe>And it's a cookie-signed process, which is a web cookie, which is pretty safe and is right the way to do the authentication.
+
+01:08:26.880 --> 01:08:27.060
+<v Michael Kennedy>Yeah.
+
+01:08:27.069 --> 01:08:27.180
+<v Michael Kennedy>Yeah.
+
+01:08:27.250 --> 01:08:27.359
+<v Michael Kennedy>Okay.
+
+01:08:27.880 --> 01:08:28.080
+<v Michael Kennedy>Fantastic.
+
+01:08:28.640 --> 01:08:41.640
+<v Michael Kennedy>And a couple of people have asked, including SilverBlade says, will it be possible to switch from Quasar to something else, or would it be possible to switch Tailwind for another utility-type framework like Bulma or something like that?
+
+01:08:42.420 --> 01:08:43.020
+<v Falko Schindler>That's a good question.
+
+01:08:44.100 --> 01:08:46.380
+<v Falko Schindler>Right now, starting with Tailwind.
+
+01:08:46.799 --> 01:08:50.279
+<v Falko Schindler>Tailwind is already a pretty thin layer on top.
+
+01:08:50.640 --> 01:08:54.720
+<v Falko Schindler>You can already disable Tailwind, and NiceGUI runs without Tailwind support.
+
+01:08:55.319 --> 01:09:00.839
+<v Falko Schindler>And you can pretty easily add other frameworks like Bulma as far as...
+
+01:09:00.839 --> 01:09:04.740
+<v Falko Schindler>I haven't tried it, but it looks like you just have to add a CSS file.
+
+01:09:05.350 --> 01:09:07.220
+<v Falko Schindler>You can simply add it to your...
+
+01:09:07.220 --> 01:09:07.640
+<v Michael Kennedy>Yeah, that's right.
+
+01:09:07.640 --> 01:09:09.480
+<v Michael Kennedy>You literally just include the CSS file.
+
+01:09:09.480 --> 01:09:10.319
+<v Michael Kennedy>There's no build steps.
+
+01:09:10.450 --> 01:09:12.259
+<v Michael Kennedy>And then you just use utility classes there.
+
+01:09:12.330 --> 01:09:13.580
+<v Michael Kennedy>So it's plausible.
+
+01:09:14.120 --> 01:09:14.520
+<v Falko Schindler>Exactly.
+
+01:09:14.609 --> 01:09:20.640
+<v Falko Schindler>And because NiceGUI is pretty agnostic when it comes to classes, you can simply add classes to your elements.
+
+01:09:20.830 --> 01:09:24.920
+<v Falko Schindler>And then they will use Bulma if you loaded Bulma.
+
+01:09:24.940 --> 01:09:49.540
+<v Falko Schindler>So that's pretty easy. We can think about official support that you can switch between frameworks. Yeah, that could be a feature request we could be thinking about. The more difficult thing is replacing Quasar because the Python implementation of these elements is pretty tightly coupled to the framework.
+
+01:09:50.819 --> 01:09:55.820
+<v Falko Schindler>a quasar button behaves a bit differently than maybe some other button.
+
+01:09:56.320 --> 01:10:06.140
+<v Falko Schindler>So that's where we would probably have to implement new elements, maybe with a different name or we have to use some global switch.
+
+01:10:06.580 --> 01:10:17.600
+<v Falko Schindler>It is not planned right now, but it's not completely off the table because sometimes we get asked if we could get a more modern feel for NiceGUI apps.
+
+01:10:17.640 --> 01:10:20.640
+<v Falko Schindler>And Quasar is already a bit dated.
+
+01:10:21.320 --> 01:10:24.780
+<v Falko Schindler>The material design is not the very newest.
+
+01:10:25.720 --> 01:10:26.500
+<v Michael Kennedy>I do like it, though.
+
+01:10:26.600 --> 01:10:28.960
+<v Michael Kennedy>It looks clean and friendly.
+
+01:10:29.170 --> 01:10:32.520
+<v Falko Schindler>Especially if you deviate a little bit from the standards.
+
+01:10:32.750 --> 01:10:38.400
+<v Falko Schindler>If you remove the shadow, make sharp edges or something, which is pretty easy and nice to do globally.
+
+01:10:38.510 --> 01:10:41.180
+<v Michael Kennedy>You can say all my buttons should have these props.
+
+01:10:42.080 --> 01:10:45.400
+<v Falko Schindler>Then you can build pretty nice apps, I guess, even with Quasar.
+
+01:10:46.520 --> 01:10:58.760
+<v Falko Schindler>But last days, I spent so much time with Quasar Tailwind and their CSS layers, because Tailwind 4 introduced CSS layers.
+
+01:10:59.450 --> 01:11:02.400
+<v Falko Schindler>Or they don't introduce it, but they are using them right now.
+
+01:11:02.920 --> 01:11:03.640
+<v Falko Schindler>Quasar does not.
+
+01:11:03.790 --> 01:11:09.200
+<v Falko Schindler>And Quasar does its own things to make some statements more important than others.
+
+01:11:09.580 --> 01:11:13.720
+<v Falko Schindler>And it makes it pretty difficult to integrate with other frameworks.
+
+01:11:13.820 --> 01:11:21.000
+<v Falko Schindler>and I started to think about maybe removing Quasar in MySky 4 or 5.
+
+01:11:22.120 --> 01:11:22.940
+<v Falko Schindler>But we'll have to see.
+
+01:11:23.260 --> 01:11:31.500
+<v Falko Schindler>Maybe Quasar comes out with a new version with a better CSS layering strategy and maybe a new look and feel or maybe a better theming support.
+
+01:11:32.540 --> 01:11:33.080
+<v Falko Schindler>Then it's back.
+
+01:11:33.860 --> 01:11:50.220
+<v Rodja Trappe>A few weeks ago, we had a pull request merged in where you could add very simply other frameworks on top of you to put them in and replace either the quasar part completely.
+
+01:11:50.680 --> 01:11:57.420
+<v Rodja Trappe>Then you cannot write UI button, but you can do it with the underlying mechanics of NiceGUI nonetheless.
+
+01:11:58.940 --> 01:12:00.900
+<v Rodja Trappe>But yeah, or you could use it as an addition.
+
+01:12:01.400 --> 01:12:01.780
+<v Michael Kennedy>Yeah.
+
+01:12:02.200 --> 01:12:03.920
+<v Michael Kennedy>Just to be clear, I'm not saying you should be doing this.
+
+01:12:04.060 --> 01:12:06.380
+<v Michael Kennedy>Like you all want to stay focused, but I do think it's interesting.
+
+01:12:06.620 --> 01:12:08.300
+<v Rodja Trappe>You know, these people, they're all like,
+
+01:12:08.360 --> 01:12:09.780
+<v Michael Kennedy>hey, we're using this other thing.
+
+01:12:10.480 --> 01:12:12.240
+<v Michael Kennedy>There's so many features you could do,
+
+01:12:12.520 --> 01:12:15.200
+<v Rodja Trappe>and we need to decide, okay, what is going on?
+
+01:12:15.340 --> 01:12:17.680
+<v Rodja Trappe>What do we like and what do we not like?
+
+01:12:17.800 --> 01:12:22.620
+<v Rodja Trappe>But also what comes from the community as feedback and as feature requests.
+
+01:12:22.620 --> 01:12:39.380
+<v Rodja Trappe>We cannot implement everything, but we really like to have a very feature-rich environment which doesn't constrain you so much, which allows you to deviate from the norm, find different aspects and evolve from that.
+
+01:12:39.940 --> 01:12:40.100
+<v Falko Schindler>Yeah.
+
+01:12:40.260 --> 01:12:42.440
+<v Falko Schindler>And our main guideline is, would it be nice?
+
+01:12:42.840 --> 01:12:46.960
+<v Falko Schindler>If another framework would be nice to have a nice guide, then we should maybe do it.
+
+01:12:47.180 --> 01:12:49.540
+<v Michael Kennedy>And we are always open to alternatives.
+
+01:12:50.060 --> 01:12:50.740
+<v Michael Kennedy>Okay. Sounds great.
+
+01:12:50.900 --> 01:12:51.020
+<v Michael Kennedy>All right.
+
+01:12:51.310 --> 01:12:52.820
+<v Michael Kennedy>Well, we're pretty much over time.
+
+01:12:53.080 --> 01:12:54.280
+<v Michael Kennedy>So that means out of time.
+
+01:12:55.360 --> 01:13:03.300
+<v Michael Kennedy>Let's round this out with a quick question as sort of leading into the final call to action for people who are interested in the project.
+
+01:13:03.560 --> 01:13:09.260
+<v Michael Kennedy>So first of all, 14,000 GitHub stars, 834, you'll must be super proud of that.
+
+01:13:09.550 --> 01:13:12.300
+<v Michael Kennedy>The other one is, are you looking for contributors?
+
+01:13:13.160 --> 01:13:14.320
+<v Michael Kennedy>What can people help with?
+
+01:13:14.880 --> 01:13:15.800
+<v Michael Kennedy>That kind of thing, right?
+
+01:13:16.480 --> 01:13:21.000
+<v Falko Schindler>Yeah, we are definitely always happy about any new contributors.
+
+01:13:21.980 --> 01:13:26.800
+<v Falko Schindler>We are always encouraging new users, new members of the community.
+
+01:13:27.450 --> 01:13:31.920
+<v Falko Schindler>If they have an idea how to improve it, we encourage them to, hey, do you want to make a pull request?
+
+01:13:32.280 --> 01:13:32.600
+<v Falko Schindler>Yeah.
+
+01:13:33.080 --> 01:13:35.840
+<v Falko Schindler>Maybe it's the first one ever, but it's a great experience.
+
+01:13:36.110 --> 01:13:37.960
+<v Falko Schindler>And then you are an official NiceGUI contributor.
+
+01:13:39.080 --> 01:13:42.000
+<v Michael Kennedy>What kind of contributions would you want?
+
+01:13:42.380 --> 01:13:44.740
+<v Michael Kennedy>Like, what would be most helpful from the community for you all?
+
+01:13:45.140 --> 01:13:46.620
+<v Falko Schindler>Versus maybe it's in certain areas, right?
+
+01:13:46.760 --> 01:13:47.440
+<v Michael Kennedy>Yeah, it's so complicated.
+
+01:13:47.860 --> 01:13:48.740
+<v Michael Kennedy>Let us handle this part.
+
+01:13:48.980 --> 01:13:50.060
+<v Michael Kennedy>It has to be this way.
+
+01:13:50.240 --> 01:13:51.240
+<v Falko Schindler>That's a good question.
+
+01:13:51.900 --> 01:13:55.680
+<v Falko Schindler>And we don't have a really easy answer about it.
+
+01:13:56.540 --> 01:14:33.140
+<v Falko Schindler>There are parts where we reach the edge of our knowledge, where if especially if users are scrolling through the open issues or pull requests and see some topic where they are maybe very experienced and there are we are we're trying to be very transparent about unsolved bugs or feature requests and where we don't know how to do it and yeah maybe even an open issue where we are still missing a reproduction something that that's weird, but we can't reproduce it.
+
+01:14:34.020 --> 01:14:37.660
+<v Falko Schindler>Any step forward to solving these issues is helpful.
+
+01:14:38.820 --> 01:14:41.380
+<v Falko Schindler>Yeah, especially in areas where we are out of knowledge.
+
+01:14:41.960 --> 01:14:42.020
+<v Michael Kennedy>Yeah.
+
+01:14:42.140 --> 01:14:42.320
+<v Michael Kennedy>Yeah.
+
+01:14:42.640 --> 01:14:42.820
+<v Michael Kennedy>All right.
+
+01:14:42.910 --> 01:14:43.260
+<v Michael Kennedy>Sounds great.
+
+01:14:43.620 --> 01:14:43.900
+<v Michael Kennedy>All right.
+
+01:14:44.000 --> 01:14:46.980
+<v Michael Kennedy>Well, I guess we're going to leave it there with that.
+
+01:14:47.070 --> 01:14:47.880
+<v Michael Kennedy>So final call to action.
+
+01:14:48.060 --> 01:14:49.240
+<v Michael Kennedy>People want to get started with NiceGUI.
+
+01:14:49.420 --> 01:14:49.820
+<v Michael Kennedy>What do you tell them?
+
+01:14:50.140 --> 01:14:50.240
+<v Rodja Trappe>Yeah.
+
+01:14:50.550 --> 01:15:06.340
+<v Rodja Trappe>Simply pip install NiceGUI or uv install NiceGUI and then launch it up, write some code in it And feel free to give us some notes and things, what you would like to see, but also just experiment with it.
+
+01:15:06.460 --> 01:15:09.900
+<v Rodja Trappe>And maybe it doesn't click with everyone, and that's fine.
+
+01:15:10.180 --> 01:15:17.840
+<v Rodja Trappe>And maybe there are people who really much more like another framework or even write HTML and simply FastAPI.
+
+01:15:18.120 --> 01:15:27.700
+<v Rodja Trappe>But for those who don't want to leave the environment where they are very familiar with, I think NiceGUI is really a good starting point.
+
+01:15:27.980 --> 01:15:29.700
+<v Michael Kennedy>Yeah. Awesome. Well, thank you so much.
+
+01:15:30.320 --> 01:15:32.260
+<v Michael Kennedy>Congratulations on the great project.
+
+01:15:32.480 --> 01:15:35.040
+<v Michael Kennedy>I know tons of people are getting lots of value.
+
+01:15:35.280 --> 01:15:36.620
+<v Michael Kennedy>So thanks for being on the show.
+
+01:15:36.820 --> 01:15:38.060
+<v Michael Kennedy>Thanks for creating it and sharing it.
+
+01:15:38.460 --> 01:15:38.620
+<v Michael Kennedy>Yeah.
+
+01:15:38.700 --> 01:15:39.120
+<v Falko Schindler>Thanks for having us.
+
+01:15:39.120 --> 01:15:39.360
+<v Falko Schindler>Thank you very much.
+
+01:15:40.140 --> 01:15:41.100
+<v Michael Kennedy>Yeah. See y'all.
+
+01:15:41.360 --> 01:15:41.540
+<v Michael Kennedy>Bye.
+
+01:15:42.360 --> 01:15:44.840
+<v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:15:45.660 --> 01:15:46.700
+<v Michael Kennedy>Thank you to our sponsors.
+
+01:15:47.080 --> 01:15:48.320
+<v Michael Kennedy>Be sure to check out what they're offering.
+
+01:15:48.440 --> 01:15:49.740
+<v Michael Kennedy>It really helps support the show.
+
+01:15:50.040 --> 01:15:52.040
+<v Michael Kennedy>Posit Connect from the makers of Shiny.
+
+01:15:52.520 --> 01:15:56.400
+<v Michael Kennedy>Publish, share, and deploy all of your data projects that you're creating using Python.
+
+01:15:57.020 --> 01:16:03.100
+<v Michael Kennedy>Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+01:16:04.000 --> 01:16:05.620
+<v Michael Kennedy>Posit Connect supports all of them.
+
+01:16:05.800 --> 01:16:11.240
+<v Michael Kennedy>Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+01:16:11.920 --> 01:16:12.280
+<v Michael Kennedy>Agency.
+
+01:16:12.920 --> 01:16:14.700
+<v Michael Kennedy>Discover agentic AI with agency.
+
+01:16:15.100 --> 01:16:19.280
+<v Michael Kennedy>Their layer lets agents find, connect, and work together, any stack, anywhere.
+
+01:16:19.940 --> 01:16:25.960
+<v Michael Kennedy>Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+
+01:16:26.520 --> 01:16:27.400
+<v Michael Kennedy>Want to level up your Python?
+
+01:16:27.850 --> 01:16:31.500
+<v Michael Kennedy>We have one of the largest catalogs of Python video courses over at Talk Python.
+
+01:16:31.960 --> 01:16:36.660
+<v Michael Kennedy>Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:16:37.020 --> 01:16:39.180
+<v Michael Kennedy>And best of all, there's not a subscription in sight.
+
+01:16:39.670 --> 01:16:42.200
+<v Michael Kennedy>Check it out for yourself at training.talkpython.fm.
+
+01:16:42.900 --> 01:16:44.300
+<v Michael Kennedy>Be sure to subscribe to the show.
+
+01:16:44.600 --> 01:16:47.080
+<v Michael Kennedy>open your favorite podcast app and search for Python.
+
+01:16:47.520 --> 01:16:48.400
+<v Michael Kennedy>We should be right at the top.
+
+01:16:48.920 --> 01:16:57.780
+<v Michael Kennedy>You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:16:58.420 --> 01:17:00.660
+<v Michael Kennedy>We're live streaming most of our recordings these days.
+
+01:17:01.100 --> 01:17:08.520
+<v Michael Kennedy>If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at  talkpython.fm/youtube.
+
+01:17:09.520 --> 01:17:10.640
+<v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:17:10.980 --> 01:17:11.920
+<v Michael Kennedy>Thanks so much for listening.
+
+01:17:12.100 --> 01:17:13.080
+<v Michael Kennedy>I really appreciate it.
+
+01:17:13.400 --> 01:17:15.000
+<v Michael Kennedy>Now get out there and write some Python code.
+
+01:17:40.520 --> 01:17:43.180
+<v Michael Kennedy>Talk Python, the async is the norm.
