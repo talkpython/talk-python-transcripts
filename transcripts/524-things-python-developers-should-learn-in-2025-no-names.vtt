@@ -1,0 +1,2420 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:01.880
+Python in 2025 is different.
+
+00:00:02.400 --> 00:00:04.460
+Threads are really about to run in parallel.
+
+00:00:05.100 --> 00:00:09.320
+Installs, finish before your coffee cools, and containers are the default.
+
+00:00:10.040 --> 00:00:14.000
+In this episode, we count down 38 things to learn this year.
+
+00:00:14.560 --> 00:00:25.180
+Free-threaded CPython, uv for packaging, Docker and Compose, Kubernetes with Tilt, DuckDB and Arrow, PyScript at the Edge, plus MCP for sane AI workflows.
+
+00:00:25.660 --> 00:00:28.260
+Expect practical wins and migration paths.
+
+00:00:28.560 --> 00:00:31.300
+No buzzword bingo, just what pays off in real apps.
+
+00:00:31.770 --> 00:00:37.000
+Join me, along with Peter Wang and Calvin Hendrix Parker, for a fun, fast-moving conversation.
+
+00:00:37.740 --> 00:00:43.580
+This is Talk Python To Me, episode 524, recorded September 22nd, 2025.
+
+00:00:43.740 --> 00:01:03.840
+five. Welcome to Talk Python To Me, a weekly podcast on Python. This is your host, Michael
+
+00:01:04.000 --> 00:01:33.680
+Kennedy. Follow me on Mastodon, where I'm @mkennedy, and follow the podcast using @talkpython, both accounts over at Fostadon.org, and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at  talkpython.fm/youtube and get notified about upcoming shows. This episode is brought to you by Sentry. Don't let those errors go unnoticed. Use Sentry like we do here at Talk Python.
+
+00:01:34.220 --> 00:01:37.120
+Sign up at talkpython.fm/sentry.
+
+00:01:37.480 --> 00:01:39.380
+And it's brought to you by Agency.
+
+00:01:40.020 --> 00:01:41.800
+Discover agentic AI with Agency.
+
+00:01:42.300 --> 00:01:45.060
+Their layer lets agents find, connect, and work together.
+
+00:01:45.520 --> 00:01:46.380
+Any stack, anywhere.
+
+00:01:47.040 --> 00:01:50.660
+Start building the internet of agents at talkpython.fm/agency.
+
+00:01:51.300 --> 00:01:53.060
+Spelled A-G-N-T-C-Y.
+
+00:01:53.840 --> 00:01:54.220
+Hello, hello.
+
+00:01:54.840 --> 00:01:57.080
+Peter and Calvin, welcome back to Talk Python.
+
+00:01:57.130 --> 00:01:58.200
+I mean, to both of you.
+
+00:01:58.480 --> 00:01:59.100
+It's great to be here.
+
+00:01:59.440 --> 00:01:59.740
+Great to be here.
+
+00:01:59.740 --> 00:02:00.180
+Thanks for having us.
+
+00:02:00.520 --> 00:02:04.120
+Yeah, I know you both are very passionate technologists.
+
+00:02:04.180 --> 00:02:09.060
+and Pythonistas, and we're going to dive into some really exciting things.
+
+00:02:09.259 --> 00:02:13.740
+What do people need to know as developers and data scientists in 2025?
+
+00:02:14.100 --> 00:02:19.260
+And I'm going to take a wild guess and bet that these trends, most of them carry over to 2026.
+
+00:02:19.840 --> 00:02:20.580
+We're just a few months.
+
+00:02:22.480 --> 00:02:29.260
+So let's just really quickly have both of you introduce yourselves just because not everyone has had a chance to listen to every episode.
+
+00:02:29.420 --> 00:02:31.600
+And even if they did, they may not remember.
+
+00:02:32.020 --> 00:02:33.320
+So Peter, welcome.
+
+00:02:33.340 --> 00:02:33.720
+Who are you?
+
+00:02:34.080 --> 00:02:39.700
+Hi, I'm Peter Wang. I'm a founder of Anaconda and the creator of the PyData community.
+
+00:02:40.120 --> 00:03:07.800
+And I'm sort of leading the advocacy, at least, and been at the center of evangelism for the use of Python in the data science and machine learning world for over 12 years now. I think 13 years at this point. But my day job is at Anaconda. I'm the chief AI officer. So I work on open source community projects, innovation, looking at AI things and how that impacts our community and our users and what good could look like there for us.
+
+00:03:07.840 --> 00:03:10.600
+I mean, there's a lot of discussion on AI, of course, good, bad, and ugly.
+
+00:03:11.280 --> 00:03:18.140
+And I'm really trying to figure out if we as responsible open source community stewards want to have something meaningful to say here, what are the right things to do?
+
+00:03:18.340 --> 00:03:20.360
+So that's what I spend a lot of my time focused on.
+
+00:03:20.660 --> 00:03:21.600
+Yeah, that's really good work.
+
+00:03:21.820 --> 00:03:22.860
+Yeah, it's really good work.
+
+00:03:22.860 --> 00:03:25.300
+And congrats with all the access you've had at Anaconda.
+
+00:03:25.940 --> 00:03:26.180
+Thank you.
+
+00:03:26.220 --> 00:03:27.000
+You made a serious dent.
+
+00:03:27.860 --> 00:03:32.860
+You were featured in or you were part of the Python documentary, right?
+
+00:03:33.180 --> 00:03:33.540
+That's right.
+
+00:03:33.990 --> 00:03:34.940
+Yeah, that was really great.
+
+00:03:35.180 --> 00:03:36.760
+I really appreciated your words in there.
+
+00:03:37.030 --> 00:03:37.360
+Thank you.
+
+00:03:37.650 --> 00:03:37.920
+Thank you.
+
+00:03:38.040 --> 00:03:38.600
+Yeah, that was great.
+
+00:03:38.780 --> 00:03:40.340
+Really honor to be included in that.
+
+00:03:40.940 --> 00:03:46.240
+Well, tell people, I haven't technically talked about it on the documentary or the documentary on the podcast very much.
+
+00:03:46.790 --> 00:03:49.760
+So you just give people a quick rundown of what that is and why they should check it out.
+
+00:03:50.160 --> 00:03:58.180
+Well, anyone who's listening to this podcast should absolutely watch the documentary because it has just got a cast of characters telling the story about how our favorite programming language came to be.
+
+00:03:58.960 --> 00:04:02.400
+All of the, not all, okay, not all, but some of the travails that have.
+
+00:04:03.060 --> 00:04:08.880
+challenged us as a community over the period of time since its inception, you know, 30 years ago at this point.
+
+00:04:09.840 --> 00:04:15.640
+And so it's just a really fun, nice, you know, I think it's weird because Python has been around forever, right?
+
+00:04:16.160 --> 00:04:19.480
+And yet in many respects, we are still, the world is changing.
+
+00:04:19.600 --> 00:04:22.500
+And I think there's lots of amazing new opportunities for Python as a language.
+
+00:04:23.220 --> 00:04:28.760
+And we've been growing, growing so fast and so much and evolving as a language and as a community.
+
+00:04:29.500 --> 00:04:36.200
+This documentary, I think, is a nice way to sort of like check in and say, oh, wow, we got to here and here's the journey we've been on.
+
+00:04:36.550 --> 00:04:43.540
+And that gives us almost the space to then be a little bit more intentional about talking about where we want to go from here, which I think is something very important that we need to do as a community.
+
+00:04:43.800 --> 00:04:47.680
+So anyway, I just really liked it from philosophically speaking from that perspective.
+
+00:04:48.380 --> 00:04:54.620
+But it's also just fun just to get the perspectives like the CPython core maintainers and the BDFL and all the stuff on just the language over the years.
+
+00:04:55.040 --> 00:04:56.400
+Yeah, I thought it was really excellent.
+
+00:04:56.800 --> 00:04:58.319
+Yeah, I enjoyed it.
+
+00:04:59.240 --> 00:04:59.720
+Tremendously.
+
+00:04:59.930 --> 00:05:02.960
+Like I really love hearing all the old stories.
+
+00:05:03.290 --> 00:05:06.260
+You know, I've been around for a long time in the community and seeing all the familiar faces.
+
+00:05:06.530 --> 00:05:10.880
+And I feel like it gives a face and a level of empathy to the community that's needed.
+
+00:05:11.260 --> 00:05:11.420
+Yeah.
+
+00:05:11.580 --> 00:05:15.780
+I would say that the production quality was almost as good as Calvin's camera here.
+
+00:05:17.660 --> 00:05:19.680
+You always look great on these streams.
+
+00:05:21.020 --> 00:05:21.260
+Welcome.
+
+00:05:21.480 --> 00:05:22.140
+Tell people about yourself.
+
+00:05:22.420 --> 00:05:22.920
+Thank you, Michael.
+
+00:05:23.260 --> 00:05:23.840
+I appreciate that.
+
+00:05:26.260 --> 00:05:27.840
+Well, I guess I can give a quick introduction.
+
+00:05:28.480 --> 00:05:29.700
+I'm Calvin Hendryx-Parker.
+
+00:05:29.840 --> 00:05:31.580
+I'm CTO and co-founder of Six Feet Up.
+
+00:05:31.690 --> 00:05:37.640
+We are a Python and AI consulting agency who helps impactful tech leaders solve the hard problems.
+
+00:05:37.920 --> 00:05:39.960
+I've been in the Python community for ages.
+
+00:05:41.040 --> 00:05:45.860
+I probably don't outnumber Peter in years, but at least since 2000, I've been involved.
+
+00:05:45.930 --> 00:05:51.220
+I started with Zope and then through that, the Plone community got very involved in the governance of the open source project.
+
+00:05:51.720 --> 00:05:58.780
+Now we do a lot of Django, a lot of other Python open source data projects like Airflow, for example.
+
+00:05:58.860 --> 00:06:00.020
+I think that's on the list for later.
+
+00:06:00.440 --> 00:06:06.000
+And so we just enjoy hanging out and being an awesome group of folks who love solving the hard problems.
+
+00:06:06.340 --> 00:06:07.040
+Yeah, excellent.
+
+00:06:07.260 --> 00:06:09.100
+Yeah, you've been doing it longer than me for sure.
+
+00:06:09.420 --> 00:06:09.940
+I'm the baby.
+
+00:06:11.260 --> 00:06:13.760
+Well, 2000 is about when I got involved in Python as well.
+
+00:06:13.980 --> 00:06:17.920
+So the old man was supposed to be maybe from 99, but basically 2000.
+
+00:06:18.599 --> 00:06:22.900
+Yeah, my first PyCon was 2003 and I think there were 250 people in the room.
+
+00:06:24.060 --> 00:06:24.680
+It was amazing.
+
+00:06:24.720 --> 00:06:26.040
+Yeah, you actually beat me by a couple of years.
+
+00:06:26.120 --> 00:06:30.880
+I went to, I went to 05 was my first one at George Washington University.
+
+00:06:31.120 --> 00:06:31.640
+I think it was.
+
+00:06:31.940 --> 00:06:32.120
+Yeah.
+
+00:06:32.400 --> 00:06:32.700
+In DC.
+
+00:06:33.200 --> 00:06:34.100
+And it was about 200 something people.
+
+00:06:34.480 --> 00:06:36.860
+They had a track in the keynote speakers.
+
+00:06:37.100 --> 00:06:37.380
+Wow.
+
+00:06:38.800 --> 00:06:40.440
+I've only been doing this since 2011.
+
+00:06:40.780 --> 00:06:42.240
+So I'm just barely getting started.
+
+00:06:42.800 --> 00:06:45.320
+That used to seem pretty recent ago, but it doesn't anymore.
+
+00:06:45.540 --> 00:06:45.780
+Oddly.
+
+00:06:45.940 --> 00:06:48.440
+No, it turns out it was, yeah, it's a long time ago.
+
+00:06:48.580 --> 00:06:50.200
+We're halfway through the 2020s now.
+
+00:06:50.320 --> 00:06:50.680
+It's crazy.
+
+00:06:51.100 --> 00:06:51.200
+I know.
+
+00:06:51.300 --> 00:06:51.440
+Yeah.
+
+00:06:51.660 --> 00:06:51.720
+Yeah.
+
+00:06:51.720 --> 00:06:57.440
+When you said 2025 things that developers should learn in 2025, I was like, is this a science fiction movie we're talking about.
+
+00:06:58.100 --> 00:06:58.280
+Exactly.
+
+00:06:58.340 --> 00:06:59.020
+What is this like then?
+
+00:06:59.180 --> 00:07:00.440
+It's a dystopian science fiction movie.
+
+00:07:00.560 --> 00:07:02.300
+This is the same crap we had to deal with in 2010.
+
+00:07:03.700 --> 00:07:04.060
+Mostly.
+
+00:07:04.960 --> 00:07:06.640
+Although async back then, it was interesting.
+
+00:07:06.850 --> 00:07:09.020
+We didn't have, you know, we had staff list, I guess.
+
+00:07:09.700 --> 00:07:11.000
+There's a, I don't know.
+
+00:07:11.780 --> 00:07:12.660
+2010 there's tornado.
+
+00:07:12.970 --> 00:07:13.060
+Yeah.
+
+00:07:13.200 --> 00:07:14.980
+There were various async systems.
+
+00:07:15.350 --> 00:07:15.980
+Anyway, salary.
+
+00:07:16.260 --> 00:07:16.340
+Yeah.
+
+00:07:16.680 --> 00:07:16.840
+Wow.
+
+00:07:17.140 --> 00:07:18.640
+We've got, we've got free threaded Python.
+
+00:07:18.860 --> 00:07:20.680
+Now we do features now.
+
+00:07:21.140 --> 00:07:21.500
+Yes.
+
+00:07:21.920 --> 00:07:22.240
+Almost.
+
+00:07:22.550 --> 00:07:23.660
+We almost have free that Python.
+
+00:07:24.000 --> 00:07:24.060
+Yeah.
+
+00:07:24.160 --> 00:07:24.300
+Yeah.
+
+00:07:24.570 --> 00:07:24.700
+Yeah.
+
+00:07:24.880 --> 00:07:25.400
+Spoiler alert.
+
+00:07:25.520 --> 00:07:27.260
+That may make an appearance in one of the topics.
+
+00:07:28.040 --> 00:07:34.340
+Well, we may not get to 20 things, but they may not be 20 big, bold items, right?
+
+00:07:35.160 --> 00:07:35.240
+Yeah.
+
+00:07:35.380 --> 00:07:37.340
+We have a list of things we want to go through.
+
+00:07:37.540 --> 00:07:37.980
+That's right.
+
+00:07:38.070 --> 00:07:43.080
+Peter, we reserve the right to design the designation of the size of the buckets that define the things.
+
+00:07:43.300 --> 00:07:44.140
+The things, that's right.
+
+00:07:45.280 --> 00:07:59.080
+But I think the plan is we're going to just riff on some ideas we think are either emerging or current important trends or even foundational things, that people should be paying attention to in the zeitgeist right now, right?
+
+00:07:59.240 --> 00:08:05.440
+What are things that maybe you haven't necessarily been tracking or you heard of, but you're like, ah, I haven't got time for that, or it's not for me yet.
+
+00:08:06.140 --> 00:08:07.060
+So I think that'll be fun.
+
+00:08:08.000 --> 00:08:09.080
+Let's start with you, Peter.
+
+00:08:09.700 --> 00:08:10.820
+What's your first...
+
+00:08:10.990 --> 00:08:14.800
+We all gathered up a couple of things that we think might be super relevant.
+
+00:08:15.200 --> 00:08:16.160
+And yeah, what do you think?
+
+00:08:17.440 --> 00:08:19.140
+So I think, well, let's just get started with it.
+
+00:08:19.260 --> 00:08:20.700
+Let's just talk about the free threading bit.
+
+00:08:20.960 --> 00:08:26.520
+And let's really, because this is a kind of, it touches the past, and it also really takes us into the future.
+
+00:08:26.800 --> 00:08:29.440
+And it's this thing that has taken quite some time to emerge.
+
+00:08:29.920 --> 00:08:33.659
+I think the GIL has been a topic of discussion since as long as I've been using Python.
+
+00:08:34.999 --> 00:08:43.979
+And finally, we have, courtesy of the team at Meta, an excellent set of patches that delivered true free threading to Python.
+
+00:08:44.500 --> 00:08:46.560
+And of course, this is both a blessing and a curse, right?
+
+00:08:46.560 --> 00:08:47.640
+You should be careful what you ask for.
+
+00:08:47.900 --> 00:08:50.440
+Because now we end up having to deal with true free threading in Python.
+
+00:08:50.980 --> 00:08:59.220
+And for those who maybe are not so familiar with this whole topic, you know, the global interpreter lock, we call it GIL, G-I-L for short.
+
+00:08:59.920 --> 00:09:04.320
+The global interpreter lock is how the Python virtual machine protects its innards.
+
+00:09:04.500 --> 00:09:16.180
+And so when you use Python and you write code, even if you use threading, like the threading module in Python, ultimately the CPython interpreter itself as a system level process, it only has one real thread.
+
+00:09:16.560 --> 00:09:20.340
+And it has this global interpreter lock that locks many of the internals of the interpreter.
+
+00:09:20.680 --> 00:09:26.520
+The problem is that sometimes you want to have real multi-threading, and so you have to release this global interpreter lock.
+
+00:09:26.760 --> 00:09:32.780
+And doing this is hard to get right, especially if you reach into C modules and whatnot.
+
+00:09:33.440 --> 00:09:36.220
+The most popular C modules are pretty good at handling this kind of thing.
+
+00:09:36.840 --> 00:09:38.200
+NumPy and others come to mind.
+
+00:09:38.520 --> 00:09:41.400
+So we get really great performance from those when they release the gil.
+
+00:09:41.680 --> 00:11:17.960
+But if you want to actually do a lot of Python logic in multiple threads, you end up essentially getting no lift whatsoever by using a threading module with classic single threaded or GIL locked python with the free threading you actually now are able to have threads running in parallel touching things like free lists and stuff like that and and and you know module definitions in the interpreter itself now what this means is a lot of python modules or packages which had been developed when python was you know implicitly single threaded they now have potential of thread contention, race conditions, all sorts of weird and unexpected behavior when they're used in a free threaded way. So we have this patch, we have this change now for free threading in the Python interpreter itself. That means that, however, what that means is we have to make sure that all of the rest of the package ecosystem is updated and tested to work with free threaded Python. So in Python 3.13, it was incorporated as an experimental, it was in the code base, but it was a build time feature. So you have to compile your own Python interpreter and turn on that flag to get a version of the interpreter that would be free threaded. In 3.14, it is now supported in the interpreter. It's still not turned on by default. And then at some indeterminate date, it will be turned on by default. The classic behavior with the global interblock will still always be there as a fallback for safety and compatibility and all that. But Python team has said, hey, we're ready to take this thing to supported mode and let the bugs flow,
+
+00:11:18.200 --> 00:11:24.160
+right? So now if you go and install Python, a Python build with, it actually has a different
+
+00:11:24.300 --> 00:11:42.360
+ABI tag. So it's CP313 or 314T for threading or free threading. So that's available through Python.org. There's a condo build for it as well. And so right now there's actually a page, Maybe we'll have the link for it, I think, in the show notes, right?
+
+00:11:42.780 --> 00:11:46.020
+But there's a page that lists what the status is.
+
+00:11:46.410 --> 00:11:47.920
+Think of the free-threaded wheels.
+
+00:11:49.050 --> 00:11:54.020
+And right now, 105 out of 360 that are passing, basically.
+
+00:11:54.300 --> 00:11:55.820
+The maintainers have updated them.
+
+00:11:56.420 --> 00:11:58.640
+And this is out of the top, like, oh, there it is, great.
+
+00:11:58.840 --> 00:12:02.480
+Yeah, out of the top 500 Python packages, something like this.
+
+00:12:02.860 --> 00:12:05.140
+So you can see we have, as a community, a lot of work to do.
+
+00:12:05.640 --> 00:12:12.540
+So the call to action here is not only should a Python developer learn this, because this is definitely coming and everyone has a multi-core machine now.
+
+00:12:13.540 --> 00:12:14.320
+So this is definitely coming.
+
+00:12:14.700 --> 00:12:16.660
+But you can also, this is a great way to give back.
+
+00:12:17.360 --> 00:12:23.020
+You know, we talk about in the open source community oftentimes, how do we get starter bugs in there for people to start becoming contributing members of the community?
+
+00:12:23.360 --> 00:12:24.440
+This is a great way to give back.
+
+00:12:24.520 --> 00:12:28.120
+If there's some packages you see here that are yellow, you're like, wait, I use AIo HTTP.
+
+00:12:28.680 --> 00:12:36.180
+Like, let me go and test that with free threading and see if I can bang, you know, just beat it up with my code in production and see like what fails there.
+
+00:12:36.540 --> 00:12:43.700
+So this is a great way for the community to really get back and help us test and make sure all this works on what is certainly to be the next generation of the Python interpreter.
+
+00:12:43.900 --> 00:12:48.940
+Yeah, there was a great talk at DjangoCon just two weeks ago by Michael Lyle.
+
+00:12:49.260 --> 00:12:52.240
+He gave a talk about using free threading in Django.
+
+00:12:52.800 --> 00:12:55.900
+And I think right now your mileage may vary was the answer.
+
+00:12:56.120 --> 00:12:57.280
+Like it kind of depends.
+
+00:12:58.360 --> 00:13:01.500
+I can only imagine going through and trying to commit and help.
+
+00:13:01.760 --> 00:13:02.540
+Threading is hard.
+
+00:13:02.740 --> 00:13:05.580
+It sounds like free threading is harder to wrap your brain around.
+
+00:13:05.860 --> 00:13:09.060
+So I think it'd be tricky for someone starting and learning something new.
+
+00:13:09.140 --> 00:13:14.160
+This may be on the more advanced edge of what someone should be learning.
+
+00:13:14.460 --> 00:13:18.200
+It's more for the advanced crotchety, you know, senior developers.
+
+00:13:18.440 --> 00:13:19.600
+I ain't got time to contribute to open source.
+
+00:13:20.080 --> 00:13:20.620
+You can.
+
+00:13:20.860 --> 00:13:21.860
+You can make your own life better.
+
+00:13:22.300 --> 00:13:25.520
+We can all sort of, this is the sort of stone soup or good old Amish barn raising.
+
+00:13:25.560 --> 00:13:27.120
+We should all get together and chip in.
+
+00:13:27.660 --> 00:13:28.120
+But you're right.
+
+00:13:28.380 --> 00:13:32.540
+Debugging async free threading issues is definitely not a beginner kind of task.
+
+00:13:33.100 --> 00:13:33.180
+Sure.
+
+00:13:33.340 --> 00:13:40.240
+But there's a lot of people who do have that experience from probably more from other languages or C extensions who could jump in, right?
+
+00:13:40.580 --> 00:13:56.940
+Yeah, actually, you know, if you're a C++ developer who has been forced to use Python because of our success of driving the growth and adoption of the community, and you're really angry about this and you want to show other ways that Python is broken, this is a great way to show how Python is broken is to test really gnarly async and multi-threaded use cases.
+
+00:13:57.400 --> 00:14:05.860
+Actually, one thing about this that I will point out for the more advanced users, Dave Beasley gave a great talk years ago at PyCon about Python parallelism.
+
+00:14:06.400 --> 00:14:08.420
+And are you IO bound? Are you CPU bound?
+
+00:14:08.920 --> 00:14:13.400
+I think he was looking at maybe it was actually relative to PyPy, PYPY.
+
+00:14:13.770 --> 00:14:19.340
+And it wasn't about async in particular, but it was a rolling your own distributed computing or something like this.
+
+00:14:19.430 --> 00:14:26.040
+I forget the exact title, but he did a deep analysis of when are we CPU bound or when are we IO bound and when are we CPU bound?
+
+00:14:26.260 --> 00:14:32.380
+When we get to free threading Python like this, I think we're going to, as a community, be faced with having to up-level our thinking about this kind of thing.
+
+00:14:32.480 --> 00:14:37.560
+Because so far we've done a lot of like, oh, delegating CPU bound numeric stuff to like Python or Pandas or Cython.
+
+00:14:37.900 --> 00:14:41.100
+But with this, now we can really play first class in system level code.
+
+00:14:41.340 --> 00:14:44.000
+And we have to think more deeply about how are we blocking events?
+
+00:14:44.060 --> 00:14:44.840
+How are we handling things?
+
+00:14:45.180 --> 00:14:48.680
+Is this, you know, or, you know, is this a, you know, event polling kind of thing?
+
+00:14:48.740 --> 00:14:50.860
+Or is this more of a completion port thing?
+
+00:14:51.020 --> 00:14:51.940
+Like a windows, you have different options.
+
+00:14:52.440 --> 00:14:53.640
+So this is a very interesting topic.
+
+00:14:53.820 --> 00:14:54.560
+Actually, it goes quite deep.
+
+00:14:54.800 --> 00:14:55.580
+It goes very deep.
+
+00:14:55.620 --> 00:15:01.360
+And I think it's going to be a big mental lift for people in the community, generally speaking.
+
+00:15:01.840 --> 00:15:07.340
+I talk to a lot of people, as you know, from the podcast, and then also interact with a lot of people teaching.
+
+00:15:07.620 --> 00:15:13.180
+And I don't see a lot of people stressing about thread safety or any of those kinds of things these days.
+
+00:15:13.530 --> 00:15:18.800
+And I think in general, it's just not in the collective thinking to be really worried about it.
+
+00:15:18.880 --> 00:15:28.780
+There are still cases in multi-threaded Python code where you need to take a lock because it's not one line is going to deadlock another or something like that, but you've got to take five steps.
+
+00:15:29.060 --> 00:15:35.160
+And if you get interrupted somewhere in those five steps, the guilt could still theoretically interrupt you in the middle of code, right?
+
+00:15:35.820 --> 00:15:40.040
+It still could be in a temporarily invalid state across more than one line.
+
+00:15:40.340 --> 00:15:44.160
+But I just don't see people even doing anything hardly at it at all.
+
+00:15:44.320 --> 00:15:48.920
+And when we just uncork this on them, it's going to be, it's going to be something.
+
+00:15:49.100 --> 00:15:51.640
+And I don't think we're going to see deadlocks as a problem first.
+
+00:15:52.160 --> 00:15:57.080
+I think we're going to see race conditions because deadlocks require people already having locks there that get out of order.
+
+00:15:57.280 --> 00:15:58.540
+And I just think the locks are not there.
+
+00:15:59.040 --> 00:16:01.640
+Then people are going to put the locks there and they're like, whoa, it's just stopped.
+
+00:16:02.779 --> 00:16:03.660
+It's total chaos.
+
+00:16:05.220 --> 00:16:05.360
+Yeah.
+
+00:16:05.440 --> 00:16:06.500
+It's not using CPU anymore.
+
+00:16:06.660 --> 00:16:07.020
+What is it doing?
+
+00:16:07.120 --> 00:16:08.240
+Well, now you found the deadlock.
+
+00:16:08.380 --> 00:16:10.140
+You, you, you added the deadlock, right?
+
+00:16:10.680 --> 00:16:31.400
+So it's going to be, it's going to be a challenge, but the potential, on the other side of this, if you can get good at it, it's going to be amazing. You know, even on my little cheapo Mac mini, I've got 10 cores. If I run Python code, unless I do really fancy tricks or multiple processes, the best I can get is like 10%. Yeah. And I know this might be a little bit
+
+00:16:31.400 --> 00:17:12.480
+of a spicy take, but like there, there was, I think a line that was being held by the CPython core team that we will accept a GIL removal or a gillectomy as it was called. We'll accept a GIL removal patch uh when it doesn't affect or negatively impact single core performance right and and like when that first came out in 2000 i think that first time i heard that article was a 2005 six seven time frame back then that was almost a defensible position nowadays you can't find a smartphone with a single core you know i can't find a raspberry pi a five dollar raspberry pi has dual core so it's like i get the general gist of that but like come on we have like 90 like you know, John Carmack's on Twitter talking about 96 core thread ripper performance with Python.
+
+00:17:12.949 --> 00:17:16.939
+We, you know, we sort of need to lean into that, right? So I'm really, really bullish on this.
+
+00:17:17.010 --> 00:17:21.060
+Cause as you know, like I'm very close to the data science and machine learning and the AI use cases.
+
+00:17:21.560 --> 00:17:34.460
+And those are all just, you know, they're looking for whatever language gives us the best performance right now. It happens to be Python. If we as a community and we as evangelists of that community, if we don't lead into that and those users, they will happily go somewhere else. I mean,
+
+00:17:34.620 --> 00:17:53.900
+that is bonusing people a hundred million dollars to start. They're not going to wait for your language to catch up. They'll make a new language, right? But I think there was something in 2025 that these developers should be learning along these lines would be just async programming and when it should be used. That's why the really tactical maneuver today. Yeah, I agree. I think
+
+00:17:54.260 --> 00:18:07.360
+the async and await keywords are super relevant and the frameworks, I think, will start to take advantage of it. We're going to see what comes along with this free threading, but there's no reason you couldn't await a thread rather than await an IO operation.
+
+00:18:07.570 --> 00:18:08.000
+You know what I mean?
+
+00:18:08.440 --> 00:18:15.320
+I come, my background is C++ and C# and C# is actually where async and await came from, from Anders Halsberg, I believe.
+
+00:18:15.840 --> 00:18:19.160
+And over there, you don't care if it's IO or compute bound.
+
+00:18:19.210 --> 00:18:21.560
+You just await some kind of async thing.
+
+00:18:21.640 --> 00:18:22.980
+It's not your job to care how it happens.
+
+00:18:23.980 --> 00:18:30.280
+So I think we're going to start to see that, but it's going to take time for that, those foundational layers to build for us to build on.
+
+00:18:30.450 --> 00:18:30.560
+Yeah.
+
+00:18:32.540 --> 00:18:36.260
+This portion of Talk Python To Me is brought to you by Sentry's Seer.
+
+00:18:36.980 --> 00:18:39.760
+I'm excited to share a new tool from Sentry, Seer.
+
+00:18:40.280 --> 00:18:47.620
+Seer is your AI-driven pair programmer that finds, diagnoses, and fixes code issues in your Python app faster than ever.
+
+00:18:48.120 --> 00:18:51.800
+If you're already using Sentry, you are already using Sentry, right?
+
+00:18:52.320 --> 00:18:56.600
+Then using Seer is as simple as enabling a feature on your already existing project.
+
+00:18:57.380 --> 00:19:00.720
+SEER taps into all the rich context Sentry has about an error.
+
+00:19:01.220 --> 00:19:05.280
+Stack traces, logs, commit history, performance data, essentially everything.
+
+00:19:05.920 --> 00:19:10.140
+Then it employs its agentic AI code capabilities to figure out what is wrong.
+
+00:19:10.620 --> 00:19:14.400
+It's like having a senior developer pair programming with you on bug fixes.
+
+00:19:15.180 --> 00:19:20.400
+SEER then proposes a solution, generating a patch for your code and even opening a GitHub pull request.
+
+00:19:21.060 --> 00:19:25.680
+This leaves the developers in charge because it's up to them to actually approve the PR.
+
+00:19:26.080 --> 00:19:29.920
+but it can reduce the time from error detection to fix dramatically.
+
+00:19:30.640 --> 00:19:36.260
+Developers who've tried it found it can fix errors in one shot that would have taken them hours to debug.
+
+00:19:36.880 --> 00:19:41.280
+SEER boasts a 94.5% accuracy in identifying root causes.
+
+00:19:41.840 --> 00:19:48.540
+SEER also prioritizes actionable issues with an actionability score, so you know what to fix first.
+
+00:19:49.160 --> 00:19:56.080
+This transforms sentry errors into actionable fixes, turning a pile of error reports into an ordered to-do list.
+
+00:19:56.800 --> 00:20:05.880
+If you could use an always-on-call AI agent to help track down errors and propose fixes before you even have time to read the notification, check out Sentry's Seer.
+
+00:20:06.520 --> 00:20:10.500
+Just visit talkpython.fm/seer, S-E-E-R.
+
+00:20:11.200 --> 00:20:12.980
+The link is in your podcast player's show notes.
+
+00:20:13.520 --> 00:20:15.820
+Be sure to use our code TALKPYTHON.
+
+00:20:16.180 --> 00:20:17.080
+One word, all caps.
+
+00:20:17.640 --> 00:20:19.800
+Thank you to Sentry for supporting Talk Python To Me.
+
+00:20:20.800 --> 00:20:21.880
+Pamela Fox out in the audience.
+
+00:20:22.280 --> 00:20:27.000
+Throws out that last time she really used locks was in my code for operating system class in college.
+
+00:20:27.180 --> 00:20:28.300
+It doesn't come up much in web dev.
+
+00:20:28.560 --> 00:20:28.900
+That's true.
+
+00:20:29.200 --> 00:20:35.060
+A lot of the times the web, it's at the web framework, the web server level, the app server level, right?
+
+00:20:35.160 --> 00:20:37.900
+It's Granian or it's UVicorn or something like that.
+
+00:20:37.980 --> 00:20:40.740
+That thing does the threading and you just handle one of the requests.
+
+00:20:41.220 --> 00:20:50.800
+I literally just deadlocked and I guess probably broke the website for a couple people at Talk Python today because I have this analytics operation that's fixing up a bunch of stuff.
+
+00:20:51.000 --> 00:20:52.560
+And it ran for like 60 seconds.
+
+00:20:53.240 --> 00:20:59.080
+Even though there's multiple workers, something about the fan out, it still sent some of the traffic to the one that was bound up.
+
+00:20:59.200 --> 00:21:00.980
+And then those things were timing out after 20 seconds.
+
+00:21:01.200 --> 00:21:02.220
+I'm like, oh, no, what have I done?
+
+00:21:03.380 --> 00:21:05.500
+And if that was true threading, it wouldn't have mattered.
+
+00:21:05.840 --> 00:21:09.420
+It would have used up one of my eight cores and the rest would have been off jamming along.
+
+00:21:09.580 --> 00:21:10.500
+It would have been fine, you know?
+
+00:21:10.760 --> 00:21:11.980
+Well, sort of, right?
+
+00:21:12.060 --> 00:21:21.260
+And I think this is, I think it's, I'm really glad Pamela brought this up because we do, when we're focused on a particular just the worker thread, it's like, okay, What am I doing?
+
+00:21:21.540 --> 00:21:24.480
+You know, pull this, run that, and then push this thing out.
+
+00:21:25.220 --> 00:21:39.080
+But if you start getting to more, anytime you start having either value dependent or heterogeneous sort of workload and time boundaries for these tasks, you start having to think about threat contention.
+
+00:21:39.220 --> 00:22:13.760
+you start you know it's um i mean to to your point calvin i think it's not so far that you have to go before you quickly find yourself thinking about things like grand central dispatch like io uh like mac os has or io completion ports and like oh crap i'm actually slamming it's not under certain cases you know to your point about the analytics maybe you're not doing a gpu based analytics thing but maybe you're slamming a bunch of stuff to disk or loading a bunch of stuff up from disk and you start getting all these things where at some point one of these things the bottleneck is the cpu is it the you know the code itself is it the disc is the network um and you're just
+
+00:22:13.940 --> 00:22:18.000
+slamming your code into one of these different boundaries stochastically and as a developer
+
+00:22:18.260 --> 00:22:31.000
+maybe as an entry-level developer you don't have to think about it too much but as any kind of a mid to senior developer you're going to be running into these problems and they are going to be stochastic they are value dependent you're gonna hit them in production and you have to sort of know
+
+00:22:31.419 --> 00:22:38.840
+what what could bite you even if it's not biting you all the time in dev right you you remove one bottleneck and it starts to slam into a different part.
+
+00:22:38.960 --> 00:22:42.280
+Maybe you take them to the database and it's even a worse console.
+
+00:22:42.380 --> 00:22:43.000
+You never know, right?
+
+00:22:43.300 --> 00:22:43.960
+We're going to see.
+
+00:22:44.040 --> 00:22:44.580
+It's going to be interesting.
+
+00:22:44.880 --> 00:22:53.960
+But thinking about that in production, you've got new challenges there because you may have containers and you're running in Kubernetes and you've got pods and resource limits and other kinds
+
+00:22:54.000 --> 00:22:56.480
+of constraints that are happening that aren't on your local machine.
+
+00:22:56.640 --> 00:22:58.040
+All of a sudden you're saturating your local machine.
+
+00:22:58.080 --> 00:22:58.680
+You're like, this is great.
+
+00:22:59.140 --> 00:23:00.160
+I'm using all the resources.
+
+00:23:00.420 --> 00:23:00.820
+Look at it go.
+
+00:23:01.160 --> 00:23:04.860
+And now you release that to production and watch calamity and chaos.
+
+00:23:04.980 --> 00:23:07.520
+They get killed off because you've set some.
+
+00:23:07.630 --> 00:23:07.740
+Yeah.
+
+00:23:08.080 --> 00:23:15.960
+Like my websites and APIs and databases all have production level, like RAM limits and kind of things like that.
+
+00:23:15.960 --> 00:23:19.760
+So that if they go completely crazy, at least it's restricted to that one thing dying.
+
+00:23:20.200 --> 00:23:20.340
+Yeah.
+
+00:23:20.460 --> 00:23:20.620
+Everything.
+
+00:23:21.160 --> 00:23:21.240
+Yeah.
+
+00:23:21.700 --> 00:23:25.480
+Speaking of which, maybe you've got some ideas on what's next, Calvin.
+
+00:23:25.880 --> 00:23:26.060
+Sure.
+
+00:23:26.320 --> 00:23:28.980
+I mean, I've been a big believer in containers.
+
+00:23:29.540 --> 00:23:33.800
+I really got turned onto this in 2020 and went down the path.
+
+00:23:33.900 --> 00:23:39.980
+And now we're finally arrived where I believe developers should be learning Kubernetes, even for local development.
+
+00:23:40.210 --> 00:23:44.760
+I feel like that whole front to back story is not as complicated.
+
+00:23:44.900 --> 00:23:47.400
+The tooling has really come up to date.
+
+00:23:47.610 --> 00:24:03.000
+And so being able to use containers to get reliable, repeatable builds, being able to use tools like Tilt.dev, for example, as a developer locally with my Kubernetes clusters, I can now have file systems syncing, use all my local tools.
+
+00:24:03.620 --> 00:24:07.440
+This just literally does take the pains out of, they say microservice development.
+
+00:24:07.840 --> 00:24:11.320
+I think that's a little bit of a buzzwordy explanation there.
+
+00:24:11.560 --> 00:24:13.920
+I will say that it's good for Django development.
+
+00:24:14.380 --> 00:24:16.840
+So if you check out the SCAF full stack template,
+
+00:24:17.360 --> 00:24:18.480
+are you going to change it for me?
+
+00:24:18.900 --> 00:24:20.280
+Perfect, that's perfect.
+
+00:24:21.260 --> 00:24:29.180
+This is exactly where we can use the same tools in production that we use in development so that it's much easier to track down issues.
+
+00:24:30.300 --> 00:24:32.120
+Containers obviously unlocked a lot of those.
+
+00:24:32.200 --> 00:24:39.320
+I feel like the true superpower of Kubernetes, I think a lot of people love it for orchestration or claim it's for orchestration.
+
+00:24:39.560 --> 00:24:46.620
+I really love the fact that it's got a control plane and a URL and an API so you can do things like continuous deployment.
+
+00:24:46.920 --> 00:24:58.280
+So being able to deliver your code, build an image, update a manifest and have things just deploy without you having to think twice about it and be able to roll back with a click of a button and using tools like Argo CD.
+
+00:24:58.900 --> 00:25:01.160
+Argo CD is a great CI CD tool.
+
+00:25:01.280 --> 00:25:02.500
+So we leverage it very heavily.
+
+00:25:02.780 --> 00:25:06.900
+If you want a good example of how to do that, you can check out that same full stack template.
+
+00:25:07.020 --> 00:25:12.280
+We have all the pieces put in there for you in GitHub to understand how that works.
+
+00:25:13.200 --> 00:25:14.660
+So I think it's real.
+
+00:25:14.800 --> 00:25:20.740
+I think developers should be embracing the container world, especially if you have more than one developer.
+
+00:25:20.880 --> 00:25:28.020
+As soon as you have a second developer, this becomes an immediate payoff in the work it took to put it in place.
+
+00:25:28.420 --> 00:25:32.500
+And so I think it hits all the environments too, like not just web dev.
+
+00:25:32.650 --> 00:25:35.340
+I think the data folks benefit from containers,
+
+00:25:35.800 --> 00:25:37.220
+especially if you look at tools like Airflow,
+
+00:25:37.600 --> 00:25:44.800
+be able to deploy that into containers, be able to manage workers that are, you know, Kubernetes-based tasks.
+
+00:25:45.310 --> 00:25:53.920
+So you can like natively handle asynchronous tasks in a cluster and leverage all that power you've got under the covers and scalability of being able to scale out all the nodes.
+
+00:25:54.520 --> 00:26:01.180
+You get a lot of, a lot of win for adopting a tool that I think a lot of people and me included used to consider overkill.
+
+00:26:01.560 --> 00:26:28.580
+Yeah. Well, let's, let's put some layers on this. First of all, preach on, preach on, but you say containers and you said Kubernetes and these, some other things. Do we, do you have to know Docker and containers? Is Docker synonymous with containers for you? Do you have to know that before you're successful with Kubernetes? Like what are the, you know, there's, there's a couple of layers of, of architecture here, where are you telling people they should pay attention to?
+
+00:26:29.000 --> 00:26:33.400
+I think you have to start with containers. Start with Docker. Oh, the dog wants me to play with
+
+00:26:33.660 --> 00:26:37.340
+the toy over here. If you start with the container, because you have to have a good
+
+00:26:37.940 --> 00:26:48.480
+container strategy, even to be able to build and work with containers inside of any kind of a, you know, whether it's Docker Compose or Swarm or, you know, using Fargate or some kind of
+
+00:26:48.700 --> 00:26:56.320
+container app service, like on DigitalOcean. Yeah, count me down as Docker Compose, by the way. I'm Yeah, that's where we started.
+
+00:26:56.640 --> 00:27:12.020
+I really enjoyed the ability to have Compose describe my whole stack and be able to run the exact same version of the exact right version of Redis, the exact right version of Postgres, the exact right version of whatever my dependent other pieces are around me, because that matters.
+
+00:27:12.820 --> 00:27:25.880
+I don't remember, folks remember the Redis 608 to 609, like a very minor release introduced a new feature that was unusable in a very minor release backward.
+
+00:27:26.340 --> 00:27:33.780
+So you want to be able to pin these things down so you aren't chasing ghosts and weird edge cases and containers enable that.
+
+00:27:33.960 --> 00:27:35.960
+And whether it's Compose or Kubernetes, it doesn't matter.
+
+00:27:36.200 --> 00:27:37.780
+You get that benefit.
+
+00:27:38.380 --> 00:27:47.260
+I feel like the Kubernetes piece just takes that to the next level and gives you a lot of the programmability of the web with an API and the fact that I'm not logging in.
+
+00:27:48.440 --> 00:27:53.840
+Our preferred way to deploy Kubernetes onto servers is actually to use Talos Linux, which has no SSH shell.
+
+00:27:54.070 --> 00:27:56.320
+There is not a way to shell into that box.
+
+00:27:56.390 --> 00:28:02.180
+It eliminates a whole class of security vulnerabilities because there is no shell on the box whatsoever.
+
+00:28:02.780 --> 00:28:05.600
+You have to interact with it programmatically via APIs.
+
+00:28:06.280 --> 00:28:10.820
+And even the upgrades happen via the same API backplanes.
+
+00:28:11.410 --> 00:28:21.460
+And just that level of control, security, reliability, and comfort helped me sleep really well at night knowing where I've deployed these things.
+
+00:28:21.940 --> 00:28:23.200
+But you do need containers first.
+
+00:28:23.430 --> 00:28:27.280
+I think if you don't understand the layers of the containers, but I think that's a quick read.
+
+00:28:27.740 --> 00:28:29.520
+There's some really good resources online.
+
+00:28:30.940 --> 00:28:32.600
+Nana's Tech World does a really good job
+
+00:28:32.720 --> 00:28:34.340
+of describing containers and Kubernetes.
+
+00:28:35.180 --> 00:28:40.400
+And she does an awesome job of bringing that down to an every person, most every person level
+
+00:28:40.910 --> 00:28:42.520
+who would even care to want to touch it.
+
+00:28:42.680 --> 00:28:45.740
+I have some thoughts about containers and compose and stuff
+
+00:28:45.860 --> 00:28:46.380
+that I want to throw in.
+
+00:28:46.440 --> 00:29:09.440
+But I do especially want to hear, Peter, contrast your take with the, you sort of say the same thing, but for data scientists, do you need to pay attention to containers and data science? Is that different? I interviewed Matthew Rockland from Coiled recently, and they've got a really interesting way to ship and produce your code without containers that you actually interact with. There's options, but what do you think?
+
+00:29:09.440 --> 00:29:15.820
+Yeah, I think, I mean, I think containers are just part of the technical landscape now, So it's good to know them.
+
+00:29:16.430 --> 00:29:25.180
+I think if we were to remove the capabilities of data science from everyone who doesn't know about containers, that we would end up with a deeply impoverished user base, right?
+
+00:29:25.780 --> 00:29:38.660
+The truth of the matter is that there are a lot of people out there today who, if you think about what containers really do from a software development and a DevOps perspective, it is a mechanism for your dog knows about to say something spicy.
+
+00:29:38.860 --> 00:29:39.820
+No, I'm not trying to be controversial.
+
+00:29:40.010 --> 00:29:41.680
+Just thinking about it on first principles,
+
+00:29:42.260 --> 00:29:54.180
+A container is a way for us to sort of format and rationalize the target deployment environment at within the boundaries of the box, within the boundaries of a particular compute node with an IP address or something like this.
+
+00:29:55.020 --> 00:30:06.620
+And then Kubernetes takes the next level up, which is, oh, if your dependencies for your application is if you have like a microservices classic sort of example, if your application is architected in such a way that you need a lot of services to be running.
+
+00:30:07.180 --> 00:30:15.340
+Well, to format that, you need to actually create a cluster of services configured with particular network configuration and various kinds of things.
+
+00:30:15.700 --> 00:30:21.480
+So you're actually shipping a cluster as the first thing you land and then you land, you deploy the airport, then you land the plane.
+
+00:30:22.160 --> 00:30:34.260
+So if you need to do that, if the thing you're doing is so big and I think that we think about the U.S. Air Force and Army, like the reason why the American military sort of has the dominance it has is because of the logistics chain.
+
+00:30:34.400 --> 00:30:42.800
+They can land just hundreds and hundreds of tons of military hardware and food and personnel into any location on the earth inside of 24 hours.
+
+00:30:43.540 --> 00:30:46.540
+And this is sort of what Kubernetes gives you is that ability to format at that level.
+
+00:30:46.920 --> 00:30:56.740
+But at the end of the day, if you have a Jupyter Notebook, well-known data set, you know how many CPU cores, what kind of GPU you need to run a particular analytic, that can seem like overkill.
+
+00:30:56.880 --> 00:31:03.440
+Because you could say, spin up the CC2 box, get me in there, spin up Jupyter Hub, copy the thing over, and now it's running.
+
+00:31:03.820 --> 00:31:04.160
+You know, yay.
+
+00:31:04.850 --> 00:31:09.740
+So I don't think that containers are necessary, but in life, we don't just do what's necessary, right?
+
+00:31:09.980 --> 00:31:18.300
+I think it is useful to know something about how to ship and work with modern IT environments and cloud-native kinds of environments.
+
+00:31:18.480 --> 00:31:19.400
+So it's a useful thing to know.
+
+00:31:20.240 --> 00:31:28.000
+But then again, like I said, it's the goal for us as technologists should be empowering those who are less technically inclined than us.
+
+00:31:28.350 --> 00:31:31.520
+And so removing the complexity for them should be the thing that we should be trying to do.
+
+00:31:31.570 --> 00:31:32.940
+And this is then to the spirit
+
+00:31:32.960 --> 00:31:45.240
+is what I think Matt Rocklin talks to. And what we on the sort of Anaconda data science oriented side also hope for, right? Is that to make as much of this disappear into the background as possible for people who don't want to learn it, who don't need to know it necessarily.
+
+00:31:45.600 --> 00:31:54.500
+Yeah. I think we want to get, we all want to score well on the plays well with others scorecard. And so, you know, if we can deploy and use containers, that means it's much easier to
+
+00:31:54.640 --> 00:32:00.260
+onboard the next dev. Yeah. And a lot of this, not everyone has to be an expert at it. Correct.
+
+00:32:00.640 --> 00:32:07.580
+A couple of people set up a cluster or some Docker compose system together, and then you all get to use it.
+
+00:32:07.640 --> 00:32:13.820
+It's a little bit like the people that work on Jupyter have to do a lot of JavaScript and TypeScript, so the rest of us don't have to do so much.
+
+00:32:14.200 --> 00:32:14.300
+Right.
+
+00:32:14.590 --> 00:32:16.980
+Although you just whipped out a little HTML editing, so I was pretty slick.
+
+00:32:19.360 --> 00:32:25.960
+Yeah, I think here's a good question from a little bit earlier from Pamela, but I think especially this one goes out to you, Calvin.
+
+00:32:26.050 --> 00:32:28.080
+I think you've walked this path recently.
+
+00:32:28.700 --> 00:32:32.400
+How much harder is Kubernetes versus Docker Compose to learn for a web dev?
+
+00:32:32.720 --> 00:32:37.840
+I think if you have a good template to start from, that's where this becomes a no-brainer.
+
+00:32:38.220 --> 00:32:48.940
+If you were to try and go learn all the things about the Kubernetes stack orchestrators, the storage bits, all these kind of pieces, that could be really overwhelming.
+
+00:32:49.180 --> 00:32:56.080
+And whereas Docker Compose, it's one file, it lists your services, it feels fairly readable, It's just YAML.
+
+00:32:57.200 --> 00:32:59.760
+Kubernetes is going to have a few more things going on under the covers.
+
+00:33:00.070 --> 00:33:12.320
+But again, I'll point to our SCAF example as a minimal, as little as you needed to get going version of being able to do Kubernetes locally and in a sandbox and production environment.
+
+00:33:12.690 --> 00:33:14.300
+So it scales up to all those pieces.
+
+00:33:14.800 --> 00:33:17.480
+So as a web dev, you just develop your code locally.
+
+00:33:17.640 --> 00:33:18.300
+You use your IDE.
+
+00:33:18.560 --> 00:33:19.160
+You're in PyCharm.
+
+00:33:19.320 --> 00:33:19.840
+You're in VS Code.
+
+00:33:20.580 --> 00:33:21.860
+You're editing your files locally.
+
+00:33:22.380 --> 00:33:30.260
+Tools like Tilt are kind of hiding a lot of that complexity out under the covers for you and synchronizing files two-way.
+
+00:33:30.540 --> 00:33:40.320
+So if things happen in the container, for example, you probably want to be able to build, compile your dependencies with the hashes in the target container environment that you're going to release to.
+
+00:33:40.680 --> 00:33:47.720
+Because if you did it locally and you're on Windows or on Mac or on Linux, you're going to get potentially different hashes, different versions of different dependencies.
+
+00:33:48.480 --> 00:33:54.820
+So those kinds of things need to write back from the container to your local file system and Tilt enables that and takes that whole pain away.
+
+00:33:55.260 --> 00:34:02.880
+I think Tilt was the big changing point for me, the inflection point for me when I moved over and fully embraced Kubernetes for local web dev.
+
+00:34:03.380 --> 00:34:03.600
+Interesting.
+
+00:34:04.240 --> 00:34:09.899
+Over at Talk Python, I've got, I think last time I counted 23 different things
+
+00:34:10.120 --> 00:34:16.600
+running in Docker containers were managed by a handful of Docker Compose things that grew them by what they're related to.
+
+00:34:16.629 --> 00:34:17.600
+And it's been awesome.
+
+00:34:17.980 --> 00:34:20.139
+It's been, it really lets you isolate things.
+
+00:34:20.520 --> 00:34:22.960
+The server doesn't get polluted with installing
+
+00:34:23.100 --> 00:34:25.460
+this version of Postgres or that version of Mongo.
+
+00:34:25.560 --> 00:34:27.179
+I think I've got two versions of Postgres,
+
+00:34:27.620 --> 00:34:30.179
+another version of MongoDB, and a few other things.
+
+00:34:30.379 --> 00:34:31.320
+Yeah, and it just doesn't matter.
+
+00:34:31.480 --> 00:34:32.879
+Do I RAM and CPU for it?
+
+00:34:33.060 --> 00:34:33.899
+Plenty, okay, good.
+
+00:34:34.020 --> 00:34:38.280
+And you can run in a one CPU or one server node.
+
+00:34:38.399 --> 00:34:43.460
+You don't need to have five machines running with a control plane and all the pieces.
+
+00:34:43.560 --> 00:34:52.120
+You will have the control plane, You can use like K3S is a minimal Kubernetes project that you can use to deploy, for example, on a single EC2 instance.
+
+00:34:52.679 --> 00:34:54.280
+Spin that up, deploy your containers.
+
+00:34:54.580 --> 00:34:58.520
+Now you can hook it up to your GitHub actions, which I think we should also talk about as something people should learn.
+
+00:34:59.520 --> 00:35:01.080
+You hook that up and away you go.
+
+00:35:01.200 --> 00:35:12.200
+You're now releasing without logging into a server and typing git pole and potentially injecting into it unintended changes from your version control.
+
+00:35:12.700 --> 00:35:19.800
+I mean, it's a peace of mind to be able to know and audit and know what you've released is exactly what you expected to get released.
+
+00:35:20.640 --> 00:35:24.300
+So I want to wrap up this container side of things with two thoughts.
+
+00:35:24.880 --> 00:35:26.400
+First, I'm a big fan of dogs.
+
+00:35:26.770 --> 00:35:29.620
+I don't know if you guys know, but I kind of understand what dogs say a little bit.
+
+00:35:29.680 --> 00:35:30.140
+It's a little weird.
+
+00:35:30.410 --> 00:35:33.560
+I believe Calvin's dog, I don't know, Peter, back me up here.
+
+00:35:33.560 --> 00:35:37.140
+I believe Calvin's dog said, forget containers I edit in production.
+
+00:35:37.580 --> 00:35:39.220
+I think that's what the dog said when it barked.
+
+00:35:39.220 --> 00:35:39.920
+I'm not entirely sure.
+
+00:35:40.580 --> 00:35:41.580
+I mean, he is a black dog.
+
+00:35:42.160 --> 00:35:48.040
+you can only. Yeah, you never know. You never know. They're known for being rebels. That's right.
+
+00:35:48.220 --> 00:36:11.480
+Exactly. Not the black sheep, but the black lab. The black dog. And then the second one I want to kind of close this out with is see for yourself out on YouTube says, I like Python for low code ML with PyCaret. The problem is that Python is now up to 313.3 and very soon 314.0 folks, while PyCaret only supports up to 311. And I think this is a good place to touch on reproducibility and isolation, right?
+
+00:36:11.590 --> 00:36:15.760
+Like you could make a container that just runs 3.11 and it doesn't matter what your server has, right, Peter?
+
+00:36:16.560 --> 00:36:23.720
+Yeah, I mean, the, is the, sorry, if you could pop up the question again, I was, I think it was just that PyCaret, yeah.
+
+00:36:24.319 --> 00:36:30.040
+So this, I guess I don't really see the, I don't see the problem.
+
+00:36:31.080 --> 00:36:32.900
+Like this is a statement of fact, right?
+
+00:36:33.020 --> 00:36:34.700
+The PyCaret only supports 3.11.
+
+00:36:35.260 --> 00:36:42.840
+Are there features that you really want to see in 3.13 or that you really need to use in 3.13 or, I mean, there's...
+
+00:36:43.380 --> 00:36:44.560
+It could be that they work.
+
+00:36:45.080 --> 00:36:47.060
+Yeah, but it could be they get a new Linux machine
+
+00:36:47.600 --> 00:36:48.360
+that's Ubuntu
+
+00:36:48.530 --> 00:36:49.720
+and it's got 3.12 on it.
+
+00:36:49.900 --> 00:36:50.040
+Yep.
+
+00:36:50.700 --> 00:36:53.140
+I mean, but you never...
+
+00:36:53.180 --> 00:36:56.900
+Okay, this might be where the dog barks again, but you never use the system Python.
+
+00:36:57.300 --> 00:36:57.580
+Well, right.
+
+00:36:58.959 --> 00:37:00.780
+It doesn't matter what the system ships with.
+
+00:37:00.900 --> 00:37:02.080
+What does macOS ship with?
+
+00:37:02.080 --> 00:37:02.460
+I don't know.
+
+00:37:03.519 --> 00:37:04.240
+You install...
+
+00:37:04.240 --> 00:37:13.440
+You either install a distribution like Anaconda, Miniconda or something like this or uv using Python standalone, the virtual environments there have their own ship, their own Python.
+
+00:37:14.720 --> 00:37:23.020
+This is now I because I am who I am, like on the Anaconda side of things, we've known that you have in order to really isolate your Python installation.
+
+00:37:23.500 --> 00:37:31.540
+You really have to have the interpreter itself be built with the same tool chain and the same versions of the tool chain as all the libraries within it.
+
+00:37:31.580 --> 00:37:35.520
+And so this is what the Conda universe, Conda Forge, BioConda, we've been doing this forever.
+
+00:37:36.400 --> 00:37:42.640
+And then with uv, I think uv has really pushed the spearheading the whole like install a separate Python bit.
+
+00:37:42.680 --> 00:37:47.800
+I know that Pyan has been there, but like it's not, I don't think it was a standard part of,
+
+00:37:47.940 --> 00:37:49.760
+it was considered best practice, right?
+
+00:37:50.120 --> 00:37:52.980
+For people, but, but I'm hoping that, you know,
+
+00:37:53.400 --> 00:37:55.420
+that, that uv helps to change minds in this way as well.
+
+00:37:55.560 --> 00:38:08.060
+But ultimately for, for, if you actually, if you do all the bits, right, you actually can have a isolated and separated, perfectly isolated Python install without needing to use containerization.
+
+00:38:08.840 --> 00:38:13.200
+Not that there's anything wrong with containerization, but just sort of saying like, this is a solvable problem.
+
+00:38:13.580 --> 00:38:20.060
+It's just so darn complicated to try to give anyone best practices in the Python packaging world because some guidance can be wrong for somebody, right?
+
+00:38:20.360 --> 00:38:21.780
+But in this case, yes,
+
+00:38:22.130 --> 00:38:34.320
+you could absolutely use containers to isolate that or look to use Konda or uv to create an isolated install with just that version of Python just to run then PyCaret inside it.
+
+00:38:34.500 --> 00:38:53.240
+Yeah, I feel like containers a pure expression of an isolated environment where you can't get it messed up. If you do anything, just know that the system Python is not your Python. You shouldn't be allowed to use it. It should be almost in a user private bin path that's not usable by people.
+
+00:38:53.680 --> 00:39:12.380
+Calvin, I've been on a journey. It's a failed journey, but it was a long, long, solid attempt. I've been trying to remove Python from my system as a global concept, period. But I'm a big fan of Homebrew and too many things that Homebrew want it. And I know something's gone wrong when my app falls back to using Python 3.9. I'm like,
+
+00:39:12.420 --> 00:39:18.820
+no, Homebrew. I deleted all my local Pythons, Pyamv and Homebrew in any packages that depended on it.
+
+00:39:18.880 --> 00:39:24.500
+And I went fully uv and uvx for any tools that would rely on it. And we've also moved to Nix.
+
+00:39:24.720 --> 00:39:28.460
+We've started using Nix for our package management instead of Homebrew for that reason.
+
+00:39:31.080 --> 00:39:33.740
+This portion of Talk Python To Me is brought to you by Agency.
+
+00:39:34.380 --> 00:39:39.400
+Build the future of multi-agent software with Agency, spelled A-G-N-T-C-Y.
+
+00:39:40.060 --> 00:39:44.480
+Now an open-source Linux foundation project, Agency is building the Internet of Things.
+
+00:39:45.120 --> 00:39:51.260
+Think of it as a collaboration layer where AI agents can discover, connect, and work across any framework.
+
+00:39:52.120 --> 00:39:53.380
+Here's what that means for developers.
+
+00:39:54.040 --> 00:39:59.700
+The core pieces engineers need to deploy multi-agent systems now belong to everyone who builds on Agency.
+
+00:40:00.140 --> 00:40:06.160
+You get robust identity and access management, so every agent is authenticated and trusted before it interacts.
+
+00:40:06.800 --> 00:40:19.200
+You get open, standardized tools for agent discovery, clean protocols for agent-to-agent communication, and modular components that let you compose scalable workflows instead of wiring up brittle glue code.
+
+00:40:19.660 --> 00:40:21.080
+Agency is not a walled garden.
+
+00:40:21.580 --> 00:40:30.200
+You'll be contributing alongside developers from Cisco, Dell Technologies, Google Cloud, Oracle, Red Hat, and more than 75 supporting companies.
+
+00:40:30.750 --> 00:40:31.620
+The goal is simple.
+
+00:40:32.070 --> 00:40:39.280
+Build the next generation of AI infrastructure together in the open so agents can cooperate across tools, vendors, and runtimes.
+
+00:40:39.980 --> 00:40:43.820
+Agencies dropping code, specs, and services with no strings attached.
+
+00:40:44.460 --> 00:40:44.920
+Sound awesome?
+
+00:40:45.440 --> 00:40:49.040
+Well, visit talkpython.fm/agency to contribute.
+
+00:40:49.580 --> 00:41:44.140
+that's talkpython.fm/agntcy the link is in your podcast player show notes and on the episode page thank you as always to agency for supporting talk python to me maybe the next one i want to throw out there to talk about is just is uv it's yeah it was compelling when it was uv pip install and uv venv but i think peter really hit the nail on the head when once it's it sort of jujitsu'd Python and said, okay, now here's the deal. We manage Python. Python doesn't manage us. It just uncorked the possibilities, right? Because you can say uv venv and specify a Python version, and it's not even on your machine. Two seconds later, it's both installed on your machine and you have a virtual environment based on it. And you don't have to think about it. You know, Peter, you talked about PyM. It's great, but it compiles Python on a machine that's super slow and error prone. Because if your build tools in your machine aren't quite right, then well,
+
+00:41:44.220 --> 00:41:44.460
+Oh, yeah.
+
+00:41:44.740 --> 00:41:45.760
+Compiling Python is no joke.
+
+00:41:46.080 --> 00:41:46.660
+No, it isn't.
+
+00:41:46.680 --> 00:41:49.160
+I used to do it for a while for Talk Python in production.
+
+00:41:49.600 --> 00:41:50.620
+It was like a 10-minute deal.
+
+00:41:51.320 --> 00:41:52.020
+I had it automated.
+
+00:41:52.040 --> 00:41:53.240
+It was fine, but it took 10 minutes.
+
+00:41:53.420 --> 00:41:54.160
+There was no rush in it.
+
+00:41:54.500 --> 00:41:55.780
+And you don't need to spend.
+
+00:41:56.360 --> 00:42:41.600
+The great irony of this is that, again, we in the data science world have spent years trying to convince certain folks in the sort of non-data and science Python world that you can't solve the Python packaging problem without including the management of Python itself in it. And we just got nowhere. We're just repeatedly told PyCon after PyCon, packaging summit after packaging summit. The scope of a Python package manager is to manage the things inside site packages and anything outside of that system libraries, lib ping, lib tiff, you know, open CV, these things are outside of scope. And, you know, many distributions, There's Linux distros like Debian or Red Hat.
+
+00:42:42.220 --> 00:42:44.920
+There's distribution vendors of like us and Akana that are cross-platform.
+
+00:42:46.020 --> 00:42:50.060
+We're trying to make the case for this, but we just kept not landing that argument.
+
+00:42:50.420 --> 00:42:51.500
+UV comes along and does it.
+
+00:42:51.740 --> 00:42:53.520
+And everyone's like, oh, this is totally the way to do it.
+
+00:42:54.360 --> 00:42:59.380
+It's like, well, I guess the users finally have, you know, I think that we can follow, we can pave that cow path.
+
+00:42:59.680 --> 00:43:01.540
+And I agree, it is utterly the way to do it.
+
+00:43:01.780 --> 00:43:19.000
+And then what we're going to learn, I think, on the other side of that is, oh, not only is it great to manage Python as part of the whole thing, But now we actually should care how we build that Python, because your choice of clang, GCC, your choice of what particular libraries you link in, that determines the tool chain for compiling everything else as well.
+
+00:43:19.390 --> 00:43:27.320
+And especially to talk about data, AI, ML kinds of libraries, there's incompatibilities that will emerge as you try to install this, install that.
+
+00:43:27.740 --> 00:43:32.460
+So I gave a talk at PyBay, sorry to sort of toot my own horn a little bit, but I gave a
+
+00:43:32.460 --> 00:43:41.560
+talk at PyBay last fall about the five demons of Python packaging, where I try to unravel why is this perennial problem so gnarly and horrible?
+
+00:43:42.640 --> 00:43:44.620
+And it's because there's many dimensions of it.
+
+00:43:44.650 --> 00:43:47.440
+And most users only care about one and a half of those dimensions.
+
+00:43:47.830 --> 00:43:50.800
+They just really want to install the damn package and just use it.
+
+00:43:51.060 --> 00:43:53.200
+But if you're a maintainer, that's right.
+
+00:43:53.920 --> 00:43:55.600
+You got to have the obligatory Blade Runner.
+
+00:43:56.880 --> 00:44:13.720
+And anyway, so I put that talk together just to sort of get everyone on the same page to understand why we have different tools, why distribution vendors, whether it's an Anaconda or an Ubuntu, a Red Hat or Nix, right? Why homebrew? These things do matter. And there's a reason people depend on these tools.
+
+00:44:14.859 --> 00:44:34.800
+And anyway, I hope that people who care about Python packaging or want to understand more deeply go and look at this talk because I do try to put time at each of their own topics that make this so complicated. And for Python in particular, because I hear a lot of people talking about, why isn't it as easy as Rust? Or, oh, MPM is so nice. Well, I don't hear that very
+
+00:44:34.820 --> 00:44:39.820
+often. Is it? No, no, no. Actually, I don't hear a lot of praise for npm. Well, like, why doesn't
+
+00:44:39.920 --> 00:45:08.960
+JavaScript have this problem? It's like, well, JavaScript doesn't have a pile of Fortran involved in it, right? Many people don't know, but, you know, there's a fun thing in there. I talk about the fact that if you want to use MB convert, if you want to use MB convert to convert notebook into a PDF, you need a Haskell compiler because Pandoc depends on Haskell. So like there's just things like that that are just our ecosystem is replete with these things. And most users don't have to see it if the upstream folks or the distribution folks and packaging people are doing their jobs right. But that doesn't mean that it's not hard. It doesn't mean that it's not
+
+00:45:09.290 --> 00:45:54.780
+real labor that goes into making it work. Yeah. Look in the chat, Pamela points out that even using uv, there are now multiple ways, which is tricky. And I would refer to myself as one of the old school people. I still use uv kind of in a agnostic way. Like if people don't want to use uv and they take one of my projects, they can still use pip and they can still use pip-tools. And things like uvvenv or uv pip install or you know pip compile especially to build out the pin requirements but if you don't like it you just pip install -r requirements.txt instead of using what i was doing right and then there's this other way of embracing like let it sort of manage your pyproject.tomal entirely and create it and so on so i think there is some a little bit
+
+00:45:55.000 --> 00:46:13.420
+of confusion but i think yeah it's probably good to make you step forward for the python packaging community for sure it's good they made that compatibility path though it helps people be comfortable because change is hard as as humans we don't like change but this is a really good change that that speed is a feature that that charlie talks about is a hundred percent i'm on
+
+00:46:13.420 --> 00:46:40.380
+the on board yeah i agree and it's it's changed even my docker stuff now yeah i just i one of my docker layers is just uv python install or really i think it just creates a virtual environment which also installs the Python. And that's a two second, one time deal. And it's after the races. It's really, really nice. All right. We have probably time for a few more topics. However, if I put this out into the world, it may consume all of the time as it does pretty much all of the GPUs.
+
+00:46:41.500 --> 00:46:54.180
+What are your thoughts on agent encoding? What are your thoughts on them? On LLMs and agent coding AI and that whole soup of craziness? I'm shocked how many people are not diving in
+
+00:46:54.200 --> 00:47:05.200
+headfirst on this. I literally started talking to some developer last week and I was like, hey, we tried Claude Code. And they were like, no, what's that? I was like, oh my.
+
+00:47:05.200 --> 00:47:05.340
+What?
+
+00:47:05.820 --> 00:47:16.800
+Yeah, exactly. Well, we've got Copilot. I think the issue is in the enterprise, a lot of people have opted to purchase Copilot because it's a checkbox and a one-click purchase.
+
+00:47:16.970 --> 00:47:20.780
+So it's easy, but they're not giving them Copilot Studio, which is the agentic version of it.
+
+00:47:21.060 --> 00:47:22.580
+They're just like, yeah, you've got your LLMs now.
+
+00:47:23.290 --> 00:47:23.820
+Go have fun.
+
+00:47:24.140 --> 00:47:31.200
+I think they're really missing out on the true power of like a tool that can inspect your file system, a tool that can like look at things and do actions.
+
+00:47:31.540 --> 00:47:33.220
+Now, obviously that introduces risk.
+
+00:47:33.590 --> 00:47:37.420
+So a lot of these security people in these environments are not excited about that level of risk.
+
+00:47:38.320 --> 00:47:46.300
+I don't have a good answer for that other than if you're a developer and you're going to turn on energetic coding, you kind of have to like sign up and be accountable for what it's going to do.
+
+00:47:46.560 --> 00:47:49.280
+I've got some ideas and some concrete recommendations for you.
+
+00:47:49.400 --> 00:47:51.220
+But Peter, I want to hear what you have to say first.
+
+00:47:51.860 --> 00:47:56.540
+So first of all, I think vibe coding is simultaneously oversold.
+
+00:47:56.690 --> 00:48:01.560
+At the same time, I'm very bullish on where this can go.
+
+00:48:02.050 --> 00:48:10.900
+Ultimately, the Transformers models and that style of current era AI has some structural mathematical limitations.
+
+00:48:11.310 --> 00:48:17.320
+The recent open AI paper about hallucinations are inevitable and sort of part of the math sort of shows that, yeah, we're going to end up.
+
+00:48:17.540 --> 00:48:20.780
+It is, to some extent, glorious high-dimensional autocomplete.
+
+00:48:21.100 --> 00:48:22.860
+But oh my God, it's glorious when it's right.
+
+00:48:23.300 --> 00:48:24.220
+So it is steerable.
+
+00:48:24.580 --> 00:48:29.100
+It's like trying to fly a very, very awkward airplane before we've really figured out aerodynamics.
+
+00:48:29.480 --> 00:48:30.600
+But it kind of still does work.
+
+00:48:31.000 --> 00:48:36.280
+So people should absolutely 100% be looking at what this can do for them.
+
+00:48:36.540 --> 00:48:51.640
+And thinking really right now, I would say actually the limitations, the known, the visible limitations of VibeCoding, should actually, you should be grateful for that because that gives us time and space to think about how would we design projects?
+
+00:48:52.260 --> 00:48:58.720
+Because I know for myself, the way I code is I write doc strings and comments and sort of class structures first.
+
+00:48:59.260 --> 00:49:02.540
+And then I think about what needs to play with what and you're writing documentation.
+
+00:49:03.120 --> 00:49:07.980
+And if I can just have the code itself just get filled out with that, like, holy crap, like, of course, right?
+
+00:49:08.460 --> 00:49:14.820
+So everyone should be doing this so they can think about it and really think about where this stuff will go because it's definitely going to get better.
+
+00:49:15.340 --> 00:49:21.060
+But if you're worried about the data leakage and the compliance and all this other stuff, use local models.
+
+00:49:21.240 --> 00:49:23.920
+Go and buy expense a couple of GPUs.
+
+00:49:24.020 --> 00:49:26.500
+3090s actually work fine with the newer, smaller models.
+
+00:49:26.880 --> 00:49:31.160
+If you work for a richer employer, maybe you can get a couple of 5090s.
+
+00:49:31.880 --> 00:49:33.420
+Sacrifice a gaming PC. Come on.
+
+00:49:34.280 --> 00:49:35.340
+It's also a gaming PC.
+
+00:49:35.440 --> 00:49:36.540
+It's also a gaming PC.
+
+00:49:36.840 --> 00:49:38.120
+An M4 Mac with 64.
+
+00:49:38.320 --> 00:49:40.180
+I have an M4 Mac with 64 gig of RAM.
+
+00:49:40.520 --> 00:49:41.000
+And it's wonderful.
+
+00:49:41.320 --> 00:49:42.380
+I've got DevStroll running.
+
+00:49:42.520 --> 00:49:44.820
+I've got the OSS GPT running.
+
+00:49:45.440 --> 00:49:49.160
+All those tools run on a, on just base model on base model.
+
+00:49:49.500 --> 00:49:50.660
+I have Mac.
+
+00:49:51.160 --> 00:49:51.280
+Yeah.
+
+00:49:51.500 --> 00:50:00.920
+I have a 32 gig Mac mini running here and I'm running the 20 billion parameter open AI model on it just to be shared with all my computers, my laptop.
+
+00:50:01.300 --> 00:50:01.400
+Yeah.
+
+00:50:01.460 --> 00:50:07.000
+And there's, and there's, there's, there's also, you know, the Chinese models are really freaking good, you know?
+
+00:50:07.060 --> 00:50:21.100
+And, and the, I mean, I think, I don't know what we'll see what happens with CES next year, but I feel like, this year was the year of small models. This year was the year, I mean, we started the year with DeepSeek, right? And so it's like not just Chinese labs saying, we don't need your stinking whatever,
+
+00:50:21.700 --> 00:50:26.700
+but over the course of the year, we got Kimi, we got Gwen, we got GLM, we got, we're just going to
+
+00:50:26.730 --> 00:50:30.300
+keep getting these. And that's not even, that's just on the code and the text prompting side.
+
+00:50:30.440 --> 00:50:33.980
+That's not even on image generation. So the Chinese image and video generation models are
+
+00:50:34.030 --> 00:50:41.100
+just jaw-droppingly good. So I think what we're going to see here is by the beginning of next year, well, this is a 25 slash 26 podcast, right?
+
+00:50:41.520 --> 00:50:51.220
+So in 26, you probably have no excuse to say, why are you not, you know, like you're, you're, you know, professional CAD and engineering people have big workstations.
+
+00:50:51.310 --> 00:50:57.140
+As a dev, maybe you just have a big workstation now or a fat 128 gig, you know, unified memory for Mac.
+
+00:50:57.610 --> 00:51:00.980
+But like, you're just going to have that as your coding station and everything is local.
+
+00:51:01.400 --> 00:51:03.020
+You're going to be careful with tool use, of course,
+
+00:51:03.160 --> 00:51:04.780
+but still like you just run all locally.
+
+00:51:05.140 --> 00:51:10.880
+But I think as a developer, the key, one of the key skills you should learn is going to be context engineering
+
+00:51:11.300 --> 00:51:13.480
+and using sub processes.
+
+00:51:14.340 --> 00:51:18.480
+The models now support basically spinning off parallel instances of themselves.
+
+00:51:18.680 --> 00:51:25.460
+And you can spin off parallel instances with a limited amount of context to kind of really shape how they understand things.
+
+00:51:25.500 --> 00:51:31.540
+Because Google introduced the Gemini with like a 1 million token context window limit.
+
+00:51:31.940 --> 00:51:32.380
+So what?
+
+00:51:32.480 --> 00:51:33.280
+What are you going to do with that?
+
+00:51:33.320 --> 00:51:39.500
+It's really not useful to just feed a million tokens into it because it can't, it just as much as you try to like stuff your brain.
+
+00:51:39.500 --> 00:51:41.340
+Well, it tapers off at the end as well.
+
+00:51:41.440 --> 00:51:43.200
+It's not really a million tokens.
+
+00:51:43.420 --> 00:51:44.320
+Right, you don't get a million tokens.
+
+00:51:44.520 --> 00:51:48.360
+And it's also, it's just going to be thoroughly confused by all the context you just threw at it.
+
+00:51:48.560 --> 00:51:53.420
+But if you can give a really narrow focus context, small diffs, that's one of the things I liked about Aider Chat.
+
+00:51:53.660 --> 00:51:56.100
+If you've not checked out Aider Chat, it has a diff mode
+
+00:51:56.380 --> 00:51:58.400
+that really limits the amount of tokens it consumes.
+
+00:51:58.580 --> 00:52:07.060
+So actually it's a little more efficient on tokens than like cloud code, even if you're using the Anthropic models the same way, because it'll do diffs and send smaller context.
+
+00:52:07.540 --> 00:52:17.740
+And if you can leverage that with like sub models or sub prompts and Goose, the chat agent from Block has recipes that actually operate in like a sub model.
+
+00:52:17.900 --> 00:52:29.540
+So it's basically like you're building your own little tools that are just descriptions of like what MCP pieces it should use, what tools should be available and use this context and only pass me back that bit and throw away the extra context once you're done.
+
+00:52:29.590 --> 00:52:34.220
+So you're not polluting your context window with a whole bunch of unneeded operation.
+
+00:52:34.320 --> 00:52:37.480
+and now you get back really what's needed for whatever you're trying to work on.
+
+00:52:37.820 --> 00:52:37.860
+Yeah.
+
+00:52:38.640 --> 00:52:41.380
+So I want to kind of take it a little bit higher level back real quick.
+
+00:52:41.600 --> 00:52:42.240
+How about I'm with you?
+
+00:52:42.280 --> 00:52:54.320
+If you have not seen this, and I've talked to a lot of really smart devs who are like, yeah, I tried Copilot or I tried one of these things and their experience is largely, I think with the multi-line autocomplete.
+
+00:52:54.660 --> 00:52:56.380
+And to me, that, I just turned that off.
+
+00:52:56.440 --> 00:52:56.940
+That's like garbage.
+
+00:52:57.579 --> 00:53:01.120
+I mean, it's not garbage, but it's, I'll put it, let me put it more kindly.
+
+00:53:01.400 --> 00:53:04.400
+Like half of the time hitting tab is glorious.
+
+00:53:04.920 --> 00:53:08.560
+And the other half, I'm like, I want the first half, but the second half is wrong.
+
+00:53:08.780 --> 00:53:10.900
+So do I hit tab and then go down and delete it again?
+
+00:53:11.180 --> 00:53:11.620
+Like, you know what I mean?
+
+00:53:11.620 --> 00:53:14.380
+I got to like, it's giving me too much and it's not quite right.
+
+00:53:14.780 --> 00:53:18.060
+But the agentic tool using part is stunning.
+
+00:53:18.660 --> 00:53:22.020
+Not with the cheap models, but with the models that cost like $20 a month.
+
+00:53:22.300 --> 00:53:24.640
+It's a huge difference from the very cheap model to like.
+
+00:53:24.640 --> 00:53:27.120
+Which is like, that's not even a latte a week, right?
+
+00:53:27.240 --> 00:53:31.700
+Like just like we're talking to an audience of probably mostly professional developers, right?
+
+00:53:32.020 --> 00:53:32.360
+Yes.
+
+00:53:32.700 --> 00:53:39.380
+You know, a hundred bucks a month, $200 a month for what literally is transforming the future of your entire industry is worth it.
+
+00:53:39.500 --> 00:53:42.420
+Like, why would you not subscribe to your and your employer should be paying for this?
+
+00:53:42.560 --> 00:53:44.000
+Like they should be handing you all.
+
+00:53:44.290 --> 00:53:45.120
+Well, but if they do actually.
+
+00:53:45.420 --> 00:53:45.980
+So here's the thing.
+
+00:53:46.120 --> 00:53:46.980
+I'm actually two minds of this.
+
+00:53:47.360 --> 00:53:54.220
+I think every dev for their own purposes, for their own application, you're paying for their own because the employers will have limitations on what they're allowed to use.
+
+00:53:54.500 --> 00:54:18.240
+They may have to sign up for an enterprise thing, which has then data, you know, data retention policies, yada, yada, yada. And you want to just go full blast. What is absolute cutting edge being released by various things. But I would still, again, my little, you know, nerd, like open source heart would not be stated unless I've made the comment here. Please play with local models. Please like have do work in a data sovereignty mode.
+
+00:54:19.300 --> 00:54:32.600
+Because this is actually the closest, the first time I think we've had real tech that could potentially move people away from a centralized computing model, which has been, I think, so deleterious to our world, actually.
+
+00:54:33.000 --> 00:54:45.880
+And the last thing that we don't have time for, but the last thing I was going to just throw a shout out for was for people to check out Beware, because that is the way that we can build Python mobile applications and really be shipping applications that don't necessarily, like, we should be deploying to mobile.
+
+00:54:46.560 --> 00:54:50.280
+so many web Python developers are web devs storing state in the Postgres somewhere.
+
+00:54:50.660 --> 00:54:53.200
+And we're part of that data concentration, data gravity problem.
+
+00:54:53.680 --> 00:54:53.740
+Yeah.
+
+00:54:53.940 --> 00:54:58.780
+Whereas if we flip the bit and just learn for ourselves, how do we vibe code an actual iOS platformer?
+
+00:54:59.040 --> 00:55:00.080
+Like let's go do that.
+
+00:55:00.140 --> 00:55:00.240
+Right.
+
+00:55:00.400 --> 00:55:02.020
+Or an Android thing, which is a little bit easier to deal with.
+
+00:55:02.660 --> 00:55:03.860
+These are things that we can actually do.
+
+00:55:04.420 --> 00:55:04.740
+Yeah.
+
+00:55:04.980 --> 00:55:05.100
+Yeah.
+
+00:55:05.280 --> 00:55:05.340
+Totally.
+
+00:55:05.660 --> 00:55:12.800
+I want to give a shout out to you, Peter and Anaconda in general for all the support for beware and some of the PI script and some of those other projects.
+
+00:55:12.940 --> 00:55:14.300
+Those are important ones.
+
+00:55:14.440 --> 00:55:15.240
+And yeah, good work.
+
+00:55:15.740 --> 00:55:15.780
+Yeah.
+
+00:55:15.860 --> 00:55:15.980
+Thank you.
+
+00:55:16.260 --> 00:55:19.960
+fight the good fight. Yeah, for sure. Thank you. I do want to, I'm not quite done with this AI
+
+00:55:20.090 --> 00:55:35.340
+thing though. I do, I do want to say, I do want to point out this thing called Klein that recently came out. That's really pretty interesting. Have you guys heard of this? Yep. Yep. Yep. Yeah. So it's open source. It's kind of like cursor, but the big difference is they don't charge for inference.
+
+00:55:35.470 --> 00:55:45.040
+You just put in an API key and, or you put in a link to a URL to a local model. So you use local with it. Yeah. Yeah. Yeah. And I recommend if you're using local models and then we want to
+
+00:55:44.980 --> 00:56:05.060
+really want to go all in on the data sovereignty pieces use tools like little snitch on your mac to know if it's sending something someplace you're you didn't request it to send to you can be totally eyes wide open and maybe exercise a little more reckless abandon if you know that the tool like that can catch an outbound connection that you didn't expect yeah i think i'll give you i'm gonna
+
+00:56:05.220 --> 00:56:17.880
+how many how much i don't want to burn this i will give you guys an example that i think probably will If you've done a lot of web development and web design mix, this will probably catch your attention.
+
+00:56:19.140 --> 00:56:23.500
+So I want to add some new features to talkpython.fm.
+
+00:56:23.500 --> 00:56:26.440
+I got some cool whole sections coming and announcements.
+
+00:56:27.220 --> 00:56:32.820
+But talkpython.fm was originally created and designed in 2015 on Bootstrap.
+
+00:56:33.100 --> 00:56:37.380
+Do you know how out of date 2015 Bootstrap is with modern day front end frameworks?
+
+00:56:37.920 --> 00:56:38.620
+A lot.
+
+00:56:39.120 --> 00:56:44.500
+But there's like 10,000 lines of HTML designed in Bootstrap, early Bootstrap.
+
+00:56:46.419 --> 00:56:48.440
+It still renders great on my phone, though.
+
+00:56:48.600 --> 00:56:52.380
+And the LLMs are very aware of old Bootstrap documentation and issues.
+
+00:56:53.560 --> 00:56:55.360
+Peter, it looks great and it works well.
+
+00:56:55.520 --> 00:56:56.040
+But here's the thing.
+
+00:56:56.130 --> 00:56:58.740
+I want to add a whole bunch of new features and sections to it.
+
+00:56:58.800 --> 00:57:00.240
+I've got to design that from scratch.
+
+00:57:00.390 --> 00:57:02.580
+I'm like, oh, I can't do this in Bootstrap 3.
+
+00:57:02.700 --> 00:57:04.200
+I just don't have the willpower for it.
+
+00:57:04.820 --> 00:57:06.700
+It's going to make it so hard, you know?
+
+00:57:07.440 --> 00:57:11.180
+And so I'm like, well, I really should redesign it, but that's got to be weeks of work.
+
+00:57:11.470 --> 00:57:19.680
+And one evening around four o'clock, I'm just hanging out, you know, enjoying the outside, sitting, working on my computer, trying to take in a little more summer before it's gone.
+
+00:57:19.710 --> 00:57:20.300
+And I'm like, you know what?
+
+00:57:20.310 --> 00:58:08.860
+I bet, I bet, Claude Sonnet and I bet we could do this quicker than two hours later, the entire site, 5,000 lines of CSS, 10,000 lines of template, HTML files, all rewritten in Bulma, modern, clean, doesn't look at all different, except for the few parts. I'm like, Oh, I don't like that. Rewrite that actually to the point where you just take a screenshot of what you do want, throw it in there and go, make it look like this. Oh yeah. Okay. I see the picture. Let's make it look like that. And it's just a couple hours that would be pulling your hair out the most tedious, painful work for a week or two. And now it's, if I want to add something to the site, it's just, Oh yeah, it's just modern Bulma off it goes. Or I could have chose tailwind or whatever. I think Bulma works a little better with AIs because it's, it doesn't have build steps and all that kind of stuff. It's a little more straightforward, But those are the kinds of things that like, literally I wrote down a markdown plan.
+
+00:58:08.890 --> 00:58:09.820
+I said, here's what we're going to do.
+
+00:58:10.260 --> 00:58:11.320
+And I planned it out with AI.
+
+00:58:11.460 --> 00:58:12.920
+Then I said, okay, step one, step two.
+
+00:58:13.040 --> 00:58:14.720
+And then we just worked it through till it was done.
+
+00:58:14.860 --> 00:58:16.000
+There's a few little glitches.
+
+00:58:16.010 --> 00:58:16.780
+I'm like, this looks weird.
+
+00:58:17.020 --> 00:58:18.020
+Here's a screenshot, fix it.
+
+00:58:18.130 --> 00:58:18.200
+Okay.
+
+00:58:18.620 --> 00:58:20.500
+AI is really good at these kinds of tasks.
+
+00:58:20.780 --> 00:58:20.860
+Yeah.
+
+00:58:21.080 --> 00:58:24.100
+And if people have not seen this in action, I think it just doesn't.
+
+00:58:24.420 --> 00:58:28.540
+They're like, I tried to use ChatGPT and it gave me an answer, but it doesn't help that much.
+
+00:58:28.590 --> 00:58:29.280
+I could write that.
+
+00:58:29.710 --> 00:58:34.040
+Or I used a free cheap model and it got it wrong and I had to fix more than it helped me.
+
+00:58:34.540 --> 00:58:36.260
+There are these neutrals that are crazy.
+
+00:58:36.900 --> 00:58:44.340
+There's something that people don't, I think, have an intuitive feeling for because they're encountering a cognitive reactive system for the first time.
+
+00:58:45.000 --> 00:58:47.960
+I'm not saying sentient or conscious, by the way, but just cognitive.
+
+00:58:48.600 --> 00:58:55.560
+And so it's sort of like it's going to be as deep as how you probe it.
+
+00:58:55.600 --> 00:58:58.680
+So if you ask it a dumb, shallow thing, it will give you a dumb, shallow response.
+
+00:58:59.980 --> 00:59:04.420
+But if you get really deep or nerdy, and I was using early incarnations.
+
+00:59:04.460 --> 00:59:12.660
+actually a couple of years back. I remember when I first figured out this effect, I was reading some philosophy books, as one does. And I was thinking, well, I could use this as a co-reading tutor.
+
+00:59:13.220 --> 00:59:53.380
+And I noticed I would just ask for some reason or give me some summaries. I'm like, well, that's reasonable, but you know, okay, whatever. But then as I got deeper into some of the content and I was asking for contrasting opinions about different from different other perspectives and some critiques and all this stuff, and I started getting into it, it would go very deep. And this is like GPT, just 4.0, it just come out kind of thing, like timeframe. So I think the same thing is true now, especially with like GPT-5 research. I've had feedback from friends who are like, yeah, some people say five is nothing burger, but five research is a thing because I'm able to do this. This is this other person, not me, but this other person saying, quote, I'm able to get graduate level feedback, like stuff that is deeply researched in arcane parts of mathematics.
+
+00:59:54.000 --> 01:00:04.740
+And I check it. And I mean, I use Claude to check the GPT-5 and it basically is correct from as far as I can tell. So I think the thing to go to these people with is like, if you're not getting
+
+01:00:04.940 --> 01:00:07.840
+anything out of it, it's because you're not squeezing hard enough, right? Approach it as
+
+01:00:07.980 --> 01:00:12.920
+if it were a super intelligence and see how little it disappoints you. Because it will not disappoint
+
+01:00:13.080 --> 01:00:53.580
+you that often if you really get into it. Yeah. I want to take a slightly different take, but I a hundred percent agree. I think you should treat it a little bit like a junior developer who knows 80% of what you want, but he's kind of guessing that last 20%. And if you gave this work to a junior dev and they got it 95% wrong and there's a little mistake and you had to go and say, hey, really good, but this part you got to fix up a little bit. That would be a success for that junior developer. I don't know why we expect 100% perfection if there's any kind of flaw whatsoever from such a creation process that like, well, it's broken, it's junk. You're expected to make a few mistakes and you got to be there to guide it, but it's the huge amount it gets right
+
+01:00:53.660 --> 01:01:07.280
+is so valuable. This doesn't negate the standard like software development lifecycle process of in code review. Like you still need to have those kinds of things in place. And in the code reviews, you with, with your junior developer, who's the LLM now. Well, yeah, the SCLC isn't, isn't negated,
+
+01:01:07.380 --> 01:01:16.020
+but, but the thing I think that's deeply counter to it is we're used to, I mean, the modality, think about the, the, the, the, how this manifests, we're typing things still into a text window.
+
+01:01:16.250 --> 01:01:58.440
+Right. And so we, as developers are used to that being a very precise, predictable input, output, transformational process. We're not used to the idea of coding with a semantic paintbrush, right like a chinese or japanese calligrapher doesn't care exactly which horse hair got ink on which part of the paper they got a brush and they're like doing their calligraphy and i think we have to get over ourselves and think about i'm painting with a semantic paintbrush splattering it certainly using my fingers with keyboard but soon it'll be dictation right and and so we're really splattering ideas into this canvas and it's auto rendering the stuff for us into a formal system and i think just the modality of wow you can see the clouds are going over the sun and like my temperature changes in video.
+
+01:01:59.700 --> 01:02:00.720
+It's the AI doing it.
+
+01:02:01.040 --> 01:02:03.200
+The AI is doing it because I'm getting passionate about this, right?
+
+01:02:04.380 --> 01:02:06.000
+So, no, but I think that's the key thing.
+
+01:02:06.000 --> 01:02:15.420
+So we are used to this modality of fingers on keyboard textual input being an input to a formal system, not an informal probabilistic system, which is what these things are.
+
+01:02:15.680 --> 01:02:20.260
+So once you make that mental bit flip, then it's like you just learn to embrace it, right?
+
+01:02:20.540 --> 01:02:20.700
+Yeah.
+
+01:02:20.820 --> 01:02:22.300
+I think voice is a great option here.
+
+01:02:23.260 --> 01:02:26.660
+We use Fireflies for our meeting recording bot.
+
+01:02:27.120 --> 01:02:30.640
+You can also just open up your phone and launch the Fireflies app and start talking to it.
+
+01:02:30.850 --> 01:02:31.880
+And it has an MCP server.
+
+01:02:32.310 --> 01:02:47.380
+So you can go into Claude Code and be like, grab the last transcript where I was just talking about this and pull it in or have a discussion about the specifications, about the journey, the epic, the customer's story, and bring those in as artifacts really, really quickly now.
+
+01:02:47.700 --> 01:02:47.820
+Yeah.
+
+01:02:48.220 --> 01:02:48.880
+Older ballgame.
+
+01:02:49.340 --> 01:02:49.920
+It is a crazy ballgame.
+
+01:02:49.920 --> 01:02:50.440
+That's something I learned.
+
+01:02:50.580 --> 01:02:51.220
+It's a whole new ballgame.
+
+01:02:51.560 --> 01:02:51.660
+Yeah.
+
+01:02:53.080 --> 01:02:57.880
+All right. Anything else that is burning on your list of topics that we should do a lightning round?
+
+01:02:57.950 --> 01:02:58.780
+Because we're out of time on.
+
+01:02:58.820 --> 01:03:00.180
+We should lightning round on DuckDB.
+
+01:03:00.620 --> 01:03:02.060
+I think I agree.
+
+01:03:02.440 --> 01:03:06.260
+You two riffed on it because I'm knowledgeable, but you all are the ones who use it.
+
+01:03:06.500 --> 01:03:13.940
+If you've not played with it, it is an incredible little, you know, embedded, you know, like kind of SQLite, but way more.
+
+01:03:14.660 --> 01:03:17.680
+And if you've got files on a disk someplace, they're now your database.
+
+01:03:18.420 --> 01:03:21.960
+If you've got stuff in an S3 bucket someplace, that's now your database.
+
+01:03:22.340 --> 01:03:23.780
+Like it's incredibly flexible.
+
+01:03:24.120 --> 01:03:26.300
+It's got so many like cool extensions built into it.
+
+01:03:26.400 --> 01:03:27.620
+Like it can do geospatial stuff.
+
+01:03:28.000 --> 01:03:31.020
+It's got JSON capabilities that are like really incredible.
+
+01:03:31.480 --> 01:03:34.200
+I mean, the speed is a little bit mind blowing.
+
+01:03:34.320 --> 01:03:35.960
+It's kind of like the first time you use uv or rough.
+
+01:03:36.280 --> 01:03:37.240
+Like how is that so fast?
+
+01:03:37.570 --> 01:03:51.440
+And then you use DuckDB and it's really, I think folks should go check it out and learn a little more because it may change how you think about deploying an at edge thing or a little local thing or even a big data analysis piece.
+
+01:03:51.620 --> 01:03:56.680
+you may actually be able to fit that into memory on your machine and DuckDB and get some incredible results out of it.
+
+01:03:56.760 --> 01:04:01.800
+I'm sure Peter has way more to talk about this than I do, but I don't use it that much.
+
+01:04:01.960 --> 01:04:05.460
+But man, if I had a use case for it, I would be 100% picking that tool up.
+
+01:04:05.740 --> 01:04:08.080
+Yeah, DuckDB is a fantastic little piece of technology.
+
+01:04:08.720 --> 01:04:19.480
+I don't mean little in a pejorative sense here, but at a technical level, I would say it is a highly portable, very efficient and very versatile database engine.
+
+01:04:19.960 --> 01:04:24.840
+So the name is almost wrong because it's exactly it liberates you from databases.
+
+01:04:25.160 --> 01:04:33.560
+We are used to thinking of databases at places where data goes to, well, not die, but to be housed at rest and have an extreme amount of gravity attracted to it.
+
+01:04:33.600 --> 01:04:44.100
+And then DuckDB takes the opposite of that, says any data representation you have should be searchable or queryable if only you had the right engine.
+
+01:04:44.660 --> 01:04:49.340
+And it's sort of like it inverts the whole thing, which is the brilliant piece of it.
+
+01:04:50.680 --> 01:04:54.080
+and again, what data isn't just representation
+
+01:04:54.220 --> 01:04:56.760
+it's somewhere on a disk or over a network or a memory
+
+01:04:57.240 --> 01:05:04.340
+so it pairs very nicely with the PyData stack of tools and so I know one of the topics we had on here as well was Arrow
+
+01:05:04.700 --> 01:05:07.380
+so if you care about representation for a variety of reasons
+
+01:05:07.700 --> 01:06:15.600
+then Arrow is great if you want a query interface you want a SQL style query interface that's agnostic as to representation that's your DuckDB and of course the fact that it plays so well with WebAssembly means Edge, Cloudflare workers or whatever or PyScript and WebAssembly workers we have some demonstration examples using PyScript where you have an entire analytics stack running entirely within the browser full on you got Pandas and Psychidimage, Psychidimage, Psychidlearn, Map, Plotlib stuff going on and you're hitting S3 buckets with full blown SQL queries using DuckDB because it all runs on WebAssembly and this is just a taste i mean none of this is mainstream yet i think some of these use cases are a little bit on the edge but the vision this takes us to as a world where we really are just we were living a much more portable world so your fees can just move and give someone a web page a static web page it's a full-blown app and actually if you look at web gpu and transformers js web lm kinds of stuff you can fit a little tiny model in there actually and you have a totally local entirely client-side experience with AI in it.
+
+01:06:15.800 --> 01:06:17.780
+So I'm very excited about this.
+
+01:06:17.960 --> 01:06:19.540
+And DuckDB is really part of that equation.
+
+01:06:19.560 --> 01:06:21.660
+Yeah, bring your query engine to where your data is.
+
+01:06:22.160 --> 01:06:22.280
+Exactly.
+
+01:06:22.700 --> 01:06:24.380
+That way around, which always takes time.
+
+01:06:25.200 --> 01:06:26.020
+Yeah, excellent.
+
+01:06:27.120 --> 01:06:28.540
+I know people are very excited about it.
+
+01:06:28.660 --> 01:06:32.000
+It's got the built-in your program.
+
+01:06:32.080 --> 01:06:35.460
+You don't have to run another server aspect, which I think is good as well.
+
+01:06:35.480 --> 01:06:46.260
+And the WebAssembly stuff, maybe there won't be local DB and local SQL or WebSQL, all those things that we just do DuckDB in the browser with WebAssembly.
+
+01:06:46.620 --> 01:06:46.940
+Be nice.
+
+01:06:48.040 --> 01:06:48.980
+So very interesting.
+
+01:06:49.460 --> 01:06:51.360
+We barely scratched the surface, you guys.
+
+01:06:51.640 --> 01:06:53.640
+Like there's more people need to know,
+
+01:06:53.780 --> 01:06:56.600
+but I think these are probably some of the hotter topics.
+
+01:06:57.440 --> 01:06:58.480
+We may have to do a part two,
+
+01:06:58.700 --> 01:07:01.400
+but a 2026 edition that's just a continuation.
+
+01:07:01.800 --> 01:07:07.300
+But if people take the time, invest in putting some energy into these things, it's going to make a big difference, I think.
+
+01:07:08.020 --> 01:07:08.740
+Thanks for being on the show.
+
+01:07:09.200 --> 01:07:10.600
+And yeah, it's been great.
+
+01:07:10.880 --> 01:07:11.420
+Yeah, this was awesome.
+
+01:07:11.640 --> 01:07:12.360
+Thank you so much for having us.
+
+01:07:12.730 --> 01:07:13.180
+Yeah, thanks, Michael.
+
+01:07:13.290 --> 01:07:15.280
+I enjoy talking about all the cool new tech and tools.
+
+01:07:15.620 --> 01:07:15.740
+Yep.
+
+01:07:15.950 --> 01:07:16.200
+Bye, guys.
+
+01:07:17.360 --> 01:07:19.720
+This has been another episode of Talk Python To Me.
+
+01:07:20.560 --> 01:07:21.480
+Thank you to our sponsors.
+
+01:07:21.960 --> 01:07:23.180
+Be sure to check out what they're offering.
+
+01:07:23.310 --> 01:07:24.600
+It really helps support the show.
+
+01:07:25.040 --> 01:07:26.420
+Take some stress out of your life.
+
+01:07:26.800 --> 01:07:32.240
+Get notified immediately about errors and performance issues in your web or mobile applications with Sentry.
+
+01:07:32.740 --> 01:07:37.120
+Just visit talkpython.fm/sentry and get started for free.
+
+01:07:37.640 --> 01:07:40.780
+And be sure to use the promo code talkpython, all one word.
+
+01:07:41.440 --> 01:08:08.760
+Agency. Discover agentic AI with agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y. Want to level up your Python? We have one of the largest catalogs of Python video courses over at Talk Python. Our content ranges from true beginners to deeply advanced topics like memory and async. And best of all, there's not a subscription in sight.
+
+01:08:09.220 --> 01:08:11.680
+Check it out for yourself at training.talkpython.fm.
+
+01:08:12.340 --> 01:08:16.540
+Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:08:16.980 --> 01:08:17.880
+We should be right at the top.
+
+01:08:18.380 --> 01:08:27.240
+You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:08:27.900 --> 01:08:30.140
+We're live streaming most of our recordings these days.
+
+01:08:30.500 --> 01:08:37.980
+If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at  talkpython.fm/youtube.
+
+01:08:38.779 --> 01:08:40.120
+This is your host, Michael Kennedy.
+
+01:08:40.540 --> 01:08:41.380
+Thanks so much for listening.
+
+01:08:41.560 --> 01:08:42.520
+I really appreciate it.
+
+01:08:42.880 --> 01:08:44.480
+Now get out there and write some Python code.
+
+01:09:06.920 --> 01:09:09.720
+*MUHING*
+

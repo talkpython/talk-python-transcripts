@@ -1,0 +1,3530 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:03.000
+Matthew, welcome to show.
+
+00:00:30.020 --> 00:00:32.119
+Quite interesting, the things that you've been doing.
+
+00:00:32.240 --> 00:00:36.280
+It's really come a long ways and quite a bit more ambitious
+
+00:00:36.830 --> 00:00:38.640
+in terms of running data science in the cloud.
+
+00:00:38.980 --> 00:00:40.760
+So it's going to be a fun conversation with you too.
+
+00:00:41.220 --> 00:00:42.000
+I look forward to it.
+
+00:00:42.220 --> 00:00:45.280
+I also brought Nat Tabris as a colleague here.
+
+00:00:45.700 --> 00:00:47.620
+I've stopped doing some engineering work these days.
+
+00:00:47.800 --> 00:00:49.180
+I used to be really smart, and now I mostly
+
+00:00:49.420 --> 00:00:51.920
+do engineering manager-y things or CEO things.
+
+00:00:52.820 --> 00:00:55.020
+So I've brought my friendly sidekick
+
+00:00:55.050 --> 00:00:56.020
+to actually explain real stuff.
+
+00:00:56.500 --> 00:00:57.360
+Yeah, wonderful.
+
+00:00:57.540 --> 00:00:59.980
+I always love having a couple of people on the show
+
+00:01:00.000 --> 00:01:03.740
+get a little extra riffing off of the ideas and so on.
+
+00:01:04.370 --> 00:01:05.500
+So great to have you here, Nat.
+
+00:01:06.460 --> 00:01:06.900
+Welcome to the show.
+
+00:01:07.080 --> 00:01:07.480
+Thanks.
+
+00:01:08.780 --> 00:01:13.180
+Before we dive into cloud computing for data scientists
+
+00:01:13.460 --> 00:01:15.500
+and all the lessons you all have learned,
+
+00:01:15.920 --> 00:01:17.880
+let's just do a quick catch up.
+
+00:01:18.420 --> 00:01:20.120
+Matthew, you've been on the show a couple of times,
+
+00:01:20.400 --> 00:01:23.560
+but not everyone has listened to every episode.
+
+00:01:24.120 --> 00:01:26.280
+In fact, an interesting stat that just came out
+
+00:01:26.300 --> 00:01:29.840
+of the recent PSF JetBrains developer survey results
+
+00:01:30.650 --> 00:01:32.980
+is 50% of the people that do Python
+
+00:01:34.500 --> 00:01:37.680
+have only been doing it for less than two years professionally.
+
+00:01:39.539 --> 00:01:42.080
+So there's a lot of new people in our industry.
+
+00:01:42.780 --> 00:01:47.140
+And 50% of Python these days is data science, which I think
+
+00:01:47.820 --> 00:01:49.020
+that's a shift as well.
+
+00:01:49.380 --> 00:01:52.280
+I mean, that's the beauty of Python, right?
+
+00:01:52.860 --> 00:01:54.619
+It's enough of a programming language
+
+00:01:54.640 --> 00:01:56.920
+that serious computer science people can get excited about it
+
+00:01:57.600 --> 00:02:00.580
+and is accessible enough that everybody can use it.
+
+00:02:01.040 --> 00:02:03.300
+And that's why it's become really popular.
+
+00:02:03.980 --> 00:02:06.800
+Compare that to maybe C++, which is very computer science
+
+00:02:07.000 --> 00:02:12.040
+focused, or maybe Matlab, which is very user focused.
+
+00:02:12.660 --> 00:02:14.000
+Python can kind of bridge those two,
+
+00:02:14.220 --> 00:02:15.820
+and that's what's always given it, I think,
+
+00:02:17.240 --> 00:02:18.760
+its special status in the world.
+
+00:02:18.760 --> 00:02:19.440
+I agree.
+
+00:02:19.520 --> 00:02:21.040
+I think people, once they get started,
+
+00:02:21.160 --> 00:02:22.280
+they have lots of reason to stick.
+
+00:02:22.800 --> 00:02:25.000
+All of that is a long-winded way of saying,
+
+00:02:25.160 --> 00:02:26.160
+there's probably a lot of people who
+
+00:02:26.900 --> 00:02:27.940
+have not heard about you before.
+
+00:02:28.070 --> 00:02:30.560
+So give us the quick introduction on yourself.
+
+00:02:31.040 --> 00:02:32.220
+Matthew first and then Nat.
+
+00:02:32.590 --> 00:02:33.100
+Sure.
+
+00:02:33.270 --> 00:02:34.380
+So my name is Matthew Rocklin.
+
+00:02:34.700 --> 00:02:37.760
+I am a long-term open source contributor to the Python space,
+
+00:02:38.220 --> 00:02:39.720
+particularly the data science part of Python.
+
+00:02:40.620 --> 00:02:43.360
+That started many years ago with tools like Tools,
+
+00:02:43.450 --> 00:02:44.540
+multiple dispatch, Simpy.
+
+00:02:45.820 --> 00:02:48.000
+And then maybe 10, 12 years ago, I
+
+00:02:48.120 --> 00:02:50.780
+started a project called Dask for parallel computing.
+
+00:02:52.100 --> 00:02:53.600
+and around us for lots of other projects.
+
+00:02:54.320 --> 00:02:56.980
+For the last decade, I've mostly focused
+
+00:02:57.190 --> 00:02:59.140
+on making it easy for Python developers
+
+00:03:00.300 --> 00:03:01.880
+to solve big problems with lots of computers
+
+00:03:02.030 --> 00:03:02.540
+and lots of hardware.
+
+00:03:04.620 --> 00:03:05.980
+Five-ish years ago, I started a company
+
+00:03:05.980 --> 00:03:07.940
+around that called Coiled, and now we do other things.
+
+00:03:08.880 --> 00:03:10.240
+But I've sort of been in that space
+
+00:03:10.940 --> 00:03:14.900
+in between Python developers and lots of hardware,
+
+00:03:15.600 --> 00:03:17.400
+and trying to make that as easy as possible.
+
+00:03:17.960 --> 00:03:20.840
+- Yeah, first you built all the packages
+
+00:03:20.860 --> 00:03:22.240
+for people that do cool data science stuff.
+
+00:03:22.320 --> 00:03:24.760
+Now you're building the infrastructure
+
+00:03:26.100 --> 00:03:27.000
+and clicking that together.
+
+00:03:28.320 --> 00:03:28.440
+Indeed.
+
+00:03:29.140 --> 00:03:30.620
+All right, Nat, welcome.
+
+00:03:31.860 --> 00:03:31.940
+- Thanks.
+
+00:03:32.740 --> 00:03:34.240
+Yeah, so I'm Nat Tabris.
+
+00:03:34.460 --> 00:03:37.380
+I'm a software engineer at Coil,
+
+00:03:37.740 --> 00:03:40.560
+been here close to four years now.
+
+00:03:40.940 --> 00:03:42.460
+And my background is both some,
+
+00:03:43.040 --> 00:03:46.340
+like I've done some research software engineer stuff,
+
+00:03:46.540 --> 00:03:47.940
+helping people use Python well,
+
+00:03:49.320 --> 00:03:51.000
+helping people use Dask well sometimes,
+
+00:03:51.920 --> 00:03:55.160
+and then also some sort of cloud SRE stuff.
+
+00:03:55.820 --> 00:03:59.060
+So something, yeah, Coiled is a lot of fun
+
+00:03:59.180 --> 00:04:00.560
+because we get to do the Python stuff
+
+00:04:00.820 --> 00:04:02.300
+and we get to do the cloud stuff
+
+00:04:02.620 --> 00:04:04.340
+and we get to help other people
+
+00:04:04.860 --> 00:04:06.080
+do the Python stuff on the cloud.
+
+00:04:06.960 --> 00:04:09.260
+- Yeah, you know, I think that's actually one of the
+
+00:04:11.140 --> 00:04:14.800
+interesting non-obvious things of building data science
+
+00:04:15.580 --> 00:04:17.739
+tools and infrastructure for data scientists.
+
+00:04:18.320 --> 00:04:21.640
+Like for you to take Jupyter as an example, right?
+
+00:04:22.070 --> 00:04:25.560
+A lot of the work on Jupyter is JavaScripty type of stuff.
+
+00:04:26.520 --> 00:04:28.700
+But the purpose is to make it so Python people
+
+00:04:28.730 --> 00:04:30.160
+could do more Python without thinking
+
+00:04:30.270 --> 00:04:31.600
+about that kind of stuff, right?
+
+00:04:31.600 --> 00:04:34.880
+And you all probably have this sort of DevOps angle
+
+00:04:35.140 --> 00:04:36.520
+of that same thing going on there.
+
+00:04:36.550 --> 00:04:38.080
+Like you do a lot of DevOps.
+
+00:04:38.390 --> 00:04:40.680
+So many people don't have to do much DevOps at all.
+
+00:04:41.780 --> 00:04:41.860
+- Yeah.
+
+00:04:42.490 --> 00:04:45.760
+- Yeah, and most users don't have that capability, right?
+
+00:04:45.860 --> 00:04:47.880
+We need to make tools that live in a space,
+
+00:04:48.380 --> 00:04:51.000
+but that don't require deep expertise at that space.
+
+00:04:51.520 --> 00:04:53.860
+That is, again, where Python brings a lot of power,
+
+00:04:54.040 --> 00:04:57.280
+sort of the old XKCD import anti-gravity comic,
+
+00:04:57.470 --> 00:04:58.000
+if you remember that.
+
+00:04:58.220 --> 00:04:58.580
+Yeah.
+
+00:04:59.500 --> 00:05:00.220
+I'm flying.
+
+00:05:00.500 --> 00:05:01.280
+How are you flying?
+
+00:05:01.460 --> 00:05:03.360
+Well, just typed import anti-gravity.
+
+00:05:03.500 --> 00:05:05.540
+You know what was really funny when I was getting into Python
+
+00:05:08.000 --> 00:05:11.520
+was first learning that you could actually
+
+00:05:11.760 --> 00:05:12.700
+type that in the interpreter.
+
+00:05:12.750 --> 00:05:13.580
+It wasn't just a comic.
+
+00:05:14.240 --> 00:05:14.840
+I didn't know that.
+
+00:05:15.840 --> 00:05:20.060
+Yeah, if you open a Python REPL and you type import anti-gravity, something happens.
+
+00:05:21.170 --> 00:05:22.080
+It has to be done, right?
+
+00:05:22.520 --> 00:05:23.280
+It has to be done.
+
+00:05:23.460 --> 00:05:24.560
+So pretty amazing.
+
+00:05:27.640 --> 00:05:35.880
+Let's start with talking about sort of the evolution of COILD.
+
+00:05:35.930 --> 00:05:40.560
+So when we first started talking about COILD, it's been a while.
+
+00:05:41.940 --> 00:05:46.720
+Three, four years, I feel like maybe the first time you and I were on the show together to talk about it.
+
+00:05:47.400 --> 00:05:51.080
+Anyway, it was effectively Dask as a service, right?
+
+00:05:51.380 --> 00:05:58.360
+So Dask is a way to do kind of grid scale-out computing with pandas and that type of work.
+
+00:05:58.980 --> 00:06:03.140
+And it would create a bunch of, you'd point it at a cluster and it would kind of spin up some machines
+
+00:06:03.360 --> 00:06:08.360
+and focus on like, how do I execute pandas-like work on a cluster?
+
+00:06:10.540 --> 00:06:11.340
+Go ahead.
+
+00:06:11.360 --> 00:06:11.940
+Yeah, no, no, go ahead.
+
+00:06:12.780 --> 00:06:14.500
+So Dask did lots of things that weren't Pandas.
+
+00:06:14.680 --> 00:06:16.660
+Pandas users were like 30% of Dask users.
+
+00:06:16.940 --> 00:06:19.280
+Dask is a much more general purpose project than that.
+
+00:06:19.970 --> 00:06:24.500
+But you're 100% correct that the pain that we felt in the Dask community at a certain
+
+00:06:24.660 --> 00:06:26.540
+point wasn't to make Dask better.
+
+00:06:26.790 --> 00:06:29.600
+It was to make Dask easier to deploy, especially in the cloud.
+
+00:06:30.020 --> 00:06:31.440
+A lot of people were in the cloud those days.
+
+00:06:32.400 --> 00:06:36.500
+And it was just like a pain in the butt to bring up all the machines, set up everything
+
+00:06:36.710 --> 00:06:38.620
+correctly, to manage awkward things.
+
+00:06:39.840 --> 00:06:41.220
+And so we made a company around that.
+
+00:06:42.580 --> 00:06:46.100
+The weird thing that happened-- so in order to run
+
+00:06:46.420 --> 00:06:48.400
+DAS in the cloud, we had to figure out
+
+00:06:48.400 --> 00:06:50.640
+how to run Python effectively in the cloud.
+
+00:06:51.140 --> 00:06:54.420
+And so we made lots of interesting technology to do that.
+
+00:06:55.620 --> 00:06:56.840
+The surprising thing that happened
+
+00:06:56.940 --> 00:07:00.640
+is that a lot of our customers started using Coiled not
+
+00:07:00.800 --> 00:07:01.360
+for DAS things.
+
+00:07:01.600 --> 00:07:03.340
+They would use Coiled to send a DAS cluster.
+
+00:07:03.980 --> 00:07:05.620
+They would throw away the DAS cluster
+
+00:07:05.840 --> 00:07:07.180
+and just use the machines that Coiled
+
+00:07:07.180 --> 00:07:07.880
+had brought up for them.
+
+00:07:09.460 --> 00:07:12.740
+It turns out that making Python run well at scale in the cloud
+
+00:07:13.540 --> 00:07:17.200
+is just much more generally applicable than Dask in particular.
+
+00:07:17.880 --> 00:07:21.120
+And so our customer base has shifted over time
+
+00:07:21.180 --> 00:07:24.340
+from being very Dask heavy to being more sort of just
+
+00:07:24.340 --> 00:07:25.740
+general computing heavy.
+
+00:07:29.139 --> 00:07:30.420
+That makes tons of sense.
+
+00:07:31.620 --> 00:07:35.480
+Because, yeah, it's fine to spin up a bunch of Dask clusters.
+
+00:07:35.700 --> 00:07:40.240
+But really, that was one specialization of,
+
+00:07:40.300 --> 00:07:42.960
+I just need a bunch of computers to run my data science
+
+00:07:43.160 --> 00:07:44.120
+workload, right?
+
+00:07:45.560 --> 00:07:48.300
+When the engineers like Nat came to me and said, hey, look,
+
+00:07:48.360 --> 00:07:50.280
+we should do this thing, at first I was like,
+
+00:07:50.580 --> 00:07:51.400
+that doesn't make any sense.
+
+00:07:51.560 --> 00:07:53.900
+The cloud must offer the--
+
+00:07:54.560 --> 00:07:56.920
+just run this thing, just bring up a machine,
+
+00:07:57.100 --> 00:07:58.580
+run some code, turn off the machine.
+
+00:07:59.060 --> 00:08:00.220
+Obviously, the clouds must do that.
+
+00:08:00.760 --> 00:08:02.420
+I was like, no, no, no, they don't do that.
+
+00:08:02.500 --> 00:08:03.320
+Or they don't do that well.
+
+00:08:03.700 --> 00:08:04.980
+There's some APIs to do that.
+
+00:08:05.100 --> 00:08:06.680
+So they're really inaccessible.
+
+00:08:07.640 --> 00:08:10.380
+If you want, go to ChatGPT and ask it to like,
+
+00:08:10.980 --> 00:08:13.860
+give you copy pasteable commands to turn on 100 VMs
+
+00:08:13.920 --> 00:08:15.480
+and run hello world and turn them off.
+
+00:08:16.120 --> 00:08:18.080
+And like, it'll type at you for a couple of minutes.
+
+00:08:18.480 --> 00:08:22.480
+And it's not the kind of typing that most data scientists,
+
+00:08:22.860 --> 00:08:25.920
+people who do use Python for a couple of years can do.
+
+00:08:26.480 --> 00:08:27.480
+It's actually pretty inaccessible.
+
+00:08:28.020 --> 00:08:30.760
+I was actually quite shocked at how hard
+
+00:08:31.360 --> 00:08:33.380
+this relatively commonplace thing was to do.
+
+00:08:34.940 --> 00:08:41.440
+I think a lot of what people do with data science, but also a lot of the courses, the
+
+00:08:41.580 --> 00:08:48.780
+tutorials, the libraries, they all lead data scientists away from developing those skills
+
+00:08:48.880 --> 00:08:49.280
+as well.
+
+00:08:50.100 --> 00:08:56.320
+They don't necessarily encourage you to start using Docker a lot, to start writing raw Linux
+
+00:08:56.620 --> 00:08:56.980
+commands.
+
+00:08:57.940 --> 00:08:59.180
+How can I make this work?
+
+00:08:59.400 --> 00:09:04.440
+It's not that they don't, but I think coming into it, talking about those beginners, the
+
+00:09:04.580 --> 00:09:10.000
+first two years of their job, they're still working on how do I do data science libraries
+
+00:09:10.180 --> 00:09:10.300
+right?
+
+00:09:11.560 --> 00:09:12.040
+Sure.
+
+00:09:12.040 --> 00:09:14.360
+I mean, that begs the question, should they?
+
+00:09:14.800 --> 00:09:18.140
+And my answer is maybe we shouldn't solve this by educating people.
+
+00:09:18.480 --> 00:09:20.040
+Maybe we should solve it by building better tooling.
+
+00:09:22.360 --> 00:09:26.220
+Docker is a great technology, but not necessarily for data science.
+
+00:09:26.960 --> 00:09:33.520
+is very much specialized to provide a really stable system that can run for decades.
+
+00:09:34.460 --> 00:09:36.620
+But we want a system that can change every five minutes.
+
+00:09:38.220 --> 00:09:44.700
+The choices that tools like Docker or Kubernetes or Terraform make are actually quite different
+
+00:09:44.700 --> 00:09:50.340
+than the choices you would make, I think, if you were building middleware for this audience.
+
+00:09:52.820 --> 00:09:58.420
+like the cloud gives you all the things that you would want.
+
+00:09:59.120 --> 00:10:00.900
+It gives you this sort of fully flexible system,
+
+00:10:01.120 --> 00:10:02.340
+getting kind of hardware you want.
+
+00:10:02.820 --> 00:10:03.800
+It's infinitely scalable.
+
+00:10:04.710 --> 00:10:06.640
+It goes away when you stop using it.
+
+00:10:06.740 --> 00:10:07.520
+It's like very ephemeral.
+
+00:10:08.190 --> 00:10:09.520
+You pay only for what you use.
+
+00:10:11.360 --> 00:10:12.620
+But it's like pretty unusable.
+
+00:10:13.290 --> 00:10:15.120
+Like it's designed for cloud infrastructure engineers.
+
+00:10:16.080 --> 00:10:16.720
+Right, right.
+
+00:10:16.790 --> 00:10:18.240
+We build middleware on top of that.
+
+00:10:18.680 --> 00:10:20.700
+But that middleware is like not designed for our use cases.
+
+00:10:22.640 --> 00:10:28.820
+Yeah, there are a bunch of tools like Pulumi and others that'll spin up machines, but they're pretty different.
+
+00:10:29.660 --> 00:10:32.100
+And you hinted at it a little bit there.
+
+00:10:33.240 --> 00:10:38.340
+Much of the cloud infrastructure and APIs, just the way that it's meant to work,
+
+00:10:39.820 --> 00:10:46.620
+it's for a little bit longer-lived systems, and it's more focused on web, API development.
+
+00:10:47.400 --> 00:10:51.100
+How do I maybe take an API that's running on four machines?
+
+00:10:52.240 --> 00:10:54.200
+scale it up to eight through auto scaling.
+
+00:10:55.339 --> 00:11:01.720
+Not, how do I get a thousand machines now for three minutes and then turn them off?
+
+00:11:04.600 --> 00:11:05.500
+That's different, right?
+
+00:11:06.680 --> 00:11:12.680
+Yeah, I think a lot of the tooling that exists isn't really with our community in mind.
+
+00:11:13.480 --> 00:11:17.820
+And so when we built Coil to run these DAS clusters, we looked around at other software,
+
+00:11:18.610 --> 00:11:20.940
+and we couldn't find something actually that fit our needs.
+
+00:11:21.720 --> 00:11:24.300
+And as a result, we committed the cardinal sin.
+
+00:11:24.500 --> 00:11:25.480
+We rolled our own.
+
+00:11:26.600 --> 00:11:28.460
+And my hope, we're talking to folks today,
+
+00:11:28.640 --> 00:11:30.160
+is that there's actually some interesting--
+
+00:11:30.220 --> 00:11:32.420
+we made some opinionated choices in doing that.
+
+00:11:32.920 --> 00:11:34.420
+I think we've actually come up with some interesting things
+
+00:11:34.580 --> 00:11:35.980
+that use coiled or don't use coiled.
+
+00:11:36.020 --> 00:11:37.260
+I think some of the choices we made
+
+00:11:37.580 --> 00:11:38.500
+are actually pretty interesting.
+
+00:11:39.160 --> 00:11:41.200
+Some of the things we ran into in reconstructing
+
+00:11:41.360 --> 00:11:44.400
+one of these new frameworks, but in the sort of service
+
+00:11:44.700 --> 00:11:49.140
+of a sort of highly burst forward, highly flexible system,
+
+00:11:50.380 --> 00:11:51.700
+There's some interesting engineering choices in there.
+
+00:11:51.900 --> 00:11:53.800
+There's some interesting experiences using the cloud
+
+00:11:53.880 --> 00:11:57.540
+at that scale, which I think people aren't as familiar with.
+
+00:11:58.880 --> 00:12:01.160
+Yeah, I've seen some of the stuff that you've done.
+
+00:12:02.180 --> 00:12:03.640
+And it's really neat.
+
+00:12:03.780 --> 00:12:06.840
+It's not just hooking to this infrastructure,
+
+00:12:07.300 --> 00:12:10.840
+but it's down into programming idioms and concepts that
+
+00:12:11.580 --> 00:12:14.420
+make it almost transparent what's happening.
+
+00:12:17.320 --> 00:12:19.460
+I think in building abstractions,
+
+00:12:19.680 --> 00:12:21.840
+you have to think a lot about what kind of things
+
+00:12:21.930 --> 00:12:23.160
+you abstract away from the user
+
+00:12:24.000 --> 00:12:26.540
+and what kind of things you give to them directly.
+
+00:12:28.020 --> 00:12:29.960
+For our users, we find that they really care
+
+00:12:30.100 --> 00:12:31.300
+about what kind of machine they run on.
+
+00:12:31.880 --> 00:12:34.360
+They want to specify the exact VM type sometimes
+
+00:12:34.720 --> 00:12:39.360
+'cause they want to have an SSD and an A10 GPU
+
+00:12:40.460 --> 00:12:42.360
+and they want to be in this particular region
+
+00:12:42.510 --> 00:12:43.000
+where they're available.
+
+00:12:43.720 --> 00:12:44.940
+They have a lot of opinions about that
+
+00:12:45.430 --> 00:12:49.640
+and they have zero opinions about their networking setup
+
+00:12:49.660 --> 00:12:51.160
+things other than please make it secure.
+
+00:12:51.840 --> 00:12:55.320
+And I think in shaping abstractions, one makes some choices.
+
+00:12:55.530 --> 00:13:01.860
+And it's interesting to sort of figure out which choices to make and how to build something
+
+00:13:01.910 --> 00:13:04.300
+that gives that set of choices to a user.
+
+00:13:07.140 --> 00:13:08.460
+What about cost?
+
+00:13:08.660 --> 00:13:13.700
+I mean, if I were to be doing this myself, if I were to spin up, hey, I need 500 machines
+
+00:13:13.720 --> 00:13:21.080
+for 10 minutes, I'd be certainly worried that what if I didn't turn them all off?
+
+00:13:23.580 --> 00:13:26.240
+That's catastrophically bad sort of things.
+
+00:13:27.380 --> 00:13:32.160
+It's one thing, oh, yeah, okay, I left a GPU-enabled machine on for a day,
+
+00:13:32.200 --> 00:13:33.100
+and that wasn't pretty.
+
+00:13:33.880 --> 00:13:39.460
+But it's a whole nother to leave large, significant numbers of machines on.
+
+00:13:42.200 --> 00:13:45.440
+Yeah. What else? Maybe let's actually, let's do that. Let's spin up a bunch of machines,
+
+00:13:45.560 --> 00:13:49.120
+maybe fun. But Nat, first, do you want to say anything about costs? I mean, I think the cost
+
+00:13:49.280 --> 00:13:51.260
+story isn't just leaving things on. It's more complicated than that.
+
+00:13:51.440 --> 00:13:56.640
+Yeah. I mean, it's like the cloud is really great and really cheap. Like you can do that if you do
+
+00:13:56.740 --> 00:14:02.500
+it right at pennies or dollars, but there's all, I don't know if you see them, but I see like
+
+00:14:03.000 --> 00:14:09.760
+all of these stories of here's how I accidentally spent $60,000 on AWS. And it's always like,
+
+00:14:09.920 --> 00:14:13.800
+oh, I didn't even realize that you could do it that way.
+
+00:14:15.000 --> 00:14:15.340
+Yeah.
+
+00:14:15.600 --> 00:14:21.420
+And a lot of times it's a misunderstanding of auto-scaling or something like that, right?
+
+00:14:21.880 --> 00:14:29.360
+There's a crazy story of this woman who wrote an AI or not image detecting.
+
+00:14:31.560 --> 00:14:35.740
+She was a photographer and she got really frustrated that there's all this AI generated art.
+
+00:14:35.880 --> 00:14:44.080
+And so they're, it's like, I'm going to make an app that will tell you or only show you real art, not AI art in order to have to filter a bunch of stuff.
+
+00:14:44.300 --> 00:14:44.360
+Right.
+
+00:14:45.060 --> 00:14:49.860
+And made that serverless and it became super like fifth, sixth most popular thing in the app store.
+
+00:14:50.180 --> 00:14:52.020
+And it just scaled like it was supposed to.
+
+00:14:52.320 --> 00:14:54.480
+There was no downtime, but it's good.
+
+00:14:54.660 --> 00:14:59.180
+Like $96,000 and climbing for sale bill.
+
+00:14:59.200 --> 00:15:05.460
+I know you guys talked about maybe a Kubernetes story with like a $50,000 surprise bill.
+
+00:15:05.560 --> 00:15:06.220
+These are not good things.
+
+00:15:07.440 --> 00:15:09.020
+- Yeah, I mean, the story you just told is actually,
+
+00:15:09.220 --> 00:15:10.380
+it's a positive one, right?
+
+00:15:10.400 --> 00:15:12.140
+I mean, like she made a thing that was useful
+
+00:15:12.340 --> 00:15:14.080
+and like a lot of people use it and so it costs more money.
+
+00:15:14.360 --> 00:15:16.160
+Like it's unfortunate that it was a surprising amount
+
+00:15:16.200 --> 00:15:18.800
+of money, but like it was all useful work.
+
+00:15:19.540 --> 00:15:22.080
+I think what we see in customers pre-coiled is like,
+
+00:15:23.000 --> 00:15:24.440
+often their costs are not useful work.
+
+00:15:25.360 --> 00:15:25.620
+- Yeah.
+
+00:15:26.400 --> 00:15:27.760
+- A story from, go ahead, Ned.
+
+00:15:28.100 --> 00:15:30.640
+- Oh, I mean, also part of, I think what the cloud makes hard
+
+00:15:30.780 --> 00:15:31.880
+is these like guide rails.
+
+00:15:32.940 --> 00:15:35.520
+You're doing something that you don't know
+
+00:15:35.540 --> 00:15:42.820
+be risky and so part of what we try to do is like put in you know put in defaults put in control so
+
+00:15:42.880 --> 00:15:50.960
+that you can't accidentally spend that much money um just to i mean like if you don't know the cloud
+
+00:15:51.110 --> 00:15:55.280
+i i remember before being a cloud engineer like i don't want to sign up for this account and put in
+
+00:15:55.320 --> 00:16:00.960
+my credit card i don't i don't know what the bill is going to be yeah i think i'll so i'll tell two
+
+00:16:01.000 --> 00:16:07.000
+quick anecdotes uh one is my first experience with a surprising bill i was like in graduate school
+
+00:16:07.580 --> 00:16:13.000
+signed up for amazon i was on the free tier created some vms and pulled around to turn them off and
+
+00:16:13.060 --> 00:16:18.240
+then like three months later i get a bill for 400 and it wasn't the vms it was the like attached
+
+00:16:18.480 --> 00:16:23.400
+storage to the vms or some networking resource that is right but i had no i had no concept of
+
+00:16:23.920 --> 00:16:29.040
+i wasn't there were abstractions i wasn't really aware of aws did a fine job they actually refunded
+
+00:16:29.060 --> 00:16:30.580
+didn't be the money, they credit it back.
+
+00:16:30.620 --> 00:16:31.680
+It happens all the time.
+
+00:16:32.400 --> 00:16:34.960
+But that's a case where the cloud is really complex.
+
+00:16:36.619 --> 00:16:38.620
+And it's really easy to shoot yourself in the foot
+
+00:16:38.860 --> 00:16:40.500
+with any complex system, especially
+
+00:16:40.500 --> 00:16:41.840
+that complex system comes with dollars attached.
+
+00:16:42.120 --> 00:16:43.720
+Yeah, and it's not just compute, right?
+
+00:16:44.420 --> 00:16:47.160
+In your example, it was storage, but there's
+
+00:16:47.300 --> 00:16:50.360
+all sorts of little other services.
+
+00:16:50.620 --> 00:16:52.080
+Oh, I just spun up a database for that,
+
+00:16:52.080 --> 00:16:54.360
+and we actually inserted way more data than I thought
+
+00:16:54.420 --> 00:16:56.680
+and then forgot to delete that or whatever, right?
+
+00:16:57.320 --> 00:17:00.120
+We've got thousands of customers who do the same thing,
+
+00:17:00.260 --> 00:17:02.640
+and then we run through those and we deal with them.
+
+00:17:02.980 --> 00:17:04.120
+So we've seen a lot of those same stories.
+
+00:17:05.220 --> 00:17:07.120
+Another story, also pre-coiled,
+
+00:17:07.300 --> 00:17:09.300
+but more sort of late in professional life.
+
+00:17:10.140 --> 00:17:12.380
+I was running, this is the $50,000 story you were mentioning.
+
+00:17:13.160 --> 00:17:16.839
+I was running a Kubernetes cluster for a customer,
+
+00:17:17.060 --> 00:17:18.860
+for a research group that I was collaborating with.
+
+00:17:20.019 --> 00:17:22.819
+And we're running a Jupyter stuff and Dask stuff.
+
+00:17:23.020 --> 00:17:23.819
+They were all pretty happy.
+
+00:17:24.260 --> 00:17:25.939
+They had to learn Kubernetes we weren't super happy about,
+
+00:17:26.220 --> 00:17:28.500
+but they were able to do things they couldn't do before
+
+00:17:28.620 --> 00:17:29.900
+and operate on scales they couldn't do before,
+
+00:17:29.990 --> 00:17:32.300
+and this was huge, it was really exciting.
+
+00:17:33.300 --> 00:17:34.480
+And then one month, I got an email,
+
+00:17:34.580 --> 00:17:36.340
+it's like, hey, we burned through our annual budget
+
+00:17:37.080 --> 00:17:39.400
+last month, we don't know why.
+
+00:17:40.700 --> 00:17:41.800
+I was like, hey, what's going on?
+
+00:17:41.880 --> 00:17:43.040
+Everything seems fine in the logs,
+
+00:17:43.280 --> 00:17:45.500
+but there's a surprise $50,000 bill.
+
+00:17:47.320 --> 00:17:48.760
+I said, well, one thing that's different
+
+00:17:49.140 --> 00:17:51.980
+is that we're now running this thousand node job,
+
+00:17:52.730 --> 00:17:55.420
+but only for like 10 minutes, every six hours.
+
+00:17:55.680 --> 00:17:57.300
+So every six hours, this job comes on,
+
+00:17:58.200 --> 00:18:00.660
+grabs a thousand machines, and then turns off.
+
+00:18:01.360 --> 00:18:03.060
+Do the math, it should be like 10 bucks a day,
+
+00:18:03.300 --> 00:18:03.840
+20 bucks a day.
+
+00:18:04.820 --> 00:18:06.060
+Obviously not thousands of dollars a day.
+
+00:18:07.600 --> 00:18:11.340
+And so what had happened is that their code
+
+00:18:11.560 --> 00:18:12.460
+brought up lots of Kubernetes pods.
+
+00:18:13.080 --> 00:18:15.180
+All the pods spring up, then 20 minutes later,
+
+00:18:15.480 --> 00:18:16.940
+they went down, everything worked great.
+
+00:18:17.780 --> 00:18:20.220
+But beneath Kubernetes, there was a node pool,
+
+00:18:21.520 --> 00:18:23.900
+and the node pool had attached an auto scaling group.
+
+00:18:24.960 --> 00:18:26.880
+Right, and that auto scaling group had a policy.
+
+00:18:27.640 --> 00:18:29.360
+It's like, hey, if you need lots of nodes, no problem.
+
+00:18:29.560 --> 00:18:30.420
+We'll give you lots of nodes.
+
+00:18:31.060 --> 00:18:34.100
+But in scaling down, I expected the nodes to go away.
+
+00:18:34.360 --> 00:18:35.760
+And actually the policy was,
+
+00:18:36.660 --> 00:18:40.240
+if the average CPU percentage is less than 50%,
+
+00:18:40.540 --> 00:18:44.040
+remove one node, check back every five minutes.
+
+00:18:45.680 --> 00:18:47.800
+And so they were getting 1,000 nodes,
+
+00:18:48.420 --> 00:18:51.120
+and then five minutes later they got 999 nodes,
+
+00:18:51.280 --> 00:18:52.700
+and then 998 nodes,
+
+00:18:53.320 --> 00:18:54.940
+And that would decline very slowly.
+
+00:18:55.080 --> 00:18:56.900
+And then six hours later, go back up to 1,000.
+
+00:18:58.200 --> 00:19:02.220
+And that policy of remove one node if CPU utilization is low
+
+00:19:02.400 --> 00:19:06.600
+makes a whole lot of sense if you are in the web services
+
+00:19:06.880 --> 00:19:09.000
+space, because that's kind of the cadence
+
+00:19:09.320 --> 00:19:11.240
+and kind of the dynamic scales that occur.
+
+00:19:11.440 --> 00:19:11.840
+Right, right.
+
+00:19:12.160 --> 00:19:14.740
+Ebbs and flows throughout the day, but it's not--
+
+00:19:15.300 --> 00:19:15.960
+Yeah, but it makes no sense.
+
+00:19:15.960 --> 00:19:18.300
+It's rarely a huge spike and then a huge drop, yeah.
+
+00:19:18.600 --> 00:19:20.800
+Yeah, it makes no sense for the kind of users
+
+00:19:20.820 --> 00:19:23.600
+we deal with who want 50 GPUs for 10 minutes
+
+00:19:23.920 --> 00:19:26.700
+and a thousand CPUs for an hour and then nothing.
+
+00:19:28.000 --> 00:19:29.900
+It's like there's two different lessons here.
+
+00:19:30.060 --> 00:19:32.880
+One is that like the technology that we saw
+
+00:19:33.880 --> 00:19:36.040
+wasn't well tuned for our audience, for our user base.
+
+00:19:36.880 --> 00:19:38.580
+And also like there were just more abstractions
+
+00:19:38.780 --> 00:19:39.600
+than there needed to be.
+
+00:19:40.500 --> 00:19:41.820
+What I really wanted at the time
+
+00:19:42.180 --> 00:19:43.320
+wasn't Kubernetes and node pools.
+
+00:19:43.500 --> 00:19:46.460
+It was just like, I want a thousand VMs.
+
+00:19:46.940 --> 00:19:48.160
+I wanted like EC2.
+
+00:19:48.280 --> 00:19:51.120
+EC2 was the right abstraction for me.
+
+00:19:51.510 --> 00:19:52.940
+I didn't want any other stuff on top.
+
+00:19:53.760 --> 00:19:56.360
+And so when we built Coiled, we actually designed for that.
+
+00:19:56.450 --> 00:19:58.300
+We designed for raw VMs.
+
+00:19:58.640 --> 00:19:59.880
+We call the raw VM architecture.
+
+00:20:00.680 --> 00:20:02.660
+And we just spin up 1,000 EC2 instances
+
+00:20:02.900 --> 00:20:04.820
+or 1,000 Google or Azure equivalents.
+
+00:20:05.660 --> 00:20:06.780
+We hook them all up dynamically
+
+00:20:06.870 --> 00:20:08.280
+and then we shut them all down when we're done.
+
+00:20:08.940 --> 00:20:10.760
+And that approach is kind of weird.
+
+00:20:10.950 --> 00:20:12.200
+A lot of our customers, when they first see it,
+
+00:20:12.220 --> 00:20:13.840
+like, oh, that's odd.
+
+00:20:14.400 --> 00:20:17.040
+But it actually provides a really interesting architecture
+
+00:20:17.060 --> 00:20:18.240
+that we found to be really interesting.
+
+00:20:20.940 --> 00:20:22.240
+If you're game-- go ahead.
+
+00:20:22.780 --> 00:20:25.900
+I do think that that is certainly what people want.
+
+00:20:27.260 --> 00:20:32.640
+You don't want to have one of these abstraction layers in there.
+
+00:20:32.700 --> 00:20:34.760
+You want, I just need these machines.
+
+00:20:35.060 --> 00:20:36.040
+I need to run my code.
+
+00:20:37.159 --> 00:20:40.520
+But I think you're saying, let's walk through an example.
+
+00:20:40.640 --> 00:20:41.420
+And I think that's great.
+
+00:20:41.500 --> 00:20:44.400
+I think one of the challenges that you're going to run into
+
+00:20:44.420 --> 00:20:47.980
+is how do you even make 1,000 VMs quickly
+
+00:20:48.920 --> 00:20:51.420
+and not spend most of your compute on machine setup
+
+00:20:51.520 --> 00:20:52.040
+and configuration?
+
+00:20:53.260 --> 00:20:55.220
+And things like-- even if you're not
+
+00:20:55.360 --> 00:20:59.420
+using some auto-scaling, auto-tuned down sort of thing,
+
+00:20:59.840 --> 00:20:59.940
+right?
+
+00:21:00.380 --> 00:21:01.640
+I think those would be the kind of problems
+
+00:21:01.820 --> 00:21:02.720
+we'd run into with 10 machines.
+
+00:21:03.020 --> 00:21:05.520
+But with 1,000, you run into other problems,
+
+00:21:05.620 --> 00:21:06.920
+with all sorts of problems that'll show up.
+
+00:21:08.039 --> 00:21:10.620
+I'm expecting the demo to kind of fail.
+
+00:21:11.200 --> 00:21:12.900
+I think it'll be interesting to see what happens.
+
+00:21:13.920 --> 00:21:15.340
+- It's weird doing a demo on a podcast.
+
+00:21:15.700 --> 00:21:15.940
+- I know.
+
+00:21:16.060 --> 00:21:19.680
+Everyone listening, I'm gonna narrate this very carefully.
+
+00:21:19.840 --> 00:21:22.440
+And if you go to the YouTube stream,
+
+00:21:22.480 --> 00:21:24.700
+you can watch it at minute 21, 25.
+
+00:21:26.120 --> 00:21:29.680
+But I will narrate it because there's some interesting ideas,
+
+00:21:29.860 --> 00:21:31.720
+like the idioms and stuff that I spoke about.
+
+00:21:32.679 --> 00:21:33.940
+- So go ahead. - Let me start saying
+
+00:21:33.960 --> 00:21:35.180
+some things and then I'll hand off you.
+
+00:21:35.340 --> 00:21:36.660
+I expect actually Nat may have to interpret
+
+00:21:36.700 --> 00:21:37.420
+some things later too.
+
+00:21:38.000 --> 00:21:41.740
+So I'm on my local machine.
+
+00:21:42.000 --> 00:21:42.680
+I'm in a Jupyter notebook,
+
+00:21:42.920 --> 00:21:44.200
+but I can be in VS Code or curse or whatever.
+
+00:21:45.260 --> 00:21:48.820
+I've imported library coiled, and I'm going to create a coiled cluster,
+
+00:21:49.080 --> 00:21:52.120
+just typing into Python some code.
+
+00:21:52.880 --> 00:21:54.160
+And workers equals 1,000.
+
+00:21:55.080 --> 00:21:56.700
+We'll ask for some ARM machines.
+
+00:21:57.260 --> 00:21:59.960
+We'll ask for Spot if it's available.
+
+00:22:00.900 --> 00:22:03.000
+If it's not available, follow back to on-demand.
+
+00:22:04.520 --> 00:22:08.120
+And we'll ask for each machine to have maybe just a couple of CPUs.
+
+00:22:10.300 --> 00:22:12.180
+All right, Matthew, before we go on,
+
+00:22:12.280 --> 00:22:13.620
+Let's just talk about some of these things.
+
+00:22:13.940 --> 00:22:16.260
+You go to Coil and you say, create me a cluster.
+
+00:22:16.800 --> 00:22:17.740
+Workers is 1,000.
+
+00:22:18.539 --> 00:22:20.580
+That's 1,000 EC2 instances, right?
+
+00:22:21.180 --> 00:22:22.100
+It will be, yeah.
+
+00:22:22.520 --> 00:22:23.180
+That's insane.
+
+00:22:24.040 --> 00:22:24.160
+Yeah.
+
+00:22:24.820 --> 00:22:25.800
+I'm also not going to Coil.
+
+00:22:25.900 --> 00:22:29.560
+I'm going to my local Python environment here on my MacBook.
+
+00:22:29.840 --> 00:22:30.760
+Mac Mini is in Austin.
+
+00:22:30.920 --> 00:22:32.520
+But it could be on a CI job or wherever.
+
+00:22:32.900 --> 00:22:33.260
+Sorry.
+
+00:22:33.400 --> 00:22:38.140
+So by saying Coil, I meant you're using the Coiled API locally.
+
+00:22:38.780 --> 00:22:39.000
+Yeah, yeah.
+
+00:22:39.980 --> 00:22:43.260
+And then what are spot instances for people who don't live in EC2?
+
+00:22:44.320 --> 00:22:46.960
+Yeah, so spot, also called preemptible in other clouds sometimes,
+
+00:22:47.430 --> 00:22:53.420
+are just instances that are cheaper because they don't have the guarantee of sticking around.
+
+00:22:53.630 --> 00:23:00.540
+The cloud can claim them back if some other customer willing to pay full price is willing to pay.
+
+00:23:01.140 --> 00:23:04.180
+And so we're looking for sort of cheap capacity.
+
+00:23:05.100 --> 00:23:09.520
+And then if it's not there, we actually are also willing to pay for on-demand for full-priced instances.
+
+00:23:10.160 --> 00:23:12.720
+So we're going to try to get 1,000, but we're like, hey, if there's any discount things
+
+00:23:12.940 --> 00:23:14.600
+around, I'm happy to take them too.
+
+00:23:15.300 --> 00:23:15.960
+Yeah, yeah.
+
+00:23:17.080 --> 00:23:22.200
+So the alternative is maybe you're going to set up, and again, this is more like the web
+
+00:23:22.540 --> 00:23:23.100
+API world.
+
+00:23:23.300 --> 00:23:26.720
+I'm going to set up an EC2 instance, and I'm going to configure my website on it.
+
+00:23:26.800 --> 00:23:32.020
+I'm just going to leave it running because my website should be up 24-7 in a perfect
+
+00:23:32.290 --> 00:23:32.380
+world.
+
+00:23:33.580 --> 00:23:35.900
+So I'm going to get a machine and just leave it.
+
+00:23:36.900 --> 00:23:42.280
+Those are often reserved instances, which have a different type of pricing, but a commitment to long term, right?
+
+00:23:42.780 --> 00:23:46.720
+Like you pay less by committing to pay for it for a month or a year or something.
+
+00:23:47.640 --> 00:23:49.560
+And so that's kind of the opposite of the spot.
+
+00:23:49.780 --> 00:23:55.120
+It's like, if there's anything that just happen to be hanging around, give us your cheap temporary ones, right?
+
+00:23:55.200 --> 00:23:56.120
+Okay, cool.
+
+00:23:56.980 --> 00:23:59.540
+So I think people get a sense of what you're going to go ask for.
+
+00:24:00.560 --> 00:24:02.360
+Yeah, so let's just run that.
+
+00:24:03.300 --> 00:24:06.680
+So take about a minute, maybe a couple of minutes, because it's a large number of machines.
+
+00:24:07.760 --> 00:24:14.260
+So the first thing that's happening is that we're scraping my local MacBook for all the Python packages I've got installed.
+
+00:24:14.420 --> 00:24:22.320
+Every conda package, pip package, local.py file, local editable package.
+
+00:24:23.500 --> 00:24:26.120
+And then we are spinning up a thousand machines.
+
+00:24:26.440 --> 00:24:28.020
+And so, go ahead.
+
+00:24:28.020 --> 00:24:30.000
+Well, let's talk about that environment a little bit.
+
+00:24:30.240 --> 00:24:32.900
+Because it's fine to have 1,000 machines,
+
+00:24:33.800 --> 00:24:37.600
+but you are intending to write a bunch of code
+
+00:24:37.620 --> 00:24:40.800
+in Jupyter Notebook that probably depends on a bunch of stuff,
+
+00:24:41.040 --> 00:24:45.320
+like what have you conda or piped installed in exactly
+
+00:24:45.400 --> 00:24:45.940
+those versions.
+
+00:24:46.060 --> 00:24:48.400
+And they might be uncommon things that you want to run.
+
+00:24:48.520 --> 00:24:51.420
+Or maybe you have local files that you're
+
+00:24:51.420 --> 00:24:55.720
+going to subsequently say, load this CSV file or this Parquet
+
+00:24:55.900 --> 00:24:56.960
+file and jam on it.
+
+00:24:59.640 --> 00:25:02.120
+How does that stay coherent?
+
+00:25:02.680 --> 00:25:03.740
+Yeah, that's a great question.
+
+00:25:05.080 --> 00:25:06.620
+I'll actually add it, make it even more complex.
+
+00:25:07.300 --> 00:25:11.500
+We're also running this first from my MacBook,
+
+00:25:11.660 --> 00:25:13.320
+but I'm actually running it on some Linux machines.
+
+00:25:13.620 --> 00:25:16.540
+And so I've got to shift the architecture of those packages
+
+00:25:16.660 --> 00:25:17.120
+where appropriate.
+
+00:25:18.160 --> 00:25:22.960
+I may have private packages that I'm pulling
+
+00:25:23.080 --> 00:25:25.820
+from my company's local or artifactory repository.
+
+00:25:25.920 --> 00:25:31.500
+I may have packages that I have installed locally that I've printed debug statements into.
+
+00:25:32.770 --> 00:25:37.980
+Things get actually quite hairy trying to replicate someone's local environment into a remote environment.
+
+00:25:38.440 --> 00:25:42.540
+And we try to do exactly that. We try to replicate as much as we can a local environment remotely.
+
+00:25:45.520 --> 00:25:49.760
+That could be data. You mentioned data like small files might move, large files probably not.
+
+00:25:50.320 --> 00:25:54.220
+Yeah, those might be pulled out of S3 storage or something like that.
+
+00:25:54.240 --> 00:25:54.820
+I guess three.
+
+00:25:55.940 --> 00:25:57.220
+Yeah, it's a complicated situation.
+
+00:25:58.160 --> 00:25:58.300
+Yeah.
+
+00:25:59.360 --> 00:26:01.440
+Just a note for what's on the screen right now.
+
+00:26:01.520 --> 00:26:10.560
+It says you've booted 838 machines and working on the environment for 137 of them.
+
+00:26:10.780 --> 00:26:11.380
+That's pretty wild.
+
+00:26:11.500 --> 00:26:12.840
+We only got 160 to go.
+
+00:26:13.460 --> 00:26:13.780
+Yeah.
+
+00:26:14.020 --> 00:26:19.460
+I mean, also things to note, we got 54 M8G larges.
+
+00:26:19.780 --> 00:26:22.520
+Those are the nice generation of AWS.
+
+00:26:22.640 --> 00:26:23.740
+I actually didn't know those were available.
+
+00:26:23.980 --> 00:26:24.480
+Those are new for me.
+
+00:26:25.160 --> 00:26:27.500
+We've got 942 M7G larges,
+
+00:26:28.060 --> 00:26:30.720
+and four of the oldest generation M6G.
+
+00:26:31.160 --> 00:26:32.600
+So actually, Coiled had to go to the cloud
+
+00:26:32.660 --> 00:26:34.540
+and get actually like a variety of different instance types
+
+00:26:35.160 --> 00:26:36.520
+because AWS ran out.
+
+00:26:38.040 --> 00:26:40.520
+In fact, maybe Nat, you can talk a little bit about
+
+00:26:41.200 --> 00:26:43.480
+like what just happened behind the scenes there.
+
+00:26:43.760 --> 00:26:45.440
+What are all the steps that we had to do
+
+00:26:45.520 --> 00:26:46.340
+in order to get those machines?
+
+00:26:46.660 --> 00:26:47.840
+They're also now all available.
+
+00:26:48.580 --> 00:26:49.060
+- Oh, nice.
+
+00:26:50.640 --> 00:26:53.200
+Yeah, so there's like all sorts of things
+
+00:26:53.220 --> 00:27:03.020
+But at the scale of like, I want one or two computers that just work that like all sorts of things break down when you're asking for hundreds or thousands.
+
+00:27:04.740 --> 00:27:07.900
+So some of that is like you can't just make individual API calls anymore.
+
+00:27:08.720 --> 00:27:10.600
+You would you would very quickly get rate limited.
+
+00:27:10.810 --> 00:27:16.960
+And then we would spend, you know, 10 minutes asking for these VMs instead of, you know, 15 seconds.
+
+00:27:19.000 --> 00:27:20.880
+So we use a variety of things we use.
+
+00:27:20.930 --> 00:27:21.920
+We use fleets.
+
+00:27:22.400 --> 00:27:31.760
+We use requests that, again, so this ties nicely with a spot where you say, basically,
+
+00:27:32.060 --> 00:27:40.720
+AWS, I want you to give me any of these range of things that have the best availability at the best price.
+
+00:27:42.000 --> 00:27:51.320
+So here, yeah, Matt is pulling up, and we can actually see how much spot we got.
+
+00:27:51.320 --> 00:27:55.900
+So it looks like we got a fair number of, actually, I don't know, what is that?
+
+00:27:55.970 --> 00:27:59.100
+Like four-fifths of our instances we did manage to get spot.
+
+00:28:00.060 --> 00:28:12.560
+And those are going to be anywhere from like, I don't know, roughly half the price of an on-demand instance, sometimes more, but often even less.
+
+00:28:12.820 --> 00:28:15.720
+So they can be 30% of full price.
+
+00:28:20.380 --> 00:28:21.660
+Yeah, what else to say here?
+
+00:28:22.900 --> 00:28:27.100
+So we were actually running this last night and I was actually hoping that it would fail.
+
+00:28:27.180 --> 00:28:27.760
+It didn't fail.
+
+00:28:29.400 --> 00:28:30.480
+Let me see if I can bring up.
+
+00:28:31.780 --> 00:28:33.300
+You have an odd hope for your demo.
+
+00:28:33.960 --> 00:28:38.080
+Well, it wasn't us that failed, it was Amazon that failed actually.
+
+00:28:38.440 --> 00:28:38.520
+Yeah.
+
+00:28:38.640 --> 00:28:41.360
+Amazon failed because it actually didn't have capacity.
+
+00:28:41.700 --> 00:28:41.780
+Yeah.
+
+00:28:42.140 --> 00:28:47.280
+It turns out that like the cloud is unlimited until you start doing really big things and
+
+00:28:47.300 --> 00:28:49.900
+that it's like, oh, you got to be clever if you want to get.
+
+00:28:50.340 --> 00:28:54.240
+And I mean, to some extent, everyone knows this nowadays with GPUs, right?
+
+00:28:54.400 --> 00:28:55.840
+GPUs are fairly constrained.
+
+00:28:56.310 --> 00:29:05.900
+But even when you're asking for just like 2000 CPU instances, AWS often says, sorry, here's
+
+00:29:06.040 --> 00:29:06.280
+200.
+
+00:29:07.720 --> 00:29:11.380
+Unless you know how to like frame that request in the right way.
+
+00:29:11.960 --> 00:29:13.000
+Right, right.
+
+00:29:13.320 --> 00:29:18.580
+And you guys have solved, that's some of the gnarly DevOps you all have solved so other
+
+00:29:18.720 --> 00:29:19.540
+people don't have to, right?
+
+00:29:19.840 --> 00:29:20.020
+Yeah.
+
+00:29:21.580 --> 00:29:21.800
+All right.
+
+00:29:22.090 --> 00:29:24.000
+Matt, I feel like we should run some code on this thing now.
+
+00:29:24.120 --> 00:29:25.540
+You've got them sitting here ready.
+
+00:29:26.680 --> 00:29:28.400
+So, I mean, what do you want to do?
+
+00:29:28.550 --> 00:29:30.180
+And this is the great question.
+
+00:29:30.590 --> 00:29:34.680
+This is the great problem of actually supporting Python users, I think, is that people want
+
+00:29:34.680 --> 00:29:38.740
+to do all sorts of different kinds of things, right?
+
+00:29:39.180 --> 00:29:45.780
+They want to load a bunch of data with pandas or with polars or with duck DB or they want to train a machine learning model with
+
+00:29:46.320 --> 00:29:52.880
+Certain kind of GPU or a certain kind of whatever. There's actually a lot of variety in what people do and it and it's
+
+00:29:53.240 --> 00:29:53.680
+challenging
+
+00:29:54.840 --> 00:30:02.960
+To build a tool that provides again some of that abstraction but not others like snowflake provides the abstraction to sequel and that's like a very clear thing to do
+
+00:30:04.020 --> 00:30:05.640
+we provide the abstraction of
+
+00:30:05.940 --> 00:30:08.500
+Here's a machine that you can play with
+
+00:30:09.550 --> 00:30:13.660
+Do whatever you want to do with it and sometimes that's Python code. Sometimes it's other weird stuff
+
+00:30:15.420 --> 00:30:19.620
+I'm actually rather than a show code might actually show a few examples. Sure. Yeah, sure
+
+00:30:21.600 --> 00:30:28.400
+Let's see so like people will play things like with pandas like what you mentioned like machine learning like
+
+00:30:29.200 --> 00:30:31.759
+Climate science, there's all sorts of different different weird things
+
+00:30:33.800 --> 00:30:41.380
+We actually found that a lot of people would, inside of their Python code, they would import the subprocess module.
+
+00:30:43.120 --> 00:30:50.320
+And then they would run a process that was calling some other Fortran or C code that had nothing to do with Python.
+
+00:30:51.140 --> 00:30:52.320
+And so we found that.
+
+00:30:52.320 --> 00:30:57.380
+We said, great, let's go and let's support that by running arbitrary batch jobs.
+
+00:30:58.360 --> 00:31:05.180
+arbitrary programs like um you know here in this example i'm just like running echo echo hello world
+
+00:31:07.160 --> 00:31:15.680
+so it's a it's a weird set of problems to handle the infrastructure for this set of people but not
+
+00:31:18.540 --> 00:31:24.339
+but not be very opinionated about what they do with that infrastructure sure does that make sense
+
+00:31:24.440 --> 00:31:30.620
+Yeah, absolutely. And so at this point, they pretty much have a machine. If they can do it from a
+
+00:31:30.900 --> 00:31:36.160
+Jupyter notebook, they're kind of good to go. Yeah, they have a thousand machines and those
+
+00:31:36.420 --> 00:31:42.360
+machines look just like their machine, just more numerous or bigger or with GPUs or whatever you
+
+00:31:42.500 --> 00:31:48.339
+like. Sure. And so how do I bring data back together? How do I fan it out? How do I map
+
+00:31:48.360 --> 00:31:56.200
+produce or like execute a bunch of you know i've got a million rows i want to send a hundred to
+
+00:31:56.200 --> 00:32:00.200
+each machine or i don't know whatever the math works out to be a thousand each machine right so
+
+00:32:00.200 --> 00:32:04.720
+now we're asking the question how are we going to use the machines that we have the answer the
+
+00:32:04.820 --> 00:32:11.060
+questions you just asked me is dask you might use dask to hey you got a petabyte of parquet out
+
+00:32:11.220 --> 00:32:17.000
+on s3 use a das cluster or if you want use a spark cluster we can we can spin up a spark cluster we
+
+00:32:16.840 --> 00:32:18.640
+We can spin up polars, we can spin lots of different things.
+
+00:32:19.350 --> 00:32:20.840
+And then now you're at the point of the--
+
+00:32:20.960 --> 00:32:24.100
+you're at the level of the sort of distributed computing
+
+00:32:24.320 --> 00:32:24.460
+framework.
+
+00:32:25.890 --> 00:32:27.200
+And they can go and run things with that--
+
+00:32:27.200 --> 00:32:28.920
+with whatever distributed computing framework they like.
+
+00:32:30.720 --> 00:32:33.540
+Often, there's then a whole other set of problems
+
+00:32:33.590 --> 00:32:34.400
+they then deal with.
+
+00:32:35.620 --> 00:32:37.320
+Again, when we started Coil, it was all around deploying
+
+00:32:37.540 --> 00:32:37.960
+Dask.
+
+00:32:38.750 --> 00:32:40.480
+But what we found is that actually, like, most times,
+
+00:32:41.060 --> 00:32:43.740
+the problems they wanted to solve were not that complicated.
+
+00:32:43.750 --> 00:32:44.520
+They were not sophisticated.
+
+00:32:45.280 --> 00:32:46.200
+There were very simple problems.
+
+00:32:47.000 --> 00:32:50.200
+They had 1,000 Parquet files in S3.
+
+00:32:50.310 --> 00:32:52.340
+They wanted to do the same thing on each Parquet file.
+
+00:32:53.020 --> 00:32:54.240
+They actually didn't want to use NAS data frame.
+
+00:32:54.290 --> 00:32:56.700
+They wanted to use Polars, say, or they wanted to use DuckDB.
+
+00:32:57.500 --> 00:32:59.740
+And so we would give them APIs that let them--
+
+00:33:00.620 --> 00:33:03.720
+so an example of an API is the coiled function API.
+
+00:33:04.220 --> 00:33:04.740
+It's a decorator.
+
+00:33:05.240 --> 00:33:06.800
+Think if you're familiar with modals, something similar.
+
+00:33:07.480 --> 00:33:08.300
+And it does the same thing.
+
+00:33:08.740 --> 00:33:09.480
+It spins up a machine.
+
+00:33:10.220 --> 00:33:11.280
+You run your function on that machine.
+
+00:33:12.800 --> 00:33:16.500
+And it goes ahead and spins up the VM, runs it, scales it down.
+
+00:33:17.760 --> 00:33:18.740
+Yeah, that's really neat.
+
+00:33:18.940 --> 00:33:22.400
+And when you say on your website, it says serverless Python,
+
+00:33:23.480 --> 00:33:25.120
+is it the same thing as like--
+
+00:33:25.120 --> 00:33:26.280
+SERVERLESS IS A WEIR TERM.
+
+00:33:26.440 --> 00:33:27.200
+Yeah, I know it is.
+
+00:33:28.140 --> 00:33:28.680
+I know.
+
+00:33:29.240 --> 00:33:32.680
+Is it still spinning up dedicated VMs, running your code on that,
+
+00:33:32.730 --> 00:33:35.660
+and then have them going away, and you're just not thinking about it?
+
+00:33:36.380 --> 00:33:40.040
+Or is it truly leveraging the serverless functionality,
+
+00:33:41.440 --> 00:33:43.340
+as AWS would refer to it in its console.
+
+00:33:44.340 --> 00:33:47.420
+Serverless always means there's a server under the hood,
+
+00:33:50.120 --> 00:33:51.920
+but roughly the distinction is
+
+00:33:52.020 --> 00:33:53.620
+who has to worry about that server?
+
+00:33:53.860 --> 00:33:53.940
+Yeah.
+
+00:33:54.320 --> 00:33:56.400
+So, yeah, when we say serverless,
+
+00:33:56.900 --> 00:33:58.480
+we're still using EC2 instances.
+
+00:33:59.480 --> 00:34:01.460
+I mean, Amazon, when you're running things on Lambda,
+
+00:34:02.020 --> 00:34:03.580
+they're still using EC2 instances.
+
+00:34:05.440 --> 00:34:07.200
+But it's an abstraction
+
+00:34:08.340 --> 00:34:09.899
+where you don't have to worry about that.
+
+00:34:10.120 --> 00:34:13.040
+you get those EC2 instances as you need them,
+
+00:34:13.210 --> 00:34:15.060
+you get them quickly and you get them
+
+00:34:15.610 --> 00:34:17.080
+only for as long as you need them.
+
+00:34:17.639 --> 00:34:19.120
+- Okay, yeah, that makes a lot of sense.
+
+00:34:20.300 --> 00:34:23.440
+So this is something that really kind of,
+
+00:34:24.260 --> 00:34:27.320
+it really blew my mind here when you all showed me is,
+
+00:34:28.379 --> 00:34:31.179
+you put a decorator at coil.function
+
+00:34:32.520 --> 00:34:34.840
+onto just a regular Python function.
+
+00:34:35.980 --> 00:34:38.600
+And you can express things like the machine type you need,
+
+00:34:39.500 --> 00:34:41.659
+how many of them you want, and so on.
+
+00:34:42.360 --> 00:34:46.520
+And it just fires it up seamlessly behind the scenes
+
+00:34:46.550 --> 00:34:48.240
+when that function is called, and then it goes away, right?
+
+00:34:49.340 --> 00:34:52.760
+Yeah, so this is all using the same underlying technology.
+
+00:34:53.399 --> 00:34:55.659
+What we joke about internally is that our core competency
+
+00:34:55.830 --> 00:34:57.360
+is turning VMs on and off.
+
+00:34:57.860 --> 00:35:01.080
+And so it's actually-- once you have that technology,
+
+00:35:01.720 --> 00:35:03.160
+writing APIs around it is pretty cheap.
+
+00:35:04.000 --> 00:35:06.500
+And so a common API is a Python decorator.
+
+00:35:07.040 --> 00:35:08.440
+That's one of the various APIs we do.
+
+00:35:09.260 --> 00:35:12.140
+And yeah, a common application is I'm running PyTorch code
+
+00:35:13.199 --> 00:35:15.400
+and I'm using it on my MacBook, it's fine,
+
+00:35:15.490 --> 00:35:17.260
+but I'd like to use an NVIDIA CUDA GPU.
+
+00:35:18.420 --> 00:35:19.680
+Cool, let's decorate that function
+
+00:35:20.260 --> 00:35:21.980
+with the GPU type that you want,
+
+00:35:22.510 --> 00:35:23.580
+and it goes ahead and runs that.
+
+00:35:24.240 --> 00:35:25.820
+And it runs locally in my environment.
+
+00:35:25.940 --> 00:35:28.440
+I'm still typing on my MacBook Pro in cursor or whatever,
+
+00:35:29.120 --> 00:35:30.840
+but that function now what it does is it just like,
+
+00:35:30.920 --> 00:35:32.720
+it spins up VM, runs code,
+
+00:35:33.600 --> 00:35:34.700
+keeps VM around for a little while,
+
+00:35:34.770 --> 00:35:36.100
+see if I wanna run anything else on it again,
+
+00:35:36.250 --> 00:35:36.940
+and then spins it down.
+
+00:35:39.440 --> 00:35:45.420
+And that gives a lot of ability for the user to start experimenting with hardware, right?
+
+00:35:46.040 --> 00:35:48.380
+You can now run that function on any kind of GPU you want.
+
+00:35:48.440 --> 00:35:49.840
+And they do. They try lots of different things.
+
+00:35:50.060 --> 00:35:56.980
+We had a customer a long time ago who was, this is when like, when GPUs were at first very hard to get access to.
+
+00:35:57.640 --> 00:36:03.000
+And they would run through every region in their cloud trying to find A100s.
+
+00:36:03.560 --> 00:36:07.860
+And it's super easy in Quola to say, like, great, I want to run this in region EU central one.
+
+00:36:08.220 --> 00:36:09.700
+Let's see if Frankfurt has any GPUs.
+
+00:36:09.840 --> 00:36:10.380
+Nope, none there.
+
+00:36:10.540 --> 00:36:13.160
+Great, let's try this in AP Southwest, whatever.
+
+00:36:13.400 --> 00:36:15.080
+Let's see if Australia has any GPUs.
+
+00:36:16.000 --> 00:36:22.120
+And they would just, because it was now easy to play with things, it was easy to use the cloud, they started to experiment a lot more.
+
+00:36:23.000 --> 00:36:24.060
+That was really valuable.
+
+00:36:25.140 --> 00:36:30.160
+We often see people playing with ARM versus Intel versus AMD, playing with every GPU type.
+
+00:36:30.180 --> 00:36:47.720
+Yeah, I think something that's interesting to me about data science, I mean, I, to some extent, come from the web world. And what you do is you just like, you look at the list of instances, you pick one that looks, you know, boring, you just use that, it runs for, you know, a year, you don't think about it.
+
+00:36:48.400 --> 00:37:03.600
+And so much in data science, it actually makes sense to try out different instance types to explore, what's this GPU do for me? Sometimes that's really helpful, sometimes it's not. To move around to different regions.
+
+00:37:03.880 --> 00:37:15.480
+So if you have a data set that's in one region, it makes like an orders of magnitude difference how quickly you can download it if you are close to it than if you are far from it.
+
+00:37:16.450 --> 00:37:27.060
+But even things like, you know, specifics of the, you know, the CPU family, we, you know, for fun, we get to run like benchmarks on different things.
+
+00:37:27.220 --> 00:37:33.600
+And it's really nice because I just go in and like, oh, AWS came out with a new ARM instance type.
+
+00:37:34.210 --> 00:37:36.320
+And I can go like change one line of code.
+
+00:37:36.690 --> 00:37:42.000
+And now we run all our benchmarks on, you know, as Matt was noticing, MAGs.
+
+00:37:42.260 --> 00:37:43.460
+I was surprised to see MAGs.
+
+00:37:43.700 --> 00:37:45.140
+Have you run the benchmarks yet?
+
+00:37:45.630 --> 00:37:46.060
+How are they doing?
+
+00:37:47.140 --> 00:37:48.740
+Yeah, I don't know if we have on those yet.
+
+00:37:50.579 --> 00:37:51.980
+What's the difference between six and seven?
+
+00:37:52.070 --> 00:37:52.360
+Do you remember?
+
+00:37:53.160 --> 00:37:59.740
+I mean, all of these are, so these are the like Amazon designed ARM CPUs.
+
+00:38:00.940 --> 00:38:05.720
+Some of those differences are, you know, the family of ARM.
+
+00:38:06.000 --> 00:38:08.740
+It's like ARM v8 versus ARM v7.
+
+00:38:09.280 --> 00:38:15.800
+Some of that actually really does make a difference for data science workloads because it has to do with those like wide instructions.
+
+00:38:16.900 --> 00:38:23.740
+So they're like MIDI GPUs that they're able to do many things in parallel on the CPU.
+
+00:38:25.420 --> 00:38:26.740
+Sometimes they put in better memory.
+
+00:38:27.090 --> 00:38:30.880
+So I think some of these new instances have DDR5 instead of DDR4.
+
+00:38:32.600 --> 00:38:34.860
+And it's like, does that make a difference for my workload?
+
+00:38:35.220 --> 00:38:36.780
+Is it going to save money?
+
+00:38:37.880 --> 00:38:40.180
+I can't tell you that a priori.
+
+00:38:41.360 --> 00:38:43.540
+But it's really easy to just try.
+
+00:38:43.840 --> 00:38:49.140
+And sometimes you're like, oh, wow, this hardware is better.
+
+00:38:49.400 --> 00:38:53.040
+Or, oh, wow, this new hardware actually doesn't make any difference for what I do.
+
+00:38:53.920 --> 00:38:54.460
+Very interesting.
+
+00:38:54.520 --> 00:39:01.360
+It seems to me like the infrastructure you all built makes experimenting way easier, right?
+
+00:39:01.540 --> 00:39:06.740
+If it's really hard for you to set up a machine, let's come back to this in a minute, but I
+
+00:39:06.740 --> 00:39:07.360
+have a question first.
+
+00:39:07.480 --> 00:39:25.480
+But I think a lot of times what people might do is, hey, instead of trying to do a lot of the scaling stuff, let's just set up one machine with 64 cores and a lot of memory and just set up a notebook server and let people, we'll just configure it and let people have that.
+
+00:39:26.120 --> 00:39:26.520
+Yeah, yeah.
+
+00:39:26.890 --> 00:39:28.620
+I do want to come back to that.
+
+00:39:28.820 --> 00:39:35.000
+But while we're still on this ARM versus x86 thing, what's the story?
+
+00:39:35.120 --> 00:39:39.100
+Do you all recommend ARM in the data center these days for this kind of stuff?
+
+00:39:39.230 --> 00:39:40.420
+Or is it still x86?
+
+00:39:42.780 --> 00:39:43.680
+What's the right choice?
+
+00:39:43.680 --> 00:39:44.620
+You should try it.
+
+00:39:45.300 --> 00:39:46.100
+That's the short answer.
+
+00:39:46.400 --> 00:39:48.500
+I mean, ARM is really nice sometimes.
+
+00:39:52.300 --> 00:39:55.040
+AWS and a lot of the clouds are really into ARM.
+
+00:39:55.230 --> 00:39:58.480
+So they're doing some really nice technology.
+
+00:39:59.060 --> 00:40:00.680
+They're offering it at a good price.
+
+00:40:02.160 --> 00:40:04.300
+It tends to run more power efficiently.
+
+00:40:04.460 --> 00:40:08.460
+and power is like actually one of the major costs at a data center.
+
+00:40:08.840 --> 00:40:08.920
+Yeah.
+
+00:40:11.540 --> 00:40:13.160
+But I would love to run ARM.
+
+00:40:13.480 --> 00:40:15.460
+I would love to run ARM for my infrastructure.
+
+00:40:15.720 --> 00:40:15.820
+Yeah.
+
+00:40:16.220 --> 00:40:20.120
+But I'm concerned that there's not,
+
+00:40:20.380 --> 00:40:25.520
+there might be some native library or some web server
+
+00:40:25.800 --> 00:40:27.740
+that doesn't run ARM, is not built for ARM
+
+00:40:27.800 --> 00:40:28.900
+or doesn't work right on ARM.
+
+00:40:30.220 --> 00:40:31.060
+It's, yeah.
+
+00:40:31.120 --> 00:40:34.300
+A couple months in, like, now I want to add this one thing
+
+00:40:34.320 --> 00:40:39.200
+that would be really nice but it doesn't work on arm we've been doing this for a few years now it's
+
+00:40:39.200 --> 00:40:44.560
+a lot better the support than it was okay like three or four years ago um but also this is like
+
+00:40:44.740 --> 00:40:50.420
+part of so you're talking about you know all of those tricks we do to get this seamless experience
+
+00:40:51.240 --> 00:40:58.700
+and part of that is uh you know people have intel machines on their desk or they have
+
+00:40:58.720 --> 00:41:08.180
+arm macbooks they're running on intel or amd or arm in the cloud and all of this is stuff where
+
+00:41:08.380 --> 00:41:14.460
+like having to figure out okay so you have this software locally what does that mean in the cloud
+
+00:41:14.590 --> 00:41:20.360
+and it might be slightly different versions of things it might even be you don't have a gpu
+
+00:41:20.900 --> 00:41:28.280
+locally so you have the cpu version of pytorch but you actually want to use pytorch on a gpu in the
+
+00:41:28.080 --> 00:41:34.100
+cloud that involves you know figuring out how to how to install the right versions of those different
+
+00:41:34.300 --> 00:41:42.160
+packages yeah so that's tricky sure that no one can see i've just switched my code to turn off arm
+
+00:41:42.320 --> 00:41:48.100
+and switch from region us east one to us west two and we're just bring up a new cluster and if i had
+
+00:41:48.240 --> 00:41:52.380
+written some debug code in my code that would also be updated you were talking earlier michael about
+
+00:41:52.520 --> 00:41:57.180
+experimentation being something to think about i think that that is one of the major differences
+
+00:41:57.760 --> 00:42:01.840
+between data workloads and web server workloads.
+
+00:42:02.570 --> 00:42:06.040
+Is that the data world like usually there's eventually, yes,
+
+00:42:06.240 --> 00:42:09.300
+there's a production part where you're like running some model inference server.
+
+00:42:09.720 --> 00:42:12.960
+But there's this long period where you're experimenting.
+
+00:42:13.730 --> 00:42:17.240
+And really optimizing that period is really, really critical.
+
+00:42:18.880 --> 00:42:22.460
+And Coiled is very much designed to accelerate that experimentation process.
+
+00:42:23.420 --> 00:42:26.540
+Even like our choice to copy your environment rather than use Docker
+
+00:42:26.560 --> 00:42:31.800
+is highly informed by that. If you put in a Docker build Docker push cycle into the data science
+
+00:42:32.980 --> 00:42:36.980
+work cycle, it just like it gums everything up. People end up not doing it.
+
+00:42:37.940 --> 00:42:44.840
+Coiled is smooth enough and easy to use enough that the cloud is now pleasant enough to actually
+
+00:42:45.300 --> 00:42:51.840
+include inside of the user dev cycle. And that's different, that's new, that's fun.
+
+00:42:52.500 --> 00:42:58.820
+and you can just play with stuff so that's why i got now you know 300 machines that are all nope
+
+00:42:58.910 --> 00:43:02.660
+like all the machines i've got a bunch of i've got a thousand intel machines and a thousand arm
+
+00:43:02.800 --> 00:43:06.680
+machines what do you want to do with them michael maybe we can run the same experiment right now
+
+00:43:06.880 --> 00:43:13.200
+inside this podcast and that's the thing though like the joy of this and and the cost of all
+
+00:43:13.220 --> 00:43:17.120
+of this is like dollars.
+
+00:43:18.200 --> 00:43:20.720
+That last cluster cost me a buck 39.
+
+00:43:21.980 --> 00:43:25.960
+This one is costing me 45 cents so far, 80 bucks an hour.
+
+00:43:27.440 --> 00:43:29.800
+Yeah, that's actually way less than I expected.
+
+00:43:30.640 --> 00:43:36.280
+Yeah, the cloud is both like way cheaper and way more expensive than I realized going
+
+00:43:36.480 --> 00:43:39.520
+in based on whether or not you're doing it correctly or doing it incorrectly.
+
+00:43:40.020 --> 00:43:41.520
+like several orders of magnitude difference.
+
+00:43:43.560 --> 00:43:45.180
+I know we want to talk about cost at some point, Michael.
+
+00:43:45.420 --> 00:43:48.180
+Maybe it's fun to talk through some of the stories.
+
+00:43:48.700 --> 00:43:48.900
+I do.
+
+00:43:48.900 --> 00:43:50.140
+I definitely want to hear some stories.
+
+00:43:50.200 --> 00:43:51.400
+I'm always here for stories.
+
+00:43:52.100 --> 00:43:57.660
+I first want to talk about the cost and the logistics
+
+00:44:00.320 --> 00:44:04.560
+of this one big shared Jupyter server sort of story
+
+00:44:06.720 --> 00:44:07.160
+versus this.
+
+00:44:09.600 --> 00:44:15.520
+No one's going to have, you asked for two CPUs per machine, I doubt anyone's going to have a 2,000 CPU single machine.
+
+00:44:17.110 --> 00:44:23.000
+I know, I think they might exist, but they're very, very rare and they're very, very expensive.
+
+00:44:25.320 --> 00:44:32.360
+So what does the cost look like and the challenges of some team that says,
+
+00:44:32.500 --> 00:44:37.940
+let's just set up one huge server and we'll just share it versus working like this?
+
+00:44:40.260 --> 00:44:40.660
+Yeah.
+
+00:44:41.440 --> 00:44:46.320
+I think the shortness is like low tens of thousands of dollars for like an always on
+
+00:44:47.000 --> 00:44:47.600
+100 core machine.
+
+00:44:48.460 --> 00:44:51.220
+I'm like, I'm honestly bringing up ChatGPT right now to ask that question.
+
+00:44:53.460 --> 00:44:55.040
+It's such a special time we live in.
+
+00:44:55.740 --> 00:44:58.560
+Before the machines rise up and kill us, it's amazing.
+
+00:45:00.680 --> 00:45:00.980
+Yeah.
+
+00:45:01.900 --> 00:45:02.360
+Let's see what we got.
+
+00:45:02.380 --> 00:45:02.880
+Yeah, here we go.
+
+00:45:03.120 --> 00:45:04.340
+So let's see if we can bring this in.
+
+00:45:06.900 --> 00:45:12.180
+Yeah, so ChatDpt is telling me about $30,000 if I don't do any optimization.
+
+00:45:13.300 --> 00:45:17.340
+When we see this in practice, people turn it off on the weekends, sometimes at night,
+
+00:45:17.540 --> 00:45:18.280
+sometimes not.
+
+00:45:18.700 --> 00:45:18.860
+Yeah.
+
+00:45:20.200 --> 00:45:21.920
+But like tens of thousands of dollars is typical.
+
+00:45:22.320 --> 00:45:27.960
+Yeah, it's expensive, but it's also, it's rarely what people actually want to use because
+
+00:45:28.160 --> 00:45:32.440
+so much you're like, "Oh, I want to try," you know, sometimes you're like, "Oh, I have
+
+00:45:32.440 --> 00:45:37.080
+an idea. I want to try this experiment with like 10 different parameters. I want to search over
+
+00:45:37.760 --> 00:45:42.720
+some things. And you're like, okay, I got to do it. You know, that's going to take me 10 days now
+
+00:45:42.880 --> 00:45:50.860
+because I got to run it one at a time. There's so much of like, I want to just try something
+
+00:45:51.380 --> 00:45:57.520
+that the one big machine doesn't let you easily do. Sure. And if someone else is trying that
+
+00:45:57.540 --> 00:46:02.160
+experiment right right and then there's also like or i ran something that you know made it crash
+
+00:46:03.800 --> 00:46:06.920
+and then you're like call your devops person can you restart the
+
+00:46:08.960 --> 00:46:13.420
+yeah or you just ran something that took way longer than you thought it would and you blocked
+
+00:46:13.720 --> 00:46:19.260
+it unintentionally right for zero little value yeah i'll add some other other things or you wanted to
+
+00:46:19.260 --> 00:46:25.120
+use a gpu or you wanted to now put that thing into production where it's running every day rather than
+
+00:46:25.140 --> 00:46:30.500
+you pressing a cell in jupiter or you wanted to use cursor rather than use jupiter there's like
+
+00:46:30.600 --> 00:46:36.020
+there's many ways in which the like the big jupiter server on the cloud it's just like not
+
+00:46:37.020 --> 00:46:42.920
+it like it technically satisfies the requirement of running code in the cloud but just so much more
+
+00:46:43.060 --> 00:46:48.240
+that we do as data professionals we run things in production we run things in different hardware
+
+00:46:48.260 --> 00:46:56.360
+we develop in new ways. We experiment. And the job description is a lot more variable than that
+
+00:46:56.670 --> 00:47:03.140
+single machine is able to satisfy. Look at cars on the road. They're not all Honda Accords. You
+
+00:47:03.200 --> 00:47:08.000
+got semi trucks, you got bicycles, you got pedestrians. We live in a world where we actually
+
+00:47:08.140 --> 00:47:13.060
+need a lot of different kinds of things. It's that variety that's actually really a core part of the
+
+00:47:12.880 --> 00:47:15.240
+cloud. That variety is something that we really care about.
+
+00:47:16.960 --> 00:47:19.020
+Yeah, and it's very true to the data science
+
+00:47:20.760 --> 00:47:25.220
+ethos, right? Like, we're going to experiment, we're going to explore, we're going to play,
+
+00:47:25.520 --> 00:47:30.560
+and if that becomes seamless, I mean, one of the problems is, I went to experiment,
+
+00:47:32.180 --> 00:47:37.640
+but it's going to take seven hours on my local machine. Could I ask that question and get an
+
+00:47:37.580 --> 00:47:43.040
+in a certain five minutes if I'm willing to pay 10 bucks or my company's willing to pay
+
+00:47:43.200 --> 00:47:44.000
+10 bucks or something, right?
+
+00:47:44.220 --> 00:47:45.940
+Well, it's going to cost 10 bucks either way.
+
+00:47:46.160 --> 00:47:50.500
+It's going to cost either 10 bucks of machine time over a week or 10 bucks of machine time
+
+00:47:50.580 --> 00:47:52.640
+over five minutes just with a thousand machines.
+
+00:47:55.100 --> 00:47:57.520
+And so I think you used a great word there, Michael, which is play.
+
+00:47:58.280 --> 00:48:05.060
+I think a lot of why Python became popular is that it feels like play often.
+
+00:48:05.700 --> 00:48:10.700
+like we're given these libraries that are both easy to use and powerful and that and that feels
+
+00:48:10.820 --> 00:48:14.100
+like play we get to like oh this is a cool this is a cool squat gun i can press this button and
+
+00:48:14.240 --> 00:48:21.100
+water shoots i can go shoot my friends isn't that fun right and if you look at using the boto library
+
+00:48:21.180 --> 00:48:26.260
+in aws that does not feel like play if you go thinking about writing yaml and kubernetes that
+
+00:48:26.300 --> 00:48:32.840
+does not feel like play like here today we got to play with making 2 000 vms half arm half intel
+
+00:48:32.920 --> 00:48:36.560
+half on the u.s east coast half on the west coast and we didn't do any work with them but like we
+
+00:48:36.620 --> 00:48:43.180
+could have and now suddenly the cloud is like play and you just do different things when things become
+
+00:48:43.300 --> 00:48:51.360
+playful you do you behave differently and that's really the fun thing um folks have fun um yeah and
+
+00:48:51.390 --> 00:48:59.120
+the cloud is a really fun tool to use once you get past all the pain i i agree you know when you first
+
+00:48:59.210 --> 00:49:02.820
+hear about it you're like wow what can i do with this but then you get into working with bodo
+
+00:49:02.840 --> 00:49:05.400
+and you just kind of want to stop.
+
+00:49:07.100 --> 00:49:07.440
+You do.
+
+00:49:08.600 --> 00:49:11.920
+Matt, you probably spend more time with Modo than any of us.
+
+00:49:13.940 --> 00:49:15.480
+You take one for the team, for all of us.
+
+00:49:15.530 --> 00:49:15.640
+Thanks.
+
+00:49:16.080 --> 00:49:16.160
+Yeah.
+
+00:49:17.110 --> 00:49:19.880
+A lot of reading API docs so that you don't have to.
+
+00:49:20.880 --> 00:49:20.960
+Yeah.
+
+00:49:21.820 --> 00:49:21.960
+All right.
+
+00:49:22.010 --> 00:49:23.400
+So two questions here.
+
+00:49:23.780 --> 00:49:24.940
+One, we've started these clusters.
+
+00:49:25.490 --> 00:49:26.440
+Are both still running?
+
+00:49:26.980 --> 00:49:27.960
+Is one just still running?
+
+00:49:28.680 --> 00:49:35.240
+if I do this in a notebook, how do I ensure that it does shut down, that I don't let it run for too
+
+00:49:35.420 --> 00:49:40.460
+long, like unnecessarily long, right? What's the workflow with that? Yeah. So broadly,
+
+00:49:40.610 --> 00:49:44.140
+how do we constrain costs? I know we make sure that things are as low cost as possible. Yeah.
+
+00:49:44.900 --> 00:49:50.080
+So one already auto shut down. So we weren't using it. Coil saw we weren't using it. It shut
+
+00:49:50.160 --> 00:49:54.000
+it down. We can bring it up again. It takes a minute. So it's easy to bring things back up and
+
+00:49:54.000 --> 00:49:54.120
+down.
+
+00:49:55.100 --> 00:49:57.600
+If you wanted to stay up, there's keywords to control all that.
+
+00:49:57.820 --> 00:50:00.120
+But default behavior is to shut things down pretty aggressively.
+
+00:50:01.280 --> 00:50:02.100
+The other one is still up.
+
+00:50:02.180 --> 00:50:03.440
+We can go do things with it if you like.
+
+00:50:03.920 --> 00:50:04.180
+Yeah.
+
+00:50:04.680 --> 00:50:07.500
+Could you set timeouts in the cluster when you create it?
+
+00:50:07.640 --> 00:50:08.560
+Yeah, 100%.
+
+00:50:09.020 --> 00:50:09.180
+Yeah.
+
+00:50:10.000 --> 00:50:10.960
+Like idle timeouts.
+
+00:50:11.200 --> 00:50:11.280
+Yeah.
+
+00:50:11.780 --> 00:50:13.200
+Typically what we do is people--
+
+00:50:13.600 --> 00:50:15.260
+if people do want to have something that sort of sits
+
+00:50:15.400 --> 00:50:17.700
+around for a while, they'll set an idle timeout,
+
+00:50:17.800 --> 00:50:18.580
+and they'll give it a name.
+
+00:50:19.260 --> 00:50:20.660
+And at the top of their script, it'll say, hey,
+
+00:50:21.220 --> 00:50:28.440
+my cluster named prod or whatever and has an idle timeout of an hour make sure that exists and if it
+
+00:50:28.480 --> 00:50:33.500
+doesn't exist we'll bring it up if it does exist we'll connect you to it um and that that behavior
+
+00:50:33.660 --> 00:50:39.220
+works that's cool so you can do things like restart my kernel in notebooks and then just like
+
+00:50:39.440 --> 00:50:45.780
+reattach to it rather than well now i have 7 000 server clusters how'd that happen that's the
+
+00:50:45.980 --> 00:50:50.260
+opposite of what you're preaching here yeah sometimes if you do want to change your code
+
+00:50:50.260 --> 00:50:54.800
+if you're working like when I work on Dask sometimes and I like need to put a print statement
+
+00:50:55.370 --> 00:50:59.380
+into some code because I want to see what's happening on my cluster at that point I'll then
+
+00:50:59.580 --> 00:51:05.340
+recreate a new cluster because I need my code to be re-pushed up but I can go to the logs and I can
+
+00:51:05.340 --> 00:51:08.160
+look at all my print statements are and they're there and like oh that wasn't quite right I'll
+
+00:51:08.220 --> 00:51:12.380
+change my print statement make a new cluster one minute later things are up again again that sort
+
+00:51:12.380 --> 00:51:19.060
+of minute long thing is not perfect I wish it was a second but like a minute does tend to be within
+
+00:51:19.080 --> 00:51:21.780
+and the dev cycle tolerance of a lot of humans.
+
+00:51:22.760 --> 00:51:23.060
+Yeah.
+
+00:51:24.620 --> 00:51:25.880
+And you asked for-- I was just thinking,
+
+00:51:26.120 --> 00:51:29.040
+how could you preload these types of things?
+
+00:51:29.300 --> 00:51:32.560
+Like, at some point, you could have just 1,000 machines
+
+00:51:32.860 --> 00:51:35.520
+hanging around, like a pool you hand out.
+
+00:51:35.980 --> 00:51:38.720
+But as we've been going through, you have all these variations.
+
+00:51:38.960 --> 00:51:40.620
+I want an ARM one.
+
+00:51:40.640 --> 00:51:41.420
+I want an x86.
+
+00:51:41.580 --> 00:51:42.480
+I want one with the GPU.
+
+00:51:42.580 --> 00:51:43.740
+I want one with this GPU.
+
+00:51:43.740 --> 00:51:44.660
+I want it in that region.
+
+00:51:45.100 --> 00:51:47.840
+That makes it really hard to completely just have a whole bunch,
+
+00:51:48.180 --> 00:51:50.120
+like a fleet of them ready to just hand out, you know?
+
+00:51:50.320 --> 00:51:53.040
+So much of what we try to do is like play that balance
+
+00:51:53.380 --> 00:51:57.960
+between speed and flexibility and low cost, right?
+
+00:51:58.020 --> 00:51:59.520
+So like the more you keep things sitting around,
+
+00:51:59.820 --> 00:52:00.840
+the more you're paying for them.
+
+00:52:03.360 --> 00:52:04.960
+Yeah, I think we've got like,
+
+00:52:05.480 --> 00:52:08.540
+if you can get it faster than someone can go get a cup of coffee,
+
+00:52:09.600 --> 00:52:11.580
+that seems to be a much better experience.
+
+00:52:12.640 --> 00:52:13.620
+Yeah, that seems fair.
+
+00:52:13.660 --> 00:52:16.780
+And also if you can get it faster than your experiment
+
+00:52:16.860 --> 00:52:17.800
+is going to take to run.
+
+00:52:18.120 --> 00:52:18.200
+Yeah.
+
+00:52:18.830 --> 00:52:20.060
+- Right, then it's kind of--
+
+00:52:20.730 --> 00:52:23.240
+- Yeah, you would not use Coiled to like backup
+
+00:52:23.880 --> 00:52:26.280
+a web API endpoint that has to get back to human
+
+00:52:26.470 --> 00:52:27.140
+in response time.
+
+00:52:27.370 --> 00:52:28.720
+You should go use Lambda, you should use modal,
+
+00:52:28.730 --> 00:52:29.520
+you should go use something else.
+
+00:52:29.800 --> 00:52:29.860
+- Yeah.
+
+00:52:30.380 --> 00:52:32.920
+- You should use Coiled when you're using enough hardware
+
+00:52:33.140 --> 00:52:34.180
+that it would be prohibitively expensive.
+
+00:52:34.580 --> 00:52:36.220
+Like you actually don't wanna have a pool
+
+00:52:36.280 --> 00:52:37.420
+of a thousand machines sitting around
+
+00:52:37.780 --> 00:52:38.760
+just in case someone wants them.
+
+00:52:39.180 --> 00:52:40.200
+That doesn't make sense.
+
+00:52:41.280 --> 00:52:43.660
+You should use Coiled when you have these other
+
+00:52:44.520 --> 00:52:45.580
+larger things to do.
+
+00:52:46.130 --> 00:52:46.540
+And again, I think,
+
+00:52:47.440 --> 00:52:48.800
+It sounded like I got back into pitch mode.
+
+00:52:49.380 --> 00:52:51.480
+The point I wanted to talk about here isn't use coiled,
+
+00:52:51.840 --> 00:52:54.760
+it's the cloud actually has these capabilities.
+
+00:52:55.040 --> 00:52:57.820
+You can get a thousand VMs anywhere in the world
+
+00:52:57.940 --> 00:53:01.220
+with any hardware type you like for dollars.
+
+00:53:02.840 --> 00:53:04.480
+And that's actually an incredible capability
+
+00:53:05.540 --> 00:53:06.420
+if you can do it right.
+
+00:53:06.810 --> 00:53:11.920
+I think today the zeitgeist is go use Kubernetes
+
+00:53:12.780 --> 00:53:14.220
+and we just think that's dead wrong.
+
+00:53:14.760 --> 00:53:16.780
+The answer is just go use raw VMs.
+
+00:53:17.440 --> 00:53:20.800
+They're actually pretty good if you do a few things around them,
+
+00:53:20.800 --> 00:53:22.000
+if you figure out software environments,
+
+00:53:22.170 --> 00:53:23.460
+if you figure out how to sort of batch requests,
+
+00:53:23.800 --> 00:53:25.820
+if you're out of the logs, you're out of low cost.
+
+00:53:26.400 --> 00:53:26.460
+- Yeah.
+
+00:53:26.540 --> 00:53:30.480
+- But like this is, I think, actually the right foundation,
+
+00:53:31.070 --> 00:53:35.280
+I think, like the raw VM is maybe the right foundation
+
+00:53:35.910 --> 00:53:37.020
+for a lot of data work.
+
+00:53:39.220 --> 00:53:43.100
+- Yeah, how about just pick a library and infrastructure
+
+00:53:43.400 --> 00:53:45.620
+that's exceptionally tuned to,
+
+00:53:45.800 --> 00:53:47.260
+I need to start them as fast as possible,
+
+00:53:47.430 --> 00:53:50.040
+run it one job and shut it back down.
+
+00:53:50.530 --> 00:53:52.680
+And I don't think serverless in the AWS sense
+
+00:53:53.460 --> 00:53:54.540
+is really gonna be the way
+
+00:53:54.680 --> 00:53:56.280
+'cause serverless gets expensive
+
+00:53:56.450 --> 00:53:57.420
+if you have too much compute.
+
+00:53:58.720 --> 00:54:00.060
+Just ask Kara.ai, right?
+
+00:54:01.620 --> 00:54:03.720
+That's the $96,000 verse sale bill.
+
+00:54:06.390 --> 00:54:08.220
+- Yeah, serverless, Lambda and similar technologies
+
+00:54:08.470 --> 00:54:11.660
+typically have like a four to five X premium on cost.
+
+00:54:12.560 --> 00:54:15.260
+They'll several limitations like you can't get big machines,
+
+00:54:15.460 --> 00:54:17.680
+can't get GPUs, your software environments
+
+00:54:17.820 --> 00:54:19.640
+have to be of a certain size.
+
+00:54:19.980 --> 00:54:20.860
+They can time out, right?
+
+00:54:21.660 --> 00:54:21.800
+Yeah.
+
+00:54:22.140 --> 00:54:22.880
+They can time out.
+
+00:54:24.560 --> 00:54:28.400
+But mostly we see people who want to run their Polars job,
+
+00:54:28.640 --> 00:54:30.900
+not with 16 cores, but with 64 cores.
+
+00:54:31.400 --> 00:54:32.540
+Like, Lambda isn't going to cut it.
+
+00:54:34.040 --> 00:54:37.800
+And so you just want the full flexibility of the cloud.
+
+00:54:39.840 --> 00:54:40.800
+Yeah, absolutely.
+
+00:54:41.380 --> 00:54:43.240
+What's a typical size?
+
+00:54:43.420 --> 00:54:46.600
+I mean, you created a thousand, you guys, and that's super impressive.
+
+00:54:47.280 --> 00:54:48.080
+But is that common?
+
+00:54:50.380 --> 00:54:51.820
+Nat, can you talk about, I think.
+
+00:54:52.720 --> 00:54:52.920
+Yeah.
+
+00:54:53.500 --> 00:54:54.760
+I mean, we see all sorts of things.
+
+00:54:54.900 --> 00:54:56.780
+So this is like, you give people a flexible tool.
+
+00:54:56.960 --> 00:54:59.500
+It turns out they use it in so many different ways.
+
+00:55:02.260 --> 00:55:08.080
+We actually have, like, we were a little bit surprised to find how many people were doing things on one VM.
+
+00:55:09.320 --> 00:55:11.580
+So we had a whole bunch of users.
+
+00:55:11.960 --> 00:55:17.920
+And this sounds less exciting, but who would just have individual scripts that they needed
+
+00:55:17.980 --> 00:55:19.300
+to run on a Cloud VM.
+
+00:55:19.680 --> 00:55:23.600
+And this is the easiest way to do that whenever you need to.
+
+00:55:23.860 --> 00:55:31.120
+Yeah, you get a lot of benefits of that that maybe don't fit the mold.
+
+00:55:32.300 --> 00:55:37.799
+But here, I can put a decorator on a function, and this function runs on a big machine in
+
+00:55:37.820 --> 00:55:43.880
+the cloud right next door to the storage in S3 where the parquet file lives or something like
+
+00:55:43.880 --> 00:55:48.220
+that. It has more memory than, I don't have enough memory, but this one has enough memory or whatever.
+
+00:55:49.060 --> 00:55:54.540
+And that's actually pretty neat. Yeah. And then we have other users who are making multi-thousand
+
+00:55:54.660 --> 00:56:01.640
+node clusters. And that's a whole different set of challenges. At that scale, you start actually
+
+00:56:01.660 --> 00:56:07.900
+hitting cloud limits of capacity and you have to do tricks like basically using multiple,
+
+00:56:09.600 --> 00:56:12.840
+they're called availability zones in AWS, like multiple data centers.
+
+00:56:14.680 --> 00:56:19.060
+Can one of these clusters span availability zones or regions even?
+
+00:56:19.840 --> 00:56:27.740
+So we don't span regions with a single cluster today. We haven't found people needing that scale.
+
+00:56:28.800 --> 00:56:34.220
+and that oh that's yet a new set of challenges but yeah we very commonly do
+
+00:56:35.120 --> 00:56:42.020
+multi-availability zone clusters um this is matt's matt's pulling up some docs and examples but
+
+00:56:42.560 --> 00:56:48.600
+something that this is actually really nice pairing with is if you want big spot clusters um
+
+00:56:50.900 --> 00:56:57.500
+spot can be really cheap but it can also there isn't as much availability of it because it's so
+
+00:56:57.340 --> 00:57:04.360
+cheap. So this works really nicely. I'll say like all of these things, sorry, my life is all about
+
+00:57:04.420 --> 00:57:10.680
+like trade-offs and edge cases. So all of these things have like, you got to be careful not to do
+
+00:57:10.680 --> 00:57:18.200
+it in the wrong way. So with availability zones, one kind of gotcha is you pay for moving data
+
+00:57:19.240 --> 00:57:27.300
+between availability zones. Right. So a simple read parquet file that happens to go across its
+
+00:57:27.380 --> 00:57:30.860
+you do that a bunch of times all of a sudden you know across a thousand machines with back and
+
+00:57:30.980 --> 00:57:36.120
+forth it's like whoa there's your surprise well it's tricky actually because reed parquet is fine
+
+00:57:36.480 --> 00:57:40.540
+because parquet is probably on s3 and s3 crosses all of the availability zones in a region
+
+00:57:40.960 --> 00:57:45.540
+okay but if one machine loads data on one availability zone then transfer it to another
+
+00:57:45.680 --> 00:57:53.020
+machine another availability zone then you pay and people don't know that yeah i mean things like if
+
+00:57:52.920 --> 00:57:57.900
+you need to shuffle or sort your data set, but also just like if you're doing naive things in
+
+00:57:57.960 --> 00:58:05.040
+terms of like pulling back your data all through one machine. And so part of what we do is like
+
+00:58:05.300 --> 00:58:10.520
+make it make it easy to control that. It's, you know, it's like, again, one parameter, you can say,
+
+00:58:10.600 --> 00:58:18.680
+I do want multiple AZs, I don't want multiple AZs. But then giving people like, you can look at
+
+00:58:18.600 --> 00:58:25.180
+network metrics to see, oh, I think my workload is embarrassingly parallel, so this is fine.
+
+00:58:26.100 --> 00:58:32.360
+Let's take a look at metrics and see, oh yeah, this workload makes sense to span AZs, get more
+
+00:58:32.580 --> 00:58:38.780
+spots, save more money that way. This workload, we want to keep this in a single AZ. We're going to
+
+00:58:38.780 --> 00:58:44.880
+let AWS pick it so that they pick the one that's cheapest and has the best availability. And that's
+
+00:58:44.860 --> 00:58:50.820
+stuff that we like automatically do um i want to double down on that for a second i think i think
+
+00:58:50.960 --> 00:58:56.320
+spot is a good example of like this is one of a hundred things you have to do well i think a lot
+
+00:58:56.440 --> 00:59:02.220
+of what what we found is that like do using the cloud well isn't doing one big thing right it's
+
+00:59:02.220 --> 00:59:07.820
+not like one magical thing that's done there's a long tail of a lot of small things to get right
+
+00:59:08.000 --> 00:59:13.260
+there's a lot of nuance a lot of polish spot's a good example so we were running benchmarks
+
+00:59:13.300 --> 00:59:17.840
+internally and they were costing us some money, like our own like DASC benchmarks back in the
+
+00:59:17.980 --> 00:59:22.940
+DASC focus days. And it was like, great, we'll switch to spot. Easy to do. And the engineers
+
+00:59:23.200 --> 00:59:28.860
+hated it. The DASC engineers hated it because all the benchmarks became very variable. Because they
+
+00:59:28.880 --> 00:59:33.380
+asked for 100 machines, but they got 70. Or they asked for, or like machines would go away.
+
+00:59:34.320 --> 00:59:39.720
+And so we did a few things. One is what I said before, the sort of falling back to on demand.
+
+00:59:40.320 --> 00:59:44.580
+okay if you only have 70 machines that's okay give me 70 spot and i'll pay full price for 30.
+
+00:59:45.440 --> 00:59:51.180
+that's a feature people really like another one is availability zones right so at any given hour of
+
+00:59:51.180 --> 00:59:58.960
+the day a different data center in us east one has more or less spot availability or gpu availability
+
+00:59:59.940 --> 01:00:04.620
+and so we will we'll we'll look at all of them and say okay this is the data center this is
+
+01:00:04.640 --> 01:00:09.660
+availability zone that's got the most available right now and so we'll go to that one and we'll
+
+01:00:09.520 --> 01:00:10.340
+we'll pull from there instead.
+
+01:00:11.120 --> 01:00:15.480
+There's things like that, that are known to cloud experts,
+
+01:00:16.040 --> 01:00:17.160
+but are just like not something
+
+01:00:17.360 --> 01:00:18.980
+your average data person knows to think about.
+
+01:00:19.720 --> 01:00:20.500
+And those are the kinds of things
+
+01:00:20.640 --> 01:00:22.520
+that you should abstract away and that we do.
+
+01:00:23.300 --> 01:00:24.760
+And there's a hundred similar things.
+
+01:00:25.650 --> 01:00:27.440
+And so again, if you wanna get GPUs,
+
+01:00:28.010 --> 01:00:29.760
+you gotta make sure you're looking at across the region.
+
+01:00:30.460 --> 01:00:31.820
+But if those GPUs are gonna talk to each other,
+
+01:00:32.430 --> 01:00:33.640
+you gotta make sure you're looking across the region
+
+01:00:33.820 --> 01:00:37.500
+and then focus on exactly one AZ and not go across.
+
+01:00:38.400 --> 01:00:39.660
+So there's a lot of sort of this interesting,
+
+01:00:40.260 --> 01:00:42.540
+sort of again, nuance to doing this stuff well.
+
+01:00:43.420 --> 01:00:45.500
+- Right, if the machines become chatty with each other,
+
+01:00:45.960 --> 01:00:47.380
+you want them all next to each other.
+
+01:00:47.839 --> 01:00:50.260
+- Yeah, it's like, it's a thousand X more expensive than,
+
+01:00:50.780 --> 01:00:52.760
+and I'm saying a thousand X without hyperbole.
+
+01:00:52.990 --> 01:00:54.500
+Like you can process data.
+
+01:00:54.940 --> 01:00:55.020
+- Yeah.
+
+01:00:56.820 --> 01:00:58.080
+- A thousand times cheaper on a machine
+
+01:00:58.260 --> 01:00:59.360
+than you can transfer it between machines.
+
+01:01:00.159 --> 01:01:01.960
+- Compute tends to be like
+
+01:01:02.700 --> 01:01:04.580
+a fairly predictable part of the cost.
+
+01:01:04.780 --> 01:01:06.540
+It's all of these other things that you like,
+
+01:01:06.700 --> 01:01:12.640
+You don't even think about, you know, like, oh, if I flip this setting, now I'm hitting
+
+01:01:12.690 --> 01:01:15.920
+this S3 API a lot.
+
+01:01:15.930 --> 01:01:19.460
+And it turns out you pay per API call.
+
+01:01:19.530 --> 01:01:22.960
+I didn't know that until that was $1,000.
+
+01:01:23.600 --> 01:01:26.860
+There was a XGBoost debug log example.
+
+01:01:27.090 --> 01:01:29.100
+Do you want to run through that?
+
+01:01:29.640 --> 01:01:30.160
+Yeah.
+
+01:01:30.700 --> 01:01:37.500
+I mean, logs is another thing that most of the time that's effectively zero money. But then
+
+01:01:38.640 --> 01:01:44.020
+we do things at the scale where someone was running a thousand node cluster, I think needed to...
+
+01:01:44.020 --> 01:01:50.300
+They had something that wasn't working well, so they turned on debug-level logging. And it gave
+
+01:01:50.980 --> 01:01:59.500
+very chatty logs. And I think it was like a $15,000 bill. And that's the sort of thing that
+
+01:01:59.420 --> 01:02:07.300
+like you just it's not even in your mind is a possibility until you until you see that um
+
+01:02:08.800 --> 01:02:14.320
+that that had a happy ending because we talked to aws and and they ended up eating that cost for
+
+01:02:14.400 --> 01:02:19.020
+the customer but um also that lesson if you talk to aws yeah give you money back
+
+01:02:21.380 --> 01:02:26.960
+yeah just don't keep crossing those boundaries too many times yeah i mean right and part of that was
+
+01:02:26.860 --> 01:02:31.960
+was like, what controls are you putting in place so this doesn't happen again? And so we do some
+
+01:02:32.140 --> 01:02:38.560
+things to like, now we warn if we see you have very chatty logs, we say, hey, you might want to turn
+
+01:02:38.600 --> 01:02:48.420
+this down. Yeah, absolutely. So when I create a coiled cluster locally, and it's going to go do
+
+01:02:48.480 --> 01:02:54.880
+all the magic that we've been talking about, what is the payment workflow? How is it distributed?
+
+01:02:55.080 --> 01:02:58.740
+Do I have an AWS account that I register my card with AWS?
+
+01:02:59.680 --> 01:03:03.840
+And then Coiled uses that account, and there's some kind of fee to Coiled,
+
+01:03:03.860 --> 01:03:07.220
+but then mostly I pay directly to AWS, or do I pay you all,
+
+01:03:07.720 --> 01:03:10.440
+and then you all hand, like, what does this look like?
+
+01:03:10.760 --> 01:03:17.840
+Yeah, so, I mean, we do have a kind of trial thing that will run in our account,
+
+01:03:18.060 --> 01:03:24.680
+but primarily what we provide and what people want is running compute in their cloud account.
+
+01:03:25.560 --> 01:03:39.480
+And we do that in part because it's simpler, but we also do it because a lot of people have their own data in their own account or they have security requirements or special networking needs.
+
+01:03:39.920 --> 01:03:43.800
+Maybe special arrangements with pricing if they're a big customer.
+
+01:03:43.800 --> 01:03:50.600
+Sure, yeah. So if they have contracts with AWS, they will just use whatever that discount is.
+
+01:03:51.320 --> 01:03:51.480
+Okay.
+
+01:03:51.760 --> 01:04:05.120
+The flip side of that is people might have AWS accounts, or we have plenty of people who just see that Coiled uses AWS and they sign up for a new one, and they don't know how to go in and set that up.
+
+01:04:07.099 --> 01:04:20.800
+So something that is actually kind of cool that we do that really isn't part of running clusters but is a necessary thing to do is make that setup really easy.
+
+01:04:20.980 --> 01:04:29.520
+so part of what we're doing is, you know, using some like best practices around how to,
+
+01:04:29.960 --> 01:04:36.980
+how to manage those credentials, how to set up the networking resources, in ways that,
+
+01:04:37.520 --> 01:04:43.580
+you know, don't have a standing cost, but are secure. there's all sorts of things that like
+
+01:04:44.800 --> 01:04:50.200
+people, if you're a data scientist, you don't want to, you don't have to think about NAT gateways.
+
+01:04:51.180 --> 01:04:51.620
+and
+
+01:04:52.760 --> 01:04:54.680
+you know we think about that stuff
+
+01:04:55.010 --> 01:04:56.860
+we NAT gateways are like
+
+01:04:57.040 --> 01:04:58.920
+one of the famous ways to spend
+
+01:04:59.000 --> 01:05:00.040
+a lot of money on AWS
+
+01:05:02.780 --> 01:05:04.560
+so we'll you know set up the network
+
+01:05:04.810 --> 01:05:06.880
+in a way that is secure but doesn't
+
+01:05:07.000 --> 01:05:07.760
+use NAT gateways
+
+01:05:09.080 --> 01:05:10.600
+and we do that automatically
+
+01:05:10.730 --> 01:05:11.640
+we do that we have a
+
+01:05:13.080 --> 01:05:14.700
+we have a web UI
+
+01:05:14.910 --> 01:05:16.700
+for that and we have I really like
+
+01:05:16.900 --> 01:05:18.460
+it because I worked on this we have this like
+
+01:05:19.940 --> 01:05:20.380
+lovely
+
+01:05:20.940 --> 01:05:24.900
+CLI tool that does that setup for you, has a lot of rich widgets.
+
+01:05:26.120 --> 01:05:26.520
+Nice.
+
+01:05:28.000 --> 01:05:33.900
+And so it's, yeah, trying to make that whole thing so that, in my mind, it's very important
+
+01:05:33.920 --> 01:05:37.500
+to make the easy case easy, but make the hard case possible.
+
+01:05:38.060 --> 01:05:43.200
+So if you don't know all of this cloud stuff and you just want us to give you sensible
+
+01:05:43.600 --> 01:05:44.800
+defaults, we'll do that.
+
+01:05:45.880 --> 01:05:56.920
+If you are a data engineer who your company is giving you a whole bunch of requirements for how the network is configured, we can support that.
+
+01:05:58.160 --> 01:06:04.900
+I think a big design consideration we're making, Nat and I actually collaborated a bunch of them on the setup process.
+
+01:06:05.580 --> 01:06:07.840
+It's like the setup process is something that we care very deeply about.
+
+01:06:08.460 --> 01:06:14.520
+We would go to conferences and just sit down with just like run-of-the-mill new Python
+
+01:06:14.980 --> 01:06:18.560
+data developers and say, "Cool, can you set up?"
+
+01:06:18.760 --> 01:06:19.940
+And we would have them do it.
+
+01:06:20.060 --> 01:06:22.640
+And they had no idea how the cloud account worked, but at some point some of the company
+
+01:06:22.690 --> 01:06:24.780
+had given them some AWS credentials file.
+
+01:06:25.759 --> 01:06:27.140
+And all of that will work.
+
+01:06:27.560 --> 01:06:32.040
+You can say, "Pip install coiled, coiled set up," and just press enter a few times, and
+
+01:06:32.050 --> 01:06:33.860
+we will set things up for you in a way that is sensible.
+
+01:06:35.440 --> 01:06:40.240
+I think we make the cloud accessible to people who don't really know how the cloud works
+
+01:06:40.460 --> 01:06:40.820
+that well.
+
+01:06:41.850 --> 01:06:44.860
+So if you're thinking like, oh, I'm a person who knows pandas and numpy and cycler and
+
+01:06:44.860 --> 01:06:47.220
+I happen to have this cloud account, you should try out Coiled.
+
+01:06:47.700 --> 01:06:49.560
+Coiled is actually designed for you.
+
+01:06:49.820 --> 01:06:51.280
+It's not designed for your IT department.
+
+01:06:51.970 --> 01:06:53.760
+But as Nat said, Nat talks lots of IT departments.
+
+01:06:54.220 --> 01:06:54.820
+They love us too.
+
+01:06:55.540 --> 01:06:58.540
+But the UX around that is especially smooth.
+
+01:06:59.980 --> 01:07:01.760
+Yeah, it looks really great.
+
+01:07:03.740 --> 01:07:06.260
+All right, guys, we are pretty much out of time.
+
+01:07:08.160 --> 01:07:14.820
+Final thoughts for folks out there before they get to the end of the show,
+
+01:07:15.140 --> 01:07:16.140
+maybe they want to try Coiled,
+
+01:07:16.320 --> 01:07:21.340
+maybe they want to try their own crack at something like this for their team or?
+
+01:07:23.360 --> 01:07:23.720
+What do you think?
+
+01:07:23.800 --> 01:07:26.180
+Yeah, I mean, the standard called actions that go to Coiled.io,
+
+01:07:26.360 --> 01:07:27.720
+it's easy to use, have a good time.
+
+01:07:28.440 --> 01:07:29.420
+I think more broadly,
+
+01:07:29.620 --> 01:07:30.420
+the thing I want to say is like,
+
+01:07:31.860 --> 01:07:37.540
+the cloud provides a promise that is great for us,
+
+01:07:38.480 --> 01:07:40.700
+but isn't actually delivered that well.
+
+01:07:41.240 --> 01:07:43.520
+And they shouldn't accept or tolerate
+
+01:07:44.240 --> 01:07:47.180
+the like kind of shitty data platform.
+
+01:07:47.320 --> 01:07:51.240
+Like this can be a delightful and a very powerful tool
+
+01:07:51.980 --> 01:07:52.740
+for the data space.
+
+01:07:53.620 --> 01:07:56.120
+And if it's not, maybe don't use Coil,
+
+01:07:56.120 --> 01:07:59.580
+but use something and like have high expectations
+
+01:07:59.620 --> 01:08:05.800
+expectations. We should have a degree of tastes and a degree of standard. And we can meet that
+
+01:08:06.010 --> 01:08:09.420
+standard. I think there's actually a lot that we can do here. There's a lot of potential
+
+01:08:10.200 --> 01:08:10.860
+that's really exciting.
+
+01:08:11.530 --> 01:08:12.620
+Yeah, absolutely.
+
+01:08:14.300 --> 01:08:14.540
+Matt?
+
+01:08:15.940 --> 01:08:21.700
+Yeah, all of that sounds right to me. I will report, I think this message of it is okay
+
+01:08:21.930 --> 01:08:29.580
+to be unhappy and things are supposed to be delightful is important to us. I spend a lot
+
+01:08:29.600 --> 01:08:35.100
+of time being unhappy, hopefully so that other people will be able to have delightful experiences.
+
+01:08:35.540 --> 01:08:36.480
+Yeah, absolutely.
+
+01:08:36.950 --> 01:08:37.080
+Absolutely.
+
+01:08:37.450 --> 01:08:38.359
+It should be delightful.
+
+01:08:38.470 --> 01:08:43.640
+It sounds delightful and it's created and it's gotten really complex, but it doesn't have
+
+01:08:43.640 --> 01:08:43.819
+to be.
+
+01:08:44.040 --> 01:08:50.020
+I guess maybe a lesson I learned from this is use tools optimized for data science workloads.
+
+01:08:50.740 --> 01:08:56.440
+Don't use tools optimized for long-running web apps and other things like that that you
+
+01:08:56.490 --> 01:08:59.100
+hear about all the time, but they're not for you necessarily.
+
+01:09:00.799 --> 01:09:01.880
+- Yeah, and it can be a delightful experience.
+
+01:09:02.020 --> 01:09:03.839
+I like the term, like we should all be playing
+
+01:09:04.540 --> 01:09:05.420
+and come by and play.
+
+01:09:05.960 --> 01:09:07.180
+Or again, if you don't use Coil, that's fine,
+
+01:09:07.299 --> 01:09:10.000
+but like there's other ways to do things, go play.
+
+01:09:10.960 --> 01:09:11.859
+- Awesome, all right.
+
+01:09:12.620 --> 01:09:14.680
+Well, we will call it a wrap on the show
+
+01:09:14.779 --> 01:09:15.859
+and people can go play.
+
+01:09:16.940 --> 01:09:17.980
+Guys, thanks for being on the show.
+
+01:09:18.760 --> 01:09:19.880
+It's been really interesting.
+
+01:09:20.200 --> 01:09:23.400
+Cool, and congrats on such a cool company,
+
+01:09:23.460 --> 01:09:25.339
+but also service, this is really neat.
+
+01:09:26.060 --> 01:09:27.200
+- Thanks, Michael, thanks for having us.
+
+01:09:27.279 --> 01:09:28.120
+- Yeah, yeah, you bet.
+
+01:09:28.339 --> 01:09:28.520
+Bye all.
+

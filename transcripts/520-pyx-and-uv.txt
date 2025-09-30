@@ -1,0 +1,1142 @@
+00:00:00 A couple years ago, Charlie Marsh lit a fire under Python tooling with Ruff and then uv.
+
+00:00:05 Today, he's back with something on the other side of that coin, pyx. pyx isn't a PyPI replacement.
+
+00:00:13 Think server, not just index. It mirrors PyPI, plays fine with pip or uv, and aims at making installs faster and predictable by letting a smart client talk to a smart server. When the client and server understand each other like uv and pyx do, you get new fast paths, fewer edge cases, and the kind of reliability teams beg for. If your Python packaging has felt like friction, this conversation is traction. This is Talk Python To Me, episode 520, recorded Tuesday, September 2nd, 2025.
+
+00:01:02 Welcome to Talk Python To Me, a weekly podcast on Python. This is your host, Michael Kennedy.
+
+00:01:07 Follow me on Mastodon, where I'm @mkennedy, and follow the podcast using @talkpython, both accounts over at Fostadon.org, and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows.
+
+00:01:32 This episode is brought to you by Six Feet Up, the Python and AI experts who solve hard software problems. Whether it's scaling an application, driving insights from data, or getting results from AI, Six Feet Up helps you move forward faster. See what's possible with Six Feet Up. Visit talkpython.fm/sixfeetup. Charlie, welcome back to Talk Python.
+
+00:01:55 It's awesome to have you here. I'm glad to be back. It's always a pleasure.
+
+00:01:58 Yes, it is. I want to say, ty, thank you for you to come back. How about that? Last time you were
+
+00:02:03 here, we talked about ty with you and Carl Meyer, right? That was fun. Yes. And we're hard at work.
+
+00:02:08 I mean, I get asked basically every day, but we're hard at work working towards the beta release, which will be soon. We have a date for it internally, but we tend to have a policy of not
+
+00:02:18 sharing deadlines externally. Let us all take AI, that is Apple intelligence, as a deep lesson in corporate history for not getting out over the skis and not releasing.
+
+00:02:30 I mean, they were running like suites of ads about all the feature for Apple intelligence before even the features existed.
+
+00:02:37 And then they had to cancel them, which is a little hard.
+
+00:02:39 So no, I'm here for you.
+
+00:02:41 I'm here with it.
+
+00:02:41 Yeah, I think for us, it's like we put enough pressure on ourselves to get it out.
+
+00:02:45 So we don't need the external pressure to get it out.
+
+00:02:49 But yeah, we do have a deadline set and we're working hard towards it.
+
+00:02:51 A lot of this stuff does happen in GitHub.
+
+00:02:54 So there's ability to like peek over the fence and see what's happening at least, right?
+
+00:02:57 Yes, if you closely watch our GitHub, Nothing is like ever a surprise.
+
+00:03:01 Except for that it is a surprise.
+
+00:03:02 Like Red Knot kind of snuck in there.
+
+00:03:04 That was the original name for ty.
+
+00:03:06 Yeah.
+
+00:03:06 Yeah, exactly.
+
+00:03:07 Up until the day that we did your podcast.
+
+00:03:09 Yes, that's right.
+
+00:03:10 That was awesome.
+
+00:03:11 I think that was literally the day that we changed the name for Red Knot to ty.
+
+00:03:14 And I had to tell you, hey, this is what it's going to be done.
+
+00:03:17 Yeah, I was scrambling like, oh, I got to change my notes.
+
+00:03:19 Like this morning it's renamed.
+
+00:03:21 Okay.
+
+00:03:22 I had to change the title in like the YouTube stream and all that.
+
+00:03:25 That's right.
+
+00:03:26 Well, it ended up being a good forcing function for us because we were basically like, Okay, we have to choose a public name by the time we do the Talk Python show.
+
+00:03:34 I love it. I love it.
+
+00:03:35 Because we don't want to go on and use the code name.
+
+00:03:36 Exactly. It's just too hard to find and replace an audio.
+
+00:03:39 Okay, well, that was really cool.
+
+00:03:42 I think maybe give us the elevator pitch on Charlie Marsh and Astral.
+
+00:03:46 Just who are you? I know most people know you from various ways, but at the same time, there's plenty of listeners who don't.
+
+00:03:51 Yeah, totally. So my name is Charlie. I'm the founder and CEO of Astral.
+
+00:03:56 we build what we call high performance python tooling so we built a couple of different tools you might be familiar with some or all or none of them the first tool we built was called rough it's a python linter a code formatter and it does a lot of code transformation so it tries to like find issues and fix them for you then we built uv which is our python package manager also manages like your python tool chain everything like that it's kind of meant to be you install it and it hopefully takes care of all your packaging and running Python problems. We're also building a tool called ty, which Michael just mentioned, which is our type checker and language server.
+
+00:04:30 It's kind of like an alternative to like mypy, Pyright, also PyLance. So you can use it to check your Python types, all that kind of stuff. I've been working on this stuff for about two and a half, three years. So we try to build Python tooling that hopefully solves a lot of the user experience problems I think that people have when they get started with Python, but also tries to
+
+00:04:49 scale to very large projects. Yeah, it's really interesting. I don't know if people necessarily believed that we had a Python tooling problem. I know they thought we had a packaging problem in the sense that why does Conda and Anaconda exist at all? It's because there were platforms where you basically could not, or it would be very difficult to install a thing, right? Like, oh, do you not have the Fortran compiler? Oh, you do have the Fortran compiler, but it's the new one, not the old. It's like, are you serious? This is the thing I need, But, you know, sometimes there's just weird edge cases.
+
+00:05:22 So I know people knew they had that, but I don't know they necessarily felt they had a performance problem until they saw Ruff and uv and they're like, oh, okay, that's different.
+
+00:05:31 What's the reaction been?
+
+00:05:32 I was a little bit wondering about that question too when I like started working on Ruff, because when I started working on Ruff, I mean, I felt like there was a little bit of a performance problem because I had tried to work on some large projects and they'd struggled a little bit.
+
+00:05:45 And when I released Ruff, I kind of wanted to see like, well, if things are way faster, would people really care? And so I think it's turned out that if I'd asked people at the time if they cared a lot about a faster linter, I think a lot of people would have probably discouraged me from investing a lot of time into that.
+
+00:06:00 It's never going to go anywhere. This will never amount to nothing.
+
+00:06:03 But since then, that's one of the reasons I started working on this stuff full-time is because the interest was just... The adoption was just so fast. And I think a lot of it is with performance, you kind of don't realize that things can be really different until you've experienced it.
+
+00:06:16 Like with uv now, you can install things much, much faster. And if you go back to a different tool, it can be a little bit jarring to be like, oh, wow, that's really different. So it turns out that people actually really, if you can give them a tool that you hope is, one of the things that we look to do a lot was like, we want this to be kind of as close to a drop-in replacement as we can, but also solve some more problems. And so it was like, if we give you a tool that we think is kind of a drop-in replacement, but it's also way faster, the value proposition was really strong.
+
+00:06:43 people are like, well, why wouldn't I use this? I've started adding rough commands to just places that they wouldn't normally exist. Like for normal linting type of operations, like in all of my editors that I work with, like the save or format document is just run ruff on that. I have a permanent rules file for when I'm doing agentic coding that says anything that you touch, run ruff format and rough check dash fix on it. Yeah, me too. And it's like, yeah, that was like one of
+
+00:07:16 the cool things for me was like, it can really change how you use the tool. Like you can run it on a keystroke. Whereas before it was like some expensive heavy step that had to paralyze across all your, like maybe made your machine take off a little bit and like could only run in CI, stuff like that. So yeah, that's been a big part of what we want to try and do.
+
+00:07:33 Yeah. Instead of being something you've got to choose, I'm going to take a moment and do this.
+
+00:07:36 It's just so fast that it can just happen automatically on like file save or on get commit or whatever.
+
+00:07:43 I think that we've learned over time is that the stuff that we're working on, it's not just about performance.
+
+00:07:49 Like I think performance is a great, it's a, anything we build, we want it to be extremely fast and ideally a lot faster than anything else out there.
+
+00:07:56 But we're also trying to solve kind of like other problems.
+
+00:07:58 And I think uv is like a good example of that where yes, performance is a big part of it.
+
+00:08:03 But I think we also have a lot of users where like the performance doesn't really matter.
+
+00:08:07 And what they actually care about is the like the overall experience that we're trying to deliver, which is like you install the thing.
+
+00:08:14 It installs Python for you.
+
+00:08:15 It manages the virtual environment abstraction for you.
+
+00:08:18 It does all these things for you.
+
+00:08:19 And you don't really have to like think and worry about like trying to make a bunch of problems go away.
+
+00:08:23 Sure.
+
+00:08:23 And I think you've done that super well.
+
+00:08:24 I remember when we first talked about uv three episodes ago, maybe before you had come up with the uv lock concept and the package.
+
+00:08:35 It was the uv pip CLI, yeah.
+
+00:08:36 Yeah, exactly.
+
+00:08:37 There was a lot of pushback from people like, why are you not just doing uv install package?
+
+00:08:44 There's like this uv pip install package.
+
+00:08:46 And you and I at the time spoke about how you wanted to save space, like room in the namespace for future work.
+
+00:08:54 I think that came out well, don't you?
+
+00:08:55 I'm really happy with how it played out.
+
+00:08:57 There was a period of time where I almost folded because like when we came out was uv pip install. Everyone was like, can we please not write the pip? Can you just make it uv install? And yeah, the whole thing for us was like, we were saying, well, yeah, but we want uv install. I ended up being, we used the name uv sink, but we were like, we want like a very different CLI, like a totally different experience. And so that's why we're doing that. And at the time when we launched with just the uv pip stuff, I mean, that actually grew quite a lot even before we launched the uv sink like that. And it's still like a fully supported, like first class thing in the in uv but when we came out with that yeah there was a period of time where i was like hey maybe we should consider like getting rid of this because people keep complaining about it but we because we do listen we listen when people have feedback we listen when people yeah of course have criticism but we stuck to it and i think ultimately that was the right decision yeah i do too yeah it just meant that we i think things became clearer too once we launched like that other set of apis like uv sync uv run uv lock because then there was like some contrast And it is still a lot to explain, but we're trying to do a hard thing of like both supporting like all these existing workflows, this huge existing ecosystem and innovate on top of it.
+
+00:10:05 Sure.
+
+00:10:06 Yeah.
+
+00:10:06 We kind of try to support those two worlds and I think we made good decisions there, but yeah, it is.
+
+00:10:11 I'm glad we stuck to it.
+
+00:10:12 Very good.
+
+00:10:13 To me, I was kind of like, I don't get the drama because I don't type any of that stuff anyway.
+
+00:10:19 I have aliases that are way shorter that used to do stuff with pip.
+
+00:10:24 So I edited my RC file and I put a uv space in front of the commands.
+
+00:10:27 I'm like, okay, well, that transformation is done.
+
+00:10:29 We're good to go.
+
+00:10:30 You know what I mean?
+
+00:10:31 That was the goal.
+
+00:10:32 Yeah.
+
+00:10:33 So for me, I actually feel like it kept it pretty straightforward.
+
+00:10:36 But yeah, there was...
+
+00:10:37 But once you came out with the sync concept, the uv tool, maybe riff a little bit on uv tool before we get into pyx and stuff too much, because I think that's actually a bit of a hidden gem.
+
+00:10:48 And I'll say why, but I want you to riff on it first.
+
+00:10:49 Tell people about the tool and the script running sort of aspect that maybe is less
+
+00:10:54 then. uv tool is this, you know, we think of a tool as like an executable application that you can install. So like often, right, when you're using Python, you're like working on a project and you install a bunch of libraries that you need to import. But, you know, there's also a very different way of like installing and using Python packages, which is a lot of packages are just executables. So like when youinstall ruff as a Python package, it's actually really just like a binary that you like unpack and run. When you run uv tool,install ruff, like we just basically install that executable and like make it available on your path. The nice thing about uv tool is like, there are lots of applications and tools that you can install. Like just, you just run like uv tool install or whatever, and then like black or rough or my pie or whatever gets added to your path and you can use it. And we also have this alias uvx. So you can do like uvx rough check.
+
+00:11:44 That's actually like typically what I use, which is an alias for like install this tool and run it.
+
+00:11:49 So if you just run like uvx rough check, it will install and run ruff.
+
+00:11:54 Or if it's already installed, obviously just execute it.
+
+00:11:56 So like for me, when I'm just like trying to execute random Python tools, a lot of the time I'm just going through uv and it abstracts away this idea of like, have I installed the thing?
+
+00:12:06 What version did I install?
+
+00:12:07 Like, where is it?
+
+00:12:07 All of that.
+
+00:12:08 It's super nice.
+
+00:12:09 And the hidden gem part of it, I think, as you talked about an executable, certainly with Rust, that is 100% true.
+
+00:12:15 I think something that's really interesting is if there's an entry point in the package, or I think it's a scripts declaration in the PyProject.toml, which says this command maps to this function, which might take command line arguments or something, and you uvtool install that package, those become just machine-wide commands that you just have.
+
+00:12:37 And so I think the reason I think that's so powerful is we've traditionally had a really hard time shipping just machine-wide installed tooling for Python people or anything, as long as they're willing to run the command to install it.
+
+00:12:50 Because that used to be, well, okay, here's what you're going to, just follow me now.
+
+00:12:53 What you're going to do, you're going to create a virtual environment, but then you're going to put part of it in the path.
+
+00:12:57 And then you're going to activate it.
+
+00:12:58 You're going to pip install that thing.
+
+00:13:00 And then once you go in there, you'll be able to run this command long as it's active because you don't want to mess up the system Python.
+
+00:13:05 No, no.
+
+00:13:06 And it was just like, whoa, all right, well, let's not do that.
+
+00:13:08 That's a hassle.
+
+00:13:08 But now if you can just uv tool install, you name it, and it works, well, then all of a sudden, that's a real viable way to ship tooling globally to anyone, even if they don't know anything about Python.
+
+00:13:19 And we actually see that with a lot of companies that we talk to.
+
+00:13:22 It's like uv becomes the easiest way for them to actually distribute and run small tools.
+
+00:13:26 And it's cool because like a lot of things in uv, a lot of this is basically enabled by standards.
+
+00:13:31 And it's like us just trying to make things that are enabled by standards, like a little more like accessible or like easy to use. Like that idea of defining scripts in your PyProject Toml is just like a standardized concept. And it's just us, we install the thing and we kind of create those little entry points, which are basically Python scripts that run the function.
+
+00:13:48 Similarly, like a lot of people, I mean, me included like the, these like standalone Python scripts. I don't know if you use those at all, where you have the metadata in the header. So you can have a single file script that says like, I depend on these things. And if you uv run that script, we'll install the packages into like this isolated environment and run the script in that environment. And that too is like, that's not even something that we invented. That's like a standard that, that was put forward. I think it's PEP 723. And again, it's take those standards and those like good ideas and just try to find ways to make them like ergonomic and accessible to people.
+
+00:14:21 So I don't know. It's something I reflected on a lot, which is like, I don't think those aren't even necessarily great examples of this, but like, it's not actually clear to me that we could really build uv like a few years ago because so much stuff got standardized. Like things that people, things that most users probably don't really think much about, like build backends and like build isolation. And there's just a lot of things that were basically came up organically in packaging and then got standardized. And now that they're standardized, we could actually build a tool that like does all the stuff. And it's not just, it's not like pip is the only tool that can be an installer. Like anyone could build an installer because so much of this has been standardized.
+
+00:14:59 Yeah, Franklin out of the audience says, uv tool install plus brew install equals heaven.
+
+00:15:03 Yes, indeed.
+
+00:15:04 Oh, nice.
+
+00:15:05 It's definitely good stuff.
+
+00:15:07 This portion of Talk Python To Me is brought to you by Six Feet Up.
+
+00:15:10 Let me ask you a question.
+
+00:15:12 What's stopping you?
+
+00:15:13 Maybe it's an application that won't scale or an AI initiative that just isn't delivering.
+
+00:15:18 That's where Six Feet Up comes in.
+
+00:15:20 With deep expertise in Python and AI, they solve hard software problems, modernize platforms, and get teams to market faster.
+
+00:15:29 These folks have been doing Python since version one.
+
+00:15:32 They know the frameworks and ecosystems like the back of their hands.
+
+00:15:35 Six Feet Up's impact speaks for itself.
+
+00:15:38 Automated healthcare pipelines for hospitals, helping NASA explore Pluto, building severe weather prediction tools, and applying AI to connect farmers with vital crop data.
+
+00:15:48 When the stakes are high and the problems are hard, Six Feet Up is the partner that delivers.
+
+00:15:53 See what's possible with Six Feet Up.
+
+00:15:55 Visit talkpython.fm/sixfeetup.
+
+00:15:58 the link is on the episode page and in your podcast player show notes thanks to six feet up for sponsoring the show i think people got a sense for uv i do want to actually let's talk about one one thing i was just talking to some folks this morning and they're like hey uv python upgrade awesome new feature oh yeah and i said i have no idea what you're talking about they said it's a new feature of uv i'm like okay after this media i'm gonna go check it out but then i didn't so you
+
+00:16:21 have to tell me about it what is this is brand new stuff right i mean it kind of does what it sounds like, which is it lets you upgrade Python. It sounds really straightforward, but here's the
+
+00:16:29 thing. I have, if I go look, if I go run uv tool list, I've got, I don't know, more than a page worth of things. And some of them are super minor, but I've got things like just path, which is a cool thing that shows you stuff that you put in your path that might still be lingering in your path settings, however they come about in the environment, but those folders don't exist anymore.
+
+00:16:49 So, hey, these are errors. Maybe you should like clean up your path settings a little bit. They're if that gets, if I don't run that very often, like, but it's around, but I have PLS. Are you familiar with PLS? The, instead of LS, the pretty LS? No, I probably, sounds like I should be.
+
+00:17:07 Oh my God. It's so beautiful. So when you do LS, it will use like the nerd font. So you have to have a nerd font at nerdfonts.com. I think it is nerd font for your terminal. But then like, if there's a Python file, I have a Python logo next to it. And if there's a GitHub, a Git ignore, it'll have like a GitHub logo.
+
+00:17:25 And it does things like looks at the Git ignore and determines which hidden files to show actually and which hidden files to actually hide or other stuff.
+
+00:17:32 So like your Git ignore will appear even though it's a regular LS and.vnv will appear and it has like a, anyway, nice.
+
+00:17:39 If that thing goes wrong, LS stops working on my system.
+
+00:17:41 And I got to go like a stone man going around typing slash bin slash LS until I can fix the virtual environment.
+
+00:17:47 So if I like remove the Python that uv installed when I said tool install that thing and I want a newer one.
+
+00:17:55 And then I try to run it.
+
+00:17:56 It's like, well, the Python is gone.
+
+00:17:57 Ah, right.
+
+00:17:58 Is this uv Python upgrade related to that or is it unrelated to this?
+
+00:18:02 I was just trying to look at the documentation because I'm trying to remind myself.
+
+00:18:07 I'm trying to remind myself what's in preview and what's not.
+
+00:18:09 Yeah, sure.
+
+00:18:10 We have like a preview mode, which lets you like opt into newer features.
+
+00:18:16 And one of the things that we wanted to solve with uv Python upgrade and with Python installs in general is basically this, which is when you create like an executable script, you have to put the path to the Python interpreter in the header, like literally the path to it goes in the file.
+
+00:18:29 So if that path contains like the patch version of Python, like 3.13.0, and then you upgrade your machine to like 3.13.1, suddenly those scripts can break because they point to interpreters that no longer exist.
+
+00:18:42 So we implemented, again, I don't remember off the top of my head if it's in preview or not, but we implemented a solution to this, which is we basically do some like kind of fancy sim linking stuff so like we have a sim link that's like 3.13 that like points to 3.13.1 and like we read the sim link to those files so if you upgrade
+
+00:19:01 from 3.13.0 to 3.13.1 we upgrade the sim link and the files i see everything else is transparent because there's like two sim links so you got that level of abstraction to swap it out with right yeah
+
+00:19:12 i think we took this from homebrew i think homebrew actually does it this way which is they create It's kind of like a sim link for the minor version, like 3.13.
+
+00:19:19 And then that points to the specific patch version.
+
+00:19:21 And so when we upgrade the patch version, we also update the sim link.
+
+00:19:24 And then everything else kind of just works.
+
+00:19:26 But I can't remember if this is only if you pass preview.
+
+00:19:30 You all are shipping fast.
+
+00:19:31 By the time most people hear this, probably it'll be.
+
+00:19:34 By the time people are here, it won't be in preview, yeah.
+
+00:19:36 Exactly, yeah.
+
+00:19:38 I use uv tool install all the time.
+
+00:19:39 I really love it.
+
+00:19:41 A lot of neat tools there.
+
+00:19:42 I think it's the stealth secret way of like, you now have ways of installing CLI apps that are just published at PyPI and a single line to go.
+
+00:19:51 And that doesn't quite give us full GUIs and things that go into the docs with icons and stuff.
+
+00:19:56 But that's okay.
+
+00:19:56 It's definitely a positive step in the right direction.
+
+00:19:59 We're also trying to make that like Python upgrade experience a lot better.
+
+00:20:02 So I'm glad that you were told about it and that we had a second to shout about it.
+
+00:20:06 Like, how am I missing all this hype?
+
+00:20:07 What have I missed?
+
+00:20:08 Exactly.
+
+00:20:09 It's super good.
+
+00:20:10 It's super good.
+
+00:20:10 Okay.
+
+00:20:11 So let's talk about the next step in Python packaging.
+
+00:20:15 What is this pyx?
+
+00:20:16 And so I think the first thing I would like you to go on record for people, because I still to this day have debates with people, whether it's...
+
+00:20:23 How to pronounce it?
+
+00:20:24 Yes.
+
+00:20:25 People are like, yeah, I got it from PyPy.
+
+00:20:27 I'm like, yeah.
+
+00:20:29 And I'll say PyPy.
+
+00:20:29 And they're like, you're saying it wrong, Michael.
+
+00:20:31 I'm like, maybe, but everyone who works on it says it the same way.
+
+00:20:34 So I think I might be saying it the right way.
+
+00:20:36 Yeah.
+
+00:20:36 Let's get the pronunciation good.
+
+00:20:38 It's kind of funny because like we basically have this problem with like all of our tools.
+
+00:20:41 And it's like very common advice that like when naming things, they shouldn't be like ambiguously pronounced.
+
+00:20:46 And we've kind of just ignored it.
+
+00:20:49 So like, like ty is the same.
+
+00:20:51 People call it like some people call it Ty, right?
+
+00:20:54 I don't know what you call it.
+
+00:20:55 I call it ty.
+
+00:20:55 I call it ty as well.
+
+00:20:56 I mean, because you called it ty.
+
+00:20:58 Right.
+
+00:20:58 In general for us, it's always the initialization.
+
+00:21:01 So like uv.
+
+00:21:02 I love R-U-F-F.
+
+00:21:03 No, just kidding.
+
+00:21:04 Yeah.
+
+00:21:04 Okay.
+
+00:21:05 Ruff is the one exception.
+
+00:21:06 That's because I created Ruff before we started the company and before we had any of these patterns. Like I didn't really know what it was going to be. Of course. And we talked about that
+
+00:21:13 on the show. We talked about that on the show. First time I had you on was about rough before
+
+00:21:17 you started Astral, I believe. Yeah. So it's uv, ty, and then here it's pyx.
+
+00:21:22 When I have some kind of AI read it back to me, because a lot of times I'll have a lot of stuff to read and I'm like, oh, let me throw it into some kind of like text to speech thing so I can listen while I'm driving and then I'll be able to talk. And it's like, oh yeah, of is amazing. I'm
+
+00:21:40 And this is our kind of our first hosted infrastructure product. So it's a big, I guess I would say expansion for us in terms of problems we're trying to solve. Historically, everything we've built so far has been focused on command line tooling, like rough UVTY. These are tools that you install, they run in your terminal. They're kind of, they just run on the client. And this for us is the first thing that has a server. It is a live thing that we run as a service for companies. And it's sort of the counterpart to uv in some ways. So like uv is the client in that sense, pyx is the server. pyx is our package registry, also does a lot of other things, but ultimately it's kind of like a backend that accompanies uv and lets us solve a bunch of problems that otherwise we were kind of limited from solving in the past. I think a lot of the motivation for actually building this and the specific features that we're working on, et cetera, they basically come from like the uv issue tracker. It's like talking to users, hearing about their problems and being like, well, we actually can't really solve that for you because like that's the responsibility of the server and we're just the client. And QIX is in a lot of ways our response to that being like, well, but if we had a server, then we actually could solve that problem. Maybe we could solve like all these other problems. And so for me, it was kind of a natural evolution of what we were already doing with uv was to say, well, if we have all these users who have all these problems that we think we can solve or hope we can solve by building our own server, then we should do that. And because it's a server, because we have to run the server and we have to serve packages, we can charge money for it. And because it's a product that competes in a space of things that people already pay money for, we can charge money for it. And that will be the first thing that we basically charge money for and try to build our business around,
+
+00:23:22 which is this package register. Definitely wanting to talk about the business model.
+
+00:23:25 I think that's a really important thing. Yeah, of course.
+
+00:23:27 But before we get to it, let's think of some of the problems that might be solvable on the server, but not solvable.
+
+00:23:34 Because uv has certainly made a dramatic splash in how many people are using it just out of nowhere, which is really impressive.
+
+00:23:41 That, count me among them, that really is really an awesome tool.
+
+00:23:45 But maybe, let me throw out some ideas and you can tell me if I'm on or off the track.
+
+00:23:50 So one of the things I think that was really challenging is to resolve the right versions.
+
+00:23:55 Like I have this version of requests and this version of beautiful soup and this version, whatever.
+
+00:24:02 And maybe one of them has the same dependency on another with constraints.
+
+00:24:06 You got to like work that out, right?
+
+00:24:07 So maybe something you could do with a server is just go, here are all the packages and versions resolve that.
+
+00:24:12 And then once you figure it out once on the server, you could cache like, well, this combination always resolves to these go like instantly index database query, give me the answer.
+
+00:24:21 So you basically share the resolution across all of humanity instead of every time an install happens, it starts over.
+
+00:24:29 Are these the types of...
+
+00:24:30 That is an example of a kind of thing we could do.
+
+00:24:32 Okay.
+
+00:24:33 I think in general, there's maybe two or more ways to think about what we're trying to do here.
+
+00:24:38 So pyx is not really a PI competitor.
+
+00:24:42 We're not trying to host public packages for people to consume.
+
+00:24:46 This is a product that's aimed at companies, enterprises, teams, people who have these problems.
+
+00:24:52 Maybe they already pay for some kind of alternate registry solution that's not API.
+
+00:24:57 And so one class of problems is basically, what are things that teams need or have that they can't get from API around packaging and package hosting?
+
+00:25:07 And some subset there is basically people who come to the uv issue tracker and they use some other registry and they have a bunch of problems with it.
+
+00:25:13 And we actually can't, we can't solve those because we're like, we can't fix your registry.
+
+00:25:17 And so like the table stakes thing is like a great private registry, which means something that's really like Python first.
+
+00:25:25 These alternative solutions that support Python also support like a bunch of different ecosystems and Python is typically like a small thing.
+
+00:25:31 And so often those registries are...
+
+00:25:33 We're going to host like, here's your binary artifact.
+
+00:25:35 And then whatever your thing does to get the artifact, it's just going to get it.
+
+00:25:39 And like, and that's kind of more or less what might be happening there, right?
+
+00:25:42 not like deep understanding. For us, it's like, okay, we want a registry that like,
+
+00:25:46 it should support all the latest standards. It should be really optimized for Python. And we should just provide like a great Python experience because it's Python, like Python is a first class thing. And so that's part of it is like, how do we build just a great private registry that is super modern, is really fast. A lot of the private registries are very slow for a variety of reasons, some of them related to standards. But our goal is like, we want to provide a great experience for that use case. So if you're a company that needs to host private Python packages, especially if you're using uv, we should just be like, well, we want to be the obvious choice for those companies.
+
+00:26:19 All right. Well, let's say, hold on before we leave that topic. Why would anybody do that?
+
+00:26:23 Why would anyone do what? Sorry. Want private package hosting?
+
+00:26:25 A private package. What is this about?
+
+00:26:27 It's very common. So especially if you get beyond a company of a certain size, maybe you have code that you need to share across the organization, like packages that subsets of your project that you want to be able to use, reuse elsewhere.
+
+00:26:39 Sometimes at small scale, you'll solve that with like Git dependencies or something.
+
+00:26:42 Like maybe you just depend on the Git repo.
+
+00:26:44 But typically as you scale, people will tend to start creating actual packages that they publish.
+
+00:26:48 In some cases, you also want to be able to do like fine-grained access control around that.
+
+00:26:53 Like maybe you want to be able to publish code that like only certain people can access within the org or maybe like select customers can access.
+
+00:27:00 Like these are all use cases we want to be able to serve, which you can't do on PyPI, which is we want to host packages that are not totally public.
+
+00:27:08 and we want to be able to control who can use them because they contain IP or, well, yeah, I mean, I guess that would be the main reason they control us to contain random IP.
+
+00:27:16 We want to be able to ship versions of our library to all the other teams at our organization, right?
+
+00:27:22 Like we wrote the definitive Python library to talk to some service we have running internally.
+
+00:27:28 We don't want people, everyone recreating some Python library, working with different versions.
+
+00:27:33 If we roll out a new version of that service, we want to just push to our little internal repository.
+
+00:27:38 a new version that works with that new and all the projects get it, right?
+
+00:27:41 Like that kind of thing seems real valuable.
+
+00:27:43 It's like a library reuse story.
+
+00:27:46 For those same users, like enterprises that care about this kind of thing, even if they're not publishing private packages, there are other things that we can do here.
+
+00:27:53 Like we have this, I was going to say pretty cool.
+
+00:27:55 I think it's pretty cool.
+
+00:27:56 We have this pretty cool system where you can define what we call like views, which are composed filtered subsets of other registries.
+
+00:28:04 So you could create like an index URL that represents API, but like frozen at a given point in time. And that's like enforced on the server or even like API, but like only things that are at least a week old. That's like a common thing that people use to guard against malware because malware tends to get removed within a short amount of time. And you can also compose them. So you could create like a single index URL that's like, if we uploaded a package of a certain name, then like get it from our upload. Otherwise, like fall back to API. You could also like disallow specific versions, specific packages.
+
+00:28:35 You can disallow based on like CVE counts.
+
+00:28:38 So you can do all this.
+
+00:28:39 Like we have a DSL for it.
+
+00:28:40 You basically like write Python code to like define the configuration.
+
+00:28:44 And then we give you like a single index URL.
+
+00:28:46 So that's both like simplifying a lot of what's happening.
+
+00:28:49 Like often you have some subset of this logic in your uv configuration.
+
+00:28:52 And now it's like, as a team, you can actually centralize like and enforce like compliance rules and give you like a single URL that defines this logic for you and is enforced on the server.
+
+00:29:02 So again, it's about things that like, these are things that companies care about, right?
+
+00:29:06 Like if you're an open source project, you probably don't care about this as much.
+
+00:29:09 But for companies who care a lot about visibility and control and security and this kind of shared centralized logic, it's a really helpful, we found it's a very helpful thing.
+
+00:29:21 So that's part of it is like companies that need to manage private packages or need to manage like their packaging setup.
+
+00:29:27 And that I just consider kind of like the table stakes of like what we can provide.
+
+00:29:31 It's like a great, fast, modern Python registry that kind of doesn't exist, in my opinion, doesn't really exist in the market.
+
+00:29:38 And it should be really like a natural thing if you're already using uv.
+
+00:29:42 Then there are some other things we're doing that are kind of maybe a little bit more crazy, but hopefully in a good way.
+
+00:29:47 The thing that we're trying to do is like, we want to build, it's kind of a similar philosophy that we've taken to the rest of our tooling, which is like pyx, you don't like have to use uv to use pyx.
+
+00:29:56 Like this is like a registry that implements like the simple API, like the upload API, which is not really standardized.
+
+00:30:02 But anyway, we implement like all the APIs that other registries implement.
+
+00:30:06 So you can use like pip and Twine or like whatever with pyx and that's fine.
+
+00:30:11 You also don't have to use pyx to use uv.
+
+00:30:13 Obviously you can use uv with like whatever registry you want.
+
+00:30:16 But our goal is like, if you use uv and pyx together, there are certain things we should be able to do to like deliver a really good experience.
+
+00:30:22 And some of those are obvious, like authentication is a little bit more seamless.
+
+00:30:25 Like you can, we kind of like know that you need the credentials.
+
+00:30:29 We know to prompt you to log in, that kind of thing.
+
+00:30:31 But there's also a lot of stuff we can do around performance.
+
+00:30:33 Like if we are the, if we under, if the client and the server kind of know each other, there are different like fast paths we can take to try and make things a lot faster.
+
+00:30:40 So there's a lot we want to explore there around kind of like, how can we vertically integrate these things while also remaining compatible with the rest of the ecosystem?
+
+00:30:48 And then there's also this bullet on the bottom, right?
+
+00:30:50 This GPU aware thing, which is another piece that we should talk about.
+
+00:30:54 Do AI people, maybe AI people use this? I don't know. That's probably going to be a fad, but you guys might want to add it anyway. Yeah.
+
+00:31:01 This AI stuff, it's going to be a fad, I'm sure.
+
+00:31:03 I guess sort of as an aside, it's kind of interesting for us because we don't have or build anything that's AI powered, but we power a lot of AI infrastructure companies. So I don't know, if you think of a big AI company without naming names, they're probably using our stuff. And so it's kind of an interesting position to be in, which is we build a lot of infrastructure that's used by AI companies and also by like end users and even by agents, right? Like if you're running an agent, it's like invoking uv and stuff, but nothing that we build is actually like AI powered in that way, which is kind of a funny position to be in. But basically since the start, we've spent a lot of time in uv trying, I will say specifically trying to make the PyTorch experience good because the PyTorch experience is kind of like, it's not the only thing in GPUs. There's a lot of stuff going on, but PyTorch is just super popular. And so we've always gotten tons of issues around how do I make this PyTorch setup work? Or how do I make, I ran into this error, like what's going on? Or I have this other package that like builds on top of PyTorch and I'm like having trouble getting into work together. So we spend a lot of time trying to make that experience good in uv because it's just super popular. And one of the things that we've come back to many times is like there are problems that, again, there are problems we could solve if we had a server that we kind of can't solve on the client. Like an example would be, there are all these pieces of software that like built, like I said, build against PyTorch and build against certain versions of CUDA, which is like NVIDIA's GPU accelerator library. And those things tend to be hard to build.
+
+00:32:30 And it's also very hard to make sure that you're getting like compatible versions of them, because there are basically some gaps in the Python standards that make that hard that we're working on. But it's very hard to install like a compatible version of PyTorch and a compatible version of Flash Attention. And it's not really anyone's fault. There are basically gaps in the standards that make that hard. But if we have our own client in our own server, especially actually, even if we just have our own server, there's a bunch of stuff we can do because we can kind of pre-build those for people. We can curate the metadata in certain ways in a way that's all standards compliant, but we could pre-build all those things. And the goal is give people an index that they can point to that will have rebuilt versions of a lot of this stuff that's consistent. The metadata is compatible. They don't have to worry about how do I build it from source?
+
+00:33:13 They don't have to worry about how do I make sure that all the versions that I'm installing are like mutually compatible. Like that's like another one of the problems that we're trying to solve.
+
+00:33:20 And again, it's the kind of thing that like we want, we've wanted to be able to offer users for
+
+00:33:24 a long time, but like there's only so much we can do on the client. This portion of Talk Python To Me is brought to you by our latest course, Just Enough Python for Data Scientists. If you live in notebooks, but need your work to hold up in the real world, check out Just Enough Python for Data scientists. It's a focused code first course that tightens the Python you actually use and adds the habits that make results repeatable. We refactor messy cells into functions and packages, use Git on easy mode, lock environments with uv and even ship with Docker. Keep your notebook speed, add engineering reliability. Find it at Talk Python Training. Just click courses in the nav bar at talkpython.fm. Let's dive into this just a little bit. So is the problem, I am a consumer of LLMs and AI, and I also have written programs that themselves use LLMs, but I have not built an LLM, so I don't really have much experience with this. So is the problem that it's kind of a source distribution that you've got to compile for PyTorch and maybe some other things, or they actually come as binary wheels, but they're incompatible with each other, even though they're pre-compiled?
+
+00:34:31 What is it that you're kind of doing to make it work here?
+
+00:34:34 It depends a little bit.
+
+00:34:34 So like for PyTorch, just as PyTorch itself, like the Python package, like import Torch, we just think about that.
+
+00:34:41 They do build, they do pre-build wheels, but a lot of the complexity comes from the fact that there's this access that isn't really captured by Python standards, which is the GPU accelerator.
+
+00:34:53 So on your machine, if you want to run PyTorch, like typically you have a GPU like plugged into your machine.
+
+00:34:59 And that could be like an NVIDIA GPU, it could be an AMD GPU. And each of those use very different software stacks. And those software stacks are also versioned. So like when they build PyTorch, and they publish to their registry, it's not just like one build. And it's not even just the standard build matrix of like Python version and architecture and operating system. There's like another axis, which is accelerator slash accelerator version. And there's actually no way to capture that really in Python met standards right now. So what they end up doing is they create separate indexes for each of those accelerators. So if you've ever installed PyTorch, there's sort of like a UI on the PyTorch page where you click through like, this is my GPU, this is my operating system, this is my Python version, and it gives you an index URL. And they have different index
+
+00:35:45 URLs for the different accelerators. Oh, wow. So it shows that multiple projects on PyPI.
+
+00:35:49 No. So on PyPI, they still basically, those wheels aren't even published on PyPI.
+
+00:35:56 in general. So they do publish on the API, but they can only publish one, basically one wheel.
+
+00:36:01 So they publish for one of those GPU versions and all the rest go on the PyTorch index. So like the first, like one source of complexity is as a PyTorch user, how do I like get the right version of PyTorch that's prebuilt? And then there's like a next level of complexity, which is then I have libraries that build against PyTorch and like Flash Attention. So when you build Flash Attention, that's a source distribution and it needs to build against a specific version of PyTorch, Not in a specific version of the GPU.
+
+00:36:27 So it's yet another dimension.
+
+00:36:29 It's not just, because it's also specific to like CUDA 12.8 or whatever.
+
+00:36:34 But in addition, it's also specific to the PyTorch version.
+
+00:36:37 So they have to publish wheels for each combination of PyTorch version and accelerator.
+
+00:36:41 And none of those go on PyPI.
+
+00:36:44 So they publish those to a GitHub releases page, but PyPI is just the source distribution.
+
+00:36:48 And like the root cause of that problem, of those problems are really some gaps in the standards that are hard to, that are hard to solve.
+
+00:36:55 it. And we're also working on some standards, some sort of like proposed evolutions to solve this in standards. But ultimately it means that like, it's kind of hard to install the right version of Torch. And then if you need to install these other things, like, like, again, these won't mean anything to you unless you've really used them. But like VLLM is, it's the most popular piece of software that people use for actually serving models. So if you wanted to do inference, like serve an LLM, VLLM would be a very popular choice. And like that has to build against a specific version of Torch and it's built for specific accelerators. And so basically you have these many levels of complexity of how do I get this thing to build? How do I make sure I get the
+
+00:37:31 right version? And we want to kind of abstract that away from people. I see. It gets combinatorially bad the more you work with pieces. The flash attention build matrix, if you think about it,
+
+00:37:42 it has, so for a single flash attention version, you have to build across Python version, operating system, architecture, CUDA version, which is like NVIDIA GPU version, and then PyTorch version. And so it's a very big build matrix and it's very hard to get right. Let's talk about
+
+00:37:59 security a little bit. You talked about some of the things. I really like the idea of just put a delay in there, like a week, a month, whatever. That's pretty new, pretty cutting edge. But by the time something's gone through there, if it's something we're using, it's going to be found out.
+
+00:38:13 Someone's going to report it, pull it off of PyPI and basically block it. We also recently hired
+
+00:38:19 William Woodruff joined the team who was an author on the like attestations pep. He implemented a lot of the trusted publishing work in PyPI. So he's done like a lot of the sort of like cutting edge security work in the PyPI ecosystem. And we basically have some ideas for kind of like more outlandish things we can do around security or sorry, outlandish is the wrong word. Maybe like ambitious things we can do around security that we want to explore. Like, I don't know if we'll actually do any of these things, but there's basically things that we can learn from other ecosystems around how to do like more secure workflows for packaging. So like we want that to be a big part of what we're doing. But I think like something that's important for me about this product is like when you think about a registry, like a private registry, a lot of the time it's motivated by like security and compliance. And that is an important piece of what we want to do.
+
+00:39:09 Like we do want to build a registry that's like very strong in security and compliance, But we also want to solve problems that I think people never really associated with a private registry.
+
+00:39:20 We want to solve some problems, like the GPU stuff, for example.
+
+00:39:23 Those are just user experience problems.
+
+00:39:25 We're trying to use the registry as a way to solve user experience and developer experience problems, even for companies where otherwise they would never have considered using a private registry.
+
+00:39:34 So our goal is that over time, we build more things into pyx that help with the overall Python experience.
+
+00:39:40 How do we make your Python team more productive?
+
+00:39:42 It's not just about how do we help them be more secure.
+
+00:39:45 That is part of it.
+
+00:39:47 But like, ultimately, we love building things that make people more productive and like remove problems that they have to like even think about.
+
+00:39:54 And so ultimately we want to use this as a position to solve more problems.
+
+00:39:57 Like this PyTorch example you talked about.
+
+00:40:00 Like the PyTorch example.
+
+00:40:01 Is there going to be an API for pyx?
+
+00:40:04 Like if I am a customer of yours and I want to control some things, can I set up automation or are there ways to put code running in pyx that will check on things additionally to webhooks or any of that kind of stuff? Like what is the, I want to participate in pyx sort of thing. I mean, we have a bunch of APIs. So we implement some of the standard,
+
+00:40:25 what I would call like standardized APIs. So like, obviously like the way that we query package metadata and download packages is based on the simple API. And then we also implement the upload API. So basically uploading and downloading packages follows, that's like public API that follows basically like standards slash what other registries do. Sorry, the upload API is a little bit strange because it tends to be people just do what API does. Outside of that, we do have APIs that we're kind of like considering how we want to expose them. I talked before about this idea of custom views, like being able to sort of declaratively write code to create an index URL, like that should all be scriptable and that should all be public API over time.
+
+00:41:06 I'll give you a sense of what I'm thinking.
+
+00:41:07 Like if I'm in charge of developer security, developer package security, supply chain security, I guess I would say at a big organization or any level of organization where it really matters or I care enough to buy your service, maybe I would do something like I would subscribe or I would have an automated system subscribe to a bunch of RSS feeds for security places, right?
+
+00:41:29 Like leaving computer and others and look at all the articles.
+
+00:41:32 and if I see PyPI show up, then maybe like, well, let's feed that to an LLM and ask like, okay, well, what packages are actually affected?
+
+00:41:39 And then if I can determine something we're using, or even if it's not, we're using it, just something relevant that we care about.
+
+00:41:45 Maybe I want to call an API back to you guys and say, block this one permanently or block it back for like three months ago.
+
+00:41:52 Like it's us right now.
+
+00:41:53 We're going to put it on a timeout and make it go back.
+
+00:41:55 You know what I mean?
+
+00:41:56 Something like that.
+
+00:41:57 We should definitely support all of that.
+
+00:41:59 I have to think about like, whether that's in a position where we'd like make it available to customers yet.
+
+00:42:04 But in theory, they could absolutely script against that today.
+
+00:42:07 That is also something you guys could write once and like have it, all right, a little preemptive sort of thing.
+
+00:42:12 Yes.
+
+00:42:12 PyPI, what is the role?
+
+00:42:14 Like I want to publish a package that is a public thing.
+
+00:42:17 Do I upload it to you guys?
+
+00:42:19 Do I just publish it to PyPI?
+
+00:42:21 But are you guys a proxy?
+
+00:42:22 You mentioned that you're not a replacement for PyPI, but what does that really mean?
+
+00:42:26 We're not trying to be like the public source of record for like four packages.
+
+00:42:30 So like for people who are publishing packages, like PyPI is still the place that they should go to like publish those.
+
+00:42:35 We do mirror in PI.
+
+00:42:37 So like you can use PIX to install things that ultimately come from PI.
+
+00:42:42 But you don't necessarily have to proxy through.
+
+00:42:43 You could just instantly go and pull like a faster local version.
+
+00:42:47 We kind of like pull those over onto our own infrastructure, which is pretty common,
+
+00:42:52 like as in other mirrors do this kind of thing too.
+
+00:42:55 But the nice thing is that like PyPI has like very good uptime.
+
+00:43:00 But the nice thing is if you depend on us, it also means that you're not introducing like more sources of failure, basically, because we mirror the stuff ourselves.
+
+00:43:08 So like, obviously we could go down in some sense, but like, you know, you're not relying on both us and PyPI to serve packages, which can be helpful.
+
+00:43:17 But, you know, the basic idea for us is like, I were obviously like a big fans of API and we, I won't speak for them, but like we spend time with the API team.
+
+00:43:26 I talked to them about this before we announced it.
+
+00:43:30 And Ivy PI is a critical piece of a healthy Python ecosystem.
+
+00:43:34 And we're not trying to displace PI PI as the public source of record for traffic.
+
+00:43:40 Our goal is we're trying to build something effectively on top, sort of on top of PI PI, a slightly different layer that's more focused on the needs that enterprises have and companies have, which is a little different than what PI is trying to do.
+
+00:43:53 In my opinion, they could obviously come out and say something.
+
+00:43:55 I don't, again, I don't want to speak for them, but at least from my perspective, it's a little different than PyPI's mandate. And so for us, I think I said online something like pyx's success depends on the success of PI and like we basically operate that way. So we'll like continue to support. I think it's a hard thing to, to message out succinctly, which is why it's nice to be able to talk about it with you. But like, we're trying to build something that we think addresses like a different gap and it's less focused on how do we compete with like PyPI. And it's more focused on how do we compete with like Artifactory or like other products that are private registries that people pay for? And how can we provide something that's a little bit different than what those people are providing? Is there going to be an on-premise option?
+
+00:44:35 Oh, such a good question. What are you, a customer? I'm like, we're not doing on-prem right now, but we do have a lot of, we do have a decent amount of people who want it. And I think it will be ultimately be important. But like in the early days of the product, obviously we're very focused on trying to iterate with customers as quickly as we can. And so the fastest feedback there tends to be from, basically we want to be able to deploy this quickly to people and get feedback on it quickly. So on-prem is a much bigger investment and also something that we would...
+
+00:45:05 Is on-prem the entire implementation? Is it just a proxy server? If you've seen this request before, you've already downloaded it. It's like a little VM that's hanging out in our data center. Just pass it out. That's pretty low hanging fruit. Whereas we want to give you the entire thing in that's a different deal.
+
+00:45:20 Yeah, we've also experimented with some kind of interesting hybrid models where like all the packages, I shouldn't even say this because then people are going to like come ask for it
+
+00:45:29 and like I don't really want to support it.
+
+00:45:30 Don't speak it into existence.
+
+00:45:32 No, it's kind of a cool idea though.
+
+00:45:33 It's basically like all the packages would live in an S3 bucket that the customer controls and that we don't even have access to.
+
+00:45:39 And we could actually support that.
+
+00:45:41 So we would be like the server that understands metadata about what packages exist and where they are, but we wouldn't actually have access to the contents.
+
+00:45:48 And there are basically cool ways that we could make that work, which is kind of an interesting hybrid model.
+
+00:45:53 But anyway, yeah, right now we're pretty focused on not doing on-prem, but I'm sure we will eventually.
+
+00:45:58 Maybe someday, yeah.
+
+00:45:59 Yeah.
+
+00:45:59 Somebody comes with a big enough check and they're like, you know what?
+
+00:46:02 On-prem is a good idea.
+
+00:46:03 Let's do that.
+
+00:46:04 For the right price, on-prem is definitely available.
+
+00:46:08 I think this is the perfect transition.
+
+00:46:09 And I know that this has been something that has been discussed on and off basically since uv.
+
+00:46:17 And for some reason, I don't think it was at all discussed with Ruff.
+
+00:46:19 I don't know.
+
+00:46:20 You make that make sense.
+
+00:46:21 Maybe you can.
+
+00:46:22 I can't.
+
+00:46:22 Well, I'll tell you if you're right, depending on what the question is.
+
+00:46:25 The question is, a lot of people are like, oh my God, uv is incredible.
+
+00:46:29 We have to switch everything to uv.
+
+00:46:31 And then there's always someone that says, but it's owned by a company.
+
+00:46:34 It's not 100% open source.
+
+00:46:37 What if that changes?
+
+00:46:38 What if its usage model changes?
+
+00:46:40 Like, what if Charlie and team decide, like, it's a tenth of a cent per package install and then, like, we're out, right?
+
+00:46:46 That's certainly been a lingering issue.
+
+00:46:48 I don't think it was with Ruff.
+
+00:46:49 People weren't like, well, what if it's like a thousandth of a cent per line of code?
+
+00:46:53 You know what I mean?
+
+00:46:54 For some reason about uv, I think it's just more foundational.
+
+00:46:57 Stuff runs because of uv.
+
+00:46:59 Stuff is nicer because of Ruff, maybe.
+
+00:47:00 I don't know.
+
+00:47:02 There's even a comment by Chris in the audience.
+
+00:47:04 What if you guys change your mind?
+
+00:47:06 And I know you've been very open about saying, that's not our intention.
+
+00:47:08 We intend to build products around it.
+
+00:47:10 When I saw this announcement, I'm like, wonderful.
+
+00:47:13 This is the first glimpse into what you guys are building that supports uv, supports Ruff, and all this other stuff you're doing in a way that is not like, well, we took that feature out of uv because it only encourages you to make uv even better.
+
+00:47:27 So maybe just talk about that for people who are listening around the business model.
+
+00:47:31 How does this solidify the stuff that you've mentioned and the more abstract?
+
+00:47:35 I think about this all the time from the start.
+
+00:47:38 It was something that came up when we talked about Ruff, but I think I've kind of sensed a long, I don't know about a long time, but I've since for a while, there's like kind of two sources of anxiety around this from users. And one form is like, oh, what if we depend on all this stuff?
+
+00:47:53 And the company goes under, the company disappears. The other form is like, you know, what if we depend on all this stuff? And then they like pull the rug out from under us.
+
+00:48:00 And the first one is like kind of a little bit easier, I think, to talk about just because we have like a good amount of funding. We're not going to like disappear in the next year or anything like that. We're very well supported. But the second one is, yeah, the second one's obviously more complicated because I'm very transparent. And I've said, I'll say a bunch of things on this podcast that I've said a bunch of other times in other places, but ultimately people, I think we have to basically prove out trust over time. I will say things right here, obviously, I've said, we have no rough uv, our tools should be free forever. And we want to keep them free and open source. And that's like very important. And, but ultimately we have to like earn that trust over time. I think like I can say all these things, but there will still be people who will be skeptical.
+
+00:48:49 Ultimately our model, it's been the same from the start really, which is, or well, I don't know from the start is wrong. Cause I sort of had no idea what I was doing when I started the company, but like the intention has been, we want to build this like open source that what we think of like as our open source tools, which is like rough UVTY, this tool chain, and that should be free, permissively licensed. And we should be incentivized to like keep investing in it and like to see it grow. And what we want to do from there is monetize services that we build that are kind of like natural extensions of, or I think what I said in the post is something along the lines of the natural next thing you need if you're already using our tooling. And for me, the registry is a really good example of that. Because basically, if you're already using uv, and you're a company that has or needs a registry, we should be the obvious choice for that. And people pay for, not if you're just using PyPI, this might not resonate with you, but a lot of people pay a lot of money for products in that space, for registries. And we should be able to build a better registry and gain a lot of distribution and visibility by building the open source. The open source should basically be in addition to something that we continue to invest in and solves a lot of problems for users and gives value to most people not paying us any money, right? Even in the limit, I think most users of our open source tool will not pay us any money, but like it should be a way for us to get distribution. Like companies should be like, oh, we use this open source thing. We need a solution for this. Okay. That's from the same people. It probably plays really well with the tools. It can probably solve more problems for us. And so that's been very consistent, which is like the tooling should be free, open source, permissively licensed. And we have absolutely no plans to change that. It should always be that way. And what we want to do instead is we view pyx as a different class of things. That's our hosted services as opposed to our open source tools. And we'll keep pushing in that direction. And I shouldn't really say this, but I've been thinking a lot about how people... I've been a software engineer my whole career.
+
+00:50:46 And we as software engineers have sort of been trained to really distrust corporate open source.
+
+00:50:52 And it's not without reason. There are a lot of companies that have done things that feel users feel burned by. And I'm very empathetic to that. And so I, as I said, I will be as open and transparent and honest as possible, which is like, we don't want to do that with the tooling.
+
+00:51:09 Like the tooling is, it's like too important. It's too valuable. It's too like to the community to do that. And so our goal is to like, keep building that stuff. We're investing a lot in continuing to make it great. And then we want to, our goal here with pyx is to build a business on top of it and we'll keep pushing in that direction. So I think there will be hard, I'm sure there will be hard decisions for us around like what goes in the open source and what doesn't. We want as much
+
+00:51:34 as possible. Single sign-on can go in the closed source. We want as much as possible to like set up
+
+00:51:40 an incentive structure whereby we actually don't have to like worry about that. Like that's something that I've been trying to do, which is to say like, okay, if there's a problem that we can solve and we can just solve it in the open source, then like we should solve it in the open source. If there's a problem that we can that we can't solve in the open source but we could solve with the server then we should do it there and like that for us at least now that's kind of like our guiding
+
+00:52:00 how we got our thinking to me it seems super clear that this is not significantly in the way of uv advancing if anything it just puts more energy to uv because as people use pyx well they're effectively customers of uv as well i think the critical thing right that like i can just keep
+
+00:52:18 saying is we don't we don't want to realize our tools we do not want to charge people money to use our tools i think we find ourselves in a position to do that like as a company we're in serious trouble anyway so i like that is that's something that i'll never do and we're just going to continue to focus on the strategy that we've had from the start which is like we build the free open source tooling we're incentivized to grow it as much as we can that's the thing that we love doing and now we're going to go and try to solve more problems and hopefully problems people will pay for you
+
+00:52:46 look at the GitHub repository, you guys have almost 67,000 GitHub stars. First of all, congratulations. That's insane. Oh, thanks. When you started this, doesn't that count as success?
+
+00:52:56 You're like, we have almost as many stars as Django. Like that's pretty wild. I don't know.
+
+00:53:01 I mean, I think when I started working on this stuff, I would have thought a hundred stars was crazy. I hear you. I totally hear you. I was not like a person who like did a lot of open source.
+
+00:53:10 And like, so like I said, I, or I not on this show, but I think I've said this before. It's like, I was just average consumer of open source.
+
+00:53:17 Like I was using open source software all the time, but I wasn't contributing or maintaining or anything.
+
+00:53:22 And so like for us now, yeah, I don't even like look at the stars anymore.
+
+00:53:25 I don't know.
+
+00:53:26 It's like.
+
+00:53:28 I feel like it's gotta be on star history, right?
+
+00:53:31 In addition to that, I feel like the reason I brought that up is because worst case scenario, this is not me speaking for me.
+
+00:53:37 This is me speaking for like the people who are speaking to the people out there who are like, I can't believe what if, like sort of a doom sort of thing.
+
+00:53:44 It's still out there under a permissive license on GitHub in 2004.
+
+00:53:48 Because that's pretty likely that there's going to be a version out there.
+
+00:53:51 But here's your star history.
+
+00:53:53 Looks pretty good.
+
+00:53:54 That's cool.
+
+00:53:54 Yeah.
+
+00:53:56 It's going strong.
+
+00:53:56 It's going real strong.
+
+00:53:57 Yeah.
+
+00:53:58 Wow, that's a lot.
+
+00:53:59 It's still going up.
+
+00:54:01 I know.
+
+00:54:01 I'll put that link to it in the show notes.
+
+00:54:03 That's wild.
+
+00:54:04 Yeah, I know.
+
+00:54:04 And I mean, we do think a lot too about project governance.
+
+00:54:08 I remember when, thankfully most people weren't really thinking about this, But when, do you remember when SVB went under Silicon Valley Bank?
+
+00:54:17 Oh yeah, I absolutely remember.
+
+00:54:19 That was, yeah, I was very much tracking that.
+
+00:54:21 Basically all our money was in Silicon Valley Bank.
+
+00:54:23 Was it?
+
+00:54:23 Oh no, I didn't even put that together.
+
+00:54:25 Oh my gosh.
+
+00:54:26 Okay.
+
+00:54:26 I mean, which was us and every other startup.
+
+00:54:29 But at the time we were a pretty small team.
+
+00:54:32 It was obviously very worrying, but there was also a sense that it would be resolved.
+
+00:54:36 And, but I remember at the time I got on the phone with the founder of another company that I won't name, but it's a developer tools company.
+
+00:54:42 And he was like, yeah, I had like a real moment where I was like, wow, if the company goes under, at least the open source project will be totally fine because we've really invested in governance and like it could run like totally without us.
+
+00:54:55 And I was like, wow, that's amazing because I think like that's what I would like to get to.
+
+00:55:00 We do think about that.
+
+00:55:01 It is governance is hard, is very hard.
+
+00:55:04 And over time, we're trying to build up a bigger contributor base.
+
+00:55:07 but that's basically the north star for me of like what I would like to get to is like ideally even if the company didn't exist the project could keep going I'm not saying I'm we are absolutely we're not there yet and like I'm fine to admit that but like that's like what I would like to get
+
+00:55:19 to I guess wrapping this that part of it up I think the concerns about that are overblown people say well I got to learn a new tool like well you just put the letters uv in front of what you're doing before it's probably fine you know what I mean it's like it's not that huge of a investment in terms of like a disruption.
+
+00:55:34 And I think I, for one, am a wholehearted adopter of uv and the tools and appreciate it every day.
+
+00:55:41 Thanks. Yeah. No, I appreciate that.
+
+00:55:42 I mean, I just like, I just love building this stuff, honestly.
+
+00:55:46 And I just love like solving problems for people.
+
+00:55:49 Like, it's sort of sad because I find myself with less and less time to just like, like I, a day where I can just hang on the issue tracker and just like close bugs and help people is like the greatest.
+
+00:56:01 And so I'm trying to find ways to keep doing as much of that as I can.
+
+00:56:05 But as a team that's grown, obviously my attention gets split in a lot of different ways.
+
+00:56:08 But basically like a lot of what we're trying to do is just like build, like build a company, right?
+
+00:56:13 That lets us continue to invest in what is effectively R&D to like build out all this open source tooling.
+
+00:56:19 And so hopefully, hopefully we can make that work.
+
+00:56:23 And that's like the push that we're going towards.
+
+00:56:24 We're pretty much out of time here.
+
+00:56:25 So let's close it out with people are interested in this.
+
+00:56:28 What do they do?
+
+00:56:29 Can they try it out?
+
+00:56:30 Is it available yet?
+
+00:56:31 is it for random individual developer type? Yeah, not yet. So like we're starting with
+
+00:56:36 what we're calling like a closed beta. So we basically launched in private with some customers through like direct outreach, just talking with teams that we'd already been working with. And that's why when we did the public launch, you can see we had a couple of customers already listed on there. And then we put on interest form on, it's linked on the pyx page and in the blog post.
+
+00:56:53 That's the best thing for people to do is fill out the interest form. We got a lot of responses to the interest form, which is great, but it's also going to take us time to get through them, like many thousands.
+
+00:57:04 So we started basically going through that list and onboarding people and we'll keep doing that and we'll basically ramp it up over time.
+
+00:57:11 So we're working towards a GA release and then hopefully everything, the plan then is for everything to be self-serve and for people to try it out themselves.
+
+00:57:18 But right now we're doing kind of this slow rollout just as we scale up the product and also just like spend more time learning from the early customers.
+
+00:57:24 You have an idea for what people want, but you've got to actually see.
+
+00:57:27 Even they might have a thing.
+
+00:57:28 They might ask.
+
+00:57:29 We have to actually build it.
+
+00:57:30 Yeah.
+
+00:57:32 Well, people also say we want this, but in fact, they actually want something slightly differently, potentially, right?
+
+00:57:37 I mean, the cool thing is, yeah, we're live in production with companies.
+
+00:57:41 The amount of traffic's going up and it's, I mean, it's a little scary, but, you know.
+
+00:57:45 Yeah, I was going to say the bandwidth build is probably not non-trivial.
+
+00:57:48 And then you start talking to the ML people, their packages are like half a gig, not half a meg, right?
+
+00:57:53 Yeah, the biggest PyTorch builds are like, like the biggest PyTorch wheels are like, almost three gigs, I think.
+
+00:57:59 Cool.
+
+00:57:59 Well, congratulations so far.
+
+00:58:02 And thanks for coming on and checking in with us and talking about pyx and updates on uv and all that.
+
+00:58:07 Yeah, thanks for having me back on.
+
+00:58:08 No, it's always fun.
+
+00:58:09 And I appreciate the opportunity just to talk more about what we're doing and try to explain what we're building and why.
+
+00:58:14 And yeah, I'm excited to come back on hopefully at some point in the future.
+
+00:58:18 Yeah.
+
+00:58:18 When you're ready to share more, you're always welcome.
+
+00:58:20 So thanks for being on.
+
+00:58:21 Appreciate it.
+
+00:58:21 See you later.
+
+00:58:21 Thanks a lot.
+
+00:58:22 Take care.
+
+00:58:22 Yep.
+
+00:58:23 Bye.
+
+00:58:23 Bye.
+
+00:58:24 This has been another episode of Talk Python To Me.
+
+00:58:27 Thank you to our sponsors.
+
+00:58:29 Be sure to check out what they're offering.
+
+00:58:30 It really helps support the show.
+
+00:58:32 Thanks again to Six Feet Up, the Python and AI experts you call for the hardest software problems.
+
+00:58:38 From scaling applications to simplifying data complexity and unlocking AI outcomes, they help you move forward faster.
+
+00:58:45 See what's possible with Six Feet Up.
+
+00:58:47 Visit talkpython.fm/sixfeetup.
+
+00:58:51 Want to level up your Python?
+
+00:58:52 We have one of the largest catalogs of Python video courses over at Talk Python.
+
+00:58:56 Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+00:59:01 And best of all, there's not a subscription in sight.
+
+00:59:04 Check it out for yourself at training.talkpython.fm.
+
+00:59:07 Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+00:59:12 We should be right at the top.
+
+00:59:13 You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+00:59:23 We're live streaming most of our recordings these days.
+
+00:59:25 If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+00:59:34 This is your host, Michael Kennedy.
+
+00:59:35 Thanks so much for listening.
+
+00:59:37 I really appreciate it.
+
+00:59:38 Now get out there and write some Python code.
+
+00:59:52 *music*
+

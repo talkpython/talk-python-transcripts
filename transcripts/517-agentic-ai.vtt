@@ -1,0 +1,2312 @@
+WEBVTT
+
+00:00:00.120 --> 00:00:28.740
+Agentic AI programming is what happens when coding assistants stop acting like autocomplete and start collaborating on real work. In this episode, we cut through the hype and incentives to define agentic, then get hands-on with how tools like Cursor, Claude Code, and LangChain actually behave inside an established code base. Our guest, Matt Makai, now the Vice President of Developer Relations at DigitalOcean, the creator of FullStackPython, and PlushCap, shares hard-won tactics.
+
+00:00:29.140 --> 00:00:38.000
+We unpack what breaks from brittle, generate a bunch of test requests to agents amplifying technical debt and uneven design patterns.
+
+00:00:38.720 --> 00:00:43.020
+Plus, we also discuss a sane Git workflow for AI-sized diffs.
+
+00:00:43.660 --> 00:00:51.900
+You'll hear practical clawed tips, why developers write more bugs when they get less time programming, and where open source agents are headed.
+
+00:00:52.280 --> 00:00:58.120
+Hint, the destination is humans as editors of systems, not just typists of code.
+
+00:00:58.780 --> 00:01:03.840
+This is Talk Python To Me, episode 517, recorded July 29th, 2025.
+
+00:01:20.180 --> 00:01:23.120
+Welcome to Talk Python To Me, a weekly podcast on Python.
+
+00:01:23.700 --> 00:01:25.280
+This is your host, Michael Kennedy.
+
+00:01:25.400 --> 00:01:58.120
+Follow me on Mastodon where I'm @mkennedy and follow the podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is sponsored by Posit Connect from the makers of Shiny. Publish, share, and deploy all of your data projects that you're creating using Python.
+
+00:01:58.720 --> 00:02:04.780
+Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+00:02:05.780 --> 00:02:16.660
+Posit Connect supports all of them. Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T. Matt, great to have you back on the show. Welcome back to Talk Python.
+
+00:02:17.040 --> 00:02:19.380
+Thanks, Michael. Been a little while. Good to be back.
+
+00:02:19.420 --> 00:02:21.220
+It has been a little while.
+
+00:02:21.680 --> 00:02:32.920
+As I was entering your show details into the backend system for Talk Python to say what episodes are coming up in what order and so on, I have to enter the guest ID into that thing.
+
+00:02:33.200 --> 00:02:35.660
+Yes, it could be a drop-down list, but then there's so much scrolling.
+
+00:02:35.860 --> 00:02:36.500
+I just can't do it.
+
+00:02:37.500 --> 00:02:38.520
+And it's multi-select.
+
+00:02:38.980 --> 00:02:40.980
+So your guest ID is 29.
+
+00:02:41.440 --> 00:02:49.420
+We first did an episode together about Fullstack Python when I was sitting on the couch in Stuttgart, Germany, back when I lived there.
+
+00:02:49.470 --> 00:02:50.020
+How about that?
+
+00:02:50.140 --> 00:02:50.520
+Wow.
+
+00:02:50.940 --> 00:02:51.180
+All right.
+
+00:02:51.200 --> 00:02:52.040
+Yeah, it's been a while.
+
+00:02:52.360 --> 00:02:54.220
+I feel like that's like that credibility.
+
+00:02:54.820 --> 00:02:58.580
+You have that like only a double digit guest ID.
+
+00:02:59.020 --> 00:02:59.460
+Exactly.
+
+00:02:59.800 --> 00:03:01.620
+That's a low double digits.
+
+00:03:01.860 --> 00:03:02.020
+Yes.
+
+00:03:02.160 --> 00:03:05.700
+This is like a pro number in racing or something.
+
+00:03:05.830 --> 00:03:05.980
+Indeed.
+
+00:03:06.460 --> 00:03:08.060
+Well, that was the past.
+
+00:03:08.580 --> 00:03:10.700
+We talked about some awesome things then.
+
+00:03:11.180 --> 00:03:16.680
+The idea of full stack Python, I believe, was a lot of the focus, but it's honestly been 10 years.
+
+00:03:16.700 --> 00:03:19.100
+I don't remember exactly what we covered in detail.
+
+00:03:19.600 --> 00:03:23.920
+However, I can tell you, this is definitely not a backward looking episode.
+
+00:03:24.540 --> 00:03:25.600
+This is cutting edge stuff.
+
+00:03:25.980 --> 00:03:26.220
+Yeah.
+
+00:03:26.820 --> 00:03:29.920
+I mean, so much of this has changed over even three months.
+
+00:03:30.340 --> 00:03:40.040
+I mean, we'll talk about it all, but there's like the philosophy behind all this, the holy religious wars around what developers should be doing with it.
+
+00:03:40.780 --> 00:03:43.140
+And then let's dig into the details
+
+00:03:43.210 --> 00:03:44.140
+because that's the fun stuff.
+
+00:03:44.380 --> 00:03:44.680
+Absolutely.
+
+00:03:45.430 --> 00:03:45.540
+Absolutely.
+
+00:03:46.140 --> 00:03:52.080
+I would say it's certainly one of the most controversial topics in dev space these days.
+
+00:03:52.500 --> 00:04:05.640
+Well, it's almost like, if you remember when Django and Ruby on Rails came out and they were the new frameworks, even before all the JavaScript frameworks and everything like that, it was backend server, server-side code, and you could do so much more.
+
+00:04:05.730 --> 00:04:08.660
+I remember this was back when I was an early professional developer.
+
+00:04:08.790 --> 00:04:15.260
+I was working in Java with servlets in a framework called Tapestry and everything was so hard to do.
+
+00:04:15.540 --> 00:04:17.299
+And they tried to add so many layers of abstraction.
+
+00:04:17.320 --> 00:04:20.019
+It was like peak enterprise, Java development.
+
+00:04:20.160 --> 00:04:22.540
+How many layers of dependency injection were at play?
+
+00:04:22.600 --> 00:04:22.840
+Oh, yeah.
+
+00:04:23.140 --> 00:04:26.400
+And so then I would go home at night and I'm like learning Django.
+
+00:04:26.480 --> 00:04:34.380
+And I was like, I can't believe how much more I can get done in an hour than I did eight, nine, 10 hours a day working in the Java code.
+
+00:04:34.740 --> 00:04:42.600
+Not because there's literally nothing wrong with Java, but it was just that the frameworks were so well built for what we were trying to do.
+
+00:04:43.160 --> 00:04:50.740
+So that's the only parallel I personally have to like what is happening right now, which, and this is like 10X, 100X of what that is.
+
+00:04:50.900 --> 00:05:02.180
+It's like, if you use the tools properly for the right purposes at the right time period, because like a year ago versus today is very different, you can be wildly more productive.
+
+00:05:03.040 --> 00:05:04.040
+There's also the downsides,
+
+00:05:04.440 --> 00:05:09.760
+but there is substantial improvement to be had in certain areas of software development.
+
+00:05:09.960 --> 00:05:13.900
+And I feel like that is actually really the big takeaway.
+
+00:05:15.000 --> 00:05:16.320
+Among all the hype, break everything out.
+
+00:05:16.320 --> 00:05:26.440
+It's like, there's tactical things you can use this, agentic tools for LLMs that will 10X, 100X certain things that are super annoying about software development right now
+
+00:05:26.800 --> 00:05:28.420
+in a way that was previously impossible.
+
+00:05:28.800 --> 00:05:30.160
+Right. Summarize my architecture.
+
+00:05:30.600 --> 00:05:38.160
+Have you tried that compared to like, I have a hundred thousand lines of code and I've got to like study the crap out of it just to figure out what piece connects to what.
+
+00:05:38.260 --> 00:05:40.160
+I love the roast my code.
+
+00:05:40.560 --> 00:05:43.380
+Like, don't just tell me about it.
+
+00:05:43.560 --> 00:05:44.860
+Like, give it to me straight here.
+
+00:05:45.140 --> 00:05:48.000
+Like, how could this function be improved?
+
+00:05:48.480 --> 00:05:49.040
+Roast it?
+
+00:05:49.460 --> 00:05:51.580
+Okay, now tell me how I can improve it.
+
+00:05:51.880 --> 00:05:51.980
+Okay.
+
+00:05:53.600 --> 00:05:57.700
+And at the end, just give me a little bit of like ego boost because I need it after all the roasting.
+
+00:05:58.240 --> 00:05:58.820
+Yes, exactly.
+
+00:05:59.540 --> 00:06:01.100
+Well, it's like, okay, you roast me.
+
+00:06:01.200 --> 00:06:06.520
+Anytime you talk me down, Just include a little spirit lifting comment as well.
+
+00:06:06.820 --> 00:06:08.880
+Well, the best part is like, okay, roast me.
+
+00:06:09.060 --> 00:06:11.300
+Okay, if you're so smart, go fix it for me.
+
+00:06:11.920 --> 00:06:13.100
+Yeah, you're like, oh, that's right.
+
+00:06:13.620 --> 00:06:14.040
+It did work.
+
+00:06:14.180 --> 00:06:15.000
+Sometimes it does actually.
+
+00:06:15.120 --> 00:06:15.220
+Sometimes.
+
+00:06:16.380 --> 00:06:16.940
+Which is insane.
+
+00:06:17.360 --> 00:06:28.480
+Yeah, I think probably the best way I could say we should frame, people should frame this conversation to at least to get started with in their mind is a balanced take, right?
+
+00:06:28.620 --> 00:06:30.800
+It's not necessarily vibe coding.
+
+00:06:31.040 --> 00:06:35.860
+while that's hilarious and has spawned many amazing YouTube videos, right?
+
+00:06:37.300 --> 00:06:42.460
+But it's also, it doesn't necessarily make sense to imagine that these tools don't exist.
+
+00:06:43.180 --> 00:06:46.680
+And just out of principle say, well, I'm never going to touch them
+
+00:06:47.120 --> 00:06:49.700
+because I'm not going to replace coders with this.
+
+00:06:49.860 --> 00:06:54.320
+It's like saying, I was just playing a bunch with rough, you know, the formatting tool, right?
+
+00:06:54.660 --> 00:06:59.640
+And it's ripping through 500 files at a time on these projects I'm working on.
+
+00:06:59.960 --> 00:07:04.320
+Ruff format, rough check fix, bam, 37 files repaired.
+
+00:07:04.640 --> 00:07:09.020
+I could have done that by hand and flexed my dev skills, but should I?
+
+00:07:09.260 --> 00:07:10.280
+No, of course I shouldn't.
+
+00:07:10.360 --> 00:07:10.660
+It takes microseconds.
+
+00:07:10.660 --> 00:07:12.220
+Would that be the best use of your time?
+
+00:07:12.480 --> 00:07:14.120
+It certainly does not.
+
+00:07:14.320 --> 00:07:19.280
+And so if these tools exist, well, then I think it comes down to like, well, what is the right way to use them?
+
+00:07:19.520 --> 00:07:20.260
+How do they go well?
+
+00:07:20.320 --> 00:07:21.120
+How do they go poorly?
+
+00:07:21.520 --> 00:07:21.680
+Yeah.
+
+00:07:21.900 --> 00:07:22.680
+Are they too expensive?
+
+00:07:23.060 --> 00:07:23.480
+That's spot on.
+
+00:07:23.540 --> 00:07:34.760
+I mean, what I find fascinating about this shift is like most professional developers have spent their entire adult lives just like learning new technologies.
+
+00:07:35.240 --> 00:07:37.060
+I actually don't know why this is any different.
+
+00:07:37.580 --> 00:07:40.400
+Like the whole point of being a developer
+
+00:07:40.760 --> 00:07:45.200
+is like keeping an open mind, an open philosophy of like, what can I learn?
+
+00:07:45.620 --> 00:07:46.760
+How should I be learning?
+
+00:07:47.580 --> 00:07:59.780
+Just that is what appeals to me so much about being a software developer is like this mindset of I go into this year not even knowing what tools I may be using by the end of the year because they may not exist yet.
+
+00:08:00.180 --> 00:08:04.640
+And I want to go learn them. And some of them I am going to throw immediately in the wastebasket
+
+00:08:05.080 --> 00:08:40.140
+and other ones are going to stick with me for potentially decades. And in fact, when it comes to LLMs, I had put out a post on X and I was like, I feel like Olama is one of those tools that I've added to my tool belt, like Django or Vim or Teamux that will be with me potentially for a couple of decades because it is just so straightforward and it makes it so easy to use these open-weighted models. And so that's incredible. 18 months ago, I hadn't even heard of this tool. And actually, it didn't exist before, I don't know, 18, 24 months ago.
+
+00:08:40.719 --> 00:08:53.920
+And here's something that I'm like, wow, this is going to stick with me. So I think that's what's maybe getting lost in a little bit of the hype cycle is we're developers. All we do is learn new stuff. Why is this any different from learning an open source project that you just found on
+
+00:08:54.040 --> 00:09:15.120
+GitHub? A hundred percent. A hundred percent. I'm definitely here with you on that. I'd see in other areas like education, I see it, you know, like write this essay for me. That's very problematic if you're in 10th grade and you're supposed to learn how to write an essay, but your job is to create software that works, add features, make it awesome. Like there's not a test. Yeah.
+
+00:09:15.880 --> 00:09:16.880
+Other than shipping.
+
+00:09:45.220 --> 00:09:54.740
+you if you're not a senior enough developer you're not experienced enough or you're not willing to dig deep enough you suddenly are stopped there's nothing you can do from there you're like no fix
+
+00:09:54.900 --> 00:09:58.380
+it fix it it doesn't matter how many times you tell the lom to fix it or the tool to fix it please
+
+00:09:58.660 --> 00:10:04.280
+or you go to jail yeah exactly yes there's people on the train tracks you must fix this right now
+
+00:10:05.679 --> 00:10:10.639
+my grandma's life depends upon it right you gotta make this database query work yeah well
+
+00:10:11.360 --> 00:10:38.800
+I think one thing that maybe is preventing people from embracing some of this stuff is, I actually don't even think that a lot of the terminology is clear. So if you'll allow me to be pedantic for a minute, I actually think that this is often the most insightful thing that I work with people on or tell people about, which is just like, what is the difference between an AI model, an LLM, an AI agent, and some of these other things? Because actually, people use these interchangeably.
+
+00:10:38.900 --> 00:10:43.940
+People will say Gen AI, generative AI, when they mean an agent or vice versa or an LLM.
+
+00:10:44.320 --> 00:10:48.700
+These are not drop and replace terminology for each other.
+
+00:10:48.730 --> 00:10:49.940
+They have very specific meanings.
+
+00:10:50.050 --> 00:11:02.660
+And I think particularly when I've seen the traditional software companies try to all of a sudden AI all the things, this is part of why developers get so annoyed with the AI ecosystem.
+
+00:11:02.790 --> 00:11:07.360
+Because it's like saying Django is not a...
+
+00:11:07.490 --> 00:11:08.520
+You wouldn't say web framework.
+
+00:11:08.760 --> 00:11:11.000
+you would say like, oh, it's an AI agent coding tool.
+
+00:11:11.040 --> 00:11:11.880
+It's like, no, it's not.
+
+00:11:12.020 --> 00:11:12.640
+What are you talking about?
+
+00:11:12.760 --> 00:11:14.580
+Immediately you lose your credibility, right?
+
+00:11:14.720 --> 00:11:19.480
+It's an AI generative web framework builder.
+
+00:11:20.140 --> 00:11:20.620
+Right, right.
+
+00:11:20.620 --> 00:11:21.460
+Thank goodness it's not.
+
+00:11:21.560 --> 00:11:26.720
+Thank goodness Django, the creators and the maintainers know what they're good at.
+
+00:11:26.740 --> 00:11:29.440
+And they're not trying to be a part of the hype cycle.
+
+00:11:30.560 --> 00:11:37.280
+Ironically, I think Simon Wilson, one of the original Django folks, is one of the leading people in AI.
+
+00:11:38.060 --> 00:11:39.520
+I've learned so much from his writing.
+
+00:11:39.600 --> 00:11:40.100
+Yeah, absolutely.
+
+00:11:40.460 --> 00:11:40.560
+It's unreal.
+
+00:11:40.560 --> 00:11:40.800
+It's amazing.
+
+00:11:41.100 --> 00:11:42.840
+I, I didn't think that, go ahead.
+
+00:11:42.880 --> 00:11:42.960
+Yeah.
+
+00:11:43.270 --> 00:11:46.020
+I don't know how, I don't know how, I don't understand how he can be so prolific.
+
+00:11:46.160 --> 00:11:46.920
+He is incredible.
+
+00:11:47.240 --> 00:11:54.720
+Like he's, he's just like a true gift, to software development, having been on the leading edge of so many things.
+
+00:11:54.940 --> 00:11:55.240
+It's amazing.
+
+00:11:55.600 --> 00:11:56.120
+Yeah, absolutely.
+
+00:11:56.600 --> 00:12:04.380
+So if I could just lay out real quick, maybe for, for folks like a, an AI model was an AI model is typically when people are talking about that.
+
+00:12:04.390 --> 00:12:13.140
+Now, again, like there can be a little bit of nuance and gray areas with some of these definitions, but typically an AI model is something that is trained on some sort of training set.
+
+00:12:13.840 --> 00:13:52.740
+And it's been typically trained on the transformer architecture, which is a fairly recent, last eight years kind of development. And so this is really what's allowed the breakthrough when we talk about AI now versus AI a couple of decades ago when it was like complete AI winter and no one wanted to talk about it, is we've had this breakthrough in architecture and it's not just like one breakthrough. It is a tremendous number of breakthroughs around attention and the way that things are weighted and things like that. But essentially, to boil that down, you have these AI models. Now, an AI model is not equivalent to a large language model, an LLM. An LLM is one type of AI model. So when I was at Assembly AI, they were training or they are training state-of-the-art speech-to-text models is not an LLM. So a lot of times people will say like AI model LLM, but those are not equivalent. An AI model is a superset of the subset, which is like an LLM, which is one type of typically working on text modality. Although there are things called multimodal models, which could have different image inputs and image outputs and text inputs, text outputs, and stuff like that. But I think that's one thing where a lot of companies and maybe even developers who are learning about the space get confused. It's like, is an AI model and LLM are the exact same thing? No, there's a relationship there, but they're not the same. So then you have like generative AI, which a lot of companies just kind of like sprinkle that into everything that they talk about. It's like generative AI is really using AI models, typically LLMs, but also image generation and some other forms to create some sort of output. So it's the generative component of it. So you have some sort of input and then there's a non-deterministic set of outputs to come out the other side.
+
+00:13:52.780 --> 00:13:57.640
+So it'll be, for example, like draw me a red dragon breathing fire for the image generation.
+
+00:13:57.920 --> 00:14:03.820
+And that generative AI is basically using an AI model to produce that image out the other side.
+
+00:14:04.100 --> 00:14:06.460
+So those are some of the common terms.
+
+00:14:06.640 --> 00:14:16.100
+And then you have AI agents, which is a lot of what we talk about or we're going to talk about, which is it is using typically an LLM, but it's typically using some sort of AI model.
+
+00:14:16.440 --> 00:14:18.540
+And that is kind of almost think about it as like the core.
+
+00:14:19.060 --> 00:14:22.880
+There's inputs into the system and non-deterministic outputs that come out the other side.
+
+00:14:22.900 --> 00:14:35.520
+So you'll say something like, write me a bunch of unit tests and in Claude Code or in Cursor or in Windsurf, and then it will interpret those inputs and then produce code or some sort of output out the other side.
+
+00:14:35.700 --> 00:14:40.400
+So I think for developers who are trying to get into, how do I even understand kind of the AI space?
+
+00:14:40.700 --> 00:14:53.240
+It's actually really important to get that terminology correct, because otherwise you won't even know when you're reading, particularly for companies or people that aren't as familiar with the space, like what they're even talking about.
+
+00:14:53.700 --> 00:15:00.420
+So I always like to kind of like- A lot of the companies, yeah, their job, it's to their benefit to obscure
+
+00:15:00.420 --> 00:15:01.280
+and make it just seem like it's everything.
+
+00:15:01.320 --> 00:15:03.420
+Yeah, they want to seem like-
+
+00:15:03.760 --> 00:15:05.020
+Yeah, totally.
+
+00:15:05.020 --> 00:15:13.300
+There's financial incentives by some companies to like obscure what they're doing and make it seem much more complicated so that they can sell this solution.
+
+00:15:13.300 --> 00:15:17.380
+Oh, it takes this really complicated problem and streamlines it down to like some sort of simple solution.
+
+00:15:17.380 --> 00:15:18.700
+And that's like often not the case.
+
+00:15:18.760 --> 00:15:22.500
+Like when you peel it back as a developer, like, you're not really doing that.
+
+00:15:22.700 --> 00:15:22.800
+Right.
+
+00:15:23.420 --> 00:15:31.960
+So I think that's often where I think a lot of developers would get frustrated with the current state of the industry because you're like, no, it's not what you're doing.
+
+00:15:32.380 --> 00:15:34.480
+You know, like you're not, you're not doing generative AI.
+
+00:15:34.700 --> 00:15:40.380
+You're not doing actual agents because agents are, you know, and then there's like autonomous agents, which are like operating independently.
+
+00:15:40.760 --> 00:15:49.060
+So that's one thing I think developers can like take away from the conversation is just like, is the company accurately describing what they are doing?
+
+00:15:49.360 --> 00:15:55.300
+Yeah, I a hundred percent agree. And let me do a little sidebar rant and I'd love to get your
+
+00:15:55.480 --> 00:16:01.780
+thoughts on this. Okay. Yeah. So when I hear people say, I've tried AI, it's a bunch of AI
+
+00:16:02.100 --> 00:16:19.740
+slop. It just makes up a bunch of mistakes. I noticed a couple of things that are often the case when I hear those and have people avoid that, right? So one, a lot of times I feel like people are not getting the best experience. They say like, I tried this. It really wasn't for me.
+
+00:16:20.100 --> 00:17:36.900
+It just messes up more than it provides. They're using the cheapest free models that they can find, right? If you use, you know, Claude's Opus model versus some free model, you know, like a 3 billion parameter local model they're not even in the same category the type of accuracy and like insight and like the context do they they understand everything rather than well they only understand the last file they read like that that is like one half of the problem and then i think the other for people who are not being successful yet with this kind of stuff it has to do with not providing enough information and context and stuff in the prompt so i'll see like oh refactor this function it's like well, hold on. What, where, where do you even want it to go? Right. It's just going to like, start randomly doing stuff. Here's a function. It is similar to these. And I need to move this to this kind of design pattern, keeping in mind that I'm using this ORM and like, give it like the same amount of description you would to a junior developer who's not super familiar with your project. So you want to give that thing like a possibly a multi-page write-up of what it needs to do and then ask it to plan it out and then start working through the plan, not just refactor
+
+00:17:36.930 --> 00:17:39.400
+to be, you know, to do this or whatever.
+
+00:17:39.500 --> 00:17:42.100
+And I think those two things are both problems.
+
+00:17:42.430 --> 00:17:48.060
+They often go together because the cheaper models can't accept that kind of information and keep it working.
+
+00:17:48.600 --> 00:17:48.660
+Right.
+
+00:17:48.780 --> 00:17:48.960
+Yes.
+
+00:17:49.160 --> 00:17:49.960
+What do you think about that?
+
+00:17:50.200 --> 00:17:51.460
+I mean, I totally agree.
+
+00:17:51.640 --> 00:17:56.660
+I think also to like these models, you cannot just like mix and match and replace things.
+
+00:17:56.820 --> 00:18:20.560
+So you may have an experience with one model and also recognize that these models, even though Claude for Opus is the public name of that model, they are tweaking and tuning that model on the backend to figure out how they can more, maybe not profitably, but serve this model up at scale in a window of resources.
+
+00:18:20.700 --> 00:18:29.040
+So even within a given model, unless it is an open weighted model that you've downloaded, like you have under complete control, these models are changing over time.
+
+00:18:29.540 --> 00:18:35.520
+So this is like, I think that's actually been one of the most concerning parts for me as a developer.
+
+00:18:35.560 --> 00:18:39.040
+I was like, what if I rely on a tool and it changes?
+
+00:18:39.620 --> 00:18:40.440
+And I wake up one day.
+
+00:18:40.500 --> 00:18:41.320
+The tests passed last week.
+
+00:18:41.420 --> 00:18:42.220
+They don't pass this week.
+
+00:18:42.220 --> 00:18:42.280
+Right.
+
+00:18:42.560 --> 00:18:43.600
+I have no control or visibility.
+
+00:18:43.620 --> 00:18:43.740
+Right.
+
+00:18:44.060 --> 00:18:48.240
+I was productive last week or I was productive yesterday and I can no longer be productive today.
+
+00:18:49.140 --> 00:18:51.580
+And that's setting aside any downtime or API stuff, right?
+
+00:18:52.419 --> 00:19:03.180
+So I think the thing is, that's why I very much appreciate the vibe check, the whole concept of a vibe check, which is you get a new model or get access to a new API.
+
+00:19:03.820 --> 00:19:06.540
+And what are the individual components that you want to test?
+
+00:19:06.940 --> 00:19:11.760
+So even to your example of refactor, here's the ORM, that sort of thing.
+
+00:19:11.980 --> 00:19:16.420
+I started very, when I have a model, and I use a lot of cloud code.
+
+00:19:16.440 --> 00:19:19.160
+I use a lot of Opus and so on now, but I'm sure this will evolve.
+
+00:19:19.310 --> 00:19:22.000
+I would love to try it with some open weighted models soon.
+
+00:19:22.540 --> 00:19:33.760
+And I will say something like in this URLs.py, because I work a lot with Django on the backend, I'll say update just the, I'm trying to add a new page.
+
+00:19:34.320 --> 00:19:35.340
+It's going to be at this route.
+
+00:19:35.740 --> 00:19:39.880
+Here is the, please update the URLs.py file for me.
+
+00:19:40.090 --> 00:19:41.520
+And like, here's roughly what I expect, right?
+
+00:19:42.000 --> 00:19:42.760
+Super specific.
+
+00:19:42.950 --> 00:20:09.040
+And if it can't even get that part right, the chances of you saying, okay, now build a new page, now build a new view, now do X, Y, and Z are very small. So you kind of have like the smallest unit that you would work with and then start building up. And it is a two-way street. Like you have to build confidence in that model over time. Like what are its true capabilities? And I will say like it's a lot of work, but it's a lot of work being a software developer and learning a new open source project.
+
+00:20:09.440 --> 00:20:14.360
+So it's actually not that different from just like, okay, pip install, new library, reading the
+
+00:20:14.320 --> 00:20:19.420
+documentation, all those things. But it's a different format of going back and forth with
+
+00:20:19.440 --> 00:20:28.700
+the computer. I think it encourages people to be less serious because it feels like a little chat, a little back and forth. Just, hey, I just asked a little question and it came with a cool answer.
+
+00:20:28.960 --> 00:20:41.879
+It doesn't speak, you need to study this and you need to really, this is a skill. It's like I'm having just a chat with someone you know or whatever. Well, it does open up, even if you set
+
+00:20:41.900 --> 00:21:22.440
+aside code generation. It opens up new capabilities that I would argue are useful for every single developer, regardless of how soon you are. So just being able to run Claude and in plan mode, ask it questions about like, where might I have security vulnerabilities in my code? Or where could I refactor database queries in order to compress the number of database queries within this view or where could I add caching that would be most impactful and don't even have it touch your code other than to read the code. That was actually like my big kind of breakthrough with LLMs was I was like, I'm just going to use them in read only mode. I don't need them to modify my code for me.
+
+00:21:22.560 --> 00:21:40.860
+I'm comfortable doing that myself as a developer. But once I got confident in the models being able to read the code, I was kind of like, eh, just like dip my toe in the water, like maybe modifying some things. And especially in Python, I've read a lot of scripts. I'm like updating data and I just, I don't know. It's not my favorite part of coding. So having models that can write for me,
+
+00:21:41.030 --> 00:21:52.640
+even if it's not perfect, and then I can modify it. I need to export this from the database in that format. And if it works at all, it's perfect. If it's not going to work at all, right? It's a little risk. Yeah. And an export from a database is,
+
+00:21:53.280 --> 00:22:08.540
+as long as you're not accidentally dropping a table, it is just a read-only, kind of like, tell me about my code. There's all these things out there that in software development are like, you have to do the analysis yourself, but if you can shortcut it with an LLM, that actually seems like a big win to me.
+
+00:22:08.960 --> 00:22:11.320
+And I don't actually see any downside to doing that.
+
+00:22:11.520 --> 00:22:17.640
+Like if, again, if it's, if it's a read only and you're not touching the code, that to me feels like only a win.
+
+00:22:17.900 --> 00:22:22.200
+It was, it's time that I've saved that otherwise I would have to invest myself.
+
+00:22:23.860 --> 00:22:27.100
+This portion of Talk Python To Me is brought to you by the folks at Posit.
+
+00:22:27.660 --> 00:22:30.780
+Posit has made a huge investment in the Python community lately.
+
+00:22:31.440 --> 00:22:36.120
+Known originally for RStudio, they've been building out a suite of tools and services for Team Python.
+
+00:22:36.980 --> 00:22:41.940
+Today, I want to tell you about a new way to share your data science assets, Posit Connect Cloud.
+
+00:22:42.940 --> 00:22:48.160
+Posit Connect Cloud is an online platform that simplifies the deployment of data applications and documents.
+
+00:22:48.740 --> 00:22:51.340
+It might be the simplest way to share your Python content.
+
+00:22:51.980 --> 00:22:53.720
+Here's how it works in three easy steps.
+
+00:22:53.990 --> 00:22:57.780
+One, push your Python code to a public or private GitHub repo.
+
+00:22:58.460 --> 00:23:02.020
+Two, tell Posit Connect Cloud which repo contains your source code.
+
+00:23:02.520 --> 00:23:03.520
+Three, click Deploy.
+
+00:23:04.020 --> 00:23:04.340
+That's it.
+
+00:23:04.740 --> 00:23:10.200
+Posit Connect Cloud will clone your code, build your asset, and host it online at a URL for you to share.
+
+00:23:10.840 --> 00:23:15.560
+Best of all, Posit Connect Cloud will update your app as you push code changes to GitHub.
+
+00:23:16.300 --> 00:23:22.480
+If you've dreamed of Git-based continuous deployment for your projects, Posit Connect Cloud is here to deliver.
+
+00:23:23.060 --> 00:23:25.900
+Any GitHub user can create a free Posit Connect Cloud account.
+
+00:23:26.280 --> 00:23:28.760
+You don't even need a special trial to see if it's a good fit.
+
+00:23:29.140 --> 00:23:34.300
+So if you need a fast, lightweight way to share your data science content, try Posit Connect Cloud.
+
+00:23:34.980 --> 00:23:40.600
+And as we've talked about before, if you need these features, but on-prem, check out Posit Connect.
+
+00:23:41.320 --> 00:23:44.400
+Visit talkpython.fm/connect-cloud.
+
+00:23:45.180 --> 00:23:46.100
+See if it's a good fit.
+
+00:23:46.600 --> 00:23:49.420
+That's talkpython.fm/connect-cloud.
+
+00:23:49.700 --> 00:23:51.680
+The link is in your podcast player's show notes.
+
+00:23:52.260 --> 00:23:54.280
+Thank you to Posit for supporting Talk Python To Me.
+
+00:23:55.520 --> 00:23:58.100
+Let me give people an example of something I recently did.
+
+00:23:58.290 --> 00:24:03.200
+And I want to kind of tie this back to like really emphasize the agentic side of things.
+
+00:24:03.660 --> 00:24:09.320
+So I have, I just checked, I have 530 GitHub repositories on my hard drive.
+
+00:24:10.300 --> 00:24:11.220
+I have three computers.
+
+00:24:11.490 --> 00:24:16.580
+I have like this streaming course live recording computer that we're talking on now.
+
+00:24:16.780 --> 00:24:17.740
+M2 Mac mini.
+
+00:24:17.990 --> 00:24:20.660
+I have an M4 Mac mini, which I usually work on, but I also have my laptop.
+
+00:24:21.120 --> 00:25:25.140
+And so every now and then, usually I'm on top of things, but every now and then I'll up a project and i'll start making changes i'm like oh i forgot to do git pull oh no oh this might be this might be bad you know especially if it's like a binary file like a powerpoint that i'm going to use for a course it's like there's no fixing it right you just yeah put them side by side and rename one and copy it over but it's it's not great and so i was sitting at my my um kitchen table on my laptop about to take my daughter to school and i opened up cursor with cloud sonnet in agentic mode and i described what i want i said what i would like is for you to create a script that i can run as a single command that will recursively find all the git repositories in a certain whatever folder i'm in downward find that do a git pull on every single one of them and report out which ones have changed. I drove my daughter to school, which is five minutes, one way, five minutes back. I sit down. The thing was there. It had created little test directories.
+
+00:25:25.460 --> 00:25:29.800
+It ran it. It said, it looks like it's totally good. And I literally just now have that as a
+
+00:25:29.960 --> 00:25:33.500
+utility. I can just, when I sit down, I'm like, oh, it's been like a week since I worked on
+
+00:25:33.550 --> 00:26:05.780
+security. Just get refreshed and just give it a moment. And then boom, you can see a report of all the stuff that's changed across all the parts. Even on something amazing is like chat CPT. You agentic. So maybe like, let's, that's a long winded way of like saying, tell us about the magic of like, what is this agent and tool using aspect for it? Cause I think when I said my rant, it's not working for people. I think a lot of times people are not doing agentic AI. They're asking LLM to write functions or stuff, which is great, but it's not the same. Yeah. Well, I think, I would say
+
+00:26:05.860 --> 00:26:18.280
+like kind of the biggest thing, and I mean, there's like, there's multiple attributes to it. Like, again, going back to some of the definitions, it's like you have an LLM and that LLM, if it's running ChatGPT on your web browser, it's not going to have access to all the stuff in your codebase.
+
+00:26:19.360 --> 00:26:26.800
+Unless you have a public GitHub repository or something. But generally, when you're working in your local development environment, it's not going to have access to that stuff.
+
+00:26:28.040 --> 00:26:46.540
+To be fair, there are some tools that will take enough context and upload it to ChatGPT. But again, what you're starting to do is you're starting to get really far away from a natural workflow and into one in which you have to bend to how the LLM is set up.
+
+00:26:46.760 --> 00:26:53.480
+So to me, I think the simplest way that I would look at it as agentic is like, it's something that is running side by side with you.
+
+00:26:53.760 --> 00:27:04.000
+It's almost like, I don't want to say copilot because copilot has overloaded terms with like kind of GitHub copilot, but it is essentially like, think about it almost as like pair programming with like more junior developers.
+
+00:27:04.760 --> 00:27:06.100
+Other people have used that analogy.
+
+00:27:06.480 --> 00:27:10.440
+It's not perfect, but it's kind of the one that I have that kind of sticks with me.
+
+00:27:10.440 --> 00:27:11.960
+It's as close as we got, I think, honestly.
+
+00:27:11.980 --> 00:27:13.100
+It's as close as we got, right?
+
+00:27:13.100 --> 00:27:16.160
+You can tell it to go do stuff, and it's not just going to only read.
+
+00:27:16.400 --> 00:27:17.300
+It'll look around.
+
+00:27:18.419 --> 00:27:19.220
+It'll experiment.
+
+00:27:19.640 --> 00:27:20.340
+It'll try something.
+
+00:27:20.500 --> 00:27:21.240
+It'll see it's wrong.
+
+00:27:21.340 --> 00:27:21.920
+It'll try something.
+
+00:27:22.900 --> 00:27:23.760
+It's kind of independent.
+
+00:27:24.040 --> 00:27:35.740
+And I think the easiest one for a lot of folks to have tried, because it was the one that I frankly got the most comfortable with at first, was in Cursor, you have which is essentially VS Code.
+
+00:27:36.020 --> 00:27:38.240
+So, you know, cursor is like embedded within that.
+
+00:27:38.300 --> 00:27:45.040
+And then you have different ways of interacting with like an agent mode where you're just asking to do stuff, right?
+
+00:27:45.120 --> 00:27:49.960
+Like asking stuff about the code base or please to write this function, whatever it is.
+
+00:27:50.260 --> 00:27:52.940
+So I do think that like that works for some folks.
+
+00:27:53.540 --> 00:27:55.300
+For me, it was not kind of the light bulb moment.
+
+00:27:55.300 --> 00:28:05.080
+It was kind of like where I started initially using it was I would, if I was like, oh, I need to like use this new API or I need to like kind of like develop a script or whatever it is.
+
+00:28:05.160 --> 00:28:12.400
+It was kind of like my, because I don't normally work in VS Code, I'm like a Vim, Tmux, like for a long time, like that's kind of my natural environment.
+
+00:28:12.610 --> 00:28:14.980
+And I was never going to like kind of adapt my own workflow.
+
+00:28:15.090 --> 00:28:16.340
+And I think a lot of people are like that, right?
+
+00:28:16.390 --> 00:28:19.520
+Like you're in JetBrains or you're in Xcode or whatever it is.
+
+00:28:19.930 --> 00:28:28.220
+You don't, you, you, what there's a breakthrough for you is like to build it in a way to your work, your development workflow that just is, is natural.
+
+00:28:28.590 --> 00:28:33.999
+And I think that's kind of, not the canonical definition, but to me is kind of most representative
+
+00:28:34.020 --> 00:29:10.120
+of kind of like agentic programming is like it it's just completely a part of your workflow and you don't have to adapt so um so again like that that cursor mode is kind of like okay i'd use it for like one-off stuff for me the breakthrough was using was using cloud code and i'll actually instead of talking about cloud code i'll say here was the bet that i made my feeling was there was enough value from cloud code uh based off of what i've been the videos that I've been watching, what I've been reading, and a lot of folks have been using it, that I was like, I'm a little worried about getting too reliant upon this tool, which is an API.
+
+00:29:10.560 --> 00:29:12.360
+And I will give Anthropic a lot of credit.
+
+00:29:12.540 --> 00:29:24.120
+They have done a lot of good work on these models, but I've also used Anthropic stuff in the past, which either had bad uptime or they were changing the model too frequently on the backside or things like that, that I was worried.
+
+00:29:24.560 --> 00:29:29.320
+And I think that's a natural thing as a software developer, should I really use this API?
+
+00:29:30.000 --> 00:29:38.900
+So I was like, my bet was, okay, even if I use this and it's amazing, if it goes away, I still need to be comfortable just like moving back to my workflow.
+
+00:29:39.460 --> 00:29:42.100
+Or there could be open weighted models in the future.
+
+00:29:42.350 --> 00:29:52.000
+Like I can just run Olama and I could run either Claude Code or Open Code or some sort of CLI that would allow me to just do the same things, right?
+
+00:29:52.180 --> 00:29:54.280
+I mean, may not exactly, but roughly the same things.
+
+00:29:54.680 --> 00:29:55.800
+So that was kind of the bet that I made.
+
+00:29:55.900 --> 00:30:01.020
+That was like the philosophical mindset shift for myself was I'm already very comfortable as a software developer.
+
+00:30:01.470 --> 00:30:04.500
+Let me add this in a way that doesn't break my coding workflow.
+
+00:30:04.570 --> 00:30:08.040
+I'm not adapting to these tools in a way that is unnatural.
+
+00:30:09.030 --> 00:30:22.480
+And then I will use them in ways that I feel like are actually going to be productive as opposed to forcing them to be used in ways that almost like all the hype cycle and the news media is talking about, you will never write another line of code again.
+
+00:30:22.720 --> 00:30:24.700
+I don't actually really believe that is true.
+
+00:30:25.170 --> 00:30:25.660
+I don't know.
+
+00:30:26.200 --> 00:30:44.800
+I feel like anybody who's saying that is not actually using these tools. And I actually don't think it's going that direction. So I don't know that that kind of sets the stage rather than like how I use the tools, like what was going through my mind as a software, as an experienced software developer of like, should I even make this shift? I don't know if that if you had to undergo that
+
+00:30:45.080 --> 00:30:56.720
+as well. I did. And I guess I haven't been as introspective about it as you. But for me, The real shift for me was I'm already a good coder.
+
+00:30:57.060 --> 00:30:59.300
+I feel very competent flying around.
+
+00:30:59.440 --> 00:31:03.200
+Our tool chain, I know yours and mine is like kind of quite different, right?
+
+00:31:03.300 --> 00:31:04.640
+You're very Tmux based.
+
+00:31:04.980 --> 00:31:10.540
+I'm very much often in PyCharm jumping around there, but we all are very fluid and capable, right?
+
+00:31:10.620 --> 00:31:13.640
+So you're feeling like this is like, I'm really productive and competent.
+
+00:31:13.840 --> 00:31:17.260
+And the last thing I want to do is just like spend my days in a chat engine.
+
+00:31:17.680 --> 00:31:18.220
+You know what I mean?
+
+00:31:18.740 --> 00:31:18.900
+Right.
+
+00:31:19.000 --> 00:31:20.360
+Like that is, that is not it.
+
+00:31:20.700 --> 00:31:28.140
+And I guess one of the main things, I sat down with a friend of mine, we were out having beer and he had his laptop, a friend named Mark, and he had his laptop.
+
+00:31:28.250 --> 00:31:31.260
+I said, well, let's just, man, I've been doing some really cool stuff with Agenda.
+
+00:31:31.460 --> 00:31:33.140
+Let me just, let's just do an example.
+
+00:31:33.720 --> 00:31:42.660
+And over like a beer, we built the most amazing app that would literally take weeks or a week at least, you know, knowing what you're doing.
+
+00:31:42.950 --> 00:31:45.940
+I got not, not, I'm going to learn these frameworks and then do it.
+
+00:31:46.220 --> 00:31:50.160
+But even with, like that actually changes my perspective.
+
+00:31:50.620 --> 00:32:00.880
+Did it use open source libraries and frameworks in order to, like, did the tool pull in a bunch of stuff and it actually stood up and built this application off of all the open source code, right?
+
+00:32:01.060 --> 00:32:01.200
+Yes.
+
+00:32:01.400 --> 00:32:02.220
+And it was ridiculous.
+
+00:32:02.840 --> 00:32:09.140
+It was a FastAPI app using SQLAlchemy to talk to SQLite.
+
+00:32:09.430 --> 00:32:12.120
+The web design was done in Bulma CSS.
+
+00:32:12.780 --> 00:32:18.060
+It used simple MDE for live markdown editing.
+
+00:32:18.680 --> 00:32:20.700
+And it just, it kept going.
+
+00:32:21.160 --> 00:32:32.860
+And one of the things I think is really interesting, and I know you have some thoughts on this as well, is it's the more you work with like new fancy HIP frameworks, the less well off you are, right?
+
+00:32:33.060 --> 00:32:37.340
+Like I could have said Tailwind, but Tailwind's got all these build steps and all these little nuances.
+
+00:32:37.820 --> 00:32:39.140
+Bulma is just include a CSS.
+
+00:32:39.720 --> 00:32:43.760
+And so it didn't have, that was like a thing it didn't have to worry about and so on, you know what I mean?
+
+00:32:43.900 --> 00:32:44.040
+Yeah.
+
+00:32:44.380 --> 00:32:46.080
+So I find it's like,
+
+00:32:46.200 --> 00:32:51.920
+I find myself trending towards more simple code than more towards frameworks, which is the opposite.
+
+00:32:52.230 --> 00:32:52.500
+I think.
+
+00:32:52.640 --> 00:32:56.400
+Yeah, well, there's I'll even take it a step further, which is I very much appreciate.
+
+00:32:56.800 --> 00:32:59.940
+I very I agree with you on the like less build steps.
+
+00:33:00.440 --> 00:33:02.860
+And in fact, like the simpler is often better.
+
+00:33:02.950 --> 00:33:07.500
+But I will say that I very much appreciate the opinionated tools and frameworks.
+
+00:33:07.920 --> 00:33:15.060
+And that's why I've actually had a better experience using Claude Code with Django.
+
+00:33:15.660 --> 00:33:27.460
+And a big piece is also, I've written thousands, if not tens of thousands of lines of code already in Plush Cap, which is typically what I'm building, if not some side scripts and stuff like that.
+
+00:33:28.060 --> 00:33:29.420
+And I will have-
+
+00:33:29.420 --> 00:33:30.640
+Let's do a really quick sidebar
+
+00:33:30.640 --> 00:33:33.700
+and let you introduce those projects.
+
+00:33:33.700 --> 00:33:35.180
+Just because I know it's really nice
+
+00:33:35.180 --> 00:33:40.680
+to be able to reference back and say, when I was adding this feature or this is the, so give people something concrete, you know,
+
+00:33:40.760 --> 00:33:43.180
+like tell us about full stack Python and Plush Cap.
+
+00:33:43.420 --> 00:33:44.280
+- So this is full stack Python.
+
+00:33:44.510 --> 00:33:46.180
+I wrote full stack Python.
+
+00:33:46.300 --> 00:33:59.180
+It's like over 150,000 words, all about the Python ecosystem, ranging from like the Python language itself to web frameworks, to deployment options, and content delivery networks, APIs, all sorts.
+
+00:33:59.480 --> 00:34:05.540
+So it was kind of like all the things around Python and it was broken down by conceptual ideas.
+
+00:34:05.800 --> 00:34:16.060
+So like data visualization and implementations, which I feel like is something that is not particularly obvious to people that are learning to program is like you have conceptual ideas and those have specific implementations.
+
+00:34:16.159 --> 00:34:29.980
+So a web framework is a conceptual idea across many different programming languages, but the specific implementations like a Ruby on Rails, like Rails, the framework, or Django, the framework, are the specific implementations within those programming ecosystems.
+
+00:34:30.440 --> 00:34:33.820
+And so that's essentially how I built out this site over 10 years.
+
+00:34:34.040 --> 00:34:38.740
+I will say that I only really work on one side project at a time.
+
+00:34:39.260 --> 00:34:43.080
+And Fullstack Python, I felt like, kind of run its course over 10 years.
+
+00:34:43.200 --> 00:34:45.320
+So I really haven't updated it in a few years.
+
+00:34:45.800 --> 00:34:52.600
+I still think it's actually relevant for most of it, but some of the links are a little bit dated and things like that.
+
+00:34:52.629 --> 00:35:00.320
+And it's not been brought into the conversation that we're having around coding agents and things like that.
+
+00:35:00.540 --> 00:35:07.300
+It is still relevant, but I would say not as relevant as it was when I was updating it literally every day.
+
+00:35:07.400 --> 00:35:07.480
+Right.
+
+00:35:07.640 --> 00:35:10.280
+Back in 2016 or something like that.
+
+00:35:10.670 --> 00:35:10.760
+Yeah.
+
+00:35:10.770 --> 00:35:10.860
+Yeah.
+
+00:35:11.080 --> 00:35:22.020
+And I also, I struggle a little bit because I would love to go back to working on full stack Python, but what I struggle with is you can ask LLMs about all of this stuff and it will give you very good answers.
+
+00:35:22.410 --> 00:35:32.160
+And so a lot of what I was doing was just bringing like as an experienced software developer, like writing almost like essays on like, you can see here, like, why are web frameworks useful?
+
+00:35:32.540 --> 00:35:59.420
+You can ask an LLM like why web frameworks are useful. And actually it'll probably give you a better answer than what I've written here, because it's going to incorporate tons of different sources. So that's where I've struggled a little bit with like, as you know, the chat models based on LLMs, especially as they've added search have gotten better. I'm not really sure how to add enough value on top of what an LLM can tell you to justify a substantial investment in writing.
+
+00:36:00.320 --> 00:36:39.260
+And then also, the one challenge with Full Stack Python is it's a statically generated site. It is primarily Markdown built with Pelican, which is a great static site generator in Python, but it was a lot of writing and it wasn't as much coding as I wanted. The site is kind of the site And then you add a ton of content to it. To me, I really wanted to get back to, especially now as a VP for the last several years of my career in executive level, I don't get a lot of time day in and day out to code. And so I really wanted something that I was coding every single day on nights and weekends and just doing in my spare time.
+
+00:36:39.360 --> 00:36:43.640
+So that's kind of where I shifted to this project, PlushCap, which is at plushcap.com.
+
+00:36:43.900 --> 00:36:48.600
+So this is like a landscape of developer-focused companies with self-service motions.
+
+00:36:49.140 --> 00:36:58.440
+So the hypothesis behind this was like when I was at Twilio, we were tracking developer content and events and other competitors.
+
+00:36:58.960 --> 00:37:05.660
+And it wasn't back then, but now YouTube is a really important source for teaching developers.
+
+00:37:05.920 --> 00:37:09.880
+And so I want to just like to aggregate a lot of this data.
+
+00:37:10.220 --> 00:37:10.880
+So that's what I've done.
+
+00:37:11.020 --> 00:37:21.280
+It's essentially 500 developer-focused companies across all different stages from like pre-seed all the way to publicly traded companies, where they stand kind of in their competitive position.
+
+00:37:21.830 --> 00:37:27.940
+And then like leaderboards that will show you like how many videos and views and subscribers do different companies have.
+
+00:37:28.800 --> 00:37:52.340
+And so like there's just a lot of data analysis, a lot of data visualization, a lot that essentially just goes into, like, if you go to, if you scroll down on Airbyte and you go down to, on this page, if you scroll down to the website structure and click on the blog, like, sorry, if you click on, go back and just click on the blog or just go up a little bit, the blog posts.
+
+00:37:52.420 --> 00:37:53.220
+Gotcha. I see.
+
+00:37:53.780 --> 00:38:34.100
+Under content category, this lays out the number of blog posts that was published per month by the company. And so just being able to visualize like their content patterns and trends is like, been helpful for me as I talk to companies about their go-to-market motions with developers and developer marketing, things like that. So anyway, this is a Django project running on DigitalOcean, Cloudflare as a CDN, a ton of Python, a ton of database stuff on the back end. So for me, I just love digging into this and I use coding agents and they've really greatly accelerated what I can actually do with this.
+
+00:38:34.260 --> 00:38:36.520
+Because what I'll do is I'm in meetings all day.
+
+00:38:37.220 --> 00:38:41.020
+So in the start of the day, I'll just tee up like a bunch of stuff that I want to get done.
+
+00:38:41.480 --> 00:38:45.320
+And then throughout the day, as I'm like getting out of meetings, I can just hit like, okay, okay, like good.
+
+00:38:45.600 --> 00:38:47.900
+And I just run it all on my own computer.
+
+00:38:48.080 --> 00:38:52.220
+And then I've got my work computer, I got my own computer where I'm like running all this stuff.
+
+00:38:52.360 --> 00:38:55.440
+And like periodically when I'm taking a break, I'm gonna be like, okay, yep, that looks good.
+
+00:38:55.440 --> 00:38:57.060
+Or no, I don't do that thing, right?
+
+00:38:57.440 --> 00:39:15.320
+So to me, it is like having a development team, even just a small development team, because I'm not doing like huge stuff to actually implement things. So that's really where I use all these tools. And I have an established code base. I wrote the code base myself over three years by hand. So now I have all the design patterns.
+
+00:39:15.570 --> 00:39:34.240
+I have an opinionated framework with Django. I've already chosen the vast majority of the open source libraries that I need. And it is mostly about the coding tools, pattern matching against what I've already done to create a new visualization or to create a new scraper because I'll scrape all the content from all these sites.
+
+00:39:34.820 --> 00:39:48.700
+So if I add a new company in the database, I have to write some custom web scrapers in order to get all their data. And that stuff is annoying. I've already written hundreds of those. So I'd rather just have- You're done right now.
+
+00:39:48.700 --> 00:39:52.440
+And then out the other side comes something that I can actually use.
+
+00:39:52.440 --> 00:39:55.580
+And I don't have to do all the grunt work because I've done a lot of that myself.
+
+00:39:55.640 --> 00:40:00.440
+Yeah. There's no more lessons to learn by making you- figure out their nav structure.
+
+00:40:01.120 --> 00:40:01.480
+Yeah.
+
+00:40:01.820 --> 00:40:16.720
+Or like, you know, I'm pulling like, okay, which CSS class corresponds to like the author name of the blog post so that I can get some structured data out of what is otherwise like unstructured data because it's every single company has a different blog format, right?
+
+00:40:16.980 --> 00:40:17.060
+So.
+
+00:40:17.860 --> 00:40:18.460
+Yeah, I think this,
+
+00:40:18.880 --> 00:40:20.660
+you touched on two really interesting things here.
+
+00:40:20.880 --> 00:40:22.300
+First, well, three, I guess.
+
+00:40:22.320 --> 00:40:23.520
+One, PlushCap is super cool.
+
+00:40:23.760 --> 00:40:24.060
+Thanks.
+
+00:40:24.360 --> 00:40:24.460
+Yeah.
+
+00:40:24.800 --> 00:40:32.220
+Two, having a low stakes project that you can just kind of go mad on with agentic AI
+
+00:40:32.370 --> 00:40:35.820
+and it's not going to end things or end badly.
+
+00:40:36.260 --> 00:40:39.300
+And three, I think this is really interesting.
+
+00:40:39.730 --> 00:40:41.800
+And I've noticed the same trends for me as well.
+
+00:40:42.160 --> 00:40:55.440
+But having already created the project, having really carefully thought about design structures, like, okay, it's going to be in this folder structure and it's going to follow this design pattern over and over using these three libraries I like.
+
+00:40:55.450 --> 00:40:59.260
+Not the most popular ones, necessarily, but the ones that I think I want to work with.
+
+00:40:59.500 --> 00:41:02.680
+Putting that in place really limits the,
+
+00:41:02.980 --> 00:41:05.080
+oh, it just, why is it using NPM?
+
+00:41:05.260 --> 00:41:06.000
+This is a Python project.
+
+00:41:06.120 --> 00:41:06.720
+What is it up to?
+
+00:41:06.780 --> 00:41:13.360
+You know, like it's way, way more focused and more likely to be aligned with what you were hoping it would do in the first place.
+
+00:41:13.580 --> 00:41:17.320
+And you need to choose the tools that you can debug the best.
+
+00:41:18.160 --> 00:41:21.300
+And so for me, like this is a Bootstrap front end.
+
+00:41:21.460 --> 00:41:29.560
+There's a framework called Tabler, which is built kind of on top of Bootstrap, which makes it even easier to build kind of these admin style interfaces and pulls in.
+
+00:41:29.590 --> 00:41:31.080
+I think it's I think it's chart.js.
+
+00:41:32.140 --> 00:41:33.040
+Apex might be Apex.
+
+00:41:33.070 --> 00:41:34.560
+I was using a few different charting frameworks.
+
+00:41:35.230 --> 00:41:36.800
+So it might be like Apex or something now.
+
+00:41:37.020 --> 00:42:25.320
+But the whole the whole point of like choosing your tools and being opinionated about your tools, I think actually helps a lot because then you don't have to get up to speed on the framework or the library before you debug the problem that the LLM created, because the lms are typically gonna they're gonna get you often 95 of the way there and you can keep prompting them but it's often it's often better to just like go fix it yourself there might be like a one-line tweak or something like that um that you need to do as opposed to like trying to get it to like sometimes it feels like getting the last like five to ten percent of polish is like finding a needle in the haystack because it's changing too much often whereas if you can just go in and and modify it yourself, you're not going to, you're not going to introduce additional noise into the development process.
+
+00:42:25.700 --> 00:42:25.900
+Yeah.
+
+00:42:26.520 --> 00:42:29.800
+I have a, but seems like an out of left field question, but it's not.
+
+00:42:30.100 --> 00:42:31.560
+What about Git and source control?
+
+00:42:32.020 --> 00:42:32.660
+Oh, yeah.
+
+00:42:33.400 --> 00:42:49.900
+So, I mean, that's the thing that we haven't talked about, which is like wildly important, which is like after when I'm letting something run, it is off of either it's either in a separate Git branch from running a bunch of things, or I actually like a grant, I have some simplest simplifying assumptions with my own code base.
+
+00:42:50.140 --> 00:42:53.760
+I've split the code base into multiple parts.
+
+00:42:54.340 --> 00:42:58.640
+So I have scripts where the scripts are like web scrapers.
+
+00:42:59.120 --> 00:43:02.960
+And if I'm updating things through an API, like I use the YouTube API.
+
+00:43:03.120 --> 00:43:06.860
+I use the PyPy API.
+
+00:43:07.200 --> 00:43:10.080
+I use a bunch of different APIs to get data into the database.
+
+00:43:10.700 --> 00:43:13.880
+So I can have an agent running on that thing.
+
+00:43:14.340 --> 00:43:15.020
+And that's separate.
+
+00:43:15.040 --> 00:43:22.380
+I actually only have those things interface with an API that is running with Django framework with the main production application database.
+
+00:43:23.190 --> 00:43:27.660
+So I've created a layer of abstraction where I can have an agent running on this thing over here.
+
+00:43:28.350 --> 00:43:32.020
+Then I can also have it running on the main application code base.
+
+00:43:32.460 --> 00:43:39.680
+And as long as we're not changing anything about the API, then I know that they can make their changes separately and that they're not going to interfere with each other.
+
+00:43:41.119 --> 00:43:46.580
+And all of this, going back to your original question about Git, I'm just constantly just doing Git add, Git commit.
+
+00:43:47.460 --> 00:43:53.080
+The one thing I've definitely noticed about some of these tools they will go off and create a bunch of different files.
+
+00:43:53.530 --> 00:44:00.060
+And so you do have to get pretty careful with like, I used to just do, you know, git commit, all the things,
+
+00:44:01.020 --> 00:44:02.880
+git commit dot, or no, sorry,
+
+00:44:03.100 --> 00:44:05.420
+git add dot, git commit with a little message.
+
+00:44:06.080 --> 00:44:10.120
+And I've learned like, oh, geez, like there's some debugging files that it actually didn't remove.
+
+00:44:10.580 --> 00:44:12.420
+I got to like manually remove those.
+
+00:44:12.940 --> 00:44:18.080
+Now, again, like I think a lot of these tools, you can configure them to like get rid of those problems.
+
+00:44:18.420 --> 00:44:21.680
+I think that that's the thing that's really improving quickly now.
+
+00:44:21.770 --> 00:44:35.180
+So if you ask me, like, what's the thing now that's really annoying that will likely be much easier a year from now, it will be like, you're going to have a standard like claw.md file that gives instructions that's just going to be like standardized.
+
+00:44:35.640 --> 00:44:38.760
+It's like how everybody has a git ignore file.
+
+00:44:39.740 --> 00:44:41.980
+Like you just kind of copy it from somewhere, right?
+
+00:44:42.220 --> 00:44:42.300
+Yeah.
+
+00:44:42.540 --> 00:44:43.780
+And then you modify it a little bit.
+
+00:44:44.040 --> 00:44:45.600
+But like the vast majority of it's the same.
+
+00:44:45.960 --> 00:44:47.260
+Like that's where we're going to go, right?
+
+00:44:47.540 --> 00:44:47.660
+Right.
+
+00:44:48.010 --> 00:44:48.140
+Right.
+
+00:44:48.240 --> 00:44:50.540
+You're like, oh, this we've all tended towards this.
+
+00:44:50.900 --> 00:44:50.980
+Yeah.
+
+00:44:51.400 --> 00:44:55.740
+And so that goes back to my, you're not prompting enough sort of things, right?
+
+00:44:55.880 --> 00:45:01.180
+Like if, if you're opinionated about how your project is built, put that in there.
+
+00:45:01.340 --> 00:45:11.440
+And a lot of times these agentic tools have like a rules file, like cursor has a dot cursor rules and stuff that you might put in there is my preferred web framework is FastAPI.
+
+00:45:11.880 --> 00:45:18.720
+When you install things or create a virtual environment, use uv, not Python's native, right?
+
+00:45:19.080 --> 00:45:20.300
+And you'll see it when it's working.
+
+00:45:20.500 --> 00:45:27.920
+It'll say things like, I know that I'm supposed to use uv, so it'll run uv pip list when it's checking if something got installed right.
+
+00:45:28.210 --> 00:45:30.660
+And it'll even like sort of remind itself from what you've said.
+
+00:45:30.730 --> 00:45:33.980
+And it's those kinds of things that keep sit on track, right?
+
+00:45:34.100 --> 00:45:43.940
+So I would say one of the things people should actually put more effort into than maybe they initially think is like setting up these rules about just your general preferences yes and uh i think
+
+00:45:43.940 --> 00:46:44.420
+it was armin roniker had a really great uh tip the other day where essentially like you can just use i believe it's a hook in cloud code and it's like basically if the um the lm tries to use a pip install something it will actually throw an error and it will know based off of that error that it should be using uv uh and so you could add enough of these hooks and so like what i anticipate is like over time, number one, like people will develop some level of standardization for these, like right now, the configuration files are very fragmented across the different agentic tools. So you can't quickly swap from like one to the other, like, and like there's a Gemini CLI and there's a cloud, you know, cloud that has a configuration, both for project specific and for all your development workspaces. My guess is like a lot of this stuff will start to get standardized, just like MCP was standardized and an open standard. And then it will make it much easier for people to just transpose their development preferences from one tool to the other.
+
+00:46:44.680 --> 00:47:54.980
+So my guess is that's probably what's coming over the next 12 to 18 months. And if the big companies don't want that to happen, they'll be left behind by the open source tools that will make that much easier. I think the other thing is I actually don't... I don't know. Maybe I'm one of the balls with them. I don't, I have a VMRC, like for my configuration, I don't have like an insane number of extensions or, you know, or I guess plugins, or like a huge VMRC or anything like that. Like I actually try to keep things relatively standard. And then just focus on the patterns that are most important or the configurations that are most important. And I I'm still kind of like that with, with using cloud code, I do have, you know, cloud and defy on stuff. But I also found that it's not 100% accurate. And so I think there's going to be a lot of development around making sure that the tools adhere to the practices that you really want. Because right now, I feel like if you want reliability in code formatting, you need to run the code formatter as a separate step as a part of your build workflow. The agentic tools are just not... Maybe I'm not doing it right.
+
+00:47:55.380 --> 00:47:56.380
+I'm reliable now.
+
+00:47:56.440 --> 00:48:04.120
+I've gotten, cloud sonnet to, to know that it's supposed to run ruff format and rough check --fix whenever it finishes anything.
+
+00:48:04.560 --> 00:48:12.060
+And so it'll, at the end it'll say, and now I'm supposed to do, you know, this to make sure it's tidy and like the style you like according to your rough Tom, all right.
+
+00:48:12.320 --> 00:48:12.460
+Yeah.
+
+00:48:12.800 --> 00:48:13.580
+And that, that makes sense.
+
+00:48:13.730 --> 00:48:16.240
+I mean, it's, it's not, sometimes it doesn't.
+
+00:48:16.380 --> 00:48:16.480
+Right.
+
+00:48:17.180 --> 00:48:18.880
+But you usually do what do you, what's wrong with you?
+
+00:48:19.180 --> 00:48:19.480
+I know.
+
+00:48:19.840 --> 00:48:20.020
+Yeah.
+
+00:48:20.260 --> 00:48:39.060
+And also I feel like everything that you add to the agent, like the more and more steps than you add, actually, again, this will change over time, but I feel like it actually gets less reliable. And also the number of steps, I would rather just have it run a script that will handle all those things before I'm ready to commit, rather than having it run all the time.
+
+00:48:39.180 --> 00:48:56.980
+Because I've also found that sometimes I want to add a tool for code formatting or something, and then it slows down the whole process too much for me. And then the main thing with these tools is I want them to be extremely fast. And that is probably the biggest piece of advice I can get to any of these companies is like why Claude Code over others?
+
+00:48:57.070 --> 00:49:03.240
+Like it is insanely fast, even though the LLMs require, you know, processing time and stuff like it's responsive.
+
+00:49:03.530 --> 00:49:07.400
+And so like my guess is like that's also where a lot of the open source tools will go as well.
+
+00:49:07.520 --> 00:49:10.120
+They'll just be really fast and responsive, just like Vim and T-Monks are.
+
+00:49:10.320 --> 00:49:10.480
+Yeah.
+
+00:49:10.830 --> 00:49:13.520
+Leave it to a Vim user to say it's not fast enough.
+
+00:49:13.570 --> 00:49:13.900
+Just kidding.
+
+00:49:15.940 --> 00:49:16.260
+Yeah, exactly.
+
+00:49:16.600 --> 00:49:21.000
+So I think maybe just like some quick shout outs to some of the tools, right?
+
+00:49:21.060 --> 00:49:23.940
+So Claude Code obviously is a really interesting one.
+
+00:49:24.200 --> 00:49:25.200
+You've been talking about that a lot.
+
+00:49:25.360 --> 00:49:26.760
+I've mentioned Cursor a few times.
+
+00:49:26.990 --> 00:49:32.800
+I think as much as I'm a much more fan of the PyTarm style, I find it to be very effective.
+
+00:49:33.160 --> 00:49:37.240
+I've done some stuff with Juni, which is kind of a new project from JetBrains.
+
+00:49:37.440 --> 00:49:42.320
+Like JetBrains has had an AI agent that was kind of like a super duper autocompleter.
+
+00:49:42.740 --> 00:49:44.360
+And maybe we could talk about that difference as well.
+
+00:49:44.590 --> 00:49:46.360
+But it's like a super duper autocompleter.
+
+00:49:46.400 --> 00:49:56.680
+but then they have a separate completely different install thing that is an agentic ai called juni and i think it's making good steps it like really integrates with pycharm if you're you're into that
+
+00:49:57.010 --> 00:50:26.720
+um yeah well and that's been the evolution right like we had yeah github copilot which was essentially like a very fancy auto complete it kind of it would complete your code for you but it was not an it wasn't an agent in any meaningful capacity like that's what kind of kicked off some of this stuff of like wow it's really great autocomplete and i think a lot of the tools follow that pattern. Even when you would use cursor say a year ago, it was very much like auto-complete, at least the standard pattern, right? Before they had the agent mode.
+
+00:50:26.920 --> 00:50:39.760
+For sure. And that never really connected with me. I'm like, I don't need that. I can just, I can auto-complete it word by word. I don't really, because half the time it'll auto-complete like three or four lines. I'm like, yes, but not that line. And how do I get it to auto-complete
+
+00:50:39.860 --> 00:50:43.180
+the next? I guess I got to accept it then go edit that part. You know, like it's just,
+
+00:50:43.500 --> 00:50:48.040
+I never really vibed with that, but the agentic mode, that is next level stuff.
+
+00:50:48.690 --> 00:50:55.280
+Also, if you're a PyCharm or VS Code user, the cloud code integrates in both of them, right?
+
+00:50:55.580 --> 00:50:55.740
+Yes.
+
+00:50:57.120 --> 00:51:03.580
+So maybe talk, I know you're using cloud code, so maybe tell people what it's like and why you like that one.
+
+00:51:03.760 --> 00:51:11.020
+Okay, so I started using cloud code like six months ago, but I was using it off of the API credits, which was before they came out with the plans.
+
+00:51:11.580 --> 00:51:12.680
+Started evaluating it.
+
+00:51:12.680 --> 00:51:15.000
+I was like, this is going to be way too expensive.
+
+00:51:15.270 --> 00:51:18.480
+Like this is going to be- Yes, it is very expensive very soon.
+
+00:51:18.480 --> 00:51:25.020
+I was like, based off of my usage patterns, like just like monthly, it's probably going to cost me over $1,000 a month.
+
+00:51:25.020 --> 00:51:28.440
+I was like, this is just not, it's not worth that, right?
+
+00:51:28.440 --> 00:51:32.540
+So then they came out with the max plan, which was I think originally $200 a month.
+
+00:51:32.540 --> 00:51:35.440
+Now they have $100 and $200 a month, which I thought was interesting, right?
+
+00:51:35.440 --> 00:51:37.720
+But I was like, I talked to enough people that did use it.
+
+00:51:37.720 --> 00:51:40.900
+And I was like, that's interesting, but I'm not that comfortable with this workflow yet.
+
+00:51:41.120 --> 00:51:43.180
+They came out with the pro plan, which was $20 a month.
+
+00:51:43.240 --> 00:51:44.720
+They said, okay, I'll try it for a month.
+
+00:51:45.260 --> 00:51:47.860
+It was almost like a, to me, it was almost like a free trial.
+
+00:51:48.020 --> 00:51:54.640
+Like I'm willing to invest $20 into a course or whatever it is like 200 is like a pretty high bar, but 20 bucks.
+
+00:51:54.720 --> 00:51:56.120
+I was like, yeah, okay, fine.
+
+00:51:56.260 --> 00:51:58.880
+Even if it, even if this sucks, I'll just, I'll try it.
+
+00:51:59.259 --> 00:52:01.220
+So I maxed out the pro plan.
+
+00:52:01.220 --> 00:52:08.420
+I was like, I'm gonna get every drop out of the pro plan that I possibly can for my 20 bucks, and then I'll make a decision as to whether I want to upgrade or not.
+
+00:52:08.660 --> 00:52:10.740
+I was like, this is good enough.
+
+00:52:11.279 --> 00:52:13.340
+And that was only with the Sonnet model.
+
+00:52:13.340 --> 00:52:14.880
+It wasn't the higher Opus model.
+
+00:52:14.990 --> 00:52:17.580
+So there's a lot of stuff that was a little bit more limiting about it.
+
+00:52:17.580 --> 00:52:18.620
+We have to give a lot more instructions.
+
+00:52:19.360 --> 00:52:20.980
+It wasn't as good as architecting things.
+
+00:52:21.460 --> 00:52:22.300
+But I got enough out of it.
+
+00:52:22.300 --> 00:52:24.380
+I was like, okay, I'd be willing to upgrade.
+
+00:52:25.420 --> 00:52:28.620
+And so I'm actually currently now on the $200 a month plan.
+
+00:52:28.940 --> 00:52:29.720
+I think it's worth it.
+
+00:52:29.870 --> 00:52:37.020
+I will say that it also, for me personally, it forces me to be a little bit more addicted to using it.
+
+00:52:37.160 --> 00:52:38.560
+I want to get my money's worth.
+
+00:52:38.620 --> 00:52:49.440
+and so there's a, there's a, a tool called CC usage, which, was originally just for the API, but now, is it'll just give you your usage patterns.
+
+00:52:49.760 --> 00:52:58.020
+Even if you're on the, the, you know, subscription plan, I will say like, my usage yesterday was, if it was by API would have been $105.
+
+00:52:58.800 --> 00:53:06.140
+So, you know, over a course of a month, if I was actually consistent, I'd be spending over $3,000 a month off of API credits, which is just not, not sustainable.
+
+00:53:06.300 --> 00:53:06.440
+Right.
+
+00:53:06.860 --> 00:53:16.020
+Yeah, there might be people out there listening who think, you know what, Matt is actually crazy because $200 a month to some random AI thing when I'm a developer is insane.
+
+00:53:16.580 --> 00:53:29.800
+But if you had somebody who worked for you, who you could give detailed instruction to and have some reasonable expectation that they can get it done independently, and you said, well, that person you hired is $200 a month, that would be insane, right?
+
+00:53:29.940 --> 00:53:34.120
+And this, you can really turn this thing loose and get a lot done.
+
+00:53:34.130 --> 00:53:41.840
+But I think one of the mind shifts, at least I had to make was if I'm going to pay for one of these AIs at a level like that, you better make use of it.
+
+00:53:42.050 --> 00:53:45.940
+And you better have a plan that like, this thing is, this is how I'm going to take advantage
+
+00:53:46.010 --> 00:53:46.300
+of it.
+
+00:53:46.470 --> 00:53:49.220
+But when you do all of a sudden, you're like, wow, this is actually a bargain.
+
+00:53:49.560 --> 00:53:49.800
+Yeah.
+
+00:53:50.220 --> 00:53:54.160
+Well, and let's, let's compare it to like another like AI tool that I use, which is Descript.
+
+00:53:54.360 --> 00:53:55.560
+And I use Descript quite a bit.
+
+00:53:55.820 --> 00:53:58.200
+Descript is for creating, you just record video.
+
+00:53:58.720 --> 00:54:02.260
+And then you can edit off of the transcript and it'll like edit the video.
+
+00:54:02.420 --> 00:54:04.580
+It's not perfect, but it's very, very good.
+
+00:54:05.160 --> 00:54:09.040
+And I'm on like, I don't know, it's like 150 bucks a year or something like that.
+
+00:54:09.200 --> 00:54:10.880
+I use it a lot for everyone.
+
+00:54:11.540 --> 00:54:20.000
+Like my teams are remote distributed and I like to record videos just so they can hear from me like in five to 10 minute increments of like, here's what I'm thinking about or shout outs or whatever it is.
+
+00:54:20.000 --> 00:54:20.080
+Right.
+
+00:54:20.480 --> 00:54:26.100
+So I use it like quite a bit internally, but like if I don't use it for a week because I'm traveling, I don't feel bad about it.
+
+00:54:27.000 --> 00:54:29.840
+And so like, but that's 150 bucks a year.
+
+00:54:30.280 --> 00:54:35.180
+Like I get enough usage out of it at 150 bucks a year that if I don't use it for a week, it's not that big of a deal.
+
+00:54:35.520 --> 00:54:37.180
+200 bucks a month is like a really high bar.
+
+00:54:37.240 --> 00:54:43.640
+And so my bet there was just like with the $20 a month plan was, if I don't use this enough, I'm going to cancel it.
+
+00:54:44.580 --> 00:54:50.660
+And the other bet is I think eventually that the open weighted models are going to get really interesting here.
+
+00:54:51.420 --> 00:54:55.920
+And so I just want to be on the edge of seeing this ahead of time.
+
+00:54:56.340 --> 00:55:00.900
+And so I look at it as a little bit of an investment in my own learning.
+
+00:55:02.300 --> 00:55:08.540
+And so to me, there's just no replacing hands-on time with the tools, right?
+
+00:55:08.870 --> 00:55:11.600
+And so that to me is really what this is about.
+
+00:55:11.900 --> 00:55:17.480
+And to be fair, I've used other tools, other APIs, developer tools, where I paid for them.
+
+00:55:18.040 --> 00:55:21.080
+It's actually a browser-based, which is like a web scraping tool, is awesome.
+
+00:55:21.780 --> 00:55:24.600
+I have paid 40 bucks a month here and there to use it.
+
+00:55:24.660 --> 00:55:27.500
+And then when I don't use it enough, I will just downgrade my plan.
+
+00:55:27.780 --> 00:55:35.720
+And you kind of have your short list of things that you're using as a developer, as a time, as opposed to thinking that it is like indefinitely, I'm going to be paying for this.
+
+00:55:36.040 --> 00:55:36.260
+Yeah.
+
+00:55:36.460 --> 00:55:36.600
+Yeah.
+
+00:55:36.760 --> 00:55:55.660
+I definitely think it's important for people to maybe not try the $200 plan, but like the $20 plan or something, if they're interested in these things, because it's downloading a free model that runs on your local machine, that 3 billion parameters and saying, well, I tried AI and it doesn't work is not the same as, as trying this, this type of thing.
+
+00:55:56.080 --> 00:55:56.160
+Right.
+
+00:55:56.160 --> 00:55:56.240
+Right.
+
+00:55:56.420 --> 00:55:57.860
+It's, it's, it's really, really different.
+
+00:55:58.220 --> 00:55:58.340
+Yeah.
+
+00:55:58.500 --> 00:56:03.560
+Well, and also think it's, if you have a, I think that's why my situation, okay, let's,
+
+00:56:03.620 --> 00:56:07.020
+let's maybe like set up a little framing of who I think this is most valuable for.
+
+00:56:07.200 --> 00:56:12.980
+If you were like an elite developer and you're working on things like embedded systems or things that absolutely cannot break.
+
+00:56:13.520 --> 00:56:15.840
+I actually think there is less value for you here.
+
+00:56:15.940 --> 00:56:18.520
+I think the read only mode is valuable in that.
+
+00:56:18.580 --> 00:56:49.240
+like analyze my C code, where could there be like, you know, like memory, you know, buffer, buffer or bullet attacks or whatever it is. Right. But I think if you were building like side projects, like I'm not trying to like monetize like plush cap really, but like, you know, maybe someday I will. I just really love building plush cap. Like I think if you have a side project and for you, like you're building courses, you have your website, like there's a lot there that if you just had more bandwidth, you could build so much more cool stuff.
+
+00:56:49.410 --> 00:57:02.860
+Like, yeah, like when you have a backlog of ideas and you don't have time to build them, that's actually where I think these tools are most valuable because you can build a lot of those ideas and some of those ideas might be stupid and then you can just throw them away.
+
+00:57:03.280 --> 00:57:09.920
+But the ones that you, if you can just clear your backlog and come up with new ideas, because this thing is just, you're able to ship so much faster.
+
+00:57:10.420 --> 00:57:12.840
+Even if you have to refactor by hand, that's amazing.
+
+00:57:13.240 --> 00:57:13.360
+Yeah.
+
+00:57:13.700 --> 00:57:20.580
+I have three projects that are like sort of side project-ish, but are like related to Talk Python in various ways.
+
+00:57:21.080 --> 00:57:24.640
+And yeah, it's just turn the stuff loose on it and see if it's a good idea.
+
+00:57:24.690 --> 00:57:31.860
+Who knows if it'll see the light of day, but it goes from, can I dedicate three months to that to, well, let me try an afternoon.
+
+00:57:32.660 --> 00:57:32.800
+Yeah.
+
+00:57:33.180 --> 00:57:34.520
+See how it comes out, you know?
+
+00:57:34.720 --> 00:57:38.960
+Let me show you like something that I built purely off of like Claude Code.
+
+00:57:39.080 --> 00:58:34.180
+if you go to if you go to plush cap i have a um a leaderboard uh of youtube channels and by company so you've got i actually have you know all almost 500 companies in there but it cuts off at a thousand so yeah if you go to leaderboards youtube um you know there's there's 231 companies listed here and all 231 are um uh have over a thousand subscribers now the thing that's interesting out like i was just showing this to someone and they're like oh you know it'd be really interesting is like you have like subscribers, you've got videos, you've got views. And if you click into like views, like if you click into the number of views, this is total views over time. It's a visualization of like, you know, what, how many views, open AI has on their YouTube channel over time. They were like, what would this look like? You know, cause they're, they're producing more and more videos. So are, is the average number of views going up over time or down?
+
+00:58:34.280 --> 00:58:36.520
+Like, are they becoming more efficient or less efficient?
+
+00:58:37.000 --> 00:58:42.260
+So I was like, I wonder, like I already have subscribers, videos and views.
+
+00:58:42.530 --> 00:58:43.180
+I have the visualization.
+
+00:58:43.290 --> 00:58:45.560
+I literally have the pattern for what I would like this to be.
+
+00:58:45.640 --> 00:58:54.380
+And yeah, there now you can see actually they're becoming less efficient over time as they add more videos and there's different ways you can slice this data.
+
+00:58:54.390 --> 00:58:58.220
+So I've actually got like a bunch more ideas just from creating this view.
+
+00:58:58.600 --> 00:59:01.680
+But this view was based off of the pattern that I had already created.
+
+00:59:02.020 --> 00:59:08.140
+And so it was just basically like using the Django ORM to pull the data, you know, create a new web page.
+
+00:59:08.600 --> 00:59:11.660
+And I could tell whether it was correct or not and then like tweak it.
+
+00:59:11.940 --> 00:59:18.400
+So it had the pattern and it just needed to mimic that in a way that was a new view and visualization.
+
+00:59:19.640 --> 00:59:20.840
+And I feel like that's what this is.
+
+00:59:20.840 --> 00:59:23.540
+Pull new data, make a new page, but it's pretty much the same.
+
+00:59:23.780 --> 00:59:24.060
+Exactly.
+
+00:59:24.580 --> 00:59:24.680
+Yes.
+
+00:59:25.200 --> 00:59:28.140
+So this isn't like, you know, rocket science or anything like that.
+
+00:59:28.200 --> 00:59:30.320
+But for me, like I wanted to build this view.
+
+00:59:30.620 --> 00:59:45.140
+I actually, the interesting part about the story is like, I talked to somebody in the morning and I shipped this like when I had a quick break and I was like, I sent it over to them and I was like, Hey, I built this thing. and actually no, it was my, my boss at work at DigitalOcean.
+
+00:59:45.200 --> 00:59:55.779
+He was like, cause we're looking at our YouTube channel and he's like, I wonder what the average views are over time. And I like, I was like a few hours later, I was like, I had a break, I shipped it. And he's like, this is crazy. Cause we use, you know, we use this data as a part of
+
+00:59:55.800 --> 01:00:00.680
+running my, my org, like Debra and stuff. So yeah, absolutely. Because whenever we have an idea,
+
+01:00:00.770 --> 01:00:03.620
+we're like, what does the data look like? Or what, especially when you can compare it across
+
+01:00:03.940 --> 01:00:07.680
+companies, that's really helpful. Yeah. It's the perfect type of thing. I absolutely love it.
+
+01:00:08.080 --> 01:00:35.340
+So let's close this out. We got maybe take a few more minutes and let's, let's give people some concrete tips. Like for example, when we talked about Git, you know, check in off to let it finish a job, save it and check that in. And don't let it just go wild for a while. Cause if it goes of bonkers and you're like oh i hate that you're like but that's also hours of work that's gone you know what i mean like use use source control as a um um sort of a save along the way
+
+01:00:35.500 --> 01:01:08.260
+um you've got a bunch of tips and stuff very give us tips yes i know okay number one thing i actually feel like i can clear uh i have better clarity around technical debt and how important it is to get rid of technical debt now because if an l if you're using the like an agent and it it like is looking to pattern match to what you have in your code base, and it finds the area that you know is basically technical debt, and it copies that, and you're not really on top of looking through the code, it will often copy design patterns that you really do not want in your code base.
+
+01:01:08.780 --> 01:01:24.940
+And so I actually feel like it allows you to make the argument that cleaning up technical debt is more important when you use LLMs and agents than when you were doing things by hand where you knew So as a developer, I'm just going to ignore that section of the code and I'm not going to use it.
+
+01:01:25.180 --> 01:01:35.220
+So that's like a very specific tip, which is like, if you are going to pattern match against something you're doing in your code base, make sure it's not copying the area that you know is a problem.
+
+01:01:35.760 --> 01:01:37.300
+And then just like shipping that.
+
+01:01:37.320 --> 01:01:38.680
+I think that's, that's one really.
+
+01:01:38.700 --> 01:01:41.420
+You don't want to supercharge your bad habits.
+
+01:01:41.900 --> 01:01:42.120
+Yeah.
+
+01:01:42.440 --> 01:01:42.500
+Yeah.
+
+01:01:42.740 --> 01:01:46.980
+I would say on top of this, you absolutely do want to clean up technical debt.
+
+01:01:47.240 --> 01:02:20.400
+you can, when it's done, say, great work, that's valid, but now please apply some dry principles and some design patterns that you know that we're already using and just polish this up one more time and you'll get pretty good results. On the other side is if you've got a project that's got a ton of technical debt, you can kind of just have this conversation with the agentic AI and say, help me understand, where are the long functions? Where is there too much coupling? Let's start breaking that down. And when it's in that mindset, it's, it's pretty good at like addressing those
+
+01:02:20.570 --> 01:04:00.579
+problems. Right. And that's, that's the flip side of like the technical debt is like, it should be easier, arguably to clean up technical debt, because if you fix something or you're, you're asking the L like the agent, like the introspective, like how could this be improved? What are the design patterns? And particularly like, at least in clock code, there's like a plan mode. I use plan mode. It's like a shift tab. I use it all the time because then it's not, it's going to just like tell you what it's going to do, not go and do it, not going to make any changes. And so I will ask it, like, how can I optimize these database queries? How can I simplify this code without oversimplifying? That type of thing. And that's actually really helpful for just identifying what changes actually should be made. Then I can make the decision, are you going to go ahead and implement those? Or should I just go ahead and implement them because they're easy enough for me to make the changes myself. Awesome. Next tip. Yeah. So I feel like you've already talked a little bit about this. Like the context is really important and the prompting is important. I will say that like where I've failed in the past and I like was not happy with the LLMs was like, I'd say something like, can you just write a bunch of unit tests for this thing? And like, of course, it's not going to have enough. Like I give it the code that I want it to be testing. But now what I found is like I, when I, after I have it write some code, I will say like, okay, now write me like a few happy paths and I'll like evaluate the happy paths and I'll be like, write the unhappy paths. And I'll like, look at those and how it's failing. And then I'm like, what are the edge cases? And so you just have to, even if you're like, a lot of people are like, oh, here's how you write the perfect prompt. Like I actually really hate doing that because what if I wrote the perfect prompt and it still didn't give me what I wanted at the other side? I just tend to
+
+01:04:00.600 --> 01:04:04.860
+have to tell it it's going to go to jail please you know no i just tend to be really incremental
+
+01:04:05.180 --> 01:05:00.380
+i'm like really specific like just like again going back to like that junior developer mentality it's like just write me like three happy path tests to test this function yeah like give me some inputs and the expected outputs okay now i want you to write the things that like basically would break it and make sure that it doesn't break so what that does is like rather than i i have not found success or it's been a lot harder with like write me a bunch of tests both happy path the non-happy path and then it's kind of you know depending which model you're using or what day you get like it may or may not be correct and so i brought it's also think about like for yourself and your own sanity when you're doing reviewing the changes that it's making uh you really want it to just like be consumable like okay those are the happy path and mentally you're like okay happy path tests or mentally not that um you should if you instruct it in the way that you want to consume the information that it's created out the other side, that can actually be really helpful as well.
+
+01:05:00.640 --> 01:05:09.620
+Yeah. I find it's terrible if you just, this, this project needs tests, write tests. It ends up testing like just the smallest arbitrary aspects of the code. And you're like, what is this?
+
+01:05:09.880 --> 01:05:35.320
+Like now I got to maintain this junk that like one plus one is two. Like, no, this is not what I want from you. Right. You got to be really specific and do bite size. And it's a little bit of the plan to like maybe plan out like the types of tests we should have. Okay. Let's do this first one and focus, you know, like really guide it a little bit, treat it like it's, it's a junior that's kind of new to this stuff. Don't just, you wouldn't tell the junior, like we need to refactor the architecture. I'll see you next week. You're like, well, what are you going to
+
+01:05:35.380 --> 01:05:40.020
+get back? You don't know. Yeah. Well, maybe, maybe like three quick, like lightning round tips.
+
+01:05:40.599 --> 01:06:02.180
+Yeah. One of one, one of them mostly just, I thought about because I do this with, I have been doing this for years where if I'm working on different projects or different part of the code base, I will just use different terminal backgrounds, different colors. This is my blue terminal. So blue is where I've got Tmux and Vim, and I'm running a bunch of stuff. Exactly.
+
+01:06:02.850 --> 01:06:19.760
+And then, yeah, I think my colleague, Amit, tweeted about this. And then black will be, I'm running the server, I'm running my task queue, all the stuff that is running right now, local development. Then if I'm tailing a bunch of logs on the server, that'll be in another
+
+01:06:19.720 --> 01:06:22.780
+different color. So just mentally- Does this happen automatically?
+
+01:06:22.860 --> 01:06:27.800
+No, I actually just open up separate terminals. And then within that, I'll have different team
+
+01:06:27.800 --> 01:06:32.800
+accessions running where I can just be like, again, it has nothing to do with the computer.
+
+01:06:32.800 --> 01:06:48.920
+It has everything to do with me. A lot of times just doing a ton of context switching. So I've found this to be applicable as a pattern for the agents. If I'm having an agent that works primarily on one part of the code base, then I will just have that be blue. And then another part of the code base have a B black.
+
+01:06:49.130 --> 01:06:49.240
+Right.
+
+01:06:49.760 --> 01:06:58.120
+So, again, like I also, this maybe goes right into the second tip, which is a lot of people are like still microservices versus monolith.
+
+01:06:58.420 --> 01:07:10.000
+Like I actually think that the perfect design pattern right now for a lot of projects is like much closer to monolith, but like you split it up into like based off of the number of agents that you want to run.
+
+01:07:10.310 --> 01:07:14.380
+So like, for me, I've got like my web scraping and like data collection stuff.
+
+01:07:14.680 --> 01:07:17.680
+And like, I generally just want like one, maybe two agents.
+
+01:07:18.360 --> 01:07:20.180
+So like, that is like a separate project.
+
+01:07:20.760 --> 01:07:24.720
+And then it interfaces with everything else through APIs, like actual like web APIs.
+
+01:07:25.240 --> 01:07:32.640
+And so like, that is actually how I've architected things where I'm like, how many developers, developers, agents do I want working on the code base at once?
+
+01:07:32.760 --> 01:07:36.200
+Like, what is my actual capacity to review the code?
+
+01:07:36.500 --> 01:07:39.660
+As a single developer, there's only so much capacity that I have.
+
+01:07:39.740 --> 01:07:43.820
+And so I will actually architect, or I've started to architect around that.
+
+01:07:44.000 --> 01:07:45.900
+But that doesn't mean I have a thousand microservices.
+
+01:07:46.110 --> 01:07:54.520
+It typically means that I split the architecture into like three or four components, maybe two beyond the main application.
+
+01:07:55.170 --> 01:07:58.760
+And that helps me to just feel like I'm being productive without being overwhelmed.
+
+01:07:59.120 --> 01:08:03.100
+Yeah, it's also good advice just for working in small teams anyway.
+
+01:08:03.460 --> 01:08:04.140
+Yeah, yeah, exactly.
+
+01:08:04.370 --> 01:08:05.520
+And it's just like a little bit more like a pragmatic.
+
+01:08:05.520 --> 01:08:06.720
+Some of the teams are automated, right?
+
+01:08:06.900 --> 01:08:07.260
+It's crazy.
+
+01:08:07.280 --> 01:08:10.400
+Yeah, it's like a pragmatic, like I'm not doing crazy microservices.
+
+01:08:10.490 --> 01:08:13.460
+I'm not also doing like monolith everything, right?
+
+01:08:13.580 --> 01:08:17.480
+So I think that to me, I'll just kind of be a little bit more, more pragmatic about things.
+
+01:08:18.140 --> 01:08:18.339
+Yeah.
+
+01:08:18.500 --> 01:08:25.900
+I wonder if you could automate, if you could, if you could AI agentic code, some form of automatic color profile selecting.
+
+01:08:26.230 --> 01:08:29.380
+I mean, yeah, they go pretty good on bash scripts.
+
+01:08:29.450 --> 01:08:30.680
+I mean, it's possible.
+
+01:08:31.460 --> 01:08:34.140
+I've one, one last tip, which kind of bit me.
+
+01:08:34.680 --> 01:08:40.160
+Luckily I have, I'm running Sentry, shout out to the Sentry team for, for, for BlushGap.
+
+01:08:40.299 --> 01:08:46.339
+and I caught this bug and I, you know, a lot of times I'm like finding bugs, like, oh, it's a 500 error or whatever.
+
+01:08:46.740 --> 01:08:47.500
+I'm not the end of the world.
+
+01:08:47.660 --> 01:08:48.440
+Like I go and fix it.
+
+01:08:48.960 --> 01:08:52.200
+I had definitely written more bugs myself by hand.
+
+01:08:53.279 --> 01:08:56.120
+Now that I am like, I have a mixed sort of like toolkit.
+
+01:08:56.620 --> 01:09:05.380
+Like I, I've just, it's just something to like be mindful of, which is like, I'm, I'm so used to having like bits and pieces written by an agent.
+
+01:09:05.589 --> 01:09:11.440
+And then I review it that when I'm writing code, I have like my, it's almost like over It's like, oh, I review a lot of code.
+
+01:09:11.880 --> 01:09:15.540
+I actually almost feel like the agent should be reviewing the code that I'm writing by hand.
+
+01:09:15.569 --> 01:09:28.779
+And so I'll just say like, that's one thing that I feel like is a big tip for developers and might bite a lot of people as they spend somewhat less time writing code, especially like low level kind of like rote detail kind of stuff.
+
+01:09:29.390 --> 01:09:31.660
+And then they have to, then they are like, oh, I'll go do that real quick.
+
+01:09:31.900 --> 01:09:35.180
+And then they suddenly like introduce a bug and they're like, oh, geez, I didn't.
+
+01:09:35.359 --> 01:09:35.620
+Yeah.
+
+01:09:36.020 --> 01:09:36.080
+Yeah.
+
+01:09:36.819 --> 01:10:32.560
+haven't done this like yeah by hand with the clickety click for a while yeah exactly exactly yeah i um i think that we need to we need to embrace and be mindful like you're saying um a certain level of like student mind when we're doing this kind of stuff i mean you say you've been using clock code for like six months and these are starting to show up like imagine 10 years down the line right you know what i mean it could be seriously an issue yeah i did help one person do a bunch of HNNC coding and won't name it because I'm not sure they want to be named, but they really were like, wow, this is incredible. And the thing that surprises me, they said, was as it's going through maybe 30 or 40 things it does to process a request, it's explaining why it's doing it. It says, okay, now I need to make sure that this runs in this way. So let's do this like Django, this manage pi command or something like that.
+
+01:10:32.640 --> 01:10:32.720
+Right.
+
+01:10:33.060 --> 01:10:38.680
+And they're like, I'm actually, if I'm paying attention, I'm actually learning new things about how this is supposed to be done.
+
+01:10:38.930 --> 01:10:40.940
+And in the end it says, here's why I made these changes.
+
+01:10:41.420 --> 01:10:43.580
+I think it's so easy to just go great next.
+
+01:10:44.180 --> 01:10:44.800
+You know what I mean?
+
+01:10:44.860 --> 01:10:44.940
+Yeah.
+
+01:10:45.260 --> 01:10:50.400
+But if we just slow down a little bit and you can learn a lot to learn, you learn, I've learned a ton.
+
+01:10:50.760 --> 01:10:53.960
+Like I can just hit escape and I'm like, tell me why you're doing that.
+
+01:10:53.990 --> 01:10:56.380
+I'm not really sure why, why you're doing that.
+
+01:10:56.780 --> 01:10:57.680
+And it'll explain it.
+
+01:10:57.840 --> 01:10:59.900
+And then you can, you can, it's the back and forth.
+
+01:11:00.000 --> 01:11:07.400
+I mean, it is like having the conversation about code that you often can't have with another developer.
+
+01:11:07.660 --> 01:11:12.440
+It's really expensive to take your whole team's time to talk through some change to the code base.
+
+01:11:12.440 --> 01:11:13.500
+You can have all those conversations.
+
+01:11:14.040 --> 01:11:20.660
+And I personally find as someone who is relatively introverted, it is not taxing on me to just have that conversation with the computer.
+
+01:11:20.790 --> 01:11:26.380
+So I can still have all the conversations with the humans and not be drained by the conversation with the computer.
+
+01:11:26.640 --> 01:11:26.780
+Yeah.
+
+01:11:27.010 --> 01:11:27.560
+Yeah, that's awesome.
+
+01:11:27.660 --> 01:11:35.200
+And think of the opportunity for people who either are sole developers or they live in places where they can't go to user group meetup type things.
+
+01:11:35.910 --> 01:11:36.020
+Yeah.
+
+01:11:36.020 --> 01:11:36.160
+Yeah.
+
+01:11:36.320 --> 01:11:42.040
+Or they're like busy in meetings all day and they still want to be a productive developer and be hands on with this stuff.
+
+01:11:42.210 --> 01:11:47.160
+And not, you know, I think a big part of it is like not getting caught up too much with the whole hype cycle.
+
+01:11:47.640 --> 01:12:07.760
+I am firmly in the camp that while this is a shift, it is not that big of a shift compared to when they said, oh, software developers are going to go away because we have COBOL. Software developers are going to go away because we have code generation off UML diagrams. Software developers are going to go away because of low code, no code.
+
+01:12:08.560 --> 01:12:16.380
+I get the sense, having used these tools, that a lot of companies will use them in the wrong way of thinking they can just replace developers.
+
+01:12:16.550 --> 01:12:21.920
+And actually what they're doing is they're building up a massive amount of technical debt and they're going to need software developers to fix it.
+
+01:12:22.180 --> 01:12:22.280
+Yeah.
+
+01:12:22.420 --> 01:12:26.300
+So that, I think it's building further layers of abstraction and more code.
+
+01:12:26.840 --> 01:12:35.400
+I think that you and I and everyone else out there who is very competent coders pre-AI, we're going to be a little bit like COBOL programmers, I think.
+
+01:12:35.700 --> 01:12:41.260
+There's going to be places that are just like, look, we've just got to call some people that know how to write code and figure this out.
+
+01:12:41.740 --> 01:12:47.740
+Like this stuff, the crazy analogy, the crazy analogy is like, okay, this is what I read one.
+
+01:12:47.910 --> 01:13:03.460
+Like, so that like the U boats during German U boats during world war one have like a pre they have steel in them that is pre or it's not been affected by like nuclear, the nuclear bombs that were set off around, you know, during and after world war two.
+
+01:13:04.080 --> 01:13:09.960
+So like they will extract the steel from those because they're not affected by the radiation.
+
+01:13:10.820 --> 01:13:12.620
+I guess we're like the old U-boats.
+
+01:13:12.730 --> 01:13:16.960
+They're going to extract us from retirement and be like, you still know how to program
+
+01:13:17.130 --> 01:13:18.360
+in this esoteric language.
+
+01:13:18.570 --> 01:13:19.880
+The LLMs can't do it.
+
+01:13:19.910 --> 01:13:20.280
+I don't know.
+
+01:13:20.400 --> 01:13:21.140
+Maybe that's what's going to happen.
+
+01:13:21.140 --> 01:13:22.000
+Take the mothballs out.
+
+01:13:22.180 --> 01:13:22.500
+That's right.
+
+01:13:22.680 --> 01:13:22.780
+Yeah.
+
+01:13:22.820 --> 01:13:24.860
+And we're going back into service.
+
+01:13:25.860 --> 01:13:26.960
+Boy, it's an interesting time.
+
+01:13:27.050 --> 01:13:30.100
+And there's a lot of opportunity as you pointed out.
+
+01:13:30.200 --> 01:13:34.980
+So I want to leave people with a message of don't be scared, embrace this, see what it can do for you.
+
+01:13:35.260 --> 01:13:38.380
+There's a lot of opportunity here, but Matt, you get the final word.
+
+01:13:38.580 --> 01:13:38.740
+Yeah.
+
+01:13:39.000 --> 01:13:39.520
+I mean, I agree.
+
+01:13:39.570 --> 01:13:48.500
+I think it's, again, it's like the same philosophy we started with, which is like, I don't see this as that big of a shift compared to like a lot of the other stuff that's happened in industry.
+
+01:13:49.940 --> 01:13:51.440
+Like just, I would just learn these things.
+
+01:13:51.530 --> 01:13:56.360
+And frankly, like, then you are empowered to say like, I'm not going to use that because you've tried it.
+
+01:13:57.160 --> 01:13:59.440
+And so like, then you have an informed opinion on it.
+
+01:14:00.020 --> 01:14:07.660
+And I think that's really what matters as software developers, not to just dismiss something simply because it seems like a hype cycle, but actually just to try it.
+
+01:14:07.860 --> 01:14:10.240
+And if it doesn't work and you're like, well, I have an informed opinion.
+
+01:14:10.660 --> 01:14:13.240
+I will say, though, this is actually rapidly evolving.
+
+01:14:13.340 --> 01:14:22.700
+And as we've talked about through our conversation, I would actually try this multiple times over several months because it does get better and it does change with the tools.
+
+01:14:22.880 --> 01:14:25.420
+And so it's not just like I tried it once and I'm going to toss it away.
+
+01:14:26.060 --> 01:14:29.120
+I would give it a try every few months and see if it works for, you know,
+
+01:14:29.160 --> 01:14:31.000
+kind of clicks for you and kind of works for your use case.
+
+01:14:31.360 --> 01:14:34.540
+Yeah, if we had this conversation pre-agentic code agents.
+
+01:14:34.980 --> 01:14:35.120
+Yeah.
+
+01:14:35.420 --> 01:14:37.660
+Could be very, very different, but six months later.
+
+01:14:38.380 --> 01:14:41.480
+It's just like when open source was like nascent.
+
+01:14:42.040 --> 01:14:43.360
+Oh, I tried open source once.
+
+01:14:43.740 --> 01:14:47.720
+If you haven't tried it in 15 years, like, I don't know what to say, right?
+
+01:14:47.840 --> 01:14:50.280
+I think it's a similar thing, but it's just a little bit faster evolution.
+
+01:14:50.700 --> 01:14:50.760
+Yeah.
+
+01:14:51.020 --> 01:14:52.320
+Yeah, it's crazy times.
+
+01:14:52.500 --> 01:15:01.260
+I mean, I'm honestly thinking maybe we should ship this episode like this week without recording, not the two weeks out that it's scheduled to be recording because who knows what's going to happen.
+
+01:15:01.620 --> 01:15:02.100
+No, I'm just kidding.
+
+01:15:02.400 --> 01:15:03.960
+But they are changing fast.
+
+01:15:04.400 --> 01:15:06.100
+Well, thanks for coming back on the show.
+
+01:15:06.200 --> 01:15:07.300
+Always great to catch up with you.
+
+01:15:07.500 --> 01:15:07.880
+Thanks, Michael.
+
+01:15:08.180 --> 01:15:08.420
+It's been great.
+
+01:15:08.700 --> 01:15:09.160
+Yeah, bye.
+
+01:15:10.440 --> 01:15:12.800
+This has been another episode of Talk Python To Me.
+
+01:15:13.620 --> 01:15:14.560
+Thank you to our sponsors.
+
+01:15:15.040 --> 01:15:16.260
+Be sure to check out what they're offering.
+
+01:15:16.480 --> 01:15:17.700
+It really helps support the show.
+
+01:15:18.280 --> 01:15:21.980
+This episode is sponsored by Posit Connect from the makers of Shiny.
+
+01:15:22.460 --> 01:15:26.340
+Publish, share, and deploy all of your data projects that you're creating using Python.
+
+01:15:26.940 --> 01:15:33.040
+Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+01:15:33.940 --> 01:15:35.560
+Posit Connect supports all of them.
+
+01:15:35.730 --> 01:15:41.160
+Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+01:15:41.900 --> 01:15:42.780
+Want to level up your Python?
+
+01:15:43.240 --> 01:15:46.880
+We have one of the largest catalogs of Python video courses over at Talk Python.
+
+01:15:47.360 --> 01:15:52.040
+Our content ranges from true beginners to deeply advanced topics like memory and async.
+
+01:15:52.420 --> 01:15:54.660
+And best of all, there's not a subscription in sight.
+
+01:15:54.740 --> 01:15:57.580
+Check it out for yourself at training.talkpython.fm.
+
+01:15:58.280 --> 01:16:02.460
+Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+
+01:16:02.880 --> 01:16:03.780
+We should be right at the top.
+
+01:16:04.280 --> 01:16:13.160
+You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+
+01:16:13.820 --> 01:16:16.040
+We're live streaming most of our recordings these days.
+
+01:16:16.380 --> 01:16:23.900
+If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
+
+01:16:24.940 --> 01:16:28.440
+This is your host, Michael Kennedy. Thanks so much for listening. I really appreciate it.
+
+01:16:28.800 --> 01:16:30.380
+Now get out there and write some Python code.
+
+01:16:42.880 --> 01:16:45.680
+*music*
+
