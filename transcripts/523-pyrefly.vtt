@@ -12,1926 +12,1890 @@ Today, we dig into what it is, why it exists, and how it plays with the rest of 
 00:00:19.240 --> 00:00:24.840
 We have Abby Mitchell, Danny Yang, and Kyle Into from Pyrefly here to dive into the project.
 
-00:00:25.340 --> 00:00:30.520
-This is Talk Python To Me, episode 523, recorded September 9th, 2025.
+00:00:25.520 --> 00:00:29.780
+This is Talk Python To Me, episode 523, recorded September 9th.
 
-00:00:45.740 --> 00:00:48.660
-Welcome to Talk Python To Me, a weekly podcast on Python.
+00:00:29.880 --> 00:00:51.220
+2025. Welcome to Talk Python To Me, the number one podcast for Python developers and data
 
-00:00:49.160 --> 00:00:50.820
-This is your host, Michael Kennedy.
+00:00:51.460 --> 00:00:57.180
+scientists. This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
 
-00:00:51.080 --> 00:01:24.060
-Follow me on Mastodon where I'm @mkennedy and follow the podcast using @talkpython, both accounts over at fosstodon.org and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at talkpython.fm/youtube and get notified about upcoming shows. This episode is brought to you by Sentry. Don't let those errors go unnoticed, use Sentry like we do here at Talk Python. Sign up at talkpython.fm/sentry.
+00:00:57.820 --> 00:00:59.000
+Let's connect on social media.
 
-00:01:24.440 --> 00:01:43.420
-And it's brought to you by Agency. Discover agentic AI with Agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y. Kyle, Danny, and Abby, welcome to Talk Python to
+00:00:59.440 --> 00:01:02.660
+You'll find me and Talk Python on Mastodon, Bluesky, and X.
 
-00:01:43.320 --> 00:01:45.160
+00:01:02.980 --> 00:01:04.739
+The social links are all in the show notes.
+
+00:01:05.339 --> 00:01:09.440
+You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:09.920 --> 00:01:13.180
+And if you want to be part of the show, you can join our recording live streams.
+
+00:01:13.740 --> 00:01:14.080
+That's right.
+
+00:01:14.100 --> 00:01:17.820
+We live stream the raw, uncut version of each episode on YouTube.
+
+00:01:18.480 --> 00:01:22.920
+Just visit  talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:23.420 --> 00:01:27.780
+and be sure to subscribe and press the bell so you'll get notified anytime we're recording.
+
+00:01:28.580 --> 00:01:39.640
+This episode is brought to you by Sentry. Don't let those errors go unnoticed. Use Sentry like we do here at Talk Python. Sign up at talkpython.fm/sentry. And it's brought to you by Agency.
+
+00:01:40.280 --> 00:01:53.240
+Discover agentic AI with Agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, Spelled A-G-N-T-C-Y.
+
+00:01:54.260 --> 00:01:58.040
+I'm super excited to tell you that I just released my first solo book.
+
+00:01:58.340 --> 00:02:00.400
+It's called Talk Python in Production.
+
+00:02:01.220 --> 00:02:06.080
+It's the inside look at how we host all the Talk Python sites, APIs, and more.
+
+00:02:06.760 --> 00:02:14.140
+The core idea is that I believe most hosting stories sold to developers and data scientists are way overcomplicated and overpriced.
+
+00:02:14.720 --> 00:02:20.000
+You've heard me say that you're not Google and you're not Facebook, so you shouldn't run your infrastructure the way they do.
+
+00:02:20.560 --> 00:02:22.100
+But if not that, then what?
+
+00:02:22.880 --> 00:02:34.400
+This book is both a blueprint for what I chose at Talk Python and a story arc of 10 years of running our own infrastructure from complete newbie to pretty neat infrastructure as code DevOps style.
+
+00:02:34.920 --> 00:02:36.960
+You'll find the book right on talkpython.fm.
+
+00:02:37.120 --> 00:02:38.760
+Just click book in the nav bar.
+
+00:02:39.400 --> 00:02:42.900
+I've made the first third of the book available for free for everyone to read online.
+
+00:02:43.560 --> 00:02:48.280
+After that, you can grab the DRM free EPUB and Kindle editions from that same page.
+
+00:02:48.620 --> 00:02:50.100
+I hope this book resonates with you.
+
+00:02:50.320 --> 00:02:56.380
+People have asked me to share the details of how I run our sites at Talk Python, and now here it is in detail.
+
+00:02:57.060 --> 00:03:00.020
+If you're interested, grab the ebook at talkpython.fm.
+
+00:03:00.180 --> 00:03:02.920
+Today, I'm working on the paperback version as well.
+
+00:03:03.120 --> 00:03:03.740
+Should be out soon.
+
+00:03:04.240 --> 00:03:06.460
+Getting the book is a great way to support the podcast.
+
+00:03:07.780 --> 00:03:10.360
+Kyle, Danny, and Abby, welcome to Talk Python To Me.
+
+00:03:10.660 --> 00:03:10.880
+Thank you.
+
+00:03:11.420 --> 00:03:12.360
 Thank you for having us.
 
-00:01:45.760 --> 00:01:46.280
+00:03:12.760 --> 00:03:13.320
 Hello, hello.
 
-00:01:46.940 --> 00:01:48.920
+00:03:14.020 --> 00:03:16.040
 I don't know what type of podcast this is going to be.
 
-00:01:49.200 --> 00:01:52.300
-I imagine, you know, when talking about Python types, it's going to be amazing.
+00:03:16.260 --> 00:03:18.560
+I imagine, you know, I'm talking about Python types.
 
-00:01:52.960 --> 00:01:54.740
-So thank you all for being here.
+00:03:18.680 --> 00:03:19.340
+It's going to be amazing.
 
-00:01:55.220 --> 00:02:04.940
-And I feel there's a new generation of Python type tools and appreciation, and you all have built a really cool one that we're going to dive into.
+00:03:20.000 --> 00:03:31.980
+So thank you all for being here. And I feel there's a new generation of Python type tools and appreciation, and you all have built a really cool one that we're going to dive into.
 
-00:02:05.480 --> 00:02:07.140
-So super excited about that.
+00:03:32.520 --> 00:03:42.640
+So super excited about that. Before we get into everything, though, let's just get a quick introduction about who you are and things like that. So Kyle, we'll go around the squares here.
 
-00:02:07.400 --> 00:02:13.160
-Before we get into everything, though, let's just get a quick introduction about who you are and things like that.
+00:03:42.710 --> 00:03:57.120
+How are you doing? Sure. I'm doing great. I've been working on Meta for three years on static analysis tooling. Originally the Pyre type checker, which I actually have engraved on my cup right here. We did that at the office. And then more recently working on Pyrefly. So I'm really excited
 
-00:02:13.240 --> 00:02:15.620
-So Kyle, we'll go around the squires here.
+00:03:57.150 --> 00:04:01.100
+to be here to talk to you guys about that. Yeah. And is your background in Python or what's the
 
-00:02:15.690 --> 00:02:16.040
-How are you doing?
+00:04:01.220 --> 00:04:05.900
+background? I guess technically I haven't worked in too much Python. Pyre was written in OCaml.
 
-00:02:16.220 --> 00:02:16.440
-Sure.
+00:04:06.500 --> 00:04:11.340
+I've worked in TypeScript and then Rust for Pyrefly. So I do personal projects in Python.
 
-00:02:16.770 --> 00:02:17.200
-I'm doing great.
+00:04:11.650 --> 00:04:24.360
+Do you feel that TypeScript prepared you well for Python typing or is it like really different? I More than, say, C#, C++, other languages, like TypeScript and Python typing kind of share a philosophy.
 
-00:02:17.940 --> 00:02:20.560
-I've been working on Meta for three years on static analysis tooling.
-
-00:02:21.300 --> 00:02:25.400
-Originally the Pyre type checker, which I actually have engraved on my cup right here.
-
-00:02:25.660 --> 00:02:26.420
-We did that at the office.
-
-00:02:27.310 --> 00:02:29.020
-And then more recently working on Pyrefly.
-
-00:02:29.420 --> 00:02:31.680
-So I'm really excited to be here to talk to you guys about that.
-
-00:02:31.980 --> 00:02:32.060
-Yeah.
-
-00:02:32.110 --> 00:02:34.320
-And is your background in Python or what's the background?
-
-00:02:34.960 --> 00:02:37.440
-I guess technically I haven't worked in too much Python.
-
-00:02:37.720 --> 00:02:38.860
-Pyre was written in OCaml.
-
-00:02:39.460 --> 00:02:42.140
-I've worked in TypeScript and then Rust for Pyrefly.
-
-00:02:42.180 --> 00:02:44.300
-So I do personal projects in Python.
-
-00:02:44.620 --> 00:02:47.880
-Do you feel that TypeScript prepared you well for Python typing?
-
-00:02:48.140 --> 00:02:49.140
-Or is it like really different?
-
-00:02:49.260 --> 00:02:57.320
-I know more than say C#, C++, other languages, like TypeScript and Python typing kind of share a philosophy.
-
-00:02:57.600 --> 00:02:58.640
+00:04:24.640 --> 00:04:25.680
 Yeah, I think they're similar.
 
-00:02:59.480 --> 00:03:00.680
+00:04:26.320 --> 00:04:27.720
 It definitely gave me some background.
 
-00:03:01.900 --> 00:03:04.280
-I think Python typing is its own beast.
+00:04:28.920 --> 00:04:36.280
+I think Python typing is its own beast, and there's so much about it that isn't so similar to TypeScript, so it really is pretty different.
 
-00:03:04.360 --> 00:03:07.740
-And there's so much about it isn't so similar to TypeScript.
+00:04:36.580 --> 00:04:37.400
+Okay. Hey, Danny.
 
-00:03:07.800 --> 00:03:09.240
-So it really is pretty different.
-
-00:03:09.540 --> 00:03:09.720
-Okay.
-
-00:03:10.040 --> 00:03:10.360
-Hey, Danny.
-
-00:03:10.620 --> 00:03:13.440
+00:04:37.760 --> 00:04:40.480
 Hey, I've been at Meta for just over five years.
 
-00:03:13.820 --> 00:03:15.360
-Currently work on Python type checking.
+00:04:40.820 --> 00:04:45.700
+Currently work on Python type checking, so I support Powerfly mostly from the type checking side of things.
 
-00:03:15.860 --> 00:03:18.660
-So I support Powerfly mostly from the type checking side of things.
-
-00:03:19.280 --> 00:03:23.940
+00:04:46.240 --> 00:04:50.980
 Before this, I was on WhatsApp working on developer tooling for them.
 
-00:03:24.460 --> 00:03:28.780
+00:04:51.500 --> 00:04:55.820
 And before that, I was working on like server and client infrastructure for Messenger.
 
-00:03:29.280 --> 00:03:29.940
+00:04:56.260 --> 00:04:56.980
 Yeah, very fun.
 
-00:03:30.200 --> 00:03:31.400
+00:04:57.170 --> 00:04:58.440
 All right, Abby, welcome.
 
-00:03:31.660 --> 00:03:37.160
+00:04:58.700 --> 00:05:04.200
 Hi, I'm the newest joiner, I guess, of this trio to Meta.
 
-00:03:37.200 --> 00:03:40.120
+00:05:04.210 --> 00:05:07.160
 I joined earlier this year and I'm a developer advocate.
 
-00:03:40.180 --> 00:03:51.560
-I started off doing more JavaScript sort of web development work and then became more of a Python person and moved into developer relations. And yeah, now I'm here.
+00:05:07.700 --> 00:05:16.480
+I started off doing more JavaScript sort of web development work and then became more of a Python person and moved into developer relations.
 
-00:03:51.840 --> 00:03:53.020
+00:05:17.360 --> 00:05:18.600
+And yeah, now I'm here.
+
+00:05:18.800 --> 00:05:20.060
 How do you find developer relations?
 
-00:03:53.400 --> 00:04:07.800
-I love it. I think I learned very early on that I enjoyed talking about code and being nerdy with people about code as much as I did actually sitting and writing code. So this job is kind
+00:05:20.440 --> 00:05:21.000
+I love it.
 
-00:04:07.700 --> 00:04:11.600
-like the best of both worlds. Yeah, it's awesome. I always kind of thought that'd be a super fun role
+00:05:21.070 --> 00:05:31.720
+I think I learned very early on that I enjoyed talking about code and being nerdy with people about code as much as I did actually sitting and writing code.
 
-00:04:11.900 --> 00:04:17.140
-and something I might want to do at some point, but I guess in a sense, I kind of, yeah, exactly.
+00:05:32.320 --> 00:05:35.800
+So this job is kind of like the best of both worlds.
 
-00:04:17.519 --> 00:04:24.400
-I just, I have no allegiances or no particular thing that I'm really, you know, jack of all trades.
+00:05:36.100 --> 00:05:36.580
+Yeah, it's awesome.
 
-00:04:25.120 --> 00:04:30.080
-Yeah, exactly. Just whatever is curious. We'll talk about it like types. So super cool. Let's
+00:05:36.630 --> 00:05:40.940
+I always kind of thought that'd be a super fun role and something I might want to do at some point,
 
-00:04:30.200 --> 00:04:39.960
-start with, excuse me, let's start with what, what is Pyrefly? Pyrefly is a Python type checker and that has very powerful IDE features.
+00:05:41.160 --> 00:05:44.080
+but I guess in a sense, I kind of- Yeah, exactly.
 
-00:04:40.420 --> 00:04:41.220
+00:05:44.600 --> 00:05:50.500
+I just, I have no allegiances or no particular thing that I'm really, you know.
+
+00:05:50.920 --> 00:05:51.480
+Jackable trades.
+
+00:05:52.140 --> 00:05:52.580
+Yeah, exactly.
+
+00:05:53.180 --> 00:05:54.740
+Just whatever is curious, we'll talk about it.
+
+00:05:54.820 --> 00:05:55.140
+Like types.
+
+00:05:55.660 --> 00:05:56.540
+So super cool.
+
+00:05:56.980 --> 00:06:00.880
+Let's start with, excuse me, let's start with what is Pyrefly?
+
+00:06:01.240 --> 00:06:07.000
+Pyrefly is a Python type checker and language server that has very powerful IDE features.
+
+00:06:07.380 --> 00:06:08.280
 It's written in Rust.
 
-00:04:41.820 --> 00:04:43.600
-You can use it as a command line tool.
+00:06:08.920 --> 00:06:10.640
+You know, you can use it as a command line tool.
 
-00:04:43.700 --> 00:04:46.000
+00:06:10.750 --> 00:06:13.040
 You can use it as a VS Code extension.
 
-00:04:46.140 --> 00:04:49.880
+00:06:13.300 --> 00:06:16.920
 You can use it as a language server connected to your favorite editor.
 
-00:04:50.200 --> 00:05:01.920
-And it provides both IDE things like hover, go to definition, things like that, as well as just very fast type checking that infers a lot of types, even when your code base is not annotated.
+00:06:17.190 --> 00:06:28.960
+And it provides both IDE things like hover, go to definition, things like that, as well as like just very fast type checking that infers a lot of types, even when your code base is not annotated.
 
-00:05:02.080 --> 00:05:05.320
+00:06:29.110 --> 00:06:32.360
 We should also mention that it's in alpha right now.
 
-00:05:05.660 --> 00:05:15.140
+00:06:32.700 --> 00:06:42.180
 So a lot of like changes getting shipped every week, you know, lots of sort of exciting new things happening.
 
-00:05:15.410 --> 00:05:17.860
+00:06:42.480 --> 00:06:44.900
 So, but just, you know, try it out with a pinch of salt.
 
-00:05:18.460 --> 00:05:18.740
+00:06:45.500 --> 00:06:45.780
 Sure.
 
-00:05:18.750 --> 00:05:19.820
+00:06:45.820 --> 00:06:46.860
 No, that's a really good point.
 
-00:05:20.530 --> 00:05:35.780
-I was just logging into GitHub for a completely different reason this morning and right in my activity feed, the very top item was Pyrefly's latest release with, I think, 18 contributors and 70 changes or something like that.
+00:06:47.640 --> 00:06:54.080
+I was just logging into GitHub for a completely different reason this morning and writing my activity feed.
 
-00:05:35.840 --> 00:05:36.980
+00:06:54.340 --> 00:07:02.820
+The very top item was Pyrefly's latest release with, I think, 18 contributors and 70 changes or something like that.
+
+00:07:02.900 --> 00:07:04.020
 Quite a big deal.
 
-00:05:37.300 --> 00:05:40.080
+00:07:04.340 --> 00:07:07.120
 Yeah, it's a huge sort of community effort.
 
-00:05:40.280 --> 00:05:42.600
+00:07:07.320 --> 00:07:09.680
 I know because I do the release notes every week.
 
-00:05:42.840 --> 00:05:46.440
-So I'm looking through everyone that's been pushing stuff.
+00:07:09.740 --> 00:07:13.480
+So I'm, you know, looking through everyone that's been pushing stuff.
 
-00:05:46.520 --> 00:05:48.860
-And we do releases currently every week.
+00:07:13.580 --> 00:07:15.900
+And that's we do releases currently every week.
 
-00:05:49.340 --> 00:06:04.640
-So every week it's some of the same faces showing up, like quite a lot of the meta team, but also quite a few non-meta folks as well, contributing, or just opening bug reports or feature requests as well. Yeah, so pretty,
+00:07:16.340 --> 00:07:30.240
+So every week it's, you know, some of the same faces showing up like quite a lot of the meta team, but also quite a few non meta folks as well, contributing or just opening bug reports or feature requests as well.
 
-00:06:05.100 --> 00:06:09.180
-it's a hive of activity at the moment. Yeah, so you said you're doing the release notes.
+00:07:31.120 --> 00:07:34.260
+Yeah, so pretty it's a hive of activity at the moment.
 
-00:06:10.460 --> 00:06:20.280
+00:07:34.680 --> 00:07:36.220
+Yeah. So you said you're doing the release notes.
+
+00:07:37.200 --> 00:07:47.320
 This project you're working on as a proper open source project rather than what you might call source open, like you can see the source, but we're working on it type of thing.
 
-00:06:20.660 --> 00:06:33.060
-Yeah, so I think one of the things that, and I think Kyle and Danny can also speak to this, They've been with the project since its inception, you know, really started from the get go as an open source initiative.
+00:07:47.500 --> 00:08:32.760
+Yeah, so I think one of the things that, and I think Kyle and Danny can also speak to this, they've been with the project since its inception, you know, really started from the get go as an open source initiative. This wasn't something that we built internally, and then just through over the fence, you know, we're working in public, and we're trying to bring in the community and work alongside them to make something that is a great tool for everyone, not just for meta obviously you know we it the original motivation for the project was probably because of some you know specific needs we had internally but there's a lot of effort that gets put into making sure that um you know we're prioritizing features that are useful for the
 
-00:06:33.270 --> 00:06:37.620
-This wasn't something that we built internally and then just through over the fence.
+00:08:32.830 --> 00:08:58.760
+entire community as well yeah and just that from the audience there tushar says pyrofly is incredible really looking forward to using it as a base tool for many many dev tools so you even though it's alpha you already have some fans which is cool that's awesome yeah and that's part of the open source thing right like kyle or danny you want to talk a bit as well about just why you all decided to open source it or you know build it primarily as an open source thing sure yeah i think
 
-00:06:38.200 --> 00:06:50.620
-You know, we're working in public and we're trying to bring in the community and work alongside them to make something that is a great tool for everyone, not just for Mata.
+00:08:59.040 --> 00:09:16.900
+the more open source contributors we have actually the more help we get in like contributions bug reports um meta has a lot of python code if python as an ecosystem gets better meta's code gets better So we love to see when we work on something and the community can improve because of it.
 
-00:06:51.040 --> 00:06:58.240
-Obviously, you know, we, the original motivation for the project was probably because of some, you know, specific needs we had internally.
+00:09:17.060 --> 00:09:38.760
+Yeah. And I guess another sort of motivation that we had was that Pyre was very like tailored to how Meta's code bases are structured, like Meta's build systems and things like that. And what that meant was that we actually had trouble sort of when we pulled in dependencies from the, you know, wider ecosystem, Pyre had some trouble understanding them.
 
-00:06:58.700 --> 00:07:06.880
-But there's a lot of effort that gets put into making sure that, you know, we're prioritizing features that are useful for the entire community as well.
+00:09:38.920 --> 00:09:48.440
+So like sort of being able to understand all the code that and not just like the flavor of Python that meta writes is was very important for us.
 
-00:07:07.120 --> 00:07:07.300
-Yeah.
+00:09:48.600 --> 00:09:54.960
+And just and we also sort of identified a gap in the current tooling that's available.
 
-00:07:07.660 --> 00:07:10.840
-And just that from the audience there, Tushar says, Pyrofly is incredible.
+00:09:56.040 --> 00:10:08.060
+And we thought that we could help sort of bring forward and sort of elevate the state of typing in Python by providing tools that make it easier to, you know, add types to your code and things like that and add type checking.
 
-00:07:11.000 --> 00:07:13.960
-Really looking forward to using it as a base tool for many, many dev tools.
+00:10:08.180 --> 00:10:11.660
+So I think, you know, maybe an interesting analogy here.
 
-00:07:14.280 --> 00:07:18.340
-So even though it's an alpha, you already have some fans, which is cool.
+00:10:11.660 --> 00:10:20.180
+I don't know how much you all are even really aware or looked at it, but I think Cinder is another thing that came from you all that got open source.
 
-00:07:18.600 --> 00:07:19.040
-That's awesome.
+00:10:20.660 --> 00:10:31.200
+But it was it was like so specifically for meta and sort of internally that it had all these cool features, but they had to kind of be backported or crossported.
 
-00:07:19.540 --> 00:07:21.140
-Yeah, and that's part of the open source thing, right?
+00:10:31.200 --> 00:10:36.500
+I don't know whatever you call it when it goes over to the real Python to sort of add some of these features.
 
-00:07:21.760 --> 00:07:30.520
-Kyle or Danny, you want to talk a bit as well about just why you all decided to open source it or build it primarily as an open source thing?
+00:10:36.820 --> 00:10:38.740
+and some of them are making big impacts, right?
 
-00:07:30.860 --> 00:07:31.060
-Sure.
-
-00:07:31.270 --> 00:07:38.000
-Yeah, I think the more open source contributors we have, actually the more help we get in contributions, bug reports.
-
-00:07:39.040 --> 00:07:40.380
-Meta has a lot of Python code.
-
-00:07:40.660 --> 00:07:42.800
-If Python as an ecosystem gets better,
-
-00:07:43.320 --> 00:07:44.140
-Meta's code gets better.
-
-00:07:44.800 --> 00:07:49.860
-So we love to see when we work on something and the community can improve because of it.
-
-00:07:50.020 --> 00:08:01.400
-Yeah. And I guess another sort of motivation that we had was that Pyre was very like tailored to how Meta's code bases are structured, like Meta's build systems and things like that.
-
-00:08:01.670 --> 00:08:41.020
-And what that meant was that we actually had trouble sort of when we pulled in dependencies from the wider ecosystem, Pyre had some trouble understanding them. So like sort of being able to understand all the code that and not just like the flavor of Python that meta writes is was very important for us. And just, and we, we also sort of identified a gap in the current tooling that's available. And we thought that we could help sort of bring forward and sort of elevate the state of typing in Python by providing tools that make it easier to, you know, add types to your code, and things like that and add type checking.
-
-00:08:41.979 --> 00:08:44.620
-I think maybe an interesting analogy here.
-
-00:08:44.640 --> 00:09:04.160
-I don't know how much you all are even really aware or looked at it, but I think Cinder is another thing that came from you all that got open source, but it was so specifically for meta and sort of internally that it had all these cool features, but they had to kind of be backported or crossported.
-
-00:09:04.160 --> 00:09:05.080
-I don't know, whatever you call it.
-
-00:09:05.180 --> 00:09:09.460
-When it goes over to the real Python to sort of add some of these features.
-
-00:09:09.820 --> 00:09:11.700
-And some of them are making big impacts, right?
-
-00:09:11.860 --> 00:09:20.140
+00:10:38.920 --> 00:10:47.180
 Like we've got with 3.14, the proper adoption of, I don't know, was it PEP 703 or something where the gill-less, the free-threaded Python stuff.
 
-00:09:20.500 --> 00:09:25.320
+00:10:47.560 --> 00:10:52.360
 And like a lot of the faster C-Python things were either taken from or inspired from Cinder.
 
-00:09:25.420 --> 00:09:26.380
+00:10:52.460 --> 00:10:53.420
 So it was really impactful.
 
-00:09:26.740 --> 00:09:36.000
-But I think maybe that's kind of a contrast to Powerfly where that was done, as far as I could tell, really internally, and then started to be shown off outside.
+00:10:53.820 --> 00:11:03.040
+But I think maybe that's kind of a contrast to Powerfly where that was done, as far as I could tell, like really internally and then like started to be shown off outside.
 
-00:09:36.520 --> 00:09:56.380
-I guess with CPython, I don't think Cinder's goal was necessarily to just create an alternative runtime implementation of Python that everyone uses, but to upstream the improvements to the official implementation of Python.
+00:11:03.440 --> 00:11:05.660
+Yeah, so with,
 
-00:09:56.760 --> 00:09:59.800
+00:11:05.980 --> 00:11:23.440
+I guess with CPython, I think like, I don't think Cinder's goal was necessarily to just create an alternative like runtime implementation of Python that everyone uses, but like to upstream the improvements to the, you know, the reference or like the official implementation of Python.
+
+00:11:23.940 --> 00:11:26.840
 Whereas I think in the typing space, things are a bit more fragmented.
 
-00:10:00.200 --> 00:10:05.220
-There isn't really an official type checker for Python.
+00:11:27.260 --> 00:11:32.280
+Like there isn't really a like official, you know, type checker for Python.
 
-00:10:05.900 --> 00:10:12.780
+00:11:32.640 --> 00:11:39.820
 mypy is the reference implementation, yes, but it also was built not as a language server.
 
-00:10:13.060 --> 00:10:17.200
-And I think architecturally, there's a lot of different choices out there, right?
+00:11:40.080 --> 00:11:42.040
+And I think architecturally,
 
-00:10:17.580 --> 00:10:20.940
+00:11:42.280 --> 00:11:44.340
+and there's a lot of different choices out there, right?
+
+00:11:44.620 --> 00:11:47.980
 PyRite is very popular, PyLance, and things like that.
 
-00:10:21.120 --> 00:10:31.280
-So it's less sort of, I think, contributing to the typing ecosystem doesn't necessarily have to come in the form of upstreaming changes to mypy.
+00:11:48.160 --> 00:11:58.320
+So it's less sort of, I think contributing to the typing ecosystem doesn't necessarily have to come in the form of upstreaming changes to mypy.
 
-00:10:32.080 --> 00:10:33.440
+00:11:59.140 --> 00:12:00.480
 Whereas it's a bit different for runtime.
 
-00:10:33.700 --> 00:10:34.440
+00:12:00.740 --> 00:12:01.480
 That's a really good point.
 
-00:10:34.720 --> 00:10:36.080
+00:12:01.760 --> 00:12:03.120
 Kyle, did you want to add something as well?
 
-00:10:36.090 --> 00:10:37.140
+00:12:03.130 --> 00:12:04.180
 You were going to say something, I think.
 
-00:10:37.340 --> 00:10:37.560
+00:12:04.380 --> 00:12:04.600
 Yeah.
 
-00:10:38.600 --> 00:10:39.280
+00:12:05.640 --> 00:12:06.320
 I don't exactly remember.
 
-00:10:39.330 --> 00:10:40.720
+00:12:06.370 --> 00:12:07.760
 I think Danny covered it all.
 
-00:10:41.200 --> 00:10:41.560
+00:12:08.240 --> 00:12:08.600
 All right.
 
-00:10:41.900 --> 00:10:42.300
+00:12:08.940 --> 00:12:09.340
 It's all good.
 
-00:10:43.060 --> 00:10:43.680
+00:12:10.100 --> 00:12:10.720
 It's all good.
 
-00:10:44.540 --> 00:10:46.340
+00:12:11.580 --> 00:12:13.380
 I do think it's different as well, right?
 
-00:10:46.560 --> 00:10:50.140
+00:12:13.600 --> 00:12:17.180
 Like in practice, there's really can only be one CPython.
 
-00:10:50.600 --> 00:10:51.720
+00:12:17.640 --> 00:12:18.660
 I know we have PyPy.
 
-00:10:51.830 --> 00:10:54.780
+00:12:18.870 --> 00:12:21.820
 I know we had IronPython, Iron, we had Jython.
 
-00:10:54.960 --> 00:10:59.980
+00:12:22.000 --> 00:12:27.020
 There's a lot of variations, but in practice of what people use, it's really CPython or Bust.
 
-00:11:00.170 --> 00:11:00.660
+00:12:27.210 --> 00:12:27.700
 You know what I mean?
 
-00:11:01.040 --> 00:11:05.720
+00:12:28.080 --> 00:12:32.760
 And so you kind of got to upstream those things if they're going to really make it back in.
 
-00:11:06.030 --> 00:11:07.160
+00:12:33.060 --> 00:12:34.200
 Whereas I agree with mypy.
 
-00:11:07.300 --> 00:11:12.660
+00:12:34.340 --> 00:12:39.700
 I know I always felt like mypy was the official hype checker, but that its adoption wasn't all that high.
 
-00:11:12.880 --> 00:11:16.680
+00:12:39.920 --> 00:12:43.720
 I mean, it has a lot of users.
 
-00:11:17.400 --> 00:11:25.480
+00:12:44.440 --> 00:12:52.520
 So I think maybe adoption, I would say, is pretty high, but I'd say maybe it's not as widespread.
 
-00:11:25.780 --> 00:11:32.540
+00:12:52.820 --> 00:12:59.580
 There's definitely a lot of people that have strong feelings about mypy and how it doesn't work for them.
 
-00:11:33.180 --> 00:11:56.800
+00:13:00.220 --> 00:13:23.840
 And I think a lot of the design choices that were made in Pyrefly and some of the other type checkers that you're seeing sort of coming on the scene this year were deliberately to solve some of those issues for people out there that wanted to use typed Python and wanted to have a type checker that didn't suffer from some of the same frustrations they had with mypy.
 
-00:11:57.240 --> 00:12:03.660
-Sure. Okay. Yeah. Your stuff is still pretty popular already for being an alpha, almost 4,000 GitHub stars.
+00:13:24.280 --> 00:13:30.700
+Sure. Okay. Yeah. Your stuff is still pretty popular already for being in alpha, almost 4,000 GitHub stars.
 
-00:12:04.020 --> 00:12:06.520
+00:13:31.060 --> 00:13:33.560
 And yeah, that's a sign that there's a lot of interest.
 
-00:12:06.620 --> 00:12:07.500
+00:13:33.660 --> 00:13:34.540
 That's just me putting in the mess office.
 
-00:12:10.040 --> 00:12:12.280
+00:13:37.080 --> 00:13:39.320
 Every day, get my coffee, star my project.
 
-00:12:13.860 --> 00:12:19.980
+00:13:40.900 --> 00:13:47.020
 So one of the goals, as you can tell from the H2, a fast Python type checker,
 
-00:12:20.240 --> 00:12:22.980
+00:13:47.280 --> 00:13:50.020
 maybe hints at some of the reasons that you all built it.
 
-00:12:23.560 --> 00:12:26.940
+00:13:50.580 --> 00:13:53.980
 So, and some of its like really important attributes.
 
-00:12:27.500 --> 00:12:33.420
+00:13:54.540 --> 00:14:00.460
 I know people in the Python space often harp on fast, Usually the word Rust is involved, check.
 
-00:12:35.240 --> 00:12:39.280
+00:14:02.279 --> 00:14:06.320
 But it's not always that fast is necessarily that important, right?
 
-00:12:39.540 --> 00:12:44.420
+00:14:06.580 --> 00:14:11.460
 Like sometimes it can take half a second or it can take a tenth of a second and it's effectively fine.
 
-00:12:44.780 --> 00:12:49.180
+00:14:11.820 --> 00:14:16.220
 But with these, especially, it's not even just the type checker.
 
-00:12:49.620 --> 00:12:54.400
+00:14:16.660 --> 00:14:21.440
 And Danny, I think this is how we originally got connected is I said, oh, this is the type checker.
 
-00:12:54.400 --> 00:12:59.960
+00:14:21.440 --> 00:14:27.000
 And I was talking about something else and said, well, that's a LSP, like a language server protocol.
 
-00:13:00.780 --> 00:13:11.960
+00:14:27.820 --> 00:14:39.000
 later language server um and you're like no ours does too i'm like oh okay interesting and there it starts to matter quite a bit right like the speed actually facilitates a different sort of
 
-00:13:12.100 --> 00:13:36.380
+00:14:39.140 --> 00:15:03.420
 interaction right yeah so i would say like if you ask like is pyrefly a type checker or is it a language server i think the answer would be yes it is both of those things and those things do rely on each other. Actually, maybe Kyle, you have some good insights to share here. You've done a lot of the language server specific work. Yeah, we've been thinking about this problem for a while.
 
-00:13:37.080 --> 00:13:54.180
+00:15:04.120 --> 00:15:21.220
 I think when you run something on the command line, if it's running in CI, you might not actually be sitting there waiting for it. It would still be fast. It would be nice to be fast running on continuous integration. But definitely as you're typing, if you can see these type errors appear, but also have IDE language services working for you.
 
-00:13:54.520 --> 00:13:57.400
+00:15:21.560 --> 00:15:24.420
 That's a huge thing for it to be fast.
 
-00:13:58.120 --> 00:14:02.760
+00:15:25.160 --> 00:15:29.800
 I think one example that we've seen is like the Instagram code base is a large Python code base.
 
-00:14:03.360 --> 00:14:08.160
+00:15:30.400 --> 00:15:35.200
 Pyre, our old type checker, was originally written because nothing could scale the Instagram level.
 
-00:14:09.040 --> 00:14:19.700
-From moving from Pyrite for our language services to Pyrefly, we've actually seen a 90% increase in speed for GoToDefinition across our Instagram users, Instagram developers.
+00:15:36.080 --> 00:15:46.740
+From moving from Pyrite for our language services to Pyrefly, we've actually seen a 90% increase in speed for go-to definition across our Instagram users, Instagram developers.
 
-00:14:20.700 --> 00:14:26.780
+00:15:47.740 --> 00:15:53.820
 So I think a difference like that from seconds to milliseconds can be really, really huge when it comes to developer productivity.
 
-00:14:27.160 --> 00:14:32.580
+00:15:54.200 --> 00:15:59.620
 Yeah, I don't know about you, but I'll open up a thing and a quick command click on something.
 
-00:14:32.800 --> 00:14:35.400
+00:15:59.840 --> 00:16:02.440
 I'm just jumping around like, oh, here, no, actually over there.
 
-00:14:35.700 --> 00:14:38.220
+00:16:02.740 --> 00:16:05.260
 And I can see that, why is it not?
 
-00:14:38.320 --> 00:14:39.500
+00:16:05.360 --> 00:16:06.540
 Oh, now it's working, right?
 
-00:14:39.600 --> 00:14:41.020
+00:16:06.640 --> 00:16:08.060
 Like that would be really frustrating.
 
-00:14:41.640 --> 00:14:52.500
+00:16:08.660 --> 00:16:19.540
 It's the difference between wondering, is your IDE just frozen versus just not even noticing it at all and it just blending into the background of your development environment.
 
-00:14:52.790 --> 00:14:58.880
+00:16:19.830 --> 00:16:25.920
 And it's actually not easy to make that happen, especially when you have these massive code bases.
 
-00:14:59.600 --> 00:15:08.060
+00:16:26.580 --> 00:16:35.100
 And so building with speed in mind does have a very tangible difference, even though it may not be the first thing that you as an end user are thinking about.
 
-00:15:09.660 --> 00:15:12.440
+00:16:36.760 --> 00:16:39.480
 This portion of Talk Python To Me is brought to you by Sentry.
 
-00:15:13.380 --> 00:15:21.420
+00:16:40.420 --> 00:16:48.460
 Over at Talk Python, Sentry has been incredibly valuable for tracking down errors in our web apps, our mobile apps, and other code that we run.
 
-00:15:22.120 --> 00:15:30.740
+00:16:49.180 --> 00:16:57.780
 I've told you the story how more than once I've learned that a user was encountering a bug through Sentry and then fixed the bug and let them know it was fixed before they contacted me.
 
-00:15:31.200 --> 00:15:32.020
+00:16:58.240 --> 00:16:59.060
 That's pretty incredible.
 
-00:15:32.700 --> 00:15:38.940
+00:16:59.760 --> 00:17:05.980
 Let me walk you through the few simple steps that you need to add error monitoring and distributed tracing to your Python web app.
 
-00:15:39.640 --> 00:15:47.200
-Let's imagine we have a Flask app with a React front-end and we want to make sure there are no errors during the checkout process for some e-commerce page.
+00:17:06.660 --> 00:17:14.240
+Let's imagine we have a Flask app with a React front end, and we want to make sure there are no errors during the checkout process for some e-commerce page.
 
-00:15:48.000 --> 00:15:52.460
+00:17:15.020 --> 00:17:19.500
 I don't know about you, but anytime money and payments are involved, I always get a little nervous writing code.
 
-00:15:53.420 --> 00:15:55.840
+00:17:20.480 --> 00:17:22.880
 We start by simply instrumenting the checkout flow.
 
-00:15:56.260 --> 00:16:02.720
-To do that, you enable distributed tracing and error monitoring in both your Flask back-end and your React front-end.
+00:17:23.339 --> 00:17:29.760
+To do that, you enable distributed tracing and error monitoring in both your Flask backend and your React frontend.
 
-00:16:03.780 --> 00:16:10.180
+00:17:30.820 --> 00:17:37.220
 Next, we want to make sure that you have enough context that the front-end and back-end actions can be correlated into a single request.
 
-00:16:11.380 --> 00:16:13.720
+00:17:38.420 --> 00:17:40.760
 So we enrich a Sentry span with data context.
 
-00:16:14.300 --> 00:16:19.680
+00:17:41.340 --> 00:17:46.700
 In your React checkout.jsx, you'd wrap the submit handler in a Sentry start span call.
 
-00:16:20.140 --> 00:16:22.180
+00:17:47.180 --> 00:17:49.220
 Then it's time to see the request live in a dashboard.
 
-00:16:22.600 --> 00:16:24.200
+00:17:49.640 --> 00:17:51.240
 We build a real-time Sentry dashboard.
 
-00:16:24.940 --> 00:16:34.200
+00:17:51.950 --> 00:18:01.240
 You spin up one using span metrics to track key attributes like cart size, checkout duration, and so on, giving you one pain for both performance and error data.
 
-00:16:35.200 --> 00:16:35.560
+00:18:02.240 --> 00:18:02.600
 That's it.
 
-00:16:35.760 --> 00:16:42.800
+00:18:02.800 --> 00:18:09.840
 When an error happens, you open the error on Sentry and you get end-to-end request data and error tracebacks to easily spot what's going on.
 
-00:16:43.780 --> 00:16:48.780
+00:18:10.800 --> 00:18:15.820
 If your app and customers matter to you, you definitely want to set up Sentry like we have here at Talk Python.
 
-00:16:49.380 --> 00:16:54.720
+00:18:16.420 --> 00:18:21.760
 Visit talkpython.fm/sentry and use the code TALKPYTHON, all caps, just one word.
 
-00:16:55.180 --> 00:16:59.400
+00:18:22.220 --> 00:18:26.440
 That's talkpython.fm/sentry, code TALKPYTHON.
 
-00:16:59.880 --> 00:17:01.500
+00:18:26.800 --> 00:18:28.540
 Thank you to Sentry for supporting the show.
 
-00:17:02.500 --> 00:17:12.100
+00:18:29.540 --> 00:18:39.140
 Can you all give any sense, and if you're not allowed to or whatever, it's fine, but give me a sense of how much, how big, when you say a big code base, what do you mean?
 
-00:17:12.180 --> 00:17:18.060
+00:18:39.220 --> 00:18:45.100
 Like I was just fiddling around trying to get a sense of like, well, how big is this versus that versus that?
 
-00:17:18.199 --> 00:17:21.880
+00:18:45.260 --> 00:18:48.920
 And like Django, I think Flask is 30,000 lines of Python.
 
-00:17:22.420 --> 00:17:23.280
+00:18:49.540 --> 00:18:50.480
 Django is 300.
 
-00:17:24.000 --> 00:17:25.199
+00:18:51.140 --> 00:18:52.220
 VS Code is 2 million.
 
-00:17:25.800 --> 00:17:26.800
+00:18:52.840 --> 00:18:53.840
 Linux is 30 million.
 
-00:17:26.880 --> 00:17:30.180
-And like, where are we talking on that spectrum?
+00:18:53.920 --> 00:18:57.220
+Like, where are we talking on that spectrum?
 
-00:17:30.780 --> 00:17:32.260
+00:18:57.820 --> 00:18:59.400
 What's a large code base?
 
-00:17:32.580 --> 00:17:36.140
+00:18:59.620 --> 00:19:03.180
 Instagram is the biggest, I think, Django deployment in the world.
 
-00:17:36.400 --> 00:17:40.620
+00:19:03.520 --> 00:19:07.520
 And I think the code base size is an order of magnitude bigger than VS Code.
 
-00:17:41.260 --> 00:17:41.720
-Oh, wow.
+00:19:08.420 --> 00:19:09.020
+Wow, okay.
 
-00:17:41.860 --> 00:17:42.000
-Okay.
-
-00:17:42.340 --> 00:17:42.460
+00:19:09.360 --> 00:19:09.500
 Yeah.
 
-00:17:42.900 --> 00:17:45.820
+00:19:09.940 --> 00:19:12.860
 Isn't the official number 20 million lines?
 
-00:17:46.200 --> 00:17:46.880
-20 something million.
+00:19:13.240 --> 00:19:14.220
+20-something million, yeah.
 
-00:17:47.000 --> 00:17:47.120
-Yeah.
+00:19:14.620 --> 00:19:18.020
+There's somewhere between, what did you say, Linux and...
 
-00:17:47.600 --> 00:17:49.600
-There's somewhere between, what did you say?
-
-00:17:49.760 --> 00:17:50.980
-Linux and...
-
-00:17:51.220 --> 00:17:52.660
+00:19:18.140 --> 00:19:19.720
 Yeah, between VS Code and Linux.
 
-00:17:53.120 --> 00:17:56.380
-I think you're, it sounds like on the par of like Firefox.
+00:19:20.160 --> 00:19:21.000
+I think you're...
 
-00:17:56.440 --> 00:17:59.040
+00:19:21.160 --> 00:19:23.400
+It sounds like on the par of, like, Firefox.
+
+00:19:23.480 --> 00:19:26.080
 or something, which is a mega, mega project.
 
-00:17:59.340 --> 00:18:00.100
+00:19:26.380 --> 00:19:27.140
 Yeah, that's awesome.
 
-00:18:00.300 --> 00:18:00.420
+00:19:27.340 --> 00:19:27.460
 Yeah.
 
-00:18:00.750 --> 00:18:08.160
+00:19:27.790 --> 00:19:35.200
 And to give like a point of reference, the like Pyre took 15 whole minutes to check the Instagram code base.
 
-00:18:08.590 --> 00:18:11.940
-Like mypy and PyreWrite just couldn't do it and fell over.
+00:19:35.630 --> 00:19:38.980
+Like mypy and Pyreite just couldn't do it and fell over.
 
-00:18:12.380 --> 00:18:14.480
+00:19:39.420 --> 00:19:41.520
 And Pyrefly now takes 15 seconds.
 
-00:18:14.840 --> 00:18:15.920
+00:19:41.880 --> 00:19:42.960
 So it's a huge difference.
 
-00:18:16.360 --> 00:18:16.780
+00:19:43.400 --> 00:19:43.820
 Yeah, wow.
 
-00:18:17.070 --> 00:18:18.240
+00:19:44.110 --> 00:19:45.280
 Yeah, that is a huge difference.
 
-00:18:18.680 --> 00:18:29.720
-And I think for language services too, like we talk about the size of the code base, but if it's a very shallow dependency graph with many, many files, that code base might still be fast with existing tools.
+00:19:45.720 --> 00:20:10.140
+And I think for language services too, like we talk about the size of the code base, but if it's a very shallow dependency graph with many, many files, that code base might still be fast with existing tools. I think where we start to see slowdowns is when you have this big bundle of dependencies that's very, very, very deep. And that's, I think, where the existing tools didn't work for us. I see. So if you were to create a
 
-00:18:30.180 --> 00:18:37.660
-I think where we start to see slowdowns is when you have this big bundle of dependencies that's very, very, very deep.
+00:20:10.240 --> 00:20:27.080
+dependency graph, the problem is more like how many edges are there and how much interconnectivity, the more it is computationally, that just gets way worse, right? Okay. Yeah, that makes a lot of So what lessons did you all take from Pyre, the OCaml version coming over?
 
-00:18:38.020 --> 00:18:40.920
-And that's, I think, where the existing tools didn't work for us.
-
-00:18:41.060 --> 00:18:41.440
-I see.
-
-00:18:41.680 --> 00:18:53.780
-So if you were to create a dependency graph, the problem is more like how many edges are there and how much interconnectivity, the more it is computationally, that just gets way worse, right?
-
-00:18:54.040 --> 00:18:54.200
-Okay.
-
-00:18:54.580 --> 00:18:55.460
-Yeah, that makes a lot of sense.
-
-00:18:55.640 --> 00:19:00.040
-So what lessons did you all take from Pyre, the OCaml version coming over?
-
-00:19:00.140 --> 00:19:04.640
+00:20:27.190 --> 00:20:31.680
 Like you wrote, you created this somewhat internal tool and then you redid it, right?
 
-00:19:04.840 --> 00:19:06.380
+00:20:31.880 --> 00:20:33.420
 So what was the story?
 
-00:19:06.800 --> 00:19:12.780
+00:20:33.840 --> 00:20:39.820
 So yeah, Pyre, we started a while ago as at first static analysis for type checking and security.
 
-00:19:13.120 --> 00:19:16.220
+00:20:40.170 --> 00:20:43.260
 And then actually a few years ago, we did try porting it to an LSP.
 
-00:19:17.040 --> 00:19:20.080
+00:20:44.080 --> 00:20:47.120
 Like we said, Instagram is very, very slow with existing tools.
 
-00:19:20.500 --> 00:19:21.660
+00:20:47.540 --> 00:20:48.700
 Pyre did work for Instagram.
 
-00:19:22.380 --> 00:19:28.540
+00:20:49.420 --> 00:20:55.560
 It would take a while to type check, but if you can type check incrementally, Pyre actually did a pretty good job of that.
 
-00:19:29.440 --> 00:19:38.140
+00:20:56.480 --> 00:21:05.180
 So with that, we tried taking our type checker, turning it into a language server for the squiggles in the editor, but also like the command clicks and all of that.
 
-00:19:38.980 --> 00:19:41.140
+00:21:06.020 --> 00:21:08.180
 I think it didn't work for a lot of reasons.
 
-00:19:42.220 --> 00:19:50.820
+00:21:09.300 --> 00:21:17.860
 And I guess maybe the biggest lesson was we kind of have to be thinking about this language server from the beginning when we make this design of a system like this.
 
-00:19:51.060 --> 00:19:53.520
+00:21:18.100 --> 00:21:20.560
 Did Pyre start out as originally just a type checker?
 
-00:19:53.800 --> 00:19:56.640
+00:21:20.780 --> 00:21:23.680
 I wasn't there when it was started, but it was a type checker.
 
-00:19:56.680 --> 00:20:01.160
+00:21:23.720 --> 00:21:28.200
 And there's a query interface that lets you like ask questions basically about the types.
 
-00:20:02.240 --> 00:20:06.400
+00:21:29.280 --> 00:21:33.440
 It's used for a few things, but like static analysis in general is its goal.
 
-00:20:07.060 --> 00:20:10.400
+00:21:34.100 --> 00:21:37.440
 Yeah, I can give a little bit more context on that.
 
-00:20:10.960 --> 00:20:57.260
+00:21:38.000 --> 00:22:24.280
 So I think the core of sort of how Pyre started was a security tool that sort of analyzed data flow through programs and prevents like, for example, unsanitized user input from being directly executed. And I think that type of static analysis tooling, like sort of, you know, is only designed to run in continuous integration. And it sort of the internal representations that used for the code were like simplified, and you know, you lose some things that are not relevant for static analysis. And then turning that into a type checker with Pyre, you know, there were already some issues with sort of Pyre's internal representation losing some of the syntactic components that were required for type checking. So we've spent a lot of time compensating for that.
 
-00:20:57.490 --> 00:21:32.620
+00:22:24.490 --> 00:22:59.660
 And then like turning that into a language server was like another big jump. And it's just, it just felt like we were taking a tool that wasn't designed to be a language server and trying to turn it into a language server and getting sort of mediocre results. So the lesson is like, you know, designing it as a language server from the ground up was very important. You know, a language server can be used as a type checker more easily than a type checker can be used as a language server. And I guess the idea of incremental checking is, you know, I think that's a good idea and it works. And, you know, we were also prioritized incrementality when we designed
 
-00:21:32.820 --> 00:21:41.560
+00:22:59.860 --> 00:23:08.600
 Pyrefly. Okay. And why Rust? I mean, I know it's the way that Python gets sped up these days, but you could have picked anything.
 
-00:21:41.740 --> 00:21:42.860
+00:23:08.780 --> 00:23:09.900
 And it was OCaml before.
 
-00:21:42.980 --> 00:21:49.060
+00:23:10.020 --> 00:23:16.140
 And I feel like going from, you know, functional type language, right, to another one is a really big change as well.
 
-00:21:49.520 --> 00:21:50.680
+00:23:16.560 --> 00:23:17.720
 So how'd that come about?
 
-00:21:50.960 --> 00:21:59.020
+00:23:18.000 --> 00:23:26.060
 Well, I think also like partly like what you said isn't like about it, it's the way now that people do Python and Rust.
 
-00:21:59.240 --> 00:22:01.580
+00:23:26.280 --> 00:23:28.620
 Like that's not actually too far from the truth.
 
-00:22:02.040 --> 00:22:38.140
-Like if you're creating an open source project, if you genuinely want contributions from the community, there is some sense in writing it in a language that the community is has the skills for and is excited about like rust as opposed to something like o'camel um no offense to any o'camel fans out there but our you know our potential community of contributors definitely was larger with with rust so i can speak to that point a bit but i think there's also some more sort of like specific technical reasons as well that Danny could probably elaborate on.
+00:23:29.080 --> 00:24:05.180
+Like if you're creating an open source project, if you genuinely want contributions from the community, there is some sense in writing it in a language that the community is has the skills for and is excited about like Rust as opposed to something like OCaml um no offense to any OCaml fans out there but our you know our potential community of contributors definitely was larger with with Rust so I can speak to that point a bit but I think there's also some more sort of like specific technical reasons as well that Danny could probably elaborate on.
 
-00:22:38.250 --> 00:22:40.900
+00:24:05.290 --> 00:24:07.940
 Yeah, I think that's absolutely worth considering, though.
 
-00:22:40.900 --> 00:22:47.240
+00:24:07.940 --> 00:24:14.280
 If you want contributors, you want to work in a language that people at least know ideally want to play with, right?
 
-00:22:47.310 --> 00:22:49.600
+00:24:14.350 --> 00:24:16.640
 So that's a really, it's non-trivial.
 
-00:22:49.990 --> 00:22:50.860
+00:24:17.000 --> 00:24:17.900
 I mean, it matters.
 
-00:22:51.340 --> 00:22:53.740
+00:24:18.380 --> 00:24:20.780
 Yeah, getting contributors for OCaml was difficult.
 
-00:22:53.970 --> 00:22:59.220
+00:24:21.010 --> 00:24:26.260
 Although I will say one of the reasons why I joined the Pyre team was so I could get paid to write OCaml.
 
-00:22:59.440 --> 00:23:00.840
+00:24:26.480 --> 00:24:27.880
 So, you know.
 
-00:23:03.400 --> 00:23:04.180
+00:24:30.180 --> 00:24:31.220
 But here you are.
 
-00:23:04.260 --> 00:23:31.820
-I enjoy writing Rust as well. So I really, yeah, it's been a great journey. And I mean, I think when writing a tool for Python, maybe the first most obvious choice would just be to write it in Python directly. So tools like, you know, FlakeA, mypy are written in Python, and that really helps get new contributors. But I think we felt like with our like very aggressive performance goals that writing it directly in Python wouldn't be fast enough.
+00:24:31.820 --> 00:24:33.420
+I enjoy writing Rust as well.
 
-00:23:31.960 --> 00:23:52.420
-So we wanted to pick, you know, a fairly fast language that, you know, compiled to native code, worked on Windows, which was very important because Pyre did not work on Windows. And so that left us with only a few options, really. And I think in the end, it was when we're doing the prototyping, it was between Rust and Go.
+00:24:33.620 --> 00:24:36.980
+So I really, yeah, it's been a great journey.
 
-00:23:52.800 --> 00:24:06.820
+00:24:37.220 --> 00:24:45.640
+And I mean, I think when writing a tool for Python, maybe the first most obvious choice would just be to write it in Python directly.
+
+00:24:46.000 --> 00:24:51.880
+So tools like, you know, FlakeA, mypy are written in Python and that really helps get new contributors.
+
+00:24:52.360 --> 00:24:58.860
+But I think we felt like with our like very aggressive performance goals that writing it directly in Python wouldn't be fast enough.
+
+00:24:59.180 --> 00:25:08.140
+So we wanted to pick, you know, a fairly fast language that, you know, compiled to native code, worked on Windows, which was very important because Pyre did not work on Windows.
+
+00:25:09.300 --> 00:25:13.660
+And so that left us with only a few options, really.
+
+00:25:13.790 --> 00:25:19.460
+And I think in the end, it was when we were doing the prototyping, it was between Rust and Go.
+
+00:25:19.840 --> 00:25:33.860
 And I think the team had sort of more experience in Rust and sort of one of the one of the leads for the project sort of had experience with a successful rewrite of our buck build system into Rust and had good results from that.
 
-00:24:07.100 --> 00:24:10.300
+00:25:34.140 --> 00:25:37.340
 So we were more confident in moving forward with writing it in Rust.
 
-00:24:10.880 --> 00:24:14.400
+00:25:37.920 --> 00:25:41.440
 But then the TypeScript team is rewriting their compiler in Go, right?
 
-00:24:14.930 --> 00:24:15.660
+00:25:41.970 --> 00:25:42.660
 So yeah, they are.
 
-00:24:15.860 --> 00:24:16.920
+00:25:42.900 --> 00:25:43.960
 That's actually a really big deal.
 
-00:24:16.970 --> 00:24:17.080
+00:25:44.010 --> 00:25:44.120
 Yeah.
 
-00:24:17.400 --> 00:24:20.220
+00:25:44.440 --> 00:25:47.260
 So yeah, we were also picking between those two languages.
 
-00:24:21.600 --> 00:24:30.020
+00:25:48.640 --> 00:25:57.060
 I do think that Rust is a little more compatible with Python people and tooling and expectation than Go.
 
-00:24:30.740 --> 00:24:35.200
+00:25:57.780 --> 00:26:02.240
 Nothing's wrong with Go necessarily, but it's more focused on concurrency than others.
 
-00:24:35.250 --> 00:24:40.460
+00:26:02.290 --> 00:26:07.500
 And I guess that there's probably some parallelism that's really interesting here, but you can do that in Rust as well.
 
-00:24:40.840 --> 00:24:48.740
+00:26:07.880 --> 00:26:15.780
 But I just see Rust being used as if you've got to go to something native, it's almost always Rust if it's a new project these days.
 
-00:24:48.880 --> 00:25:10.980
+00:26:15.920 --> 00:26:38.020
 Yeah. And I mean, Rust also lets us have very like good control over our memory. So and one of the concerns when checking extremely large code bases is sort of the memory overhead, both like, you know, total and also the peak and sort of having control over sort of how how memory is allocated when to evict certain things was like very was important for us.
 
-00:25:11.140 --> 00:25:24.760
+00:26:38.180 --> 00:26:51.800
 So, yeah. So you talked about having to work on Windows. What's the what's the OS breakdown at meta? Like, do people get to pick whatever they want? Is it all Macs? Can you do Linux on the desktop? What's the story there?
 
-00:25:24.840 --> 00:25:54.740
+00:26:51.880 --> 00:27:21.780
 Well, I'm the most recent joiner out of this team. And I definitely got a choice of device when I joined. But yeah, I'd say, yeah, I don't know. I think it probably really depends on what team you're in. And I think we do when we're creating open source projects, you know, not all of the not not every user in the world is someone who sits in Silicon Valley and is using like the latest version of their Mac device.
 
-00:25:54.820 --> 00:26:01.800
+00:27:21.860 --> 00:27:28.840
 So it's super important to make sure we're, you know, thinking about all the different, you know, at least well within reason.
 
-00:26:02.300 --> 00:26:02.740
+00:27:29.340 --> 00:27:29.780
 Yeah, yeah.
 
-00:26:03.110 --> 00:26:05.980
+00:27:30.150 --> 00:27:33.020
 I mean, you don't need it to run on a Raspberry Pi necessarily.
 
-00:26:07.300 --> 00:26:12.360
+00:27:34.300 --> 00:27:39.340
 But if you look at the latest survey results, like these are always the PSF survey results.
 
-00:26:12.370 --> 00:26:16.420
+00:27:39.410 --> 00:27:43.460
 These are always a year behind because they get collected at the end of that year.
 
-00:26:16.450 --> 00:26:18.600
+00:27:43.490 --> 00:27:45.640
 And then this is the latest one, even though it's 2024.
 
-00:26:19.200 --> 00:26:23.520
+00:27:46.240 --> 00:27:50.560
 If you look at Windows, I mean, what operating system people write Python code on?
 
-00:26:23.880 --> 00:26:53.980
+00:27:50.920 --> 00:28:21.020
 it is i think it's actually windows is the most it's 58 compared to Linux which is 59 but i think that means a lot of people write on windows and deploy to Linux and check both boxes you know what i mean yeah and people write on mac and Linux and they check that box and so i think Linux while it's 59 versus 58 i think it it gets double counted a lot kind of like css is one of the most popular languages well sort of anything no matter what language you're using it gets that box checked
 
-00:26:53.980 --> 00:27:27.440
-you know what i mean it will probably also be interesting to look at this data when you kind of cross-section it by regions of the world as well yes probably if you're looking at north america the mac proportion would be significantly higher but than it is there but you know python is such a globally adopted language and there are huge emerging you know tech economies in certain areas of like india southeast asia um south america where you know windows systems that are
+00:28:21.020 --> 00:28:55.120
+you know what i mean it will probably also be interesting to look at this data when you kind of cross-section it by regions of the world as well yes probably if you're looking at north america the mac proportion would be significantly higher but than it is there but you know python is such a globally adopted language and there are huge emerging you know tech economies in certain areas of like india southeast asia um south america where you know windows systems that are much more
 
-00:27:27.840 --> 00:27:36.820
-much more dominant as well yeah that's a good point abby yeah i definitely think it's table stakes to support all the operating systems people use especially if we expect people to use our
+00:28:55.320 --> 00:29:04.679
+dominant as well yeah that's a good point abby yeah i definitely think it's table stakes to support all the operating systems people use especially if we expect people to use our project
 
-00:27:36.780 --> 00:27:50.240
-project yeah yeah the sort of main area why like pyre not working on windows i think hurt mostly the ar vr developers at meta who had to develop in a windows environment i think because
+00:29:04.700 --> 00:29:18.020
+yeah the sort of main area why like pyre not working on windows i think hurt mostly the ar vr developers at meta who had to develop in a windows environment i think because they were writing like
 
-00:27:50.240 --> 00:28:23.460
-they were writing like C# so right right or maybe using direct x or something like that yeah okay no very interesting um the other thing i think is interesting if you look over here is see how many years of professional coding experience do you have 50 say two years or less 30% say less than one year. So what do you think about typing for new people coming in versus those who've been around for a long time and like, yeah, I worked on a project without typing and eventually it got out of control. How do you see Pyrofly fitting in with new folks versus people
+00:29:18.020 --> 00:29:46.400
+C# so right right or maybe using direct x or something like that yeah okay no very interesting um the other thing i think is interesting if you look over here is see how many years of professional coding experience do you have? 50% say two years or less. 30% say less than one year. So what do you think about typing for new people coming in versus those who've been around for a long time and like, yeah, I worked on a project without typing and eventually it got out of control.
 
-00:28:23.540 --> 00:29:12.780
-been around for a long time? It's really interesting because Python, I mean, I would argue is so much of the success of Python as a language is because it is very well designed for newcomers to programming in general. So I think there is a reason why you see like a lot of Python developers skew towards maybe more of the sort of the early learners. And then I think you certainly get, and again, this is more like anecdotal, you know, my anecdotal take, but you sort of, you get to a point, you know, after you've, you know, sort of, you've got the basics of the language, you've got those sort of fundamental skills locked down and you're starting to actually develop production level code when you realize that like, oh, maybe I can't, maybe I shouldn't
+00:29:47.120 --> 00:29:51.620
+How do you see Pyrofly fitting in with new folks versus people who've been around for a long time?
 
-00:29:12.780 --> 00:29:18.940
-be playing as fast and loose with the types. And, you know, maybe it would actually be helpful if,
+00:29:51.860 --> 00:31:44.020
+It's really interesting because Python, I mean, I would argue is so much of the success of Python as a language is because it is very well designed for newcomers to programming in general. So I think there is a reason why you see like a lot of Python developers skew towards maybe more of the sort of early learners. And then I think you certainly get, and again, this is more like anecdotal, you know, my anecdotal take, but you sort of, you get to a point, you know, after you've, you know, sort of you've got the basics of the language, you've got those sort of fundamental skills locked down, and you're starting to actually develop production level code when you realize that like, oh, maybe I can't, maybe I shouldn't be playing as fast and loose with the types. And, you know, maybe it would actually be helpful if I was, you know, thinking a little bit more, you know, proactively about the types that I'm passing around as my project scales more and more. I think the goals of Pyrefly specifically are to support people that really value type safety and bug-free code. So maybe if you are a super new user, maybe adding a type checker isn't really on the cards for you right now. But there is a significant proportion of the Python community that are like in this stage where, you know, that they're not early professionals anymore. And they're trying to build production level code. And now they need tools to support them and, and help them get through, you know, make type safe code. And that's where a tool like type checker, a tool like Pyrefly, I think really provides value.
 
-00:29:19.500 --> 00:30:10.420
-if I was, you know, thinking a little bit more, you know, proactively about the types that I'm passing around as my project scales more and more. I think the goals of Pyrefly specifically are to support people that really value type safety and bug-free code. So maybe if you are a super new user, maybe adding a type checker isn't really on the cards for you right now. But there is a significant proportion of the Python community that are like in this stage where, you know, they're not early professionals anymore, and they're trying to build production level code, and now they need tools to support them and help them get through, you know, make type safe code.
-
-00:30:10.460 --> 00:30:16.980
-And that's where a tool like TypeChecker, a tool like Pyrefly, I think really provides value.
-
-00:30:17.360 --> 00:30:39.280
+00:31:44.500 --> 00:32:06.320
 I will say that even if you don't want type checking in your code, and you don't want to write any types at all you can still use pyrefly in vs code and it will try to understand as many types as it can and power your go to death in like you know and it will work better than if you were doing it without you know without understanding any of the types so i see so maybe it can tell you
 
-00:30:39.700 --> 00:30:48.780
+00:32:06.740 --> 00:32:15.819
 this thing like i can find references on this thing and show you the three places used or go to its definition i just can't tell you that it returns a list of integers well it does some
 
-00:30:48.800 --> 00:31:20.160
+00:32:15.840 --> 00:32:47.200
 inference is it depends on you as a user, right? Like if you want to use Pyrefly as a language server, you can do that and you definitely should. So if you're maybe an early user who's not interested in types, maybe you just want to use Pyrefly as your IDE extension because it's really fast and helps you navigate your code base. If you then want to make that jump to being a bit more type conscious, you can still use Pyrefly. You just have to decide that now I also want Pyrefly to help me check the type as well.
 
-00:31:20.210 --> 00:31:23.400
+00:32:47.260 --> 00:32:50.420
 And that is a toggle that you can switch as a user.
 
-00:31:25.460 --> 00:31:28.260
+00:32:52.540 --> 00:32:55.300
 This portion of Talk Python To Me is brought to you by Agency.
 
-00:31:28.660 --> 00:31:33.960
+00:32:55.700 --> 00:33:01.000
 Build the future of multi-agent software with Agency, spelled A-G-N-T-C-Y.
 
-00:31:34.580 --> 00:31:39.000
-Now an open source Linux foundation project, Agency is building the internet of things.
+00:33:01.280 --> 00:33:05.700
+Now an open source Linux foundation project, Agency is building the internet of agents.
 
-00:31:39.620 --> 00:31:45.760
+00:33:06.260 --> 00:33:12.400
 Think of it as a collaboration layer where AI agents can discover, connect, and work across any framework.
 
-00:31:46.620 --> 00:31:47.920
+00:33:13.260 --> 00:33:14.560
 Here's what that means for developers.
 
-00:31:48.480 --> 00:31:54.220
+00:33:15.180 --> 00:33:20.840
 The core pieces engineers need to deploy multi-agent systems now belong to everyone who builds on agency.
 
-00:31:54.660 --> 00:32:00.680
+00:33:21.210 --> 00:33:27.300
 You get robust identity and access management, so every agent is authenticated and trusted before it interacts.
 
-00:32:01.320 --> 00:32:13.720
+00:33:27.940 --> 00:33:40.360
 You get open, standardized tools for agent discovery, clean protocols for agent-to-agent communication, and modular components that let you compose scalable workflows instead of wiring up brittle glue code.
 
-00:32:14.200 --> 00:32:15.600
+00:33:40.800 --> 00:33:42.240
 Agency is not a walled garden.
 
-00:32:16.180 --> 00:32:24.720
+00:33:42.720 --> 00:33:51.340
 You'll be contributing alongside developers from Cisco, Dell Technologies, Google Cloud, Oracle, Red Hat, and more than 75 supporting companies.
 
-00:32:25.250 --> 00:32:26.140
+00:33:51.900 --> 00:33:52.760
 The goal is simple.
 
-00:32:26.590 --> 00:32:33.800
+00:33:53.220 --> 00:34:00.440
 Build the next generation of AI infrastructure together in the open so agents can cooperate across tools, vendors, and runtimes.
 
-00:32:34.500 --> 00:32:38.340
+00:34:01.120 --> 00:34:04.960
 Agencies dropping code, specs, and services with no strings attached.
 
-00:32:38.980 --> 00:32:39.440
+00:34:05.620 --> 00:34:06.060
 Sound awesome?
 
-00:32:39.960 --> 00:32:43.560
+00:34:06.600 --> 00:34:10.179
 Well, visit talkpython.fm/agency to contribute.
 
-00:32:44.100 --> 00:32:47.480
-That's talkpython.fm/A-G-N-T-C-Y.
+00:34:10.720 --> 00:34:24.800
+that's talkpython.fm/agntcy the link is in your podcast player show notes and on the episode page thank you as always to agency for supporting talk python to me and i guess two sort of key
 
-00:32:48.060 --> 00:32:50.900
-The link is in your podcast player's show notes and on the episode page.
+00:34:25.080 --> 00:34:44.879
+things that i think is or three key things that i think are very important for sort of um sort of early and intermediate stage developers is like one is like things should work pretty well out of the box. Like, I don't think they necessarily, people necessarily want to go fiddle with a bunch of settings to get things working if they're just working on like a small script or something.
 
-00:32:51.640 --> 00:32:54.220
-Thank you, as always, to Agency for supporting Talk Python To Me.
+00:34:45.520 --> 00:35:07.000
+And the second is like good error messages. I think like not just saying like these types don't match, but like explaining why and maybe explaining how to fix it. And that's something that we're, we're working on. And the third is something that we provide in the IDE called like inlay hints, where we put the inferred types in this like grayed out text next to like the variable.
 
-00:32:55.440 --> 00:33:09.620
-And I guess two sort of key things that I think is, or three key things that I think are very important for sort of early and intermediate stage developers is like, one is like, things should work pretty well out of the box.
-
-00:33:09.880 --> 00:33:13.840
-Like, I don't think people necessarily want to go fiddle with a bunch of settings.
-
-00:33:14.580 --> 00:33:17.840
-to get things working if they're just working on like a small script or something.
-
-00:33:18.540 --> 00:33:20.740
-And the second is like good error messages.
-
-00:33:20.950 --> 00:33:26.740
-I think like not just saying like these types don't match, but like explaining why and maybe explaining how to fix it.
-
-00:33:27.360 --> 00:33:29.820
-And that's something that we're working on.
-
-00:33:30.100 --> 00:33:39.960
-And the third is something that we provide in the IDE called like inlay hints, where we put the inferred types in this like grayed out text next to like the variable.
-
-00:33:40.500 --> 00:33:52.600
+00:35:07.540 --> 00:35:19.620
 So even if you like didn't know what the type was or didn't understand the type, how the types work, like you can still see, you can still see the type of the variable next to it without you actually having to write any types.
 
-00:33:52.780 --> 00:34:00.340
+00:35:19.860 --> 00:35:27.380
 And if you want to eventually start adding types to your code base, it's as simple as like you can double click that type and it will just add it to your code.
 
-00:34:00.680 --> 00:34:01.480
+00:35:27.720 --> 00:35:28.520
 And you can also run it.
 
-00:34:01.580 --> 00:34:08.740
-I was going to, yeah, I was going to ask if there's any kind of tools that take that, that, that inference and turn it into concrete code.
+00:35:28.620 --> 00:35:35.780
+I was going to, yeah, I was going to ask if there's any kind of tools take that inference and turn it into concrete code.
 
-00:34:09.060 --> 00:34:09.159
+00:35:36.180 --> 00:35:36.280
 Yeah.
 
-00:34:09.520 --> 00:34:19.639
-So in addition to clicking in the UI, we also have a subcommand in Pyrofly called Pyrofly Infer that just takes all of the inferred types and applies it to your whole code base.
+00:35:36.680 --> 00:35:46.680
+So in addition to clicking in the UI, we also have a sub command in Pyrofly called Pyrofly infer that just takes all of the inferred types and applies it to your whole code base.
 
-00:34:20.280 --> 00:34:26.179
+00:35:47.320 --> 00:35:53.220
 And does that surface itself in VS Code where you've got that little, like, you can, was it Alt Enter or something?
 
-00:34:26.379 --> 00:34:30.580
-And it'll show you, like, here's the fixes you can apply or the things you can apply.
+00:35:53.310 --> 00:35:57.620
+And it'll show you like, here's the fixes you can apply or the things you can apply.
 
-00:34:30.860 --> 00:34:33.440
-And you can choose, like, add the types to my code or something like that.
+00:35:57.790 --> 00:36:00.480
+And you can choose like, add the types to my code or something like that.
 
-00:34:33.659 --> 00:34:34.379
+00:36:00.700 --> 00:36:01.580
 I think not.
 
-00:34:34.800 --> 00:34:37.460
+00:36:01.620 --> 00:36:04.500
 I think right now it's just a command line tool, but that's a good idea.
 
-00:34:37.760 --> 00:34:38.879
+00:36:04.800 --> 00:36:05.920
 You know, I'll write this down.
 
-00:34:38.940 --> 00:34:40.360
-Yeah, there you go.
+00:36:06.680 --> 00:36:07.400
+There you go.
 
-00:34:41.250 --> 00:34:46.120
+00:36:07.900 --> 00:36:13.160
 So, but the thing is, if you're using Firefly only, you don't necessarily need to write all the types.
 
-00:34:46.470 --> 00:34:49.639
+00:36:13.520 --> 00:36:16.680
 I think we like when interface boundaries have these types.
 
-00:34:50.060 --> 00:34:54.740
+00:36:17.040 --> 00:36:21.780
 Like, so for functions, if you can do a return type on those, that's actually what the typing spec mandates.
 
-00:34:55.050 --> 00:35:00.480
+00:36:22.100 --> 00:36:27.520
 So mypy doesn't type check your function unless it has a return type or like types in the arguments.
 
-00:35:01.540 --> 00:35:08.800
-But I think for like the quick fix in the IDE, it might be noisy if every time we infer something, we show it to you.
+00:36:28.540 --> 00:36:35.820
+But I think for like the quick fix and the IDE, it might be noisy if every time we infer something, we show it to you.
 
-00:35:08.880 --> 00:35:11.360
+00:36:36.100 --> 00:36:38.400
 So I guess these things are still somewhat being figured out.
 
-00:35:11.360 --> 00:35:14.300
-Yeah, you don't want it to just swamp your code and kill the ability.
+00:36:38.400 --> 00:36:41.520
+Yeah, you don't want it to just swamp your code and kill readability.
 
-00:35:14.800 --> 00:35:32.320
-This is maybe an interesting challenge that might be worth clicking into a little bit in that we as the team developing Firefly, it's hard to create a language server and a type checker that does everything for everyone.
+00:36:41.800 --> 00:36:59.360
+This is maybe an interesting challenge that might be worth clicking into a little bit and that we as the team developing Pyrefly, it's hard to create a language server and a type checker that does everything for everyone.
 
-00:35:32.520 --> 00:35:43.780
+00:36:59.560 --> 00:37:10.820
 And I think individual developers have a lot of, you know, different opinions on like how much they want Pyrefly to like get in the way of what they're doing.
 
-00:35:44.020 --> 00:35:50.600
+00:37:11.060 --> 00:37:17.640
 Like some people care a lot about if anything might even have a chance of being a type error, they want to know about it.
 
-00:35:50.870 --> 00:35:53.480
+00:37:17.910 --> 00:37:20.600
 Other people, you know, that's too much for them.
 
-00:35:53.710 --> 00:35:59.820
+00:37:20.750 --> 00:37:26.860
 And they, you know, they would rather like us not, you know, aggressively tell them that they have these errors.
 
-00:36:00.160 --> 00:36:06.600
+00:37:27.200 --> 00:37:33.640
 Right. Part of the magic of Python typing is you don't have to be exactly 100% complete and perfect.
 
-00:36:07.080 --> 00:36:07.160
+00:37:34.120 --> 00:37:34.200
 Yeah.
 
-00:36:07.460 --> 00:36:07.580
+00:37:34.500 --> 00:37:34.620
 Yeah.
 
-00:36:07.860 --> 00:36:14.160
+00:37:35.000 --> 00:37:41.200
 But some people do want that if they're, you know, shipping very sophisticated production level code, for example.
 
-00:36:14.500 --> 00:36:23.780
+00:37:41.540 --> 00:37:50.820
 So we've a lot of our, I think, development discussions revolve around, you know, what should the default behavior be here?
 
-00:36:23.940 --> 00:36:27.300
+00:37:50.980 --> 00:37:54.340
 Like we can make like what should be like a choice that is for the user?
 
-00:36:27.900 --> 00:36:29.980
+00:37:54.940 --> 00:37:57.020
 What things do we assume that the user wants?
 
-00:36:31.080 --> 00:36:34.340
+00:37:58.120 --> 00:38:01.380
 And so it's definitely challenging.
 
-00:36:34.880 --> 00:36:41.760
+00:38:01.920 --> 00:38:08.800
 So yeah, to try and like figure out like, because there doesn't really seem to be a consensus in the Python community right now.
 
-00:36:41.800 --> 00:36:43.560
+00:38:08.840 --> 00:38:10.600
 No, no, there definitely is not.
 
-00:36:43.600 --> 00:36:45.240
+00:38:10.640 --> 00:38:12.280
 And I'm on team Kyle.
 
-00:36:45.560 --> 00:36:55.080
+00:38:12.600 --> 00:38:22.120
 I think that putting the types in on like the architectural boundary areas is super valuable because you can think about, well, what comes into this area?
 
-00:36:55.120 --> 00:37:01.440
+00:38:22.160 --> 00:38:28.480
 I want it to be completely known and accurate and write, but every single variable in a function doesn't need a type.
 
-00:37:01.700 --> 00:37:10.360
+00:38:28.740 --> 00:38:37.400
 You know, like there's a lot of just let me work in this nice free form readable way, but also let me put up the signs or signposts or whatever.
 
-00:37:10.600 --> 00:37:18.540
+00:38:37.640 --> 00:38:45.580
 People that say if I'm going to create a public package, well, every single public bit of that's going to have types, but maybe not the internals, right?
 
-00:37:18.700 --> 00:37:29.180
+00:38:45.740 --> 00:38:56.220
 And it really, I think just a little bit like that really helps the language servers make your editors better because there's enough information for them to refer almost everything, especially the stuff that you're going to touch because that's on the boundaries.
 
-00:37:29.540 --> 00:37:35.580
-Yeah, I definitely think at Meta, like we've had experience making sure that your code can become type.
+00:38:56.560 --> 00:39:17.580
+Yeah, I definitely think at Meta, we've had experience making sure that your code can become typed. So like Maggie at a bunch of the PyCons on our team will talk about how much success we've had in increasing type coverage. So I definitely think these inference tools and the other tools will provide people will be a really good way for people to add types and make their code base
 
-00:37:35.960 --> 00:37:42.460
-So like Maggie at a bunch of the PyCons on our team will talk about how much success we've had in increasing type coverage.
+00:39:17.980 --> 00:39:28.420
+very strongly typed. Yeah. To give you overdo it, you start to kill the Xenopython and it starts to look like C# or Java or something like that, where it's like, why are all these symbols
 
-00:37:42.980 --> 00:37:52.040
-So I definitely think these inference tools and the other tools we'll provide people will be a really good way for people to add types and make their code base very strongly type.
+00:39:28.560 --> 00:39:38.400
+here? You know, there's a lot of symbols here all of a sudden. Let's not start an existential crisis around like, what is Python on? I know. I don't think I can handle it.
 
-00:37:52.340 --> 00:37:53.640
-Yeah, to give you overdo it,
+00:39:40.480 --> 00:39:53.520
+Absolutely. So right here on the screen, it says get VS Code extension. So if I were to go over there and get the VS Code extension, I know you said it's an alpha, but 15,143 people don't care.
 
-00:37:53.670 --> 00:38:01.620
-you start to kill the Xenopython and it starts to look like C# or Java or something like that, where it's like, why are all these symbols here?
+00:39:53.880 --> 00:40:12.880
+14 people gave it five stars across the board so what happens if i install this into a vs code based editor you know yes many many many branches of that tree these days but if i install it into a vs code based editor from the marketplace does it replace pylance or pyrite or things like that
 
-00:38:02.000 --> 00:38:03.900
-You know, there's a lot of symbols here all of a sudden.
+00:40:13.240 --> 00:40:22.580
+yes so actually now if you install it it's just one click install it will disable pylance and pyrite it will start using Pyrefly for everything.
 
-00:38:04.220 --> 00:38:08.960
-Let's not start an existential crisis around like, what is Python on?
+00:40:23.100 --> 00:40:31.020
+And in our case, that works really well because we have very, very large code bases and PyLance and Pyright are a little bit slow on them.
 
-00:38:09.140 --> 00:38:09.840
-I know.
-
-00:38:10.080 --> 00:38:11.420
-I don't think I can handle it.
-
-00:38:13.520 --> 00:38:13.880
-Absolutely.
-
-00:38:14.520 --> 00:38:17.160
-So right here on the screen, it says get VS Code extension.
-
-00:38:17.620 --> 00:38:26.480
-So if I were to go over there and get the VS Code extension, I know you said it's in alpha, but 15,143 people don't care.
-
-00:38:27.110 --> 00:38:29.560
-14 people gave it five stars across the board.
-
-00:38:29.940 --> 00:38:34.120
-So what happens if I install this into a VS Code-based editor?
-
-00:38:34.580 --> 00:38:36.560
-You know, there's many, many, many branches
-
-00:38:36.630 --> 00:38:37.780
-of that tree these days.
-
-00:38:38.380 --> 00:38:45.900
-But if I install it into a VS Code-based editor from the marketplace, does it replace PyLance or Pyright or things like that?
-
-00:38:46.060 --> 00:38:46.340
-Yes.
-
-00:38:46.540 --> 00:38:49.760
-So actually now if you install it, it's just one click install.
-
-00:38:50.170 --> 00:38:52.960
-It will disable PyLance and Pyright.
-
-00:38:53.420 --> 00:38:55.540
-It will start using Pyrefly for everything.
-
-00:38:56.060 --> 00:39:03.980
-And in our case, that works really well because we have very, very large code bases and PyLance and PyRite are a little bit slow on them.
-
-00:39:04.780 --> 00:39:16.440
+00:40:31.820 --> 00:40:43.480
 If that doesn't work for you and if you want Pyrefly to only be used in certain cases, we have settings in the, you can see in the readme, there's two, there's disabled language services and then disabled type errors.
 
-00:39:17.520 --> 00:39:21.140
+00:40:44.560 --> 00:40:48.180
 And you can configure that however you want to.
 
-00:39:21.340 --> 00:39:23.660
+00:40:48.380 --> 00:40:50.700
 But it's ready to try out today.
 
-00:39:23.940 --> 00:39:25.640
+00:40:50.980 --> 00:40:52.680
 If I wanted to install it, it would work.
 
-00:39:25.980 --> 00:39:28.960
+00:40:53.020 --> 00:40:56.000
 Yes, you can even try it in front of us live if you want.
 
-00:39:29.300 --> 00:39:29.740
+00:40:56.340 --> 00:40:56.780
 There we go.
 
-00:39:30.490 --> 00:39:32.120
+00:40:57.520 --> 00:40:59.140
 Let me show you all my errors.
 
-00:39:33.180 --> 00:39:40.720
+00:41:00.220 --> 00:41:07.760
 Do you have intentions of supporting anything other than VS Code, like the JetBrains IDEs or Emacs or whatever?
 
-00:39:40.910 --> 00:39:41.300
+00:41:07.940 --> 00:41:08.340
 I don't know.
 
-00:39:41.560 --> 00:39:45.040
+00:41:08.600 --> 00:41:12.080
 So we do already have a JetBrains extension made by a community member.
 
-00:39:46.080 --> 00:39:48.320
+00:41:13.120 --> 00:41:15.360
 I don't know when the last time it was updated was.
 
-00:39:48.420 --> 00:39:55.580
+00:41:15.460 --> 00:41:22.620
 it is not a meta official one, but someone did make it. We support all editors that support LSP.
 
-00:39:56.120 --> 00:40:06.820
+00:41:23.160 --> 00:41:33.860
 So like Vim, Emacs, we have in our website ways to download Firefly for those. We've even made some decisions in the process of ming Firefly that make it easier for non-VS Code editors to work.
 
-00:40:07.160 --> 00:40:15.840
+00:41:34.280 --> 00:41:42.880
 So one example of this is basically we try keeping as much out of the language client as possible to make it so any editor will work really well.
 
-00:40:16.720 --> 00:40:16.880
+00:41:43.760 --> 00:41:43.920
 Okay.
 
-00:40:17.300 --> 00:40:19.160
+00:41:44.340 --> 00:41:46.200
 I'm just fooling around with the PyCharm version here.
 
-00:40:19.280 --> 00:40:25.280
+00:41:46.320 --> 00:41:52.240
 Yeah, it looks, it's got 1,300 installs as well, which is, you know, pretty comparable.
 
-00:40:25.700 --> 00:40:26.240
+00:41:52.740 --> 00:41:53.280
 That's pretty cool.
 
-00:40:26.560 --> 00:40:29.440
+00:41:53.600 --> 00:41:56.480
 If you're using IntelliJ or PyCharm and the plugin's going to be installed.
 
-00:40:29.560 --> 00:40:30.240
+00:41:56.600 --> 00:41:57.280
 Okay, very nice.
 
-00:40:30.640 --> 00:40:42.880
+00:41:57.680 --> 00:42:09.920
 Haven't tried that yet, but I don't, I think that the language server type checker aspect is more presented to you in VS Code and PyCharm, it's like, hey, PyCharm has really good type checking, but we don't know how that happens.
 
-00:40:43.000 --> 00:40:52.480
-You know what I mean? Like, it's kind of like just behind the scenes in their tooling, whereas you're going through and picking the details and the VS Code with all the extensions and piecing it together.
+00:42:10.040 --> 00:42:19.520
+You know what I mean? Like, it's kind of like just behind the scenes in their tooling, whereas you're going through and picking the details in the VS Code with all the extensions and piecing it together.
 
-00:40:52.820 --> 00:41:25.260
+00:42:19.860 --> 00:42:52.300
 Yeah, I think a lot of people also are just something that you you're not necessarily thinking about a lot, like you're thinking about writing your code, and you're thinking about, you know, whatever goal you're trying to achieve with the project that you're building. And so I think a lot of people don't even know necessarily what default language server they're using in that IDE and how that affects the development experience, especially in IDEs like PyCharm, where it's very built in and you know, for better or worse, is abstracted away from the user.
 
-00:41:25.700 --> 00:41:50.800
+00:42:52.740 --> 00:43:17.840
 Yeah. So one of the things I think will be interesting, maybe we can explore a little bit is sometimes, you know, you talked about like picking the right defaults. And when you're new, you don't necessarily want to fiddle with the defaults. I think also, as you go through these different type checker options, they make different choices for the default behaviors and what how strict or relaxed they're going to be. And it can be super annoying if you ever want to adopt them.
 
-00:41:50.840 --> 00:41:55.460
+00:43:17.880 --> 00:43:22.500
 I remember somebody sent me a message about a, I can't remember which one.
 
-00:41:55.640 --> 00:42:00.840
-One of them, I have a bunch of different packages that let you do different things for web frameworks.
+00:43:22.680 --> 00:43:27.880
+One, I have a bunch of different packages that let you do different things for web frameworks.
 
-00:42:01.200 --> 00:42:03.980
+00:43:28.240 --> 00:43:31.020
 Like I have one called FastAPI Chameleon.
 
-00:42:04.540 --> 00:42:10.480
+00:43:31.580 --> 00:43:37.520
 So if you want to use the Chameleon template language, but in FastAPI, instead of using Jinja, you just put a decorator and it does its thing.
 
-00:42:10.540 --> 00:42:10.640
-Right.
-
-00:42:10.880 --> 00:42:13.680
+00:43:37.680 --> 00:43:40.720
 And one is about like partial rendering.
 
-00:42:13.820 --> 00:42:15.460
+00:43:40.880 --> 00:43:42.500
 I think it was the first one that I said.
 
-00:42:15.700 --> 00:42:21.440
+00:43:42.740 --> 00:43:48.460
 Somebody sent me a message and said, Pyrite is giving me a load of errors out of this when I use your library.
 
-00:42:21.860 --> 00:42:23.660
+00:43:48.900 --> 00:43:50.700
 It's a decorator for web calling.
 
-00:42:24.560 --> 00:42:25.680
+00:43:51.600 --> 00:43:52.720
 Nobody's calling that function.
 
-00:42:25.900 --> 00:42:26.800
+00:43:52.940 --> 00:43:53.840
 How is it giving you an error?
 
-00:42:27.460 --> 00:42:38.580
-Just the fact of here's a web view in Flask or FastAPI or whatever it was, and you put a decorator on it, Pyrite decided, well, here's a function that's never called, but we better validate it.
+00:43:54.500 --> 00:44:01.300
+Just the fact of here's a web view in Flask or FastAPI or whatever it was, and you put a decorator on it.
 
-00:42:38.590 --> 00:42:45.420
+00:44:01.520 --> 00:44:05.620
+Pyrite decided, well, here's a function that's never called, but we better validate it.
+
+00:44:05.630 --> 00:44:12.460
 And there was some slight variation, and it basically filled the screen to put out the signature differences between the two.
 
-00:42:45.580 --> 00:42:46.200
+00:44:12.640 --> 00:44:13.240
 It was gnarly.
 
-00:42:46.460 --> 00:42:50.460
+00:44:13.500 --> 00:44:17.500
 And I'm like, does it really, do I really need to figure this out to make that error go away for this person?
 
-00:42:50.920 --> 00:42:53.960
+00:44:17.960 --> 00:44:21.000
 And I did end up doing it and it was a hassle.
 
-00:42:54.260 --> 00:43:08.500
+00:44:21.300 --> 00:44:35.540
 But my point is these different tools out there all make these different trade-offs and having it as a language server is really nice because if it's your language server and then maybe your CI testing tool, you see it as you build the code.
 
-00:43:08.940 --> 00:43:12.460
+00:44:35.980 --> 00:44:39.500
 You know, you don't build all the code and then run a different tool and go, whoa, it's full of errors.
 
-00:43:12.980 --> 00:43:15.780
+00:44:40.020 --> 00:44:42.820
 You see the little squigglies as you make your way through, right?
 
-00:43:16.660 --> 00:43:23.140
+00:44:43.700 --> 00:44:50.180
 And as you switch around, you'll see like a whole bunch of errors appear that you thought were not a problem, but one thing says yes, one thing says no.
 
-00:43:23.540 --> 00:43:36.700
+00:44:50.580 --> 00:45:03.740
 So that's a very long-winded way of saying, let's maybe talk just a little bit about like the different type checkers and how you, what is your philosophy in like kind of that zone compared to say mypy, Pyrite, PyLance.
 
-00:43:36.760 --> 00:43:39.180
+00:45:03.800 --> 00:45:06.220
 We could talk about ty just a little bit as well.
 
-00:43:39.360 --> 00:44:41.420
+00:45:06.400 --> 00:46:08.460
 other another new one that i feel um a peer of powerfly yeah so i guess maybe our our philosophy right now is like we we're fairly aggressive i think with trying to infer types but we're not necessarily like super aggressive about you know raising type errors or like you know we're we do want to try and reduce noise and we've tried we've implemented a few features um to help with that. Like if you are coming from mypy or pyright, we have a pyrefly init script that will actually take your pyright config or mypy config and generate an equivalent pyrefly config that has, you know, the equivalent error settings. And if you run it in a vacuum, then it will automatically add suppressions to certain files or like ask you to like opt in or out of type checking certain error codes if they're like very prevalent in your project. But yeah, I guess like, Compared to mypy, I guess we are a language server and not just a type checker.
 
-00:44:42.260 --> 00:44:47.600
+00:46:09.300 --> 00:46:14.640
 And I would say compared to Pyright, we are significantly more aggressive in terms of type inference.
 
-00:44:48.020 --> 00:44:52.420
+00:46:15.060 --> 00:46:19.460
 So a good example for this is an empty container.
 
-00:44:52.920 --> 00:45:01.340
+00:46:19.960 --> 00:46:28.380
 So if you have, for example, if you write X equals empty list, and then say later on, you add an int to it.
 
-00:45:01.550 --> 00:45:04.620
+00:46:28.590 --> 00:46:31.660
 And then after that, you try to add a string to it.
 
-00:45:04.880 --> 00:45:12.540
-mypy and Pyrefly, what we'll do is we'll determine that based on the first time you add something to the list, that it's a list of ints.
+00:46:31.920 --> 00:46:54.460
+mypy and Pyrofly, what we'll do is we'll determine that based on the first time you add something to the list, that it's a list of ints. And then when you try to add a string to it, it will error. And what Pyright does is it will assume it's a list of any because it's empty. And then you can add anything to it. And then when you read from it, you lose your type safety because where you're getting out of it isn't any.
 
-00:45:12.730 --> 00:45:15.960
-And then when you try to add a string to it, it will error.
+00:46:55.480 --> 00:47:16.180
+Right. Yeah. And that's like a trade off between, you know, the flexibility of having a list of any versus like the type safety you get by assuming it's a list of ints, you know, so it depends in this case where we're more trying to make sure that you're being as as type safe as you can be, I guess, in that.
 
-00:45:16.380 --> 00:45:20.980
-And what Pyright does is it will assume it's a list of any because it's empty.
+00:47:17.060 --> 00:47:35.120
+Yeah, it makes a lot of sense. I do feel like there's a lot of stuff geared towards, well, it could be anything, right? It's a dictionary, it could have anything, it's a list, it could have anything or a set or whatever. I might just put three customers, shopping cart object and a couple of integers into a list, like it's totally possible.
 
-00:45:21.340 --> 00:45:23.360
-And then you can add anything to it.
-
-00:45:23.390 --> 00:45:27.480
-And then when you read from it, you lose your type safety because where you're getting out of it is an any.
-
-00:45:28.450 --> 00:45:28.580
-Right.
-
-00:45:28.700 --> 00:45:50.020
-Yeah. And that's like a trade-off between, you know, the flexibility of having a list of any versus like the type safety you get by assuming it's a list of ints, you know. So it depends in this case where we're more trying to make sure that you're being as type safe as you can be, I guess, in that specific example.
-
-00:45:50.340 --> 00:46:08.080
-Yeah, it makes a lot of sense. I do feel like there's a lot of stuff geared towards, well, it could be anything, right? It's a dictionary, it could have anything, it's a list, it could have anything or a set or whatever. I might just put three customers, shopping cart object and a couple of integers into a list. Like it's totally possible.
-
-00:46:08.320 --> 00:46:13.900
+00:47:35.270 --> 00:47:40.940
 You can do that if you type your list, you know, at the start.
 
-00:46:14.820 --> 00:46:41.620
-But I think, you know, there's a lot of talk about like how this is an advantage and it's a thing want to keep the flexibility but i i don't know if i've ever seen real code written that does real things that is that flexible you know what i mean like you usually want a list of roughly the same types of things maybe the integers and floats but they're not like completely unrelated almost ever so i feel like that's a pretty fair assumption y'all are making yeah yeah and there's i guess a third
+00:47:41.080 --> 00:47:47.980
+But I think, you know, there's a lot of talk about like how this is an advantage and it's a thing that you want to keep the flexibility.
 
-00:46:41.860 --> 00:46:48.620
-path to doing this inference that's not like pinning it based on the first time it's used or just giving up and doing any.
+00:47:48.110 --> 00:47:54.180
+But I don't know if I've ever seen real code written that does real things that is that flexible.
 
-00:46:49.080 --> 00:46:54.720
-There's another way where based on what you add to it, you continually modify the type of the list.
+00:47:54.600 --> 00:47:55.080
+You know what I mean?
 
-00:46:55.040 --> 00:46:59.160
-So if you add an int to it and then you add a string, then it becomes a list of int or string.
+00:47:55.400 --> 00:47:58.760
+Like you usually want a list of roughly the same types of things.
 
-00:46:59.640 --> 00:47:03.200
-And then you get your error when you try to read from the list and use it as an int.
+00:47:59.360 --> 00:48:04.080
+Maybe the integers and floats, but they're not like completely unrelated almost ever.
 
-00:47:03.480 --> 00:47:12.760
-But then you end up with kind of spooky action at a distance where you're getting your error where you're reading from the list, but you don't know where you put the wrong thing into the list at.
+00:48:04.300 --> 00:48:06.760
+So I feel like that's a pretty fair assumption you all are making.
 
-00:47:13.300 --> 00:47:16.500
-So where you fix your error is not where your squiggle is.
+00:48:07.160 --> 00:48:37.060
+Yeah, and there's, I guess, a third path to doing this inference that's not like pinning it based on the first time it's used, or just giving up and doing any. There's another way where based on what you add to it, you continually modify the type of the list. So if you add an int to it, and then you add a string, then it becomes a list of int or string. And then you get your error when you try to read from the list and use it as an int. But, you know, then you end up with like kind of spooky, like action at a distance where you're getting your error where you're reading from the
 
-00:47:16.680 --> 00:47:22.480
-So we thought that giving the error when you put things into the list makes the error more easy to fix.
+00:48:37.080 --> 00:48:41.760
+list, but you don't know where you put the wrong thing into the list. So yeah, where you fix your
 
-00:47:22.780 --> 00:47:24.100
-And I guess if you're also like,
+00:48:41.920 --> 00:48:52.300
+error is not where your squiggle is. So we thought that like, you know, giving the error when you put things into the list makes the error more easy to fix. And I guess if you're like, if you're if
 
-00:47:24.680 --> 00:47:44.680
-if you have a code base where you're trying to gradually add types to, but you want to make sure that it is type safe, then doing it the way that Pyrefly does, I think, is you can have a list where you haven't declared the type from the start and you can go back and add it later.
+00:48:52.300 --> 00:49:21.460
+you have a code base where you're trying to sort of gradually add types to, but you want to make sure that it is type safe, then, you know, doing it the way that Pyrefly does, I think is you you can have a list where you haven't declared the type from the start and you can go back and add it later. But PyFly helps make sure that in the meantime, before you do that, you're not, you know, you're not going to break things because we're catching a potential error before it happens.
 
-00:47:45.260 --> 00:47:54.420
-But PyFly helps make sure that in the meantime, before you do that, you're not going to break things because we're catching a potential error before it happens.
+00:49:21.980 --> 00:49:42.340
+Yeah, I like it. So let's do a little, I don't know, compare and contrast, if you will. I think you've talked a lot about mypy already in terms of like the difference in the language server, But just in terms of the type checking aspect, what are some of the philosophical differences, say, with mypy versus PowerFly? mypy seems quite strict in the way that it works.
 
-00:47:54.900 --> 00:47:55.880
-Yeah, I like it.
+00:49:42.580 --> 00:49:57.860
+Yeah, I think mypy, I think, does a lot of inference and basically like this empty container stuff. But I think we're actually a little bit more aggressive in terms of inferring some of the types.
 
-00:47:56.160 --> 00:47:59.860
-So let's do a little, I don't know, compare and contrast, if you will.
-
-00:48:00.160 --> 00:48:12.160
-I think you've talked a lot about mypy already in terms of like the difference in the language server, but just in terms of the type checking aspect, what are some of the philosophical differences, say with mypy versus PyFly?
-
-00:48:12.220 --> 00:48:15.300
-mypy seems quite strict in the way that it works.
-
-00:48:15.720 --> 00:48:22.060
-Yeah, I think mypy does a lot of inference and basically likes this empty container stuff.
-
-00:48:22.460 --> 00:48:30.820
-But I think we're actually a little bit more aggressive in terms of inferring some of the types.
-
-00:48:30.940 --> 00:48:47.020
+00:49:58.080 --> 00:50:14.060
 I think, for example, when you construct a class and you aren't able to determine the type of the type parameters based on the arguments you provide to the constructor, we can actually, based on how you use that class later, infer that last type parameter.
 
-00:48:47.420 --> 00:48:50.800
+00:50:14.460 --> 00:50:17.840
 So that's something that I don't think any other type checker does.
 
-00:48:51.140 --> 00:48:51.420
-Okay.
+00:50:18.160 --> 00:50:19.720
+Okay. What about pyrite?
 
-00:48:51.700 --> 00:48:52.680
-What about pyrite?
+00:50:20.060 --> 00:50:27.280
+i think i think the biggest like contrast like i could give is the empty container um okay
 
-00:48:53.800 --> 00:49:00.700
-I think the biggest contrast I could give is the empty container example.
+00:50:27.500 --> 00:50:32.700
+example i don't know if kyle or abby have any no honestly all the type checkers blur together
 
-00:49:01.060 --> 00:49:03.040
-I don't know if Kyle or Abby have any.
+00:50:32.970 --> 00:50:38.320
+a little bit yes i know i think until you change them in the editors and you get new errors you're
 
-00:49:03.420 --> 00:49:06.720
-No, honestly, all the type checkers blur together a little bit.
+00:50:38.380 --> 00:50:47.599
+like oh wait this one does that okay and then there's also and like you can also configure each of them with your own you know whatever their defaults are you can normally toggle to whatever
 
-00:49:06.920 --> 00:49:07.540
-Yes, I know.
+00:50:47.620 --> 00:50:59.100
+the other option is. So yeah. Yeah. But like, overall, PyRite is like very good. You know, they they do a lot of things right. So architecturally, we're pretty similar to them,
 
-00:49:08.500 --> 00:49:11.100
-Until you change them in the editors and you get new errors,
+00:50:59.280 --> 00:51:15.360
+actually. Yeah, PyRite, the creator of PyRite actually made a conformance test suite that all type checkers run on. So we run PyRify on that PyRite runs on it, my PyRons on it. And the goal is to make all the type checkers behave in a very, very similar way for the unspecified things.
 
-00:49:11.220 --> 00:49:20.720
-you're like, oh, wait, this one does that. Okay. And then there's also unlike you can also configure each of them with your own, you know, whatever their defaults are, you can toggle to whatever the
+00:51:15.900 --> 00:51:20.100
+In practice, there will still be differences in the inference and other things.
 
-00:49:21.240 --> 00:49:32.360
-other option is. So yeah, yeah. But like, overall pirate is like, very good. You know, they they do a lot of things, right? So architecturally, we're pretty similar to them, actually.
+00:51:20.360 --> 00:51:26.700
+But ideally, if all type bearers could give the same output with the same input, it would be much easier to migrate between them.
 
-00:49:32.820 --> 00:49:59.120
-Yeah, right. The creator of pirate actually made a conformance test suite that all type checkers run on so we run pyrefly on that pyright runs on it my py runs on it um and the goal is to make all the type checkers behave in a very very similar way for the unspecified things um in practice there will still be differences in the inference and other things but ideally if all type bearers could give the same output with the same input it would be much easier to migrate
+00:51:27.000 --> 00:51:27.980
+Yeah, it definitely would.
 
-00:49:59.280 --> 00:50:03.859
-between them yeah it definitely would like maybe you can send you the links for the for any yeah
+00:51:28.220 --> 00:51:30.700
+Maybe you can send me the links for any...
 
-00:50:03.880 --> 00:50:05.440
-Yeah, I'll put it in the show notes.
+00:51:30.720 --> 00:51:31.080
+Yeah, yeah.
 
-00:50:05.440 --> 00:50:05.760
+00:51:31.100 --> 00:51:32.460
+I'll put it in the show notes.
+
+00:51:32.490 --> 00:51:32.880
 Yeah, absolutely.
 
-00:50:06.260 --> 00:50:06.380
+00:51:33.240 --> 00:51:33.420
 Yeah.
 
-00:50:06.920 --> 00:50:13.080
+00:51:33.960 --> 00:51:40.120
 It's like a reset CSS equivalent to try to get a weird assumption browsers make, but for typing.
 
-00:50:13.350 --> 00:50:13.480
+00:51:40.410 --> 00:51:40.540
 Yeah.
 
-00:50:13.960 --> 00:50:16.260
-And then I was going to add one more thing.
+00:51:40.980 --> 00:51:41.600
+And then...
 
-00:50:16.380 --> 00:50:19.540
-What Pyrefly also gives you is an automatic suppression script.
+00:51:41.780 --> 00:51:42.000
+Go ahead.
 
-00:50:20.040 --> 00:50:22.360
+00:51:42.300 --> 00:51:43.300
+I was going to add one more thing.
+
+00:51:43.340 --> 00:51:46.580
+And what Pyrefly also gives you is an automatic suppression script.
+
+00:51:47.080 --> 00:51:49.360
 So let's say you do switch from a different type checker.
 
-00:50:22.610 --> 00:50:37.460
-If you don't want to use our adoption script that will try mimicking the old type checkers config, you can just run this script that will automatically put a type ignore in all of the spots for you to then later fix. Oh, interesting. Okay. Yeah. Because we know that
+00:51:49.720 --> 00:52:01.880
+If you don't want to use our adoption script that will try mimicking the old type checkers config, you can just run this script that will automatically put a type ignore in all of the spots for you to then later fix.
 
-00:50:37.520 --> 00:50:55.700
-like there's probably people out there that have never used a type checker before, but also a lot of people that maybe already use mypy or PyRite and everyone hates, you know, doing migrations if it's too much of a hassle. So we really tried to make that experience as pain-free as we could.
+00:52:02.380 --> 00:52:03.140
+Oh, interesting. Okay.
 
-00:50:56.380 --> 00:50:58.640
-Yeah, I totally get that.
+00:52:03.580 --> 00:52:11.940
+Yeah, because we know that like there's probably people out there that have never used a type checker before, but also a lot of people that maybe already use mypy or PyRite.
 
-00:50:58.920 --> 00:51:05.160
-All right, so another one that is similar, not the same for sure, comes from Astral, right?
+00:52:12.340 --> 00:52:17.500
+And everyone hates, you know, doing migrations if it's too much of a hassle.
 
-00:51:05.700 --> 00:51:06.340
-Written and Ruffed.
+00:52:17.720 --> 00:52:22.740
+So we really tried to make that experience as pain-free as we could.
 
-00:51:06.620 --> 00:51:12.400
-T.Y. had Charlie Marsh on the show a month ago or something like that to talk about maybe a little bit longer, maybe six weeks.
+00:52:23.480 --> 00:52:25.600
+Yeah, I totally, I totally get that.
 
-00:51:12.580 --> 00:51:15.280
-Him and Carl Meyer on the show to talk about T.Y.
-
-00:51:15.780 --> 00:51:18.740
-and all the stuff it's doing, why it's different.
-
-00:51:19.260 --> 00:51:21.140
-I want to maybe compare and contrast that one.
-
-00:51:21.160 --> 00:51:25.460
-I know one of the big differences is that T.Y. is based on Salsa.
-
-00:51:26.400 --> 00:51:30.960
-static analysis tool from the Rust world and you guys are not, but what else?
-
-00:51:32.020 --> 00:51:44.780
-Yeah. So I think architecturally that, that is a major difference. And like, we sort of chose not to use Salsa because we wanted more control over the memory allocation aspect of things.
-
-00:51:45.290 --> 00:52:13.700
-I think Salsa, if you, you know, if you're using a framework to handle the core of your type checking, then you kind of give up some of that control. Like what we are able to do things like, for example, we don't keep the whole AST in memory during the whole duration of type checking, like we, we are able to free the memory for the AST as soon as we're done with it. And then that keeps our like memory from spiking so much during type checking. And that's something that we didn't
-
-00:52:13.820 --> 00:52:23.680
-have wouldn't have as much control over with salsa. But it's like more of a generator iterator type of pattern instead of just load it all up and process it. Yeah, it's like sort of like an eager
-
-00:52:23.940 --> 00:53:05.980
-versus lazy thing. But I guess in terms of like concrete comparisons, so everything I say has to be taken with a grain of salt, because both type checkers are in alpha, of course, design decisions can change. I would say like, right now, I think we're a bit further along in terms of implementing the typing spec. Like, I think in terms of like typing, the number of fully passing typing conformance cases were actually like higher than my pie now. But ty has, I think, done a lot of very interesting things related to gradual typing and sort of pioneering the representation of like intersection and negation types, which are not part of the typing specification. So I think there's just a
-
-00:53:06.500 --> 00:53:10.500
-sort of like each type checker is like sort of ahead in different areas right now.
-
-00:53:10.700 --> 00:53:53.280
-Yeah, both very interesting indeed. So one thing I think might be fun to close this out, well, a couple of things for sure. But one thing I think that people don't often, at least a year or two ago, they didn't really think about a benefit of typing. This originally manifests itself in printed words or out of context information about the code, right? So if I'm doing a blog post and I've got a function I write as, look, here's a little thing we're doing and it doesn't have any types. We don't have necessarily how it's used and you don't have a lot of information. The 2025 equivalent of that is maybe AI coding agents, right? I want to say, here's what I'm working on.
-
-00:53:53.450 --> 00:53:59.380
-Help me. Somehow, didn't we? We had to, we had to. And so it's like, here's some Python code.
-
-00:53:59.410 --> 00:54:35.440
-Help me do this thing. If there is typing on that code, I think the AI agents have a much better chance at getting it right. Like they like, oh, that's an integer. That means this. And if that information is missing, well, it's just has more work to figure out if it ever can possibly figure it out. So what do you all think about the benefits of typing, not for consistency of people, not for reading printed non-IDE code, but for actually this weird, bizarre and kind of amazing time we live in now with AI? Yeah. I mean, I think, I mean, I can just give you like one
-
-00:54:35.680 --> 00:54:49.180
-example of how like it helps me in my sort of daily development life. And I, you know, I will put my hands up and say I use AI assisted coding tools all the time.
-
-00:54:49.340 --> 00:54:50.580
-It saves me so much time.
-
-00:54:52.000 --> 00:54:56.420
-It's yeah, it's a huge time saver and I'm really enjoying using them.
-
-00:54:57.560 --> 00:55:04.840
-One thing that I will do a lot is some of these AI tools you can have directly in your IDE.
-
-00:55:05.320 --> 00:55:12.940
-You can write the function signature and the doc string and then you can just ask the AI to fill in the rest of the code for me.
-
-00:55:13.020 --> 00:55:20.980
-It is so much, I will get a much better result if I add type annotations to my function signature.
-
-00:55:21.540 --> 00:55:30.480
-And then the whatever AI tool I'm using can use that function signature and know, oh, it needs to take in an int, but it needs to return a string.
-
-00:55:30.900 --> 00:55:41.900
-And it's a really small change that I can make and how I'm just writing the first part of that code that gives me like a much better result from what the AI spits out at me.
-
-00:55:41.960 --> 00:55:52.320
-So that's like one very tangible example of how typed Python, I think is valuable in this, this new world of vibe coding that we're living in.
-
-00:55:53.640 --> 00:55:56.180
-Yeah, I don't know, Danny or Kyle, if you have more to add.
-
-00:55:56.400 --> 00:56:01.080
-Yeah, I definitely think like a lot of models are not good at keeping a ton of context.
-
-00:56:01.180 --> 00:56:03.520
-They can't keep a whole code based in the context.
-
-00:56:03.980 --> 00:56:20.160
-So if a type checker or even an LSP that can find the definition of stuff, find references, If it can just provide a little summary with some more information closer to the model, like that, I think is huge for the model being able to produce a correct result.
-
-00:56:20.500 --> 00:56:32.480
-And then on the other side, you have like the, like, is it correct question, which I think these tools will become even more important in if we have agents that do things without users necessarily.
-
-00:56:33.140 --> 00:56:33.540
-Right, right.
-
-00:56:33.740 --> 00:56:39.800
-Then you kind of want to say, does this code hang together from this piece to this piece to this piece or this job to that job?
-
-00:56:39.920 --> 00:56:53.180
-Yeah. Yeah. And I guess to piggyback off of that, like, yeah, like type checkers are pretty valuable as both tools for coding agents to use and for graders to evaluate the finished work.
-
-00:56:53.560 --> 00:57:02.480
-So like, I guess having a type checker that runs quickly, of course, is very valuable because these like agentic coding loops already take like a really long time.
-
-00:57:02.540 --> 00:57:09.180
-Like sometimes, you know, you set the AI going, you go get coffee or eat lunch and then you come back and see, check for it.
-
-00:57:09.320 --> 00:57:11.920
-So anything that can make it work faster is valuable.
-
-00:57:12.080 --> 00:57:17.940
-But also, I think grading the LLM generated work is very important.
-
-00:57:18.960 --> 00:57:26.440
-One concrete example I can give is that at Meta, we do these things called code mods, which are sort of automated refactors.
-
-00:57:26.680 --> 00:57:36.340
-Imagine you have your 20 million line code base, and you need to upgrade an old API to a new API, and there's like 20,000 call sites.
-
-00:57:36.880 --> 00:57:40.980
-Like doing that by hand is not, you know, not really a good use of engineering time.
-
-00:57:41.370 --> 00:57:50.840
-So you normally would write like maybe a complicated AST based transformation, but not everything can be expressed in a simple like AST mapping.
-
-00:57:51.380 --> 00:57:53.640
-And like, maybe you want something that's a bit smarter.
-
-00:57:53.790 --> 00:57:59.660
-So then LLMs have unlocked a lot of like fancier types of refactoring.
-
-00:57:59.940 --> 00:58:06.260
-Like maybe a simple example that I can give is I did recently did one where we were just eliminating redundant casts.
-
-00:58:06.380 --> 00:58:10.060
-So we're looking at where we're getting redundant cast warnings from the type checker.
-
-00:58:10.280 --> 00:58:12.760
-We're getting rid of the cast and then cleaning up the imports.
-
-00:58:13.340 --> 00:58:22.920
-And, you know, and sort of and if you're casting like the variable you're casting and the variable you're casting to were both named X, then it would just clean it up entirely.
-
-00:58:23.220 --> 00:58:23.780
-Things like that.
-
-00:58:24.080 --> 00:58:29.120
-That's like that would be a very it's doable, but fairly complicated to write as AST transformation.
-
-00:58:29.160 --> 00:58:39.820
-So sort of having the LLM do that and then having and running a type checker on the results to make sure that the LLM didn't like, you know, remove an import it wasn't supposed to remove.
-
-00:58:39.960 --> 00:58:41.940
-It didn't like break anything else in the code.
-
-00:58:42.000 --> 00:58:46.260
-It didn't like introduce a new type checker like suppression when it wasn't supposed to.
-
-00:58:46.460 --> 00:58:50.500
-Things like that are has been very valuable.
-
-00:58:50.940 --> 00:58:52.380
-Yeah, that's an awesome example.
-
-00:58:52.740 --> 00:58:56.040
-I definitely have in rules files for agentic agents.
-
-00:58:56.200 --> 00:59:00.300
-For me, I have things like make sure that you run the linter on anything that you edit.
-
-00:59:00.730 --> 00:59:02.900
-And then if there's a problem, you need to go fix that.
-
-00:59:03.060 --> 00:59:06.280
-Like, don't just leave it there, you know, and type checking and things like that.
-
-00:59:06.400 --> 00:59:11.920
-And you should add a line, run Pyrefly and make sure that it's, you know, got the right types.
-
-00:59:12.440 --> 00:59:14.560
-Yeah, I think that might be one of my new lines as well.
-
-00:59:14.660 --> 00:59:15.400
-That's going to be pretty cool.
-
-00:59:15.740 --> 00:59:17.980
-Okay, so let's wrap this up.
-
-00:59:18.140 --> 00:59:21.800
-Let's just maybe give people a sense of where you're going.
-
-00:59:21.900 --> 00:59:25.360
-I know if I go, like I said, there was a brand new release today, which is awesome.
-
-00:59:25.920 --> 00:59:27.880
-But this is still status alpha.
-
-00:59:28.430 --> 00:59:29.760
-Only the brave shall go here.
-
-00:59:31.800 --> 00:59:32.780
-What's coming soon?
-
-00:59:33.270 --> 00:59:34.380
-What could people look forward to?
-
-00:59:35.040 --> 00:59:35.620
-All the things.
-
-00:59:36.200 --> 00:59:36.680
-So many things.
-
-00:59:38.960 --> 00:59:43.740
-So I think we mentioned already that we do releases every week.
-
-00:59:44.760 --> 00:59:51.920
-We have, I think we have milestones as well in our GitHub so people can keep an eye out for things that are coming up.
-
-00:59:53.020 --> 01:00:02.760
-We, right now, it's a lot of like trying to fix a lot of bugs that are coming up as any alpha product has.
-
-01:00:03.100 --> 01:00:08.080
-We want to make sure that, you know, the type checking side of stuff is type checking stuff correctly.
-
-01:00:09.740 --> 01:00:18.800
-And we also really want to, actually, maybe Danny or Kyle, Do you have any things to add to that of like big things that are coming that people should watch out for?
-
-01:00:19.660 --> 01:00:25.040
-At this stage, the alpha label probably only applies to the type checking side of things.
-
-01:00:25.280 --> 01:00:28.480
-I think our IDE is pretty solid and ready to use.
-
-01:00:28.500 --> 01:00:29.320
-Pretty robust, yeah.
-
-01:00:29.940 --> 01:00:35.380
-I would say something to look forward to, I guess, is the type checker in a good enough state to use in production.
-
-01:00:35.760 --> 01:00:38.860
-I think right now people could be trying the IDE extension.
-
-01:00:40.320 --> 01:00:41.940
-And what are you changing it to?
-
-01:00:42.160 --> 01:00:42.260
-Beta?
-
-01:00:42.680 --> 01:00:45.720
-So we thought about calling something a beta,
-
-01:00:46.200 --> 01:00:48.060
-and I don't remember what the conclusion was.
-
-01:00:48.200 --> 01:00:54.220
-I think the more of these intermediate, like not done steps we have, like at what point is it ready for production use?
-
-01:00:54.320 --> 01:00:56.300
-And I think we want to wait until it's production ready.
-
-01:00:56.660 --> 01:00:57.680
-We're going to call it V1.
-
-01:00:57.980 --> 01:01:00.300
-We're going to say the type checker will be good enough for everything.
-
-01:01:01.240 --> 01:01:05.280
-Like we said earlier right now, IDE is used by every single Instagram employee.
-
-01:01:06.100 --> 01:01:06.740
-If it works for that.
-
-01:01:07.000 --> 01:01:09.840
-And it's used at like mega scale with that much code.
-
-01:01:09.960 --> 01:01:11.620
-It's not just used a little bit, right?
-
-01:01:11.720 --> 01:01:12.600
-That's a serious test.
-
-01:01:12.980 --> 01:01:13.460
-Yeah.
-
-01:01:13.760 --> 01:01:16.080
-I think I updated it for you here on the website.
-
-01:01:16.110 --> 01:01:16.580
-I fixed it.
-
-01:01:19.020 --> 01:01:22.060
-I think we can, you could just replace me as the developer advocate.
-
-01:01:25.100 --> 01:01:30.100
-So what are we looking at in terms of timeframe before it maybe gets a little farther?
-
-01:01:30.250 --> 01:01:34.440
-Although it sounds like the VS Code side of LSP things maybe is good to go.
-
-01:01:34.880 --> 01:01:35.020
-Yeah.
-
-01:01:35.300 --> 01:01:40.980
-IDE side of stuff, like definitely people should feel confident to go and start using straight away.
-
-01:01:41.480 --> 01:01:55.640
-For the type checking side of things, I think it's going to depend on how fast we can get through the backlog of bugs and also how many new critical bugs come up.
-
-01:01:56.370 --> 01:02:00.540
-I don't think we have a solid timeline yet for when we want to reach V1.
-
-01:02:01.140 --> 01:02:11.480
-But maybe this is actually a good time for us to invite anyone who's listening to this right now to definitely go and give Firefly a try.
-
-01:02:12.060 --> 01:02:22.420
-And because we are still in this alpha phase, it now is a super critical time for us to get feedback from people that are using this.
-
-01:02:23.640 --> 01:02:46.480
-you know, what are the critical issues that we need to fix? Or what are some of the defaults that, you know, don't do make sense or don't make sense for you? Right now, everything is, you know, sort of up for discussion and debate. And people can open issues in our GitHub, people can come talk to us on Discord. We have office hours every fortnight, bi-weekly for the Americans.
-
-01:02:48.420 --> 01:03:02.300
-And yeah, we don't want to commit to a solid V1 date yet until we feel, I think, a bit more confident that the type checking capabilities are really, really robust and where they need to be.
-
-01:03:02.520 --> 01:03:05.880
-And a lot of that, you know, that's why we're open source, right?
-
-01:03:06.020 --> 01:03:10.560
-Like we really need the community to help us get there.
-
-01:03:10.880 --> 01:03:11.800
-Yeah, sounds great.
-
-01:03:11.920 --> 01:03:41.660
-Yeah, I guess, I mean, we, I think on our, on our repository, read me, it says that we are planning to replace Pyre in CI by the end of this year. And I think we are still, you know, on track towards that. But it's not necessary to say that by the end of the year, everything will be perfect. I think there, even on the IDE side, we're missing some like refactoring related features that are not like code navigation related, I think. And, you know, obviously quality of life, things can also we can also work on.
-
-01:03:41.920 --> 01:03:51.620
-And for type checking, there's like a handful of, you know, larger features that we or like larger sort of areas that we still need to be able to we need to understand a bit better.
-
-01:03:52.100 --> 01:03:58.120
-So but it's like I feel like the in terms of like major things left to do, like the end
-
-01:03:58.440 --> 01:03:59.080
-is, you know, insight.
-
-01:03:59.540 --> 01:03:59.640
-Yeah.
-
-01:03:59.920 --> 01:04:00.340
-Oh, awesome.
-
-01:04:00.760 --> 01:04:00.920
-Congratulations.
-
-01:04:01.600 --> 01:04:02.260
-So how about this?
-
-01:04:02.380 --> 01:04:07.560
-If somebody tries it on their project and they're pretty happy with the way it's working, maybe they could use it in CI.
-
-01:04:08.000 --> 01:04:10.420
-But if they try it and they don't like it, maybe just wait.
-
-01:04:10.600 --> 01:04:11.460
-That seemed like a good advice.
-
-01:04:11.840 --> 01:04:19.960
-Yeah, like I wouldn't like try it today and then, you know, find an issue and then think you'll never want to use Firefly ever in your life.
-
-01:04:20.760 --> 01:04:23.520
-You know, it is it is still an alpha, as we said.
-
-01:04:23.760 --> 01:04:26.900
-So, you know, check back in, you know, next week.
-
-01:04:26.980 --> 01:04:28.880
-Who knows? Your bug could be fixed by then.
-
-01:04:29.900 --> 01:04:33.160
-So, yeah, give us give us your feedback.
-
-01:04:33.820 --> 01:04:38.260
-And it's open source. You could find the issue on GitHub and click the watch button.
-
-01:04:38.880 --> 01:04:41.600
-Exactly. Yeah. Give it a spin in your VS Code.
-
-01:04:41.780 --> 01:04:42.780
-you know, report bugs.
-
-01:04:43.790 --> 01:04:48.480
-Join our Discord if you, you know, want to just chat with the dev team or want help setting things up.
-
-01:04:48.610 --> 01:04:51.180
-Like we have a, we're pretty active on Discord right now.
-
-01:04:51.800 --> 01:04:52.260
-Yeah, fantastic.
-
-01:04:52.840 --> 01:04:53.080
+00:52:25.960 --> 00:52:26.160
 All right.
 
-01:04:53.520 --> 01:04:55.200
+00:52:26.360 --> 00:52:32.300
+So another one that is similar, not the same for sure, comes from Astral, right?
+
+00:52:32.620 --> 00:52:33.380
+Britain and Ruffed.
+
+00:52:33.660 --> 00:52:39.440
+T.Y. had Charlie Marsh on the show a month ago or something like that to talk about, maybe a little bit longer, maybe six weeks.
+
+00:52:39.500 --> 00:52:45.780
+him and Carl Meyer on the show to talk about ty and all the stuff it's doing, why it's different.
+
+00:52:46.300 --> 00:52:57.980
+Want to maybe compare and contrast that one. I know one of the big differences is that ty is based on Salsa, a static analysis tool from the Rust world, and you guys are not. But what else?
+
+00:52:59.040 --> 00:53:11.800
+Yeah. So I think architecturally, that is a major difference. And we sort of chose not to use Salsa because we wanted more control over the memory allocation aspect of things.
+
+00:53:12.350 --> 00:53:20.880
+I think Salsa, if you're using a framework to handle the core of your type checking, then you kind of give up some of that control.
+
+00:53:22.060 --> 00:53:29.280
+Like what we are able to do things like, for example, we don't keep the whole AST in memory during the whole duration of type checking.
+
+00:53:29.520 --> 00:53:33.880
+Like we are able to free the memory for the AST as soon as we're done with it.
+
+00:53:34.180 --> 00:53:38.240
+And then that keeps our memory from spiking so much during type checking.
+
+00:53:38.460 --> 00:53:42.760
+And that's something that we wouldn't have as much control over with Salsa.
+
+00:53:43.860 --> 00:53:48.780
+It's like more of a generator-iterator type of pattern instead of just load it all up and process it.
+
+00:53:49.040 --> 00:53:52.600
+Yeah, it's sort of like an eager versus lazy thing.
+
+00:53:52.980 --> 00:54:01.300
+But I guess in terms of concrete comparisons, so everything I say has to be taken with a grain of salt because both type checkers are in alpha.
+
+00:54:01.820 --> 00:54:30.980
+design decisions can change. I would say like right now, I think we're a bit further along in terms of implementing the typing spec. Like I think in terms of like typing, the number of fully passing typing conformance cases, we're actually like higher than mypy now. But ty has, I think, done a lot of very interesting things related to gradual typing and sort of pioneering the representation of like intersection and negation types, which are not part of the typing specification.
+
+00:54:31.480 --> 00:54:36.820
+So I think there's just sort of like each type checker is like sort of ahead in different
+
+00:54:36.940 --> 00:54:37.540
+areas right now.
+
+00:54:37.740 --> 00:54:39.640
+Yeah, both very interesting indeed.
+
+00:54:40.060 --> 00:54:43.340
+So one thing I think might be fun to close this out.
+
+00:54:43.460 --> 00:54:44.960
+Well, a couple of things for sure.
+
+00:54:45.140 --> 00:54:53.420
+But one thing I think that people don't often, at least a year or two ago, they didn't really think about a benefit of typing.
+
+00:54:54.000 --> 00:55:00.780
+This originally manifests itself in like printed words or out of context information about the code, right?
+
+00:55:00.980 --> 00:55:07.040
+So if I'm doing a blog post and I've got a function, I write, look, here's a little thing we're doing.
+
+00:55:07.290 --> 00:55:08.400
+And it doesn't have any types.
+
+00:55:08.770 --> 00:55:12.280
+We don't have necessarily how it's used and you don't have a lot of information.
+
+00:55:12.820 --> 00:55:17.900
+The 2025 equivalent of that is maybe AI coding agents, right?
+
+00:55:18.140 --> 00:55:20.320
+I want to say, here's what I'm working on.
+
+00:55:20.490 --> 00:55:20.800
+Help me.
+
+00:55:21.220 --> 00:55:22.140
+Somehow, didn't we?
+
+00:55:22.720 --> 00:55:23.400
+We had to.
+
+00:55:23.490 --> 00:55:23.900
+We had to.
+
+00:55:24.350 --> 00:55:26.420
+And so it's like, here's some Python code.
+
+00:55:26.470 --> 00:55:27.420
+Help me do this thing.
+
+00:55:27.940 --> 00:55:34.540
+If there is typing on that code, I think the AI agents have a much better chance at getting it right.
+
+00:55:34.730 --> 00:55:36.420
+Like, oh, that's an integer.
+
+00:55:36.470 --> 00:55:37.120
+That means this.
+
+00:55:37.430 --> 00:55:43.980
+And if that information is missing, well, it just has more work to figure out if it ever can possibly figure it out.
+
+00:55:44.240 --> 00:55:47.180
+So what do you all think about the benefits of typing?
+
+00:55:47.460 --> 00:55:58.740
+not for consistency of people, not for reading printed non-IDE code, but for actually this weird, bizarre and kind of amazing time we live in now with AI.
+
+00:55:59.200 --> 00:56:57.520
+Yeah. I mean, I think, I mean, I can just give you like one example of how like it helps me in my sort of daily development life. And I, you know, I will put my hands up and say, I use AI assisted coding tools all the time. It saves me so much time. It's a huge time saver and I'm really enjoying using them. One thing that I will do a lot is some of these AI tools you can have directly in your IDE. You can write the function signature and the doc string and then you can just ask the AI to fill in the rest of the code for me. It is so much, I will get a much better result If I add type annotations to my function signature, and then the whatever AI tool I'm using can use that function signature and know, oh, it needs to take in an int, but it needs to return a string.
+
+00:56:57.940 --> 00:57:08.940
+And it's a really small change that I can make and how I'm just writing the first part of that code that gives me like a much better result from what the AI spits out at me.
+
+00:57:08.940 --> 00:57:19.380
+So that's like one very tangible example of how typed Python, I think, is valuable in this new world of vibe coding that we're living in.
+
+00:57:20.680 --> 00:57:23.220
+Yeah, I don't know, Danny or Kyle, if you have more to add.
+
+00:57:23.460 --> 00:58:00.180
+Yeah, I definitely think a lot of models are not good at keeping a ton of context. They can't keep a whole code based in the context. So if a type checker or even an LSP that can find the definition of stuff, find references, if it can just provide a little summary with some more information closer the model like that I think is huge for the model being able to produce a correct result and then on the other side you have like the like is it correct question which I think these tools will become even more important in if we have agents that do things without users necessarily right
+
+00:58:00.350 --> 00:58:10.980
+right then you kind of want to say does this code hang together from this piece to this piece to this piece or this job to that job yeah yeah and I guess to piggyback off of that like yeah
+
+00:58:11.660 --> 00:58:38.960
+like type checkers are pretty valuable as both tools for coding agents to use and for graders to evaluate the finished work. So like, I guess, having a, you know, a type checker that runs quickly, of course, is very valuable, because these like agentic coding loops already take like a really long time. Like sometimes, you know, you set the AI going, you go get coffee or eat lunch, and then you come back and see, check for it. So anything that can make it work faster is valuable.
+
+00:58:39.180 --> 00:58:44.960
+But also, I think grading the LLM generated work is very important.
+
+00:58:46.000 --> 00:58:53.480
+One concrete example I can give is that at Meta, we do these things called code mods, which are sort of automated refactors.
+
+00:58:53.720 --> 00:58:59.920
+Imagine you have your 20 million line code base, and you need to upgrade an old API to a new API.
+
+00:59:00.640 --> 00:59:03.380
+And there's like 20,000 call sites.
+
+00:59:03.780 --> 00:59:08.020
+Doing that by hand is not really a good use of engineering time.
+
+00:59:08.440 --> 00:59:33.300
+So you normally would write like maybe a complicated AST based transformation, but not everything can be expressed in a simple like AST mapping. And like maybe you want something that's a bit smarter. So then LLMs have unlocked a lot of like fancier types of refactoring. Like maybe a simple example that I can give is I did recently did one where we were just eliminating redundant casts.
+
+00:59:33.400 --> 00:59:37.100
+So we're looking at where we're getting redundant cast warnings from the type checker.
+
+00:59:37.320 --> 00:59:39.800
+We're getting rid of the cast and then cleaning up the imports.
+
+00:59:40.380 --> 00:59:49.960
+And, you know, and sort of and if you're casting like the variable you're casting and the variable you're casting to were both named X, then it would just clean it up entirely.
+
+00:59:50.260 --> 00:59:50.820
+Things like that.
+
+00:59:51.120 --> 00:59:56.160
+That's like that would be a very it's doable, but fairly complicated to write as AST transformation.
+
+00:59:56.200 --> 01:00:06.860
+So sort of having the LLM do that and then having and running a type checker on the results to make sure that the LLM didn't like, you know, remove an import it wasn't supposed to remove.
+
+01:00:07.000 --> 01:00:08.980
+It didn't like break anything else in the code.
+
+01:00:09.040 --> 01:00:13.300
+It didn't like introduce a new type checker like suppression when it wasn't supposed to.
+
+01:00:13.500 --> 01:00:17.540
+Things like that are has been very valuable.
+
+01:00:17.980 --> 01:00:19.420
+Yeah, that's an awesome example.
+
+01:00:19.500 --> 01:00:23.080
+I definitely have in rules files for agentic agents.
+
+01:00:23.240 --> 01:00:27.340
+For me, I have things like make sure that you run the linter on anything that you edit.
+
+01:00:27.770 --> 01:00:29.940
+And then if there's a problem, you need to go fix that.
+
+01:00:30.100 --> 01:00:33.320
+Like, don't just leave it there, you know, and type checking and things like that.
+
+01:00:33.440 --> 01:00:38.960
+And you should add a line, run Pyrefly and make sure that it's, you know, got the right types.
+
+01:00:39.480 --> 01:00:41.600
+Yeah, I think that might be one of my new lines as well.
+
+01:00:41.700 --> 01:00:42.460
+That's going to be pretty cool.
+
+01:00:42.780 --> 01:00:45.020
+Okay, so let's wrap this up.
+
+01:00:45.180 --> 01:00:48.840
+Let's just maybe give people a sense of where you're going.
+
+01:00:48.940 --> 01:00:52.380
+I know if I go, like I said, there was a brand new release today, which is awesome.
+
+01:00:52.960 --> 01:00:54.920
+But this is still status alpha.
+
+01:00:55.470 --> 01:00:56.800
+Only the brave shall go here.
+
+01:00:58.840 --> 01:00:59.820
+What's coming soon?
+
+01:01:00.310 --> 01:01:01.420
+What could people look forward to?
+
+01:01:02.080 --> 01:01:02.660
+All the things.
+
+01:01:03.240 --> 01:01:03.720
+So many things.
+
+01:01:06.000 --> 01:01:10.780
+So I think we mentioned already that we do releases every week.
+
+01:01:11.800 --> 01:01:18.960
+We have, I think we have milestones as well in our GitHub so people can keep an eye out for things that are coming up.
+
+01:01:20.060 --> 01:01:29.800
+We, right now, it's a lot of like trying to fix a lot of bugs that are coming up as any alpha product has.
+
+01:01:30.140 --> 01:01:35.120
+We want to make sure that, you know, the type checking side of stuff is type checking stuff correctly.
+
+01:01:36.780 --> 01:01:45.840
+And we also really want to, actually, maybe Danny or Kyle, Do you have any things to add to that of like big things that are coming that people should watch out for?
+
+01:01:46.700 --> 01:01:52.080
+At this stage, the alpha label probably only applies to the type checking side of things.
+
+01:01:52.480 --> 01:01:55.520
+I think our IDE is pretty solid and ready to use.
+
+01:01:55.540 --> 01:01:56.360
+Pretty robust, yeah.
+
+01:01:56.840 --> 01:02:02.420
+I would say something to look forward to, I guess, is the type checker in a good enough state to use in production.
+
+01:02:02.800 --> 01:02:05.900
+I think right now people could be trying the IDE extension.
+
+01:02:07.360 --> 01:02:08.960
+And what are you changing it to?
+
+01:02:09.200 --> 01:02:09.300
+Beta?
+
+01:02:09.720 --> 01:02:12.760
+So we thought about calling something a beta,
+
+01:02:13.240 --> 01:02:15.100
+and I don't remember what the conclusion was.
+
+01:02:15.240 --> 01:02:21.260
+I think the more of these intermediate, like not done steps we have, like at what point is it ready for production use?
+
+01:02:21.360 --> 01:02:23.340
+And I think we want to wait until it's production ready.
+
+01:02:23.700 --> 01:02:24.720
+We're going to call it V1.
+
+01:02:24.980 --> 01:02:27.340
+We're going to say the type checker will be good enough for everything.
+
+01:02:28.280 --> 01:02:32.320
+Like we said earlier right now, IDE is used by every single Instagram employee.
+
+01:02:33.120 --> 01:02:33.780
+If it works for that.
+
+01:02:34.040 --> 01:02:36.880
+And it's used at like mega scale with that much code.
+
+01:02:37.000 --> 01:02:38.660
+It's not just used a little bit, right?
+
+01:02:38.760 --> 01:02:39.640
+That's a serious test.
+
+01:02:40.020 --> 01:02:40.500
+Yeah.
+
+01:02:40.800 --> 01:02:43.120
+I think I updated it for you here on the website.
+
+01:02:43.150 --> 01:02:43.620
+I fixed it.
+
+01:02:46.060 --> 01:02:49.100
+I think we can, you could just replace me as the developer advocate.
+
+01:02:52.140 --> 01:02:57.120
+So what are we looking at in terms of timeframe before it maybe gets a little farther?
+
+01:02:57.280 --> 01:03:01.480
+Although it sounds like the VS Code side of LSP things maybe is good to go.
+
+01:03:01.900 --> 01:03:02.080
+Yeah.
+
+01:03:02.340 --> 01:03:08.020
+IDE side of stuff, like definitely people should feel confident to go and start using straight away.
+
+01:03:08.520 --> 01:03:22.680
+For the type checking side of things, I think it's going to depend on how fast we can get through the backlog of bugs and also how many new critical bugs come up.
+
+01:03:23.410 --> 01:03:27.580
+I don't think we have a solid timeline yet for when we want to reach V1.
+
+01:03:28.180 --> 01:03:38.520
+But maybe this is actually a good time for us to invite anyone who's listening to this right now to definitely go and give Firefly a try.
+
+01:03:39.100 --> 01:03:49.460
+And because we are still in this alpha phase, it now is a super critical time for us to get feedback from people that are using this.
+
+01:03:50.680 --> 01:04:13.520
+you know, what are the critical issues that we need to fix? Or what are some of the defaults that, you know, don't do make sense or don't make sense for you? Right now, everything is, you know, sort of up for discussion and debate. And people can open issues in our GitHub, people can come talk to us on Discord. We have office hours every fortnight, bi-weekly for the Americans.
+
+01:04:15.460 --> 01:04:29.340
+And yeah, we don't want to commit to a solid V1 date yet until we feel, I think, a bit more confident that the type checking capabilities are really, really robust and where they need to be.
+
+01:04:29.560 --> 01:04:32.920
+And a lot of that, you know, that's why we're open source, right?
+
+01:04:33.060 --> 01:04:37.600
+Like we really need the community to help us get there.
+
+01:04:37.920 --> 01:04:38.840
+Yeah, sounds great.
+
+01:04:38.960 --> 01:05:08.700
+Yeah, I guess, I mean, we, I think on our, on our repository, read me, it says that we are planning to replace Pyre in CI by the end of this year. And I think we are still, you know, on track towards that. But it's not necessary to say that by the end of the year, everything will be perfect. I think there, even on the IDE side, we're missing some like refactoring related features that are not like code navigation related, I think. And, you know, obviously quality of life, things can also we can also work on.
+
+01:05:08.960 --> 01:05:18.660
+And for type checking, there's like a handful of, you know, larger features that we or like larger sort of areas that we still need to be able to we need to understand a bit better.
+
+01:05:19.140 --> 01:05:26.120
+So but it's like I feel like the in terms of like major things left to do, like the end is, you know, insight.
+
+01:05:26.580 --> 01:05:26.680
+Yeah.
+
+01:05:26.960 --> 01:05:27.380
+Oh, awesome.
+
+01:05:27.800 --> 01:05:27.960
+Congratulations.
+
+01:05:28.640 --> 01:05:29.300
+So how about this?
+
+01:05:29.420 --> 01:05:34.600
+If somebody tries it on their project and they're pretty happy with the way it's working, maybe they could use it in CI.
+
+01:05:35.040 --> 01:05:37.460
+But if they try it and they don't like it, maybe just wait.
+
+01:05:37.640 --> 01:05:38.500
+That seemed like a good advice.
+
+01:05:38.880 --> 01:05:47.000
+Yeah, like I wouldn't like try it today and then, you know, find an issue and then think you'll never want to use Firefly ever in your life.
+
+01:05:47.800 --> 01:05:50.560
+You know, it is it is still an alpha, as we said.
+
+01:05:50.800 --> 01:05:53.940
+So, you know, check back in, you know, next week.
+
+01:05:54.020 --> 01:05:55.920
+Who knows? Your bug could be fixed by then.
+
+01:05:56.940 --> 01:06:00.200
+So, yeah, give us give us your feedback.
+
+01:06:00.860 --> 01:06:05.300
+And it's open source. You could find the issue on GitHub and click the watch button.
+
+01:06:05.920 --> 01:06:07.040
+Exactly. Yeah.
+
+01:06:07.200 --> 01:06:09.820
+Give it a spin in your VS Code, you know, report bugs.
+
+01:06:10.760 --> 01:06:15.520
+Join our Discord if you, you know, want to just chat with the dev team or want help setting things up.
+
+01:06:15.650 --> 01:06:18.220
+Like we have a, we're pretty active on Discord right now.
+
+01:06:18.820 --> 01:06:19.300
+Yeah, fantastic.
+
+01:06:19.840 --> 01:06:20.120
+All right.
+
+01:06:20.500 --> 01:06:22.240
 Well, let's leave it there then.
 
-01:04:55.580 --> 01:04:58.060
+01:06:22.680 --> 01:06:25.100
 Kyle, Danny, and Abby, thank you all for being on the show.
 
-01:04:58.060 --> 01:04:58.540
+01:06:25.100 --> 01:06:25.500
 It was really great.
 
-01:04:58.760 --> 01:04:59.660
+01:06:25.800 --> 01:06:26.700
 Thank you for having us.
 
-01:05:00.100 --> 01:05:00.660
+01:06:27.120 --> 01:06:27.740
 Yeah, you bet.
 
-01:05:01.560 --> 01:05:04.160
+01:06:28.820 --> 01:06:30.960
 This has been another episode of Talk Python To Me.
 
-01:05:04.960 --> 01:05:05.920
+01:06:31.460 --> 01:06:32.240
 Thank you to our sponsors.
 
-01:05:06.400 --> 01:05:07.620
+01:06:32.640 --> 01:06:34.020
 Be sure to check out what they're offering.
 
-01:05:07.800 --> 01:05:09.040
+01:06:34.300 --> 01:06:35.620
 It really helps support the show.
 
-01:05:09.560 --> 01:05:10.920
+01:06:36.300 --> 01:06:37.880
 Take some stress out of your life.
 
-01:05:11.320 --> 01:05:16.700
+01:06:38.360 --> 01:06:43.780
 Get notified immediately about errors and performance issues in your web or mobile applications with Sentry.
 
-01:05:17.240 --> 01:05:21.620
+01:06:44.280 --> 01:06:48.660
 Just visit talkpython.fm/sentry and get started for free.
 
-01:05:22.020 --> 01:05:25.280
+01:06:49.100 --> 01:06:52.320
 And be sure to use the promo code talkpython, all one word.
 
-01:05:25.860 --> 01:05:28.640
-Agency. Discover agentic AI with agency.
+01:06:52.900 --> 01:06:53.260
+Agency.
 
-01:05:29.140 --> 01:05:33.200
+01:06:53.900 --> 01:06:55.680
+Discover agentic AI with agency.
+
+01:06:56.100 --> 01:07:00.240
 Their layer lets agents find, connect, and work together, any stack, anywhere.
 
-01:05:33.880 --> 01:05:39.900
-Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y.
+01:07:00.880 --> 01:07:06.940
+Start building the Internet of Agents at talkpython.fm/agency spelled A-G-N-T-C-Y.
 
-01:05:40.460 --> 01:05:41.300
-Want to level up your Python?
+01:07:07.340 --> 01:07:19.960
+If you or your team needs to learn Python, we have over 270 hours of beginner and advanced courses on topics ranging from complete beginners to async code, Flask, Django, HTMX, and even LLMs.
 
-01:05:41.770 --> 01:05:45.400
-We have one of the largest catalogs of Python video courses over at Talk Python.
+01:07:20.460 --> 01:07:22.540
+Best of all, there's not a subscription in sight.
 
-01:05:45.880 --> 01:05:50.580
-Our content ranges from true beginners to deeply advanced topics like memory and async.
+01:07:23.000 --> 01:07:24.800
+Browse the catalog at talkpython.fm.
 
-01:05:50.960 --> 01:05:53.100
-And best of all, there's not a subscription in sight.
+01:07:25.220 --> 01:07:26.640
+Be sure to subscribe to the show.
 
-01:05:53.610 --> 01:05:56.120
-Check it out for yourself at training.talkpython.fm.
+01:07:27.060 --> 01:07:28.800
+Open your favorite podcast player app.
 
-01:05:56.780 --> 01:06:00.980
-Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+01:07:29.300 --> 01:07:29.940
+Search for Python.
 
-01:06:01.440 --> 01:06:02.320
-We should be right at the top.
+01:07:30.200 --> 01:07:31.100
+we should be right at the top.
 
-01:06:02.820 --> 01:06:11.680
-You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+01:07:31.520 --> 01:07:35.020
+If you enjoy the Geeky Rap theme song, you can download the full track.
 
-01:06:12.340 --> 01:06:14.580
-We're live streaming most of our recordings these days.
+01:07:35.220 --> 01:07:36.860
+The link is your podcast player's show notes.
 
-01:06:14.910 --> 01:06:22.420
-If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at talkpython.fm/youtube.
-
-01:06:23.440 --> 01:06:24.560
+01:07:37.480 --> 01:07:38.780
 This is your host, Michael Kennedy.
 
-01:06:24.980 --> 01:06:25.820
-Thanks so much for listening.
+01:07:39.240 --> 01:07:40.380
+Thank you so much for listening.
 
-01:06:26.010 --> 01:06:26.960
+01:07:40.540 --> 01:07:41.400
 I really appreciate it.
 
-01:06:27.340 --> 01:06:28.920
+01:07:41.800 --> 01:07:43.480
 Now get out there and write some Python code.
 
-01:06:46.320 --> 01:06:49.120
-*music*
+01:07:53.620 --> 01:08:13.320
+Talk Python To Me And we ready to roll Upgrading the code No fear of getting old We tapped into that modern vibe Overcame each storm Talk Python To Me Async is the norm you
 
