@@ -1,0 +1,4412 @@
+WEBVTT
+
+00:00:03.340 --> 00:00:06.800
+<v Christopher Trudeau>Have you ever thought about getting your small product into production, but are worried about
+
+00:00:06.810 --> 00:00:11.920
+<v Christopher Trudeau>the cost of the big cloud providers? Or maybe you think your current cloud service is over-architected
+
+00:00:11.990 --> 00:00:16.900
+<v Christopher Trudeau>and costing you too much? Well, in this episode, we interview Michael Kennedy, author of "Talk
+
+00:00:17.070 --> 00:00:21.780
+<v Christopher Trudeau>Python in Production," a new book that guides you through deploying web apps at scale with
+
+00:00:22.000 --> 00:00:27.660
+<v Christopher Trudeau>right-sized engineering. This is "Talk Python To Me," episode 531, recorded November 26,
+
+00:00:28.380 --> 00:00:35.880
+<v Christopher Trudeau>2025. Welcome to Talk Python To Me, a weekly podcast on Python. This is your guest host,
+
+00:00:36.160 --> 00:00:41.800
+<v Christopher Trudeau>Christopher Trudeau. Follow me on Bluesky, where I'm trudeau.dev. You can follow the podcast or
+
+00:00:42.000 --> 00:00:47.540
+<v Christopher Trudeau>this week's guest on Mastodon, at Talk Python for the show, and @mkennedy for the guest,
+
+00:00:47.940 --> 00:00:54.360
+<v Christopher Trudeau>both on fosstodon.org. And keep up with the show and listen to over nine years of episodes at
+
+00:00:54.380 --> 00:00:55.700
+<v Christopher Trudeau>talkpython.fm.
+
+00:00:56.760 --> 00:01:00.980
+<v Christopher Trudeau>If you want to be part of our live, if you want to be part of our live episodes,
+
+00:01:01.340 --> 00:01:05.720
+<v Christopher Trudeau>you can find the live streams over on YouTube, subscribe to our YouTube channel
+
+00:01:05.880 --> 00:01:09.940
+<v Christopher Trudeau>at talkpython.fm/youtube and get notified about upcoming.
+
+00:01:10.180 --> 00:01:13.200
+<v Christopher Trudeau>So and get notified about upcoming shows.
+
+00:01:14.300 --> 00:01:16.300
+<v Christopher Trudeau>Michael, welcome to talk Python to me.
+
+00:01:16.960 --> 00:01:17.740
+<v Christopher Trudeau>You know, I looked it up.
+
+00:01:17.940 --> 00:01:21.300
+<v Christopher Trudeau>You've been on the show more than anyone else, but in case there's new listeners,
+
+00:01:21.840 --> 00:01:22.740
+<v Christopher Trudeau>tell us a bit about yourself.
+
+00:01:23.760 --> 00:01:25.000
+<v Michael Kennedy>Incredible, incredible.
+
+00:01:25.720 --> 00:01:27.020
+<v Michael Kennedy>Good to be here with you, Christopher.
+
+00:01:28.979 --> 00:01:33.140
+<v Michael Kennedy>So a bit of a turn of the tables, I would say.
+
+00:01:33.220 --> 00:01:37.040
+<v Michael Kennedy>And long-time listeners, I'm sure they
+
+00:01:37.200 --> 00:01:39.880
+<v Michael Kennedy>know all the little details because I work them in here
+
+00:01:40.000 --> 00:01:40.220
+<v Michael Kennedy>and there.
+
+00:01:40.280 --> 00:01:42.280
+<v Michael Kennedy>I think that's kind of fun to just make things personal.
+
+00:01:44.259 --> 00:01:46.340
+<v Michael Kennedy>But I've also said this on the show,
+
+00:01:46.600 --> 00:01:50.140
+<v Michael Kennedy>and I'm sure it's a surprising fact that you know as well.
+
+00:01:50.280 --> 00:01:53.720
+<v Michael Kennedy>but over half of the people in the Python space
+
+00:01:53.960 --> 00:01:55.080
+<v Michael Kennedy>have only been here for two years.
+
+00:01:55.500 --> 00:01:57.100
+<v Christopher Trudeau>- Yeah, I keep seeing that stat.
+
+00:01:57.350 --> 00:01:57.480
+<v Christopher Trudeau>- Yep.
+
+00:01:57.880 --> 00:01:58.640
+<v Michael Kennedy>- That's crazy, right?
+
+00:01:58.710 --> 00:02:01.180
+<v Michael Kennedy>So even if people, you know, I told this story
+
+00:02:01.520 --> 00:02:03.240
+<v Michael Kennedy>about my background five years ago,
+
+00:02:03.330 --> 00:02:05.160
+<v Michael Kennedy>like those people weren't here, like half of them.
+
+00:02:05.400 --> 00:02:06.900
+<v Michael Kennedy>So crazy, crazy stuff.
+
+00:02:07.600 --> 00:02:10.300
+<v Michael Kennedy>All right, so my backstory, I was,
+
+00:02:11.590 --> 00:02:12.900
+<v Michael Kennedy>I thought I would be a mathematician.
+
+00:02:13.330 --> 00:02:16.560
+<v Michael Kennedy>I studied math and stuff like that in college,
+
+00:02:17.140 --> 00:02:21.700
+<v Michael Kennedy>was working on my PhD and started doing a bunch of work
+
+00:02:22.160 --> 00:02:25.780
+<v Michael Kennedy>with silicon graphics, mainframe,
+
+00:02:26.080 --> 00:02:28.700
+<v Michael Kennedy>supercomputer type stuff so that I could do my math research.
+
+00:02:28.880 --> 00:02:30.660
+<v Michael Kennedy>And I realized, wow, this programming stuff
+
+00:02:30.660 --> 00:02:31.860
+<v Michael Kennedy>is way more fun than math.
+
+00:02:32.840 --> 00:02:33.760
+<v Michael Kennedy>How do I change gears?
+
+00:02:34.000 --> 00:02:37.360
+<v Michael Kennedy>And so that was like 1998, 99.
+
+00:02:38.160 --> 00:02:38.720
+<v Michael Kennedy>Haven't looked back.
+
+00:02:38.740 --> 00:02:39.920
+<v Michael Kennedy>I've been programming since then.
+
+00:02:40.240 --> 00:02:43.400
+<v Michael Kennedy>And super fun, a couple of languages.
+
+00:02:43.740 --> 00:02:47.540
+<v Michael Kennedy>And around 10, 11 years ago, started Talk Python.
+
+00:02:47.980 --> 00:02:52.300
+<v Michael Kennedy>A year after that, quit my job, made Talk Python my full-time job,
+
+00:02:53.280 --> 00:02:54.780
+<v Michael Kennedy>started offering courses as well.
+
+00:02:54.960 --> 00:02:56.700
+<v Michael Kennedy>That's something that people don't necessarily know,
+
+00:02:57.730 --> 00:03:00.260
+<v Michael Kennedy>that sometimes they'll ask, well, what do you do for your job, actually?
+
+00:03:00.290 --> 00:03:01.760
+<v Michael Kennedy>I'm like, well, we're doing it.
+
+00:03:03.040 --> 00:03:07.820
+<v Michael Kennedy>So anyway, that's me, a super fan of Python,
+
+00:03:08.310 --> 00:03:09.400
+<v Michael Kennedy>a super fan of programming.
+
+00:03:10.800 --> 00:03:13.120
+<v Michael Kennedy>Every day I wake up just like, wow, how awesome is today?
+
+00:03:13.380 --> 00:03:16.440
+<v Michael Kennedy>that like, look at all the new stuff that came out that we learned that we can do, right?
+
+00:03:16.640 --> 00:03:19.800
+<v Michael Kennedy>Like new libraries, AI stuff these days.
+
+00:03:20.760 --> 00:03:22.260
+<v Christopher Trudeau>Yeah, there's always plenty to talk about.
+
+00:03:22.840 --> 00:03:23.760
+<v Michael Kennedy>It's incredible times.
+
+00:03:24.200 --> 00:03:24.880
+<v Michael Kennedy>It's incredible times.
+
+00:03:25.180 --> 00:03:30.840
+<v Christopher Trudeau>And you've added a new trophy to the mantle, I guess?
+
+00:03:30.980 --> 00:03:31.900
+<v Christopher Trudeau>You've written a book.
+
+00:03:33.180 --> 00:03:34.300
+<v Michael Kennedy>I have written a book.
+
+00:03:34.820 --> 00:03:39.100
+<v Michael Kennedy>And, you know, that's a little bit, I'll put it this way.
+
+00:03:39.160 --> 00:03:40.860
+<v Michael Kennedy>It's not something I ever saw myself doing.
+
+00:03:41.660 --> 00:03:43.900
+<v Michael Kennedy>But I'm really excited that I did.
+
+00:03:45.240 --> 00:03:50.120
+<v Michael Kennedy>And yeah, it took, I spent a couple of months properly writing it.
+
+00:03:50.300 --> 00:03:51.820
+<v Michael Kennedy>You know, I really put in my energy in.
+
+00:03:52.580 --> 00:03:55.140
+<v Michael Kennedy>And like all projects, you think you're about done.
+
+00:03:57.260 --> 00:04:01.040
+<v Christopher Trudeau>Yeah, that first 80% is nothing like the last 80%.
+
+00:04:01.080 --> 00:04:03.580
+<v Michael Kennedy>No, and the last 5% is long.
+
+00:04:04.460 --> 00:04:07.000
+<v Michael Kennedy>You know, and it's not just the book.
+
+00:04:07.120 --> 00:04:08.960
+<v Michael Kennedy>It's like, okay, well, where am I going to sell it?
+
+00:04:09.200 --> 00:04:11.800
+<v Michael Kennedy>okay, well, Amazon, and then I'll self-publish,
+
+00:04:11.900 --> 00:04:12.800
+<v Michael Kennedy>or do I use a publisher?
+
+00:04:13.600 --> 00:04:14.680
+<v Michael Kennedy>And you end up self-publishing it,
+
+00:04:14.740 --> 00:04:16.940
+<v Michael Kennedy>but then you're like, how do I?
+
+00:04:17.260 --> 00:04:19.100
+<v Michael Kennedy>You know, all these things you learn for the first time.
+
+00:04:19.180 --> 00:04:21.700
+<v Michael Kennedy>Like, how do I get it into Amazon to sell even?
+
+00:04:22.060 --> 00:04:23.220
+<v Michael Kennedy>And there's a bunch of decisions.
+
+00:04:24.139 --> 00:04:28.780
+<v Christopher Trudeau>And I can tell you, even with having taken the publishing route,
+
+00:04:29.020 --> 00:04:29.700
+<v Christopher Trudeau>it's no easier.
+
+00:04:30.060 --> 00:04:32.400
+<v Christopher Trudeau>It's just that it goes dark for two months,
+
+00:04:32.480 --> 00:04:33.540
+<v Christopher Trudeau>and then all of a sudden it's like,
+
+00:04:33.640 --> 00:04:34.780
+<v Christopher Trudeau>you need to do this by yesterday.
+
+00:04:35.100 --> 00:04:38.800
+<v Christopher Trudeau>So, yeah, it's not necessarily an advantage either way,
+
+00:04:38.960 --> 00:04:45.200
+<v Michael Kennedy>I think. Yeah. Yeah. Yeah. I was really on the fence and I thought, look, let me just try this
+
+00:04:45.400 --> 00:04:51.380
+<v Michael Kennedy>myself. I got a few podcast listeners and I can let them know about it. And an audience helps.
+
+00:04:52.180 --> 00:04:58.320
+<v Michael Kennedy>I honestly think it was probably the right choice for me. And for those who haven't come across it
+
+00:04:58.440 --> 00:05:03.719
+<v Christopher Trudeau>yet, do you want to give us the one paragraph version? Yeah. So the book is called Talk Python
+
+00:05:03.760 --> 00:05:08.920
+<v Michael Kennedy>in production. There are other books that are, I'm pretty sure one is called Python in production,
+
+00:05:09.070 --> 00:05:14.120
+<v Michael Kennedy>or other things about how do you get your Python app into production. But this is talk Python in
+
+00:05:14.300 --> 00:05:20.840
+<v Michael Kennedy>production because it's sort of a dual role storytelling vehicle. Obviously it's nonfiction,
+
+00:05:20.960 --> 00:05:29.039
+<v Michael Kennedy>it's a technical book. But the idea was, let me tell not a generic story of how you might run some
+
+00:05:29.060 --> 00:05:34.460
+<v Michael Kennedy>of your Python code in production, mostly APIs, web apps, databases, like that kind of stuff,
+
+00:05:34.640 --> 00:05:42.560
+<v Michael Kennedy>right? Not a general story of that, but my story, right? I've been on this journey of
+
+00:05:43.390 --> 00:05:53.280
+<v Michael Kennedy>not complete noob, but pretty significantly lost getting my original Python app out into the world
+
+00:05:53.760 --> 00:05:56.860
+<v Michael Kennedy>to pretty confident running stuff
+
+00:05:57.810 --> 00:06:01.200
+<v Michael Kennedy>in, I think, a simpler than usual way,
+
+00:06:01.820 --> 00:06:02.620
+<v Michael Kennedy>in a good way.
+
+00:06:03.320 --> 00:06:03.400
+<v Christopher Trudeau>Right.
+
+00:06:05.200 --> 00:06:07.040
+<v Christopher Trudeau>One of the things I really liked about the book is
+
+00:06:08.440 --> 00:06:10.000
+<v Christopher Trudeau>it's not quite changing gears,
+
+00:06:10.130 --> 00:06:13.300
+<v Christopher Trudeau>but you do a nice mix of sort of the
+
+00:06:14.100 --> 00:06:16.040
+<v Christopher Trudeau>decision-making process versus the
+
+00:06:16.320 --> 00:06:17.520
+<v Christopher Trudeau>here's exactly what I did.
+
+00:06:18.440 --> 00:06:20.040
+<v Christopher Trudeau>And so you get a little bit of both.
+
+00:06:20.300 --> 00:06:22.359
+<v Christopher Trudeau>And honestly, the decision-making process
+
+00:06:22.380 --> 00:06:25.960
+<v Christopher Trudeau>is something I find often isn't there in a lot of work.
+
+00:06:27.080 --> 00:06:29.180
+<v Christopher Trudeau>You know, your standard blog post is always,
+
+00:06:29.360 --> 00:06:32.260
+<v Christopher Trudeau>well, and then add exactly this to exactly this file.
+
+00:06:33.120 --> 00:06:35.200
+<v Christopher Trudeau>But I think I really, really sort of enjoyed the,
+
+00:06:35.520 --> 00:06:38.860
+<v Christopher Trudeau>and this is what I tried, and this is why I changed.
+
+00:06:39.420 --> 00:06:41.200
+<v Christopher Trudeau>And you're very kind of humble about it.
+
+00:06:41.340 --> 00:06:43.820
+<v Christopher Trudeau>Like a lot of folks who write this kind of content,
+
+00:06:44.020 --> 00:06:45.340
+<v Christopher Trudeau>it's thou shalt do this.
+
+00:06:45.380 --> 00:06:47.620
+<v Christopher Trudeau>And you're like, this is the way, I told you.
+
+00:06:47.780 --> 00:06:48.820
+<v Christopher Trudeau>Yeah, this worked for me.
+
+00:06:49.140 --> 00:06:53.980
+<v Christopher Trudeau>and uh yeah so so i really like the fact that you've you've kind of blended that in
+
+00:06:54.620 --> 00:06:59.700
+<v Christopher Trudeau>what what made you decide to do this like that what there so you said you didn't really have
+
+00:06:59.700 --> 00:07:04.900
+<v Michael Kennedy>the itch to go down the path so uh what i'm not sure i didn't have the itch i just didn't think
+
+00:07:05.020 --> 00:07:11.840
+<v Michael Kennedy>that it was something i was capable of ah i see okay you know what i mean not not that i didn't
+
+00:07:11.980 --> 00:07:17.579
+<v Michael Kennedy>think if i literally took two years of my life and went into like a cabin the row style or something
+
+00:07:17.600 --> 00:07:19.540
+<v Michael Kennedy>I could come out with a book, I'm pretty sure.
+
+00:07:20.100 --> 00:07:24.440
+<v Michael Kennedy>But given all the constraints of like, I have a family and I got to keep Talk Python running.
+
+00:07:24.560 --> 00:07:27.780
+<v Michael Kennedy>Like in that sense, I didn't think I would be able to do it.
+
+00:07:27.960 --> 00:07:30.980
+<v Christopher Trudeau>Yeah, it's perseverance more than anything else, I think.
+
+00:07:31.160 --> 00:07:32.240
+<v Christopher Trudeau>Yeah, for sure.
+
+00:07:32.920 --> 00:07:33.160
+<v Michael Kennedy>Exactly.
+
+00:07:34.420 --> 00:07:35.340
+<v Michael Kennedy>So, yeah, go ahead.
+
+00:07:35.340 --> 00:07:35.640
+<v Michael Kennedy>Go ahead.
+
+00:07:35.850 --> 00:07:36.300
+<v Michael Kennedy>No, no, go ahead.
+
+00:07:36.430 --> 00:07:40.240
+<v Michael Kennedy>Well, you know, so why did I write it?
+
+00:07:41.880 --> 00:07:42.600
+<v Michael Kennedy>Two reasons.
+
+00:07:42.840 --> 00:07:44.400
+<v Michael Kennedy>One, I think it's an interesting story.
+
+00:07:45.120 --> 00:07:47.240
+<v Michael Kennedy>And I thought people would enjoy hearing it.
+
+00:07:47.400 --> 00:07:49.160
+<v Michael Kennedy>like the personal side that you mentioned a little bit.
+
+00:07:49.160 --> 00:07:50.500
+<v Michael Kennedy>I thought people would appreciate that.
+
+00:07:52.000 --> 00:07:54.180
+<v Michael Kennedy>And maybe more significantly,
+
+00:07:55.170 --> 00:07:57.560
+<v Michael Kennedy>I feel like a lot of the advice out there
+
+00:07:58.120 --> 00:08:00.580
+<v Michael Kennedy>in the tech space in general,
+
+00:08:01.220 --> 00:08:02.640
+<v Michael Kennedy>but for now we're focused on like,
+
+00:08:02.640 --> 00:08:03.740
+<v Michael Kennedy>how do I deploy my app?
+
+00:08:03.840 --> 00:08:05.920
+<v Michael Kennedy>Sort of like Python plus DevOps type of thing.
+
+00:08:06.670 --> 00:08:08.640
+<v Michael Kennedy>But I think a lot of the advice out there
+
+00:08:09.800 --> 00:08:13.880
+<v Michael Kennedy>is a little bit of a flex in the sense that,
+
+00:08:14.590 --> 00:08:15.920
+<v Michael Kennedy>oh, look at this.
+
+00:08:16.120 --> 00:08:20.100
+<v Michael Kennedy>we're using these seven services and then this technology, and then we're auto
+
+00:08:20.320 --> 00:08:21.060
+<v Michael Kennedy>scaling it with that.
+
+00:08:21.080 --> 00:08:23.500
+<v Michael Kennedy>And then we have these logs pumped over to this other thing.
+
+00:08:23.720 --> 00:08:25.060
+<v Michael Kennedy>You're like, Whoa, okay.
+
+00:08:25.220 --> 00:08:25.940
+<v Michael Kennedy>That's kind of cool.
+
+00:08:26.660 --> 00:08:30.700
+<v Michael Kennedy>But a lot of people who just have an app and they just want to go from like, it
+
+00:08:30.820 --> 00:08:33.719
+<v Michael Kennedy>works on my machine to look what I made.
+
+00:08:35.200 --> 00:08:37.380
+<v Michael Kennedy>They see that and go, I can't do that.
+
+00:08:37.919 --> 00:08:38.360
+<v Michael Kennedy>You know what?
+
+00:08:38.400 --> 00:08:39.000
+<v Michael Kennedy>It's not for me.
+
+00:08:39.719 --> 00:08:46.080
+<v Michael Kennedy>It's just like, I can't spend $500 on this infrastructure and I don't feel
+
+00:08:46.100 --> 00:08:49.660
+<v Michael Kennedy>if I don't have all, you know, like completely geo
+
+00:08:50.760 --> 00:08:54.320
+<v Michael Kennedy>distributed redundant databases and like, you don't need that.
+
+00:08:54.840 --> 00:08:55.520
+<v Michael Kennedy>You know what I mean?
+
+00:08:55.640 --> 00:08:58.080
+<v Michael Kennedy>And people keep asking me like, Hey, Michael, can you give me some advice?
+
+00:08:58.250 --> 00:08:59.540
+<v Michael Kennedy>I'm like, well, not that.
+
+00:09:00.350 --> 00:09:02.860
+<v Michael Kennedy>And finally, I'm like, let me just tell the story, you know?
+
+00:09:04.140 --> 00:09:05.900
+<v Michael Kennedy>And so that was a big motivation.
+
+00:09:06.300 --> 00:09:07.780
+<v Christopher Trudeau>You see it in industry a lot.
+
+00:09:07.810 --> 00:09:11.320
+<v Christopher Trudeau>it's sometimes referred to as, you know, resume based architecture, right?
+
+00:09:11.440 --> 00:09:14.320
+<v Christopher Trudeau>Like it's a, do we need this or is this because I'm trying to learn?
+
+00:09:14.500 --> 00:09:14.640
+<v Christopher Trudeau>Yes.
+
+00:09:15.100 --> 00:09:20.480
+<v Christopher Trudeau>and I think there's always that, oh, some of it's aspirational, right?
+
+00:09:20.520 --> 00:09:21.740
+<v Christopher Trudeau>I, I, we will be Netflix.
+
+00:09:22.040 --> 00:09:26.480
+<v Christopher Trudeau>And so, you know, we, we need to be on every continent and all the rest of it.
+
+00:09:26.600 --> 00:09:27.400
+<v Christopher Trudeau>And,
+
+00:09:27.660 --> 00:09:28.180
+<v Michael Kennedy>Right, right.
+
+00:09:28.260 --> 00:09:29.360
+<v Michael Kennedy>It's, it's very aspirational.
+
+00:09:29.560 --> 00:09:30.960
+<v Michael Kennedy>It's like, I'm going to build this app.
+
+00:09:31.120 --> 00:09:33.580
+<v Michael Kennedy>And the reason I'm building it is it's going to take off.
+
+00:09:33.720 --> 00:09:37.180
+<v Michael Kennedy>And that day when the hockey stick hits, I'm ready.
+
+00:09:37.620 --> 00:09:37.720
+<v Christopher Trudeau>Yeah.
+
+00:09:38.280 --> 00:09:38.920
+<v Michael Kennedy>You know what I mean?
+
+00:09:39.180 --> 00:09:44.200
+<v Christopher Trudeau>There's also a, you know, I think there's a, a lack of
+
+00:09:44.220 --> 00:09:51.380
+<v Christopher Trudeau>recognition of the cost of both in energy and money uh energy as in human effort i'm not talking
+
+00:09:51.380 --> 00:09:59.480
+<v Christopher Trudeau>about electricity uh of the next one percent right so like getting from 90 uptime to 95 uptime costs
+
+00:09:59.680 --> 00:10:06.460
+<v Christopher Trudeau>something getting from 95 to 96 costs more than that and getting from 96 like and once you're
+
+00:10:06.510 --> 00:10:11.860
+<v Christopher Trudeau>getting into like the four nines five nines thing and then you know cloud flare goes down and you're
+
+00:10:11.720 --> 00:10:19.280
+<v Michael Kennedy>all screwed anyways, right? So it's so it's so ironic. It is 100% ironic that you take all these
+
+00:10:19.460 --> 00:10:23.540
+<v Michael Kennedy>steps and you employ all these services. And it's the complexity of those services that went down
+
+00:10:23.700 --> 00:10:28.740
+<v Michael Kennedy>like, you know, this show will come out in a couple weeks, but it we're just on the eve of
+
+00:10:29.280 --> 00:10:37.000
+<v Michael Kennedy>basically three weeks of important things going down. First AWS. Yeah. Then Azure and then GitHub.
+
+00:10:37.540 --> 00:10:39.600
+<v Michael Kennedy>And also, and then Cloudflare, so let's put that as four,
+
+00:10:39.910 --> 00:10:41.820
+<v Michael Kennedy>within three weeks, right?
+
+00:10:42.060 --> 00:10:46.020
+<v Michael Kennedy>And the AWS one was like, the reason it went down
+
+00:10:46.280 --> 00:10:49.320
+<v Michael Kennedy>is DynamoDB had some sort of DNS problem.
+
+00:10:50.280 --> 00:10:52.580
+<v Michael Kennedy>Even if you're not using that, the thing you're using,
+
+00:10:52.780 --> 00:10:56.660
+<v Michael Kennedy>like Lambda, depends upon DynamoDB for itself to work.
+
+00:10:56.660 --> 00:10:59.800
+<v Michael Kennedy>So it was just like a cascade of kabang, right?
+
+00:10:59.900 --> 00:11:01.360
+<v Michael Kennedy>And that's a little bit of this complexity.
+
+00:11:03.120 --> 00:11:05.580
+<v Michael Kennedy>The more complexity you buy in, even if it's not yours,
+
+00:11:06.070 --> 00:11:07.140
+<v Michael Kennedy>it is yours in a sense.
+
+00:11:07.220 --> 00:11:10.960
+<v Christopher Trudeau>Yeah. And there's, there's always humans involved, right? So you're always, there's,
+
+00:11:11.320 --> 00:11:16.500
+<v Christopher Trudeau>there's always fallibility somewhere, right? Although one of the arguments I have seen
+
+00:11:16.780 --> 00:11:21.640
+<v Christopher Trudeau>recently in response to the Cloudflare outages, the good news is if you're, you know, I saw some
+
+00:11:21.700 --> 00:11:25.040
+<v Christopher Trudeau>articles that were like, well, you shouldn't be dependent on Cloudflare. And I saw the counter
+
+00:11:25.240 --> 00:11:29.760
+<v Christopher Trudeau>articles were basically, you know what, when half the internet's down, no one's hassling you that
+
+00:11:29.820 --> 00:11:35.320
+<v Christopher Trudeau>your app is down because half the internet is down. So yeah, that's true. There is an excuse when it
+
+00:11:35.300 --> 00:11:35.940
+<v Christopher Trudeau>isn't your fault.
+
+00:11:36.200 --> 00:11:37.460
+<v Christopher Trudeau>So yeah, anyways.
+
+00:11:37.700 --> 00:11:38.400
+<v Christopher Trudeau>That is true.
+
+00:11:38.640 --> 00:11:43.400
+<v Michael Kennedy>And you don't see what Cloudflare saved people.
+
+00:11:43.740 --> 00:11:43.920
+<v Michael Kennedy>Yes.
+
+00:11:44.560 --> 00:11:46.120
+<v Michael Kennedy>I'm not using Cloudflare.
+
+00:11:46.220 --> 00:11:47.260
+<v Michael Kennedy>I actually use bunny.net.
+
+00:11:49.860 --> 00:11:52.200
+<v Michael Kennedy>But CDNs make it possible for your app
+
+00:11:52.220 --> 00:11:55.100
+<v Michael Kennedy>to survive these spikes in ways that they very well may not
+
+00:11:55.580 --> 00:11:57.760
+<v Michael Kennedy>without, and certainly the DDoS type of stuff
+
+00:11:57.880 --> 00:11:58.800
+<v Michael Kennedy>that they protect against.
+
+00:11:59.700 --> 00:12:01.840
+<v Christopher Trudeau>And I use it simply for certificates.
+
+00:12:03.180 --> 00:12:08.120
+<v Christopher Trudeau>Like Google decided everyone shall be HTTPS, even my sites that don't need it.
+
+00:12:08.480 --> 00:12:13.640
+<v Christopher Trudeau>And rather than try to figure out automation for let's encrypt has gotten a lot better.
+
+00:12:13.840 --> 00:12:17.840
+<v Christopher Trudeau>But when I first started it, it was like, and I need this and I need this and I need this.
+
+00:12:17.970 --> 00:12:21.500
+<v Christopher Trudeau>And then the cron job could go down or it's like, or I can stick cloud fair in front of it.
+
+00:12:21.720 --> 00:12:23.420
+<v Christopher Trudeau>And I never have to think about it ever again.
+
+00:12:23.640 --> 00:12:23.740
+<v Christopher Trudeau>Right.
+
+00:12:23.960 --> 00:12:24.960
+<v Christopher Trudeau>So yeah, like exactly.
+
+00:12:25.500 --> 00:12:26.580
+<v Christopher Trudeau>There's a little bit of value that way.
+
+00:12:26.870 --> 00:12:28.300
+<v Michael Kennedy>So yeah, there definitely, definitely is.
+
+00:12:28.740 --> 00:12:31.060
+<v Michael Kennedy>Another thing I want to kind of bring back a little bit,
+
+00:12:31.200 --> 00:12:33.640
+<v Michael Kennedy>you opened this segment on,
+
+00:12:34.430 --> 00:12:37.560
+<v Michael Kennedy>you said, like I shared the human side of the story
+
+00:12:37.690 --> 00:12:39.040
+<v Michael Kennedy>in kind of a humble way.
+
+00:12:39.700 --> 00:12:41.340
+<v Michael Kennedy>That was certainly something,
+
+00:12:41.430 --> 00:12:42.880
+<v Michael Kennedy>that was one of the main goals, like I said.
+
+00:12:43.720 --> 00:12:45.840
+<v Michael Kennedy>I think it's just a continuation of the podcast.
+
+00:12:46.520 --> 00:12:48.200
+<v Michael Kennedy>I started the podcast 10 years ago,
+
+00:12:48.270 --> 00:12:50.540
+<v Michael Kennedy>and I'm like, when I got into Python,
+
+00:12:51.020 --> 00:12:52.120
+<v Michael Kennedy>there were no Python podcasts.
+
+00:12:52.440 --> 00:12:54.380
+<v Michael Kennedy>There had been, but there were none at the time.
+
+00:12:54.430 --> 00:12:55.800
+<v Michael Kennedy>And I'm like, there's all these cool libraries.
+
+00:12:56.340 --> 00:12:58.700
+<v Michael Kennedy>I want to hear the stories and the humanity.
+
+00:12:58.820 --> 00:13:04.940
+<v Michael Kennedy>And you go to the documentation and you're like, cool technology, sterile as can be.
+
+00:13:05.499 --> 00:13:10.580
+<v Michael Kennedy>And the reason technology is interesting is not just because there's an API I can call this,
+
+00:13:10.640 --> 00:13:14.180
+<v Michael Kennedy>but it's like, it's a journey and it's a story.
+
+00:13:14.560 --> 00:13:17.600
+<v Michael Kennedy>And it's, so I just wanted to do that again in the book.
+
+00:13:17.920 --> 00:13:19.180
+<v Christopher Trudeau>It's all problem solving, right?
+
+00:13:19.260 --> 00:13:22.920
+<v Christopher Trudeau>And there has to have been a problem for someone to want to solve it,
+
+00:13:23.000 --> 00:13:26.000
+<v Christopher Trudeau>which means there's got to have been people involved in trying to figure out what that is.
+
+00:13:26.240 --> 00:13:55.400
+<v Michael Kennedy>I think a lot of people maybe, I don't know, I shouldn't speak for people. It seems to me though, like a lot of people, they look at a technology and they think they just assess it as a dry, sterile sort of thing on its own. That was created in a context, right? Why was celery created? Not just so I can send events to it and like, you know, add more complexity and asynchronous. It solved a real problem.
+
+00:13:55.540 --> 00:14:03.320
+<v Michael Kennedy>And if you hear and you understand and you follow that journey, you're like, I see this is where this come from and why it exists.
+
+00:14:03.650 --> 00:14:05.880
+<v Michael Kennedy>Then you can decide, is it for me?
+
+00:14:06.340 --> 00:14:06.460
+<v Michael Kennedy>Yes.
+
+00:14:06.570 --> 00:14:06.680
+<v Michael Kennedy>Right?
+
+00:14:07.780 --> 00:14:15.340
+<v Christopher Trudeau>Well, and I think doubly so in the open source space because this is all volunteer work.
+
+00:14:16.050 --> 00:14:21.780
+<v Christopher Trudeau>And so knowing a little bit about who's doing what and humanizing that a little bit.
+
+00:14:22.750 --> 00:14:22.860
+<v Christopher Trudeau>Right.
+
+00:14:23.250 --> 00:14:23.680
+<v Christopher Trudeau>Their motivation.
+
+00:14:24.340 --> 00:14:24.420
+<v Christopher Trudeau>Yeah.
+
+00:14:24.660 --> 00:14:26.220
+<v Christopher Trudeau>And it's also easier to be grateful, right?
+
+00:14:26.360 --> 00:14:28.440
+<v Christopher Trudeau>Like this isn't some soulless corporate machine.
+
+00:14:28.540 --> 00:14:31.000
+<v Christopher Trudeau>There was, there was a reason behind this and a driver behind it.
+
+00:14:31.140 --> 00:14:36.260
+<v Christopher Trudeau>So you've, inside the book, you've, you've added a couple of things that are a
+
+00:14:36.340 --> 00:14:42.020
+<v Christopher Trudeau>little sort of non-standard, like the audio reader briefs and the galleries that you want
+
+00:14:42.020 --> 00:14:47.300
+<v Christopher Trudeau>to give a quick rundown and speaking of, and speaking of motivation, what, what motivated
+
+00:14:47.380 --> 00:14:48.500
+<v Christopher Trudeau>you to include those things?
+
+00:14:50.379 --> 00:14:52.060
+<v Michael Kennedy>So let me describe what they are first.
+
+00:14:52.100 --> 00:14:54.400
+<v Michael Kennedy>Cause they are weird, but they're weird in a good way.
+
+00:14:54.540 --> 00:15:02.380
+<v Michael Kennedy>I think. So if you go to the book, my vision was somebody's going to be reading this very likely on
+
+00:15:02.390 --> 00:15:13.800
+<v Michael Kennedy>a Kindle. And if I go and put really nice diagrams, pictures, whatever, how good is that going to look
+
+00:15:14.280 --> 00:15:18.480
+<v Michael Kennedy>in a Kindle paperwhite, black and white? You know what I mean? Like how hard is that going to be
+
+00:15:18.600 --> 00:15:24.260
+<v Michael Kennedy>to read? I think it's going to be hard is what I decided. And so what I ended up doing is I said,
+
+00:15:24.340 --> 00:15:30.780
+<v Michael Kennedy>okay, how, how can I make it better for people so that when they want to work with code,
+
+00:15:31.220 --> 00:15:37.180
+<v Michael Kennedy>it's not trapped inside your Kindle or your iPad, Apple books or wherever you read it,
+
+00:15:38.000 --> 00:15:43.580
+<v Michael Kennedy>but it's super accessible, right? So what I did is I created some things I called galleries and
+
+00:15:43.880 --> 00:15:49.820
+<v Michael Kennedy>there's a code gallery, a figure gallery and a links gallery. And these are just like,
+
+00:15:50.240 --> 00:15:55.840
+<v Michael Kennedy>they're kind of like an index of those things so like the links one just says hey here's all the
+
+00:15:55.920 --> 00:16:02.640
+<v Michael Kennedy>urls that we talked about in chapter 10 or chapter 11 and just the sentence that contains them so
+
+00:16:02.830 --> 00:16:06.320
+<v Michael Kennedy>instead of trying to go back through and flipping through the book like where was that thing they
+
+00:16:06.480 --> 00:16:10.920
+<v Michael Kennedy>talked about right like no you just go to the gallery and you click on the chapter or you just
+
+00:16:11.010 --> 00:16:17.659
+<v Michael Kennedy>do command f there it is you know what i mean and also for especially for the figures like it's um
+
+00:16:18.300 --> 00:16:26.560
+<v Michael Kennedy>all it has like 2,000 or 4,000 by whatever level pictures that you're not even allowed to put into
+
+00:16:27.320 --> 00:16:32.320
+<v Michael Kennedy>like a Kindle book they're like uh no we're gonna redo those rescale those images for you down to
+
+00:16:32.380 --> 00:16:38.320
+<v Michael Kennedy>something fuzzy right so if you want to read like little tiny texts I put it there so that's the
+
+00:16:38.460 --> 00:16:46.960
+<v Michael Kennedy>galleries and I was just maybe a little bit more backstory here is when I wrote this I've worked
+
+00:16:46.980 --> 00:16:52.620
+<v Michael Kennedy>with other type of editing things, any tools, I'm just like, I need to write this and I need to get
+
+00:16:52.690 --> 00:16:59.560
+<v Michael Kennedy>this done in a super fluid way. So I'm just going to write in Markdown. I'm just writing in Markdown.
+
+00:16:59.970 --> 00:17:05.620
+<v Michael Kennedy>And so what I did is, of course, there's book publishing things that you can put Markdown into
+
+00:17:05.709 --> 00:17:11.499
+<v Michael Kennedy>and so on. But I'm like, I'm just going to write one Markdown file per chapter and then write some
+
+00:17:11.520 --> 00:17:19.520
+<v Michael Kennedy>Python program to assemble that in interesting ways and then turn that into an EPUB or PDF or
+
+00:17:20.060 --> 00:17:24.780
+<v Michael Kennedy>Kindle or whatever through something called Pandoc. Are you familiar with Pandoc? I've heard of it,
+
+00:17:24.939 --> 00:17:29.760
+<v Michael Kennedy>yeah. If you go and look, for people who don't know what Pandoc is, if you go look at Pandoc,
+
+00:17:29.850 --> 00:17:35.960
+<v Michael Kennedy>it has right on the web page, it has this like fuzzy thing on the right. It's like gray fuzzy.
+
+00:17:36.560 --> 00:17:37.520
+<v Michael Kennedy>You're like, what is that?
+
+00:17:38.320 --> 00:17:45.140
+<v Michael Kennedy>This thing on the right shows you all the formats that go in and all the formats that can come out.
+
+00:17:45.700 --> 00:17:47.180
+<v Michael Kennedy>And it's insane.
+
+00:17:47.420 --> 00:17:51.740
+<v Michael Kennedy>Like you can't even – the line is just – the line is connecting the graphs of these things.
+
+00:17:51.960 --> 00:17:53.200
+<v Michael Kennedy>It's just a black blob.
+
+00:17:53.500 --> 00:18:00.820
+<v Michael Kennedy>Like I could put a hadocked document, whatever the heck that is, and convert that to a docbook 4.
+
+00:18:01.360 --> 00:18:01.540
+<v Christopher Trudeau>Right.
+
+00:18:02.100 --> 00:18:02.860
+<v Michael Kennedy>I mean it's insane.
+
+00:18:03.300 --> 00:18:14.560
+<v Michael Kennedy>Okay, so what I did is I built this Python, simple Python thing that reassembles Markdown in certain ways and then feed the final thing that I built into Pandoc to get the different e-book formats.
+
+00:18:14.840 --> 00:18:15.720
+<v Christopher Trudeau>Right, right. Okay.
+
+00:18:16.340 --> 00:18:26.060
+<v Michael Kennedy>But then it occurred to me, so I didn't start out with these gallery type things or other stuff, but I'm like, well, this is just Python against Markdown.
+
+00:18:26.860 --> 00:18:31.100
+<v Michael Kennedy>surely I can start pulling out all the links and pulling out the images and then writing them
+
+00:18:31.300 --> 00:18:35.980
+<v Michael Kennedy>somewhere else and then just committing that to GitHub. So once, you know, it's kind of just the
+
+00:18:36.300 --> 00:18:40.960
+<v Michael Kennedy>standard story of Python or programming in general, but I think it's extra common in Python. It's like,
+
+00:18:41.280 --> 00:18:47.940
+<v Michael Kennedy>I started solving the problem with Python and once that was in place, it's like the next block and
+
+00:18:47.940 --> 00:18:51.500
+<v Michael Kennedy>the next thing is just like, that's easy now and that's easy. And these three things are also easy.
+
+00:18:51.660 --> 00:18:53.500
+<v Michael Kennedy>Let's just do that and just keep adding to it.
+
+00:18:53.680 --> 00:18:58.840
+<v Michael Kennedy>So that's where they came from is one, wanting to make sure people had a good
+
+00:18:59.080 --> 00:19:02.820
+<v Michael Kennedy>experience with like code resources, pictures and so on.
+
+00:19:03.560 --> 00:19:07.400
+<v Michael Kennedy>But also it's just kind of following the lead of like, Hey, let's just keep going.
+
+00:19:08.000 --> 00:19:10.240
+<v Christopher Trudeau>Well, and it's one of the beauties of an ebook.
+
+00:19:11.980 --> 00:19:14.860
+<v Christopher Trudeau>If dead tree copies, those things cost money.
+
+00:19:15.520 --> 00:19:19.620
+<v Christopher Trudeau>And so it's like, Oh, I've got a great idea for six more appendices.
+
+00:19:19.980 --> 00:19:21.980
+<v Christopher Trudeau>And that's when you start going, oh, wait a second.
+
+00:19:22.200 --> 00:19:24.700
+<v Christopher Trudeau>I'm not going to add 300 pages to a 200-page book.
+
+00:19:25.400 --> 00:19:25.920
+<v Christopher Trudeau>Yeah, exactly.
+
+00:19:26.300 --> 00:19:32.780
+<v Christopher Trudeau>With an e-book, you can go, oh, yeah, here, we can make this referenceable in a couple different ways.
+
+00:19:33.550 --> 00:19:33.920
+<v Michael Kennedy>Right, yeah.
+
+00:19:34.060 --> 00:19:38.380
+<v Michael Kennedy>It's like it duplicates the images into maybe 20 more pages or something.
+
+00:19:38.640 --> 00:19:40.300
+<v Michael Kennedy>But it's an e-book.
+
+00:19:40.410 --> 00:19:40.840
+<v Michael Kennedy>Who cares?
+
+00:19:41.160 --> 00:19:41.520
+<v Christopher Trudeau>Exactly.
+
+00:19:41.790 --> 00:19:42.260
+<v Christopher Trudeau>Yeah, yeah.
+
+00:19:44.420 --> 00:19:49.480
+<v Christopher Trudeau>So over the history of the show, I think I've become familiar with your AI journey.
+
+00:19:50.600 --> 00:19:53.840
+<v Christopher Trudeau>and recently it sounds like you've bought.
+
+00:19:54.560 --> 00:19:56.380
+<v Christopher Trudeau>You're a fairly big proponent.
+
+00:19:57.420 --> 00:20:00.640
+<v Christopher Trudeau>That being said, there's still a Made by Humans logo inside.
+
+00:20:01.500 --> 00:20:01.700
+<v Christopher Trudeau>Yeah.
+
+00:20:05.220 --> 00:20:06.980
+<v Christopher Trudeau>So I'm going to put you on the spot.
+
+00:20:07.600 --> 00:20:08.500
+<v Christopher Trudeau>Put me on the spot.
+
+00:20:08.500 --> 00:20:09.160
+<v Christopher Trudeau>Do you believe in it or not?
+
+00:20:09.920 --> 00:20:11.120
+<v Michael Kennedy>Do I believe in it or not?
+
+00:20:12.720 --> 00:20:13.780
+<v Christopher Trudeau>So why Made by Humans?
+
+00:20:13.780 --> 00:20:14.800
+<v Michael Kennedy>It's a good question.
+
+00:20:15.420 --> 00:20:16.660
+<v Michael Kennedy>Yeah, it's a really good question.
+
+00:20:16.680 --> 00:20:41.820
+<v Michael Kennedy>So I think there's a weariness of content generated by AI or assisted by AI meant to attract attention and build authoritative feelings about a thing when that authority or that skill set is not necessarily yours.
+
+00:20:42.760 --> 00:20:45.720
+<v Michael Kennedy>And that I still very much do not like.
+
+00:20:46.660 --> 00:20:50.040
+<v Michael Kennedy>If I wanted to create a blog, I mean, I guess I could do it.
+
+00:20:50.100 --> 00:20:52.680
+<v Michael Kennedy>It'd be a fun experiment, I guess, in sort of an evil way.
+
+00:20:52.820 --> 00:21:03.080
+<v Michael Kennedy>Like, what if I just go create a completely random blog and I just have chat just bust out an article twice a day, every day, of the thing that's on the top of Hacker News or something?
+
+00:21:03.130 --> 00:21:05.000
+<v Michael Kennedy>You know, just like, you could do that.
+
+00:21:05.460 --> 00:21:07.520
+<v Michael Kennedy>And actually, it might even be interesting.
+
+00:21:07.650 --> 00:21:08.780
+<v Michael Kennedy>I don't really even know.
+
+00:21:09.330 --> 00:21:11.140
+<v Michael Kennedy>But I don't want that, right?
+
+00:21:12.300 --> 00:21:20.500
+<v Michael Kennedy>And for this, I wanted to share my story, not have AI create a book that has bullet points of my story.
+
+00:21:20.880 --> 00:21:21.440
+<v Christopher Trudeau>Right. Yeah.
+
+00:21:22.110 --> 00:21:24.260
+<v Michael Kennedy>So for me, it was important to write this.
+
+00:21:24.720 --> 00:21:27.840
+<v Michael Kennedy>I wrote it 100% by Michael.
+
+00:21:28.330 --> 00:21:30.520
+<v Michael Kennedy>Right. It took me a lot of work.
+
+00:21:30.620 --> 00:21:35.900
+<v Michael Kennedy>People, I know, it got posted on Reddit and I think Hacker News somewhere.
+
+00:21:35.990 --> 00:21:36.660
+<v Michael Kennedy>There was a bunch of comments.
+
+00:21:37.050 --> 00:21:39.400
+<v Michael Kennedy>And they're like, oh, this thing is definitely just AI generated.
+
+00:21:39.500 --> 00:21:40.160
+<v Michael Kennedy>I'm like, you know what?
+
+00:21:40.240 --> 00:21:44.260
+<v Michael Kennedy>There was a lot of months that I spent on this that were felt not AI generated to me.
+
+00:21:45.559 --> 00:21:52.560
+<v Christopher Trudeau>If it makes you feel any better, I've had actually comments pop up on some of my video courses claiming that my voiceover was AI.
+
+00:21:53.100 --> 00:21:56.300
+<v Christopher Trudeau>So that's just the world we live in now.
+
+00:21:56.320 --> 00:21:58.920
+<v Michael Kennedy>It's the world we live in, and there's not a lot you can do with it.
+
+00:21:59.100 --> 00:22:02.440
+<v Michael Kennedy>So just kind of put a little bit of a pushback against that.
+
+00:22:02.460 --> 00:22:08.280
+<v Michael Kennedy>I did put like a prefix sort of thing and a label that says made by humans.
+
+00:22:08.880 --> 00:22:12.560
+<v Michael Kennedy>And what's really funny is I don't know if I can actually find that section.
+
+00:22:12.620 --> 00:22:15.200
+<v Michael Kennedy>I don't think I can on just the web part.
+
+00:22:16.300 --> 00:22:17.140
+<v Michael Kennedy>But I made a picture.
+
+00:22:18.080 --> 00:22:18.480
+<v Michael Kennedy>Maybe I did.
+
+00:22:19.180 --> 00:22:19.400
+<v Michael Kennedy>Humans?
+
+00:22:19.720 --> 00:22:19.800
+<v Michael Kennedy>No.
+
+00:22:20.500 --> 00:22:22.600
+<v Michael Kennedy>Anyway, I made a picture that I drew.
+
+00:22:22.700 --> 00:22:26.300
+<v Michael Kennedy>I literally am a big fan of Pixelmator Pro.
+
+00:22:26.440 --> 00:22:28.360
+<v Michael Kennedy>I went into Pixelmator Pro and I drew it.
+
+00:22:28.600 --> 00:22:30.800
+<v Michael Kennedy>And they said, proof that this is AI generated.
+
+00:22:31.040 --> 00:22:33.060
+<v Michael Kennedy>Look at that stupid made by humans graphic.
+
+00:22:33.180 --> 00:22:34.240
+<v Michael Kennedy>It's clearly AI generated.
+
+00:22:34.560 --> 00:22:35.740
+<v Michael Kennedy>It would be way better if it worked.
+
+00:22:35.740 --> 00:22:36.780
+<v Christopher Trudeau>It obviously wasn't generated, yes.
+
+00:22:38.580 --> 00:22:44.360
+<v Michael Kennedy>Okay, so how do I square that with me actually being quite a fan of AI stuff these days?
+
+00:22:44.580 --> 00:22:51.920
+<v Michael Kennedy>Like, I'm, let's do like a looking back and then looking forward.
+
+00:22:52.000 --> 00:22:53.300
+<v Michael Kennedy>So let's go back 30 years.
+
+00:22:54.580 --> 00:23:02.560
+<v Michael Kennedy>I'm also a fan of using editors that when I hit dot, tell me what I can do with that function, class, variable, etc.
+
+00:23:03.240 --> 00:23:06.540
+<v Michael Kennedy>So I'm not constantly in the documentation, right?
+
+00:23:07.200 --> 00:23:09.180
+<v Michael Kennedy>Does that make me not a programmer?
+
+00:23:09.670 --> 00:23:10.360
+<v Michael Kennedy>I don't think so.
+
+00:23:10.460 --> 00:23:11.280
+<v Michael Kennedy>I'm still writing code.
+
+00:23:11.310 --> 00:23:12.360
+<v Michael Kennedy>I'm still thinking architecture.
+
+00:23:12.580 --> 00:23:14.760
+<v Michael Kennedy>I'm just not in the documentation constantly.
+
+00:23:14.810 --> 00:23:18.360
+<v Michael Kennedy>And honestly, I maybe don't memorize every little function
+
+00:23:18.960 --> 00:23:22.360
+<v Michael Kennedy>and field of everything in the standard library, right?
+
+00:23:23.200 --> 00:23:23.580
+<v Michael Kennedy>It's fine.
+
+00:23:24.040 --> 00:23:25.540
+<v Michael Kennedy>That's not where our time is best spent.
+
+00:23:25.900 --> 00:23:27.940
+<v Michael Kennedy>And I feel that way about AI programming.
+
+00:23:28.050 --> 00:23:32.140
+<v Michael Kennedy>I think there are pitfalls and there are worrisome aspects of it.
+
+00:23:33.280 --> 00:23:38.760
+<v Michael Kennedy>but you can use some of these agentic AI tools these days
+
+00:23:39.260 --> 00:23:41.620
+<v Michael Kennedy>to think in so much higher level building blocks.
+
+00:23:42.520 --> 00:23:44.460
+<v Michael Kennedy>Think of like, I'm working in a function
+
+00:23:44.830 --> 00:23:45.800
+<v Michael Kennedy>and I'm writing this part,
+
+00:23:45.980 --> 00:23:48.660
+<v Michael Kennedy>or I'm working in design patterns
+
+00:23:48.770 --> 00:23:50.920
+<v Michael Kennedy>and I can think of these big sort of concepts.
+
+00:23:52.040 --> 00:23:53.700
+<v Michael Kennedy>Well, with this AI stuff, you can just say,
+
+00:23:54.080 --> 00:23:55.320
+<v Michael Kennedy>what if we had a login page?
+
+00:23:56.800 --> 00:23:57.840
+<v Michael Kennedy>Oh, we have a login page.
+
+00:23:58.060 --> 00:24:00.200
+<v Michael Kennedy>Now, what other building block do I need?
+
+00:24:00.280 --> 00:24:03.240
+<v Michael Kennedy>Like the building blocks are so big
+
+00:24:03.660 --> 00:24:07.340
+<v Michael Kennedy>and sort of non-critical software,
+
+00:24:07.860 --> 00:24:09.080
+<v Michael Kennedy>non-super important software
+
+00:24:12.440 --> 00:24:14.740
+<v Michael Kennedy>becomes so much cheaper than before.
+
+00:24:15.520 --> 00:24:17.260
+<v Michael Kennedy>You're like, I wish I had a little utility
+
+00:24:17.330 --> 00:24:18.360
+<v Michael Kennedy>or app that would do this,
+
+00:24:18.560 --> 00:24:20.540
+<v Michael Kennedy>but it just definitely doesn't justify
+
+00:24:20.750 --> 00:24:21.980
+<v Michael Kennedy>two weeks of work to have it.
+
+00:24:22.050 --> 00:24:25.040
+<v Michael Kennedy>Like, what if it was a couple of prompts
+
+00:24:25.130 --> 00:24:25.700
+<v Michael Kennedy>in half an hour?
+
+00:24:25.770 --> 00:24:26.700
+<v Michael Kennedy>Like, yeah, well, then I'll have it.
+
+00:24:26.910 --> 00:24:27.400
+<v Michael Kennedy>You know what I mean?
+
+00:24:27.450 --> 00:24:30.720
+<v Michael Kennedy>And you can, that is transformative
+
+00:24:32.080 --> 00:24:33.120
+<v Christopher Trudeau>for how we work.
+
+00:24:33.340 --> 00:24:37.500
+<v Christopher Trudeau>Yeah, so much of coding is boilerplate, right? So if we can figure out how to make that easier,
+
+00:24:37.730 --> 00:24:43.160
+<v Christopher Trudeau>then why not? Right? And I haven't got there with it myself. I don't know whether I will. I'm
+
+00:24:43.280 --> 00:24:49.660
+<v Christopher Trudeau>definitely a little more suspicious of it than you are, but I copy and paste code all the time. And
+
+00:24:50.420 --> 00:24:54.900
+<v Christopher Trudeau>it's not like I'm like, oh, I have to hand tune that. No, it's like, well, I got to copy something
+
+00:24:55.140 --> 00:25:00.799
+<v Michael Kennedy>that does that. Yeah. Let me give you a concrete example, because I think it's easy to talk in
+
+00:25:00.820 --> 00:25:04.820
+<v Michael Kennedy>generalizations and people are like, well, that's not for me, a bunch of AI slop, which is fair.
+
+00:25:06.220 --> 00:25:08.940
+<v Michael Kennedy>But I'll give you an example of one thing. I'm like, this was just such a,
+
+00:25:09.960 --> 00:25:14.800
+<v Michael Kennedy>such a nuisance and I'm going to fix it. So when I first built Talk Python, the website,
+
+00:25:15.820 --> 00:25:20.560
+<v Michael Kennedy>10 years ago, Bootstrap was all the rage, not modern Bootstrap, like old Bootstrap,
+
+00:25:21.090 --> 00:25:26.420
+<v Michael Kennedy>right? Which they've completely redone the way that you have to structure your HTML and CSS
+
+00:25:28.659 --> 00:25:31.460
+<v Michael Kennedy>completely, incompatibly, several times since then.
+
+00:25:33.480 --> 00:25:35.580
+<v Michael Kennedy>And until very recently, until this summer,
+
+00:25:36.160 --> 00:25:38.120
+<v Michael Kennedy>every time I wanted to add a feature or an aspect,
+
+00:25:38.400 --> 00:25:40.640
+<v Michael Kennedy>like, for example, this whole section that hosts the book,
+
+00:25:41.340 --> 00:25:42.260
+<v Michael Kennedy>right, I want to add that.
+
+00:25:42.800 --> 00:25:43.760
+<v Michael Kennedy>Well, you know what I had to do?
+
+00:25:43.760 --> 00:25:45.840
+<v Michael Kennedy>I had to go write like 10-year-old bootstrap.
+
+00:25:45.940 --> 00:25:47.240
+<v Michael Kennedy>And I'm like, oh, I hate it so much.
+
+00:25:47.780 --> 00:25:49.840
+<v Michael Kennedy>There's so much nicer tools I could be doing this.
+
+00:25:50.620 --> 00:25:54.840
+<v Michael Kennedy>But there's 8,000 lines of HTML and almost as many CSS.
+
+00:25:55.660 --> 00:26:03.500
+<v Michael Kennedy>Does it justify me rewriting that much UI so that I can feel a little bit better and use a little bit nicer UI tooling?
+
+00:26:04.180 --> 00:26:05.920
+<v Michael Kennedy>No, it definitely doesn't.
+
+00:26:06.520 --> 00:26:11.720
+<v Michael Kennedy>And so for a couple of years, I'm like, oh, I wish I could do something else, but it's not worth it.
+
+00:26:12.260 --> 00:26:16.660
+<v Michael Kennedy>And then I was sitting on my porch, a little back area with my computer in the summer, hanging out.
+
+00:26:16.660 --> 00:26:17.240
+<v Michael Kennedy>I'm like, you know what?
+
+00:26:17.240 --> 00:26:18.260
+<v Michael Kennedy>I bet Claude could do it.
+
+00:26:18.820 --> 00:26:22.440
+<v Michael Kennedy>Hey, Claude, rewrite all of this site.
+
+00:26:22.900 --> 00:26:29.740
+<v Michael Kennedy>make a plan and rewrite it, move it from Bootstrap 3 to Bulma, which is like simple tailwind,
+
+00:26:30.230 --> 00:26:36.540
+<v Michael Kennedy>and just completely do it. Four hours later, the whole thing was redone, like 20,000 lines of edits.
+
+00:26:37.120 --> 00:26:37.400
+<v Christopher Trudeau>Wow.
+
+00:26:38.030 --> 00:26:42.200
+<v Michael Kennedy>Done. And it wasn't perfect. I had to go, you messed up a little bit here. And actually,
+
+00:26:43.120 --> 00:26:46.120
+<v Michael Kennedy>that was right, but that doesn't look good anymore. So could you actually just make it look,
+
+00:26:46.190 --> 00:26:49.780
+<v Michael Kennedy>you know what I mean? But I mean, it was like half a day. That work was done.
+
+00:26:50.140 --> 00:26:53.260
+<v Michael Kennedy>and that is a different level
+
+00:26:54.270 --> 00:26:55.040
+<v Michael Kennedy>no it would have been
+
+00:26:56.320 --> 00:26:57.940
+<v Michael Kennedy>weeks to a month and it's
+
+00:26:57.940 --> 00:26:59.120
+<v Michael Kennedy>the worst kind it's like
+
+00:26:59.650 --> 00:27:01.380
+<v Michael Kennedy>okay here's how the grid system used to work
+
+00:27:01.470 --> 00:27:03.540
+<v Michael Kennedy>let me restructure the HTML oh you lost
+
+00:27:03.590 --> 00:27:05.300
+<v Michael Kennedy>a div whoopsie now
+
+00:27:05.490 --> 00:27:07.480
+<v Michael Kennedy>how are you going to untangle this you know what I mean like really
+
+00:27:07.660 --> 00:27:09.520
+<v Michael Kennedy>really not good stuff and you
+
+00:27:09.550 --> 00:27:11.080
+<v Michael Kennedy>can just turn these tools on it and like
+
+00:27:13.100 --> 00:27:13.380
+<v Michael Kennedy>you know
+
+00:27:13.740 --> 00:27:15.120
+<v Michael Kennedy>love it or hate it that is a
+
+00:27:15.880 --> 00:27:17.460
+<v Michael Kennedy>skill and a power and a tool
+
+00:27:17.640 --> 00:27:19.980
+<v Michael Kennedy>that is unlike things we've had before
+
+00:27:20.000 --> 00:27:24.160
+<v Michael Kennedy>when I started having some of those kinds of experiences, I'm like, all right, I need to pay
+
+00:27:24.300 --> 00:27:31.620
+<v Michael Kennedy>attention to this. I honestly think a lot of these AIs and LLMs, they're kind of copyright theft
+
+00:27:32.440 --> 00:27:36.600
+<v Michael Kennedy>and other types of things. And there's the environmental aspect and all that. But these,
+
+00:27:37.080 --> 00:27:43.360
+<v Michael Kennedy>you know, the thing is out of the box, you know, Pandora is on the loose, right? So given that
+
+00:27:43.560 --> 00:27:48.160
+<v Michael Kennedy>you're putting their head in the sand, it's not going to make it go away. Should you use it or
+
+00:27:48.080 --> 00:27:54.080
+<v Michael Kennedy>not like it's it's a very powerful tool and so that is what i'm excited about but i'm not excited
+
+00:27:54.220 --> 00:27:59.840
+<v Michael Kennedy>about when i go to youtube and i see a video and i just you can just tell that it's a voiceover plus
+
+00:27:59.960 --> 00:28:05.020
+<v Michael Kennedy>some general or i go to read a blog and you can tell that it's like they didn't even put enough
+
+00:28:05.280 --> 00:28:09.620
+<v Michael Kennedy>energy into like they spent less time writing than i have to read it that's not right there's
+
+00:28:09.700 --> 00:28:14.260
+<v Christopher Trudeau>something going wrong here well as with all tools we'll figure out what works and what doesn't work
+
+00:28:15.000 --> 00:28:22.420
+<v Christopher Trudeau>Those 8,000 files that you're talking about, though, those are 8,000 files you have and built over time.
+
+00:28:24.840 --> 00:28:26.240
+<v Michael Kennedy>Lines, by the way, not files.
+
+00:28:27.070 --> 00:28:29.840
+<v Michael Kennedy>I think it's a couple hundred files, probably.
+
+00:28:31.340 --> 00:28:35.600
+<v Christopher Trudeau>So that might be something that folks listening aren't really aware of, right?
+
+00:28:35.820 --> 00:28:43.400
+<v Christopher Trudeau>Like, you're not just the podcasts and the courses, but you're the guy behind the engineering behind all of it.
+
+00:28:43.460 --> 00:28:55.760
+<v Christopher Trudeau>So why, you know, why do that? Why not, you know, Squarespace or something along those lines didn't exist when you came out, but you get the idea. Like what, what, why spin it up yourself? How did you, how did you get there?
+
+00:28:57.240 --> 00:29:05.700
+<v Michael Kennedy>So it's a good question. When I started, there were places I could have gone and hosted the podcast.
+
+00:29:07.610 --> 00:29:15.160
+<v Michael Kennedy>You know, they were very unappealing, not in the sense, like as a consumer of it, like they put your show there.
+
+00:29:15.190 --> 00:29:22.020
+<v Michael Kennedy>And then they, they were really ugly and they would do things like next to your show.
+
+00:29:22.100 --> 00:29:25.440
+<v Michael Kennedy>Here's some other shows you might like. You're like, no, no, I don't.
+
+00:29:25.920 --> 00:29:27.640
+<v Michael Kennedy>I just got people to come to my page.
+
+00:29:27.640 --> 00:29:28.460
+<v Michael Kennedy>They just sent them away.
+
+00:29:28.640 --> 00:29:29.420
+<v Michael Kennedy>Like, don't do that.
+
+00:29:29.800 --> 00:29:32.560
+<v Michael Kennedy>Right, but those sites are like Squarespace or whatever,
+
+00:29:32.640 --> 00:29:35.000
+<v Michael Kennedy>and they're hosting a bunch of them,
+
+00:29:35.020 --> 00:29:38.100
+<v Michael Kennedy>and so they want engagement on their platform broadly.
+
+00:29:38.580 --> 00:29:39.620
+<v Michael Kennedy>They're not for you.
+
+00:29:40.500 --> 00:29:45.700
+<v Michael Kennedy>So initially I thought, well, plus I don't have a ton of experience writing Python code,
+
+00:29:45.800 --> 00:29:48.680
+<v Michael Kennedy>and if I'm going to do the podcast, the more I can get my hands on this stuff
+
+00:29:49.160 --> 00:29:49.780
+<v Michael Kennedy>and get experience.
+
+00:29:50.520 --> 00:29:55.880
+<v Michael Kennedy>So I just sat down, and really in like three days I wrote the Talk Python website
+
+00:29:56.880 --> 00:29:58.400
+<v Michael Kennedy>I'm like I'm doing it this weekend
+
+00:29:58.660 --> 00:30:00.700
+<v Michael Kennedy>I had a job at the time so I'm like I gotta do it
+
+00:30:00.820 --> 00:30:02.000
+<v Michael Kennedy>it's a long weekend we're doing it
+
+00:30:02.860 --> 00:30:04.520
+<v Michael Kennedy>and so I just sat there and
+
+00:30:05.260 --> 00:30:06.640
+<v Michael Kennedy>cranked it out and really
+
+00:30:08.000 --> 00:30:08.560
+<v Michael Kennedy>got a
+
+00:30:08.880 --> 00:30:10.680
+<v Michael Kennedy>really good appreciation for building
+
+00:30:12.020 --> 00:30:12.660
+<v Michael Kennedy>all the way
+
+00:30:12.680 --> 00:30:14.600
+<v Michael Kennedy>to the end you know like not 60%
+
+00:30:14.820 --> 00:30:16.660
+<v Michael Kennedy>or following a demo but like no here's a
+
+00:30:16.860 --> 00:30:18.700
+<v Michael Kennedy>fully working app and all
+
+00:30:18.800 --> 00:30:20.440
+<v Michael Kennedy>the little nuances but then
+
+00:30:21.100 --> 00:30:22.400
+<v Michael Kennedy>honestly that's like the
+
+00:30:23.000 --> 00:30:24.260
+<v Michael Kennedy>the genesis of the
+
+00:30:24.280 --> 00:30:30.920
+<v Michael Kennedy>the story that is the book is, well, now how do I get it out there? I built it. It works great here
+
+00:30:31.120 --> 00:30:36.760
+<v Michael Kennedy>locally. Now, where do I take it? Right? And a lot of places said, well, you just fire up your
+
+00:30:36.880 --> 00:30:41.240
+<v Michael Kennedy>Linux terminal and your SSH. And I'm like, these words are making me very nervous. I need them to
+
+00:30:41.270 --> 00:30:47.580
+<v Christopher Trudeau>not do, I need you to stop saying that. You know, don't forget to swing the chicken over your head.
+
+00:30:48.880 --> 00:30:58.140
+<v Michael Kennedy>Exactly. So I actually started in Python Anywhere, even before Anaconda owned them, which was
+
+00:30:59.780 --> 00:31:11.280
+<v Michael Kennedy>the selling point was you go to your browser. I think you give it a get URL, or maybe you go into
+
+00:31:11.280 --> 00:31:15.400
+<v Michael Kennedy>a terminally do a get. I can't remember how it worked 10 years ago. But it was basically you go
+
+00:31:15.420 --> 00:31:21.400
+<v Michael Kennedy>to the web page, you type in your domain, you get a terminal which is basically an SSH connection,
+
+00:31:21.640 --> 00:31:25.660
+<v Michael Kennedy>but in the terminal, and then you give it some commands, and then they manage it for you.
+
+00:31:26.860 --> 00:31:30.280
+<v Michael Kennedy>And I'm like, okay, I don't really have to know any Linux. I just have to do the two things it
+
+00:31:30.420 --> 00:31:37.120
+<v Michael Kennedy>says in the terminal. And then they keep it running, and they do the SSH key, the SSH certificates,
+
+00:31:38.360 --> 00:31:42.880
+<v Michael Kennedy>the DNS, all that. I'm like, I can do this. And I got it going there, and I was really proud,
+
+00:31:43.040 --> 00:31:49.600
+<v Michael Kennedy>And I ran Talk Python on basically Python Anywhere and SQLite for like six months.
+
+00:31:51.020 --> 00:31:51.680
+<v Michael Kennedy>The first six months.
+
+00:31:54.860 --> 00:32:01.500
+<v Michael Kennedy>But then it occurred to me that Python Anywhere is not really intended to host production level applications.
+
+00:32:02.360 --> 00:32:04.820
+<v Michael Kennedy>And it occurred to me when I got an email from them one day.
+
+00:32:05.680 --> 00:32:07.040
+<v Michael Kennedy>Again, this is pre-Anaconda.
+
+00:32:08.440 --> 00:32:13.340
+<v Michael Kennedy>And what it said was, we're going to be down for four hours as we do some maintenance.
+
+00:32:15.600 --> 00:32:23.880
+<v Michael Kennedy>That's not going to be the best look for my podcast, which is just now starting to gain some traction and getting a lot of people talking on social media and saying, there's a new podcast.
+
+00:32:24.000 --> 00:32:24.640
+<v Michael Kennedy>You should check it out.
+
+00:32:24.640 --> 00:32:27.920
+<v Michael Kennedy>I'm like, the four hours are not making me psyched.
+
+00:32:27.980 --> 00:32:30.280
+<v Michael Kennedy>Like, I understand that things might have to reboot.
+
+00:32:30.480 --> 00:32:31.860
+<v Michael Kennedy>They might be down for 30 seconds.
+
+00:32:32.960 --> 00:32:38.380
+<v Michael Kennedy>But hours and hours seems a little like this is not really what they intend this for.
+
+00:32:38.580 --> 00:32:40.180
+<v Michael Kennedy>It's like for hobbyists to put up a thing.
+
+00:32:41.140 --> 00:32:42.500
+<v Michael Kennedy>And I probably don't belong there anymore.
+
+00:32:43.680 --> 00:32:48.540
+<v Christopher Trudeau>And once you shifted, why not AWS or Azure or something like that?
+
+00:32:50.240 --> 00:32:53.600
+<v Michael Kennedy>So I looked around and I went to DigitalOcean.
+
+00:32:55.460 --> 00:32:59.160
+<v Michael Kennedy>So I'd done stuff with both Azure and AWS.
+
+00:32:59.480 --> 00:33:08.740
+<v Michael Kennedy>A little part that I left out about this web journey is I had actually run some pretty big websites in both AWS and Azure,
+
+00:33:09.940 --> 00:33:13.660
+<v Michael Kennedy>but they were Windows-based.NET type things, right?
+
+00:33:13.920 --> 00:33:20.540
+<v Michael Kennedy>So literally GUI sort of configuration hosting them or platform as a service.
+
+00:33:22.440 --> 00:33:23.320
+<v Michael Kennedy>And I don't know.
+
+00:33:23.460 --> 00:33:26.460
+<v Michael Kennedy>I looked at both of them, especially Azure at the time.
+
+00:33:26.460 --> 00:33:29.260
+<v Michael Kennedy>I'm like, well, this is complicated and unnecessarily so.
+
+00:33:29.360 --> 00:33:34.700
+<v Michael Kennedy>and I'm afraid I'm trading one level of complexity for another
+
+00:33:34.920 --> 00:33:38.600
+<v Michael Kennedy>and also really expensive, like no joke expensive.
+
+00:33:41.780 --> 00:33:45.940
+<v Michael Kennedy>The podcast, like in terms of people viewing the pages,
+
+00:33:46.540 --> 00:33:47.480
+<v Michael Kennedy>is nothing insane.
+
+00:33:47.690 --> 00:33:49.320
+<v Michael Kennedy>I mean, it's certainly popular,
+
+00:33:49.390 --> 00:33:51.260
+<v Michael Kennedy>but it's nothing like how are you going to handle that?
+
+00:33:51.310 --> 00:33:53.719
+<v Michael Kennedy>But the amount of traffic the podcasts and courses do
+
+00:33:53.740 --> 00:33:59.400
+<v Michael Kennedy>in terms of video and MP3s and even XML.
+
+00:33:59.920 --> 00:34:04.100
+<v Michael Kennedy>I think Talk Python ships about a gigabyte of,
+
+00:34:05.160 --> 00:34:06.700
+<v Michael Kennedy>no, a terabyte of XML.
+
+00:34:07.180 --> 00:34:08.679
+<v Michael Kennedy>Think about a terabyte of XML every month.
+
+00:34:09.280 --> 00:34:12.360
+<v Michael Kennedy>It's basically a distributed denial, a DDoS,
+
+00:34:13.100 --> 00:34:14.639
+<v Michael Kennedy>a welcome DDoS attack,
+
+00:34:15.260 --> 00:34:17.960
+<v Michael Kennedy>because you'll think how many podcast players are out there going,
+
+00:34:18.040 --> 00:34:20.300
+<v Michael Kennedy>got a new one, got a new one, got a new one, got a new one.
+
+00:34:20.540 --> 00:34:23.240
+<v Michael Kennedy>And each one of those requests is like a meg.
+
+00:34:24.420 --> 00:34:25.899
+<v Michael Kennedy>of XML or more.
+
+00:34:26.050 --> 00:34:27.860
+<v Michael Kennedy>You know, it's like, got a new one, got a new one, got a new one.
+
+00:34:29.060 --> 00:34:29.940
+<v Michael Kennedy>And so
+
+00:34:32.320 --> 00:34:34.040
+<v Michael Kennedy>originally I was using S3 to ship
+
+00:34:36.200 --> 00:34:38.100
+<v Michael Kennedy>the podcasts, certainly
+
+00:34:38.210 --> 00:34:41.520
+<v Michael Kennedy>the courses, and my bill was well over a thousand bucks in just bandwidth.
+
+00:34:42.240 --> 00:34:44.960
+<v Michael Kennedy>Right. And then I looked at DigitalOcean and I'm like,
+
+00:34:47.200 --> 00:34:48.320
+<v Michael Kennedy>oh, you mean
+
+00:34:48.419 --> 00:34:51.220
+<v Michael Kennedy>all that bandwidth is free? It's included?
+
+00:34:52.399 --> 00:34:58.400
+<v Michael Kennedy>You get like terabytes of free traffic with DigitalOcean or Hetzner or some of these smaller ones.
+
+00:34:59.300 --> 00:35:01.560
+<v Michael Kennedy>And I'm just like, yeah, this is better.
+
+00:35:01.680 --> 00:35:10.280
+<v Michael Kennedy>Like, I don't know what this stuff for is here where they charge, you know, $100 a terabyte just to ship stuff around.
+
+00:35:11.360 --> 00:35:11.620
+<v Michael Kennedy>It's crazy.
+
+00:35:12.040 --> 00:35:17.520
+<v Christopher Trudeau>I have found particularly professionally, it's like, oh, you're going to charge me for how many DNS lookups there are.
+
+00:35:18.060 --> 00:35:20.480
+<v Christopher Trudeau>That doesn't seem like something I can predict.
+
+00:35:22.040 --> 00:35:23.100
+<v Christopher Trudeau>Yes, I know.
+
+00:35:23.620 --> 00:35:29.560
+<v Christopher Trudeau>And quite frankly, if it reaches a certain level, I need you to turn it off because something's gone horribly awry.
+
+00:35:31.380 --> 00:35:34.000
+<v Michael Kennedy>There's certainly areas where the cloud can go sideways.
+
+00:35:35.320 --> 00:35:38.600
+<v Michael Kennedy>In the book, I mentioned a story about Kara, I believe.
+
+00:35:40.660 --> 00:35:47.880
+<v Michael Kennedy>And that was this project that this woman, I think in Hong Kong or South Korea, I'm afraid I can't remember which.
+
+00:35:49.280 --> 00:35:50.060
+<v Michael Kennedy>I think it's South Korea.
+
+00:35:50.100 --> 00:35:52.200
+<v Michael Kennedy>Anyway, created this, she's a photographer
+
+00:35:52.520 --> 00:35:54.240
+<v Michael Kennedy>and really hates AI generated art.
+
+00:35:54.400 --> 00:35:55.940
+<v Michael Kennedy>So created this service that would say,
+
+00:35:56.360 --> 00:35:59.880
+<v Michael Kennedy>hey, give me a piece of art and I'll tell you
+
+00:36:00.400 --> 00:36:03.460
+<v Michael Kennedy>if it's AI generated or not, or something vaguely like this.
+
+00:36:05.200 --> 00:36:07.260
+<v Michael Kennedy>And her thing took off in the app store
+
+00:36:07.300 --> 00:36:08.100
+<v Michael Kennedy>and was like number six.
+
+00:36:08.740 --> 00:36:13.440
+<v Michael Kennedy>And her cloud bill at Vercel was $96,000 in a week.
+
+00:36:13.600 --> 00:36:16.580
+<v Michael Kennedy>As not as a business, just as a human
+
+00:36:16.620 --> 00:36:19.260
+<v Michael Kennedy>who built something fun as a side project, like, oh my.
+
+00:36:20.260 --> 00:36:25.800
+<v Christopher Trudeau>Yeah. And in fairness to a lot of those tools, they tend to have ways of saying, please limit this and do that.
+
+00:36:26.180 --> 00:36:26.540
+<v Christopher Trudeau>Yeah. Yeah.
+
+00:36:27.080 --> 00:36:37.100
+<v Christopher Trudeau>They're not the default. And if you're not thinking about that problem and protecting yourself, you know, you'd kind of hope that it would be the other way around.
+
+00:36:37.360 --> 00:36:42.540
+<v Christopher Trudeau>It should be, you know, here's your cap. And if you want more than that, you need to do something about it.
+
+00:36:42.760 --> 00:36:48.620
+<v Michael Kennedy>so yeah absolutely and to their fairness they did send her a message saying your bill is going way
+
+00:36:48.840 --> 00:36:53.940
+<v Michael Kennedy>higher than you might expect and like she didn't look at her email or something but but still and
+
+00:36:53.940 --> 00:37:02.300
+<v Michael Kennedy>so one of the things that really appeals to me is when you choose something like a hetzner or a
+
+00:37:02.300 --> 00:37:06.059
+<v Michael Kennedy>digital ocean or something and you say i'm going to pay for the server you're like okay that's
+
+00:37:06.880 --> 00:37:08.600
+<v Michael Kennedy>$40 I'm committing to.
+
+00:37:09.980 --> 00:37:11.380
+<v Michael Kennedy>Maybe double that, you know, whatever.
+
+00:37:12.480 --> 00:37:15.700
+<v Michael Kennedy>But the bandwidth is basically free, or it's included, right?
+
+00:37:15.820 --> 00:37:17.240
+<v Michael Kennedy>But for $40, it feels free.
+
+00:37:18.080 --> 00:37:21.920
+<v Michael Kennedy>And then it's only going to cost as much as it costs.
+
+00:37:22.020 --> 00:37:24.660
+<v Michael Kennedy>You might have to go, oh, my gosh, it's too much traffic.
+
+00:37:24.860 --> 00:37:25.700
+<v Michael Kennedy>We're going to have to deal with it.
+
+00:37:25.840 --> 00:37:31.080
+<v Michael Kennedy>But the upper bound of those systems these days is so high.
+
+00:37:31.520 --> 00:37:39.220
+<v Michael Kennedy>It is so high that we, you know, back to that aspirational thing that you mentioned, right?
+
+00:37:39.560 --> 00:37:50.860
+<v Michael Kennedy>Like the chances that you blow past what a $50 server can handle, you're going to be really, really popular with the SaaS or something.
+
+00:37:51.280 --> 00:37:53.960
+<v Christopher Trudeau>You were joking earlier about SQLite.
+
+00:37:54.080 --> 00:37:55.540
+<v Christopher Trudeau>It's gotten so much better as well.
+
+00:37:55.580 --> 00:37:57.680
+<v Christopher Trudeau>And I'm not saying it's the answer to everything.
+
+00:37:58.540 --> 00:38:02.420
+<v Christopher Trudeau>but I could probably come pretty close to running your site now too.
+
+00:38:02.620 --> 00:38:04.680
+<v Christopher Trudeau>Like it's scary between the,
+
+00:38:05.140 --> 00:38:08.100
+<v Christopher Trudeau>between the processor improvements and the improvements in the software.
+
+00:38:08.340 --> 00:38:11.420
+<v Christopher Trudeau>It's, it's made a big, made a big difference for that kind of stuff.
+
+00:38:11.500 --> 00:38:15.780
+<v Christopher Trudeau>It takes very, very little hardware to, to, to handle something that's,
+
+00:38:15.980 --> 00:38:17.400
+<v Christopher Trudeau>that's pretty, pretty impressive.
+
+00:38:18.260 --> 00:38:18.440
+<v Christopher Trudeau>Yeah.
+
+00:38:19.040 --> 00:38:22.680
+<v Christopher Trudeau>You're so I think the title of chapter four is one of my favorites.
+
+00:38:23.280 --> 00:38:26.640
+<v Christopher Trudeau>I, it gives a little hint as to what approach you took.
+
+00:38:26.780 --> 00:38:28.880
+<v Christopher Trudeau>The title is Docker, Docker, Docker.
+
+00:38:29.480 --> 00:38:30.800
+<v Christopher Trudeau>So what approach did you take?
+
+00:38:31.820 --> 00:38:32.240
+<v Michael Kennedy>You know what?
+
+00:38:32.280 --> 00:38:33.720
+<v Michael Kennedy>I was really not wanting to do Docker.
+
+00:38:34.300 --> 00:38:35.520
+<v Michael Kennedy>Genuinely, I mean that.
+
+00:38:35.820 --> 00:38:42.720
+<v Michael Kennedy>And so what I did when I originally switched over to some VMs, I'm like, okay, the story I'm told of what the cloud is.
+
+00:38:43.380 --> 00:38:46.020
+<v Michael Kennedy>You know, I bought the EC2 story.
+
+00:38:46.760 --> 00:38:48.200
+<v Michael Kennedy>Well, we've got all this extra capacity.
+
+00:38:49.060 --> 00:38:55.760
+<v Michael Kennedy>Instead of getting like really expensive, heavy metal, you know, big metal sort of servers, you get a bunch of small ones.
+
+00:38:55.880 --> 00:38:58.420
+<v Michael Kennedy>and they're kind of like cheap and you just make them,
+
+00:38:58.570 --> 00:38:59.680
+<v Michael Kennedy>throw them away, whatever, right?
+
+00:39:00.020 --> 00:39:03.300
+<v Michael Kennedy>So I went and made a bunch of small servers in DigitalOcean.
+
+00:39:03.430 --> 00:39:04.880
+<v Michael Kennedy>I think I had eight servers at one point.
+
+00:39:05.720 --> 00:39:07.360
+<v Michael Kennedy>And I thought, this is gonna give me lots of isolation.
+
+00:39:07.590 --> 00:39:09.820
+<v Michael Kennedy>If I gotta work on this one thing, it won't mess with that.
+
+00:39:09.980 --> 00:39:12.640
+<v Michael Kennedy>And then what I realized is they're interconnected enough,
+
+00:39:13.260 --> 00:39:18.420
+<v Michael Kennedy>like that really, I ended up just having to reboot eight servers
+
+00:39:18.940 --> 00:39:20.720
+<v Michael Kennedy>in an orchestrated way than managing.
+
+00:39:20.980 --> 00:39:22.100
+<v Michael Kennedy>I'm like, this is just worse.
+
+00:39:22.540 --> 00:39:24.560
+<v Michael Kennedy>I gotta patch eight servers instead of one now,
+
+00:39:24.840 --> 00:39:30.880
+<v Michael Kennedy>because this is not better. So how do I end up with Docker, Docker, Docker? I realized that
+
+00:39:32.200 --> 00:39:37.080
+<v Michael Kennedy>it would be better to just have one server and basically stepping back just a little bit, like,
+
+00:39:37.580 --> 00:39:44.220
+<v Michael Kennedy>what if you could completely isolate yourself from almost all the complexity of the cloud and all of
+
+00:39:44.220 --> 00:39:50.439
+<v Michael Kennedy>their services and all that junk and just say, I have a place where I can run apps that's got
+
+00:39:50.460 --> 00:39:53.400
+<v Michael Kennedy>enough capacity that I can just keep throwing more apps in there if I want.
+
+00:39:54.640 --> 00:39:57.740
+<v Michael Kennedy>And it doesn't have any tie in with the specific
+
+00:39:58.880 --> 00:40:02.740
+<v Michael Kennedy>APIs and services of a particular provider. So I said, well what if I just
+
+00:40:02.740 --> 00:40:06.180
+<v Michael Kennedy>get a big server and I just run all my apps in there
+
+00:40:06.840 --> 00:40:09.840
+<v Michael Kennedy>and if I want a database I put the database there. If I want like a
+
+00:40:10.580 --> 00:40:14.200
+<v Michael Kennedy>Valkey caching I can put a Valkey caching and things like that. And
+
+00:40:16.300 --> 00:40:20.420
+<v Michael Kennedy>that's sort of as much autonomy as I can exert on running something
+
+00:40:20.440 --> 00:40:24.360
+<v Michael Kennedy>in the cloud, right? It's almost like I went and got a big machine and stuck it in my closet.
+
+00:40:24.880 --> 00:40:29.900
+<v Michael Kennedy>But that's insane because you get million dollar networking equipment and, you know, failover.
+
+00:40:30.460 --> 00:40:35.940
+<v Michael Kennedy>But that doesn't mean you have to go fully past managed database, this other service. Like you
+
+00:40:35.950 --> 00:40:43.119
+<v Michael Kennedy>could just say, just give me a Linux machine where I can then go do my, do my, my hosting and all my
+
+00:40:43.120 --> 00:40:47.640
+<v Michael Kennedy>apps and let them party and talk to each other and stuff in there, right?
+
+00:40:49.520 --> 00:40:53.700
+<v Michael Kennedy>So then I thought, well, I don't have all these little servers for isolation.
+
+00:40:54.480 --> 00:40:58.020
+<v Michael Kennedy>I'm not really sure I want to throw all this random stuff together,
+
+00:40:59.380 --> 00:41:03.480
+<v Michael Kennedy>like completely just in the same soup in that one big server.
+
+00:41:03.900 --> 00:41:06.300
+<v Michael Kennedy>And by the way, the big server right now that it's running,
+
+00:41:06.300 --> 00:41:09.280
+<v Michael Kennedy>it has eight cores, 16 gigs of RAM and costs $30.
+
+00:41:09.900 --> 00:41:10.020
+<v Christopher Trudeau>Right.
+
+00:41:11.420 --> 00:41:13.560
+<v Michael Kennedy>It comes with two terabytes of four terabytes traffic,
+
+00:41:13.670 --> 00:41:14.080
+<v Michael Kennedy>something like that.
+
+00:41:14.560 --> 00:41:14.700
+<v Michael Kennedy>Lots.
+
+00:41:15.880 --> 00:41:18.740
+<v Michael Kennedy>$400 of included bandwidth for $30.
+
+00:41:20.040 --> 00:41:21.460
+<v Michael Kennedy>So I said, well, what if I took that over?
+
+00:41:22.480 --> 00:41:26.740
+<v Michael Kennedy>Like autonomy is a big motivator of this whole journey as well.
+
+00:41:26.880 --> 00:41:30.200
+<v Michael Kennedy>Like I don't want to be tied into all these different things.
+
+00:41:30.250 --> 00:41:33.860
+<v Michael Kennedy>I just want a space where I have reliable compute networking
+
+00:41:34.300 --> 00:41:35.860
+<v Michael Kennedy>and Linux and I can just do whatever.
+
+00:41:36.100 --> 00:41:38.140
+<v Michael Kennedy>So then I said, all right, well,
+
+00:41:38.300 --> 00:41:44.080
+<v Michael Kennedy>I better figure out some of the stuff with Docker just so that there's some isolation
+
+00:41:45.360 --> 00:41:49.760
+<v Michael Kennedy>of all the different pieces living in the same space. So I forced myself to learn Docker. And
+
+00:41:49.860 --> 00:41:57.660
+<v Michael Kennedy>what occurred to me was, oh, Docker is just writing down in a file what I would normally
+
+00:41:57.760 --> 00:42:03.220
+<v Michael Kennedy>have to type in the terminal to make the thing happen, except for I put run in front of the
+
+00:42:03.240 --> 00:42:09.280
+<v Michael Kennedy>command or copy instead of CP and I get a repeatability.
+
+00:42:10.520 --> 00:42:13.280
+<v Christopher Trudeau>And, and, and someone else has packaged a bunch of this stuff.
+
+00:42:13.340 --> 00:42:14.740
+<v Michael Kennedy>So you don't have to do it yourself.
+
+00:42:15.480 --> 00:42:15.600
+<v Michael Kennedy>Exactly.
+
+00:42:15.860 --> 00:42:20.100
+<v Michael Kennedy>And I'm like, okay, I don't know what all my concern was about because it's,
+
+00:42:20.240 --> 00:42:21.480
+<v Michael Kennedy>it's not much more complicated.
+
+00:42:22.060 --> 00:42:24.400
+<v Michael Kennedy>Another one of my concerns was sort of monitorability.
+
+00:42:24.580 --> 00:42:28.640
+<v Michael Kennedy>Like if it's all, if I just go there and I just create a bunch of virtual
+
+00:42:28.820 --> 00:42:31.900
+<v Michael Kennedy>admittance and run my code, I can actually go and see the source code.
+
+00:42:32.000 --> 00:42:33.080
+<v Michael Kennedy>I can see the config files.
+
+00:42:33.280 --> 00:42:34.940
+<v Michael Kennedy>I can see where the logs are being written.
+
+00:42:35.100 --> 00:42:37.800
+<v Michael Kennedy>And I can sort of manage it through SSH.
+
+00:42:39.160 --> 00:42:41.440
+<v Michael Kennedy>And I thought, well, if I put a bunch of disconnected Docker
+
+00:42:41.620 --> 00:42:43.040
+<v Michael Kennedy>things together, that's going to be challenging.
+
+00:42:43.120 --> 00:42:45.600
+<v Michael Kennedy>And I realized, actually, not really.
+
+00:42:46.280 --> 00:42:48.180
+<v Michael Kennedy>Like if you set it up the same, you could still
+
+00:42:48.420 --> 00:42:49.300
+<v Michael Kennedy>tail all the logs.
+
+00:42:49.660 --> 00:42:49.860
+<v Michael Kennedy>Yeah.
+
+00:42:50.100 --> 00:42:54.260
+<v Michael Kennedy>And you can SSH into the containers
+
+00:42:54.480 --> 00:42:58.620
+<v Michael Kennedy>if you really have to look at something running inside them.
+
+00:42:58.740 --> 00:43:02.080
+<v Michael Kennedy>like what is the process actually,
+
+00:43:02.900 --> 00:43:03.600
+<v Michael Kennedy>I don't know, what does it do?
+
+00:43:03.600 --> 00:43:05.480
+<v Michael Kennedy>How much memory is it using relative to other stuff?
+
+00:43:06.060 --> 00:43:09.460
+<v Michael Kennedy>And I also talk about a bunch of tools for monitoring them.
+
+00:43:10.200 --> 00:43:11.960
+<v Christopher Trudeau>- Yeah, so how has that changed over time?
+
+00:43:12.080 --> 00:43:13.860
+<v Christopher Trudeau>Like you started with some fairly bare bones,
+
+00:43:14.300 --> 00:43:16.700
+<v Christopher Trudeau>you've got some extra tools.
+
+00:43:17.280 --> 00:43:20.240
+<v Christopher Trudeau>What does that evolution look like?
+
+00:43:22.200 --> 00:43:27.140
+<v Michael Kennedy>- Well, I used to rely more on whatever the cloud provider,
+
+00:43:27.760 --> 00:43:32.780
+<v Michael Kennedy>DigitalOcean or Hetzner offered, they always have a metrics section.
+
+00:43:32.860 --> 00:43:34.600
+<v Michael Kennedy>So I can go see, well, what's the CPU doing?
+
+00:43:36.700 --> 00:43:38.420
+<v Michael Kennedy>What's the memory looking like over time?
+
+00:43:38.960 --> 00:43:41.840
+<v Michael Kennedy>And that works OK.
+
+00:43:42.440 --> 00:43:46.180
+<v Michael Kennedy>And if you've got one app that you're running there, you're like, OK, well, that must be
+
+00:43:46.200 --> 00:43:47.540
+<v Michael Kennedy>how much memory the app is using.
+
+00:43:48.260 --> 00:43:54.100
+<v Michael Kennedy>But right now, if I go to Talk Python and I ask, I think there are 27 different containers
+
+00:43:54.380 --> 00:43:54.460
+<v Michael Kennedy>running.
+
+00:43:55.120 --> 00:43:55.480
+<v Christopher Trudeau>OK.
+
+00:43:56.280 --> 00:43:59.720
+<v Michael Kennedy>Which you can't ask, how's the server doing?
+
+00:43:59.880 --> 00:44:00.500
+<v Michael Kennedy>I know very much.
+
+00:44:00.820 --> 00:44:02.320
+<v Michael Kennedy>It really matters much more.
+
+00:44:02.400 --> 00:44:03.520
+<v Michael Kennedy>Well, it's busy.
+
+00:44:03.560 --> 00:44:03.940
+<v Michael Kennedy>I get it.
+
+00:44:03.940 --> 00:44:05.340
+<v Michael Kennedy>But which one is the problem?
+
+00:44:05.580 --> 00:44:06.360
+<v Michael Kennedy>Which one is busy?
+
+00:44:06.480 --> 00:44:07.240
+<v Michael Kennedy>Which one's using all of them?
+
+00:44:07.920 --> 00:44:09.740
+<v Michael Kennedy>So I started to look around.
+
+00:44:10.820 --> 00:44:14.140
+<v Michael Kennedy>And there's actually a bunch of recommendations that I have for the book.
+
+00:44:14.840 --> 00:44:19.240
+<v Michael Kennedy>So one of them, the first one I used was this thing called Glances.
+
+00:44:19.560 --> 00:44:20.760
+<v Michael Kennedy>And Glances is excellent.
+
+00:44:21.020 --> 00:44:33.180
+<v Michael Kennedy>And by the way, Glances, the way they talk about often getting it, I think, somewhere they talk about installing it here probably, is often like apt install Glances or something like that, right?
+
+00:44:33.940 --> 00:44:36.680
+<v Michael Kennedy>But a lot of these tools even have Docker versions.
+
+00:44:37.840 --> 00:44:41.840
+<v Michael Kennedy>If you share the volumes and sockets just right, they function just the same.
+
+00:44:42.100 --> 00:44:52.020
+<v Michael Kennedy>So you can say Docker run glances XYZ, and it doesn't even install, it doesn't even touch your one big server that is kind of like your building space.
+
+00:44:52.150 --> 00:44:53.740
+<v Michael Kennedy>So it leaves it a little more pure, right?
+
+00:44:55.080 --> 00:44:56.240
+<v Michael Kennedy>So glances is super cool.
+
+00:44:56.270 --> 00:45:08.560
+<v Michael Kennedy>And what it does is it, if I open it up, is it gives you this really nice dashboard of what's going on with your app, like your server.
+
+00:45:08.610 --> 00:45:09.680
+<v Michael Kennedy>How much memory is being used?
+
+00:45:09.990 --> 00:45:11.280
+<v Michael Kennedy>How much CPU is being used?
+
+00:45:11.420 --> 00:45:12.480
+<v Michael Kennedy>How has that been over time?
+
+00:45:12.640 --> 00:45:14.660
+<v Michael Kennedy>Has there been extended spikes?
+
+00:45:15.780 --> 00:45:16.320
+<v Michael Kennedy>And so on.
+
+00:45:16.440 --> 00:45:19.260
+<v Michael Kennedy>And one of the things that's new to Glances,
+
+00:45:19.420 --> 00:45:22.040
+<v Michael Kennedy>and I don't think it's in this picture that's on their home screen.
+
+00:45:22.260 --> 00:45:23.600
+<v Michael Kennedy>I'm pretty sure it is not.
+
+00:45:23.780 --> 00:45:24.220
+<v Michael Kennedy>Oh, no, it is.
+
+00:45:25.120 --> 00:45:26.820
+<v Michael Kennedy>Mine is inverted because I have so many.
+
+00:45:27.260 --> 00:45:28.680
+<v Michael Kennedy>It has a container section.
+
+00:45:29.000 --> 00:45:31.840
+<v Michael Kennedy>So when you run it, it actually shows you not just the processes,
+
+00:45:32.620 --> 00:45:36.320
+<v Michael Kennedy>but also gives you a performance, memory, I.O., etc.
+
+00:45:36.800 --> 00:45:39.020
+<v Michael Kennedy>for all the running containers and their uptimes
+
+00:45:39.260 --> 00:45:40.100
+<v Michael Kennedy>and those kind of things.
+
+00:45:41.620 --> 00:45:43.100
+<v Michael Kennedy>so this is super cool
+
+00:45:43.690 --> 00:45:45.560
+<v Michael Kennedy>so you construct a certain docker command
+
+00:45:45.830 --> 00:45:47.240
+<v Michael Kennedy>and then you have this running dashboard
+
+00:45:48.760 --> 00:45:49.100
+<v Michael Kennedy>that just
+
+00:45:49.900 --> 00:45:51.620
+<v Michael Kennedy>goes so this is the first thing
+
+00:45:51.660 --> 00:45:52.840
+<v Michael Kennedy>that I started with and I really like that
+
+00:45:53.580 --> 00:45:55.460
+<v Michael Kennedy>but then I also found something called
+
+00:45:55.880 --> 00:45:57.280
+<v Michael Kennedy>btop are you familiar with btop
+
+00:45:57.600 --> 00:45:58.580
+<v Christopher Trudeau>no I haven't used this one
+
+00:45:58.690 --> 00:46:01.320
+<v Michael Kennedy>oh my gosh btop is incredible this is so good
+
+00:46:01.940 --> 00:46:02.380
+<v Michael Kennedy>it's
+
+00:46:03.640 --> 00:46:04.520
+<v Michael Kennedy>really something
+
+00:46:06.860 --> 00:46:07.600
+<v Michael Kennedy>zoom in on it
+
+00:46:07.760 --> 00:46:09.119
+<v Michael Kennedy>so this gives you
+
+00:46:09.780 --> 00:46:13.840
+<v Michael Kennedy>like moving graphs over time of all sorts of things.
+
+00:46:14.660 --> 00:46:18.720
+<v Michael Kennedy>It shows you like graphs of network, inbound, outbound traffic.
+
+00:46:18.840 --> 00:46:20.460
+<v Michael Kennedy>It shows you the CPUs.
+
+00:46:20.460 --> 00:46:21.600
+<v Michael Kennedy>It gives you a breakdown of like,
+
+00:46:21.760 --> 00:46:23.540
+<v Michael Kennedy>here's all the different distributed work
+
+00:46:23.720 --> 00:46:26.260
+<v Michael Kennedy>across your eight CPU cores and over total.
+
+00:46:28.180 --> 00:46:29.540
+<v Michael Kennedy>It's really something else.
+
+00:46:29.640 --> 00:46:31.320
+<v Michael Kennedy>And so this one is really nice.
+
+00:46:31.320 --> 00:46:34.580
+<v Michael Kennedy>You can configure the UI a lot to show
+
+00:46:34.780 --> 00:46:37.880
+<v Michael Kennedy>and zoom in on disk activity or whatever.
+
+00:46:39.080 --> 00:46:40.360
+<v Michael Kennedy>This is really a nice way to view it.
+
+00:46:40.360 --> 00:46:43.720
+<v Michael Kennedy>And again, when you run all these Docker containers,
+
+00:46:43.840 --> 00:46:46.720
+<v Michael Kennedy>they feel like they're super isolated and tucked away.
+
+00:46:47.900 --> 00:46:49.280
+<v Michael Kennedy>And from their perspective, they are.
+
+00:46:49.440 --> 00:46:51.520
+<v Michael Kennedy>But when you look in the process list here,
+
+00:46:52.580 --> 00:46:54.720
+<v Michael Kennedy>it just shows the process that Docker is running.
+
+00:46:55.620 --> 00:46:58.120
+<v Michael Kennedy>So I have all my web apps and APIs and stuff
+
+00:46:58.400 --> 00:46:59.620
+<v Michael Kennedy>setting a process name.
+
+00:47:00.120 --> 00:47:02.340
+<v Michael Kennedy>So instead of just Python, Python, Python, Python, Python,
+
+00:47:03.020 --> 00:47:05.840
+<v Michael Kennedy>it'll say like, talk Python, gradient worker one,
+
+00:47:06.120 --> 00:47:07.440
+<v Michael Kennedy>talk Python, gradient worker two.
+
+00:47:10.120 --> 00:47:14.340
+<v Michael Kennedy>courses indexing service daemon and then when you look into any of these tools
+
+00:47:15.860 --> 00:47:20.740
+<v Michael Kennedy>you can see oh exactly what is busy and those are actually the names inside of docker but they still
+
+00:47:21.000 --> 00:47:27.560
+<v Michael Kennedy>surface exactly like that to all these tools one of the things you said kind of hit home for me
+
+00:47:27.700 --> 00:47:33.380
+<v Christopher Trudeau>it was subtle and it kind of moved on which was like if you interconnect it correctly right like
+
+00:47:33.360 --> 00:47:37.040
+<v Christopher Trudeau>If you get the files and sockets going, this goes smoothly.
+
+00:47:38.080 --> 00:47:40.660
+<v Christopher Trudeau>And I think it's one of the things you've done very, very well in the book
+
+00:47:40.760 --> 00:47:42.040
+<v Christopher Trudeau>is sort of walking through that.
+
+00:47:42.240 --> 00:47:44.880
+<v Christopher Trudeau>Like as you talk about the different Docker configurations, like, okay,
+
+00:47:45.320 --> 00:47:48.260
+<v Christopher Trudeau>well, this is why we're putting this here rather than in the container.
+
+00:47:48.360 --> 00:47:49.380
+<v Christopher Trudeau>This is going to be shared.
+
+00:47:49.980 --> 00:47:54.960
+<v Christopher Trudeau>And the reason for this, I assume some of that was experimental.
+
+00:47:55.400 --> 00:47:58.560
+<v Christopher Trudeau>You just sort of over time, you kind of went, oh, okay, wait,
+
+00:47:58.680 --> 00:47:59.880
+<v Christopher Trudeau>I need that somewhere else.
+
+00:48:00.580 --> 00:48:07.180
+<v Christopher Trudeau>Or was there somebody's knowledge that you depended on a lot there?
+
+00:48:07.420 --> 00:48:08.260
+<v Christopher Trudeau>How did you get there?
+
+00:48:08.820 --> 00:48:10.120
+<v Christopher Trudeau>How organic is the journey?
+
+00:48:12.460 --> 00:48:13.760
+<v Michael Kennedy>I would say half and half.
+
+00:48:14.080 --> 00:48:16.980
+<v Michael Kennedy>Like some of it, for example, the Glances stuff.
+
+00:48:18.320 --> 00:48:24.020
+<v Michael Kennedy>I just found when I went looking for it that there was like ways to install.
+
+00:48:24.120 --> 00:48:27.540
+<v Michael Kennedy>And I said, it just said, oh, you could just install it by running this Docker thing.
+
+00:48:27.660 --> 00:48:29.100
+<v Michael Kennedy>And it's like a big, long command.
+
+00:48:30.060 --> 00:48:31.700
+<v Michael Kennedy>I'm like, oh, that's cool.
+
+00:48:32.130 --> 00:48:34.320
+<v Michael Kennedy>Because it doesn't matter how long the command is.
+
+00:48:34.610 --> 00:48:40.220
+<v Michael Kennedy>What I would do is I'll go into my.zshrc and say alias, glances, equals, paste.
+
+00:48:40.640 --> 00:48:42.420
+<v Michael Kennedy>And then I save that somewhere.
+
+00:48:42.470 --> 00:48:45.200
+<v Michael Kennedy>And I never, I couldn't tell you what it is at all.
+
+00:48:45.270 --> 00:48:47.740
+<v Michael Kennedy>I just know it has to like do a, yeah, it has a few things.
+
+00:48:47.810 --> 00:48:51.940
+<v Michael Kennedy>So it can like look back into the host to see, you know, what's running and so on.
+
+00:48:54.000 --> 00:48:56.140
+<v Michael Kennedy>Yeah, so a lot of it was like that.
+
+00:48:56.240 --> 00:49:02.820
+<v Michael Kennedy>And then some of it was definitely, you know, two whole days of like, why won't that talk to that?
+
+00:49:03.250 --> 00:49:04.000
+<v Michael Kennedy>Let me build it again.
+
+00:49:04.290 --> 00:49:05.260
+<v Michael Kennedy>Let me do some more to vote.
+
+00:49:05.380 --> 00:49:05.820
+<v Michael Kennedy>You know what I mean?
+
+00:49:05.900 --> 00:49:06.800
+<v Michael Kennedy>And eventually like, okay.
+
+00:49:07.380 --> 00:49:07.520
+<v Michael Kennedy>All right.
+
+00:49:07.580 --> 00:49:12.240
+<v Michael Kennedy>But once you get it kind of dialed, then it's, once you get a little bit of it working, it's a blueprint.
+
+00:49:12.350 --> 00:49:14.200
+<v Michael Kennedy>You just like, again, again, again.
+
+00:49:15.320 --> 00:49:19.440
+<v Christopher Trudeau>So you seem to have taken a bit of a, like a heavier weight approach here.
+
+00:49:19.660 --> 00:49:23.880
+<v Christopher Trudeau>You're, it's, it's everything in the kitchen sink.
+
+00:49:24.060 --> 00:49:25.880
+<v Christopher Trudeau>That implies that it's not the right amount.
+
+00:49:26.140 --> 00:49:29.180
+<v Christopher Trudeau>but it's counter to some of the advice that's out there.
+
+00:49:29.860 --> 00:49:32.180
+<v Christopher Trudeau>Sometimes folks talk about wanting to have things
+
+00:49:32.420 --> 00:49:33.460
+<v Christopher Trudeau>as minimal as possible.
+
+00:49:35.460 --> 00:49:37.760
+<v Christopher Trudeau>Why what you've done versus the other,
+
+00:49:38.260 --> 00:49:39.520
+<v Christopher Trudeau>how are they wrong?
+
+00:49:40.140 --> 00:49:41.740
+<v Christopher Trudeau>Can we start a flame war on the internet?
+
+00:49:42.280 --> 00:49:42.840
+<v Michael Kennedy>- Let's do it.
+
+00:49:43.280 --> 00:49:45.280
+<v Michael Kennedy>Let's see how many, Michael, you're wrong,
+
+00:49:45.290 --> 00:49:46.640
+<v Michael Kennedy>I can get into the YouTube comments.
+
+00:49:46.890 --> 00:49:48.140
+<v Michael Kennedy>Actually, please, that's not a challenge.
+
+00:49:51.060 --> 00:49:52.240
+<v Michael Kennedy>So here's the deal.
+
+00:49:55.300 --> 00:50:07.200
+<v Michael Kennedy>I want, especially at the beginning of this journey, when I was like, I want as much comfort and visibility as I can get in these containers and other areas.
+
+00:50:07.300 --> 00:50:07.780
+<v Michael Kennedy>You know what I mean?
+
+00:50:08.420 --> 00:50:16.080
+<v Michael Kennedy>And I wanted to make it as close to if I just set up a VM and just, you know, uv, V, E, and V, and just roll from there.
+
+00:50:16.260 --> 00:50:16.380
+<v Michael Kennedy>Right.
+
+00:50:18.340 --> 00:50:24.400
+<v Michael Kennedy>So what I did is I said, okay, I could try to go for like the super slim Docker image.
+
+00:50:25.620 --> 00:50:31.080
+<v Michael Kennedy>or I could just get like a basic Docker image, but then put, you know, I put like,
+
+00:50:31.240 --> 00:50:36.720
+<v Michael Kennedy>oh, my Z shell and ZSH on it, right? Does that need it? No, you could use SH,
+
+00:50:37.280 --> 00:50:42.260
+<v Michael Kennedy>but do you know what happens when you use SH and you go in there? It's a brand new start. It
+
+00:50:42.460 --> 00:50:46.880
+<v Michael Kennedy>doesn't remember anything you've ever, any command you've ever run. It doesn't give you any help.
+
+00:50:47.880 --> 00:50:51.300
+<v Michael Kennedy>You know, you hit tab, it doesn't tell you nothing, right? You're like, oh gosh,
+
+00:50:52.120 --> 00:50:57.940
+<v Michael Kennedy>But if you use like, oh, my Z shell, it'll show you, hey, what version of Python is your virtual environment activated in?
+
+00:50:58.380 --> 00:51:02.260
+<v Michael Kennedy>And I can just hit command R and filter all my history.
+
+00:51:03.039 --> 00:51:10.040
+<v Michael Kennedy>And I can hit get tab and it'll autocomplete all the get commands that I forgot what I was supposed to use because I'm freaked out because the site is down.
+
+00:51:10.070 --> 00:51:10.880
+<v Michael Kennedy>And how do I fix this?
+
+00:51:10.960 --> 00:51:13.460
+<v Michael Kennedy>I mean, I wouldn't actually be in the container for that.
+
+00:51:13.640 --> 00:51:19.900
+<v Michael Kennedy>But a lot of times you're in there kind of exploring because you're like, it's been fine for six months, but I need to see something.
+
+00:51:20.920 --> 00:51:24.460
+<v Michael Kennedy>And so in the book, at least in the beginning,
+
+00:51:24.640 --> 00:51:28.000
+<v Michael Kennedy>I recommended to people that they install some of these tools
+
+00:51:28.140 --> 00:51:30.000
+<v Michael Kennedy>that you might install into your own terminal
+
+00:51:30.140 --> 00:51:31.280
+<v Michael Kennedy>to make you feel more comfortable.
+
+00:51:32.500 --> 00:51:36.440
+<v Michael Kennedy>So that my assumption is you're kind of new to Docker.
+
+00:51:37.340 --> 00:51:38.480
+<v Michael Kennedy>You're feeling a little uncomfortable.
+
+00:51:39.300 --> 00:51:43.180
+<v Michael Kennedy>Like, who cares if it's another 100 megs on your hard drive?
+
+00:51:45.200 --> 00:51:47.800
+<v Michael Kennedy>You're not shipping your app to Docker Hub.
+
+00:51:48.520 --> 00:51:50.940
+<v Michael Kennedy>You're not going to take your web app, probably.
+
+00:51:52.300 --> 00:51:54.100
+<v Michael Kennedy>It's not a reusable component.
+
+00:51:54.560 --> 00:51:56.000
+<v Michael Kennedy>You've got your source code, and you
+
+00:51:56.220 --> 00:51:58.080
+<v Michael Kennedy>want the thing to just run here.
+
+00:51:58.900 --> 00:51:59.900
+<v Michael Kennedy>You're not shipping it.
+
+00:51:59.960 --> 00:52:03.700
+<v Michael Kennedy>So whoever wants to run indeed.com can just Docker pull that.
+
+00:52:04.680 --> 00:52:05.580
+<v Michael Kennedy>That's not what it is.
+
+00:52:06.420 --> 00:52:11.160
+<v Michael Kennedy>And in that context, you're not so worried about the space.
+
+00:52:11.400 --> 00:52:12.780
+<v Michael Kennedy>And there's a couple of tips that you
+
+00:52:12.900 --> 00:52:14.940
+<v Michael Kennedy>can use for really, really fast build times.
+
+00:52:16.140 --> 00:52:20.600
+<v Michael Kennedy>So I mean, like container build times for me are like seconds,
+
+00:52:20.940 --> 00:52:24.080
+<v Michael Kennedy>a few seconds, even though, you know,
+
+00:52:24.160 --> 00:52:29.240
+<v Michael Kennedy>there's 250 pip install packages for Talk Python training,
+
+00:52:30.240 --> 00:52:31.700
+<v Michael Kennedy>you know, build times, a couple of,
+
+00:52:31.880 --> 00:52:34.540
+<v Michael Kennedy>and that's build time is also installing Python, right?
+
+00:52:34.640 --> 00:52:37.580
+<v Michael Kennedy>Like it's, you could make these things fast.
+
+00:52:37.620 --> 00:52:39.800
+<v Michael Kennedy>So it's not like a huge impedance,
+
+00:52:40.740 --> 00:52:42.440
+<v Michael Kennedy>but I think for people who are new to it,
+
+00:52:42.680 --> 00:52:45.680
+<v Michael Kennedy>having a something other than just SH,
+
+00:52:45.820 --> 00:52:48.020
+<v Michael Kennedy>not even bash, you're a lot better off.
+
+00:52:48.400 --> 00:52:49.360
+<v Michael Kennedy>So that's what I promoted.
+
+00:52:49.760 --> 00:52:50.900
+<v Christopher Trudeau>- And I think it's, you know,
+
+00:52:51.060 --> 00:52:52.600
+<v Christopher Trudeau>it kind of comes back to sort of the thesis
+
+00:52:52.760 --> 00:52:53.800
+<v Christopher Trudeau>of the book as well, right?
+
+00:52:53.900 --> 00:52:55.280
+<v Christopher Trudeau>Which is right for you.
+
+00:52:56.320 --> 00:52:58.720
+<v Christopher Trudeau>So, you know, if you are going to be running
+
+00:52:59.120 --> 00:53:01.320
+<v Christopher Trudeau>a thousand of these spread across a whole bunch
+
+00:53:01.400 --> 00:53:04.080
+<v Christopher Trudeau>of different cores, then yeah, if you optimize this,
+
+00:53:04.300 --> 00:53:06.460
+<v Christopher Trudeau>that might change your cost framework and everything else.
+
+00:53:07.080 --> 00:53:07.840
+<v Christopher Trudeau>Well, you know.
+
+00:53:07.900 --> 00:53:10.340
+<v Michael Kennedy>- Or if I was, sorry, go ahead.
+
+00:53:10.460 --> 00:53:13.400
+<v Christopher Trudeau>- If you're 27 on eight CPUs works fine,
+
+00:53:13.940 --> 00:53:15.940
+<v Christopher Trudeau>And go for it.
+
+00:53:17.280 --> 00:53:18.280
+<v Christopher Trudeau>Why get in your own way?
+
+00:53:18.900 --> 00:53:20.640
+<v Michael Kennedy>And that advice is not--
+
+00:53:20.760 --> 00:53:23.700
+<v Michael Kennedy>this is why I really emphasize the context sort of thing.
+
+00:53:24.420 --> 00:53:26.440
+<v Michael Kennedy>This advice is bad if your goal is
+
+00:53:26.560 --> 00:53:30.220
+<v Michael Kennedy>to ship a container to Docker Hub so that people can self-host
+
+00:53:30.280 --> 00:53:31.300
+<v Michael Kennedy>your open source thing.
+
+00:53:31.820 --> 00:53:34.640
+<v Michael Kennedy>You don't want that to have extra crap that they don't need.
+
+00:53:34.980 --> 00:53:37.600
+<v Michael Kennedy>But when there's only one of them for your machine,
+
+00:53:38.020 --> 00:53:40.700
+<v Michael Kennedy>and you're building it, and you're managing it,
+
+00:53:41.600 --> 00:53:43.760
+<v Michael Kennedy>make it as comfy and helpful as possible.
+
+00:53:44.780 --> 00:53:45.460
+<v Michael Kennedy>That was my philosophy.
+
+00:53:46.340 --> 00:53:52.100
+<v Christopher Trudeau>The, the structure of your site is,  it has a lot of different pieces to it
+
+00:53:52.460 --> 00:53:54.120
+<v Christopher Trudeau>using different technology.
+
+00:53:55.100 --> 00:53:58.900
+<v Christopher Trudeau>you spend some time talking about like static sites and using static sites
+
+00:53:59.000 --> 00:54:03.000
+<v Christopher Trudeau>for part of it versus, you know, Python applications and those kinds of parts.
+
+00:54:03.680 --> 00:54:06.840
+<v Christopher Trudeau>the, how did you end up here?
+
+00:54:06.960 --> 00:54:09.700
+<v Christopher Trudeau>Like oftentimes the answer when you're looking at this kind of stuff as well,
+
+00:54:10.160 --> 00:54:11.300
+<v Christopher Trudeau>I need a CMS for everything.
+
+00:54:11.450 --> 00:54:16.320
+<v Christopher Trudeau>And then I will try to figure out how to square peg my round hole of a CMS or
+
+00:54:16.490 --> 00:54:19.180
+<v Christopher Trudeau>whatever. So how did you end up with a collection?
+
+00:54:20.339 --> 00:54:24.600
+<v Michael Kennedy>Well, you know, like many things that start simple and then you're like,
+
+00:54:24.700 --> 00:54:25.640
+<v Michael Kennedy>well, I just one more thing.
+
+00:54:27.740 --> 00:54:28.620
+<v Michael Kennedy>So I tried,
+
+00:54:28.770 --> 00:54:32.260
+<v Michael Kennedy>I had kept pretty much the same web framework across all my different sites
+
+00:54:32.560 --> 00:54:36.260
+<v Michael Kennedy>thinking, okay, that's, I'm going to just pick one and go with it.
+
+00:54:36.260 --> 00:54:38.040
+<v Michael Kennedy>I think a lot of people do that. You know, there's people who are like,
+
+00:54:38.200 --> 00:54:40.420
+<v Michael Kennedy>I use Django, there's people I use Flask and so on.
+
+00:54:41.020 --> 00:54:44.460
+<v Michael Kennedy>And then just slowly over time,
+
+00:54:44.600 --> 00:54:48.100
+<v Michael Kennedy>you're like really this part is really a hassle.
+
+00:54:48.540 --> 00:54:50.960
+<v Michael Kennedy>I'd be a lot better off if I made that part
+
+00:54:51.820 --> 00:54:55.420
+<v Michael Kennedy>served through the CDN or why am I,
+
+00:54:55.760 --> 00:54:58.220
+<v Michael Kennedy>you know, one of the things that I see a lot
+
+00:54:58.380 --> 00:55:00.700
+<v Michael Kennedy>and it doesn't drive me crazy,
+
+00:55:00.820 --> 00:55:02.940
+<v Michael Kennedy>but I'm just like, yeah, it's probably not necessary
+
+00:55:03.800 --> 00:55:06.880
+<v Michael Kennedy>is a lot of people in technology X,
+
+00:55:07.080 --> 00:55:07.920
+<v Michael Kennedy>For us, that's Python.
+
+00:55:08.160 --> 00:55:09.680
+<v Michael Kennedy>It could be JavaScript.
+
+00:55:09.980 --> 00:55:11.400
+<v Michael Kennedy>It could be.NET, whatever, right?
+
+00:55:12.180 --> 00:55:14.080
+<v Michael Kennedy>People who work extensively in that
+
+00:55:14.120 --> 00:55:15.960
+<v Michael Kennedy>and have a lot of their identity tied into that,
+
+00:55:16.120 --> 00:55:16.900
+<v Michael Kennedy>like I do and others.
+
+00:55:18.300 --> 00:55:20.260
+<v Michael Kennedy>Like, I'm a Python developer, right?
+
+00:55:20.460 --> 00:55:22.680
+<v Michael Kennedy>So if I'm going to choose a tool,
+
+00:55:22.860 --> 00:55:26.000
+<v Michael Kennedy>like let's say a CMS or a static site generator
+
+00:55:26.040 --> 00:55:26.700
+<v Michael Kennedy>or something like that,
+
+00:55:26.880 --> 00:55:28.040
+<v Michael Kennedy>I'm going to choose the Python one
+
+00:55:29.020 --> 00:55:30.000
+<v Michael Kennedy>because I'm a Python person.
+
+00:55:30.180 --> 00:55:33.140
+<v Michael Kennedy>Like, okay, but are there better options out there
+
+00:55:33.180 --> 00:55:35.140
+<v Michael Kennedy>than the Python ones for what you're trying to do?
+
+00:55:35.300 --> 00:55:37.280
+<v Michael Kennedy>Because are you going to extend this tool?
+
+00:55:37.630 --> 00:55:37.720
+<v Michael Kennedy>No.
+
+00:55:37.910 --> 00:55:39.420
+<v Michael Kennedy>Then what do you care what it's written in?
+
+00:55:39.580 --> 00:55:41.620
+<v Michael Kennedy>Your operating system is not written in Python.
+
+00:55:42.300 --> 00:55:44.740
+<v Michael Kennedy>It's written in C or--
+
+00:55:44.740 --> 00:55:46.460
+<v Christopher Trudeau>Well, I'm not going to use this word processor,
+
+00:55:46.650 --> 00:55:47.920
+<v Christopher Trudeau>because it's not written in Python.
+
+00:55:48.599 --> 00:55:48.960
+<v Michael Kennedy>Exactly.
+
+00:55:49.460 --> 00:55:51.380
+<v Michael Kennedy>Just have to go back in, no, I need a new service.
+
+00:55:52.200 --> 00:55:52.840
+<v Michael Kennedy>You don't see it.
+
+00:55:52.940 --> 00:55:53.720
+<v Michael Kennedy>You don't have to work with it.
+
+00:55:53.750 --> 00:55:54.320
+<v Michael Kennedy>You don't care.
+
+00:55:55.220 --> 00:55:58.220
+<v Michael Kennedy>And so I ended up a little bit with a mishmash of just trying
+
+00:55:58.230 --> 00:55:59.540
+<v Michael Kennedy>to say, what are the best tools?
+
+00:55:59.840 --> 00:56:03.140
+<v Michael Kennedy>For example, for the blog and some of the other static elements,
+
+00:56:03.680 --> 00:56:05.160
+<v Michael Kennedy>I use Hugo, which is written in Go.
+
+00:56:07.080 --> 00:56:10.400
+<v Michael Kennedy>It's like, OK, I type the command Hugo,
+
+00:56:11.000 --> 00:56:12.480
+<v Michael Kennedy>and it does its thing.
+
+00:56:12.480 --> 00:56:13.820
+<v Michael Kennedy>I don't really care what it's written in.
+
+00:56:14.340 --> 00:56:15.960
+<v Michael Kennedy>The templating extension is a little bit annoying.
+
+00:56:19.240 --> 00:56:21.600
+<v Michael Kennedy>But I kind of just went around and said, OK,
+
+00:56:21.650 --> 00:56:25.580
+<v Michael Kennedy>well, what do I think would be the best fit to make my life easy,
+
+00:56:25.800 --> 00:56:29.940
+<v Michael Kennedy>not to reinforce my identity as this type of developer
+
+00:56:30.010 --> 00:56:31.000
+<v Michael Kennedy>or that type of developer?
+
+00:56:32.720 --> 00:56:43.660
+<v Christopher Trudeau>Yeah, it's the one of the things, you know, I'll show my own stripes here and you can defend your beloved flask if you like.
+
+00:56:43.710 --> 00:56:51.740
+<v Christopher Trudeau>But having come from the Django side, some of the things that you kind of learned organically here are forced on you in Django.
+
+00:56:53.000 --> 00:57:02.580
+<v Christopher Trudeau>So when you, like the instructions for putting together a production site are, and you will run this command and it will move all of your static content over here.
+
+00:57:03.060 --> 00:57:09.160
+<v Christopher Trudeau>So like your mental model when you come from that side is, oh, my site is actually built of these, at least these two different things.
+
+00:57:10.100 --> 00:57:15.780
+<v Christopher Trudeau>And I think coming from Flask, you might have sort of, that discovery might have been a little more organic.
+
+00:57:17.420 --> 00:57:19.200
+<v Christopher Trudeau>You might not have been forced into it immediately.
+
+00:57:19.480 --> 00:57:27.300
+<v Christopher Trudeau>But once you've come to that realization of, oh, wait, I have these pieces and I can use something like Nginx to tie it all together.
+
+00:57:27.500 --> 00:57:32.400
+<v Christopher Trudeau>that means, well, then I don't have to figure out how to use a CMS for this thing that's very
+
+00:57:32.600 --> 00:57:38.420
+<v Christopher Trudeau>unnatural for a CMS. I can just mount it under slash blog and it'll work fine. Yeah.
+
+00:57:39.080 --> 00:57:44.340
+<v Michael Kennedy>Yeah. Jingo is very powerful. It definitely is. And I actually talked a lot about that in the
+
+00:57:44.820 --> 00:57:51.020
+<v Michael Kennedy>book, like evaluating web frameworks. But I would say before we, if we're going to that,
+
+00:57:51.020 --> 00:57:55.300
+<v Michael Kennedy>but before we do, I think your point about using Nginx to piece things together,
+
+00:57:56.720 --> 00:57:59.080
+<v Michael Kennedy>or Caddy or traffic or whatever, it doesn't matter,
+
+00:57:59.290 --> 00:58:00.460
+<v Michael Kennedy>like some front-end web server.
+
+00:58:00.510 --> 00:58:01.120
+<v Michael Kennedy>They all do it.
+
+00:58:01.660 --> 00:58:01.760
+<v Michael Kennedy>Yeah.
+
+00:58:03.380 --> 00:58:06.560
+<v Michael Kennedy>So often people think I have this Python app.
+
+00:58:06.660 --> 00:58:07.860
+<v Michael Kennedy>Let's say I have a Django app.
+
+00:58:08.240 --> 00:58:09.720
+<v Michael Kennedy>So I want to add a CMS to it.
+
+00:58:09.940 --> 00:58:11.220
+<v Michael Kennedy>What could I possibly add?
+
+00:58:12.140 --> 00:58:13.080
+<v Michael Kennedy>Is it static content?
+
+00:58:13.960 --> 00:58:15.580
+<v Michael Kennedy>Well, maybe what you should add is Hugo.
+
+00:58:16.010 --> 00:58:16.400
+<v Michael Kennedy>I don't know.
+
+00:58:16.400 --> 00:58:17.300
+<v Michael Kennedy>I'm just making this up, right?
+
+00:58:17.360 --> 00:58:18.520
+<v Michael Kennedy>It might actually be a bad option.
+
+00:58:19.720 --> 00:58:21.000
+<v Michael Kennedy>Well, Hugo is not a Python thing.
+
+00:58:21.030 --> 00:58:22.700
+<v Michael Kennedy>So how do I put it into my Django app?
+
+00:58:23.220 --> 00:58:25.200
+<v Michael Kennedy>I mean, they're very, very different in the way they work.
+
+00:58:25.320 --> 00:58:26.920
+<v Michael Kennedy>So they don't really go that super well together.
+
+00:58:27.500 --> 00:58:29.960
+<v Michael Kennedy>If you were to try to think, how does one literally,
+
+00:58:30.240 --> 00:58:31.780
+<v Michael Kennedy>source code wise, go into another?
+
+00:58:32.360 --> 00:58:37.020
+<v Michael Kennedy>But if you just made a Hugo site or other static site,
+
+00:58:37.100 --> 00:58:40.140
+<v Michael Kennedy>however you make it, and then put it on the same server,
+
+00:58:41.260 --> 00:58:44.100
+<v Michael Kennedy>and then in Nginx when you say, if you go to this domain slash
+
+00:58:45.100 --> 00:58:47.960
+<v Michael Kennedy>docs, it goes completely over here.
+
+00:58:48.100 --> 00:58:50.320
+<v Michael Kennedy>And if it goes anywhere else, it goes just to Django.
+
+00:58:51.120 --> 00:58:52.420
+<v Michael Kennedy>And all of a sudden, from the outside,
+
+00:58:52.840 --> 00:58:56.060
+<v Michael Kennedy>It looks like a very cohesive single thing
+
+00:58:56.240 --> 00:58:57.360
+<v Michael Kennedy>with just different sub URLs.
+
+00:58:58.460 --> 00:59:00.920
+<v Michael Kennedy>But you get to choose the best technology for the static bits,
+
+00:59:01.140 --> 00:59:04.060
+<v Michael Kennedy>and you get to choose the best technology for your dynamic data
+
+00:59:04.220 --> 00:59:04.540
+<v Michael Kennedy>driven bits.
+
+00:59:05.300 --> 00:59:08.960
+<v Michael Kennedy>And that is all just done by configuring the front end web
+
+00:59:09.180 --> 00:59:12.120
+<v Michael Kennedy>server that you don't even have visibility to in Python.
+
+00:59:12.240 --> 00:59:14.100
+<v Michael Kennedy>And I think that that's a big mental shift.
+
+00:59:14.140 --> 00:59:15.760
+<v Michael Kennedy>But it's like those kinds of things
+
+00:59:16.660 --> 00:59:20.059
+<v Michael Kennedy>that bring both the flexibility to make these choices
+
+00:59:20.080 --> 00:59:22.160
+<v Michael Kennedy>and the simplicity to not try to jam them together.
+
+00:59:24.160 --> 00:59:26.860
+<v Christopher Trudeau>- There's a third party library for Django
+
+00:59:27.000 --> 00:59:28.860
+<v Christopher Trudeau>that I use once in a while, which is called Distill.
+
+00:59:29.700 --> 00:59:33.000
+<v Christopher Trudeau>And it's a static site generator based on Django.
+
+00:59:33.780 --> 00:59:35.900
+<v Christopher Trudeau>So say you had your URL was like books,
+
+00:59:36.340 --> 00:59:39.260
+<v Christopher Trudeau>you know, it's books/1, book/2, book/3.
+
+00:59:39.420 --> 00:59:41.760
+<v Christopher Trudeau>Well, you tell Distill, I want book
+
+00:59:42.040 --> 00:59:44.200
+<v Christopher Trudeau>and I want all the possible queries of this number
+
+00:59:44.840 --> 00:59:47.840
+<v Christopher Trudeau>and it will generate the results as static.
+
+00:59:48.580 --> 00:59:51.020
+<v Christopher Trudeau>So even when you've got a dynamic site,
+
+00:59:51.070 --> 00:59:53.840
+<v Christopher Trudeau>you can actually carve off the static portion
+
+00:59:54.090 --> 00:59:56.380
+<v Christopher Trudeau>and then have that fed straight out of NGINX.
+
+00:59:56.830 --> 00:59:59.140
+<v Christopher Trudeau>And if it isn't, if there's no actual dynamic content
+
+00:59:59.520 --> 01:00:01.680
+<v Christopher Trudeau>on the page, and if it only updates when the database
+
+01:00:01.930 --> 01:00:03.020
+<v Christopher Trudeau>updates or something like that,
+
+01:00:03.280 --> 01:00:06.080
+<v Christopher Trudeau>and you can do it nightly, like this gives you all sorts
+
+01:00:06.080 --> 01:00:08.820
+<v Christopher Trudeau>of other options and you know, to come back to your,
+
+01:00:09.140 --> 01:00:10.840
+<v Christopher Trudeau>my eight processor, whatever's well,
+
+01:00:12.120 --> 01:00:13.920
+<v Christopher Trudeau>the static sites are almost free.
+
+01:00:14.340 --> 01:00:15.500
+<v Michael Kennedy>- You do not even need that.
+
+01:00:15.650 --> 01:00:16.440
+<v Christopher Trudeau>You don't even need it.
+
+01:00:16.600 --> 01:00:17.360
+<v Christopher Trudeau>- It's nothing.
+
+01:00:17.680 --> 01:00:21.640
+<v Christopher Trudeau>So you can scale way down and have an absolutely mammoth site
+
+01:00:21.980 --> 01:00:25.220
+<v Christopher Trudeau>just by properly fine-tuning what's dynamic and what's static.
+
+01:00:25.680 --> 01:00:28.620
+<v Michael Kennedy>Yeah, you could go to millions and millions of requests
+
+01:00:28.710 --> 01:00:34.540
+<v Michael Kennedy>if you just converted all that stuff to static
+
+01:00:34.650 --> 01:00:41.700
+<v Michael Kennedy>and then put the extra resources, CSS, image, JavaScript, etc., on a CDN.
+
+01:00:42.380 --> 01:00:46.480
+<v Michael Kennedy>I mean, that's like web on easy mode right there
+
+01:00:46.440 --> 01:00:52.000
+<v Michael Kennedy>because it can't go down unless the server literally.
+
+01:00:52.070 --> 01:00:53.320
+<v Michael Kennedy>Almost, almost can't go down.
+
+01:00:53.320 --> 01:00:55.320
+<v Michael Kennedy>Yeah, I mean, let's not say we're in the eve of,
+
+01:00:55.510 --> 01:00:57.640
+<v Michael Kennedy>like, are we in the eve of a fifth going down?
+
+01:00:58.420 --> 01:01:02.140
+<v Michael Kennedy>But, I mean, it can't go down because the code is wrong
+
+01:01:02.430 --> 01:01:04.400
+<v Michael Kennedy>or there's a race condition or you're out of memory.
+
+01:01:04.610 --> 01:01:10.680
+<v Michael Kennedy>Like, it's really close to just, if the web server is up
+
+01:01:12.880 --> 01:01:14.160
+<v Michael Kennedy>and you put a CD in front of it
+
+01:01:14.260 --> 01:01:15.700
+<v Michael Kennedy>and then it's not even necessarily that.
+
+01:01:15.900 --> 01:01:17.860
+<v Michael Kennedy>It's like the CDN has to go.
+
+01:01:18.000 --> 01:01:19.700
+<v Michael Kennedy>You've got to have a Cloudflare level incident.
+
+01:01:19.780 --> 01:01:23.620
+<v Christopher Trudeau>Yeah, and fully distributed in often cases, right?
+
+01:01:23.640 --> 01:01:28.120
+<v Christopher Trudeau>So people in continents other than where you are based
+
+01:01:28.340 --> 01:01:30.660
+<v Christopher Trudeau>are getting fantastic load times
+
+01:01:31.080 --> 01:01:32.940
+<v Christopher Trudeau>because it's cached locally for them.
+
+01:01:33.720 --> 01:01:35.140
+<v Michael Kennedy>Yeah, I just want to give a little shout out.
+
+01:01:35.380 --> 01:01:38.080
+<v Michael Kennedy>I'm going to give a little shout out to Bunny.net.
+
+01:01:38.820 --> 01:01:40.720
+<v Michael Kennedy>I know people are all about Cloudflare,
+
+01:01:40.880 --> 01:01:43.459
+<v Michael Kennedy>but this is a cool European company
+
+01:01:43.940 --> 01:01:46.760
+<v Michael Kennedy>that focuses on privacy, has some really nice features.
+
+01:01:47.100 --> 01:01:47.700
+<v Michael Kennedy>The pricing is great.
+
+01:01:47.810 --> 01:01:51.780
+<v Michael Kennedy>And they have, if you go here, go to the CDN,
+
+01:01:52.480 --> 01:01:55.220
+<v Michael Kennedy>they've got somewhere way down here,
+
+01:01:55.490 --> 01:02:00.260
+<v Michael Kennedy>like 119 different places, including all over Africa.
+
+01:02:02.980 --> 01:02:06.480
+<v Michael Kennedy>And this is just super, super cheap for traffic.
+
+01:02:07.320 --> 01:02:07.860
+<v Christopher Trudeau>Nice.
+
+01:02:08.680 --> 01:02:08.780
+<v Christopher Trudeau>Yeah.
+
+01:02:08.880 --> 01:02:13.440
+<v Christopher Trudeau>So earlier there, I wasn't intending
+
+01:02:13.500 --> 01:02:17.960
+<v Christopher Trudeau>to to force a fist fight and you know we're on the opposite side of the continent so that would
+
+01:02:17.960 --> 01:02:25.460
+<v Christopher Trudeau>be a challenge uh when i django versus flash go uh but uh you know i think one of my favorite
+
+01:02:25.700 --> 01:02:31.120
+<v Christopher Trudeau>chapters was actually chapter 13 which was titled picking a python web framework uh i really liked
+
+01:02:31.360 --> 01:02:39.200
+<v Christopher Trudeau>the new nuance of this uh it's it's unusual for folks to sort of reveal their reasoning and
+
+01:02:39.940 --> 01:02:50.120
+<v Christopher Trudeau>Honestly, I think like because I had no intention of tomorrow going and using Docker, the Docker chapters were interesting because I like to see how other people do things.
+
+01:02:50.820 --> 01:02:57.340
+<v Christopher Trudeau>But like I could grab the picking a Python web framework, pull that chapter out and hand it to almost any of my students.
+
+01:02:57.560 --> 01:02:57.680
+<v Christopher Trudeau>Right.
+
+01:02:57.840 --> 01:03:01.440
+<v Christopher Trudeau>Like it's this, you know, how do I make these kinds of decisions?
+
+01:03:01.580 --> 01:03:02.360
+<v Christopher Trudeau>How is this different?
+
+01:03:02.540 --> 01:03:03.700
+<v Christopher Trudeau>Why do I think about these things?
+
+01:03:04.300 --> 01:03:07.780
+<v Christopher Trudeau>And so often the content on this is really just religious war.
+
+01:03:08.820 --> 01:03:15.800
+<v Christopher Trudeau>And you've done like a really, really good job there of just sort of conveying this, you know, hey, here are pros and cons for each.
+
+01:03:15.860 --> 01:03:17.520
+<v Christopher Trudeau>And this is why I picked this.
+
+01:03:18.000 --> 01:03:22.140
+<v Christopher Trudeau>And so I really, really liked how you covered that.
+
+01:03:22.760 --> 01:03:23.200
+<v Christopher Trudeau>Thank you so much.
+
+01:03:23.680 --> 01:03:31.100
+<v Christopher Trudeau>What you, I guess it's maybe the answer is obvious, but why?
+
+01:03:31.660 --> 01:03:33.020
+<v Christopher Trudeau>Like you were fine.
+
+01:03:33.080 --> 01:03:37.320
+<v Christopher Trudeau>You were just doing configuration file after configuration file and then a little bit editorial.
+
+01:03:38.080 --> 01:03:41.680
+<v Christopher Trudeau>What caused you, what was the emphasis for,
+
+01:03:42.020 --> 01:03:44.120
+<v Christopher Trudeau>the impetus for spicing it up a little?
+
+01:03:45.040 --> 01:03:49.460
+<v Michael Kennedy>- Well, I mean, I think it's an important part
+
+01:03:49.460 --> 01:03:54.780
+<v Michael Kennedy>of the journey is picking a technology to run your code on.
+
+01:03:54.920 --> 01:03:56.500
+<v Michael Kennedy>So there's actually a couple of places
+
+01:03:56.740 --> 01:03:57.460
+<v Michael Kennedy>that I kind of have that.
+
+01:03:57.600 --> 01:04:00.360
+<v Michael Kennedy>Like I have that for, I'm trying to create a term here
+
+01:04:00.360 --> 01:04:01.560
+<v Michael Kennedy>'cause I don't think we do a good job
+
+01:04:01.640 --> 01:04:06.820
+<v Michael Kennedy>of disambiguating it from like Nginx of Python,
+
+01:04:07.320 --> 01:04:10.020
+<v Michael Kennedy>like production app servers, like where your code runs.
+
+01:04:10.240 --> 01:04:11.780
+<v Michael Kennedy>I think there's a little more disambiguation.
+
+01:04:11.920 --> 01:04:15.440
+<v Michael Kennedy>I'm talking like Granian, G-Unicorn, those kinds of things.
+
+01:04:18.780 --> 01:04:22.000
+<v Michael Kennedy>Hypercorn, Uveacorn now, all those places you run your Python code.
+
+01:04:22.640 --> 01:04:27.340
+<v Michael Kennedy>So I kind of went through a debate on those from Michael's context, right?
+
+01:04:27.840 --> 01:04:29.880
+<v Michael Kennedy>And then I did the same for Python web frameworks.
+
+01:04:30.240 --> 01:04:34.600
+<v Michael Kennedy>And it was, you know, I told the story of the bootstrap
+
+01:04:34.620 --> 01:04:36.920
+<v Michael Kennedy>and how I just every time I have to write new code,
+
+01:04:37.020 --> 01:04:38.140
+<v Michael Kennedy>I'm like, here we go.
+
+01:04:39.060 --> 01:04:41.920
+<v Michael Kennedy>I'm in the relic and write in the relic code.
+
+01:04:43.000 --> 01:04:44.420
+<v Michael Kennedy>I kind of felt the same way.
+
+01:04:45.340 --> 01:04:46.680
+<v Michael Kennedy>So everything was based on Pyramid.
+
+01:04:46.720 --> 01:04:49.580
+<v Michael Kennedy>And I loved Pyramid and I still have a lot of respect for it.
+
+01:04:49.640 --> 01:04:51.340
+<v Michael Kennedy>The reason I chose Pyramid in 2015
+
+01:04:52.320 --> 01:04:54.880
+<v Michael Kennedy>was when I went to the Flask page,
+
+01:04:55.560 --> 01:05:00.620
+<v Michael Kennedy>it said, you may potentially be able to use Python 3,
+
+01:05:00.860 --> 01:05:03.060
+<v Michael Kennedy>but we are not supporting it and we don't recommend it.
+
+01:05:03.780 --> 01:05:07.380
+<v Michael Kennedy>And I'm like, wait a minute, didn't Python 3 come out in 2008?
+
+01:05:08.320 --> 01:05:09.640
+<v Michael Kennedy>That's like seven years later.
+
+01:05:10.000 --> 01:05:10.560
+<v Michael Kennedy>You know what?
+
+01:05:11.660 --> 01:05:13.040
+<v Michael Kennedy>No, I'm not doing that.
+
+01:05:14.280 --> 01:05:17.440
+<v Michael Kennedy>I'm starting this project beyond this problem,
+
+01:05:17.700 --> 01:05:20.740
+<v Michael Kennedy>and I'm not going back to be in the, you know what I mean?
+
+01:05:21.280 --> 01:05:23.620
+<v Michael Kennedy>They've since obviously moved on from that.
+
+01:05:24.760 --> 01:05:25.880
+<v Michael Kennedy>So Flask was out.
+
+01:05:26.300 --> 01:05:29.220
+<v Michael Kennedy>I looked at Django, and I thought, I'm really like a microservice guy.
+
+01:05:29.400 --> 01:05:30.500
+<v Michael Kennedy>I really want to use Mongo.
+
+01:05:32.100 --> 01:05:34.020
+<v Michael Kennedy>A lot of things were not quite good fits.
+
+01:05:34.160 --> 01:05:35.620
+<v Michael Kennedy>They actually would be better fits now, right?
+
+01:05:35.840 --> 01:05:36.420
+<v Michael Kennedy>Even then.
+
+01:05:36.740 --> 01:05:37.080
+<v Michael Kennedy>Yeah, no.
+
+01:05:37.240 --> 01:05:41.180
+<v Christopher Trudeau>If you want to do Mongo, that's almost a deal breaker.
+
+01:05:41.680 --> 01:05:42.240
+<v Michael Kennedy>Yeah, I know.
+
+01:05:42.420 --> 01:05:42.540
+<v Michael Kennedy>Almost.
+
+01:05:42.860 --> 01:05:44.920
+<v Michael Kennedy>And so I'm like, all right, well, maybe not Django.
+
+01:05:45.260 --> 01:05:46.900
+<v Michael Kennedy>Well, you had a pyramid.
+
+01:05:47.300 --> 01:05:51.900
+<v Michael Kennedy>They're like, we are trying to embrace the latest standards.
+
+01:05:52.360 --> 01:05:54.480
+<v Michael Kennedy>We're Python 3 first, et cetera, et cetera.
+
+01:05:55.260 --> 01:05:57.640
+<v Michael Kennedy>And I'm like, all right, I'm going to give this a chance,
+
+01:05:57.840 --> 01:05:58.860
+<v Michael Kennedy>even though it wasn't as popular.
+
+01:05:59.000 --> 01:05:59.500
+<v Michael Kennedy>Like, this is great.
+
+01:05:59.620 --> 01:06:03.340
+<v Michael Kennedy>And I used it for eight years, seven years, something like that.
+
+01:06:03.380 --> 01:06:03.900
+<v Michael Kennedy>It was really good.
+
+01:06:07.060 --> 01:06:09.240
+<v Michael Kennedy>But things evolved over time, right?
+
+01:06:09.300 --> 01:06:10.760
+<v Michael Kennedy>Like Pydantic came out.
+
+01:06:10.760 --> 01:06:12.160
+<v Michael Kennedy>And Pydantic was great.
+
+01:06:13.560 --> 01:06:16.860
+<v Michael Kennedy>What's a really nice way to talk to the database with Pydantic?
+
+01:06:17.540 --> 01:06:17.840
+<v Michael Kennedy>Beanie.
+
+01:06:18.500 --> 01:06:18.700
+<v Michael Kennedy>Okay.
+
+01:06:19.600 --> 01:06:21.720
+<v Michael Kennedy>So I can do Beanie and I can do Pydantic.
+
+01:06:21.800 --> 01:06:25.200
+<v Michael Kennedy>And wow, what a really nice, clever way to write databases.
+
+01:06:26.080 --> 01:06:28.580
+<v Michael Kennedy>And oh, Beanie is all async only.
+
+01:06:29.900 --> 01:06:36.380
+<v Michael Kennedy>pyramids synchronous only when was the last commit to pyramid oh it was two and a half years ago
+
+01:06:36.840 --> 01:06:41.020
+<v Michael Kennedy>chances that it gets async support are low because that was just like a minor bug fix you know what
+
+01:06:41.020 --> 01:06:45.760
+<v Michael Kennedy>i mean it's just like it's fine open source projects they ebb and they flow and they come
+
+01:06:45.760 --> 01:06:53.660
+<v Michael Kennedy>and they go but i'm just like i should really i should really move this forward to something
+
+01:06:54.400 --> 01:06:57.980
+<v Michael Kennedy>that feels like it's active right i mean stuff in the web makes me nervous i'm always
+
+01:06:58.000 --> 01:07:00.340
+<v Michael Kennedy>Did you put a port open on the internet?
+
+01:07:00.600 --> 01:07:02.360
+<v Michael Kennedy>Well, that's scary.
+
+01:07:03.760 --> 01:07:11.560
+<v Michael Kennedy>And so a framework that felt like things were not on top of it as it could have been made me nervous.
+
+01:07:12.080 --> 01:07:17.600
+<v Michael Kennedy>To be fair, I don't know that they had any security incidents or very, very few because it did so little.
+
+01:07:17.860 --> 01:07:23.600
+<v Michael Kennedy>It's not like it had a bunch of admin pages or something where there's like accepting input.
+
+01:07:24.140 --> 01:07:26.260
+<v Michael Kennedy>But still, same reason.
+
+01:07:26.420 --> 01:07:33.760
+<v Michael Kennedy>So I'm like, I really want to use these more modern tools, typing, async, pydantic, et
+
+01:07:33.780 --> 01:07:33.960
+<v Michael Kennedy>cetera.
+
+01:07:34.900 --> 01:07:39.140
+<v Michael Kennedy>And I kind of would not like to continue building on something that feels like it's no longer
+
+01:07:39.520 --> 01:07:40.020
+<v Michael Kennedy>being supported.
+
+01:07:41.900 --> 01:07:47.540
+<v Christopher Trudeau>And similarly, you, with Chapter 13, sort of that, you know, the different thought process
+
+01:07:47.800 --> 01:07:52.580
+<v Christopher Trudeau>there, you also provide Chapter 15, which is a retrospective on Hetzner, which is the
+
+01:07:52.620 --> 01:07:54.120
+<v Christopher Trudeau>hosting provider that you chose.
+
+01:07:55.920 --> 01:07:59.340
+<v Christopher Trudeau>And again, I think it's pretty clear.
+
+01:07:59.580 --> 01:08:00.900
+<v Christopher Trudeau>I think I've said it three different ways.
+
+01:08:01.400 --> 01:08:04.000
+<v Christopher Trudeau>My favorite stuff in the book really is sort of this, you know,
+
+01:08:04.140 --> 01:08:08.540
+<v Christopher Trudeau>that the little insight into Michael's brain, right?
+
+01:08:08.680 --> 01:08:12.420
+<v Christopher Trudeau>Like how did he make this decision and how happy is he with these decisions, right?
+
+01:08:12.900 --> 01:08:18.080
+<v Christopher Trudeau>I think that's the stuff that's globally applicable to a reader, which is nice.
+
+01:08:18.759 --> 01:08:22.080
+<v Christopher Trudeau>So it's now even a few months further on with Hetzner.
+
+01:08:22.380 --> 01:08:24.180
+<v Christopher Trudeau>So you still happy?
+
+01:08:24.520 --> 01:08:25.359
+<v Christopher Trudeau>Any regrets yet?
+
+01:08:26.060 --> 01:08:32.640
+<v Michael Kennedy>yeah no no regrets it hasn't been absolutely 100% smooth let's see that's
+
+01:08:32.640 --> 01:08:37.940
+<v Michael Kennedy>I could tell you how long it's been if I can get past all the ads there we go so
+
+01:08:38.200 --> 01:08:46.779
+<v Michael Kennedy>I actually blogged about this and yeah so it's been about a year I guess no
+
+01:08:46.880 --> 01:08:53.620
+<v Michael Kennedy>regrets I would say if people are out there looking around to me it really and
+
+01:08:53.640 --> 01:08:58.540
+<v Michael Kennedy>And you want to follow the philosophy of Michael, like carve yourself a space out in a multimillion
+
+01:08:58.660 --> 01:09:01.020
+<v Michael Kennedy>dollar data center that doesn't have anything to do with it.
+
+01:09:01.240 --> 01:09:03.580
+<v Michael Kennedy>And you just run your code in your own space.
+
+01:09:05.100 --> 01:09:07.859
+<v Michael Kennedy>DigitalOcean and Hetzner are the two ones.
+
+01:09:08.040 --> 01:09:09.299
+<v Michael Kennedy>And I did DigitalOcean for a long time.
+
+01:09:09.480 --> 01:09:16.359
+<v Michael Kennedy>When Hetzner came out, I thought they just had some really interesting appeal.
+
+01:09:16.700 --> 01:09:18.480
+<v Michael Kennedy>I started seeing a lot of people talking about them.
+
+01:09:19.839 --> 01:09:23.200
+<v Michael Kennedy>They are a German company and they were just in Europe.
+
+01:09:23.580 --> 01:09:25.440
+<v Michael Kennedy>And I'm like, I love Europe,
+
+01:09:26.100 --> 01:09:27.940
+<v Michael Kennedy>but the majority of my customers are in the US.
+
+01:09:28.259 --> 01:09:31.140
+<v Michael Kennedy>So what is the best place for my server?
+
+01:09:31.620 --> 01:09:33.460
+<v Michael Kennedy>Probably the East coast of the United States,
+
+01:09:33.580 --> 01:09:35.580
+<v Michael Kennedy>'cause that serves the US really well,
+
+01:09:35.620 --> 01:09:37.759
+<v Michael Kennedy>but then it's like one hop across the ocean
+
+01:09:37.819 --> 01:09:39.640
+<v Michael Kennedy>to all of Europe as well.
+
+01:09:39.740 --> 01:09:43.900
+<v Michael Kennedy>So it's still really fast from there and so on.
+
+01:09:44.240 --> 01:09:48.400
+<v Michael Kennedy>So I didn't want to move my server to Europe,
+
+01:09:50.359 --> 01:09:53.400
+<v Michael Kennedy>when I felt like being closer to the U.S. was more important.
+
+01:09:53.540 --> 01:09:54.940
+<v Michael Kennedy>Not so much because I needed to manage it.
+
+01:09:54.940 --> 01:09:58.440
+<v Michael Kennedy>I could SSH to wherever, but, you know, just East Coast to the U.S.
+
+01:09:58.490 --> 01:10:02.200
+<v Michael Kennedy>And then they're like, hey, we have two new U.S. data centers,
+
+01:10:02.580 --> 01:10:09.200
+<v Michael Kennedy>one near Virginia right by the U.S. East One, the infamous AWS U.S. East One.
+
+01:10:09.860 --> 01:10:14.060
+<v Michael Kennedy>And the other one actually in Hillsborough, Oregon, just down the street from me.
+
+01:10:14.360 --> 01:10:14.860
+<v Michael Kennedy>Oh, okay.
+
+01:10:14.860 --> 01:10:15.120
+<v Michael Kennedy>Which is funny.
+
+01:10:15.250 --> 01:10:17.780
+<v Michael Kennedy>Yeah, it's like I could drive to it in like 20 minutes.
+
+01:10:19.680 --> 01:10:21.960
+<v Michael Kennedy>which of all places in the world is relatively close.
+
+01:10:22.710 --> 01:10:24.100
+<v Michael Kennedy>So I went and looked at it and I said,
+
+01:10:24.230 --> 01:10:25.440
+<v Michael Kennedy>let me just check it out.
+
+01:10:25.620 --> 01:10:27.840
+<v Michael Kennedy>And the prices are super cheap.
+
+01:10:27.850 --> 01:10:30.120
+<v Michael Kennedy>You get a little bit less support
+
+01:10:30.580 --> 01:10:35.200
+<v Michael Kennedy>and I think a little bit less top tier data center
+
+01:10:35.440 --> 01:10:36.000
+<v Michael Kennedy>than DigitalOcean.
+
+01:10:36.570 --> 01:10:39.140
+<v Michael Kennedy>But the prices are like insane there.
+
+01:10:40.080 --> 01:10:45.380
+<v Michael Kennedy>Like I said, eight core server for 30 bucks.
+
+01:10:45.940 --> 01:10:47.000
+<v Michael Kennedy>You know, that's insane.
+
+01:10:47.780 --> 01:10:52.260
+<v Michael Kennedy>And when I first signed up, that came with 20 terabytes of free traffic.
+
+01:10:52.980 --> 01:10:53.180
+<v Christopher Trudeau>Wow.
+
+01:10:54.600 --> 01:11:00.400
+<v Michael Kennedy>Which is about $1,700 out of AWS.
+
+01:11:01.220 --> 01:11:01.360
+<v Christopher Trudeau>Right.
+
+01:11:01.640 --> 01:11:03.140
+<v Michael Kennedy>Included in your $30 bill.
+
+01:11:03.440 --> 01:11:03.920
+<v Michael Kennedy>You know what I mean?
+
+01:11:04.060 --> 01:11:05.300
+<v Michael Kennedy>Like, oh, my gosh.
+
+01:11:05.860 --> 01:11:06.000
+<v Christopher Trudeau>Yeah.
+
+01:11:06.620 --> 01:11:08.660
+<v Michael Kennedy>So, yeah, I talk a lot about it in the book.
+
+01:11:08.840 --> 01:11:11.340
+<v Michael Kennedy>But, yeah, I went over and moved my stuff over there.
+
+01:11:11.400 --> 01:11:13.660
+<v Michael Kennedy>And it's been good.
+
+01:11:13.780 --> 01:11:18.000
+<v Michael Kennedy>I've had one incident where the machine that it was on died.
+
+01:11:18.940 --> 01:11:21.040
+<v Michael Kennedy>The one big server, wherever it was, it died.
+
+01:11:22.100 --> 01:11:25.360
+<v Michael Kennedy>And they had to move it, which blows my mind.
+
+01:11:26.160 --> 01:11:29.080
+<v Michael Kennedy>They were able to hot relocate it to another server.
+
+01:11:29.560 --> 01:11:34.380
+<v Michael Kennedy>But the problem is it has a 300 gig external drive,
+
+01:11:35.780 --> 01:11:37.260
+<v Michael Kennedy>and that didn't move location.
+
+01:11:37.460 --> 01:11:41.180
+<v Michael Kennedy>So all of a sudden, a lot of the IO operations were much slower
+
+01:11:41.400 --> 01:11:43.060
+<v Michael Kennedy>because they weren't close to the server anymore.
+
+01:11:44.220 --> 01:11:48.120
+<v Michael Kennedy>why why did my docker builds take two minutes they used to take about three or four seconds
+
+01:11:48.200 --> 01:11:52.700
+<v Michael Kennedy>i cannot figure it out and i i wrote him they're like no there's we've tested there's no problem
+
+01:11:52.820 --> 01:11:57.280
+<v Michael Kennedy>like i don't care what you say there's a huge problem and eventually there's like we moved it
+
+01:11:57.320 --> 01:12:04.000
+<v Michael Kennedy>again it's fine and then it was fine but right so you know if if folks are looking for something
+
+01:12:04.820 --> 01:12:09.860
+<v Christopher Trudeau>slightly lighter weight and this is going to sound like a commercial i'm just a happy customer i don't
+
+01:12:09.880 --> 01:12:16.740
+<v Christopher Trudeau>no sponsorship or whatever but i use opal stack with a lot of my clients um what do you use opal
+
+01:12:16.920 --> 01:12:23.320
+<v Christopher Trudeau>stack opal stack yeah and you wouldn't go full docker with it um but they do act they do give
+
+01:12:23.320 --> 01:12:29.740
+<v Christopher Trudeau>you access full ssh ssh to the box and they've got a neat little sort of packaging thing they don't
+
+01:12:29.980 --> 01:12:34.400
+<v Christopher Trudeau>support a lot of things but if you've got like django or flask or you know static files for
+
+01:12:34.420 --> 01:12:40.460
+<v Christopher Trudeau>nginx or whatever you hit a couple buttons in the dashboard and it spawns it up but a lot of tools
+
+01:12:40.620 --> 01:12:44.440
+<v Christopher Trudeau>like that it spawns it up and then you're not allowed to touch it what they do is create all
+
+01:12:44.440 --> 01:12:48.700
+<v Christopher Trudeau>the entries in the directories and then you can ssh into the box and get at the files themselves so i
+
+01:12:48.820 --> 01:12:54.820
+<v Christopher Trudeau>find it's a nice little compromise between the two uh it would not scale to what you're doing
+
+01:12:55.420 --> 01:13:00.320
+<v Christopher Trudeau>but if folks are looking for a relatively inexpensive thing to experiment with i find
+
+01:13:00.340 --> 01:13:01.600
+<v Christopher Trudeau>it's a nice little stopgap.
+
+01:13:02.200 --> 01:13:03.100
+<v Michael Kennedy>Yeah, that's awesome.
+
+01:13:03.460 --> 01:13:06.600
+<v Michael Kennedy>I'm always interested in finding those types of things.
+
+01:13:08.060 --> 01:13:08.900
+<v Michael Kennedy>This one is new to me.
+
+01:13:09.000 --> 01:13:09.380
+<v Michael Kennedy>This is cool.
+
+01:13:10.620 --> 01:13:13.520
+<v Christopher Trudeau>Yeah, this is, I'm trying to remember,
+
+01:13:14.400 --> 01:13:16.900
+<v Christopher Trudeau>there was a site I used to use, it got bought.
+
+01:13:18.480 --> 01:13:20.280
+<v Christopher Trudeau>The half of the founders went,
+
+01:13:20.530 --> 01:13:21.440
+<v Christopher Trudeau>we don't want to be bought,
+
+01:13:21.880 --> 01:13:24.080
+<v Christopher Trudeau>and took their baseball bat and created Opal Stack.
+
+01:13:24.270 --> 01:13:26.320
+<v Christopher Trudeau>So I used to be a client of the original
+
+01:13:26.470 --> 01:13:27.500
+<v Christopher Trudeau>and mulling them along.
+
+01:13:28.000 --> 01:13:28.460
+<v Christopher Trudeau>So, yeah.
+
+01:13:28.780 --> 01:13:28.940
+<v Christopher Trudeau>Cool.
+
+01:13:29.180 --> 01:13:31.780
+<v Christopher Trudeau>And very happy with the service as well.
+
+01:13:32.100 --> 01:13:35.140
+<v Christopher Trudeau>They're like, you open a ticket and things are very human,
+
+01:13:35.440 --> 01:13:37.060
+<v Christopher Trudeau>which is nice in this day and age.
+
+01:13:37.900 --> 01:13:39.800
+<v Christopher Trudeau>I'm usually expecting to talk to a bot.
+
+01:13:40.640 --> 01:13:42.480
+<v Michael Kennedy>You're getting about as much support as you get out of Gmail.
+
+01:13:42.880 --> 01:13:43.320
+<v Christopher Trudeau>Yeah, exactly.
+
+01:13:44.060 --> 01:13:45.800
+<v Michael Kennedy>Or Google Docs, which is done.
+
+01:13:46.720 --> 01:13:50.600
+<v Michael Kennedy>Another thing worth a shout out here is sort of an alternate way
+
+01:13:50.800 --> 01:13:53.280
+<v Michael Kennedy>of working with Docker and Docker Compose directly
+
+01:13:53.360 --> 01:13:56.480
+<v Michael Kennedy>that I propose in the book is something called Coolify.
+
+01:13:56.600 --> 01:13:57.620
+<v Michael Kennedy>Are you familiar with Coolify?
+
+01:13:58.200 --> 01:13:59.060
+<v Christopher Trudeau>No, this one I don't know.
+
+01:13:59.540 --> 01:14:00.780
+<v Michael Kennedy>Yeah, this is super interesting.
+
+01:14:00.990 --> 01:14:06.520
+<v Michael Kennedy>So what this does is it knows how to run Docker, Docker Compose,
+
+01:14:07.400 --> 01:14:12.040
+<v Michael Kennedy>but it also gives you all sorts of easier ways.
+
+01:14:12.270 --> 01:14:15.580
+<v Michael Kennedy>So if people look at what I'm proposing, they're like, no, Michael, too complicated.
+
+01:14:16.260 --> 01:14:19.460
+<v Michael Kennedy>This is interesting because what it gives you is it basically gives you
+
+01:14:19.650 --> 01:14:24.240
+<v Michael Kennedy>your own private Heroku or Netlify or Vercel or Railway,
+
+01:14:25.020 --> 01:14:27.620
+<v Michael Kennedy>or you can go in, I don't know how to find it from here.
+
+01:14:28.960 --> 01:14:32.900
+<v Michael Kennedy>But you can also go in and say, let me find any self-hosted app.
+
+01:14:34.020 --> 01:14:34.380
+<v Christopher Trudeau>Okay.
+
+01:14:34.580 --> 01:14:36.020
+<v Michael Kennedy>And they've got hundreds of them in there.
+
+01:14:36.050 --> 01:14:37.460
+<v Michael Kennedy>And then you just type in the name and say,
+
+01:14:38.020 --> 01:14:42.720
+<v Michael Kennedy>install this set of Docker containers as a Docker Compose file into my server.
+
+01:14:43.400 --> 01:14:47.960
+<v Michael Kennedy>So you could create the one big server, which is your own space in someone's cloud.
+
+01:14:49.380 --> 01:14:52.800
+<v Michael Kennedy>And then you can install this or you can pay them five bucks a month
+
+01:14:52.810 --> 01:14:56.500
+<v Michael Kennedy>and they'll actually manage the server, manage the deployments,
+
+01:14:59.679 --> 01:15:03.220
+<v Michael Kennedy>to rollouts of new versions of your app and stuff like that.
+
+01:15:03.580 --> 01:15:07.780
+<v Michael Kennedy>It sounds like it makes it way easier.
+
+01:15:08.320 --> 01:15:12.020
+<v Michael Kennedy>It actually makes it-- it's like two steps forward,
+
+01:15:12.340 --> 01:15:13.500
+<v Michael Kennedy>1.8 steps backwards.
+
+01:15:15.100 --> 01:15:17.680
+<v Michael Kennedy>Because instead of just using.env files,
+
+01:15:17.700 --> 01:15:21.440
+<v Michael Kennedy>you've got a UI to enter a bunch of environment variables.
+
+01:15:21.940 --> 01:15:24.240
+<v Michael Kennedy>And the saving of them is weird.
+
+01:15:24.260 --> 01:15:26.820
+<v Michael Kennedy>And you're like, oh, I forgot to press save on these three,
+
+01:15:27.060 --> 01:15:28.100
+<v Michael Kennedy>even though I saved the page.
+
+01:15:28.210 --> 01:15:28.840
+<v Michael Kennedy>I mean, there's just...
+
+01:15:28.840 --> 01:15:29.480
+<v Christopher Trudeau>Right, right.
+
+01:15:31.160 --> 01:15:34.340
+<v Michael Kennedy>It promises more ease than you would think,
+
+01:15:34.490 --> 01:15:35.620
+<v Michael Kennedy>and I'm not necessarily switching.
+
+01:15:35.700 --> 01:15:36.980
+<v Michael Kennedy>I do, like, I've played with it some.
+
+01:15:38.120 --> 01:15:41.220
+<v Michael Kennedy>I'm not saying I would switch to it given a choice,
+
+01:15:41.720 --> 01:15:44.680
+<v Michael Kennedy>but it does ease you in.
+
+01:15:44.780 --> 01:15:45.960
+<v Michael Kennedy>It's a little bit like Python Anywhere.
+
+01:15:46.440 --> 01:15:47.640
+<v Michael Kennedy>I'm sure when I started,
+
+01:15:47.710 --> 01:15:49.280
+<v Michael Kennedy>there were things that could have gotten in my way,
+
+01:15:49.520 --> 01:15:51.300
+<v Michael Kennedy>but the stuff, the support that it gave me
+
+01:15:51.360 --> 01:15:53.180
+<v Michael Kennedy>made it possible for me to feel, like,
+
+01:15:53.740 --> 01:15:54.680
+<v Michael Kennedy>comfortable and get going.
+
+01:15:55.120 --> 01:16:00.180
+<v Michael Kennedy>I feel like this might be an option for people who care.
+
+01:16:00.640 --> 01:16:00.980
+<v Christopher Trudeau>Right.
+
+01:16:01.500 --> 01:16:02.900
+<v Michael Kennedy>But let me give you an example.
+
+01:16:03.120 --> 01:16:10.920
+<v Michael Kennedy>For example, I could go install an app that has Postgres, Valkey, and the web app.
+
+01:16:11.740 --> 01:16:17.220
+<v Michael Kennedy>If I then I just click install that from wherever self-hosted definition that comes from,
+
+01:16:17.660 --> 01:16:18.720
+<v Michael Kennedy>it creates those three containers.
+
+01:16:19.400 --> 01:16:24.040
+<v Michael Kennedy>And then on the container setting through the image setting, I don't know really how you think of it.
+
+01:16:24.260 --> 01:16:26.420
+<v Michael Kennedy>I mean, they're not, I guess, an image, sort of.
+
+01:16:28.080 --> 01:16:31.000
+<v Michael Kennedy>You can go to the web part and say, and just use this URL.
+
+01:16:31.500 --> 01:16:34.660
+<v Michael Kennedy>And it'll automatically do the SSL generation as part of that.
+
+01:16:34.900 --> 01:16:36.980
+<v Michael Kennedy>Then you go to the database, the Postgres thing,
+
+01:16:37.080 --> 01:16:39.940
+<v Michael Kennedy>you say, oh, and make backups for me daily,
+
+01:16:40.420 --> 01:16:42.660
+<v Michael Kennedy>and store them in this S3 compatible storage.
+
+01:16:43.960 --> 01:16:46.160
+<v Michael Kennedy>And that kind of stuff is a lot of extra
+
+01:16:46.300 --> 01:16:47.360
+<v Michael Kennedy>when you're doing it yourself, and you just
+
+01:16:47.360 --> 01:16:48.220
+<v Michael Kennedy>go check those boxes.
+
+01:16:48.520 --> 01:16:52.120
+<v Michael Kennedy>So that's the two forward, but then there's the step back.
+
+01:16:52.400 --> 01:16:54.060
+<v Christopher Trudeau>- Yeah, yeah, well, and that tends to be also
+
+01:16:54.180 --> 01:16:55.580
+<v Christopher Trudeau>what makes people nervous, right?
+
+01:16:55.770 --> 01:16:57.580
+<v Christopher Trudeau>So like that, and that's, you know,
+
+01:16:57.690 --> 01:17:02.340
+<v Christopher Trudeau>I still use managed database simply because I don't want
+
+01:17:02.340 --> 01:17:03.440
+<v Christopher Trudeau>to have to think about it, right?
+
+01:17:03.540 --> 01:17:06.180
+<v Christopher Trudeau>Like it's like, yeah, okay, I'm perfectly fine
+
+01:17:06.250 --> 01:17:07.980
+<v Christopher Trudeau>with pointing my app at a managed database
+
+01:17:08.720 --> 01:17:11.000
+<v Christopher Trudeau>and let somebody else think about backing it up
+
+01:17:11.030 --> 01:17:11.780
+<v Christopher Trudeau>and all the rest of it.
+
+01:17:12.300 --> 01:17:12.540
+<v Michael Kennedy>- Yeah.
+
+01:17:12.920 --> 01:17:13.040
+<v Michael Kennedy>- Yeah.
+
+01:17:13.270 --> 01:17:14.720
+<v Michael Kennedy>- You know, one thing about managed databases
+
+01:17:14.940 --> 01:17:19.280
+<v Michael Kennedy>that I don't like, and I can't speak to all potential hosts
+
+01:17:19.440 --> 01:17:21.760
+<v Michael Kennedy>of them, but certainly some of them, some well-known ones,
+
+01:17:21.900 --> 01:17:23.100
+<v Michael Kennedy>some names I've already said,
+
+01:17:23.690 --> 01:17:25.100
+<v Michael Kennedy>if you get a managed database there,
+
+01:17:25.440 --> 01:17:28.000
+<v Michael Kennedy>that database server is listening on the public internet.
+
+01:17:29.160 --> 01:17:33.460
+<v Michael Kennedy>And I very much do not spouse having a database listening.
+
+01:17:34.680 --> 01:17:37.500
+<v Michael Kennedy>Yeah, it has a password, but I mean,
+
+01:17:37.640 --> 01:17:40.180
+<v Michael Kennedy>that database, I'm always worried about
+
+01:17:40.210 --> 01:17:41.080
+<v Michael Kennedy>what is in the database.
+
+01:17:41.180 --> 01:17:41.800
+<v Christopher Trudeau>- That's interesting.
+
+01:17:42.000 --> 01:17:43.700
+<v Christopher Trudeau>I've never thought to even check that.
+
+01:17:44.020 --> 01:17:48.560
+<v Michael Kennedy>- And on my setup, not only is it not listening
+
+01:17:48.590 --> 01:17:50.980
+<v Michael Kennedy>on the internet, it's not even listening on the host.
+
+01:17:51.220 --> 01:17:53.220
+<v Michael Kennedy>There's like a private Docker network
+
+01:17:53.460 --> 01:17:55.520
+<v Michael Kennedy>that only things in the Docker,
+
+01:17:56.760 --> 01:17:58.940
+<v Michael Kennedy>shared Docker network can even know about
+
+01:17:58.950 --> 01:18:00.220
+<v Michael Kennedy>or see the data, you know what I mean?
+
+01:18:00.840 --> 01:18:01.360
+<v Michael Kennedy>So there's--
+
+01:18:02.520 --> 01:18:05.140
+<v Christopher Trudeau>- Yep, it's less likely to, fewer holes.
+
+01:18:05.680 --> 01:18:08.480
+<v Michael Kennedy>- But I have to make backups and if I don't, it's bad.
+
+01:18:08.580 --> 01:18:09.800
+<v Michael Kennedy>And if it goes down, it's real bad.
+
+01:18:10.440 --> 01:18:11.760
+<v Michael Kennedy>And it did one time this year,
+
+01:18:11.760 --> 01:18:12.700
+<v Michael Kennedy>it was down for like 10 minutes,
+
+01:18:14.020 --> 01:18:15.580
+<v Michael Kennedy>about tore a honk a hair out.
+
+01:18:15.760 --> 01:18:17.660
+<v Christopher Trudeau>- There goes your sixth nine, yes.
+
+01:18:18.400 --> 01:18:19.240
+<v Michael Kennedy>- Exactly, I know.
+
+01:18:20.180 --> 01:18:24.320
+<v Michael Kennedy>So the problem was, just for people who want to benefit
+
+01:18:24.540 --> 01:18:26.280
+<v Michael Kennedy>from my suffering and not suffer themselves,
+
+01:18:26.520 --> 01:18:28.300
+<v Michael Kennedy>is I did not--
+
+01:18:28.760 --> 01:18:30.880
+<v Michael Kennedy>on the Docker pull for the database image,
+
+01:18:30.980 --> 01:18:32.640
+<v Michael Kennedy>I didn't pin it to a major version.
+
+01:18:33.900 --> 01:18:34.920
+<v Michael Kennedy>And so it upgraded.
+
+01:18:35.040 --> 01:18:37.140
+<v Michael Kennedy>And then it said, well, you have all data in your file system.
+
+01:18:37.640 --> 01:18:39.080
+<v Michael Kennedy>And we're not going to upgrade it for you automatically.
+
+01:18:39.400 --> 01:18:40.260
+<v Michael Kennedy>So we're not going to run.
+
+01:18:40.360 --> 01:18:42.060
+<v Michael Kennedy>I'm like, why is the database server not running?
+
+01:18:43.380 --> 01:18:44.780
+<v Michael Kennedy>And it was like a weird update.
+
+01:18:44.780 --> 01:18:48.580
+<v Michael Kennedy>It was like 8.2.1 that broke.
+
+01:18:48.820 --> 01:18:50.180
+<v Michael Kennedy>Well, why? Point one.
+
+01:18:51.120 --> 01:18:54.620
+<v Michael Kennedy>Surely, surely a bigger number needs to be like,
+
+01:18:54.720 --> 01:18:55.700
+<v Michael Kennedy>this will never run again.
+
+01:18:59.000 --> 01:19:00.960
+<v Michael Kennedy>Anyway, you find this stuff out the hard way,
+
+01:19:01.220 --> 01:19:05.800
+<v Michael Kennedy>but that's the negative not using a managed database.
+
+01:19:06.200 --> 01:19:08.120
+<v Christopher Trudeau>Yes. Yeah. Because you have to deal with
+
+01:19:08.260 --> 01:19:09.220
+<v Christopher Trudeau>some of that kind of stuff yourself.
+
+01:19:10.260 --> 01:19:10.400
+<v Christopher Trudeau>Yeah.
+
+01:19:10.530 --> 01:19:14.980
+<v Christopher Trudeau>So I thought we would wrap up by reviving an old tradition.
+
+01:19:15.270 --> 01:19:16.660
+<v Christopher Trudeau>I have two questions for you.
+
+01:19:17.320 --> 01:19:22.400
+<v Christopher Trudeau>What is your development environment and what library are you excited about?
+
+01:19:23.460 --> 01:19:33.460
+<v Michael Kennedy>So the development environment right now is a mix of cursor and PyCharm for editing.
+
+01:19:34.420 --> 01:19:38.500
+<v Michael Kennedy>And despite this very detailed conversation about Docker,
+
+01:19:38.500 --> 01:19:42.420
+<v Michael Kennedy>I don't use Docker very much locally for development.
+
+01:19:42.420 --> 01:19:43.680
+<v Michael Kennedy>I just use virtual environments.
+
+01:19:43.900 --> 01:19:51.000
+<v Michael Kennedy>And I want to give a shout out to Hynek, who I had some back and forth about when I was writing some of this stuff that gave me some really good ideas.
+
+01:19:51.110 --> 01:19:57.280
+<v Michael Kennedy>And he has a really good article, which I reference in the book, about you just use virtual environments.
+
+01:19:57.940 --> 01:19:58.980
+<v Michael Kennedy>Keep everything consistent, right?
+
+01:19:59.180 --> 01:20:02.600
+<v Michael Kennedy>That's an interesting debate that we don't have time for, but it's very fun.
+
+01:20:04.040 --> 01:20:06.100
+<v Michael Kennedy>So uv, I'm a huge fan of uv.
+
+01:20:09.160 --> 01:20:11.580
+<v Christopher Trudeau>Particularly in Docker, that makes things that much faster.
+
+01:20:11.920 --> 01:20:34.400
+<v Michael Kennedy>Yeah, because you can just say in your doc, it used to be you're like, okay, well, I got to use Docker and I need to use Python. So let me use the official Python distribution for Docker because I need to have Python. And then, well, that, that excludes 99.9% of all the other things you could build upon that already have something that's harder to manage, set up for you, right?
+
+01:20:34.520 --> 01:20:41.480
+<v Michael Kennedy>But in your Docker file, you just say run uv venv --Python 3.14.
+
+01:20:43.160 --> 01:20:45.640
+<v Michael Kennedy>You've installed Python 3.14 in two seconds.
+
+01:20:46.180 --> 01:20:46.320
+<v Michael Kennedy>Right.
+
+01:20:46.540 --> 01:20:47.360
+<v Michael Kennedy>And it's cached, right?
+
+01:20:47.540 --> 01:20:52.380
+<v Michael Kennedy>It's like, yeah, it just, it makes it so much faster and so, so powerful.
+
+01:20:52.430 --> 01:20:53.760
+<v Michael Kennedy>But also just in general, right?
+
+01:20:53.860 --> 01:20:58.600
+<v Michael Kennedy>Like it's unified so many tools that I like that are just, it's all there together.
+
+01:20:59.400 --> 01:21:00.160
+<v Michael Kennedy>And then library.
+
+01:21:00.400 --> 01:21:00.980
+<v Michael Kennedy>Oh my goodness.
+
+01:21:03.300 --> 01:21:04.680
+<v Christopher Trudeau>Now you know what it feels like.
+
+01:21:04.900 --> 01:21:05.980
+<v Michael Kennedy>I know how it feels.
+
+01:21:06.420 --> 01:21:07.840
+<v Christopher Trudeau>I didn't warn you on purpose.
+
+01:21:08.660 --> 01:21:09.300
+<v Michael Kennedy>I love it.
+
+01:21:09.540 --> 01:21:10.100
+<v Michael Kennedy>I love it.
+
+01:21:15.800 --> 01:21:19.760
+<v Michael Kennedy>So there are a bunch of ones I've been playing with lately,
+
+01:21:19.800 --> 01:21:22.540
+<v Michael Kennedy>and I'm trying to think which one I've used.
+
+01:21:22.640 --> 01:21:24.220
+<v Michael Kennedy>I don't really have a great answer to this, Chris.
+
+01:21:25.140 --> 01:21:26.120
+<v Michael Kennedy>I'm afraid to say.
+
+01:21:26.220 --> 01:21:31.640
+<v Michael Kennedy>I would say let's keep it flowing with some of the vibes that we had here.
+
+01:21:32.240 --> 01:21:36.560
+<v Michael Kennedy>I would say, let me give a shout out to setproctitle,
+
+01:21:37.220 --> 01:21:39.940
+<v Michael Kennedy>which sounds insanely silly.
+
+01:21:40.320 --> 01:21:41.620
+<v Michael Kennedy>Like the goal of that is,
+
+01:21:42.600 --> 01:21:44.620
+<v Michael Kennedy>so in your process, in your Python process,
+
+01:21:44.860 --> 01:21:46.660
+<v Michael Kennedy>and I actually use this on a bunch of different things.
+
+01:21:46.740 --> 01:21:51.780
+<v Michael Kennedy>In your Python process, you can say setproctitle.settitle,
+
+01:21:52.140 --> 01:21:54.400
+<v Michael Kennedy>and you give it the name of whatever you want your process to be.
+
+01:21:54.820 --> 01:21:55.680
+<v Michael Kennedy>So why does that matter?
+
+01:21:57.660 --> 01:21:59.840
+<v Michael Kennedy>When you pull up all these tools like Glances,
+
+01:22:02.340 --> 01:22:05.080
+<v Michael Kennedy>BTOP or others, anything that looks at processes basically,
+
+01:22:06.510 --> 01:22:09.760
+<v Michael Kennedy>instead of seeing Python, Python, Python, Node, Node, Node, Postgres, Postgres, Postgres,
+
+01:22:10.600 --> 01:22:12.700
+<v Michael Kennedy>at least the Python ones now have meaningful names.
+
+01:22:13.600 --> 01:22:16.900
+<v Michael Kennedy>And you might be thinking, "Well, Michael, I'm not running that much production."
+
+01:22:17.300 --> 01:22:19.580
+<v Michael Kennedy>Useless to me. No, it's good for development too.
+
+01:22:20.400 --> 01:22:24.260
+<v Michael Kennedy>Have you ever had the idea,
+
+01:22:25.120 --> 01:22:27.600
+<v Michael Kennedy>"I want to know how much memory my process is using."
+
+01:22:27.820 --> 01:22:28.800
+<v Michael Kennedy>Is it using a lot or a little?
+
+01:22:29.060 --> 01:22:32.700
+<v Michael Kennedy>So you pull up activity monitor, task manager, whatever.
+
+01:22:33.580 --> 01:22:34.700
+<v Michael Kennedy>And you see Python, Python, Python.
+
+01:22:34.880 --> 01:22:35.520
+<v Michael Kennedy>You're like, oh, man.
+
+01:22:36.180 --> 01:22:38.780
+<v Michael Kennedy>I know my editor is using one of these or whatever.
+
+01:22:39.020 --> 01:22:39.880
+<v Michael Kennedy>But which one is it?
+
+01:22:41.020 --> 01:22:43.300
+<v Christopher Trudeau>And if you're using the right terminal,
+
+01:22:43.540 --> 01:22:45.180
+<v Christopher Trudeau>it'll change the terminal's title too.
+
+01:22:45.460 --> 01:22:47.540
+<v Christopher Trudeau>Because most terminals respond to the proc name.
+
+01:22:48.500 --> 01:22:50.020
+<v Michael Kennedy>Oh, that's a very nice touch.
+
+01:22:50.180 --> 01:22:50.520
+<v Michael Kennedy>Yeah, OK.
+
+01:22:51.280 --> 01:22:51.580
+<v Michael Kennedy>Yeah.
+
+01:22:52.300 --> 01:22:54.080
+<v Michael Kennedy>But if you do that in development,
+
+01:22:54.260 --> 01:22:59.020
+<v Michael Kennedy>if you just set the name of your process to be like my utility
+
+01:22:59.040 --> 01:23:03.460
+<v Michael Kennedy>the heck you call it, right? Then when you go into process management tools, like even just for
+
+01:23:03.820 --> 01:23:09.720
+<v Michael Kennedy>Mac or Windows or whatever, you'll see it. And you can see how much CPU is it using? Is it using a
+
+01:23:09.860 --> 01:23:14.980
+<v Michael Kennedy>lot of RAM? If you've got to end task it, like we now have another reason that this is something
+
+01:23:15.100 --> 01:23:21.160
+<v Michael Kennedy>we've got to do all the time is sometimes the agentic AI things go mad and they start a bunch
+
+01:23:21.320 --> 01:23:25.020
+<v Michael Kennedy>of the web servers and then they lose track of them. And then you can't run anymore because it
+
+01:23:25.040 --> 01:23:33.740
+<v Michael Kennedy>says port is in use you're like but where like something in that stream of text that shot by for
+
+01:23:33.920 --> 01:23:39.300
+<v Michael Kennedy>five minutes it started one and then it left it going but then you pull it up it says python python
+
+01:23:39.480 --> 01:23:43.080
+<v Michael Kennedy>python and like well i don't want to kill the other thing that's right you know what i mean
+
+01:23:43.620 --> 01:23:49.500
+<v Michael Kennedy>and so it also gives you a way to kill off your ai abandoned stuff that it went mad on so there you
+
+01:23:49.580 --> 01:23:53.880
+<v Christopher Trudeau>go setting a process name might save you a reboot there's there's there's your little nugget to
+
+01:23:53.900 --> 01:23:54.900
+<v Christopher Trudeau>take away from the podcast.
+
+01:23:55.490 --> 01:23:55.600
+<v Michael Kennedy>Exactly.
+
+01:23:56.060 --> 01:23:59.320
+<v Michael Kennedy>It's a package with one function, but it's a good one.
+
+01:23:59.580 --> 01:23:59.960
+<v Christopher Trudeau>Excellent.
+
+01:24:00.330 --> 01:24:01.800
+<v Christopher Trudeau>Well, thank you for having me on.
+
+01:24:02.460 --> 01:24:05.380
+<v Christopher Trudeau>This has been fun to sort of reverse the tables on you.
+
+01:24:05.560 --> 01:24:06.500
+<v Christopher Trudeau>It's been great.
+
+01:24:07.240 --> 01:24:07.320
+<v Michael Kennedy>Yeah.
+
+01:24:07.610 --> 01:24:08.360
+<v Michael Kennedy>Chris, thank you so much.
+
+01:24:08.370 --> 01:24:09.160
+<v Michael Kennedy>I really appreciate it.
+
+01:24:09.280 --> 01:24:10.540
+<v Michael Kennedy>And always great to catch up with you.
+
+01:24:10.850 --> 01:24:10.940
+<v Michael Kennedy>Bye.
+
+01:24:11.030 --> 01:24:11.500
+<v Christopher Trudeau>Fun to be here.
+
