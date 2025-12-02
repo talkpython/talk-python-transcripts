@@ -6,5 +6,5 @@ Find a mistake? Feel free to suggest a fix.
 
 [![Talk Python To Me logo](https://raw.githubusercontent.com/mikeckennedy/talk-python-transcripts/master/readme_resources/talk_python_logo.png)](https://talkpython.fm)
 
-Thank you, Michael Kennedy
+Thanks, Michael Kennedy
 

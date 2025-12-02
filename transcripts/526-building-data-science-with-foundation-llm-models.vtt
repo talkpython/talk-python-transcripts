@@ -1,0 +1,3518 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:03.960
+<v Michael Kennedy>AI has changed how we write code and data science is right in the blast radius.
+
+00:00:04.660 --> 00:00:10.480
+<v Michael Kennedy>Today we move past autocomplete to systems that file PRs, comment in Slack, and even police our CI.
+
+00:00:11.160 --> 00:00:13.940
+<v Michael Kennedy>Hugo Bown Anderson is back to map the new stack.
+
+00:00:14.560 --> 00:00:20.840
+<v Michael Kennedy>When classic PyData still wins, where small local models beat the cloud, and how tests become your specs.
+
+00:00:21.520 --> 00:00:26.300
+<v Michael Kennedy>We dig into cursor and copilot, proactive agents, and practical patterns you can ship this week.
+
+00:00:26.480 --> 00:00:30.900
+<v Michael Kennedy>This episode is all about leveling up your data science workflow, not replacing it.
+
+00:00:31.380 --> 00:00:37.400
+<v Michael Kennedy>This is Talk Python To Me, episode 526, recorded October 7th, 2025.
+
+00:00:55.140 --> 00:00:59.620
+<v Michael Kennedy>Welcome to Talk Python To Me, the number one podcast for Python developers and data scientists.
+
+00:01:00.260 --> 00:01:05.239
+<v Michael Kennedy>This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:05.920 --> 00:01:10.720
+<v Michael Kennedy>Let's connect on social media. You'll find me and Talk Python on Mastodon, BlueSky, and X.
+
+00:01:11.160 --> 00:01:16.380
+<v Michael Kennedy>The social links are all in the show notes. You can find over 10 years of past episodes at
+
+00:01:16.460 --> 00:01:21.300
+<v Michael Kennedy>Talk Python.fm. And if you want to be part of the show, you can join our recording live streams.
+
+00:01:21.800 --> 00:01:25.880
+<v Michael Kennedy>That's right. We live streamed the raw uncut version of each episode on YouTube.
+
+00:01:26.660 --> 00:01:30.980
+<v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:31.500 --> 00:01:35.840
+<v Michael Kennedy>And be sure to subscribe and press the bell so you'll get notified anytime we're recording.
+
+00:01:36.680 --> 00:01:40.380
+<v Michael Kennedy>This episode is sponsored by Posit Connect from the makers of Shiny.
+
+00:01:40.860 --> 00:01:44.740
+<v Michael Kennedy>Publish, share, and deploy all of your data projects that you're creating using Python.
+
+00:01:45.340 --> 00:01:51.420
+<v Michael Kennedy>Streamlit, Dash, Shiny, Bokeh, FastAPI, Flask, Quarto, Reports, Dashboards, and APIs.
+
+00:01:52.320 --> 00:01:53.940
+<v Michael Kennedy>Posit Connect supports all of them.
+
+00:01:54.260 --> 00:01:59.580
+<v Michael Kennedy>Try Posit Connect for free by going to talkpython.fm/posit, P-O-S-I-T.
+
+00:02:00.340 --> 00:02:02.360
+<v Michael Kennedy>And it's brought to you by Nordstellar.
+
+00:02:02.860 --> 00:02:07.200
+<v Michael Kennedy>Nordstellar is a threat exposure management platform from the Nord security family,
+
+00:02:07.480 --> 00:02:12.960
+<v Michael Kennedy>the folks behind NordVPN, that combines dark web intelligence, session hijacking prevention,
+
+00:02:13.640 --> 00:02:17.640
+<v Michael Kennedy>brand and domain abuse detection, and external attack surface management.
+
+00:02:18.230 --> 00:02:23.180
+<v Michael Kennedy>Learn more and get started keeping your team safe at talkpython.fm/nordstellar.
+
+00:02:24.480 --> 00:02:26.520
+<v Michael Kennedy>Hey, I want to take just a minute and talk to you guys.
+
+00:02:26.770 --> 00:02:28.700
+<v Michael Kennedy>I just released a really cool new course called
+
+00:02:28.920 --> 00:02:32.660
+<v Michael Kennedy>Agentic AI Programming for Python Developers and Data Scientists.
+
+00:02:33.620 --> 00:02:35.700
+<v Michael Kennedy>You've heard me mention a couple times on the podcast
+
+00:02:36.120 --> 00:02:41.140
+<v Michael Kennedy>how I've had some incredible success with some of these agentic AI coding tools.
+
+00:02:41.680 --> 00:02:44.680
+<v Michael Kennedy>I hear people talking about how they're not really working for them.
+
+00:02:45.110 --> 00:02:49.300
+<v Michael Kennedy>And then I look at the results that I'm getting and think, wow, that's something that would
+
+00:02:49.300 --> 00:02:50.160
+<v Michael Kennedy>have taken two weeks.
+
+00:02:50.920 --> 00:02:55.220
+<v Michael Kennedy>It's built in two hours and it's well factored and good looking code.
+
+00:02:56.060 --> 00:02:56.540
+<v Michael Kennedy>What gives?
+
+00:02:57.160 --> 00:02:58.200
+<v Michael Kennedy>Why is this difference here?
+
+00:02:58.400 --> 00:03:04.940
+<v Michael Kennedy>Well, I decided to create this course to share all the things that I'm doing with these agentic
+
+00:03:05.060 --> 00:03:09.220
+<v Michael Kennedy>coding tools with the idea of making you as successful and productive as well.
+
+00:03:09.740 --> 00:03:14.700
+<v Michael Kennedy>Yes, I know we're all tired about hearing about how AI is going to change everything for software developers.
+
+00:03:15.480 --> 00:03:20.720
+<v Michael Kennedy>But there are some tools here that will give you truly difference-making levels of productivity.
+
+00:03:21.500 --> 00:03:22.960
+<v Michael Kennedy>And that's what this course is about.
+
+00:03:23.280 --> 00:03:26.840
+<v Michael Kennedy>So check it out at talkpython.fm/agentic AI.
+
+00:03:27.740 --> 00:03:29.120
+<v Michael Kennedy>The link's in your podcast player show notes.
+
+00:03:29.900 --> 00:03:30.580
+<v Michael Kennedy>Let's get to the interview.
+
+00:03:31.660 --> 00:03:32.760
+<v Michael Kennedy>Hey, Hugo. Welcome to Talk Python.
+
+00:03:33.140 --> 00:03:33.780
+<v Hugo Bowne-Anderson>Awesome to have you, man.
+
+00:03:33.900 --> 00:03:36.400
+<v Hugo Bowne-Anderson>Such a pleasure to be here and to be back.
+
+00:03:36.400 --> 00:03:39.240
+<v Hugo Bowne-Anderson>I think this is my third time over the years on Talk Python.
+
+00:03:39.480 --> 00:03:40.960
+<v Michael Kennedy>I do think it is your third time.
+
+00:03:41.300 --> 00:03:43.480
+<v Michael Kennedy>It's been a lot of fun data science things.
+
+00:03:43.820 --> 00:03:46.960
+<v Michael Kennedy>And I think people will see that our conversation,
+
+00:03:47.130 --> 00:03:49.280
+<v Michael Kennedy>the thing that we're going to really focus on this time,
+
+00:03:49.640 --> 00:03:52.040
+<v Michael Kennedy>will have evolved a little bit as the times have changed.
+
+00:03:52.730 --> 00:03:53.640
+<v Michael Kennedy>Since the last couple of years,
+
+00:03:54.140 --> 00:03:57.560
+<v Michael Kennedy>the data science and the entirety of programming has gotten a little different.
+
+00:03:57.700 --> 00:04:00.220
+<v Hugo Bowne-Anderson>Actually, just our conversations over the years,
+
+00:04:00.600 --> 00:04:03.400
+<v Hugo Bowne-Anderson>like kind of art can be a symbol of the trajectory
+
+00:04:03.740 --> 00:04:05.340
+<v Hugo Bowne-Anderson>from like early days of data science,
+
+00:04:05.880 --> 00:04:07.460
+<v Hugo Bowne-Anderson>PyDataStack, all of these amazing things
+
+00:04:07.570 --> 00:04:09.360
+<v Hugo Bowne-Anderson>as it went from academia to industry.
+
+00:04:09.440 --> 00:04:11.480
+<v Hugo Bowne-Anderson>then to, you know, large-scale distributed compute
+
+00:04:11.680 --> 00:04:14.000
+<v Hugo Bowne-Anderson>when I came and talked about Dask and Coiled.
+
+00:04:14.040 --> 00:04:16.859
+<v Hugo Bowne-Anderson>And now a couple of years after our quote-unquote GPT moment
+
+00:04:17.160 --> 00:04:19.280
+<v Hugo Bowne-Anderson>and our ChatGPT moment and our stable diffusion moment
+
+00:04:19.359 --> 00:04:22.320
+<v Hugo Bowne-Anderson>here to talk about LLM's foundation models meet data science.
+
+00:04:22.520 --> 00:04:22.800
+<v Michael Kennedy>That's right.
+
+00:04:22.940 --> 00:04:26.340
+<v Michael Kennedy>We've gone from local machine to cloud, AI.
+
+00:04:27.060 --> 00:04:27.360
+<v Michael Kennedy>Wow.
+
+00:04:27.540 --> 00:04:29.400
+<v Michael Kennedy>I do see that we'll actually maybe be back.
+
+00:04:29.700 --> 00:04:34.560
+<v Michael Kennedy>I see a world where we build together smaller models
+
+00:04:34.760 --> 00:04:36.500
+<v Michael Kennedy>that maybe run locally, doing other things,
+
+00:04:36.960 --> 00:04:41.260
+<v Michael Kennedy>Maybe some servers, connect MCP servers, connecting all these things, like little special agents.
+
+00:04:41.800 --> 00:04:44.160
+<v Michael Kennedy>That's going to be something we can potentially dive into.
+
+00:04:44.460 --> 00:04:44.740
+<v Michael Kennedy>We'll see.
+
+00:04:44.900 --> 00:04:46.720
+<v Michael Kennedy>But I think the arc is not done.
+
+00:04:46.880 --> 00:04:50.880
+<v Hugo Bowne-Anderson>The other thing that comes to mind is I do, and we'll get into this with AI-assisted programming,
+
+00:04:50.970 --> 00:04:55.560
+<v Hugo Bowne-Anderson>which I think superpowers people who know what they're doing, but may not be great for beginners.
+
+00:04:56.160 --> 00:05:02.119
+<v Hugo Bowne-Anderson>I do imagine we might have boot camps or classes where you're in a cave and no access to AI
+
+00:05:02.120 --> 00:05:07.060
+<v Hugo Bowne-Anderson>or the internet and you learn, you actually learn to code on a laptop without any of this stuff.
+
+00:05:07.180 --> 00:05:12.060
+<v Michael Kennedy>Yeah. There's going to be a local PyPI and be a local set of docs. You know, there was this really
+
+00:05:12.180 --> 00:05:18.300
+<v Michael Kennedy>cool app. Gosh, I've covered on Python bytes, the news podcast I do. And I wish I could remember,
+
+00:05:18.520 --> 00:05:24.380
+<v Michael Kennedy>but what it would do is it had like hundreds, maybe thousands of different projects like Flask
+
+00:05:24.660 --> 00:05:30.219
+<v Michael Kennedy>or Tailwind or whatever, Span Technologies. And you could click it and say, I want to have Flask
+
+00:05:30.480 --> 00:05:32.840
+<v Michael Kennedy>3.1 offline, get me the docs.
+
+00:05:33.260 --> 00:05:34.580
+<v Michael Kennedy>And you could create like a catalog
+
+00:05:34.860 --> 00:05:36.300
+<v Michael Kennedy>of all these different projects you're using,
+
+00:05:36.580 --> 00:05:38.940
+<v Michael Kennedy>all offline searchable docs across.
+
+00:05:39.120 --> 00:05:39.220
+<v Michael Kennedy>Amazing.
+
+00:05:39.560 --> 00:05:41.400
+<v Michael Kennedy>I feel like something like that might come back.
+
+00:05:41.520 --> 00:05:41.940
+<v Michael Kennedy>You know what I mean?
+
+00:05:42.060 --> 00:05:42.800
+<v Hugo Bowne-Anderson>It's funny you mentioned that
+
+00:05:42.800 --> 00:05:44.320
+<v Hugo Bowne-Anderson>because I was chatting with Innes Montani
+
+00:05:44.740 --> 00:05:47.100
+<v Hugo Bowne-Anderson>of spaCy and Prodigy fame the other night.
+
+00:05:47.180 --> 00:05:47.780
+<v Hugo Bowne-Anderson>She's here in Sydney.
+
+00:05:48.260 --> 00:05:50.280
+<v Hugo Bowne-Anderson>And she reminded me that Sebastian Ramirez
+
+00:05:50.760 --> 00:05:51.840
+<v Hugo Bowne-Anderson>of FastAPI,
+
+00:05:52.240 --> 00:05:53.860
+<v Hugo Bowne-Anderson>when he was building FastAPI originally,
+
+00:05:53.980 --> 00:05:55.900
+<v Hugo Bowne-Anderson>I think what she reminded me was
+
+00:05:56.200 --> 00:05:58.000
+<v Hugo Bowne-Anderson>they didn't have great internet access
+
+00:05:58.300 --> 00:05:59.100
+<v Hugo Bowne-Anderson>where they were.
+
+00:05:59.420 --> 00:06:04.480
+<v Hugo Bowne-Anderson>So they did download a lot of things at very slow speeds, then build everything locally.
+
+00:06:04.680 --> 00:06:07.000
+<v Michael Kennedy>I'm reliving that, by the way, in a very weird way.
+
+00:06:07.280 --> 00:06:08.460
+<v Michael Kennedy>My fiber modem died.
+
+00:06:08.570 --> 00:06:12.780
+<v Michael Kennedy>And if anybody watches the video, they'll see that I'm actually in the library here, which is great.
+
+00:06:12.830 --> 00:06:13.960
+<v Michael Kennedy>I preserve a little private room.
+
+00:06:13.960 --> 00:06:14.980
+<v Michael Kennedy>I got high speed internet here.
+
+00:06:15.380 --> 00:06:18.080
+<v Michael Kennedy>But at home, I'm tethered with one bar of LTE.
+
+00:06:18.230 --> 00:06:20.540
+<v Michael Kennedy>So anything I do is at like 30 kilobits.
+
+00:06:20.750 --> 00:06:22.080
+<v Michael Kennedy>And it brings me back to my youth.
+
+00:06:22.360 --> 00:06:24.480
+<v Michael Kennedy>But boy, you got to decide what you want to do next.
+
+00:06:24.620 --> 00:06:24.960
+<v Michael Kennedy>That's it.
+
+00:06:25.160 --> 00:06:25.220
+<v Michael Kennedy>Yeah.
+
+00:06:25.450 --> 00:06:28.120
+<v Michael Kennedy>So I do, circling back and closing this up,
+
+00:06:28.240 --> 00:06:31.780
+<v Michael Kennedy>I do think this true learning the code thing is both,
+
+00:06:32.020 --> 00:06:33.560
+<v Michael Kennedy>it's going to be something that comes back around.
+
+00:06:33.650 --> 00:06:38.080
+<v Michael Kennedy>I think it's actually a challenge with all the tools and cheats.
+
+00:06:38.250 --> 00:06:41.700
+<v Michael Kennedy>I don't consider them bad cheats, but the things that can do the work for you,
+
+00:06:41.970 --> 00:06:44.100
+<v Michael Kennedy>it requires a lot of willpower to stay focused.
+
+00:06:44.210 --> 00:06:47.500
+<v Michael Kennedy>And I do think it's going to be kind of a kobold moment as well,
+
+00:06:47.780 --> 00:06:49.700
+<v Michael Kennedy>where somewhere down the line, people are going to be like,
+
+00:06:49.780 --> 00:06:52.740
+<v Michael Kennedy>we need to just get some people that used to type this stuff in by hand.
+
+00:06:53.080 --> 00:06:55.480
+<v Michael Kennedy>And we need them to look at it and figure out why this doesn't work.
+
+00:06:55.600 --> 00:06:56.060
+<v Hugo Bowne-Anderson>Without a doubt.
+
+00:06:56.240 --> 00:06:57.880
+<v Hugo Bowne-Anderson>And, you know, learn Python the hard way.
+
+00:06:58.080 --> 00:06:58.980
+<v Hugo Bowne-Anderson>Learn X the hard way.
+
+00:06:59.060 --> 00:07:02.320
+<v Hugo Bowne-Anderson>Like sometimes most things you got to do the work, right?
+
+00:07:02.540 --> 00:07:03.320
+<v Michael Kennedy>You definitely do.
+
+00:07:03.720 --> 00:07:08.180
+<v Michael Kennedy>Well, Hugo, before we get into the topic too much, quick introduction on yourself.
+
+00:07:08.700 --> 00:07:09.140
+<v Michael Kennedy>Who are you?
+
+00:07:09.180 --> 00:07:12.620
+<v Michael Kennedy>I know you've been on the show a few times, but it's spanned many years and I say it often,
+
+00:07:12.800 --> 00:07:13.760
+<v Michael Kennedy>but it's always worth repeating.
+
+00:07:13.860 --> 00:07:18.260
+<v Michael Kennedy>And like 50% of the people in the Python community are new over the last two years.
+
+00:07:18.340 --> 00:07:21.020
+<v Michael Kennedy>Like they've only been here two years or less, which blows my mind.
+
+00:07:21.260 --> 00:07:23.640
+<v Michael Kennedy>So those people probably want to listen to the podcast before they got into Python.
+
+00:07:23.840 --> 00:07:24.200
+<v Michael Kennedy>Who are you?
+
+00:07:24.340 --> 00:07:26.160
+<v Hugo Bowne-Anderson>So firstly, what is up Python community?
+
+00:07:26.680 --> 00:07:27.960
+<v Hugo Bowne-Anderson>Clearly, I'm a huge fan of Python.
+
+00:07:28.180 --> 00:07:28.800
+<v Hugo Bowne-Anderson>Used it for many years.
+
+00:07:28.930 --> 00:07:29.260
+<v Hugo Bowne-Anderson>Love it.
+
+00:07:29.540 --> 00:07:32.980
+<v Hugo Bowne-Anderson>Background many moons ago in scientific research, biology, math, physics.
+
+00:07:33.640 --> 00:07:37.600
+<v Hugo Bowne-Anderson>Was working in academic research at Yale University, New Haven, Connecticut.
+
+00:07:37.900 --> 00:07:39.980
+<v Hugo Bowne-Anderson>Living in New York City just over a decade ago.
+
+00:07:40.350 --> 00:07:44.160
+<v Hugo Bowne-Anderson>The data science ML meetups, hackathons there blew my mind so much.
+
+00:07:44.560 --> 00:07:48.060
+<v Hugo Bowne-Anderson>Moved to industry, a small startup at the time, Datacamp.
+
+00:07:48.380 --> 00:07:51.760
+<v Hugo Bowne-Anderson>Worked on curriculum, education, internal data science product.
+
+00:07:52.340 --> 00:07:53.380
+<v Hugo Bowne-Anderson>Wore many hats, as you do.
+
+00:07:53.740 --> 00:07:56.160
+<v Hugo Bowne-Anderson>And worked a lot on Pythonic education there.
+
+00:07:56.560 --> 00:07:59.560
+<v Hugo Bowne-Anderson>Since then, I've been working in a mixture of DevRel, marketing, product.
+
+00:08:00.010 --> 00:08:04.680
+<v Hugo Bowne-Anderson>A year and a half ago on wonderful projects, such as Dask at Coiled with Matt Rocklin,
+
+00:08:04.920 --> 00:08:08.480
+<v Hugo Bowne-Anderson>then Metaflow out of Netflix with the wonderful team at Outer Bounds.
+
+00:08:08.910 --> 00:08:12.160
+<v Hugo Bowne-Anderson>A year and a half ago or so, space was so exciting, man.
+
+00:08:12.250 --> 00:08:13.320
+<v Hugo Bowne-Anderson>I decided to go freelance.
+
+00:08:13.970 --> 00:08:23.320
+<v Hugo Bowne-Anderson>And so I mixed my time, essentially helping people build, ship, and maintain AI, LLM, ML, data-powered products more generally.
+
+00:08:23.460 --> 00:08:24.740
+<v Hugo Bowne-Anderson>I do this through consulting.
+
+00:08:25.120 --> 00:08:26.600
+<v Hugo Bowne-Anderson>I do it through advising.
+
+00:08:27.180 --> 00:08:30.300
+<v Hugo Bowne-Anderson>I do it through education and developer relations.
+
+00:08:30.360 --> 00:08:35.479
+<v Hugo Bowne-Anderson>So helping open source frameworks and products reach developers and getting material that
+
+00:08:35.640 --> 00:08:35.979
+<v Hugo Bowne-Anderson>helps them.
+
+00:08:36.159 --> 00:08:40.940
+<v Hugo Bowne-Anderson>My former colleague and boss at Outer Bounds, Vilay, who really gets developer relations,
+
+00:08:41.560 --> 00:08:44.420
+<v Hugo Bowne-Anderson>refers to DevRel as the wisdom layer.
+
+00:08:44.580 --> 00:08:46.980
+<v Hugo Bowne-Anderson>And he puts it firmly beside product as a pillar.
+
+00:08:47.200 --> 00:08:52.879
+<v Hugo Bowne-Anderson>And I love that because I think a lot of the time we consider education or DevRel as a
+
+00:08:52.900 --> 00:08:58.260
+<v Hugo Bowne-Anderson>necessary thing you have to do as opposed to being at a foundational pillar. And once again,
+
+00:08:58.320 --> 00:09:02.780
+<v Hugo Bowne-Anderson>that's why I'm in such admiration of the work you do in bringing so many resources to the community
+
+00:09:03.140 --> 00:09:09.240
+<v Michael Kennedy>at large. Thank you. And foreshadowing a little bit, I would like to kind of reinforce that quote
+
+00:09:09.240 --> 00:09:15.180
+<v Michael Kennedy>you just said. It's the wisdom layer. Like as data scientists, your job is to provide insight
+
+00:09:15.780 --> 00:09:22.139
+<v Michael Kennedy>and knowledge and trends, forecasting. Developers, our job is to provide solutions and things that
+
+00:09:22.160 --> 00:09:27.200
+<v Michael Kennedy>that we can use apps and tools and whatnot. And I think a lot of us, myself included,
+
+00:09:27.660 --> 00:09:32.260
+<v Michael Kennedy>get tied down and like, oh, I'm really good at coding and I'm good at this library.
+
+00:09:32.780 --> 00:09:38.580
+<v Michael Kennedy>And we can kind of forget that like the real first tier job of ours is to provide answers
+
+00:09:39.240 --> 00:09:43.840
+<v Michael Kennedy>and solutions and apps. And I think a lot of the pushback on AI is like, it's taken my coding.
+
+00:09:44.140 --> 00:09:48.820
+<v Hugo Bowne-Anderson>One way I think about it is it has taken my coding in some ways, but as we'll get to,
+
+00:09:49.140 --> 00:09:54.200
+<v Hugo Bowne-Anderson>I never particularly enjoyed writing, love Pandas, never particularly enjoyed writing
+
+00:09:54.460 --> 00:09:56.660
+<v Hugo Bowne-Anderson>Pandas code, for example, incredible tool.
+
+00:09:56.940 --> 00:10:01.440
+<v Hugo Bowne-Anderson>But if I can help me write my Pandas code, I read it, make sure it's all good in the
+
+00:10:01.540 --> 00:10:01.660
+<v Hugo Bowne-Anderson>hood.
+
+00:10:01.940 --> 00:10:03.580
+<v Hugo Bowne-Anderson>And then I get to focus on building systems.
+
+00:10:04.200 --> 00:10:05.260
+<v Michael Kennedy>I think that's a huge win.
+
+00:10:05.380 --> 00:10:05.900
+<v Michael Kennedy>100%.
+
+00:10:06.100 --> 00:10:10.340
+<v Michael Kennedy>I would be remiss to not give a little shout out to a couple of things that you have done
+
+00:10:10.440 --> 00:10:11.040
+<v Michael Kennedy>or are doing.
+
+00:10:11.520 --> 00:10:12.560
+<v Michael Kennedy>Take it chronologically.
+
+00:10:13.080 --> 00:10:17.900
+<v Michael Kennedy>A while ago, you worked on the fundamentals of Dask, high performance data science course
+
+00:10:18.000 --> 00:10:18.660
+<v Michael Kennedy>over at Talk Python.
+
+00:10:18.880 --> 00:10:19.960
+<v Michael Kennedy>This course is 100% free.
+
+00:10:20.300 --> 00:10:21.860
+<v Michael Kennedy>People want to dive into it and learn from you.
+
+00:10:22.080 --> 00:10:23.220
+<v Michael Kennedy>They can absolutely take it.
+
+00:10:23.300 --> 00:10:24.240
+<v Hugo Bowne-Anderson>I might even take it now.
+
+00:10:24.300 --> 00:10:24.540
+<v Hugo Bowne-Anderson>It's free.
+
+00:10:24.660 --> 00:10:25.520
+<v Michael Kennedy>It's just over an hour.
+
+00:10:26.060 --> 00:10:29.440
+<v Michael Kennedy>Yeah, people can drop in and I'll be sure to put a link in the show notes for that.
+
+00:10:29.560 --> 00:10:30.540
+<v Michael Kennedy>So that's awesome.
+
+00:10:30.700 --> 00:10:33.020
+<v Hugo Bowne-Anderson>That was really fun to build with you as well, Michael.
+
+00:10:33.240 --> 00:10:35.600
+<v Hugo Bowne-Anderson>That was during the early days of COVID we were working on that.
+
+00:10:35.780 --> 00:10:36.440
+<v Hugo Bowne-Anderson>So, you know.
+
+00:10:36.580 --> 00:10:37.360
+<v Michael Kennedy>What else do we have to do?
+
+00:10:37.440 --> 00:10:40.060
+<v Michael Kennedy>No, it was really great working on it with you as well.
+
+00:10:40.300 --> 00:10:41.200
+<v Michael Kennedy>I appreciate that tons.
+
+00:10:41.680 --> 00:10:47.740
+<v Michael Kennedy>And then you since then have started a data podcast called Vanishing Gradients.
+
+00:10:47.980 --> 00:10:48.140
+<v Hugo Bowne-Anderson>Exactly.
+
+00:10:48.500 --> 00:10:49.140
+<v Michael Kennedy>Tell people about that.
+
+00:10:49.280 --> 00:10:51.640
+<v Hugo Bowne-Anderson>So this is a podcast and I still call it a data podcast.
+
+00:10:52.330 --> 00:10:54.820
+<v Hugo Bowne-Anderson>Although a lot of people like you have to call it AI, Hugo.
+
+00:10:54.930 --> 00:10:56.240
+<v Hugo Bowne-Anderson>And AI is data.
+
+00:10:56.550 --> 00:11:00.140
+<v Hugo Bowne-Anderson>And as we'll get to a lot of the principles in building AI powered products are the same.
+
+00:11:00.400 --> 00:11:03.620
+<v Hugo Bowne-Anderson>Modulo implementation details of building data powered products.
+
+00:11:03.800 --> 00:11:08.900
+<v Hugo Bowne-Anderson>It's a podcast where I talk with industry practitioners and builders about what they're
+
+00:11:09.020 --> 00:11:13.319
+<v Hugo Bowne-Anderson>doing in the space, how they're building, and essentially trying to help propagate knowledge
+
+00:11:13.720 --> 00:11:20.000
+<v Hugo Bowne-Anderson>from the bleeding edge back to builders and leaders in the space. So recently had a conversation
+
+00:11:20.460 --> 00:11:26.360
+<v Hugo Bowne-Anderson>with Hamil Hussain there, who he's the evals guy, among other things, but all about the eval space
+
+00:11:26.360 --> 00:11:32.820
+<v Hugo Bowne-Anderson>and how you can use evaluation in the LLM powered software development lifecycle to improve your
+
+00:11:32.890 --> 00:11:40.220
+<v Hugo Bowne-Anderson>product. I've spoken with Shell Genteman at NASA, conversations with Jeremy Howard. So one of the
+
+00:11:40.020 --> 00:11:45.360
+<v Hugo Bowne-Anderson>things, as I'm sure you do, I love about podcasting is I get to invite people I admire and who I think
+
+00:11:45.360 --> 00:11:50.500
+<v Hugo Bowne-Anderson>are awesome to chat about stuff and then share it with the public. So that's the rationale there.
+
+00:11:50.680 --> 00:11:56.360
+<v Hugo Bowne-Anderson>But it's really to help people propagate knowledge, wisdom, and skills back the adoption curve.
+
+00:11:56.820 --> 00:12:00.280
+<v Michael Kennedy>Along the adoption curve. That's good work. Who should listen to it? Beginners, experts,
+
+00:12:00.800 --> 00:12:05.299
+<v Michael Kennedy>data people, programmers? Everyone should listen to it. Everyone who's interested in building and
+
+00:12:05.320 --> 00:12:11.020
+<v Hugo Bowne-Anderson>shipping data-powered stuff. And the way I actually chat about it with guests is the first third of
+
+00:12:11.160 --> 00:12:15.960
+<v Hugo Bowne-Anderson>any conversation, I want everyone to understand, everyone who's somewhat technical. The middle,
+
+00:12:16.380 --> 00:12:20.760
+<v Hugo Bowne-Anderson>we can go a bit deeper. And the third is a free-for-all. I definitely encourage everyone to
+
+00:12:21.160 --> 00:12:25.960
+<v Hugo Bowne-Anderson>jump in. And we've got specific episodes on evals, of course, and that type of stuff.
+
+00:12:26.170 --> 00:12:31.239
+<v Hugo Bowne-Anderson>But we also have industry-specific episodes, such as chatting about what was happening in the
+
+00:12:31.260 --> 00:12:36.740
+<v Hugo Bowne-Anderson>early days of shipping LLM-powered software at Honeycomb or at NASA and these types of places.
+
+00:12:36.960 --> 00:12:41.500
+<v Michael Kennedy>That is one of the little secrets of being podcast hosts is you get to talk to people about
+
+00:12:41.880 --> 00:12:45.080
+<v Michael Kennedy>amazing stuff. You're like, huh, it'd be really cool to talk to the people that made that
+
+00:12:45.400 --> 00:12:48.700
+<v Michael Kennedy>Fusion breakthrough. They did Python. Why don't we invite them? And don't draw by,
+
+00:12:48.840 --> 00:12:51.660
+<v Hugo Bowne-Anderson>you know, that's amazing. And I get like a lot of my friends who work in the space connect me
+
+00:12:51.660 --> 00:12:55.840
+<v Hugo Bowne-Anderson>with other people. So I'm actually chatting with a data leader at Mozilla and then the VP of
+
+00:12:55.960 --> 00:12:59.660
+<v Hugo Bowne-Anderson>learning at Duolingo. So we're going to have a lot of really fun episodes coming up. What's up with
+
+00:12:59.680 --> 00:13:03.040
+<v Michael Kennedy>the name, Vanishing Gradients? Where'd that come from? There's the Vanishing Gradient problem
+
+00:13:04.150 --> 00:13:08.420
+<v Hugo Bowne-Anderson>in deep learning. So when you do stochastic gradient descent, you compute gradients and
+
+00:13:08.650 --> 00:13:14.420
+<v Hugo Bowne-Anderson>climb down in order to optimize neural networks. And there's a challenge that sometimes gradients
+
+00:13:14.840 --> 00:13:20.040
+<v Hugo Bowne-Anderson>vanish and you stop learning. So the rationale was, what happens when you stop learning? And
+
+00:13:20.140 --> 00:13:24.300
+<v Hugo Bowne-Anderson>let's bring back the idea of learning in this space. The opposite, of course, is the exploding
+
+00:13:24.520 --> 00:13:28.700
+<v Hugo Bowne-Anderson>gradients problem, which I also considered calling it, where the gradients just explode, of course,
+
+00:13:29.020 --> 00:13:30.700
+<v Hugo Bowne-Anderson>But we went with vanishing for that reason.
+
+00:13:30.900 --> 00:13:31.420
+<v Michael Kennedy>I like that.
+
+00:13:31.540 --> 00:13:33.860
+<v Michael Kennedy>That's a very clever, very subtle.
+
+00:13:34.360 --> 00:13:34.440
+<v Michael Kennedy>Nice.
+
+00:13:34.920 --> 00:13:37.840
+<v Michael Kennedy>So let's talk data science in 2025.
+
+00:13:38.760 --> 00:13:40.700
+<v Michael Kennedy>And to be clear, I didn't ask,
+
+00:13:40.860 --> 00:13:43.100
+<v Michael Kennedy>let's talk using AI for data science.
+
+00:13:44.040 --> 00:13:45.580
+<v Michael Kennedy>Let's talk data science in 2025.
+
+00:13:46.060 --> 00:13:48.020
+<v Michael Kennedy>And surely, I think there's two things here.
+
+00:13:48.020 --> 00:13:49.300
+<v Michael Kennedy>I think there's some really interesting,
+
+00:13:49.860 --> 00:13:51.620
+<v Michael Kennedy>what I don't know how we want to think about,
+
+00:13:51.720 --> 00:13:54.800
+<v Michael Kennedy>like pure programming libraries and tools
+
+00:13:54.860 --> 00:13:55.660
+<v Michael Kennedy>that are super powerful.
+
+00:13:56.080 --> 00:13:58.180
+<v Michael Kennedy>And we could give a quick shout out to some of them.
+
+00:13:58.480 --> 00:14:03.940
+<v Michael Kennedy>But then also, anytime you're exploring data, using some of these LLMs, especially the agentic
+
+00:14:04.160 --> 00:14:05.460
+<v Michael Kennedy>tooling, it's a game changer.
+
+00:14:05.900 --> 00:14:07.000
+<v Michael Kennedy>So let's start with the first one.
+
+00:14:07.500 --> 00:14:12.640
+<v Michael Kennedy>What tools, you know, things like polars maybe or whatever is like jumping out at you over
+
+00:14:12.640 --> 00:14:14.880
+<v Michael Kennedy>the last year or so that's like, wow.
+
+00:14:14.990 --> 00:14:19.960
+<v Hugo Bowne-Anderson>I chatted about this on Vanishing Gradients with Akshay Agrawal, who built Marimo and
+
+00:14:20.100 --> 00:14:23.360
+<v Hugo Bowne-Anderson>develops Marimo, which I encourage everyone to check out.
+
+00:14:23.520 --> 00:14:28.640
+<v Hugo Bowne-Anderson>So let's actually rewind slightly and think about what we've been using over the past decade,
+
+00:14:29.200 --> 00:14:29.640
+<v Hugo Bowne-Anderson>plus plus.
+
+00:14:29.820 --> 00:14:37.400
+<v Hugo Bowne-Anderson>And it's the PyData stack, Jupyter Notebooks, Pandas, SQL, SQLite databases, and in production,
+
+00:14:37.400 --> 00:14:40.220
+<v Hugo Bowne-Anderson>maybe Postgres and these types of things.
+
+00:14:40.500 --> 00:14:42.020
+<v Hugo Bowne-Anderson>And how has this evolved now?
+
+00:14:42.160 --> 00:14:46.260
+<v Hugo Bowne-Anderson>What are modern, really cutting edge tools that we use in similar ways?
+
+00:14:46.280 --> 00:14:47.480
+<v Hugo Bowne-Anderson>You mentioned polars.
+
+00:14:47.680 --> 00:14:51.860
+<v Hugo Bowne-Anderson>I totally agree that this is something we're seeing a lot of activity on and a lot of use
+
+00:14:52.000 --> 00:14:52.100
+<v Hugo Bowne-Anderson>on.
+
+00:14:52.200 --> 00:14:54.720
+<v Hugo Bowne-Anderson>On the database side, we've got DuckDB, right?
+
+00:14:54.920 --> 00:14:56.100
+<v Michael Kennedy>DuckDB is making a huge impact.
+
+00:14:56.380 --> 00:14:59.360
+<v Hugo Bowne-Anderson>Beautiful to use, but it's so fast as well, right?
+
+00:14:59.780 --> 00:15:01.580
+<v Hugo Bowne-Anderson>And I mean, and that's what you want there.
+
+00:15:01.750 --> 00:15:03.380
+<v Hugo Bowne-Anderson>And then on the literate programming side,
+
+00:15:03.660 --> 00:15:06.440
+<v Hugo Bowne-Anderson>you've got Marimo, which I'm a huge fan of.
+
+00:15:08.620 --> 00:15:09.880
+<v Michael Kennedy>This portion of Talk Python To Me
+
+00:15:09.980 --> 00:15:11.380
+<v Michael Kennedy>is brought to you by the folks at Posit.
+
+00:15:11.820 --> 00:15:13.420
+<v Michael Kennedy>Posit has made a huge investment
+
+00:15:13.490 --> 00:15:14.700
+<v Michael Kennedy>in the Python community lately.
+
+00:15:15.320 --> 00:15:16.640
+<v Michael Kennedy>Known originally for RStudio,
+
+00:15:17.120 --> 00:15:18.880
+<v Michael Kennedy>they've been building out a suite of tools
+
+00:15:18.990 --> 00:15:20.500
+<v Michael Kennedy>and services for Team Python.
+
+00:15:21.240 --> 00:15:24.480
+<v Michael Kennedy>Over the past few years, we've all learned some pretty scary terms.
+
+00:15:25.380 --> 00:15:29.420
+<v Michael Kennedy>Hypersquatting, supply chain attack, obfuscated code, and more.
+
+00:15:30.040 --> 00:15:33.760
+<v Michael Kennedy>These all orbit around the idea that when you install Python packages,
+
+00:15:34.280 --> 00:15:37.840
+<v Michael Kennedy>you're effectively running arbitrary code off the internet on your dev machine,
+
+00:15:38.560 --> 00:15:40.260
+<v Michael Kennedy>and usually even on your servers.
+
+00:15:41.040 --> 00:15:42.260
+<v Michael Kennedy>The thought alone makes me shudder,
+
+00:15:42.660 --> 00:15:46.440
+<v Michael Kennedy>and this doesn't even touch the reproducibility issues surrounding external packages.
+
+00:15:47.200 --> 00:15:48.460
+<v Michael Kennedy>But there are tools to help.
+
+00:15:49.080 --> 00:15:51.900
+<v Michael Kennedy>Posit Package Manager can solve both problems for you.
+
+00:15:52.730 --> 00:15:56.020
+<v Michael Kennedy>Think of Posit Package Manager as your personal package concierge.
+
+00:15:56.400 --> 00:16:00.760
+<v Michael Kennedy>You use it to build your own package repositories within your firewall that keep your project safe.
+
+00:16:00.930 --> 00:16:06.020
+<v Michael Kennedy>You can upload your own internal packages to share or import packages directly from PyPI.
+
+00:16:06.680 --> 00:16:12.060
+<v Michael Kennedy>Your team members can install from these repos in normal ways using tools like pip, Poetry, and uv.
+
+00:16:12.760 --> 00:16:14.900
+<v Michael Kennedy>Posit Package Manager can help you manage updates,
+
+00:16:15.380 --> 00:16:16.500
+<v Michael Kennedy>ensuring you're using the latest,
+
+00:16:17.020 --> 00:16:19.040
+<v Michael Kennedy>most secure versions of your packages.
+
+00:16:19.660 --> 00:16:22.940
+<v Michael Kennedy>But it also takes point-in-time snapshots of your repos,
+
+00:16:23.220 --> 00:16:25.060
+<v Michael Kennedy>which you can use to rerun your code
+
+00:16:25.580 --> 00:16:26.840
+<v Michael Kennedy>reproducibly in the future.
+
+00:16:27.360 --> 00:16:29.340
+<v Michael Kennedy>Posit Package Manager reports on packages
+
+00:16:29.600 --> 00:16:31.380
+<v Michael Kennedy>with known CVEs and other vulnerabilities
+
+00:16:31.860 --> 00:16:33.460
+<v Michael Kennedy>so you can keep ahead of threats.
+
+00:16:34.080 --> 00:16:35.920
+<v Michael Kennedy>And if you need the highest level of security,
+
+00:16:36.100 --> 00:16:37.920
+<v Michael Kennedy>you can even run Posit Package Manager
+
+00:16:38.320 --> 00:16:39.440
+<v Michael Kennedy>in air-gapped environments.
+
+00:16:40.060 --> 00:16:41.420
+<v Michael Kennedy>If you work on a data science team
+
+00:16:41.520 --> 00:16:42.460
+<v Michael Kennedy>where security matters,
+
+00:16:42.660 --> 00:16:46.020
+<v Michael Kennedy>You owe it to you and your org to check out Posit Package Manager.
+
+00:16:46.600 --> 00:16:52.440
+<v Michael Kennedy>Visit talkpython.fm/ppm today and get a three-month free trial to see if it's a good fit.
+
+00:16:52.640 --> 00:16:54.900
+<v Michael Kennedy>That's talkpython.fm/ppm.
+
+00:16:55.460 --> 00:16:57.160
+<v Michael Kennedy>The link is in your podcast player's show notes.
+
+00:16:57.740 --> 00:16:59.160
+<v Michael Kennedy>Thank you to Posit for supporting the show.
+
+00:17:00.520 --> 00:17:04.280
+<v Hugo Bowne-Anderson>I still use Jupyter Notebooks, but one thing Marimo affords me,
+
+00:17:04.720 --> 00:17:08.339
+<v Hugo Bowne-Anderson>because it's actually a.py file as well, you can convert them.
+
+00:17:08.520 --> 00:17:09.900
+<v Hugo Bowne-Anderson>Well, they're essentially scripts as well.
+
+00:17:09.959 --> 00:17:12.860
+<v Hugo Bowne-Anderson>So the notebook to production story is really interesting there.
+
+00:17:13.040 --> 00:17:15.740
+<v Michael Kennedy>I think Marimo is super interesting.
+
+00:17:16.199 --> 00:17:20.160
+<v Michael Kennedy>I think when I look at it, when I see people working with it or when I work with it, the
+
+00:17:20.310 --> 00:17:25.400
+<v Michael Kennedy>limited extent to which I have, it just looks smooth and polished and modern.
+
+00:17:26.040 --> 00:17:29.380
+<v Michael Kennedy>And I don't know, I just, when I use it, I feel, feel like it's something great.
+
+00:17:29.780 --> 00:17:34.960
+<v Michael Kennedy>It also solves the problem that while JupyterNetbooks or JupyterNetbooks, JupyterLab, whatever,
+
+00:17:35.060 --> 00:17:42.120
+<v Michael Kennedy>in general is like an incredible tool for data exploration and presenting data. It has this,
+
+00:17:42.560 --> 00:17:47.920
+<v Michael Kennedy>this crazy implicit go-to sort of sequence, right? Like if you don't just go run all cells
+
+00:17:48.440 --> 00:17:52.720
+<v Michael Kennedy>and you start bouncing around, you end up potentially running stuff out of order or
+
+00:17:52.820 --> 00:17:56.820
+<v Michael Kennedy>skipping a step that would have made a different answer, the step below. And that's, that's real
+
+00:17:56.940 --> 00:18:02.939
+<v Michael Kennedy>dangerous. And so Marimo uses the abstract syntax tree to look at dependencies across
+
+00:18:02.940 --> 00:18:07.340
+<v Michael Kennedy>cells and make sure they run in order, which I think is an underappreciated benefit.
+
+00:18:07.740 --> 00:18:08.500
+<v Michael Kennedy>It's like, oh, that's kind of nice.
+
+00:18:08.650 --> 00:18:11.360
+<v Michael Kennedy>Like, no, like, do you want the wrong answer or the right answer?
+
+00:18:11.540 --> 00:18:13.860
+<v Michael Kennedy>This is really important in data science and science in general.
+
+00:18:14.040 --> 00:18:14.320
+<v Hugo Bowne-Anderson>You're right.
+
+00:18:14.470 --> 00:18:18.920
+<v Hugo Bowne-Anderson>My understanding is it uses the AST to build a DAG of cells and execute some.
+
+00:18:19.280 --> 00:18:24.220
+<v Hugo Bowne-Anderson>And what that means is, yeah, and it means you can't redefine something in a cell below,
+
+00:18:24.400 --> 00:18:27.000
+<v Hugo Bowne-Anderson>but it'll give you a scratch pad to do so if you want to.
+
+00:18:27.160 --> 00:18:30.060
+<v Hugo Bowne-Anderson>Now, I just want to say that's fantastic for a lot of cases.
+
+00:18:30.500 --> 00:18:34.520
+<v Hugo Bowne-Anderson>There are cases when you just want to explore an experiment where Jupyter notebooks like
+
+00:18:35.140 --> 00:18:35.860
+<v Hugo Bowne-Anderson>absolutely excel.
+
+00:18:36.110 --> 00:18:38.180
+<v Hugo Bowne-Anderson>So it's not an either or here as well.
+
+00:18:38.430 --> 00:18:43.440
+<v Hugo Bowne-Anderson>And I do want to say Jupyter notebooks, in all honesty, like get a bunch of hate for that.
+
+00:18:43.660 --> 00:18:45.280
+<v Hugo Bowne-Anderson>And neither you nor I feel that way.
+
+00:18:45.310 --> 00:18:49.620
+<v Hugo Bowne-Anderson>But I just want to be very explicit that that's not what we're saying here at all.
+
+00:18:49.780 --> 00:18:51.440
+<v Michael Kennedy>Yeah, I have a lot of reverence for notebooks.
+
+00:18:52.340 --> 00:18:57.600
+<v Michael Kennedy>Not only did they change the game for data science in general, but they changed it for
+
+00:18:57.810 --> 00:18:57.940
+<v Michael Kennedy>Python.
+
+00:18:58.620 --> 00:19:02.340
+<v Michael Kennedy>So if you look at the popularity and the people participating in Python,
+
+00:19:02.650 --> 00:19:06.660
+<v Michael Kennedy>like one of its really powerful aspects is people are coming from all these different angles
+
+00:19:06.930 --> 00:19:10.820
+<v Michael Kennedy>with different ideas and perspectives and different tools they want to build and so on.
+
+00:19:10.860 --> 00:19:11.780
+<v Michael Kennedy>That's made it so rich.
+
+00:19:11.950 --> 00:19:17.840
+<v Michael Kennedy>And that started basically in 2012 with the PyData stack with notebooks and all of that.
+
+00:19:18.080 --> 00:19:21.820
+<v Hugo Bowne-Anderson>Yeah, I remember the first notebook I opened was called an IPython notebook,
+
+00:19:22.100 --> 00:19:23.340
+<v Hugo Bowne-Anderson>not even a Jupyter notebook.
+
+00:19:23.470 --> 00:19:27.020
+<v Hugo Bowne-Anderson>And of course, it's all based around an IPython also.
+
+00:19:27.270 --> 00:19:28.400
+<v Hugo Bowne-Anderson>So we got to give a shout out to that.
+
+00:19:28.580 --> 00:19:31.720
+<v Hugo Bowne-Anderson>And as I said, I was actually working biology in research at the time.
+
+00:19:32.040 --> 00:19:35.440
+<v Hugo Bowne-Anderson>And in biology, we have notebooks, right?
+
+00:19:35.660 --> 00:19:39.120
+<v Hugo Bowne-Anderson>Like you write, you put your PCR gel, you put your figures there, you write things.
+
+00:19:39.420 --> 00:19:42.160
+<v Hugo Bowne-Anderson>This idea of literate programming is exactly that.
+
+00:19:42.320 --> 00:19:44.480
+<v Hugo Bowne-Anderson>And what it does is it brings experimentation.
+
+00:19:45.160 --> 00:19:48.980
+<v Hugo Bowne-Anderson>It brings scientific rigor and scientific research into computation.
+
+00:19:49.460 --> 00:19:53.479
+<v Hugo Bowne-Anderson>And very important for this space where we are, really what we're talking about in data
+
+00:19:53.500 --> 00:19:59.080
+<v Hugo Bowne-Anderson>science, ML, AI is the convergence of software meeting data and experimentation. So we need new
+
+00:19:59.260 --> 00:20:05.240
+<v Michael Kennedy>tools for this. And notebooks are one of the most awesome examples of that. Okay. I took us down a
+
+00:20:05.340 --> 00:20:10.780
+<v Michael Kennedy>bit of a hole with the Marimo stuff because it is cool. Anything else that jumps out to you? I have
+
+00:20:10.880 --> 00:20:14.580
+<v Michael Kennedy>one at the end that I want to riff on before we get off this topic, but what else jumps out to you?
+
+00:20:14.940 --> 00:20:19.379
+<v Michael Kennedy>Schools 2024, 2025, that's kind of like, oh, that's different. To step back a bit, we are talking
+
+00:20:19.400 --> 00:20:24.300
+<v Hugo Bowne-Anderson>about like data science with AI and that type of stuff. And this works both ways, right? Like data
+
+00:20:24.370 --> 00:20:30.080
+<v Hugo Bowne-Anderson>science plays into AI and building with foundation models, but I'd have to fire myself if I didn't
+
+00:20:30.180 --> 00:20:36.360
+<v Hugo Bowne-Anderson>talk about the other way, which is AI helping us do data science. And the tools are AI assisted.
+
+00:20:37.030 --> 00:20:44.260
+<v Hugo Bowne-Anderson>The biggest tool is AI assisted programming for data science, which is revolutionary. I think
+
+00:20:44.370 --> 00:20:48.400
+<v Hugo Bowne-Anderson>maybe isn't even as big a term as we need for this. Absolutely groundbreaking.
+
+00:20:48.940 --> 00:20:52.440
+<v Michael Kennedy>It's easy to get frustrated saying it's bad for the environment.
+
+00:20:52.880 --> 00:20:54.120
+<v Michael Kennedy>I'm a good data science, good developer.
+
+00:20:54.160 --> 00:20:54.900
+<v Michael Kennedy>I don't need this stuff.
+
+00:20:55.280 --> 00:20:58.120
+<v Michael Kennedy>But for the most part, I feel like the cat is out of the bag.
+
+00:20:58.280 --> 00:21:01.340
+<v Michael Kennedy>The Pandora's box is open, whatever analogy you want to use here.
+
+00:21:01.480 --> 00:21:02.880
+<v Michael Kennedy>And it's made such a difference.
+
+00:21:03.240 --> 00:21:03.640
+<v Hugo Bowne-Anderson>Without a doubt.
+
+00:21:03.640 --> 00:21:05.520
+<v Hugo Bowne-Anderson>And I definitely agree on climate concerns.
+
+00:21:05.520 --> 00:21:07.540
+<v Hugo Bowne-Anderson>We should be having larger conversations around this.
+
+00:21:07.780 --> 00:21:11.480
+<v Hugo Bowne-Anderson>You can start using smaller models and local models for AI-assisted programming.
+
+00:21:11.520 --> 00:21:13.220
+<v Hugo Bowne-Anderson>They won't superpower you as much.
+
+00:21:13.900 --> 00:21:19.500
+<v Hugo Bowne-Anderson>there are, you know, to say all, and this is to say all of AI is very bad for the climate is,
+
+00:21:19.860 --> 00:21:25.720
+<v Hugo Bowne-Anderson>I suppose, like saying both hummers and electric cars in the same bucket, right? So, but I totally
+
+00:21:25.960 --> 00:21:31.220
+<v Hugo Bowne-Anderson>agree that that's a concern we need. And the other thing though, man, if we're talking about like,
+
+00:21:31.680 --> 00:21:34.980
+<v Hugo Bowne-Anderson>you know, software's writing the software, AI's writing the software, vibe coding, I don't
+
+00:21:35.120 --> 00:21:39.420
+<v Hugo Bowne-Anderson>necessarily understand it. Guess what? We were all copy and pasting from Stack Overflow. We've
+
+00:21:39.420 --> 00:21:43.860
+<v Hugo Bowne-Anderson>been doing that for a long time, right? And I don't necessarily understand all that code. So
+
+00:21:43.880 --> 00:21:47.580
+<v Hugo Bowne-Anderson>in some ways scaling and superpowering that behavior.
+
+00:21:47.920 --> 00:21:48.460
+<v Michael Kennedy>It's on you.
+
+00:21:48.600 --> 00:21:48.880
+<v Michael Kennedy>It's on me.
+
+00:21:48.960 --> 00:21:52.800
+<v Michael Kennedy>It's on everyone who uses it to either, and we're going to get into this more in detail
+
+00:21:53.060 --> 00:21:57.940
+<v Michael Kennedy>later, use that as a learning experience or as a, well, I don't need to know that.
+
+00:21:58.360 --> 00:21:59.960
+<v Michael Kennedy>I'll just, whatever it says, right?
+
+00:22:00.400 --> 00:22:01.900
+<v Michael Kennedy>That was true with Stack Overflow as well.
+
+00:22:02.120 --> 00:22:05.200
+<v Michael Kennedy>Like you would go to Stack Overflow and you would just copy something.
+
+00:22:05.350 --> 00:22:08.880
+<v Michael Kennedy>And the knock on people who would take stuff from Stack Overflow and paste it was they
+
+00:22:09.040 --> 00:22:10.680
+<v Michael Kennedy>had no idea what it meant.
+
+00:22:11.020 --> 00:22:12.260
+<v Michael Kennedy>They just saw that it solved the problem.
+
+00:22:12.320 --> 00:22:17.360
+<v Michael Kennedy>there was even that joke keyboard that Stack Overflow created. All it had was like a control
+
+00:22:17.880 --> 00:22:21.300
+<v Michael Kennedy>and a C and a V and they had a Stack Overflow logo. It's like, this is all you need, right?
+
+00:22:21.560 --> 00:22:25.960
+<v Hugo Bowne-Anderson>It was hilarious, right? I'd like to system prompt ChatGBT to not be so sycophantic
+
+00:22:26.480 --> 00:22:29.500
+<v Hugo Bowne-Anderson>and treat me like people on Stack Overflow used to treat people sometimes as well.
+
+00:22:29.640 --> 00:22:33.200
+<v Michael Kennedy>My ego is doing way too well today. I need to be beat down. But the thing is like,
+
+00:22:33.380 --> 00:22:37.420
+<v Michael Kennedy>you could go to Stack Overflow and you could go, wow, okay, I didn't know that. And then you learn
+
+00:22:37.560 --> 00:22:41.300
+<v Michael Kennedy>it and you don't need to go back to Stack Overflow and copy that thing because now you've understood
+
+00:22:41.320 --> 00:22:46.000
+<v Michael Kennedy>something deep and that's different that's on you when you're copying my stack overflow and it's
+
+00:22:46.400 --> 00:22:51.780
+<v Michael Kennedy>it's on you a hundred times over if you use these tools right because a lot of times especially the
+
+00:22:51.880 --> 00:22:56.480
+<v Michael Kennedy>agentic stuff it explains what it does like here's what it was here's why i changed it it could let
+
+00:22:56.600 --> 00:23:01.600
+<v Michael Kennedy>that scroll by or you can go slow and study it and become smarter not more brain dead you know what
+
+00:23:01.600 --> 00:23:06.680
+<v Hugo Bowne-Anderson>i mean if i was getting like pandas or scikit-learn code from stack overflow i'd really like
+
+00:23:06.920 --> 00:23:11.280
+<v Hugo Bowne-Anderson>want to understand it because that was my bread and butter whereas if it was front end stuff
+
+00:23:11.500 --> 00:23:15.760
+<v Hugo Bowne-Anderson>Like I'd probably go and find the same issue question time and time again.
+
+00:23:16.280 --> 00:23:21.140
+<v Hugo Bowne-Anderson>Same with like environment stuff, like getting environments working in Jupyter notebooks or
+
+00:23:21.230 --> 00:23:21.320
+<v Hugo Bowne-Anderson>something.
+
+00:23:21.410 --> 00:23:23.180
+<v Hugo Bowne-Anderson>I just, I still can't grok that stuff.
+
+00:23:23.540 --> 00:23:23.820
+<v Michael Kennedy>I know.
+
+00:23:23.870 --> 00:23:27.180
+<v Michael Kennedy>I was just thinking of bash scripts, like shell scripts.
+
+00:23:27.480 --> 00:23:27.940
+<v Michael Kennedy>I'm like, you know what?
+
+00:23:28.040 --> 00:23:29.920
+<v Michael Kennedy>This is just, I don't need to, I don't need to remember this.
+
+00:23:30.050 --> 00:23:31.140
+<v Michael Kennedy>I just bookmark that puppy.
+
+00:23:31.740 --> 00:23:35.820
+<v Michael Kennedy>And long as it doesn't have RMRF or something destructive in it, I'm just right.
+
+00:23:36.640 --> 00:23:37.000
+<v Michael Kennedy>Incredible.
+
+00:23:37.220 --> 00:23:42.940
+<v Michael Kennedy>Okay, one more thing before we move on to like the AI depths that I think is, we got to talk about it.
+
+00:23:43.130 --> 00:23:47.160
+<v Michael Kennedy>Because today is October 7th, 2025, as we record this, not as I release it.
+
+00:23:47.320 --> 00:23:50.520
+<v Michael Kennedy>So I'll have to be a bit nostalgic for a few weeks.
+
+00:23:50.960 --> 00:23:52.900
+<v Michael Kennedy>But today is Python Pi Day.
+
+00:23:53.390 --> 00:23:55.620
+<v Michael Kennedy>Python 3.14 came out today, right?
+
+00:23:56.080 --> 00:24:02.700
+<v Michael Kennedy>And one of the main features of Python 3.14 is the free threaded aspect being sort of officially taken in.
+
+00:24:03.080 --> 00:24:10.500
+<v Michael Kennedy>And I know one of the big challenges that's been solved with C extensions and Rust and other stuff, but it's still a bit of a challenge is like, I've got a ton of data.
+
+00:24:10.690 --> 00:24:12.320
+<v Michael Kennedy>I want to process it in my codes in Python.
+
+00:24:12.720 --> 00:24:15.340
+<v Michael Kennedy>How do I take advantage of the 32 cores I got?
+
+00:24:15.510 --> 00:24:17.980
+<v Michael Kennedy>Or do I get one 32nd of a computer, right?
+
+00:24:18.110 --> 00:24:26.520
+<v Michael Kennedy>And so I think starting to think about parallel programming a little bit, it's going to take on whatever significance it takes, it's going to take on more than it has traditionally.
+
+00:24:26.800 --> 00:24:27.260
+<v Michael Kennedy>Totally agree.
+
+00:24:27.330 --> 00:24:30.680
+<v Michael Kennedy>And I think it's the data scientists who are going to need it more than anyone.
+
+00:24:30.940 --> 00:24:31.060
+<v Michael Kennedy>Yeah.
+
+00:24:31.320 --> 00:24:33.240
+<v Michael Kennedy>Our web frameworks handle that kind of stuff for us.
+
+00:24:33.340 --> 00:24:36.700
+<v Michael Kennedy>They fan that out into processes and other things.
+
+00:24:36.900 --> 00:24:42.140
+<v Michael Kennedy>But when you've got real computational stuff, there's no IO blocking that you can work around,
+
+00:24:42.340 --> 00:24:43.860
+<v Michael Kennedy>right, to leverage async, right?
+
+00:24:43.900 --> 00:24:45.180
+<v Michael Kennedy>You've got to do the CPU stuff.
+
+00:24:45.380 --> 00:24:45.780
+<v Hugo Bowne-Anderson>Exactly.
+
+00:24:46.000 --> 00:24:50.820
+<v Hugo Bowne-Anderson>And it's a really good question because I would have a trillion percent agreed with you.
+
+00:24:51.140 --> 00:24:57.220
+<v Hugo Bowne-Anderson>And I 100%, but I would have a trillion percent agreed with you pre our chat GBT moment when
+
+00:24:57.240 --> 00:25:02.260
+<v Hugo Bowne-Anderson>data scientists, ML engineers, all of these types of people weren't only building products,
+
+00:25:02.600 --> 00:25:06.040
+<v Hugo Bowne-Anderson>serving models, that type of stuff, but they were responsible for training as well.
+
+00:25:06.600 --> 00:25:11.880
+<v Hugo Bowne-Anderson>And I think you're totally right with large-scale analytics. Think about Dask and geospatial,
+
+00:25:12.800 --> 00:25:17.260
+<v Hugo Bowne-Anderson>large-scale, multidimensional, geospatial, atmospheric data, these types of things,
+
+00:25:17.740 --> 00:25:20.840
+<v Hugo Bowne-Anderson>and basic analytics. I'm not even talking about machine learning there, but we have entered
+
+00:25:21.180 --> 00:25:29.600
+<v Hugo Bowne-Anderson>a regime now where you can build ml and ai powered products by pinging apis or hosting your own models
+
+00:25:29.740 --> 00:25:33.140
+<v Hugo Bowne-Anderson>and that type of stuff whether it's hugging face from hugging face or wherever it may be
+
+00:25:33.600 --> 00:25:39.560
+<v Hugo Bowne-Anderson>or you know using olama locally and in that case i think because you're not doing the training
+
+00:25:39.920 --> 00:25:44.640
+<v Hugo Bowne-Anderson>yourself you're able to do a lot of things without requiring massive massive compute yeah there is a
+
+00:25:44.720 --> 00:25:49.780
+<v Michael Kennedy>bit of a it seems like a big area but it's a bit of a thin area because you've got the regular
+
+00:25:49.800 --> 00:25:54.340
+<v Michael Kennedy>programming you can do then you need that async you need that parallelism for higher compute but
+
+00:25:54.540 --> 00:25:59.580
+<v Michael Kennedy>just you don't go very far until someone says fine i'm doing it in rust i'm doing a C++ or it's an
+
+00:25:59.760 --> 00:26:04.120
+<v Michael Kennedy>api and then you don't need it again you know what i mean there's like a little stratosphere sort of
+
+00:26:04.150 --> 00:26:09.680
+<v Michael Kennedy>bit of it and happy python pi day yes happy python pi day that's pretty cool i've not even installed
+
+00:26:09.710 --> 00:26:15.560
+<v Michael Kennedy>it yet today because uv has not shipped their support for it yet and that's when i mentioned
+
+00:26:15.920 --> 00:26:22.600
+<v Hugo Bowne-Anderson>new modern tools like marimo and polars and duck db uv has has to be in there as well also very
+
+00:26:22.900 --> 00:26:27.720
+<v Hugo Bowne-Anderson>excited about other package management but plus plus for lack of a better term tools like
+
+00:26:27.900 --> 00:26:33.000
+<v Hugo Bowne-Anderson>pixie that uh wolf olprecht and his his team who i know have been on the show and you know who
+
+00:26:33.380 --> 00:26:39.420
+<v Hugo Bowne-Anderson>people may know from mamba which helped us with conda so much so uv is not the only only story
+
+00:26:39.440 --> 00:26:42.800
+<v Michael Kennedy>out there solving these working to solve these problems i do think it's really interesting
+
+00:26:42.820 --> 00:26:47.640
+<v Michael Kennedy>especially for the data science crowd, because things have gotten better for those of us that
+
+00:26:47.760 --> 00:26:53.140
+<v Michael Kennedy>use pip exclusively. It's like faster, a little bit better resolution, a little bit better workflow.
+
+00:26:53.720 --> 00:26:58.160
+<v Michael Kennedy>Like some of the tools are brought together, like pip-tools plus just regular pip. But I think it's
+
+00:26:58.160 --> 00:27:03.120
+<v Michael Kennedy>a bigger consideration for your side of the fence in that there's Conda. And now do you stick with
+
+00:27:03.260 --> 00:27:08.480
+<v Michael Kennedy>Conda or do you use UV? Like that's, they kind of compete more than pip did with uv, I think,
+
+00:27:08.740 --> 00:27:12.780
+<v Michael Kennedy>actually. I use uv. I agree. I think uv is pushed it over the edge. And then the pyx
+
+00:27:12.800 --> 00:27:17.880
+<v Michael Kennedy>that charlie's released if you're like an org where they help with building like the layers of
+
+00:27:17.880 --> 00:27:22.160
+<v Hugo Bowne-Anderson>machine models and pytorch and stuff is it's pretty interesting i also just want to say on python pi
+
+00:27:22.170 --> 00:27:27.760
+<v Hugo Bowne-Anderson>day that is so geeky and i i would want to i do want to say show my geeky t-shirt to everyone which
+
+00:27:28.140 --> 00:27:33.840
+<v Hugo Bowne-Anderson>says schrodinger's cat wanted dead and alive it's a wanted poster so speaking of geeky stuff that's
+
+00:27:33.960 --> 00:27:38.440
+<v Michael Kennedy>perfect that's perfect i i just have a sweater i'm sorry i didn't i didn't prepare yeah that's true
+
+00:27:38.500 --> 00:27:42.760
+<v Michael Kennedy>i'm in a library it's full of books so i can i'm sure something geeky is behind me all right so
+
+00:27:42.780 --> 00:27:48.780
+<v Michael Kennedy>We've talked about maybe some of the other not so necessarily AI focused tools is like what people should focus on.
+
+00:27:49.280 --> 00:27:52.080
+<v Michael Kennedy>But like we both said, it's so transformative.
+
+00:27:52.620 --> 00:27:56.480
+<v Michael Kennedy>And if people haven't actually tried it and seen it in action, you got to see it to believe it.
+
+00:27:56.480 --> 00:27:59.400
+<v Michael Kennedy>Because I was a skeptic until my friend's like, no, let's sit down and let me show you.
+
+00:27:59.400 --> 00:28:01.820
+<v Michael Kennedy>I'm like, oh, OK, I get it.
+
+00:28:02.520 --> 00:28:04.140
+<v Michael Kennedy>And so let's talk about some of the AI tools.
+
+00:28:04.340 --> 00:28:10.520
+<v Hugo Bowne-Anderson>I've done an initial slicing into different levels, which may be useful thinking through the evolution of these tools.
+
+00:28:10.840 --> 00:28:13.700
+<v Hugo Bowne-Anderson>And how do we use AI to help us code?
+
+00:28:13.820 --> 00:28:19.940
+<v Hugo Bowne-Anderson>And I jokingly level zero because we zero index here is copy and pasting from Stack Overflow.
+
+00:28:20.010 --> 00:28:24.580
+<v Hugo Bowne-Anderson>Right now, that's not quite using AI, but it is AI is using collective wisdom as opposed
+
+00:28:24.760 --> 00:28:25.660
+<v Hugo Bowne-Anderson>to stuff in yourself.
+
+00:28:25.830 --> 00:28:26.000
+<v Hugo Bowne-Anderson>Right.
+
+00:28:26.160 --> 00:28:27.220
+<v Hugo Bowne-Anderson>So we've got that.
+
+00:28:27.470 --> 00:28:27.600
+<v Hugo Bowne-Anderson>Okay.
+
+00:28:28.040 --> 00:28:33.900
+<v Hugo Bowne-Anderson>But then after our chat GBT moment, we've people started copy instead of copying and pasting
+
+00:28:34.030 --> 00:28:38.200
+<v Hugo Bowne-Anderson>between Stack Overflow and their IDE, VS Code, Jupyter Notebooks, whatever it may be.
+
+00:28:38.420 --> 00:28:42.760
+<v Hugo Bowne-Anderson>people started copy and pasting between ChatGPT and the IDE.
+
+00:28:43.380 --> 00:28:46.580
+<v Hugo Bowne-Anderson>So you would, you know, let's say you get an error message from your IDE,
+
+00:28:47.140 --> 00:28:50.600
+<v Hugo Bowne-Anderson>copy it into ChatGPT, give it a bit more context, whatever it may be.
+
+00:28:50.920 --> 00:28:53.620
+<v Hugo Bowne-Anderson>And then such as, you know, give it the code you wrote,
+
+00:28:53.900 --> 00:28:55.800
+<v Hugo Bowne-Anderson>plus the error message, plus your environment.
+
+00:28:56.160 --> 00:28:58.500
+<v Hugo Bowne-Anderson>And it will be pretty good at helping you,
+
+00:28:58.800 --> 00:29:01.560
+<v Hugo Bowne-Anderson>depending on what packages you're using, what framework.
+
+00:29:01.680 --> 00:29:05.140
+<v Hugo Bowne-Anderson>If you're working in PyData, absolutely fantastic, right?
+
+00:29:05.420 --> 00:29:06.960
+<v Hugo Bowne-Anderson>Of course, it's trained on scikit-learn.
+
+00:29:07.020 --> 00:29:08.420
+<v Hugo Bowne-Anderson>It's trained on MapLotlib.
+
+00:29:08.520 --> 00:29:09.520
+<v Hugo Bowne-Anderson>It's trained on Seaborn.
+
+00:29:09.600 --> 00:29:10.720
+<v Hugo Bowne-Anderson>It's trained on spaCy.
+
+00:29:10.940 --> 00:29:15.620
+<v Hugo Bowne-Anderson>One of the biggest frustrations at that point was it wasn't trained on ChatGPT's current
+
+00:29:16.100 --> 00:29:16.220
+<v Hugo Bowne-Anderson>API.
+
+00:29:16.620 --> 00:29:22.920
+<v Hugo Bowne-Anderson>So it would always give you, even if you corrected it, it would always revert to previous OpenAI
+
+00:29:23.180 --> 00:29:23.360
+<v Hugo Bowne-Anderson>API.
+
+00:29:23.650 --> 00:29:23.760
+<v Hugo Bowne-Anderson>Okay.
+
+00:29:24.120 --> 00:29:25.660
+<v Hugo Bowne-Anderson>So level one, copy and pasting.
+
+00:29:26.120 --> 00:29:28.140
+<v Hugo Bowne-Anderson>Level two, code completion in IDE.
+
+00:29:28.320 --> 00:29:30.000
+<v Hugo Bowne-Anderson>So you can think co-pilot or whatever.
+
+00:29:30.440 --> 00:29:32.820
+<v Hugo Bowne-Anderson>You're writing code and it will start suggesting things, right?
+
+00:29:33.080 --> 00:29:34.860
+<v Hugo Bowne-Anderson>So that's just working your IDE.
+
+00:29:35.320 --> 00:29:38.080
+<v Hugo Bowne-Anderson>Now, I think these things people probably know about.
+
+00:29:38.330 --> 00:29:42.240
+<v Hugo Bowne-Anderson>But then level three is where things get really wild for me, where you actually, you have an
+
+00:29:42.690 --> 00:29:45.080
+<v Hugo Bowne-Anderson>agent in your IDE or your terminal.
+
+00:29:45.360 --> 00:29:51.560
+<v Hugo Bowne-Anderson>So cursor, which is a VS CodeFork, has an agent and a chat in it where you can have an
+
+00:29:51.820 --> 00:29:59.760
+<v Hugo Bowne-Anderson>empty repository and say, hey, I want you to write a program that creates a RAG pipeline
+
+00:30:00.420 --> 00:30:04.180
+<v Hugo Bowne-Anderson>over the documents in this subdirectory or something like that.
+
+00:30:04.260 --> 00:30:06.140
+<v Hugo Bowne-Anderson>And it will go and do that immediately.
+
+00:30:06.540 --> 00:30:09.300
+<v Hugo Bowne-Anderson>It will be, when you do that, it won't be great.
+
+00:30:09.420 --> 00:30:10.640
+<v Hugo Bowne-Anderson>It'll do all types of nonsense.
+
+00:30:10.780 --> 00:30:13.120
+<v Hugo Bowne-Anderson>It might write lots of directories and subdirectories.
+
+00:30:13.540 --> 00:30:15.480
+<v Hugo Bowne-Anderson>So we can talk about some of the gotchas,
+
+00:30:16.080 --> 00:30:18.920
+<v Hugo Bowne-Anderson>but this is agentic coding where you're chatting
+
+00:30:19.300 --> 00:30:21.180
+<v Hugo Bowne-Anderson>and it just throws stuff in.
+
+00:30:21.480 --> 00:30:22.380
+<v Hugo Bowne-Anderson>I will also add,
+
+00:30:22.400 --> 00:30:24.020
+<v Hugo Bowne-Anderson>and this is something we mentioned briefly beforehand.
+
+00:30:24.659 --> 00:30:26.880
+<v Hugo Bowne-Anderson>I don't like typing that much, to be honest.
+
+00:30:26.940 --> 00:30:28.400
+<v Hugo Bowne-Anderson>So I use Super Whisper.
+
+00:30:28.560 --> 00:30:31.240
+<v Hugo Bowne-Anderson>There are other tools to do this where I dictate to it.
+
+00:30:31.540 --> 00:30:33.240
+<v Hugo Bowne-Anderson>And I also have a stream deck,
+
+00:30:33.760 --> 00:30:39.420
+<v Hugo Bowne-Anderson>which is what we mentioned beforehand, which a lot of content creators use this. It's like buttons
+
+00:30:39.780 --> 00:30:45.340
+<v Hugo Bowne-Anderson>and knobs that you can assign to macros. And so when I have a button that opens cursor, puts it in
+
+00:30:45.580 --> 00:30:52.220
+<v Hugo Bowne-Anderson>agent mode, attaches Claude, Sonnet 4.5 or Gemma 2.5, whatever it may be. Exactly. That's a stream
+
+00:30:52.360 --> 00:30:57.660
+<v Hugo Bowne-Anderson>deck. And then I have accept code buttons and reject code and that type of stuff. So I can
+
+00:30:57.820 --> 00:31:02.140
+<v Hugo Bowne-Anderson>actually build a not insignificant amount of software with my voice and three buttons,
+
+00:31:02.540 --> 00:31:04.020
+<v Michael Kennedy>which is so powerful.
+
+00:31:04.240 --> 00:31:06.720
+<v Michael Kennedy>I also find that if I do dictation,
+
+00:31:07.220 --> 00:31:09.040
+<v Michael Kennedy>I can be a lot more patient and thorough
+
+00:31:09.580 --> 00:31:10.700
+<v Michael Kennedy>in a lot of ways, right?
+
+00:31:10.900 --> 00:31:12.120
+<v Michael Kennedy>Like I don't know about you,
+
+00:31:12.240 --> 00:31:13.840
+<v Michael Kennedy>but I've had like RSI issues.
+
+00:31:13.920 --> 00:31:15.480
+<v Michael Kennedy>So I got to be real cognizant
+
+00:31:15.480 --> 00:31:16.940
+<v Michael Kennedy>of like how much typing I do.
+
+00:31:17.120 --> 00:31:19.900
+<v Michael Kennedy>I've got my Microsoft Sculpt ergonomic keyboard
+
+00:31:20.100 --> 00:31:21.060
+<v Michael Kennedy>that I drag with me everywhere
+
+00:31:21.180 --> 00:31:23.720
+<v Michael Kennedy>because square keyboards will destroy me in like a week.
+
+00:31:24.000 --> 00:31:26.700
+<v Michael Kennedy>And so it lets me go on without worrying
+
+00:31:26.840 --> 00:31:27.740
+<v Michael Kennedy>about those kinds of things.
+
+00:31:27.820 --> 00:31:28.860
+<v Michael Kennedy>I use a Mac Whisper,
+
+00:31:29.260 --> 00:31:31.660
+<v Michael Kennedy>but it's super similar, I believe, right?
+
+00:31:31.780 --> 00:31:33.160
+<v Michael Kennedy>It just uses the same underlying engine.
+
+00:31:33.800 --> 00:31:36.480
+<v Michael Kennedy>And it's really nice that you can, I do it for email.
+
+00:31:36.590 --> 00:31:37.440
+<v Michael Kennedy>I do it for lots of things.
+
+00:31:37.680 --> 00:31:38.040
+<v Hugo Bowne-Anderson>I'll just give that.
+
+00:31:38.090 --> 00:31:42.460
+<v Hugo Bowne-Anderson>I love how you mentioned it does help one be more patient because yeah, when typing, well,
+
+00:31:42.620 --> 00:31:47.320
+<v Hugo Bowne-Anderson>when chatting with an AI, you can get frustrated and the friction in typing and correcting yourself
+
+00:31:47.430 --> 00:31:50.780
+<v Hugo Bowne-Anderson>and that type of stuff, you just don't have when speaking natural language.
+
+00:31:51.140 --> 00:31:51.300
+<v Michael Kennedy>Yeah.
+
+00:31:51.370 --> 00:31:55.180
+<v Michael Kennedy>And I find people, I don't, I mean, this is not scientific, but my experience has been
+
+00:31:55.190 --> 00:31:57.180
+<v Michael Kennedy>that people say like, oh, this stuff is not good.
+
+00:31:57.300 --> 00:32:03.240
+<v Michael Kennedy>it always just gives me junk results and so on, is so often there's not enough information given.
+
+00:32:03.620 --> 00:32:09.340
+<v Michael Kennedy>It'd be like, create me a graph, not use Plotly to create this type of graph with this type of
+
+00:32:09.540 --> 00:32:14.500
+<v Michael Kennedy>focus from this data like I did before. You know what I mean? Those are really different things.
+
+00:32:14.700 --> 00:32:19.700
+<v Michael Kennedy>And the more specificity you can give these tools, the better. I use a lot of AI stuff.
+
+00:32:20.080 --> 00:32:25.720
+<v Michael Kennedy>And I would say I have plenty of prompts that are pages long. And I was like, here's a file,
+
+00:32:26.020 --> 00:32:28.300
+<v Michael Kennedy>Here's four pages of what I want you to do with it.
+
+00:32:28.660 --> 00:32:28.960
+<v Michael Kennedy>Let's go.
+
+00:32:29.030 --> 00:32:30.820
+<v Michael Kennedy>And it is not always writing.
+
+00:32:30.870 --> 00:32:34.500
+<v Michael Kennedy>So but incredible results compared to what if you just say, you know, analyze this or whatever.
+
+00:32:34.820 --> 00:32:36.400
+<v Hugo Bowne-Anderson>We'll get to this when we talk about gotchas.
+
+00:32:36.530 --> 00:32:44.680
+<v Hugo Bowne-Anderson>But having a conversation with your system before getting it to write anything is incredibly important and productive.
+
+00:32:46.560 --> 00:32:49.300
+<v Michael Kennedy>This portion of Talk Python To Me is brought to you by NordStellar.
+
+00:32:49.980 --> 00:32:53.660
+<v Michael Kennedy>NordStellar is a threat exposure management platform from the Nord security family,
+
+00:32:54.020 --> 00:32:59.320
+<v Michael Kennedy>the folks behind NordVPN that combines dark web intelligence, session hijacking prevention,
+
+00:32:59.980 --> 00:33:04.800
+<v Michael Kennedy>brand and abuse detection, and external attack service management. Keeping your team and your
+
+00:33:04.900 --> 00:33:10.300
+<v Michael Kennedy>company secure is a daunting challenge. That's why you need NordStellar on your side. It's a
+
+00:33:10.680 --> 00:33:15.900
+<v Michael Kennedy>comprehensive set of services, monitoring, and alerts to limit your exposure to breaches and
+
+00:33:16.500 --> 00:33:21.599
+<v Michael Kennedy>attacks and act instantly if something does happen. Here's how it works. NordStellar detects
+
+00:33:21.620 --> 00:33:27.660
+<v Michael Kennedy>compromised employee and consumer credentials. It detects stolen authentication cookies found in
+
+00:33:27.840 --> 00:33:34.300
+<v Michael Kennedy>InfoSteeler logs and dark web sources, then revokes live sessions and flags compromised devices,
+
+00:33:34.920 --> 00:33:40.800
+<v Michael Kennedy>reducing MFA bypass ATOs without extra code in your app. Nordstellar scans the dark web for
+
+00:33:40.860 --> 00:33:47.519
+<v Michael Kennedy>cyber threats targeting your company. It monitors forums, markets, ransomware blogs, and over 25,000
+
+00:33:47.540 --> 00:33:53.160
+<v Michael Kennedy>cybercrime telegram channels with alerting and searchable context you can route to Slack or your
+
+00:33:53.400 --> 00:33:59.440
+<v Michael Kennedy>IRR tool. Nordstellar adds brand and domain protection. It detects cyber squats and lookalikes
+
+00:33:59.820 --> 00:34:05.180
+<v Michael Kennedy>via visual, content similarity, and search transparency logs, plus broader brand abuse
+
+00:34:05.400 --> 00:34:11.020
+<v Michael Kennedy>takedowns across the web, social, and app stores to cut the phishing risk for your users. They
+
+00:34:11.139 --> 00:34:16.440
+<v Michael Kennedy>don't just alert you about impersonation, they file and manage the removals. Finally, Nordstellar
+
+00:34:16.460 --> 00:34:17.379
+<v Michael Kennedy>is developer-friendly.
+
+00:34:17.860 --> 00:34:19.580
+<v Michael Kennedy>It's available as a platform and API
+
+00:34:19.800 --> 00:34:20.960
+<v Michael Kennedy>with integrations for Splunk,
+
+00:34:21.220 --> 00:34:22.520
+<v Michael Kennedy>QRadar, Datadog, Sentinel,
+
+00:34:22.899 --> 00:34:24.139
+<v Michael Kennedy>Elastic, and Cortex.
+
+00:34:24.540 --> 00:34:25.399
+<v Michael Kennedy>No agents to install.
+
+00:34:25.940 --> 00:34:27.179
+<v Michael Kennedy>If security is important to you
+
+00:34:27.320 --> 00:34:27.879
+<v Michael Kennedy>and your organization,
+
+00:34:28.240 --> 00:34:29.040
+<v Michael Kennedy>check out Nordstellar.
+
+00:34:29.560 --> 00:34:31.820
+<v Michael Kennedy>Visit talkpython.fm/nordstellar.
+
+00:34:31.919 --> 00:34:33.340
+<v Michael Kennedy>The link is in your podcast player's
+
+00:34:33.379 --> 00:34:34.820
+<v Michael Kennedy>show notes and on the episode page.
+
+00:34:35.300 --> 00:34:36.020
+<v Michael Kennedy>Please use our link,
+
+00:34:36.280 --> 00:34:37.960
+<v Michael Kennedy>talkpython.fm/nordstellar,
+
+00:34:38.440 --> 00:34:39.820
+<v Michael Kennedy>so that they know that you heard
+
+00:34:39.960 --> 00:34:41.500
+<v Michael Kennedy>about their service from us.
+
+00:34:41.860 --> 00:34:42.560
+<v Michael Kennedy>Thank you to the whole
+
+00:34:42.760 --> 00:34:43.820
+<v Michael Kennedy>Nord security team
+
+00:34:44.159 --> 00:34:45.200
+<v Michael Kennedy>for supporting Talk Python To Me.
+
+00:34:46.499 --> 00:34:51.280
+<v Hugo Bowne-Anderson>Isaac Flath, who he has a wonderful course on Maven called Elite AI Assisted Coding,
+
+00:34:51.350 --> 00:34:55.659
+<v Hugo Bowne-Anderson>which I'm actually starting as a student this week. And I may give a guest talk there. He wrote,
+
+00:34:55.760 --> 00:34:58.940
+<v Hugo Bowne-Anderson>I don't know whether he came up with it, but it's, it's, he calls it Socratic and dialogue
+
+00:34:59.160 --> 00:35:03.200
+<v Hugo Bowne-Anderson>driven development where you essentially pair program with the AI. Don't expect it to do
+
+00:35:03.380 --> 00:35:08.020
+<v Hugo Bowne-Anderson>everything, but have, have conversations. So the other thing is a lot of these agentic systems like
+
+00:35:08.100 --> 00:35:13.500
+<v Hugo Bowne-Anderson>cursor, which I use daily, probably a bit too much. You can plug into any, you know, state of the art
+
+00:35:15.200 --> 00:35:20.460
+<v Hugo Bowne-Anderson>API. So, you know, Sonnet 4.5 came out recently and the day after you could use that in Cursor.
+
+00:35:20.680 --> 00:35:26.260
+<v Hugo Bowne-Anderson>Gemini 2.5 came out a while ago, then you couldn't plug it in. GPT-5 and so on. The other thing I
+
+00:35:26.260 --> 00:35:31.060
+<v Hugo Bowne-Anderson>just wanted to give a shout out to is Continue. Tyler Dunn, speaking of modern tools and open
+
+00:35:31.240 --> 00:35:36.780
+<v Hugo Bowne-Anderson>source tools, it's like an open source cursor of sorts. And I mean, he wouldn't frame it that way,
+
+00:35:37.020 --> 00:35:42.960
+<v Hugo Bowne-Anderson>but you can have all your own local models, data preserving, privacy preserving, and use those in
+
+00:35:42.980 --> 00:35:48.300
+<v Hugo Bowne-Anderson>in this way. So just going back to this slicing though, level one, copy and paste code, level two,
+
+00:35:48.500 --> 00:35:54.400
+<v Hugo Bowne-Anderson>code completion, level three agents in an IDE or terminal. So Claude code, for example, can be in
+
+00:35:54.400 --> 00:36:01.640
+<v Hugo Bowne-Anderson>your terminal, cursor, VS Code, fork. Level four is embedded in other tools like Slack or Discord or
+
+00:36:01.820 --> 00:36:08.020
+<v Hugo Bowne-Anderson>email. You can tag cursor in Slack to, if you notice a documentation fault, you can tag it in
+
+00:36:07.940 --> 00:36:10.040
+<v Hugo Bowne-Anderson>Slack to fix that.
+
+00:36:10.720 --> 00:36:13.120
+<v Hugo Bowne-Anderson>Manus, you can tag in email threads now.
+
+00:36:13.520 --> 00:36:15.620
+<v Hugo Bowne-Anderson>Level five is more proactive.
+
+00:36:15.830 --> 00:36:17.180
+<v Hugo Bowne-Anderson>So all of these are reactive systems.
+
+00:36:17.840 --> 00:36:18.900
+<v Hugo Bowne-Anderson>Level five is more proactive.
+
+00:36:19.010 --> 00:36:20.520
+<v Hugo Bowne-Anderson>So you can have Cursor, for example,
+
+00:36:20.740 --> 00:36:21.460
+<v Hugo Bowne-Anderson>and a lot of these systems,
+
+00:36:21.510 --> 00:36:22.320
+<v Hugo Bowne-Anderson>I just use Cursor the most,
+
+00:36:22.720 --> 00:36:24.640
+<v Hugo Bowne-Anderson>to do code review in CI,
+
+00:36:24.830 --> 00:36:25.620
+<v Hugo Bowne-Anderson>in continuous integration.
+
+00:36:26.200 --> 00:36:27.940
+<v Hugo Bowne-Anderson>So whenever I submit a PR,
+
+00:36:28.280 --> 00:36:30.920
+<v Hugo Bowne-Anderson>Cursor can come in and do a code review there.
+
+00:36:31.340 --> 00:36:32.720
+<v Hugo Bowne-Anderson>Now I'm getting a bit to future music.
+
+00:36:33.030 --> 00:36:36.079
+<v Hugo Bowne-Anderson>At level six, we've got async or background agents
+
+00:36:36.140 --> 00:36:38.860
+<v Hugo Bowne-Anderson>that just do stuff in the background, essentially,
+
+00:36:39.160 --> 00:36:40.720
+<v Hugo Bowne-Anderson>which we're going to see a lot more of.
+
+00:36:41.000 --> 00:36:42.200
+<v Hugo Bowne-Anderson>And then level seven,
+
+00:36:42.430 --> 00:36:45.280
+<v Hugo Bowne-Anderson>which we haven't seen so much proactive agents.
+
+00:36:45.350 --> 00:36:46.560
+<v Hugo Bowne-Anderson>And I think these are going to be huge
+
+00:36:46.590 --> 00:36:49.260
+<v Hugo Bowne-Anderson>that will just notice stuff happening in production.
+
+00:36:49.460 --> 00:36:50.720
+<v Hugo Bowne-Anderson>Like, hey, we have this outlier here.
+
+00:36:51.040 --> 00:36:52.740
+<v Hugo Bowne-Anderson>Oh, this didn't quite work.
+
+00:36:53.060 --> 00:36:55.300
+<v Hugo Bowne-Anderson>Or agents that come to me on a Monday morning
+
+00:36:55.510 --> 00:36:57.120
+<v Hugo Bowne-Anderson>and be like, hey, check this out.
+
+00:36:57.300 --> 00:36:57.680
+<v Hugo Bowne-Anderson>Check that out.
+
+00:36:57.730 --> 00:36:58.020
+<v Hugo Bowne-Anderson>Check that.
+
+00:36:58.160 --> 00:37:00.960
+<v Hugo Bowne-Anderson>Like a good colleague, right?
+
+00:37:01.460 --> 00:37:02.300
+<v Hugo Bowne-Anderson>A team member.
+
+00:37:02.660 --> 00:37:02.760
+<v Hugo Bowne-Anderson>Yeah.
+
+00:37:02.840 --> 00:37:08.520
+<v Hugo Bowne-Anderson>So, but we're already at, you know, level five and kind of got background agents as well.
+
+00:37:08.720 --> 00:37:12.700
+<v Hugo Bowne-Anderson>So we're getting, yeah, to a lot of really exciting places.
+
+00:37:13.140 --> 00:37:13.320
+<v Michael Kennedy>Yeah.
+
+00:37:13.480 --> 00:37:18.880
+<v Michael Kennedy>So I'm a hundred percent bought in up to level four, probably like certainly the agent decoding
+
+00:37:19.280 --> 00:37:22.940
+<v Michael Kennedy>a little bit of the code review, not so much in CI, but like looking at the stuff that
+
+00:37:22.960 --> 00:37:25.280
+<v Michael Kennedy>I'm, I might ask it like, Hey, what's going on here?
+
+00:37:25.700 --> 00:37:27.620
+<v Michael Kennedy>Why is it like this background agents?
+
+00:37:27.680 --> 00:37:29.240
+<v Michael Kennedy>I just haven't, I haven't got there.
+
+00:37:29.240 --> 00:37:32.520
+<v Michael Kennedy>They seem, they seem like they don't have enough to work with, right?
+
+00:37:32.560 --> 00:37:36.440
+<v Michael Kennedy>they don't have my whole machine and all the setups and all the things they need. But I can
+
+00:37:36.540 --> 00:37:39.360
+<v Michael Kennedy>see how they would be useful. Certainly the way you're describing like a good colleague.
+
+00:37:39.600 --> 00:37:44.480
+<v Hugo Bowne-Anderson>And so one example is not necessarily in software, but background agents, and I haven't done this,
+
+00:37:44.640 --> 00:37:48.080
+<v Hugo Bowne-Anderson>but I've got friends and colleagues who've built background agents that monitor their inbox and
+
+00:37:48.080 --> 00:37:53.120
+<v Hugo Bowne-Anderson>will ping them like their email, sorry, and will cluster emails and be like, hey, you really should
+
+00:37:53.260 --> 00:37:57.240
+<v Hugo Bowne-Anderson>reply to this one. This is a prospect or a client that really needs your attention right now.
+
+00:37:57.320 --> 00:38:00.920
+<v Michael Kennedy>I think that kind of stuff would be really neat. I will throw out there now, this comes from
+
+00:38:00.940 --> 00:38:04.000
+<v Michael Kennedy>Sentry, who is a sponsor of the show, just to be fair, but I'm not doing this because they
+
+00:38:04.160 --> 00:38:10.420
+<v Michael Kennedy>sponsored it. They added this thing called Seer, S-E-E-R, that when your app collects an exception
+
+00:38:10.860 --> 00:38:14.580
+<v Michael Kennedy>or something or doesn't collect it and it gets up there, depending on how you send it up there,
+
+00:38:15.000 --> 00:38:19.820
+<v Michael Kennedy>is it'll apply AI to whatever it receives. And it'll look, if you bind it to your GitHub and so
+
+00:38:19.860 --> 00:38:24.820
+<v Michael Kennedy>on, it'll like try to understand the project. And maybe by the time you get to look at the bug
+
+00:38:25.320 --> 00:38:30.300
+<v Michael Kennedy>report, it actually has a solution suggested as well, which, and it'll do a PR, which that's on
+
+00:38:30.300 --> 00:38:34.400
+<v Michael Kennedy>the verge of what you were suggesting as this sort of like proactive buddy that's just hanging out
+
+00:38:34.500 --> 00:38:40.360
+<v Hugo Bowne-Anderson>there. As I said, I do want to mention just a few gotchas. Or actually, let me just say some of the
+
+00:38:40.600 --> 00:38:45.680
+<v Hugo Bowne-Anderson>really powerful use cases in data science, since we are talking about foundation models for data
+
+00:38:45.940 --> 00:38:51.780
+<v Hugo Bowne-Anderson>science, just writing code. I mean, text to seek all these LLMs are trained on now, right? So
+
+00:38:52.080 --> 00:38:57.900
+<v Hugo Bowne-Anderson>writing SQL code based on what you say or what you type in natural language. Now, chat with it
+
+00:38:57.880 --> 00:39:02.620
+<v Hugo Bowne-Anderson>beforehand so that you make sure it understands your schema. It may not be great at complex joins,
+
+00:39:03.100 --> 00:39:07.120
+<v Hugo Bowne-Anderson>this type of stuff. Understand the system you're working with, get a feel for how it works.
+
+00:39:07.740 --> 00:39:13.960
+<v Hugo Bowne-Anderson>Actually think of it as like a super excited ADHD-esque, perhaps slightly autistic as well.
+
+00:39:14.000 --> 00:39:19.560
+<v Hugo Bowne-Anderson>And I mean that with all the love in terms of, you know, absolute like deep memory, be able to recall
+
+00:39:19.760 --> 00:39:26.360
+<v Hugo Bowne-Anderson>a lot of information. And on the ADHD spectrum, in terms of just how it will do, like it will spread
+
+00:39:26.380 --> 00:39:30.240
+<v Hugo Bowne-Anderson>its attention over a lot of different places and create lots of different stuff, some of which may
+
+00:39:30.300 --> 00:39:34.520
+<v Hugo Bowne-Anderson>not work, but some of which will be incredible. So have empathy for your system in that sense,
+
+00:39:34.640 --> 00:39:39.940
+<v Hugo Bowne-Anderson>but writing SQL code, amazing. PyDataStack, incredible. I want to run an idea by you and
+
+00:39:39.960 --> 00:39:44.040
+<v Michael Kennedy>just see what you think here with what you just said with like, think of it as this super excited,
+
+00:39:44.820 --> 00:39:50.240
+<v Michael Kennedy>somewhat scatterbrain, junior helper, excited friend. If you had hired somebody, even if they
+
+00:39:50.360 --> 00:39:53.960
+<v Michael Kennedy>went to Stanford, but they hadn't really done work on any like major data science projects,
+
+00:39:54.120 --> 00:39:56.640
+<v Michael Kennedy>and they came to your company and you gave them a job,
+
+00:39:57.000 --> 00:40:00.480
+<v Michael Kennedy>would you expect 100%, like absolutely 100% correctness?
+
+00:40:00.780 --> 00:40:01.420
+<v Michael Kennedy>And they're, no.
+
+00:40:01.800 --> 00:40:05.760
+<v Michael Kennedy>So I don't know why people expect the AI to be literally 100%.
+
+00:40:05.800 --> 00:40:07.080
+<v Michael Kennedy>I think I have an idea why,
+
+00:40:07.180 --> 00:40:09.860
+<v Michael Kennedy>but expecting the AI to be 100% right,
+
+00:40:10.320 --> 00:40:13.480
+<v Michael Kennedy>where it's kind of doing some of this human level type of reason.
+
+00:40:13.600 --> 00:40:15.480
+<v Michael Kennedy>I mean, not thinking, I'm not saying that,
+
+00:40:15.580 --> 00:40:18.540
+<v Michael Kennedy>but this kind of problem, this creative problem solving,
+
+00:40:18.980 --> 00:40:21.320
+<v Michael Kennedy>we should have a little bit of patience for if it gets it wrong,
+
+00:40:21.500 --> 00:40:22.800
+<v Michael Kennedy>especially if we give it poor directions.
+
+00:40:23.300 --> 00:40:23.860
+<v Michael Kennedy>You know what I mean?
+
+00:40:23.920 --> 00:40:28.720
+<v Michael Kennedy>And I just feel like people so often think, well, it's a computer and it's wrong, so it's trash.
+
+00:40:29.080 --> 00:40:29.480
+<v Michael Kennedy>It's no good.
+
+00:40:29.760 --> 00:40:31.300
+<v Michael Kennedy>Well, was it 95% right?
+
+00:40:31.550 --> 00:40:32.260
+<v Michael Kennedy>Because that's really helpful.
+
+00:40:32.500 --> 00:40:33.300
+<v Hugo Bowne-Anderson>This is so important.
+
+00:40:33.350 --> 00:40:34.500
+<v Hugo Bowne-Anderson>And there are several things in there.
+
+00:40:34.700 --> 00:40:44.300
+<v Hugo Bowne-Anderson>Firstly, I think when after our chat champion moment, Jeremy Howard noticed a complaint that people were like, oh, I need to chat with it like it doesn't do the thing the first time and I need to correct it.
+
+00:40:44.520 --> 00:40:48.820
+<v Hugo Bowne-Anderson>And Jeremy was like, what type of human don't you need to have a conversation with to learn stuff?
+
+00:40:48.880 --> 00:40:53.780
+<v Hugo Bowne-Anderson>The other thing is in nearly all of these systems now, you have memory.
+
+00:40:54.000 --> 00:40:55.680
+<v Hugo Bowne-Anderson>And cursor, for example, has cursor rules.
+
+00:40:55.820 --> 00:40:59.860
+<v Hugo Bowne-Anderson>Whereas if you notice stuff that it does or doesn't do, put it in the rules.
+
+00:40:59.920 --> 00:41:01.160
+<v Hugo Bowne-Anderson>You can have project-specific rules.
+
+00:41:01.220 --> 00:41:04.020
+<v Hugo Bowne-Anderson>You can have cursor general rules, this type of stuff.
+
+00:41:04.480 --> 00:41:06.280
+<v Hugo Bowne-Anderson>Such as always explain your reasoning.
+
+00:41:06.440 --> 00:41:10.580
+<v Hugo Bowne-Anderson>And to your point, I don't think these things think, but they mimic reasoning and thought
+
+00:41:10.820 --> 00:41:12.120
+<v Hugo Bowne-Anderson>in pretty sophisticated ways.
+
+00:41:12.400 --> 00:41:14.280
+<v Hugo Bowne-Anderson>So I totally agree with that.
+
+00:41:14.340 --> 00:41:21.140
+<v Hugo Bowne-Anderson>Also, use these things to not only write code, but to write tests for code producers, right?
+
+00:41:21.320 --> 00:41:23.840
+<v Hugo Bowne-Anderson>To debug, to add assertions.
+
+00:41:24.160 --> 00:41:29.700
+<v Hugo Bowne-Anderson>Now, also make sure you're always reading the code on average that it writes.
+
+00:41:30.200 --> 00:41:32.380
+<v Hugo Bowne-Anderson>If things are really important, it's about your appetite for risk.
+
+00:41:32.840 --> 00:41:37.080
+<v Hugo Bowne-Anderson>Maybe if things are really important, make sure you know what the code does and read it.
+
+00:41:37.260 --> 00:41:39.940
+<v Hugo Bowne-Anderson>If things aren't as important, maybe you don't need to.
+
+00:41:40.040 --> 00:41:47.240
+<v Hugo Bowne-Anderson>And an example I'll give there is one of the biggest wins here is being able to vibe code your own data viewers.
+
+00:41:47.430 --> 00:41:48.200
+<v Hugo Bowne-Anderson>So let's say I'm building.
+
+00:41:48.770 --> 00:41:50.660
+<v Michael Kennedy>100% I agree with you on this.
+
+00:41:50.710 --> 00:41:50.960
+<v Michael Kennedy>Incredible, right?
+
+00:41:51.170 --> 00:42:02.520
+<v Hugo Bowne-Anderson>So if I'm building an LLM powered app where, okay, building an LLM powered app and I've got all these conversations, I can build a vibe code, a custom, a bespoke custom viewer to view that.
+
+00:42:02.580 --> 00:42:08.300
+<v Hugo Bowne-Anderson>If it's an agent that writes emails, I can even build a viewer that displays the conversations
+
+00:42:08.560 --> 00:42:10.540
+<v Hugo Bowne-Anderson>as emails or whatever it may be, right?
+
+00:42:10.920 --> 00:42:14.500
+<v Hugo Bowne-Anderson>Now, I need to make sure that it's displaying the correct information.
+
+00:42:14.580 --> 00:42:18.620
+<v Hugo Bowne-Anderson>So I need to make sure that my traces are actually looking correct.
+
+00:42:18.660 --> 00:42:20.040
+<v Hugo Bowne-Anderson>So I need to understand that code.
+
+00:42:20.500 --> 00:42:24.320
+<v Hugo Bowne-Anderson>But the ins and outs of the front end it's building, not the biggest deal for me.
+
+00:42:24.320 --> 00:42:26.220
+<v Hugo Bowne-Anderson>So figure out what's important and what isn't.
+
+00:42:26.300 --> 00:42:31.280
+<v Michael Kennedy>There's so many tools like this that are like, it's not me worth taking a week to write that.
+
+00:42:31.600 --> 00:42:33.120
+<v Michael Kennedy>But wouldn't it be cool if I had that?
+
+00:42:33.480 --> 00:42:34.560
+<v Michael Kennedy>And nothing depends on it.
+
+00:42:34.680 --> 00:42:36.680
+<v Michael Kennedy>It's kind of like its own side little utility.
+
+00:42:37.120 --> 00:42:38.960
+<v Michael Kennedy>There's no, it's not a building block
+
+00:42:39.100 --> 00:42:41.300
+<v Michael Kennedy>that's going to become an important foundational thing.
+
+00:42:41.420 --> 00:42:43.120
+<v Michael Kennedy>It just, if it works, you're like, that's awesome.
+
+00:42:43.180 --> 00:42:43.620
+<v Michael Kennedy>I have that.
+
+00:42:44.080 --> 00:42:46.420
+<v Michael Kennedy>People got to take advantage of just going like,
+
+00:42:46.540 --> 00:42:48.520
+<v Michael Kennedy>oh, I need a utility that does X
+
+00:42:49.020 --> 00:42:51.980
+<v Michael Kennedy>or I need a view in our admin section of the web app
+
+00:42:52.300 --> 00:42:52.880
+<v Michael Kennedy>that does this.
+
+00:42:53.100 --> 00:42:53.940
+<v Michael Kennedy>Nothing depends on it.
+
+00:42:54.120 --> 00:42:55.540
+<v Michael Kennedy>If it works, amazing.
+
+00:42:55.660 --> 00:42:57.700
+<v Michael Kennedy>If it doesn't, well, it didn't exist anyway.
+
+00:42:57.940 --> 00:42:58.720
+<v Michael Kennedy>So whatever.
+
+00:42:59.320 --> 00:43:00.680
+<v Michael Kennedy>And there's so many opportunities.
+
+00:43:01.040 --> 00:43:21.940
+<v Hugo Bowne-Anderson>I love this so much. And I want to take a slight detour because it's so important. I actually think the surface area of what software is, is expanding and changing completely. So let's just look at, take a bit of a sociological big picture look at history where software, classically, you've, has been very expensive to build, right?
+
+00:43:22.120 --> 00:43:28.260
+<v Hugo Bowne-Anderson>You've needed to pay a lot of not inexpensive engineers to build out a sophisticated product.
+
+00:43:29.060 --> 00:43:32.120
+<v Hugo Bowne-Anderson>For that reason, you've had to get a lot of demand.
+
+00:43:32.540 --> 00:43:34.620
+<v Hugo Bowne-Anderson>You've had to have a lot of service area of the market.
+
+00:43:34.900 --> 00:43:40.840
+<v Hugo Bowne-Anderson>What that's meant is that you've needed to cover a lot of edge cases to satisfy a large
+
+00:43:41.030 --> 00:43:45.280
+<v Hugo Bowne-Anderson>market so that you can make revenue based on the costs that you're accruing, right?
+
+00:43:45.640 --> 00:43:52.000
+<v Hugo Bowne-Anderson>Now, with the ability to even vibe code or use AI-assisted coding to build this type
+
+00:43:52.020 --> 00:43:57.640
+<v Hugo Bowne-Anderson>stuff, it changes what we can build and what it needs, what type of people it needs to satisfy.
+
+00:43:58.140 --> 00:44:04.180
+<v Hugo Bowne-Anderson>So that's why the conversation of like vibe coding is going to bury Salesforce or SaaS versus like
+
+00:44:04.380 --> 00:44:09.960
+<v Hugo Bowne-Anderson>old men screaming at clouds, vibe coding sucks or whatever it is, misses the entire middle ground
+
+00:44:10.110 --> 00:44:15.300
+<v Hugo Bowne-Anderson>of the types of things that are possible. And I do think internal products, such as we've talked
+
+00:44:15.440 --> 00:44:19.720
+<v Hugo Bowne-Anderson>about data viewers, internal products, such as, you know, lots of companies are ripping out their
+
+00:44:20.560 --> 00:44:26.120
+<v Hugo Bowne-Anderson>marketing automation stacks and building things internally through to, I mean, I've got a friend
+
+00:44:26.260 --> 00:44:32.160
+<v Michael Kennedy>who built a chess tutor app. I mean, it's not chess.com, but like a hundred of his friends
+
+00:44:32.880 --> 00:44:38.580
+<v Hugo Bowne-Anderson>use it, right? So the idea of the different types of software we can build now and thinking about,
+
+00:44:38.780 --> 00:44:43.580
+<v Hugo Bowne-Anderson>you know, ephemeral software or just in time software, disposable software, fast software
+
+00:44:44.040 --> 00:44:48.780
+<v Hugo Bowne-Anderson>that we can build to solve a problem right now and then move on. I think we need to shift our
+
+00:44:48.780 --> 00:44:54.800
+<v Michael Kennedy>model of what software actually is. I 100% agree. And it's such an exciting time. I also think this
+
+00:44:55.140 --> 00:45:01.080
+<v Michael Kennedy>actually has an implication for IPI packages and a lot of these just external packages. So think
+
+00:45:01.280 --> 00:45:05.440
+<v Michael Kennedy>about the ones you use, like this is not going to happen for pandas or polars or Jupyter or
+
+00:45:05.570 --> 00:45:12.260
+<v Michael Kennedy>something like that. But how often have you gone like, oh, I need, I need a package that will let
+
+00:45:12.280 --> 00:45:19.180
+<v Michael Kennedy>me look up both my ipv4 and ipv6 ip address and you you'd make you take that as a dependency
+
+00:45:19.760 --> 00:45:23.560
+<v Michael Kennedy>that's like one fun using one function out of whatever thing you grab that might give you that
+
+00:45:23.640 --> 00:45:27.980
+<v Michael Kennedy>information and there's there's a lot more opportunity to have fewer building blocks and
+
+00:45:28.100 --> 00:45:34.020
+<v Michael Kennedy>dependencies that you need in your application if you can just say hey agent thing i need this and
+
+00:45:34.140 --> 00:45:38.640
+<v Michael Kennedy>put it in its own file and boom and now you're not dependent on well did that thing upgrade to
+
+00:45:38.600 --> 00:45:43.880
+<v Michael Kennedy>Python 3.15, sorry, you're stuck. It didn't. You know what I mean? Like it's, you were sort of free
+
+00:45:44.140 --> 00:45:50.220
+<v Michael Kennedy>from, from these like little weird, I depend on this whole tree of dependencies because I need
+
+00:45:50.380 --> 00:45:54.560
+<v Michael Kennedy>one little piece of functionality. You can vendor in stuff a lot easier if it's a low stakes.
+
+00:45:54.800 --> 00:45:59.400
+<v Hugo Bowne-Anderson>The other thing that I think AI assisted coding help I've seen help with is,  now this is,
+
+00:45:59.420 --> 00:46:03.680
+<v Hugo Bowne-Anderson>this will be a bit controversial, but it's going from prototype to production. And what I really
+
+00:46:03.700 --> 00:46:08.520
+<v Hugo Bowne-Anderson>mean by that? Let's say your production stack is in like Databricks, Spark, whatever. You can
+
+00:46:08.880 --> 00:46:13.920
+<v Hugo Bowne-Anderson>prototype, write your pandas code. And then because once again, Spark, Databricks, all that documentation
+
+00:46:14.200 --> 00:46:18.560
+<v Hugo Bowne-Anderson>is in training data. You can then convert it relatively easily. But of course, read, test your
+
+00:46:18.720 --> 00:46:24.060
+<v Hugo Bowne-Anderson>code that you're pushing to prod just as you would with a junior software engineer, right?
+
+00:46:24.260 --> 00:46:30.360
+<v Hugo Bowne-Anderson>The other thing is some gotchas with this. It'll do lots of things you don't ask it to do, okay?
+
+00:46:30.820 --> 00:46:34.940
+<v Hugo Bowne-Anderson>such as it will just start downloading packages, for example,
+
+00:46:35.090 --> 00:46:36.960
+<v Hugo Bowne-Anderson>if you're trying to write some code, right?
+
+00:46:37.440 --> 00:46:40.560
+<v Hugo Bowne-Anderson>And so it'll do lots of things you don't ask it to do,
+
+00:46:40.850 --> 00:46:43.760
+<v Hugo Bowne-Anderson>and it will also do things you ask it to not do, right?
+
+00:46:44.060 --> 00:46:46.660
+<v Hugo Bowne-Anderson>So you'll say only write in one file,
+
+00:46:47.060 --> 00:46:51.200
+<v Hugo Bowne-Anderson>and Devon, for example, will create nested subdirectories
+
+00:46:51.420 --> 00:46:54.340
+<v Hugo Bowne-Anderson>each with 15 notebooks, something like that.
+
+00:46:54.600 --> 00:46:58.420
+<v Hugo Bowne-Anderson>It will also forget lots of things in your conversation.
+
+00:46:58.860 --> 00:47:01.480
+<v Hugo Bowne-Anderson>So make sure to remind it of things.
+
+00:47:02.140 --> 00:47:03.820
+<v Hugo Bowne-Anderson>It will do something called dead looping.
+
+00:47:04.060 --> 00:47:07.220
+<v Hugo Bowne-Anderson>And this is one of the most frustrating and pernicious things, depending on how long the
+
+00:47:07.360 --> 00:47:07.680
+<v Hugo Bowne-Anderson>loop is.
+
+00:47:08.020 --> 00:47:11.500
+<v Hugo Bowne-Anderson>But it will try to solve your most recent concern.
+
+00:47:11.760 --> 00:47:14.360
+<v Hugo Bowne-Anderson>It will really optimize locally around the conversation.
+
+00:47:15.000 --> 00:47:16.080
+<v Hugo Bowne-Anderson>And so it will solve that.
+
+00:47:16.300 --> 00:47:18.700
+<v Hugo Bowne-Anderson>Then another error will appear and it will solve that.
+
+00:47:18.880 --> 00:47:20.320
+<v Hugo Bowne-Anderson>And it will another error appear.
+
+00:47:20.480 --> 00:47:21.220
+<v Hugo Bowne-Anderson>It will solve that.
+
+00:47:21.500 --> 00:47:23.940
+<v Hugo Bowne-Anderson>And after a while, it might actually go back to the initial state.
+
+00:47:24.080 --> 00:47:25.180
+<v Hugo Bowne-Anderson>So that's what dead looping is.
+
+00:47:25.200 --> 00:47:26.240
+<v Hugo Bowne-Anderson>And this can be a loop of three.
+
+00:47:26.520 --> 00:47:27.240
+<v Michael Kennedy>And it just cycles.
+
+00:47:27.380 --> 00:47:27.480
+<v Michael Kennedy>Yeah.
+
+00:47:27.740 --> 00:47:33.180
+<v Hugo Bowne-Anderson>five, seven, nine. So be very careful about that. Solutions are get it to zoom out. Say, hey,
+
+00:47:33.540 --> 00:47:37.400
+<v Hugo Bowne-Anderson>let's zoom out and have a holistic conversation about this. Now, this is wild that this is how
+
+00:47:37.520 --> 00:47:41.480
+<v Hugo Bowne-Anderson>we're interacting with software as well. Now, this is part of the- It's science fiction.
+
+00:47:41.480 --> 00:47:46.200
+<v Hugo Bowne-Anderson>It really is. Science fiction. But write product requirement drops with it before any code. Now,
+
+00:47:46.200 --> 00:47:50.940
+<v Hugo Bowne-Anderson>it may still just start writing code, even when you tell it to do that, right? Plan with it.
+
+00:47:50.940 --> 00:47:57.040
+<v Hugo Bowne-Anderson>Write rules. Have empathy for your super excited, bright, fast, forgetful intern.
+
+00:47:57.400 --> 00:47:58.920
+<v Michael Kennedy>I've really embraced this plan thing.
+
+00:47:59.200 --> 00:48:01.600
+<v Michael Kennedy>All my major projects have a plans folder.
+
+00:48:01.920 --> 00:48:04.400
+<v Michael Kennedy>And every time I start, I create a markdown file.
+
+00:48:04.490 --> 00:48:06.240
+<v Michael Kennedy>I say, we're going to plan it out.
+
+00:48:06.340 --> 00:48:09.360
+<v Michael Kennedy>And I want you to write in this markdown file what we're going to do.
+
+00:48:09.820 --> 00:48:12.420
+<v Michael Kennedy>And I'll do that with a really expensive model, you know, like a thinking
+
+00:48:12.940 --> 00:48:14.500
+<v Michael Kennedy>something or whatever, and it'll do it.
+
+00:48:14.510 --> 00:48:14.960
+<v Michael Kennedy>Then I'll switch.
+
+00:48:15.200 --> 00:48:16.540
+<v Michael Kennedy>I'll completely throw away that chat.
+
+00:48:16.820 --> 00:48:18.100
+<v Michael Kennedy>Get another one, a little lower model.
+
+00:48:18.220 --> 00:48:19.640
+<v Michael Kennedy>Say, we're going to do phase one of this plan.
+
+00:48:19.980 --> 00:48:20.380
+<v Michael Kennedy>Let's go.
+
+00:48:20.740 --> 00:48:21.620
+<v Michael Kennedy>And then two and then three.
+
+00:48:21.880 --> 00:48:23.880
+<v Michael Kennedy>And every time I say, when you're done, you update the plan.
+
+00:48:24.250 --> 00:48:26.000
+<v Michael Kennedy>So you know where we are and what we've done.
+
+00:48:26.440 --> 00:48:26.880
+<v Michael Kennedy>What's not.
+
+00:48:27.000 --> 00:48:28.640
+<v Michael Kennedy>And it's tremendously successful.
+
+00:48:28.840 --> 00:48:32.300
+<v Hugo Bowne-Anderson>There is a concern of sometimes you want memory from one chat.
+
+00:48:32.370 --> 00:48:33.960
+<v Hugo Bowne-Anderson>Like sometimes a chat just degrades.
+
+00:48:34.140 --> 00:48:35.120
+<v Hugo Bowne-Anderson>So start a new conversation.
+
+00:48:35.270 --> 00:48:40.180
+<v Hugo Bowne-Anderson>And there are clever ways, different for different products and models, but to get it to summarize
+
+00:48:40.310 --> 00:48:43.820
+<v Hugo Bowne-Anderson>the conversation so far, like literally say, I'm going to take another instance of you.
+
+00:48:44.160 --> 00:48:48.180
+<v Hugo Bowne-Anderson>Let's squash this so I can pass the important memories to it and so on.
+
+00:48:48.480 --> 00:48:53.440
+<v Hugo Bowne-Anderson>The other thing is Cursor, a lot of these products have, it used to be called YOLO mode on Cursor,
+
+00:48:53.660 --> 00:48:56.220
+<v Hugo Bowne-Anderson>Like Y-O-L-O mode, right?
+
+00:48:56.290 --> 00:48:57.900
+<v Hugo Bowne-Anderson>Where it just executes.
+
+00:48:58.220 --> 00:49:00.060
+<v Michael Kennedy>I run in YOLO mode, by the way, I do it.
+
+00:49:00.180 --> 00:49:02.340
+<v Hugo Bowne-Anderson>I have too much anxiety around that.
+
+00:49:02.460 --> 00:49:04.680
+<v Michael Kennedy>So here's the thing that's really gotten
+
+00:49:04.830 --> 00:49:06.280
+<v Michael Kennedy>that I've really noticed that's interesting
+
+00:49:06.730 --> 00:49:10.540
+<v Michael Kennedy>is my Git discipline is significantly better
+
+00:49:11.040 --> 00:49:13.120
+<v Michael Kennedy>now that I'm, if I do that.
+
+00:49:13.210 --> 00:49:14.740
+<v Michael Kennedy>So I'll open it up and I'll go
+
+00:49:15.260 --> 00:49:16.260
+<v Michael Kennedy>and I'll start having a chat
+
+00:49:16.400 --> 00:49:18.140
+<v Michael Kennedy>and I'll make sure everything is checked in.
+
+00:49:18.140 --> 00:49:19.180
+<v Michael Kennedy>I might do a separate branch
+
+00:49:19.230 --> 00:49:20.560
+<v Michael Kennedy>if I think it's going to go bonkers.
+
+00:49:21.100 --> 00:49:22.300
+<v Michael Kennedy>And then it'll do a little bit of work.
+
+00:49:22.380 --> 00:49:23.740
+<v Michael Kennedy>And I'm like, okay, that's successful.
+
+00:49:23.830 --> 00:49:26.300
+<v Michael Kennedy>So I'll stage those changes, but not even commit them.
+
+00:49:26.690 --> 00:49:29.320
+<v Michael Kennedy>And then I'll let it keep going and it'll create more work.
+
+00:49:29.430 --> 00:49:30.980
+<v Michael Kennedy>And I see if it's successful, I'll just like put,
+
+00:49:31.030 --> 00:49:33.200
+<v Michael Kennedy>and then eventually I'll commit it at the end.
+
+00:49:33.210 --> 00:49:34.460
+<v Michael Kennedy>It won't even push it necessarily.
+
+00:49:35.080 --> 00:49:36.600
+<v Michael Kennedy>And then you can also, while it's running,
+
+00:49:37.380 --> 00:49:39.600
+<v Michael Kennedy>have the get diff window open
+
+00:49:39.610 --> 00:49:41.260
+<v Michael Kennedy>and you can just sort of see what it's doing
+
+00:49:41.820 --> 00:49:43.460
+<v Michael Kennedy>by looking at the diffs that start to appear.
+
+00:49:43.900 --> 00:49:46.080
+<v Michael Kennedy>And so that's why I'm okay with YOLO mode
+
+00:49:46.230 --> 00:49:49.700
+<v Michael Kennedy>because I can always just get revert and we're fine again.
+
+00:49:49.940 --> 00:49:50.160
+<v Hugo Bowne-Anderson>Totally.
+
+00:49:50.440 --> 00:49:55.100
+<v Hugo Bowne-Anderson>And also, I didn't mention this, but these AI assistants are great at looking at diffs with you.
+
+00:49:55.320 --> 00:50:01.060
+<v Hugo Bowne-Anderson>And I also, I'm really thinking through what happens when we have so much AI generated code.
+
+00:50:01.450 --> 00:50:07.920
+<v Hugo Bowne-Anderson>And I think part of the future of work, I don't want to get too sci-fi-esque, but how many agents can you manage simultaneously?
+
+00:50:08.260 --> 00:50:12.340
+<v Hugo Bowne-Anderson>Like maybe the SuperSpa employees will be people who can manage 100 agents.
+
+00:50:12.720 --> 00:50:15.220
+<v Michael Kennedy>It's like the revenge of the program manager, I'm telling you.
+
+00:50:15.360 --> 00:50:20.100
+<v Hugo Bowne-Anderson>And in fact, project management, product management are some of the most important skills moving forward.
+
+00:50:20.300 --> 00:50:24.040
+<v Hugo Bowne-Anderson>But also when you have so many agents generating code, what happens to CICD?
+
+00:50:24.260 --> 00:50:25.200
+<v Hugo Bowne-Anderson>What happens to Jenkins?
+
+00:50:25.790 --> 00:50:30.900
+<v Hugo Bowne-Anderson>And there's going to be a whole new space of products and agents that may deal with these
+
+00:50:31.040 --> 00:50:32.040
+<v Hugo Bowne-Anderson>types of systems, right?
+
+00:50:32.420 --> 00:50:37.100
+<v Hugo Bowne-Anderson>Look during the industrial revolution, what sprung up when looms like appeared and the
+
+00:50:37.740 --> 00:50:39.400
+<v Hugo Bowne-Anderson>satellite industries that happened there.
+
+00:50:39.400 --> 00:50:43.660
+<v Hugo Bowne-Anderson>So I think we're talking about job automation, job automation and job displacement, but the
+
+00:50:43.880 --> 00:50:48.620
+<v Hugo Bowne-Anderson>amount of new jobs that will become available, I'm actually very excited about.
+
+00:50:48.800 --> 00:50:50.160
+<v Hugo Bowne-Anderson>And we'll put in the show notes, please.
+
+00:50:50.320 --> 00:50:52.260
+<v Hugo Bowne-Anderson>But there's an essay by Tim O'Reilly.
+
+00:50:52.360 --> 00:50:55.480
+<v Hugo Bowne-Anderson>And I did a podcast with him about it, actually, that we can link to if you're up for it, called
+
+00:50:55.600 --> 00:50:57.540
+<v Hugo Bowne-Anderson>The End of Programming As We Know It.
+
+00:50:57.800 --> 00:50:57.920
+<v Hugo Bowne-Anderson>OK.
+
+00:50:59.000 --> 00:51:04.560
+<v Hugo Bowne-Anderson>And he essentially, with his great depth of historical knowledge and his forward thinking
+
+00:51:04.780 --> 00:51:10.260
+<v Hugo Bowne-Anderson>through vectors, prevents a really wonderful vision and ideas around where software is
+
+00:51:10.740 --> 00:51:10.840
+<v Hugo Bowne-Anderson>heading.
+
+00:51:11.140 --> 00:51:11.260
+<v Hugo Bowne-Anderson>Exactly.
+
+00:51:11.540 --> 00:51:12.760
+<v Hugo Bowne-Anderson>What about exploring data?
+
+00:51:13.180 --> 00:51:18.040
+<v Michael Kennedy>So we've been talking about mostly writing data, testing, writing code, testing code in
+
+00:51:18.060 --> 00:51:23.540
+<v Michael Kennedy>the context of data science, but I think it's actually really pretty powerful to say, here's a
+
+00:51:23.660 --> 00:51:29.180
+<v Michael Kennedy>CSV. This is basically what it means. Let's start looking at, get me some graphs, pull me out some
+
+00:51:29.320 --> 00:51:33.920
+<v Michael Kennedy>trends. What's important? What do you see that I didn't see? What do you think about this, like
+
+00:51:34.300 --> 00:51:38.660
+<v Michael Kennedy>this exploratory analysis side of it? And that's not even, you know, that doesn't even worry you
+
+00:51:38.820 --> 00:51:42.300
+<v Michael Kennedy>about like, is there maybe a bug in the code because I don't want to put it in production,
+
+00:51:42.680 --> 00:51:45.620
+<v Michael Kennedy>right? It's just, it's fooling around to get a jumpstart on understanding.
+
+00:51:45.860 --> 00:51:50.940
+<v Hugo Bowne-Anderson>So firstly, exploratory data analysis is one of a scientist's and data scientist's most important
+
+00:51:51.160 --> 00:51:57.520
+<v Hugo Bowne-Anderson>jobs. So the question then becomes is how can we get AI to help us see what's happening that's so
+
+00:51:57.700 --> 00:52:02.740
+<v Hugo Bowne-Anderson>integral to what we do? And the truth is they're wonderful. They can be wonderful at pulling out
+
+00:52:02.800 --> 00:52:09.080
+<v Hugo Bowne-Anderson>insights that I just haven't noticed, or I don't even think about how to visualize. Now, if I ask
+
+00:52:09.080 --> 00:52:14.920
+<v Hugo Bowne-Anderson>it to find the mean or median, it may suck at that on average, unless it writes the code to do so,
+
+00:52:15.020 --> 00:52:23.260
+<v Hugo Bowne-Anderson>But when you get it to do EDA or exploratory data analysis, it will provide insights that I haven't thought of.
+
+00:52:23.320 --> 00:52:33.340
+<v Hugo Bowne-Anderson>So one example I saw recently from a client was throwing in thousands of rows of customer data and website data of customers.
+
+00:52:33.880 --> 00:52:38.840
+<v Hugo Bowne-Anderson>And it immediately showed clusters of high usage versus low usage.
+
+00:52:39.140 --> 00:52:40.360
+<v Hugo Bowne-Anderson>You could see power users.
+
+00:52:40.360 --> 00:52:43.240
+<v Hugo Bowne-Anderson>You could see power users who spent a lot on the platform.
+
+00:52:43.580 --> 00:52:46.020
+<v Hugo Bowne-Anderson>You could see power users who didn't spend much on the platform.
+
+00:52:46.550 --> 00:52:51.680
+<v Hugo Bowne-Anderson>And this is the type of work that takes hours for data scientists to sift through and develop
+
+00:52:52.620 --> 00:52:53.500
+<v Hugo Bowne-Anderson>hypotheses around.
+
+00:52:53.760 --> 00:52:58.360
+<v Hugo Bowne-Anderson>So when we're talking about, you know, data science is exploration and hypothesis driven,
+
+00:52:58.430 --> 00:52:58.560
+<v Hugo Bowne-Anderson>right?
+
+00:52:58.570 --> 00:53:03.460
+<v Hugo Bowne-Anderson>So when we're talking about exploration and hypothesis driven data science, it's wonderful
+
+00:53:03.760 --> 00:53:03.860
+<v Hugo Bowne-Anderson>there.
+
+00:53:04.080 --> 00:53:07.740
+<v Hugo Bowne-Anderson>And once again, this isn't to replace what we do, but it's to help us.
+
+00:53:07.840 --> 00:53:10.780
+<v Michael Kennedy>It's having a thought partner, which is fast.
+
+00:53:11.070 --> 00:53:13.260
+<v Michael Kennedy>Beyond the computer, a different bicycle of the mind.
+
+00:53:13.520 --> 00:53:17.260
+<v Michael Kennedy>of a sort. Yeah. Maybe like a, maybe it's like an e-bike of the mind. What do you think?
+
+00:53:17.260 --> 00:53:17.640
+<v Michael Kennedy>I love it.
+
+00:53:17.640 --> 00:53:19.140
+<v Michael Kennedy>Yeah. E-bikes. I love e-bikes.
+
+00:53:19.700 --> 00:53:24.280
+<v Hugo Bowne-Anderson>They're awesome. And I especially do because I live in Sydney, right? So getting to the beach,
+
+00:53:24.600 --> 00:53:29.680
+<v Hugo Bowne-Anderson>it's actually quite hilly depending where, where you are. And the other thing I, yeah, when,
+
+00:53:30.030 --> 00:53:34.800
+<v Hugo Bowne-Anderson>so hopefully we have time to talk about this, but something I do a lot of work on is what I call
+
+00:53:35.280 --> 00:53:41.780
+<v Hugo Bowne-Anderson>evaluation driven development for LLM and AI powered applications where a really important part
+
+00:53:41.800 --> 00:53:49.380
+<v Hugo Bowne-Anderson>of this is error analysis and failure analysis. So seeing where your applications fail. So let's
+
+00:53:49.440 --> 00:53:54.700
+<v Hugo Bowne-Anderson>say we're building a chatbot, which is RAG. So it has some corpus of documents and it retrieves
+
+00:53:54.820 --> 00:54:00.460
+<v Hugo Bowne-Anderson>stuff from it. And we want to interact with it. When we're building that, some of the first steps
+
+00:54:00.540 --> 00:54:04.820
+<v Hugo Bowne-Anderson>and ongoing process is seeing what failure modes they are. Is it hallucinating or is it not
+
+00:54:05.040 --> 00:54:10.840
+<v Hugo Bowne-Anderson>retrieving things correctly? Is it looking at the wrong documents? These types of things. And you do
+
+00:54:10.860 --> 00:54:18.340
+<v Hugo Bowne-Anderson>that to drive the development and iterative process of AI powered software. Now you can also use AI
+
+00:54:18.880 --> 00:54:24.400
+<v Hugo Bowne-Anderson>to look at that and look at the results in the data exploration. And it can really bring out a lot of
+
+00:54:24.560 --> 00:54:29.580
+<v Hugo Bowne-Anderson>different failure modes. It can say, Hey, look at this cluster of conversations where the user
+
+00:54:30.050 --> 00:54:34.800
+<v Hugo Bowne-Anderson>finally got the correct response, but they asked to be connected to a representative first,
+
+00:54:35.210 --> 00:54:39.880
+<v Hugo Bowne-Anderson>and they didn't get connected to a representative. So this is actually an example where the conversation
+
+00:54:39.900 --> 00:54:44.580
+<v Hugo Bowne-Anderson>looks like it's resolved. The support ticket was resolved or whatever it is, but there's a deep
+
+00:54:44.740 --> 00:54:49.980
+<v Hugo Bowne-Anderson>failure mode within there. So AI can be very good in terms of the data exploration and hypothesis
+
+00:54:50.540 --> 00:54:55.920
+<v Hugo Bowne-Anderson>driving process with that. So that was an example, but yeah, should we get into building LLM powered
+
+00:54:56.340 --> 00:55:01.140
+<v Michael Kennedy>software? Yeah, sure. So I wonder whether you'd like to bring up the figure that I will talk
+
+00:55:01.220 --> 00:55:06.099
+<v Hugo Bowne-Anderson>through because I know there'll be people listening and I'll share it in the chat with you. So this is
+
+00:55:06.060 --> 00:55:11.100
+<v Hugo Bowne-Anderson>a slightly tongue-in-cheek figure. It speaks to real pain we have. So on the x-axis, we have time
+
+00:55:11.600 --> 00:55:16.580
+<v Hugo Bowne-Anderson>and we're talking about building software. On the y-axis, we have excitement or dopamine, if you will,
+
+00:55:16.680 --> 00:55:20.360
+<v Hugo Bowne-Anderson>if you want to measure it. And for the scientists out there, I apologize for not having units on my
+
+00:55:20.480 --> 00:55:26.240
+<v Hugo Bowne-Anderson>axes, but it's all good. We know with traditional software, excitement increases over time. Things
+
+00:55:26.240 --> 00:55:30.120
+<v Hugo Bowne-Anderson>are pretty boring at the start. You have a hello world and basic features and add unit tests,
+
+00:55:30.250 --> 00:55:34.460
+<v Hugo Bowne-Anderson>then you scale and optimize and load balance. And over time, excitement increases and increases
+
+00:55:34.480 --> 00:55:39.520
+<v Hugo Bowne-Anderson>and increases. This is absolutely inverted with generative AI powered software, right? Where you
+
+00:55:39.520 --> 00:55:44.020
+<v Hugo Bowne-Anderson>have a flashy demo at the start. You're like, wow, check this out. Okay. Then you're like, oh, wait,
+
+00:55:44.250 --> 00:55:49.300
+<v Hugo Bowne-Anderson>does it actually work? Or can someone else use it? And so you have issues with basic functionality
+
+00:55:49.580 --> 00:55:54.420
+<v Hugo Bowne-Anderson>then. So excitement goes down. Then you're like, oh no, all these hallucinations, excitement goes
+
+00:55:54.560 --> 00:55:58.720
+<v Hugo Bowne-Anderson>down. Then you have monitoring challenges. You're like, how can I even look at all my conversations
+
+00:55:59.280 --> 00:56:03.300
+<v Hugo Bowne-Anderson>and tool calls and actions and this type of stuff? Excitement goes down. Then you have integration
+
+00:56:03.320 --> 00:56:07.940
+<v Hugo Bowne-Anderson>issues? How do I integrate into my enterprise stack? Excitement goes down again. And I don't
+
+00:56:07.940 --> 00:56:13.640
+<v Hugo Bowne-Anderson>think it's a coincidence that this is one of the most exciting technologies of a generation that's
+
+00:56:14.000 --> 00:56:18.420
+<v Hugo Bowne-Anderson>totally addicted to Instagram as well, right? But the question is, and a lot of work I do,
+
+00:56:18.760 --> 00:56:22.980
+<v Hugo Bowne-Anderson>is in helping people raise the curve, not change anything, not even change the excitement of the
+
+00:56:23.100 --> 00:56:29.700
+<v Hugo Bowne-Anderson>flashy demo, but just make sure that excitement goes up and up and up as you build. And once again,
+
+00:56:30.080 --> 00:56:30.780
+<v Hugo Bowne-Anderson>There's no free lunch.
+
+00:56:30.960 --> 00:56:32.720
+<v Hugo Bowne-Anderson>You've got to do this the hard way, right?
+
+00:56:33.060 --> 00:56:36.040
+<v Hugo Bowne-Anderson>So this is something, and a short plug for a course I teach,
+
+00:56:36.060 --> 00:56:37.600
+<v Hugo Bowne-Anderson>but this is something I teach a lot on.
+
+00:56:37.840 --> 00:56:39.480
+<v Hugo Bowne-Anderson>And I teach a Maven course,
+
+00:56:40.040 --> 00:56:41.440
+<v Hugo Bowne-Anderson>building LM powered applications
+
+00:56:41.760 --> 00:56:43.320
+<v Hugo Bowne-Anderson>for data science and software engineers
+
+00:56:43.740 --> 00:56:45.080
+<v Hugo Bowne-Anderson>with my colleague, Stefan Krauchik,
+
+00:56:45.200 --> 00:56:48.200
+<v Hugo Bowne-Anderson>who he works on agent infrastructure at Salesforce.
+
+00:56:48.700 --> 00:56:50.300
+<v Hugo Bowne-Anderson>I bring a lot of the data and ML stuff.
+
+00:56:50.320 --> 00:56:51.940
+<v Hugo Bowne-Anderson>He brings a lot of the ops stuff.
+
+00:56:52.380 --> 00:56:53.400
+<v Hugo Bowne-Anderson>But yeah, in this course,
+
+00:56:53.900 --> 00:56:55.840
+<v Hugo Bowne-Anderson>we teach a lot of these things.
+
+00:56:56.340 --> 00:56:58.480
+<v Hugo Bowne-Anderson>And the way we do that,
+
+00:56:58.700 --> 00:57:03.000
+<v Hugo Bowne-Anderson>one way to think about it is what we call evaluation-driven development. So that's not
+
+00:57:03.220 --> 00:57:09.200
+<v Hugo Bowne-Anderson>necessarily having very sophisticated evals and tests and that type of stuff to start,
+
+00:57:09.600 --> 00:57:16.220
+<v Hugo Bowne-Anderson>but it's about having a sense of where you want your product to go and having a sense of evaluation
+
+00:57:16.780 --> 00:57:22.780
+<v Hugo Bowne-Anderson>of how to drive it in that direction. And the skillset that's required for this is so similar
+
+00:57:22.800 --> 00:57:28.600
+<v Hugo Bowne-Anderson>to people who've built data science and ML powered products, right? So it's a curiosity to explore
+
+00:57:28.880 --> 00:57:33.740
+<v Hugo Bowne-Anderson>data. It's a hacker mindset. It's experimenting with different tools. And what have we been doing
+
+00:57:34.040 --> 00:57:38.980
+<v Hugo Bowne-Anderson>in the PyDataStack? I mean, look at the data viz landscape in Python. I think it was maybe PyCon
+
+00:57:39.280 --> 00:57:44.300
+<v Hugo Bowne-Anderson>2018 that Jake Vanderplass, I think first time gave his talk, you know, data visualization in
+
+00:57:44.560 --> 00:57:49.160
+<v Hugo Bowne-Anderson>Python. And, you know, there were so many tools one could use there. It's this type of mindset
+
+00:57:49.160 --> 00:57:55.660
+<v Hugo Bowne-Anderson>you need. And then in terms of the product workflow, how you make sure you don't kind of go down this
+
+00:57:56.040 --> 00:58:00.380
+<v Hugo Bowne-Anderson>curve, lose excitement in what I call proof of concept purgatory. People call the plateau of
+
+00:58:00.460 --> 00:58:06.040
+<v Hugo Bowne-Anderson>productivity. There are all types of fun names about it. But what you do is you use the machine
+
+00:58:06.260 --> 00:58:11.360
+<v Hugo Bowne-Anderson>learning mindset, which is get some data in and out of your system. If you don't have users yet,
+
+00:58:11.530 --> 00:58:19.140
+<v Hugo Bowne-Anderson>you can generate synthetic data to do so, right? Then you label it, pass or fail initially. And
+
+00:58:19.580 --> 00:58:24.960
+<v Hugo Bowne-Anderson>you give it a failure mode such as it was hallucination retrieval error wrong tool call
+
+00:58:25.200 --> 00:58:30.900
+<v Hugo Bowne-Anderson>and a tool call essentially is what an agent does so an agent is an llm plus tool calls a tool call
+
+00:58:30.980 --> 00:58:36.480
+<v Hugo Bowne-Anderson>could be ping an api send an email whatever it is agent plus tool call in some you know while loop
+
+00:58:36.550 --> 00:58:43.080
+<v Hugo Bowne-Anderson>or for loop right and so you have did it did this particular interaction pass or fail what was the
+
+00:58:43.080 --> 00:58:48.880
+<v Hugo Bowne-Anderson>failure mode and then how do I fix these particular failure modes? And I mean, one way to do this
+
+00:58:49.020 --> 00:58:52.160
+<v Hugo Bowne-Anderson>initially, depending on the complexity of your system, is to put all of this in a spreadsheet
+
+00:58:52.680 --> 00:58:57.740
+<v Hugo Bowne-Anderson>and do a pivot table. I know AI engineers hate it when I tell them to do pivot tables, but if you
+
+00:58:57.920 --> 00:59:03.000
+<v Hugo Bowne-Anderson>rank order, use a pivot table to rank order your failure modes by frequency, then you can see what
+
+00:59:03.050 --> 00:59:08.460
+<v Hugo Bowne-Anderson>to fix first. And if it's a retrieval error, maybe you want to fix the rag part of your system and
+
+00:59:08.480 --> 00:59:09.620
+<v Hugo Bowne-Anderson>the retrieval part, right?
+
+00:59:09.910 --> 00:59:11.380
+<v Hugo Bowne-Anderson>As opposed to the generative part.
+
+00:59:11.500 --> 00:59:13.420
+<v Hugo Bowne-Anderson>So focus on your embeddings or chunks.
+
+00:59:13.870 --> 00:59:14.600
+<v Hugo Bowne-Anderson>If it's a tool call,
+
+00:59:15.110 --> 00:59:17.360
+<v Hugo Bowne-Anderson>focus on how that tool call is defined,
+
+00:59:17.420 --> 00:59:19.860
+<v Hugo Bowne-Anderson>heuristics that the LLM uses there.
+
+00:59:20.180 --> 00:59:21.840
+<v Michael Kennedy>A lot of the time, if you're doing...
+
+00:59:21.840 --> 00:59:22.820
+<v Michael Kennedy>I would like to add,
+
+00:59:23.400 --> 00:59:24.040
+<v Michael Kennedy>well, this is great.
+
+00:59:24.130 --> 00:59:25.160
+<v Michael Kennedy>I would like to add that
+
+00:59:25.430 --> 00:59:27.420
+<v Michael Kennedy>you can use those agentic coding tools
+
+00:59:27.640 --> 00:59:29.420
+<v Michael Kennedy>to help build better analytics.
+
+00:59:29.800 --> 00:59:29.980
+<v Michael Kennedy>Absolutely.
+
+00:59:30.520 --> 00:59:31.060
+<v Michael Kennedy>Other support.
+
+00:59:31.310 --> 00:59:31.940
+<v Michael Kennedy>So you're like,
+
+00:59:32.040 --> 00:59:32.980
+<v Michael Kennedy>God, we don't really have,
+
+00:59:33.140 --> 00:59:34.120
+<v Michael Kennedy>we can't really track that, right?
+
+00:59:34.260 --> 00:59:35.760
+<v Michael Kennedy>Like, well, give it half an hour
+
+00:59:35.860 --> 00:59:37.020
+<v Michael Kennedy>and you can, you know what I mean?
+
+00:59:37.180 --> 00:59:37.380
+<v Michael Kennedy>Exactly.
+
+00:59:37.760 --> 00:59:41.340
+<v Michael Kennedy>And so you got to kind of think out of the box and be a little creative there.
+
+00:59:42.000 --> 00:59:47.880
+<v Michael Kennedy>Maybe build an MCP server that specializes in solving a specialized LLM that addresses
+
+00:59:48.660 --> 00:59:52.920
+<v Michael Kennedy>a shortcoming that you can then force it to use the MCP server and work more constrained
+
+00:59:52.960 --> 00:59:53.280
+<v Michael Kennedy>or whatever.
+
+00:59:53.420 --> 00:59:53.840
+<v Hugo Bowne-Anderson>Exactly.
+
+00:59:53.960 --> 00:59:57.600
+<v Hugo Bowne-Anderson>And as we kind of hinted at earlier, one of the wacky things here is that a lot of this
+
+00:59:57.840 --> 00:59:58.840
+<v Hugo Bowne-Anderson>comes down to prompting.
+
+00:59:58.900 --> 01:00:02.340
+<v Hugo Bowne-Anderson>And people like, should I fine tune or prompt engineer or rag or that type of stuff?
+
+01:00:02.880 --> 01:00:08.360
+<v Hugo Bowne-Anderson>Prompt and prompt and prompt initially, because you can get so much lift by prompting.
+
+01:00:08.480 --> 01:00:12.880
+<v Hugo Bowne-Anderson>Now, if it is actually a retrieval error, perhaps you want to improve your embeddings
+
+01:00:13.120 --> 01:00:15.220
+<v Hugo Bowne-Anderson>or your chunking strategy or that type of stuff.
+
+01:00:15.540 --> 01:00:18.920
+<v Hugo Bowne-Anderson>The other thing is, of course, data, metadata, data ingestion.
+
+01:00:19.380 --> 01:00:23.620
+<v Hugo Bowne-Anderson>Draw an architectural diagram of your system where you see, you know, you have your RAG,
+
+01:00:23.640 --> 01:00:27.420
+<v Hugo Bowne-Anderson>you have your output, you have your embeddings, you have your OCR, or if you've got PDS,
+
+01:00:27.540 --> 01:00:28.660
+<v Hugo Bowne-Anderson>however you're ingesting your data,
+
+01:00:29.020 --> 01:00:30.420
+<v Hugo Bowne-Anderson>a huge amount of the time,
+
+01:00:30.780 --> 01:00:34.360
+<v Hugo Bowne-Anderson>fixing how you do your OCR on your PDFs
+
+01:00:34.760 --> 01:00:36.340
+<v Hugo Bowne-Anderson>will be far more significant lift
+
+01:00:36.460 --> 01:00:39.880
+<v Hugo Bowne-Anderson>than switching out to Claude Sonnet 4.5, okay?
+
+01:00:40.160 --> 01:00:42.280
+<v Michael Kennedy>At that point, I totally understand
+
+01:00:42.660 --> 01:00:45.340
+<v Hugo Bowne-Anderson>why people want to try the newest and sexiest model.
+
+01:00:45.620 --> 01:00:47.320
+<v Hugo Bowne-Anderson>And I'm not telling people not to.
+
+01:00:47.660 --> 01:00:49.540
+<v Hugo Bowne-Anderson>What I'm saying is focus on the fundamentals.
+
+01:00:50.200 --> 01:00:53.760
+<v Hugo Bowne-Anderson>And then when you have this set of evals
+
+01:00:53.920 --> 01:00:57.280
+<v Hugo Bowne-Anderson>of labeled data of what works, what doesn't,
+
+01:00:57.380 --> 01:00:59.680
+<v Hugo Bowne-Anderson>You want a test set, essentially, right?
+
+01:00:59.800 --> 01:01:00.560
+<v Hugo Bowne-Anderson>Like in machine learning.
+
+01:01:00.680 --> 01:01:01.500
+<v Hugo Bowne-Anderson>So it's the same process.
+
+01:01:02.040 --> 01:01:06.720
+<v Hugo Bowne-Anderson>You have this test set, your gold standard, which ideally covers, has coverage over all
+
+01:01:06.740 --> 01:01:07.560
+<v Hugo Bowne-Anderson>your failure modes.
+
+01:01:07.580 --> 01:01:08.540
+<v Hugo Bowne-Anderson>You want eval coverage.
+
+01:01:09.120 --> 01:01:13.060
+<v Hugo Bowne-Anderson>Then when you switch out to a new model, you can see how it performed on your test set.
+
+01:01:13.320 --> 01:01:13.960
+<v Hugo Bowne-Anderson>Imagine that.
+
+01:01:14.280 --> 01:01:18.600
+<v Hugo Bowne-Anderson>Imagine being able to switch out a model and seeing what's up there.
+
+01:01:18.700 --> 01:01:22.940
+<v Michael Kennedy>We will say it's better concretely with data, not just it feels better, which is often.
+
+01:01:23.220 --> 01:01:26.200
+<v Hugo Bowne-Anderson>There are all these eval conversations about we don't want these evals.
+
+01:01:26.220 --> 01:01:27.880
+<v Hugo Bowne-Anderson>We want online evals.
+
+01:01:27.920 --> 01:01:29.860
+<v Hugo Bowne-Anderson>And then there are people do things only by vibes.
+
+01:01:29.920 --> 01:01:32.680
+<v Hugo Bowne-Anderson>And all of these things are absolutely valid as well.
+
+01:01:32.680 --> 01:01:36.660
+<v Hugo Bowne-Anderson>I think it's a healthy combination for whatever your product needs at any point in time.
+
+01:01:36.760 --> 01:01:41.740
+<v Michael Kennedy>I do want to take just a couple minutes, literally, and get your thoughts on people coming into
+
+01:01:41.740 --> 01:01:42.200
+<v Michael Kennedy>the industry.
+
+01:01:42.700 --> 01:01:47.240
+<v Michael Kennedy>Data scientists who are just graduating now, or they got their first job, or they're about
+
+01:01:47.240 --> 01:01:47.900
+<v Michael Kennedy>to get their first job.
+
+01:01:48.100 --> 01:01:50.520
+<v Michael Kennedy>Like, I imagine this is something of a scary time.
+
+01:01:50.860 --> 01:01:53.420
+<v Michael Kennedy>I think, well, now I'm not just competing with all the other people.
+
+01:01:53.500 --> 01:01:57.240
+<v Michael Kennedy>Now these like AI things are biting against me getting a job as well.
+
+01:01:57.440 --> 01:01:59.680
+<v Michael Kennedy>But I think it's both a blessing and a curse.
+
+01:02:00.280 --> 01:02:00.720
+<v Michael Kennedy>What do you think?
+
+01:02:00.780 --> 01:02:01.700
+<v Hugo Bowne-Anderson>Focus on three things.
+
+01:02:02.070 --> 01:02:03.240
+<v Hugo Bowne-Anderson>What value you can deliver?
+
+01:02:03.440 --> 01:02:04.960
+<v Hugo Bowne-Anderson>What's your skill as a data scientist?
+
+01:02:05.130 --> 01:02:07.460
+<v Hugo Bowne-Anderson>And it is looking at data.
+
+01:02:07.570 --> 01:02:10.880
+<v Hugo Bowne-Anderson>It is building and it is tying that to business value.
+
+01:02:10.970 --> 01:02:15.400
+<v Hugo Bowne-Anderson>So if you focus on your skills and you build, build, build and consistently tie it to business
+
+01:02:15.680 --> 01:02:17.800
+<v Hugo Bowne-Anderson>value, I think you'll go a long way.
+
+01:02:18.020 --> 01:02:22.780
+<v Hugo Bowne-Anderson>And this actually speaks to how we think about evaluation more generally.
+
+01:02:23.000 --> 01:02:32.300
+<v Hugo Bowne-Anderson>And I do want to give a shout out to a Sydney-based company called Lorikeet that they build customer support agents for all types of industries.
+
+01:02:33.000 --> 01:02:38.980
+<v Hugo Bowne-Anderson>And when they do evaluation, they always evaluate was the ticket solved or not.
+
+01:02:39.160 --> 01:02:40.660
+<v Hugo Bowne-Anderson>That's the most important evaluation.
+
+01:02:40.870 --> 01:02:45.760
+<v Hugo Bowne-Anderson>It's not did this LLM call result in what we wanted it to be or anything along those lines.
+
+01:02:45.880 --> 01:02:53.300
+<v Hugo Bowne-Anderson>Of course, once they see a failure, they tie it back to these more technical LLM-based failure modes.
+
+01:02:53.940 --> 01:02:58.160
+<v Hugo Bowne-Anderson>But I wonder if, yeah, maybe Google Lorikeet AI or something like that.
+
+01:02:58.300 --> 01:02:59.460
+<v Michael Kennedy>I had it in another tab.
+
+01:02:59.660 --> 01:02:59.920
+<v Michael Kennedy>I don't know.
+
+01:02:59.960 --> 01:03:00.520
+<v Michael Kennedy>I'll get it back.
+
+01:03:00.660 --> 01:03:03.200
+<v Hugo Bowne-Anderson>One thing I love about, and I'm indexing on them.
+
+01:03:03.330 --> 01:03:04.980
+<v Hugo Bowne-Anderson>There are lots of companies that do this.
+
+01:03:05.480 --> 01:03:12.700
+<v Hugo Bowne-Anderson>But one thing that's very interesting about them is that their pricing model is ticket resolution based, right?
+
+01:03:12.780 --> 01:03:18.880
+<v Hugo Bowne-Anderson>So if they've built a concierge or customer service agent for you, you pay based on how many tickets are resolved.
+
+01:03:19.240 --> 01:03:22.780
+<v Hugo Bowne-Anderson>A lot of their competitors, their pricing is based on tokens, right?
+
+01:03:22.900 --> 01:03:24.360
+<v Hugo Bowne-Anderson>Because that's what they pay for.
+
+01:03:24.480 --> 01:03:31.940
+<v Hugo Bowne-Anderson>And in terms of aligning incentives, having it based around resolution is incredibly important for how you build as well.
+
+01:03:32.060 --> 01:03:36.980
+<v Hugo Bowne-Anderson>And the reason, the question was, what should early stage data scientists focus on?
+
+01:03:37.080 --> 01:03:46.240
+<v Hugo Bowne-Anderson>The reason I detoured on that story is supreme focus on business value, how your skills can be tied to business value via building stuff.
+
+01:03:46.640 --> 01:03:47.280
+<v Michael Kennedy>It's great advice.
+
+01:03:47.480 --> 01:03:55.700
+<v Michael Kennedy>And I will just throw one more thing out there for people is don't let these AI tools undercut your desire to actually learn the details.
+
+01:03:56.240 --> 01:04:02.420
+<v Michael Kennedy>If you just go like, all right, I asked it and it gave me the answer and it just streamed by and you didn't pay attention, you're doing it wrong.
+
+01:04:02.620 --> 01:04:06.740
+<v Michael Kennedy>You've got to stop, read, pay attention, question why did it do that.
+
+01:04:06.880 --> 01:04:08.280
+<v Michael Kennedy>You can even ask it, why did you do this?
+
+01:04:08.560 --> 01:04:11.240
+<v Michael Kennedy>Rather than that way, it might give you a documentation link.
+
+01:04:11.820 --> 01:04:16.940
+<v Michael Kennedy>Like you got to stay active and it's so easy to just go next, next, next, because it's exciting
+
+01:04:17.100 --> 01:04:17.840
+<v Michael Kennedy>that it's building something.
+
+01:04:18.060 --> 01:04:18.280
+<v Michael Kennedy>Absolutely.
+
+01:04:18.800 --> 01:04:22.380
+<v Hugo Bowne-Anderson>And I will add one other thing there, which is we need to carve out time.
+
+01:04:22.700 --> 01:04:24.000
+<v Hugo Bowne-Anderson>These things won't always work.
+
+01:04:24.200 --> 01:04:28.060
+<v Hugo Bowne-Anderson>You can spend a day working with AI and make less progress than if you'd done it yourself
+
+01:04:28.320 --> 01:04:28.580
+<v Hugo Bowne-Anderson>as well.
+
+01:04:28.580 --> 01:04:30.440
+<v Hugo Bowne-Anderson>I want to be very clear about that.
+
+01:04:30.700 --> 01:04:35.780
+<v Hugo Bowne-Anderson>What we all need to do is figure out organizations we can work at, work with, and then time ourselves
+
+01:04:36.300 --> 01:04:39.160
+<v Hugo Bowne-Anderson>to experiment with these seriously emerging
+
+01:04:39.540 --> 01:04:41.940
+<v Hugo Bowne-Anderson>and rapidly changing technologies.
+
+01:04:42.220 --> 01:04:44.960
+<v Hugo Bowne-Anderson>So it won't always be wins is my point.
+
+01:04:45.070 --> 01:04:47.200
+<v Hugo Bowne-Anderson>So don't get discouraged when it isn't.
+
+01:04:47.300 --> 01:04:47.780
+<v Michael Kennedy>Awesome, Hugo.
+
+01:04:48.250 --> 01:04:49.180
+<v Michael Kennedy>Thank you for being on the show,
+
+01:04:49.700 --> 01:04:50.660
+<v Michael Kennedy>sharing what you've been up to,
+
+01:04:51.470 --> 01:04:52.040
+<v Michael Kennedy>your view of this.
+
+01:04:52.280 --> 01:04:52.880
+<v Michael Kennedy>It's got your pleasure.
+
+01:04:53.180 --> 01:04:53.340
+<v Michael Kennedy>Absolutely.
+
+01:04:53.540 --> 01:04:54.800
+<v Michael Kennedy>I'll put a link to your podcasts,
+
+01:04:55.030 --> 01:04:56.040
+<v Michael Kennedy>your courses, stuff like that
+
+01:04:56.040 --> 01:04:56.720
+<v Michael Kennedy>in the show notes for people.
+
+01:04:56.740 --> 01:04:57.080
+<v Hugo Bowne-Anderson>I'd love that.
+
+01:04:57.320 --> 01:04:58.940
+<v Hugo Bowne-Anderson>Oh, and I mentioned this to you earlier,
+
+01:04:59.200 --> 01:05:01.520
+<v Hugo Bowne-Anderson>but always love Talk Python, of course,
+
+01:05:01.660 --> 01:05:03.620
+<v Hugo Bowne-Anderson>and I'm so grateful for having me on three times.
+
+01:05:03.740 --> 01:05:06.920
+<v Hugo Bowne-Anderson>And I'd love to offer your audience 20% off my course as well.
+
+01:05:06.950 --> 01:05:08.940
+<v Hugo Bowne-Anderson>So we'll include that link in the show notes.
+
+01:05:09.180 --> 01:05:09.380
+<v Michael Kennedy>Beautiful.
+
+01:05:09.530 --> 01:05:10.920
+<v Michael Kennedy>We'll put it right by the link.
+
+01:05:11.220 --> 01:05:11.400
+<v Michael Kennedy>All right.
+
+01:05:11.430 --> 01:05:12.560
+<v Michael Kennedy>Well, thanks for being here.
+
+01:05:12.960 --> 01:05:15.460
+<v Michael Kennedy>We live in weird and amazing and crazy times.
+
+01:05:15.760 --> 01:05:17.260
+<v Michael Kennedy>And yeah, I'm going to leave it with that.
+
+01:05:17.340 --> 01:05:17.900
+<v Hugo Bowne-Anderson>On the journey together.
+
+01:05:18.160 --> 01:05:18.360
+<v Hugo Bowne-Anderson>Thank you.
+
+01:05:18.500 --> 01:05:18.900
+<v Hugo Bowne-Anderson>Thanks, Michael.
+
+01:05:19.000 --> 01:05:19.240
+<v Michael Kennedy>That's right.
+
+01:05:19.490 --> 01:05:19.800
+<v Michael Kennedy>See you later.
+
+01:05:19.970 --> 01:05:20.280
+<v Michael Kennedy>Bye, everyone.
+
+01:05:20.440 --> 01:05:20.500
+<v Michael Kennedy>Ciao.
+
+01:05:21.859 --> 01:05:24.300
+<v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:05:24.760 --> 01:05:25.560
+<v Michael Kennedy>Thank you to our sponsors.
+
+01:05:25.850 --> 01:05:27.340
+<v Michael Kennedy>Be sure to check out what they're offering.
+
+01:05:27.560 --> 01:05:28.920
+<v Michael Kennedy>It really helps support the show.
+
+01:05:29.840 --> 01:05:33.520
+<v Michael Kennedy>This episode is sponsored by Posit Connect from the makers of Shiny.
+
+01:05:34.020 --> 01:05:37.880
+<v Michael Kennedy>publish share and deploy all of your data projects that you're creating using python
+
+01:05:38.460 --> 01:05:46.320
+<v Michael Kennedy>streamlet dash shiny bokeh fast api flask quarto reports dashboards and apis posit connect supports
+
+01:05:46.550 --> 01:05:54.140
+<v Michael Kennedy>all of them try posit connect for free by going to talkpython.fm/ posit p-o-s-i-t this episode
+
+01:05:54.170 --> 01:05:59.980
+<v Michael Kennedy>is brought to you by nord stellar nord stellar is a threat exposure management platform from the
+
+01:05:59.940 --> 01:06:05.300
+<v Michael Kennedy>Nord security family, the folks behind Nord VPN that combines dark web intelligence, session
+
+01:06:05.800 --> 01:06:11.300
+<v Michael Kennedy>hijacking prevention, brand and domain abuse detection, and external attack surface management.
+
+01:06:11.860 --> 01:06:16.840
+<v Michael Kennedy>Learn more and get started keeping your team safe at talkpython.fm/nordstellar.
+
+01:06:17.340 --> 01:06:22.640
+<v Michael Kennedy>If you or your team needs to learn Python, we have over 270 hours of beginner and advanced
+
+01:06:22.860 --> 01:06:27.680
+<v Michael Kennedy>courses on topics ranging from complete beginners to async code, Flask, Django,
+
+01:06:28.000 --> 01:06:29.980
+<v Michael Kennedy>HTML and even LLMs.
+
+01:06:30.480 --> 01:06:32.560
+<v Michael Kennedy>Best of all, there's not a subscription in sight.
+
+01:06:33.020 --> 01:06:34.820
+<v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:06:35.240 --> 01:06:36.560
+<v Michael Kennedy>Be sure and subscribe to the show.
+
+01:06:37.100 --> 01:06:38.820
+<v Michael Kennedy>Open your favorite podcast player app,
+
+01:06:39.280 --> 01:06:39.980
+<v Michael Kennedy>search for Python,
+
+01:06:40.340 --> 01:06:41.120
+<v Michael Kennedy>we should be right at the top.
+
+01:06:41.540 --> 01:06:43.380
+<v Michael Kennedy>If you enjoy the Geeky Rap theme song,
+
+01:06:43.500 --> 01:06:43.680
+<v Michael Kennedy>you will be right at the top.
+
+01:06:43.680 --> 01:06:45.040
+<v Michael Kennedy>You can download the full track.
+
+01:06:45.260 --> 01:06:46.880
+<v Michael Kennedy>The link is your podcast player show notes.
+
+01:06:47.500 --> 01:06:48.800
+<v Michael Kennedy>This Is Your Host Michael Kennedy.
+
+01:06:49.260 --> 01:06:50.400
+<v Michael Kennedy>Thank you so much for listening.
+
+01:06:50.560 --> 01:06:51.420
+<v Michael Kennedy>I really appreciate it.
+
+01:06:51.840 --> 01:06:53.500
+<v Michael Kennedy>Now get out there and write some Python code.
+
+01:07:03.900 --> 01:07:07.820
+Talk Python To Me, yeah we ready to roll
+
+01:07:09.440 --> 01:07:13.140
+Upgrading the code, no fear of getting whole
+
+01:07:14.500 --> 01:07:18.040
+We tapped into that modern vibe, overcame each storm
+
+01:07:18.780 --> 01:07:21.620
+Talk Python To Me, I-Sync is the norm
+
+01:07:21.620 --> 01:07:22.320
+you
+

@@ -1,1586 +1,1732 @@
-00:00:00 <v Michael Kennedy>Python in 2025 is different.
+00:00:00 Python in 2025 is different.
 
-00:00:02 <v Michael Kennedy>Threads are really about to run in parallel.
+00:00:02 Threads are really about to run in parallel.
 
-00:00:05 <v Michael Kennedy>Installs, finish before your coffee cools, and containers are the default.
+00:00:05 Installs, finish before your coffee cools, and containers are the default.
 
-00:00:10 <v Michael Kennedy>In this episode, we count down 38 things to learn this year.
+00:00:10 In this episode, we count down 38 things to learn this year.
 
-00:00:14 <v Michael Kennedy>Free-threaded CPython, uv for packaging, Docker and Compose, Kubernetes with Tilt, DuckDB and Arrow, PyScript at the Edge, plus MCP for sane AI workflows.
+00:00:14 Free-threaded CPython, uv for packaging, Docker and Compose, Kubernetes with Tilt, DuckDB and Arrow, PyScript at the Edge, plus MCP for sane AI workflows.
 
-00:00:25 <v Michael Kennedy>Expect practical wins and migration paths.
+00:00:25 Expect practical wins and migration paths.
 
-00:00:28 <v Michael Kennedy>No buzzword bingo, just what pays off in real apps.
+00:00:28 No buzzword bingo, just what pays off in real apps.
 
-00:00:31 <v Michael Kennedy>Join me, along with Peter Wang and Calvin Hendrix Parker, for a fun, fast-moving conversation.
+00:00:31 Join me, along with Peter Wang and Calvin Hendrix Parker, for a fun, fast-moving conversation.
 
-00:00:37 <v Michael Kennedy>This is Talk Python To Me, episode 524, recorded September 22nd, 2025.
+00:00:37 This is Talk Python To Me, episode 524, recorded September 22nd, 2025.
 
-00:00:43 five. Welcome to Talk Python To Me, a weekly podcast on Python. This is your host, Michael
+00:01:01 Welcome to Talk Python To Me, the number one podcast for Python developers and data scientists.
 
-00:01:04 <v Michael Kennedy>Kennedy. Follow me on Mastodon, where I'm @mkennedy, and follow the podcast using @talkpython, both accounts over at Fostadon.org, and keep up with the show and listen to over nine years of episodes at talkpython.fm. If you want to be part of our live episodes, you can find the live streams over on YouTube. Subscribe to our YouTube channel over at  talkpython.fm/youtube and get notified about upcoming shows. This episode is brought to you by Sentry. Don't let those errors go unnoticed. Use Sentry like we do here at Talk Python.
+00:01:06 This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
 
-00:01:34 <v Michael Kennedy>Sign up at talkpython.fm/sentry.
+00:01:11 Let's connect on social media.
 
-00:01:37 <v Michael Kennedy>And it's brought to you by Agency.
+00:01:13 You'll find me and Talk Python on Mastodon, Bluesky, and X.
 
-00:01:40 <v Michael Kennedy>Discover agentic AI with Agency.
+00:01:16 The social links are all in the show notes.
 
-00:01:42 <v Michael Kennedy>Their layer lets agents find, connect, and work together.
+00:01:19 You can find over 10 years of past episodes at talkpython.fm.
 
-00:01:45 <v Michael Kennedy>Any stack, anywhere.
+00:01:23 And if you want to be part of the show, you can join our recording live streams.
 
-00:01:47 <v Michael Kennedy>Start building the internet of agents at talkpython.fm/agency.
+00:01:27 That's right.
 
-00:01:51 <v Michael Kennedy>Spelled A-G-N-T-C-Y.
+00:01:28 We live stream the raw, uncut version of each episode on YouTube.
 
-00:01:53 <v Michael Kennedy>Hello, hello.
+00:01:32 Just visit talkpython.fm/youtube to see the schedule of upcoming events.
 
-00:01:54 <v Michael Kennedy>Peter and Calvin, welcome back to Talk Python.
+00:01:37 and be sure to subscribe and press the bell so you'll get notified anytime we're recording.
 
-00:01:57 <v Michael Kennedy>I mean, to both of you.
+00:01:42 This episode is brought to you by Sentry. Don't let those errors go unnoticed. Use Sentry like we do here at Talk Python. Sign up at talkpython.fm/sentry. And it's brought to you by Agency.
 
-00:01:58 <v Michael Kennedy>It's great to be here.
+00:01:54 Discover agentic AI with Agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y. Hello, hello, Peter and Calvin. Welcome back to Talk Python To Me, to both of you. It's great to be here. Great to be here. Thanks for having us.
 
-00:01:59 <v Michael Kennedy>Great to be here.
+00:02:14 Yeah, I know you both are very passionate technologists and Pythonistas, and we're going to dive into some really exciting things. What do people need to know as developers and data scientists in 2025? And I'm going to take a wild guess and bet that these trends, most of them carry over to 2026.
 
-00:01:59 <v Michael Kennedy>Thanks for having us.
+00:02:34 You know, we're just a few months.
 
-00:02:00 <v Michael Kennedy>Yeah, I know you both are very passionate technologists.
+00:02:36 So let's just really quickly have both of you introduce yourselves just because not everyone has had a chance to listen to every episode.
 
-00:02:04 <v Michael Kennedy>and Pythonistas, and we're going to dive into some really exciting things.
+00:02:43 And even if they did, they may not remember.
 
-00:02:09 <v Michael Kennedy>What do people need to know as developers and data scientists in 2025?
+00:02:46 So Peter, welcome.
 
-00:02:14 <v Michael Kennedy>And I'm going to take a wild guess and bet that these trends, most of them carry over to 2026.
+00:02:47 Who are you?
 
-00:02:19 <v Michael Kennedy>We're just a few months.
+00:02:48 Hi, I'm Peter Wang.
 
-00:02:22 <v Michael Kennedy>So let's just really quickly have both of you introduce yourselves just because not everyone has had a chance to listen to every episode.
+00:02:49 I'm a founder of Anaconda and the creator of the PyData community.
 
-00:02:29 <v Michael Kennedy>And even if they did, they may not remember.
+00:02:54 And I'm sort of leading the advocacy, at least, and been at the center of evangelism for the use of Python in the data science and machine learning world for over 12 years now. I think 13 years at this point. But my day job is at Anaconda. I'm the chief AI officer. So I work on open source community projects, innovation, looking at AI things and how that impacts our community and our users and what good could look like there for us. I mean, there's a lot of discussion on AI, of course, good, bad, and ugly. And I'm really trying to figure out if we as responsible open source community stewards, you know, want to have something meaningful to say here, what are the right things to do? So that's what I spend a lot of my time focused on. Yeah, that's really good
 
-00:02:32 <v Michael Kennedy>So Peter, welcome.
+00:03:35 work. Yeah, it's really good work. And congrats with all the access you've had at Anaconda. It's thank you made a serious dent. I you were on you were featured in or you were part of the Python documentary, right? That's right. Yeah, that was really great. I really appreciated your words in
 
-00:02:33 <v Michael Kennedy>Who are you?
+00:03:51 there. Thank you. Thank you. Yeah, that was great. Really honor to be included in that.
 
-00:02:34 <v Peter Wang>Hi, I'm Peter Wang. I'm a founder of Anaconda and the creator of the PyData community.
+00:03:55 Well, tell people, I haven't technically talked about it on the documentary or the documentary on the podcast very much.
 
-00:02:40 <v Peter Wang>And I'm sort of leading the advocacy, at least, and been at the center of evangelism for the use of Python in the data science and machine learning world for over 12 years now. I think 13 years at this point. But my day job is at Anaconda. I'm the chief AI officer. So I work on open source community projects, innovation, looking at AI things and how that impacts our community and our users and what good could look like there for us.
+00:04:00 So you just give people a quick rundown on what that is and why they should check it out.
 
-00:03:07 <v Peter Wang>I mean, there's a lot of discussion on AI, of course, good, bad, and ugly.
+00:04:04 Well, well, anyone who's listening to this podcast should absolutely watch the documentary because it is just got a cast of characters telling the story about how our favorite programming language came to be.
 
-00:03:11 <v Peter Wang>And I'm really trying to figure out if we as responsible open source community stewards want to have something meaningful to say here, what are the right things to do?
+00:04:13 All of the not all.
 
-00:03:18 <v Peter Wang>So that's what I spend a lot of my time focused on.
+00:04:14 OK, not all.
 
-00:03:20 <v Michael Kennedy>Yeah, that's really good work.
+00:04:15 But some of the travails that have challenged us as a community over over the period of time since since its inception, you know, 30 years ago at this point.
 
-00:03:21 <v Michael Kennedy>Yeah, it's really good work.
+00:04:24 And so it's just a really fun, nice, you know, I think it's weird because Python has been around forever.
 
-00:03:22 <v Michael Kennedy>And congrats with all the access you've had at Anaconda.
+00:04:29 Right. And yet in many respects, we are still the world is changing.
 
-00:03:25 <v Michael Kennedy>Thank you.
+00:04:33 And I think there's lots of amazing new opportunities for Python as a language.
 
-00:03:26 <v Michael Kennedy>You made a serious dent.
+00:04:37 And we've been growing, growing so fast and so much and evolving as a language and as a community.
 
-00:03:27 <v Michael Kennedy>You were featured in or you were part of the Python documentary, right?
+00:04:44 This documentary, I think, is a nice way to sort of like check in and say, oh, wow, we got to here.
 
-00:03:33 <v Michael Kennedy>That's right.
+00:04:49 And here's the journey we've been on.
 
-00:03:33 <v Peter Wang>Yeah, that was really great.
+00:04:50 And that gives us almost the space to then be a little bit more intentional about talking about where we want to go from here, which I think is something very important that we need to do as a community.
 
-00:03:35 <v Peter Wang>I really appreciated your words in there.
+00:04:58 So anyway, I just really liked it from philosophically speaking from that perspective.
 
-00:03:37 <v Peter Wang>Thank you.
+00:05:02 But it's also just fun just to get the perspectives of like the CPython core maintainers and the BDFL and all the stuff on just the language over the years.
 
-00:03:37 <v Peter Wang>Thank you.
+00:05:09 Yeah, I thought it was really excellent.
 
-00:03:38 <v Peter Wang>Yeah, that was great.
+00:05:11 Yeah, I enjoyed it tremendously.
 
-00:03:38 <v Peter Wang>Really honor to be included in that.
+00:05:14 Like I really loved hearing all the old stories.
 
-00:03:40 <v Michael Kennedy>Well, tell people, I haven't technically talked about it on the documentary or the documentary on the podcast very much.
+00:05:17 I've been around for a long time in the community and seen all the familiar faces.
 
-00:03:46 <v Michael Kennedy>So you just give people a quick rundown of what that is and why they should check it out.
+00:05:20 And I feel like it gives a face and a level of empathy to the community that's needed.
 
-00:03:50 <v Peter Wang>Well, anyone who's listening to this podcast should absolutely watch the documentary because it has just got a cast of characters telling the story about how our favorite programming language came to be.
+00:05:25 Yeah.
 
-00:03:58 <v Peter Wang>All of the, not all, okay, not all, but some of the travails that have.
+00:05:25 I would say that the production quality was almost as good as Calvin's camera here.
 
-00:04:03 <v Peter Wang>challenged us as a community over the period of time since its inception, you know, 30 years ago at this point.
+00:05:31 You always look great on these streams.
 
-00:04:09 <v Peter Wang>And so it's just a really fun, nice, you know, I think it's weird because Python has been around forever, right?
+00:05:35 Welcome.
 
-00:04:16 <v Peter Wang>And yet in many respects, we are still, the world is changing.
+00:05:35 Tell people about yourself.
 
-00:04:19 <v Peter Wang>And I think there's lots of amazing new opportunities for Python as a language.
+00:05:36 Thank you, Michael.
 
-00:04:23 <v Peter Wang>And we've been growing, growing so fast and so much and evolving as a language and as a community.
+00:05:37 I appreciate that.
 
-00:04:29 <v Peter Wang>This documentary, I think, is a nice way to sort of like check in and say, oh, wow, we got to here and here's the journey we've been on.
+00:05:40 Well, I guess I can give a quick introduction.
 
-00:04:36 <v Peter Wang>And that gives us almost the space to then be a little bit more intentional about talking about where we want to go from here, which I think is something very important that we need to do as a community.
+00:05:43 I'm Calvin Hendryx-Parker.
 
-00:04:43 <v Peter Wang>So anyway, I just really liked it from philosophically speaking from that perspective.
+00:05:44 I'm CTO and co-founder of Six Feet Up.
 
-00:04:48 <v Peter Wang>But it's also just fun just to get the perspectives like the CPython core maintainers and the BDFL and all the stuff on just the language over the years.
+00:05:46 We are a Python and AI consulting agency who helps impactful tech leaders solve the hard problems.
 
-00:04:55 <v Michael Kennedy>Yeah, I thought it was really excellent.
+00:05:52 I've been in the Python community for ages.
 
-00:04:56 <v Calvin Hendrix-Parker>Yeah, I enjoyed it.
+00:05:55 I probably don't outnumber Peter in years, but at least since 2000, I've been involved.
 
-00:04:59 <v Calvin Hendrix-Parker>Tremendously.
+00:06:00 I started with Zope and then through that, the Plone community got very involved in the governance open source project.
 
-00:04:59 <v Calvin Hendrix-Parker>Like I really love hearing all the old stories.
+00:06:06 Now we do a lot of Django, a lot of other Python open source data projects like Airflow, for example.
 
-00:05:03 <v Calvin Hendrix-Parker>You know, I've been around for a long time in the community and seeing all the familiar faces.
+00:06:13 I think that's on the list for later.
 
-00:05:06 <v Calvin Hendrix-Parker>And I feel like it gives a face and a level of empathy to the community that's needed.
+00:06:14 And so we just enjoy hanging out and being an awesome group of folks who love solving the hard problems.
 
-00:05:11 <v Michael Kennedy>Yeah.
+00:06:20 Yeah, excellent.
 
-00:05:11 <v Michael Kennedy>I would say that the production quality was almost as good as Calvin's camera here.
+00:06:21 You've been doing it longer than me for sure.
 
-00:05:17 <v Michael Kennedy>You always look great on these streams.
+00:06:23 I'm the baby.
 
-00:05:21 <v Michael Kennedy>Welcome.
+00:06:25 Well, 2000 is about when I got involved in Python as well.
 
-00:05:21 <v Michael Kennedy>Tell people about yourself.
+00:06:28 So the old manual was supposed to be maybe from 99, but basically 2000.
 
-00:05:22 <v Calvin Hendrix-Parker>Thank you, Michael.
+00:06:32 Yeah, my first Python was 2003, and I think there were 250 people in the room.
 
-00:05:23 <v Calvin Hendrix-Parker>I appreciate that.
+00:06:38 It was amazing.
 
-00:05:26 <v Calvin Hendrix-Parker>Well, I guess I can give a quick introduction.
+00:06:39 Yeah, you actually beat me by a couple of years.
 
-00:05:28 <v Calvin Hendrix-Parker>I'm Calvin Hendryx-Parker.
+00:06:40 I went to, I went to 05 was my first one at George Washington University.
 
-00:05:29 <v Calvin Hendrix-Parker>I'm CTO and co-founder of Six Feet Up.
+00:06:45 I think it was.
 
-00:05:31 <v Calvin Hendrix-Parker>We are a Python and AI consulting agency who helps impactful tech leaders solve the hard problems.
+00:06:46 Yeah.
 
-00:05:37 <v Calvin Hendrix-Parker>I've been in the Python community for ages.
+00:06:46 In DC.
 
-00:05:41 <v Calvin Hendrix-Parker>I probably don't outnumber Peter in years, but at least since 2000, I've been involved.
+00:06:47 And it was about 200 something people.
 
-00:05:45 <v Calvin Hendrix-Parker>I started with Zope and then through that, the Plone community got very involved in the governance of the open source project.
+00:06:48 They had a track in the keynote speakers.
 
-00:05:51 <v Calvin Hendrix-Parker>Now we do a lot of Django, a lot of other Python open source data projects like Airflow, for example.
+00:06:51 Wow.
 
-00:05:58 <v Calvin Hendrix-Parker>I think that's on the list for later.
+00:06:52 I've only been doing this since 2011.
 
-00:06:00 <v Calvin Hendrix-Parker>And so we just enjoy hanging out and being an awesome group of folks who love solving the hard problems.
+00:06:55 So I'm just barely getting started.
 
-00:06:06 <v Michael Kennedy>Yeah, excellent.
+00:06:57 That used to seem pretty recent ago, but it doesn't anymore.
 
-00:06:07 <v Michael Kennedy>Yeah, you've been doing it longer than me for sure.
+00:06:59 Oddly.
 
-00:06:09 <v Michael Kennedy>I'm the baby.
+00:07:00 No, it turns out it was, yeah, it's a long time ago.
 
-00:06:11 <v Peter Wang>Well, 2000 is about when I got involved in Python as well.
+00:07:02 We're halfway through the 2020s now.
 
-00:06:13 <v Peter Wang>So the old man was supposed to be maybe from 99, but basically 2000.
+00:07:04 It's crazy.
 
-00:06:18 <v Calvin Hendrix-Parker>Yeah, my first PyCon was 2003 and I think there were 250 people in the room.
+00:07:05 I know.
 
-00:06:24 <v Calvin Hendrix-Parker>It was amazing.
+00:07:05 Yeah.
 
-00:06:24 <v Peter Wang>Yeah, you actually beat me by a couple of years.
+00:07:05 Yeah.
 
-00:06:26 <v Peter Wang>I went to, I went to 05 was my first one at George Washington University.
+00:07:06 When you said 2025 things that developers should learn in 2025, I was like, is this a science fiction movie we're talking about.
 
-00:06:31 <v Peter Wang>I think it was.
+00:07:12 Exactly.
 
-00:06:31 <v Calvin Hendrix-Parker>Yeah.
+00:07:12 What is this like then?
 
-00:06:32 <v Peter Wang>In DC.
+00:07:13 It's a dystopian science fiction movie.
 
-00:06:33 <v Peter Wang>And it was about 200 something people.
+00:07:14 It's the same crap we had to deal with in 2010.
 
-00:06:34 <v Calvin Hendrix-Parker>They had a track in the keynote speakers.
+00:07:18 Mostly.
 
-00:06:37 <v Calvin Hendrix-Parker>Wow.
+00:07:19 Although async back then, it was interesting.
 
-00:06:38 <v Michael Kennedy>I've only been doing this since 2011.
+00:07:21 We didn't have, you know, we had staff list, I guess.
 
-00:06:40 <v Michael Kennedy>So I'm just barely getting started.
+00:07:24 There's a, I don't know.
 
-00:06:42 <v Michael Kennedy>That used to seem pretty recent ago, but it doesn't anymore.
+00:07:26 2010.
 
-00:06:45 <v Michael Kennedy>Oddly.
+00:07:26 There's tornado.
 
-00:06:45 <v Peter Wang>No, it turns out it was, yeah, it's a long time ago.
+00:07:27 Yeah.
 
-00:06:48 <v Peter Wang>We're halfway through the 2020s now.
+00:07:27 There were various async systems.
 
-00:06:50 <v Peter Wang>It's crazy.
+00:07:29 Anyway, salary.
 
-00:06:51 <v Peter Wang>I know.
+00:07:30 Yeah.
 
-00:06:51 <v Peter Wang>Yeah.
+00:07:31 Wow.
 
-00:06:51 <v Calvin Hendrix-Parker>Yeah.
+00:07:31 We've got, we've got free threaded Python.
 
-00:06:51 <v Calvin Hendrix-Parker>When you said 2025 things that developers should learn in 2025, I was like, is this a science fiction movie we're talking about.
+00:07:33 Now we do.
 
-00:06:58 <v Michael Kennedy>Exactly.
+00:07:34 Futures now.
 
-00:06:58 <v Michael Kennedy>What is this like then?
+00:07:35 Yes.
 
-00:06:59 <v Peter Wang>It's a dystopian science fiction movie.
+00:07:36 Almost.
 
-00:07:00 <v Peter Wang>This is the same crap we had to deal with in 2010.
+00:07:36 We almost have free threaded Python.
 
-00:07:03 <v Peter Wang>Mostly.
+00:07:38 Yeah.
 
-00:07:04 <v Peter Wang>Although async back then, it was interesting.
+00:07:38 Yeah.
 
-00:07:06 <v Peter Wang>We didn't have, you know, we had staff list, I guess.
+00:07:38 Yeah.
 
-00:07:09 <v Peter Wang>There's a, I don't know.
+00:07:39 Spoiler alert.
 
-00:07:11 <v Peter Wang>2010 there's tornado.
+00:07:39 That may make an appearance in one of the topics.
 
-00:07:12 <v Peter Wang>Yeah.
+00:07:42 Well, we may not get to 20 things, but they may not be 20 big, bold items, right?
 
-00:07:13 <v Peter Wang>There were various async systems.
+00:07:49 Yeah.
 
-00:07:15 <v Peter Wang>Anyway, salary.
+00:07:49 We have a list of things we want to go through.
 
-00:07:16 <v Peter Wang>Yeah.
+00:07:51 That's right.
 
-00:07:16 <v Peter Wang>Wow.
+00:07:52 Peter, we reserve the right to design the designation of the size of the buckets that define the things.
 
-00:07:17 <v Calvin Hendrix-Parker>We've got, we've got free threaded Python.
+00:07:57 The things, that's right.
 
-00:07:18 <v Calvin Hendrix-Parker>Now we do features now.
+00:07:59 But I think the plan is we're going to just riff on some ideas we think are either emerging or current important trends or even foundational things.
 
-00:07:21 <v Peter Wang>Yes.
+00:08:08 that people should be paying attention to in the zeitgeist right now, right?
 
-00:07:21 <v Calvin Hendrix-Parker>Almost.
+00:08:13 What are things that maybe you haven't necessarily been tracking or you heard of, but you're like, ah, I haven't got time for that, or it's not for me yet.
 
-00:07:22 <v Peter Wang>We almost have free that Python.
+00:08:20 So I think that'll be fun.
 
-00:07:24 <v Michael Kennedy>Yeah.
+00:08:22 Let's start with you, Peter.
 
-00:07:24 <v Michael Kennedy>Yeah.
+00:08:24 What's your first...
 
-00:07:24 <v Michael Kennedy>Yeah.
+00:08:25 We all gathered up a couple of things that we think might be super relevant.
 
-00:07:24 <v Michael Kennedy>Spoiler alert.
+00:08:29 And yeah, what do you think?
 
-00:07:25 <v Michael Kennedy>That may make an appearance in one of the topics.
+00:08:31 So I think, well, let's just get started with it.
 
-00:07:28 <v Peter Wang>Well, we may not get to 20 things, but they may not be 20 big, bold items, right?
+00:08:33 Let's just talk about the free threading bit.
 
-00:07:35 <v Michael Kennedy>Yeah.
+00:08:35 And let's really, because this is a kind of, it touches the past, and it also really takes us into the future.
 
-00:07:35 <v Peter Wang>We have a list of things we want to go through.
+00:08:41 And it's this thing that has taken quite some time to emerge.
 
-00:07:37 <v Michael Kennedy>That's right.
+00:08:44 I think the GIL has been a topic of discussion since as long as I've been using Python.
 
-00:07:38 <v Michael Kennedy>Peter, we reserve the right to design the designation of the size of the buckets that define the things.
+00:08:49 And finally, we have, courtesy of the team at Meta, an excellent set of patches that delivered true free threading to Python.
 
-00:07:43 <v Peter Wang>The things, that's right.
+00:08:58 And of course, this is both a blessing and a curse, right?
 
-00:07:45 <v Michael Kennedy>But I think the plan is we're going to just riff on some ideas we think are either emerging or current important trends or even foundational things, that people should be paying attention to in the zeitgeist right now, right?
+00:09:00 You should be careful what you ask for.
 
-00:07:59 <v Michael Kennedy>What are things that maybe you haven't necessarily been tracking or you heard of, but you're like, ah, I haven't got time for that, or it's not for me yet.
+00:09:02 Because now we end up having to deal with true free threading in Python.
 
-00:08:06 <v Michael Kennedy>So I think that'll be fun.
+00:09:05 And for those who maybe are not so familiar with this whole topic, the global interpreter lock, we call it GIL, G-I-L for short.
 
-00:08:08 <v Michael Kennedy>Let's start with you, Peter.
+00:09:14 The global interpreter lock is how the Python virtual machine protects its innards.
 
-00:08:09 <v Michael Kennedy>What's your first...
+00:09:18 And so when you use Python and you write code, even if you use threading, like the threading module in Python, ultimately the CPython interpreter itself as a system level process, it only has one real thread.
 
-00:08:10 <v Michael Kennedy>We all gathered up a couple of things that we think might be super relevant.
+00:09:30 And it has this global interpreter lock that locks many of the internals of the interpreter.
 
-00:08:15 <v Michael Kennedy>And yeah, what do you think?
+00:09:35 The problem is that sometimes you want to have real multi-threading.
 
-00:08:17 <v Peter Wang>So I think, well, let's just get started with it.
+00:09:38 And so you have to release this global interpreter lock and doing this, doing this is hard to
 
-00:08:19 <v Peter Wang>Let's just talk about the free threading bit.
+00:09:44 get right, especially if you reach into C modules and whatnot.
 
-00:08:20 <v Peter Wang>And let's really, because this is a kind of, it touches the past, and it also really takes us into the future.
+00:09:47 The most popular C modules are pretty good at handling this kind of thing.
 
-00:08:26 <v Peter Wang>And it's this thing that has taken quite some time to emerge.
+00:09:51 NumPy and others come to mind.
 
-00:08:29 <v Peter Wang>I think the GIL has been a topic of discussion since as long as I've been using Python.
+00:09:52 So we get really great performance from those when they release the gil.
 
-00:08:34 <v Peter Wang>And finally, we have, courtesy of the team at Meta, an excellent set of patches that delivered true free threading to Python.
+00:09:56 But if you want to actually do a lot of Python logic in multiple threads, you end up essentially getting no lift whatsoever by using a threading module with classic single threaded or GIL locked python with the free threading you actually now are able to have threads running in parallel touching things like free lists and stuff like that and and and you know module definitions in the interpreter itself now what this means is a lot of python modules or packages which had been developed when Python was, you know, implicitly single threaded, they now have the potential of thread contention, race conditions, all sorts of weird and unexpected behavior when they're used in a free threaded way. So we have this patch, we have this change now for free threading in the Python interpreter itself. That means that however, what that means is we have to make sure that all of the rest of the package ecosystem is updated and tested to work with free threaded Python.
 
-00:08:44 <v Peter Wang>And of course, this is both a blessing and a curse, right?
+00:10:51 So in Python 3.13, it was incorporated as an experimental.
 
-00:08:46 <v Peter Wang>You should be careful what you ask for.
+00:10:56 It was in the code base, but it was a build time feature.
 
-00:08:47 <v Peter Wang>Because now we end up having to deal with true free threading in Python.
+00:10:59 So you have to compile your own Python interpreter and turn on that flag to get a version of the interpreter that would be free-threaded.
 
-00:08:50 <v Peter Wang>And for those who maybe are not so familiar with this whole topic, you know, the global interpreter lock, we call it GIL, G-I-L for short.
+00:11:05 In 3.14, it is now supported in the interpreter.
 
-00:08:59 <v Peter Wang>The global interpreter lock is how the Python virtual machine protects its innards.
+00:11:09 It's still not turned on by default.
 
-00:09:04 <v Peter Wang>And so when you use Python and you write code, even if you use threading, like the threading module in Python, ultimately the CPython interpreter itself as a system level process, it only has one real thread.
+00:11:11 And then at some indeterminate date, it will be turned on by default.
 
-00:09:16 <v Peter Wang>And it has this global interpreter lock that locks many of the internals of the interpreter.
+00:11:16 The classic behavior with the global interblock will still always be there as a fallback for safety and compatibility and all that.
 
-00:09:20 <v Peter Wang>The problem is that sometimes you want to have real multi-threading, and so you have to release this global interpreter lock.
+00:11:23 But anyway, we're right now at the point where the core CPython team has said, hey, we're ready to take this thing to supported mode and let the bugs flow, right?
 
-00:09:26 <v Michael Kennedy>And doing this is hard to get right, especially if you reach into C modules and whatnot.
+00:11:32 So now if you go and install Python, a Python build with, it actually has a different ABI tag.
 
-00:09:33 <v Peter Wang>The most popular C modules are pretty good at handling this kind of thing.
+00:11:39 So it's CP313 or 314T for threading or free threading.
 
-00:09:36 <v Peter Wang>NumPy and others come to mind.
+00:11:45 um so that's available through you know python.org there's a condo bill for it as well and um so right now there's actually a page maybe we'll have the link for it i think in the in the show notes right but there's a page that lists what the status is think of the free threaded wheels um and uh right now 105 out of 360 that are passing basically having the maintainers have updated them um and this is out of the top like oh there it is great yeah out of the top 500 um Python packages, something like this.
 
-00:09:38 <v Peter Wang>So we get really great performance from those when they release the gil.
+00:12:17 So you can see we have, as a community, a lot of work to do.
 
-00:09:41 <v Peter Wang>But if you want to actually do a lot of Python logic in multiple threads, you end up essentially getting no lift whatsoever by using a threading module with classic single threaded or GIL locked python with the free threading you actually now are able to have threads running in parallel touching things like free lists and stuff like that and and and you know module definitions in the interpreter itself now what this means is a lot of python modules or packages which had been developed when python was you know implicitly single threaded they now have potential of thread contention, race conditions, all sorts of weird and unexpected behavior when they're used in a free threaded way. So we have this patch, we have this change now for free threading in the Python interpreter itself. That means that, however, what that means is we have to make sure that all of the rest of the package ecosystem is updated and tested to work with free threaded Python. So in Python 3.13, it was incorporated as an experimental, it was in the code base, but it was a build time feature. So you have to compile your own Python interpreter and turn on that flag to get a version of the interpreter that would be free threaded. In 3.14, it is now supported in the interpreter. It's still not turned on by default. And then at some indeterminate date, it will be turned on by default. The classic behavior with the global interblock will still always be there as a fallback for safety and compatibility and all that. But Python team has said, hey, we're ready to take this thing to supported mode and let the bugs flow,
+00:12:19 So the call to action here is not only should a Python developer learn this, because this is definitely coming and everyone has a multi-core machine now.
 
-00:11:18 <v Michael Kennedy>right? So now if you go and install Python, a Python build with, it actually has a different
+00:12:27 So this is definitely coming.
 
-00:11:24 <v Peter Wang>ABI tag. So it's CP313 or 314T for threading or free threading. So that's available through Python.org. There's a condo build for it as well. And so right now there's actually a page, Maybe we'll have the link for it, I think, in the show notes, right?
+00:12:29 But you can also, this is a great way to give back.
 
-00:11:42 <v Peter Wang>But there's a page that lists what the status is.
+00:12:31 You know, we talk about in the open source community oftentimes, how do we get starter bugs in there for people to start becoming contributing members of the community?
 
-00:11:46 <v Peter Wang>Think of the free-threaded wheels.
+00:12:37 This is a great way to give back.
 
-00:11:49 <v Peter Wang>And right now, 105 out of 360 that are passing, basically.
+00:12:38 If there's some packages you see here that are yellow, you're like, wait, I use AIoHttp.
 
-00:11:54 <v Peter Wang>The maintainers have updated them.
+00:12:42 Like, let me go and test that with free threading and see if I can bang, you know, just beat up my beat up with my code in production and see like what what fails there.
 
-00:11:56 <v Peter Wang>And this is out of the top, like, oh, there it is, great.
+00:12:50 So these are this is a great way for the community to really get back and help us test and make sure all this works on what is certainly to be the next generation of the Python interpreter.
 
-00:11:58 <v Peter Wang>Yeah, out of the top 500 Python packages, something like this.
+00:12:58 Yeah, there was a great talk at DjangoCon just two weeks ago by Michael Lyle.
 
-00:12:02 <v Peter Wang>So you can see we have, as a community, a lot of work to do.
+00:13:03 He gave a talk about using free threaded, free threading in Django.
 
-00:12:05 <v Peter Wang>So the call to action here is not only should a Python developer learn this, because this is definitely coming and everyone has a multi-core machine now.
+00:13:07 And I think right now your mileage may vary was the answer.
 
-00:12:13 <v Peter Wang>So this is definitely coming.
+00:13:10 Like it kind of depends.
 
-00:12:14 <v Peter Wang>But you can also, this is a great way to give back.
+00:13:12 I can only imagine going through and trying to commit and help.
 
-00:12:17 <v Peter Wang>You know, we talk about in the open source community oftentimes, how do we get starter bugs in there for people to start becoming contributing members of the community?
+00:13:16 Threading is hard.
 
-00:12:23 <v Peter Wang>This is a great way to give back.
+00:13:17 It sounds like free threading is harder to wrap your brain around.
 
-00:12:24 <v Peter Wang>If there's some packages you see here that are yellow, you're like, wait, I use AIo HTTP.
+00:13:20 So I think it'd be tricky for someone starting and learning something new.
 
-00:12:28 <v Peter Wang>Like, let me go and test that with free threading and see if I can bang, you know, just beat it up with my code in production and see like what fails there.
+00:13:23 This may be on the more advanced edge of what someone should be learning.
 
-00:12:36 <v Peter Wang>So this is a great way for the community to really get back and help us test and make sure all this works on what is certainly to be the next generation of the Python interpreter.
+00:13:28 It's more for the advanced crotchety, you know, senior developers.
 
-00:12:43 <v Calvin Hendrix-Parker>Yeah, there was a great talk at DjangoCon just two weeks ago by Michael Lyle.
+00:13:32 I ain't got time to contribute to open source.
 
-00:12:49 <v Calvin Hendrix-Parker>He gave a talk about using free threading in Django.
+00:13:34 You can.
 
-00:12:52 <v Calvin Hendrix-Parker>And I think right now your mileage may vary was the answer.
+00:13:35 You can make your own life better.
 
-00:12:56 <v Calvin Hendrix-Parker>Like it kind of depends.
+00:13:36 We can all sort of, this is the sort of stone soup or good old Amish barn raising.
 
-00:12:58 <v Calvin Hendrix-Parker>I can only imagine going through and trying to commit and help.
+00:13:39 We should all get together and chip in.
 
-00:13:01 <v Calvin Hendrix-Parker>Threading is hard.
+00:13:41 But you're right.
 
-00:13:02 <v Calvin Hendrix-Parker>It sounds like free threading is harder to wrap your brain around.
+00:13:42 Debugging async free threading issues is definitely not a beginner kind of task.
 
-00:13:05 <v Calvin Hendrix-Parker>So I think it'd be tricky for someone starting and learning something new.
+00:13:47 Sure.
 
-00:13:09 <v Calvin Hendrix-Parker>This may be on the more advanced edge of what someone should be learning.
+00:13:47 But there's a lot of people who do have that experience from probably more from other languages or C extensions who could jump in, right?
 
-00:13:14 <v Peter Wang>It's more for the advanced crotchety, you know, senior developers.
+00:13:54 Yeah.
 
-00:13:18 <v Peter Wang>I ain't got time to contribute to open source.
+00:13:55 Actually, if you're a C++ developer who has been forced to use Python because of our success of driving the growth and adoption of the community, and you're really angry about this and you want to show other ways that Python is broken, this is a great way to show how Python has broken is to test really gnarly async and multi-threaded use cases.
 
-00:13:20 <v Peter Wang>You can.
+00:14:11 Actually, one thing about this that I will point out for the more advanced users, Dave Beasley gave a great talk years ago at PyCon about Python parallelism and are you IO bound?
 
-00:13:20 <v Peter Wang>You can make your own life better.
+00:14:21 Are you CPU bound?
 
-00:13:22 <v Peter Wang>We can all sort of, this is the sort of stone soup or good old Amish barn raising.
+00:14:23 You know what?
 
-00:13:25 <v Peter Wang>We should all get together and chip in.
+00:14:23 I think he was looking at maybe it was actually relative to PyPy, P-Y-P-Y, and it wasn't about async in particular, but it was a rolling your own distributed computing or something like this.
 
-00:13:27 <v Peter Wang>But you're right.
+00:14:33 I forget the exact title.
 
-00:13:28 <v Peter Wang>Debugging async free threading issues is definitely not a beginner kind of task.
+00:14:35 but he did a deep analysis of when are we CPU bound or when are we IO bound?
 
-00:13:33 <v Michael Kennedy>Sure.
+00:14:39 And when are we CPU bound?
 
-00:13:33 <v Michael Kennedy>But there's a lot of people who do have that experience from probably more from other languages or C extensions who could jump in, right?
+00:14:40 When we get to free threading Python like this, I think we're going to, as a community, be faced with having to up-level our thinking about this kind of thing.
 
-00:13:40 <v Peter Wang>Yeah, actually, you know, if you're a C++ developer who has been forced to use Python because of our success of driving the growth and adoption of the community, and you're really angry about this and you want to show other ways that Python is broken, this is a great way to show how Python is broken is to test really gnarly async and multi-threaded use cases.
+00:14:46 Because so far we've done a lot of like, oh, delegating CPU bound numeric stuff to like Python or Pandas or Cython.
 
-00:13:57 <v Peter Wang>Actually, one thing about this that I will point out for the more advanced users, Dave Beasley gave a great talk years ago at PyCon about Python parallelism.
+00:14:52 But with this, now we can really play first class in system level code.
 
-00:14:06 <v Peter Wang>And are you IO bound? Are you CPU bound?
+00:14:55 And we have to think more deeply about how are we blocking events?
 
-00:14:08 <v Peter Wang>I think he was looking at maybe it was actually relative to PyPy, PYPY.
+00:14:58 How are we handling things?
 
-00:14:13 <v Peter Wang>And it wasn't about async in particular, but it was a rolling your own distributed computing or something like this.
+00:14:59 Is this, you know, is this a, you know, event polling kind of thing?
 
-00:14:19 <v Peter Wang>I forget the exact title, but he did a deep analysis of when are we CPU bound or when are we IO bound and when are we CPU bound?
+00:15:03 or is this more of a completion port thing?
 
-00:14:26 <v Peter Wang>When we get to free threading Python like this, I think we're going to, as a community, be faced with having to up-level our thinking about this kind of thing.
+00:15:05 Like in Windows, you have different options.
 
-00:14:32 <v Peter Wang>Because so far we've done a lot of like, oh, delegating CPU bound numeric stuff to like Python or Pandas or Cython.
+00:15:06 So this is a very interesting topic, actually.
 
-00:14:37 <v Peter Wang>But with this, now we can really play first class in system level code.
+00:15:08 It goes quite deep.
 
-00:14:41 <v Peter Wang>And we have to think more deeply about how are we blocking events?
+00:15:09 It goes very deep.
 
-00:14:44 <v Peter Wang>How are we handling things?
+00:15:10 And I think it's going to be a big mental lift for people in the community, generally speaking.
 
-00:14:45 <v Peter Wang>Is this, you know, or, you know, is this a, you know, event polling kind of thing?
+00:15:16 I talk to a lot of people, as you know from the podcast, and then also interact with a lot of people teaching.
 
-00:14:48 <v Peter Wang>Or is this more of a completion port thing?
+00:15:21 And I don't see a lot of people stressing about thread safety or any of those kinds of things these days.
 
-00:14:51 <v Peter Wang>Like a windows, you have different options.
+00:15:27 And I think in general, it's just not in the collective thinking to be really worried about it.
 
-00:14:52 <v Peter Wang>So this is a very interesting topic.
+00:15:33 There are still cases in multi-threaded Python code where you need to take a lock because it's not one line's gonna deadlock another or something like that, but you've gotta take five steps.
 
-00:14:53 <v Michael Kennedy>Actually, it goes quite deep.
+00:15:43 And if you get interrupted somewhere in those five steps, the guilt could still theoretically interrupt you
 
-00:14:54 <v Michael Kennedy>It goes very deep.
+00:15:48 in the middle of code, right?
 
-00:14:55 <v Michael Kennedy>And I think it's going to be a big mental lift for people in the community, generally speaking.
+00:15:50 It still could be in a temporarily invalid state across more than one line.
 
-00:15:01 <v Michael Kennedy>I talk to a lot of people, as you know, from the podcast, and then also interact with a lot of people teaching.
+00:15:54 But I just don't see people even doing anything hardly at it at all.
 
-00:15:07 <v Michael Kennedy>And I don't see a lot of people stressing about thread safety or any of those kinds of things these days.
+00:15:58 And when we just uncork this on them, it's going to be, it's going to be something.
 
-00:15:13 <v Michael Kennedy>And I think in general, it's just not in the collective thinking to be really worried about it.
+00:16:03 And I don't think we're going to see deadlocks as a problem first.
 
-00:15:18 <v Michael Kennedy>There are still cases in multi-threaded Python code where you need to take a lock because it's not one line is going to deadlock another or something like that, but you've got to take five steps.
+00:16:06 I think we're going to see race conditions because deadlocks require people already having locks there that get out of order.
 
-00:15:29 <v Michael Kennedy>And if you get interrupted somewhere in those five steps, the guilt could still theoretically interrupt you in the middle of code, right?
+00:16:11 And I just think the locks are not there.
 
-00:15:35 <v Michael Kennedy>It still could be in a temporarily invalid state across more than one line.
+00:16:13 Then people are going to put the locks there and they're like, Whoa, it's just stopped.
 
-00:15:40 <v Michael Kennedy>But I just don't see people even doing anything hardly at it at all.
+00:16:17 It's total chaos.
 
-00:15:44 <v Michael Kennedy>And when we just uncork this on them, it's going to be, it's going to be something.
+00:16:19 Yeah. It's not using CPU anymore. What is it doing?
 
-00:15:49 <v Michael Kennedy>And I don't think we're going to see deadlocks as a problem first.
+00:16:21 Well, now you found the deadlock. You, you, you added the deadlock, right?
 
-00:15:52 <v Michael Kennedy>I think we're going to see race conditions because deadlocks require people already having locks there that get out of order.
+00:16:25 So it's going to be, it's going to be a challenge, but the potential on the other side of this, if you can get good at it, it's going to be amazing.
 
-00:15:57 <v Michael Kennedy>And I just think the locks are not there.
+00:16:33 You know, even on my little cheapo Mac mini, I've got 10 cores.
 
-00:15:59 <v Michael Kennedy>Then people are going to put the locks there and they're like, whoa, it's just stopped.
+00:16:37 If I run Python code, unless I do really fancy tricks or multiple processes, the best I can get is like 10%.
 
-00:16:02 <v Peter Wang>It's total chaos.
+00:16:43 Yeah, and I know this might be a little bit of a spicy take, but like there was, I think, a line that was being held by the CPython core team that we will accept a GIL removal or a gillectomy as it was called.
 
-00:16:05 <v Michael Kennedy>Yeah.
+00:16:55 We'll accept a GIL removal patch when it doesn't affect or negatively impact single core performance, right?
 
-00:16:05 <v Michael Kennedy>It's not using CPU anymore.
+00:17:02 And like when that first came out in 2000, I think that first time I heard that article was a 2005, six, seven timeframe.
 
-00:16:06 <v Michael Kennedy>What is it doing?
+00:17:08 Back then that was almost a defensible position.
 
-00:16:07 <v Michael Kennedy>Well, now you found the deadlock.
+00:17:11 Nowadays, you can't find a smartphone with a single core.
 
-00:16:08 <v Michael Kennedy>You, you, you added the deadlock, right?
+00:17:14 You know, I can't find a Raspberry Pi, a $5 Raspberry Pi has dual core.
 
-00:16:10 <v Michael Kennedy>So it's going to be, it's going to be a challenge, but the potential, on the other side of this, if you can get good at it, it's going to be amazing. You know, even on my little cheapo Mac mini, I've got 10 cores. If I run Python code, unless I do really fancy tricks or multiple processes, the best I can get is like 10%. Yeah. And I know this might be a little bit
+00:17:17 So it's like, I get the general gist of that, but like, come on, we have like 90, like, you know, John Carmacks on Twitter talking about 96 core Threadripper performance with Python.
 
-00:16:31 <v Peter Wang>of a spicy take, but like there, there was, I think a line that was being held by the CPython core team that we will accept a GIL removal or a gillectomy as it was called. We'll accept a GIL removal patch uh when it doesn't affect or negatively impact single core performance right and and like when that first came out in 2000 i think that first time i heard that article was a 2005 six seven time frame back then that was almost a defensible position nowadays you can't find a smartphone with a single core you know i can't find a raspberry pi a five dollar raspberry pi has dual core so it's like i get the general gist of that but like come on we have like 90 like you know, John Carmack's on Twitter talking about 96 core thread ripper performance with Python.
+00:17:27 We, you know, we sort of need to lean into that, right?
 
-00:17:12 <v Michael Kennedy>We, you know, we sort of need to lean into that, right? So I'm really, really bullish on this.
+00:17:29 So I'm really, really bullish on this because as you know, like I'm very close to the data science and machine learning and the AI use cases.
 
-00:17:17 <v Peter Wang>Cause as you know, like I'm very close to the data science and machine learning and the AI use cases.
+00:17:35 And those are all just, you know, they're looking for whatever language gives us the best performance.
 
-00:17:21 <v Peter Wang>And those are all just, you know, they're looking for whatever language gives us the best performance right now. It happens to be Python. If we as a community and we as evangelists of that community, if we don't lead into that and those users, they will happily go somewhere else. I mean,
+00:17:40 Right now, it happens to be Python.
 
-00:17:34 <v Calvin Hendrix-Parker>that is bonusing people a hundred million dollars to start. They're not going to wait for your language to catch up. They'll make a new language, right? But I think there was something in 2025 that these developers should be learning along these lines would be just async programming and when it should be used. That's why the really tactical maneuver today. Yeah, I agree. I think
+00:17:41 If we as a community and we as evangelists of that community, if we don't lead into that and those users, they will happily go somewhere else.
 
-00:17:54 <v Michael Kennedy>the async and await keywords are super relevant and the frameworks, I think, will start to take advantage of it. We're going to see what comes along with this free threading, but there's no reason you couldn't await a thread rather than await an IO operation.
+00:17:48 I mean, that is bonusing people $100 million to start.
 
-00:18:07 <v Michael Kennedy>You know what I mean?
+00:17:51 They're not going to wait for your language to catch up.
 
-00:18:08 <v Michael Kennedy>I come, my background is C++ and C# and C# is actually where async and await came from, from Anders Halsberg, I believe.
+00:17:53 They'll make a new language.
 
-00:18:15 <v Michael Kennedy>And over there, you don't care if it's IO or compute bound.
+00:17:54 Right.
 
-00:18:19 <v Michael Kennedy>You just await some kind of async thing.
+00:17:54 But I think there was something in 2025 that these developers should be learning along these lines would be just async programming and when it should be used.
 
-00:18:21 <v Michael Kennedy>It's not your job to care how it happens.
+00:18:02 That's why the really tactical maneuver today.
 
-00:18:23 <v Michael Kennedy>So I think we're going to start to see that, but it's going to take time for that, those foundational layers to build for us to build on.
+00:18:06 Yeah, I agree.
 
-00:18:30 <v Calvin Hendrix-Parker>Yeah.
+00:18:07 I think the async and await keywords are super relevant.
 
-00:18:32 <v Michael Kennedy>This portion of Talk Python To Me is brought to you by Sentry's Seer.
+00:18:11 And the frameworks, I think, will start to take advantage of it.
 
-00:18:36 <v Michael Kennedy>I'm excited to share a new tool from Sentry, Seer.
+00:18:14 We're going to see what comes along with this free threading.
 
-00:18:40 <v Michael Kennedy>Seer is your AI-driven pair programmer that finds, diagnoses, and fixes code issues in your Python app faster than ever.
+00:18:16 But there's no reason you couldn't await a thread rather than await an IO operation.
 
-00:18:48 <v Michael Kennedy>If you're already using Sentry, you are already using Sentry, right?
+00:18:21 You know what I mean?
 
-00:18:52 <v Michael Kennedy>Then using Seer is as simple as enabling a feature on your already existing project.
+00:18:22 My background is C++ and C#, and C# is actually where async and await came from, from Anders Halsberg, I believe.
 
-00:18:57 <v Michael Kennedy>SEER taps into all the rich context Sentry has about an error.
+00:18:30 And over there, you don't care if it's IO or compute bound.
 
-00:19:01 <v Michael Kennedy>Stack traces, logs, commit history, performance data, essentially everything.
+00:18:33 You just await some kind of async thing.
 
-00:19:05 <v Michael Kennedy>Then it employs its agentic AI code capabilities to figure out what is wrong.
+00:18:35 It's not your job to care how it happens.
 
-00:19:10 <v Michael Kennedy>It's like having a senior developer pair programming with you on bug fixes.
+00:18:38 So I think we're going to start to see that, but it's going to take time for those foundational layers to build for us to build on.
 
-00:19:15 <v Michael Kennedy>SEER then proposes a solution, generating a patch for your code and even opening a GitHub pull request.
+00:18:44 Yeah.
 
-00:19:21 <v Michael Kennedy>This leaves the developers in charge because it's up to them to actually approve the PR.
+00:18:47 This portion of Talk Python To Me is brought to you by Centuries Seer.
 
-00:19:26 <v Michael Kennedy>but it can reduce the time from error detection to fix dramatically.
+00:18:51 I'm excited to share a new tool from Sentry, Seer.
 
-00:19:30 <v Michael Kennedy>Developers who've tried it found it can fix errors in one shot that would have taken them hours to debug.
+00:18:54 Seer is your AI-driven pair programmer that finds, diagnoses, and fixes code issues in your Python app faster than ever.
 
-00:19:36 <v Michael Kennedy>SEER boasts a 94.5% accuracy in identifying root causes.
+00:19:02 If you're already using Sentry, you are already using Sentry, right?
 
-00:19:41 <v Michael Kennedy>SEER also prioritizes actionable issues with an actionability score, so you know what to fix first.
+00:19:06 Then using Seer is as simple as enabling a feature on your already existing project.
 
-00:19:49 <v Michael Kennedy>This transforms sentry errors into actionable fixes, turning a pile of error reports into an ordered to-do list.
+00:19:11 Seer taps into all the rich context Sentry has about an error.
 
-00:19:56 <v Michael Kennedy>If you could use an always-on-call AI agent to help track down errors and propose fixes before you even have time to read the notification, check out Sentry's Seer.
+00:19:15 Stack traces, logs, commit history, performance data, essentially everything.
 
-00:20:06 <v Michael Kennedy>Just visit talkpython.fm/seer, S-E-E-R.
+00:19:20 Then it employs its agentic AI code capabilities to figure out what is wrong.
 
-00:20:11 <v Michael Kennedy>The link is in your podcast player's show notes.
+00:19:24 It's like having a senior developer pair programming with you on bug fixes.
 
-00:20:13 <v Michael Kennedy>Be sure to use our code TALKPYTHON.
+00:19:29 Seer then proposes a solution, generating a patch for your code and even opening a GitHub pull request.
 
-00:20:16 <v Michael Kennedy>One word, all caps.
+00:19:35 This leaves the developers in charge because it's up to them to actually approve the PR.
 
-00:20:17 <v Michael Kennedy>Thank you to Sentry for supporting Talk Python To Me.
+00:19:40 But it can reduce the time from error detection to fix dramatically.
 
-00:20:20 <v Michael Kennedy>Pamela Fox out in the audience.
+00:19:45 Developers who've tried it found it can fix errors in one shot that would have taken them hours to debug.
 
-00:20:22 <v Michael Kennedy>Throws out that last time she really used locks was in my code for operating system class in college.
+00:19:51 SEER boasts a 94.5% accuracy in identifying root causes.
 
-00:20:27 <v Michael Kennedy>It doesn't come up much in web dev.
+00:19:56 SEER also prioritizes actionable issues with an actionability score, so you know what to fix first.
 
-00:20:28 <v Michael Kennedy>That's true.
+00:20:03 This transforms sentry errors into actionable fixes, turning a pile of error reports into an ordered to-do list.
 
-00:20:29 <v Michael Kennedy>A lot of the times the web, it's at the web framework, the web server level, the app server level, right?
+00:20:11 If you could use an always-on-call AI agent to help track down errors and propose fixes before you even have time to read the notification, check out Sentry's Seer.
 
-00:20:35 <v Michael Kennedy>It's Granian or it's UVicorn or something like that.
+00:20:20 Just visit talkpython.fm/Seer, S-E-E-R.
 
-00:20:37 <v Michael Kennedy>That thing does the threading and you just handle one of the requests.
+00:20:25 The link is in your podcast player's show notes.
 
-00:20:41 <v Michael Kennedy>I literally just deadlocked and I guess probably broke the website for a couple people at Talk Python today because I have this analytics operation that's fixing up a bunch of stuff.
+00:20:27 Be sure to use our code, Talk Python.
 
-00:20:51 <v Michael Kennedy>And it ran for like 60 seconds.
+00:20:30 One word, all caps.
 
-00:20:53 <v Michael Kennedy>Even though there's multiple workers, something about the fan out, it still sent some of the traffic to the one that was bound up.
+00:20:32 Thank you to Sentry for supporting Talk Python To Me.
 
-00:20:59 <v Michael Kennedy>And then those things were timing out after 20 seconds.
+00:20:35 Pamela Fox out in the audience throws out that last time she really used locks was in my code for operating system class in college. It doesn't come up much in web dev. That's true. A lot of the times the web, it's at the web framework, the web server level, the app server level, right? It's Granian or it's UVicorn or something like that. That thing does the threading and you just handle one of the requests. I literally just deadlocked and I guess probably broke the website for a couple of people at Talk Python today because I have this analytics operation that's fixing up a stuff and it it ran for like 60 seconds even though there's multiple workers something about the fan out it's still it still sent some of the traffic to the one that was bound up and then those things were timing out after 20 seconds i'm like oh no what have i done and if that was true threading it wouldn't have mattered it would have used up one of my eight cores and the rest would have been off jamming along it would have been fine you know well sort of right and i think this is i think it's
 
-00:21:01 <v Michael Kennedy>I'm like, oh, no, what have I done?
+00:21:27 i'm really glad pamela brought this up because um we do when we're focused on a particular just the worker thread, it's like, okay, what am I doing? Pull this, run that, and then push this thing out.
 
-00:21:03 <v Michael Kennedy>And if that was true threading, it wouldn't have mattered.
+00:21:39 But if you start getting to more, anytime you start having either value dependent or heterogeneous workload and time boundaries for these tasks, you start having to think about thread contention.
 
-00:21:05 <v Michael Kennedy>It would have used up one of my eight cores and the rest would have been off jamming along.
+00:21:55 To your point, Calvin, I think it's not so far that you have to go before you quickly find
 
-00:21:09 <v Michael Kennedy>It would have been fine, you know?
+00:22:00 yourself thinking about things like grand central dispatch like iowa like mac os has or io completion
 
-00:21:10 <v Peter Wang>Well, sort of, right?
+00:22:06 ports and like oh crap i'm actually slamming it's not under certain cases you know to your point about the analytics maybe you're not doing a gpu-based analytics thing but maybe you're slamming a bunch of stuff to disk or loading a bunch of stuff up from disk and you start getting all these things where at some point one of these things the bottleneck is the cpu is it the you know the code itself is it the disk is the network um and you're just slamming your code into one of
 
-00:21:12 <v Peter Wang>And I think this is, I think it's, I'm really glad Pamela brought this up because we do, when we're focused on a particular just the worker thread, it's like, okay, What am I doing?
+00:22:29 these different boundaries stochastically.
 
-00:21:21 <v Peter Wang>You know, pull this, run that, and then push this thing out.
+00:22:31 And as a developer, maybe as an entry-level developer, you don't have to think about it too much, but as any kind of a mid to senior developer, you're going to be running into these problems and they are going to be stochastic.
 
-00:21:25 <v Peter Wang>But if you start getting to more, anytime you start having either value dependent or heterogeneous sort of workload and time boundaries for these tasks, you start having to think about threat contention.
+00:22:41 They are value dependent.
 
-00:21:39 <v Peter Wang>you start you know it's um i mean to to your point calvin i think it's not so far that you have to go before you quickly find yourself thinking about things like grand central dispatch like io uh like mac os has or io completion ports and like oh crap i'm actually slamming it's not under certain cases you know to your point about the analytics maybe you're not doing a gpu based analytics thing but maybe you're slamming a bunch of stuff to disk or loading a bunch of stuff up from disk and you start getting all these things where at some point one of these things the bottleneck is the cpu is it the you know the code itself is it the disc is the network um and you're just
+00:22:42 You're going to hit them in production and you have to sort of know what could bite you, even if it's not biting you all the time in dev.
 
-00:22:13 <v Michael Kennedy>slamming your code into one of these different boundaries stochastically and as a developer
+00:22:49 Right, you remove one bottleneck and it starts to slam into a different part.
 
-00:22:18 <v Peter Wang>maybe as an entry-level developer you don't have to think about it too much but as any kind of a mid to senior developer you're going to be running into these problems and they are going to be stochastic they are value dependent you're gonna hit them in production and you have to sort of know
+00:22:53 Maybe you take them to the database and it's even a worse console.
 
-00:22:31 <v Michael Kennedy>what what could bite you even if it's not biting you all the time in dev right you you remove one bottleneck and it starts to slam into a different part.
+00:22:56 You never know, right?
 
-00:22:38 <v Michael Kennedy>Maybe you take them to the database and it's even a worse console.
+00:22:57 That's right.
 
-00:22:42 <v Michael Kennedy>You never know, right?
+00:22:57 We're going to see.
 
-00:22:43 <v Calvin Hendrix-Parker>We're going to see.
+00:22:58 It's going to be interesting.
 
-00:22:44 <v Michael Kennedy>It's going to be interesting.
+00:22:59 But thinking about that in production, you've got new challenges there because you may have containers and you're running in Kubernetes and you've got pods and resource limits and other kinds of constraints that are happening that aren't on your local machine.
 
-00:22:44 <v Calvin Hendrix-Parker>But thinking about that in production, you've got new challenges there because you may have containers and you're running in Kubernetes and you've got pods and resource limits and other kinds
+00:23:10 All of a sudden you're saturating your local machine.
 
-00:22:54 <v Michael Kennedy>of constraints that are happening that aren't on your local machine.
+00:23:12 You're like, this is great.
 
-00:22:56 <v Calvin Hendrix-Parker>All of a sudden you're saturating your local machine.
+00:23:13 I'm using all the resources.
 
-00:22:58 <v Calvin Hendrix-Parker>You're like, this is great.
+00:23:14 Look at it go.
 
-00:22:59 <v Calvin Hendrix-Parker>I'm using all the resources.
+00:23:15 And now you release that to production and watch calamity and chaos.
 
-00:23:00 <v Calvin Hendrix-Parker>Look at it go.
+00:23:19 They get killed off because you've set some.
 
-00:23:01 <v Calvin Hendrix-Parker>And now you release that to production and watch calamity and chaos.
+00:23:22 My websites and APIs and databases all have production level RAM limits and things like that, so that if they go completely crazy, at least it's restricted to that one thing dying.
 
-00:23:04 <v Michael Kennedy>They get killed off because you've set some.
+00:23:34 Yeah.
 
-00:23:07 <v Calvin Hendrix-Parker>Yeah.
+00:23:34 Everything.
 
-00:23:08 <v Michael Kennedy>Like my websites and APIs and databases all have production level, like RAM limits and kind of things like that.
+00:23:35 Speaking of which, have you got some ideas on what's next, Calvin?
 
-00:23:15 <v Michael Kennedy>So that if they go completely crazy, at least it's restricted to that one thing dying.
+00:23:40 Sure.
 
-00:23:20 <v Michael Kennedy>Yeah.
+00:23:40 I've been a big believer in containers.
 
-00:23:20 <v Michael Kennedy>Everything.
+00:23:43 I really got turned on to this in 2020 and went down the path.
 
-00:23:21 <v Michael Kennedy>Yeah.
+00:23:48 And now we're finally arrived where I believe developers should be learning Kubernetes, even for local development.
 
-00:23:21 <v Michael Kennedy>Speaking of which, maybe you've got some ideas on what's next, Calvin.
+00:23:54 I feel like that whole front to back story is not as complicated.
 
-00:23:25 <v Michael Kennedy>Sure.
+00:23:59 The tooling has really come up to date.
 
-00:23:26 <v Calvin Hendrix-Parker>I mean, I've been a big believer in containers.
+00:24:01 And so being able to use containers to get reliable, repeatable builds, being able to use tools like Tilt.dev, for example, as a developer locally with my Kubernetes clusters, I can now have file systems syncing, use all my local tools.
 
-00:23:29 <v Calvin Hendrix-Parker>I really got turned onto this in 2020 and went down the path.
+00:24:18 This just literally does take the pains out of, they say microservice development.
 
-00:23:33 <v Calvin Hendrix-Parker>And now we're finally arrived where I believe developers should be learning Kubernetes, even for local development.
+00:24:22 I think that's a little bit of a buzzwordy explanation there.
 
-00:23:40 <v Calvin Hendrix-Parker>I feel like that whole front to back story is not as complicated.
+00:24:25 I will say that it's good for Django development.
 
-00:23:44 <v Calvin Hendrix-Parker>The tooling has really come up to date.
+00:24:28 So if you check out the SCAF full stack template, are you going to change it for me?
 
-00:23:47 <v Calvin Hendrix-Parker>And so being able to use containers to get reliable, repeatable builds, being able to use tools like Tilt.dev, for example, as a developer locally with my Kubernetes clusters, I can now have file systems syncing, use all my local tools.
+00:24:33 Perfect, that's perfect.
 
-00:24:03 <v Calvin Hendrix-Parker>This just literally does take the pains out of, they say microservice development.
+00:24:35 This is exactly where we can use the same tools in production that we use in development so that it's much easier to track down issues.
 
-00:24:07 <v Calvin Hendrix-Parker>I think that's a little bit of a buzzwordy explanation there.
+00:24:44 Containers obviously unlocked a lot of those.
 
-00:24:11 <v Calvin Hendrix-Parker>I will say that it's good for Django development.
+00:24:46 I feel like the true superpower of Kubernetes, I think a lot of people love it for orchestration or claim it's for orchestration.
 
-00:24:14 <v Calvin Hendrix-Parker>So if you check out the SCAF full stack template,
+00:24:53 I really love the fact that it's got a control plane and a URL and an API so you can do things like continuous deployment.
 
-00:24:17 <v Michael Kennedy>are you going to change it for me?
+00:25:01 So being able to deliver your code, build an image, update a manifest and have things just deploy without you having to think twice about it and be able to roll back with a click of a button and using tools like Argo CD.
 
-00:24:18 <v Calvin Hendrix-Parker>Perfect, that's perfect.
+00:25:13 Argo CD is a great CI CD tool.
 
-00:24:21 <v Calvin Hendrix-Parker>This is exactly where we can use the same tools in production that we use in development so that it's much easier to track down issues.
+00:25:15 So we leverage it very heavily.
 
-00:24:30 <v Calvin Hendrix-Parker>Containers obviously unlocked a lot of those.
+00:25:16 If you want a good example of how to do that, you can check out that same full stack template.
 
-00:24:32 <v Calvin Hendrix-Parker>I feel like the true superpower of Kubernetes, I think a lot of people love it for orchestration or claim it's for orchestration.
+00:25:21 We have all the pieces put in there for you in GitHub to understand how that works.
 
-00:24:39 <v Calvin Hendrix-Parker>I really love the fact that it's got a control plane and a URL and an API so you can do things like continuous deployment.
+00:25:26 So I think it's real.
 
-00:24:46 <v Calvin Hendrix-Parker>So being able to deliver your code, build an image, update a manifest and have things just deploy without you having to think twice about it and be able to roll back with a click of a button and using tools like Argo CD.
+00:25:29 I think developers should be embracing the container world, especially if you have more than one developer.
 
-00:24:58 <v Calvin Hendrix-Parker>Argo CD is a great CI CD tool.
+00:25:35 As soon as you have a second developer, this becomes an immediate payoff in the work it took to put it in place.
 
-00:25:01 <v Calvin Hendrix-Parker>So we leverage it very heavily.
+00:25:42 And so I think it hits all the environments too, like not just web dev.
 
-00:25:02 <v Calvin Hendrix-Parker>If you want a good example of how to do that, you can check out that same full stack template.
+00:25:46 I think the data folks benefit from containers, especially if you look at tools like Airflow,
 
-00:25:07 <v Calvin Hendrix-Parker>We have all the pieces put in there for you in GitHub to understand how that works.
+00:25:51 be able to deploy that into containers, being able to manage workers that are Kubernetes-based tasks so you can natively handle asynchronous tasks in a cluster and leverage all that power you've got under the covers and scalability of being able to scale out all the nodes, you get a lot of win for adopting a tool that I think a lot of people, and me included, used to consider overkill.
 
-00:25:13 <v Calvin Hendrix-Parker>So I think it's real.
+00:26:15 Yeah.
 
-00:25:14 <v Calvin Hendrix-Parker>I think developers should be embracing the container world, especially if you have more than one developer.
+00:26:16 Well, let's put some layers on this.
 
-00:25:20 <v Calvin Hendrix-Parker>As soon as you have a second developer, this becomes an immediate payoff in the work it took to put it in place.
+00:26:19 First of all, preach on, preach on.
 
-00:25:28 <v Calvin Hendrix-Parker>And so I think it hits all the environments too, like not just web dev.
+00:26:21 But you say containers.
 
-00:25:32 <v Calvin Hendrix-Parker>I think the data folks benefit from containers,
+00:26:23 You said Kubernetes, these some other things.
 
-00:25:35 <v Michael Kennedy>especially if you look at tools like Airflow, <v Calvin Hendrix-Parker>be able to deploy that into containers, be able to manage workers that are, you know, Kubernetes-based tasks.
+00:26:26 Do you have to know Docker and containers?
 
-00:25:45 <v Calvin Hendrix-Parker>So you can like natively handle asynchronous tasks in a cluster and leverage all that power you've got under the covers and scalability of being able to scale out all the nodes.
+00:26:30 Is Docker synonymous with containers for you?
 
-00:25:54 <v Calvin Hendrix-Parker>You get a lot of, a lot of win for adopting a tool that I think a lot of people and me included used to consider overkill.
+00:26:31 Do you have to know that before you're successful with Kubernetes?
 
-00:26:01 <v Michael Kennedy>Yeah. Well, let's, let's put some layers on this. First of all, preach on, preach on, but you say containers and you said Kubernetes and these, some other things. Do we, do you have to know Docker and containers? Is Docker synonymous with containers for you? Do you have to know that before you're successful with Kubernetes? Like what are the, you know, there's, there's a couple of layers of, of architecture here, where are you telling people they should pay attention to?
+00:26:36 There's a couple of layers of architecture here.
 
-00:26:29 <v Calvin Hendrix-Parker>I think you have to start with containers. Start with Docker. Oh, the dog wants me to play with
+00:26:40 Where are you telling people they should pay attention to?
 
-00:26:33 <v Michael Kennedy>the toy over here. If you start with the container, because you have to have a good
+00:26:43 I think you have to start with containers.
 
-00:26:37 <v Calvin Hendrix-Parker>container strategy, even to be able to build and work with containers inside of any kind of a, you know, whether it's Docker Compose or Swarm or, you know, using Fargate or some kind of
+00:26:45 Start with Docker.
 
-00:26:48 <v Michael Kennedy>container app service, like on DigitalOcean. Yeah, count me down as Docker Compose, by the way. I'm Yeah, that's where we started.
+00:26:46 The dog wants me to play with the toy over here.
 
-00:26:56 <v Calvin Hendrix-Parker>I really enjoyed the ability to have Compose describe my whole stack and be able to run the exact same version of the exact right version of Redis, the exact right version of Postgres, the exact right version of whatever my dependent other pieces are around me, because that matters.
+00:26:49 If you start with the container, because you have to have a good container strategy, even to be able to build and work with containers inside of any kind of a, whether it's Docker Compose or Swarm or using Fargate or some kind of container app service, like on DigitalOcean.
 
-00:27:12 <v Calvin Hendrix-Parker>I don't remember, folks remember the Redis 608 to 609, like a very minor release introduced a new feature that was unusable in a very minor release backward.
+00:27:05 - Yeah, count me down as Docker Compose, by the way.
 
-00:27:26 <v Calvin Hendrix-Parker>So you want to be able to pin these things down so you aren't chasing ghosts and weird edge cases and containers enable that.
+00:27:07 I'm a big fan of this.
 
-00:27:33 <v Calvin Hendrix-Parker>And whether it's Compose or Kubernetes, it doesn't matter.
+00:27:08 - Yeah, you're a big fan.
 
-00:27:36 <v Calvin Hendrix-Parker>You get that benefit.
+00:27:09 That's where we started.
 
-00:27:38 <v Calvin Hendrix-Parker>I feel like the Kubernetes piece just takes that to the next level and gives you a lot of the programmability of the web with an API and the fact that I'm not logging in.
+00:27:10 I really enjoyed the ability to have Compose describe my whole stack and be able to run the exact same version of the exact right version of Redis, the exact right version of Postgres, the exact right version of whatever my dependent other pieces are around me, because that matters.
 
-00:27:48 <v Calvin Hendrix-Parker>Our preferred way to deploy Kubernetes onto servers is actually to use Talos Linux, which has no SSH shell.
+00:27:27 I don't remember folks remember the Reddit 608 to 609, like a very minor release introduced a new feature that was unusable in a very minor release backward. So you want to be able to pin these things down so you aren't chasing ghosts and weird edge cases and containers enable that.
 
-00:27:54 <v Calvin Hendrix-Parker>There is not a way to shell into that box.
+00:27:48 whether it's Compose or Kubernetes, it doesn't matter.
 
-00:27:56 <v Calvin Hendrix-Parker>It eliminates a whole class of security vulnerabilities because there is no shell on the box whatsoever.
+00:27:50 You get that benefit.
 
-00:28:02 <v Calvin Hendrix-Parker>You have to interact with it programmatically via APIs.
+00:27:52 I feel like the Kubernetes piece just takes that to the next level and gives you a lot of the programmability of the web with an API and the fact that I'm not logging in.
 
-00:28:06 <v Calvin Hendrix-Parker>And even the upgrades happen via the same API backplanes.
+00:28:02 Our preferred way to deploy Kubernetes onto servers is actually to use Talos Linux, which has no SSH shell.
 
-00:28:11 <v Calvin Hendrix-Parker>And just that level of control, security, reliability, and comfort helped me sleep really well at night knowing where I've deployed these things.
+00:28:08 There is not a way to shell into that box.
 
-00:28:21 <v Michael Kennedy>But you do need containers first.
+00:28:10 There eliminates a whole class of security vulnerabilities because there is no shell on the box whatsoever.
 
-00:28:23 <v Calvin Hendrix-Parker>I think if you don't understand the layers of the containers, but I think that's a quick read.
+00:28:17 You have to interact with it programmatically via APIs.
 
-00:28:27 <v Calvin Hendrix-Parker>There's some really good resources online.
+00:28:20 And even the upgrades happen via the same API backplanes.
 
-00:28:30 <v Calvin Hendrix-Parker>Nana's Tech World does a really good job <v Michael Kennedy>of describing containers and Kubernetes.
+00:28:25 And just that level of control, security, reliability, and comfort helped me sleep really well at night knowing where I've deployed these things.
 
-00:28:35 <v Calvin Hendrix-Parker>And she does an awesome job of bringing that down to an every person, most every person level
+00:28:36 But you do need containers first.
 
-00:28:40 <v Michael Kennedy>who would even care to want to touch it.
+00:28:37 I think if you don't understand the layers of the containers, I think that's a quick read.
 
-00:28:42 <v Calvin Hendrix-Parker>I have some thoughts about containers and compose and stuff
+00:28:42 There's some really good resources online.
 
-00:28:45 <v Michael Kennedy>that I want to throw in.
+00:28:45 Nana's tech world does a really good job of describing containers.
 
-00:28:46 <v Michael Kennedy>But I do especially want to hear, Peter, contrast your take with the, you sort of say the same thing, but for data scientists, do you need to pay attention to containers and data science? Is that different? I interviewed Matthew Rockland from Coiled recently, and they've got a really interesting way to ship and produce your code without containers that you actually interact with. There's options, but what do you think?
+00:28:48 She does a really good job.
 
-00:29:09 <v Peter Wang>Yeah, I think, I mean, I think containers are just part of the technical landscape now, So it's good to know them.
+00:28:49 And she does an awesome job of bringing that down to an every person, most every person level who would even care to want to touch it.
 
-00:29:16 <v Peter Wang>I think if we were to remove the capabilities of data science from everyone who doesn't know about containers, that we would end up with a deeply impoverished user base, right?
+00:28:57 I have some thoughts about containers and components and stuff that I want to throw in.
 
-00:29:25 <v Peter Wang>The truth of the matter is that there are a lot of people out there today who, if you think about what containers really do from a software development and a DevOps perspective, it is a mechanism for your dog knows about to say something spicy.
+00:29:00 But I do especially want to hear, Peter, contrast your take with the, you sort of say the same thing, but for data scientists.
 
-00:29:38 <v Michael Kennedy>No, I'm not trying to be controversial.
+00:29:08 Do you need to pay attention to containers and data science?
 
-00:29:40 <v Michael Kennedy>Just thinking about it on first principles, <v Peter Wang>A container is a way for us to sort of format and rationalize the target deployment environment at within the boundaries of the box, within the boundaries of a particular compute node with an IP address or something like this.
+00:29:12 Is that different?
 
-00:29:55 <v Peter Wang>And then Kubernetes takes the next level up, which is, oh, if your dependencies for your application is if you have like a microservices classic sort of example, if your application is architected in such a way that you need a lot of services to be running.
+00:29:12 I interviewed Matthew Rockland from Coiled recently, and they've got a really interesting way to ship and produce your code without containers that you actually interact with.
 
-00:30:07 <v Peter Wang>Well, to format that, you need to actually create a cluster of services configured with particular network configuration and various kinds of things.
+00:29:22 There's options, but what do you think?
 
-00:30:15 <v Peter Wang>So you're actually shipping a cluster as the first thing you land and then you land, you deploy the airport, then you land the plane.
+00:29:23 Yeah, I think containers are just part of the technical landscape now, so it's good to know them.
 
-00:30:22 <v Peter Wang>So if you need to do that, if the thing you're doing is so big and I think that we think about the U.S. Air Force and Army, like the reason why the American military sort of has the dominance it has is because of the logistics chain.
+00:29:30 I think if we were to remove the capabilities of data science from everyone who doesn't know about containers, that we would end up with a deeply impoverished user base.
 
-00:30:34 <v Peter Wang>They can land just hundreds and hundreds of tons of military hardware and food and personnel into any location on the earth inside of 24 hours.
+00:29:39 The truth of the matter is that there are a lot of people out there today who, if you think about what containers really do from a software development and a DevOps perspective, it is a mechanism for your dog knows about to say something spicy.
 
-00:30:43 <v Peter Wang>And this is sort of what Kubernetes gives you is that ability to format at that level.
+00:29:53 No, I'm not trying to be controversial.
 
-00:30:46 <v Peter Wang>But at the end of the day, if you have a Jupyter Notebook, well-known data set, you know how many CPU cores, what kind of GPU you need to run a particular analytic, that can seem like overkill.
+00:29:54 Just thinking about it on first principles, a container is a way for us to sort of format and rationalize the target deployment environment within the boundaries of the box, within the boundaries of a particular compute node with an IP address or something like this.
 
-00:30:56 <v Peter Wang>Because you could say, spin up the CC2 box, get me in there, spin up Jupyter Hub, copy the thing over, and now it's running.
+00:30:09 And then Kubernetes takes the next level up, which is, oh, if your dependencies for your application is if you have like a microservices classic sort of example, if your application is architected in such a way that you need a lot of services to be running.
 
-00:31:03 <v Peter Wang>You know, yay.
+00:30:21 Well, to format that, you need to actually create a cluster of services configured with particular network configuration and various kinds of things.
 
-00:31:04 <v Peter Wang>So I don't think that containers are necessary, but in life, we don't just do what's necessary, right?
+00:30:30 So you're actually shipping a cluster as the first thing you land and then you land, you deploy the airport, then you land the plane.
 
-00:31:09 <v Peter Wang>I think it is useful to know something about how to ship and work with modern IT environments and cloud-native kinds of environments.
+00:30:36 So if you need to do that, if the thing you're doing is so big, and I think that when you think about the U.S. Air Force and Army, the reason why the American military sort of has the dominance it has is because of the logistics chain.
 
-00:31:18 <v Peter Wang>So it's a useful thing to know.
+00:30:48 They can land just hundreds and hundreds of tons of military hardware and food and personnel into any location on the earth inside of 24 hours.
 
-00:31:20 <v Peter Wang>But then again, like I said, it's the goal for us as technologists should be empowering those who are less technically inclined than us.
+00:30:57 And this is sort of what Kubernetes gives you is that ability to format at that level.
 
-00:31:28 <v Peter Wang>And so removing the complexity for them should be the thing that we should be trying to do.
+00:31:01 But at the end of the day, if you have a Jupyter Notebook, well-known data set, you know how many CPU cores, what kind of GPU you need to run a particular analytic, that can seem like overkill.
 
-00:31:31 <v Michael Kennedy>And this is then to the spirit <v Peter Wang>is what I think Matt Rocklin talks to. And what we on the sort of Anaconda data science oriented side also hope for, right? Is that to make as much of this disappear into the background as possible for people who don't want to learn it, who don't need to know it necessarily.
+00:31:11 Because you could say, spin up the CC2 box, get me in there, spin up Jupyter Hub, copy the thing over, and now it's running.
 
-00:31:45 <v Calvin Hendrix-Parker>Yeah. I think we want to get, we all want to score well on the plays well with others scorecard. And so, you know, if we can deploy and use containers, that means it's much easier to
+00:31:18 You know, yay.
 
-00:31:54 <v Michael Kennedy>onboard the next dev. Yeah. And a lot of this, not everyone has to be an expert at it. Correct.
+00:31:19 So I don't think that containers are necessary.
 
-00:32:00 <v Michael Kennedy>A couple of people set up a cluster or some Docker compose system together, and then you all get to use it.
+00:31:21 But in life, we don't just do what's necessary, right?
 
-00:32:07 <v Michael Kennedy>It's a little bit like the people that work on Jupyter have to do a lot of JavaScript and TypeScript, so the rest of us don't have to do so much.
+00:31:24 I think it is useful to know something about how to ship and work with modern IT environments and cloud native kinds of environments.
 
-00:32:14 <v Peter Wang>Right.
+00:31:32 So it's a useful thing to know.
 
-00:32:14 <v Peter Wang>Although you just whipped out a little HTML editing, so I was pretty slick.
+00:31:34 But then, like I said, it's the goal for us as technologists should be empowering those who are less technically inclined than us.
 
-00:32:19 <v Michael Kennedy>Yeah, I think here's a good question from a little bit earlier from Pamela, but I think especially this one goes out to you, Calvin.
+00:31:42 And so removing the complexity for them should be the thing that we should be trying to do.
 
-00:32:26 <v Michael Kennedy>I think you've walked this path recently.
+00:31:45 And this is the spirit of what I think Matt Rockland talks to.
 
-00:32:28 <v Michael Kennedy>How much harder is Kubernetes versus Docker Compose to learn for a web dev?
+00:31:48 And what we on the sort of Anaconda data science oriented side also hope for, right, is that to make as much of this disappear into the background as possible for people who don't want to learn it, who don't need to know it necessarily.
 
-00:32:32 <v Calvin Hendrix-Parker>I think if you have a good template to start from, that's where this becomes a no-brainer.
+00:31:59 Yeah, I think we want to get it.
 
-00:32:38 <v Calvin Hendrix-Parker>If you were to try and go learn all the things about the Kubernetes stack orchestrators, the storage bits, all these kind of pieces, that could be really overwhelming.
+00:32:01 We all want to score well on the plays well with others scorecard.
 
-00:32:49 <v Calvin Hendrix-Parker>And whereas Docker Compose, it's one file, it lists your services, it feels fairly readable, It's just YAML.
+00:32:04 And so if we can deploy and use containers, that means it's much easier to onboard the next dev.
 
-00:32:57 <v Calvin Hendrix-Parker>Kubernetes is going to have a few more things going on under the covers.
+00:32:10 Yeah.
 
-00:33:00 <v Calvin Hendrix-Parker>But again, I'll point to our SCAF example as a minimal, as little as you needed to get going version of being able to do Kubernetes locally and in a sandbox and production environment.
+00:32:11 And a lot of this, not everyone has to be an expert at it.
 
-00:33:12 <v Calvin Hendrix-Parker>So it scales up to all those pieces.
+00:32:14 Correct.
 
-00:33:14 <v Calvin Hendrix-Parker>So as a web dev, you just develop your code locally.
+00:32:14 A couple of people set up a cluster or some Docker compose system together, and then you all get to use it.
 
-00:33:17 <v Calvin Hendrix-Parker>You use your IDE.
+00:32:21 It's a little bit like the people that work on Jupyter have to do a lot of JavaScript and TypeScript, so the rest of us don't have to do so much.
 
-00:33:18 <v Calvin Hendrix-Parker>You're in PyCharm.
+00:32:28 Right.
 
-00:33:19 <v Calvin Hendrix-Parker>You're in VS Code.
+00:32:28 Although you just whipped out a little HTML editing, so I was pretty slick.
 
-00:33:20 <v Calvin Hendrix-Parker>You're editing your files locally.
+00:32:33 Yeah, I think here's a good question from a little bit earlier from Pamela, but I think especially this one goes out to you, Calvin.
 
-00:33:22 <v Calvin Hendrix-Parker>Tools like Tilt are kind of hiding a lot of that complexity out under the covers for you and synchronizing files two-way.
+00:32:40 I think you've walked this path recently.
 
-00:33:30 <v Calvin Hendrix-Parker>So if things happen in the container, for example, you probably want to be able to build, compile your dependencies with the hashes in the target container environment that you're going to release to.
+00:32:43 How much harder is Kubernetes versus Docker Compose to learn for a web dev?
 
-00:33:40 <v Calvin Hendrix-Parker>Because if you did it locally and you're on Windows or on Mac or on Linux, you're going to get potentially different hashes, different versions of different dependencies.
+00:32:47 I think if you have a good template to start from, that's where this becomes a no-brainer.
 
-00:33:48 <v Calvin Hendrix-Parker>So those kinds of things need to write back from the container to your local file system and Tilt enables that and takes that whole pain away.
+00:32:52 If you were to try and go learn all the things about the Kubernetes stack orchestrators, the storage bits, all these kind of pieces, that could be really overwhelming.
 
-00:33:55 <v Calvin Hendrix-Parker>I think Tilt was the big changing point for me, the inflection point for me when I moved over and fully embraced Kubernetes for local web dev.
+00:33:03 And whereas Docker Compose, it's one file, it lists your services, it feels fairly readable, It's just YAML.
 
-00:34:03 <v Michael Kennedy>Interesting.
+00:33:11 Kubernetes is going to have a few more things going on under the covers.
 
-00:34:04 <v Calvin Hendrix-Parker>Over at Talk Python, I've got, I think last time I counted 23 different things
+00:33:14 But again, I'll point to our SCAF example as a minimal, as little as you needed to get going version of being able to do Kubernetes locally and in a sandbox and production environment.
 
-00:34:10 <v Michael Kennedy>running in Docker containers were managed by a handful of Docker Compose things that grew them by what they're related to.
+00:33:27 So it scales up to all those pieces.
 
-00:34:16 <v Michael Kennedy>And it's been awesome.
+00:33:29 So as a web dev, you just develop your code locally.
 
-00:34:17 <v Michael Kennedy>It's been, it really lets you isolate things.
+00:33:31 You use your IDE.
 
-00:34:20 <v Michael Kennedy>The server doesn't get polluted with installing <v Michael Kennedy>this version of Postgres or that version of Mongo.
+00:33:32 You're in PyCharm.
 
-00:34:25 <v Michael Kennedy>I think I've got two versions of Postgres, <v Michael Kennedy>another version of MongoDB, and a few other things.
+00:33:33 You're in VS Code.
 
-00:34:30 <v Michael Kennedy>Yeah, and it just doesn't matter.
+00:33:34 You're editing your files locally.
 
-00:34:31 <v Michael Kennedy>Do I RAM and CPU for it?
+00:33:36 Tools like Tilt are kind of hiding a lot of that complexity out under the covers for you and synchronizing files two-way.
 
-00:34:33 <v Michael Kennedy>Plenty, okay, good.
+00:33:44 So if things happen in the container, for example, you probably want to be able to build, compile your dependencies with the hashes in the target container environment that you're going to release to.
 
-00:34:34 <v Calvin Hendrix-Parker>And you can run in a one CPU or one server node.
+00:33:55 Because if you did it locally and you're on Windows or on Mac or on Linux, you're going to get potentially different hashes, different versions of different dependencies.
 
-00:34:38 <v Calvin Hendrix-Parker>You don't need to have five machines running with a control plane and all the pieces.
+00:34:02 So those kinds of things need to write back from the container to your local file system and Tilt enables that and takes that whole pain away.
 
-00:34:43 <v Calvin Hendrix-Parker>You will have the control plane, You can use like K3S is a minimal Kubernetes project that you can use to deploy, for example, on a single EC2 instance.
+00:34:09 I think Tilt was the big changing point for me, the inflection point for me when I moved over
 
-00:34:52 <v Calvin Hendrix-Parker>Spin that up, deploy your containers.
+00:34:15 and fully embraced Kubernetes for local web dev.
 
-00:34:54 <v Calvin Hendrix-Parker>Now you can hook it up to your GitHub actions, which I think we should also talk about as something people should learn.
+00:34:17 Interesting.
 
-00:34:59 <v Calvin Hendrix-Parker>You hook that up and away you go.
+00:34:18 Over at Talk Python, I've got, I think last time I counted 23 different things running in Docker containers were managed by a handful of Docker Compose things that grew them by what they're related to.
 
-00:35:01 <v Calvin Hendrix-Parker>You're now releasing without logging into a server and typing git pole and potentially injecting into it unintended changes from your version control.
+00:34:30 And it's been awesome.
 
-00:35:12 <v Calvin Hendrix-Parker>I mean, it's a peace of mind to be able to know and audit and know what you've released is exactly what you expected to get released.
+00:34:32 It's been, it really lets you isolate things.
 
-00:35:20 <v Michael Kennedy>So I want to wrap up this container side of things with two thoughts.
+00:34:34 The server doesn't get polluted with installing this version of Postgres or that version of Mongo.
 
-00:35:24 <v Michael Kennedy>First, I'm a big fan of dogs.
+00:34:39 I think I've got two versions of Postgres, another version of MongoDB and a few other things.
 
-00:35:26 <v Michael Kennedy>I don't know if you guys know, but I kind of understand what dogs say a little bit.
+00:34:44 Yeah, and it just doesn't matter.
 
-00:35:29 <v Michael Kennedy>It's a little weird.
+00:34:45 Do I RAM and CPU for it?
 
-00:35:30 <v Michael Kennedy>I believe Calvin's dog, I don't know, Peter, back me up here.
+00:34:47 Plenty.
 
-00:35:33 <v Michael Kennedy>I believe Calvin's dog said, forget containers I edit in production.
+00:34:47 Okay, good.
 
-00:35:37 <v Michael Kennedy>I think that's what the dog said when it barked.
+00:34:48 And you can run in a one CPU or one server node.
 
-00:35:39 <v Michael Kennedy>I'm not entirely sure.
+00:34:52 You don't need to have five machines running with a control plane and all the pieces.
 
-00:35:40 <v Calvin Hendrix-Parker>I mean, he is a black dog.
+00:34:57 You will have the control plane, You can use like K3S is a minimal Kubernetes project that you can use to deploy, for example, on a single EC2 instance.
 
-00:35:42 <v Michael Kennedy>you can only. Yeah, you never know. You never know. They're known for being rebels. That's right.
+00:35:07 Spin that up, deploy your containers.
 
-00:35:48 <v Michael Kennedy>Exactly. Not the black sheep, but the black lab. The black dog. And then the second one I want to kind of close this out with is see for yourself out on YouTube says, I like Python for low code ML with PyCaret. The problem is that Python is now up to 313.3 and very soon 314.0 folks, while PyCaret only supports up to 311. And I think this is a good place to touch on reproducibility and isolation, right?
+00:35:08 Now you can hook it up to your GitHub actions, which I think we should also talk about as something people should learn.
 
-00:36:11 <v Michael Kennedy>Like you could make a container that just runs 3.11 and it doesn't matter what your server has, right, Peter?
+00:35:13 You hook that up and away you go.
 
-00:36:16 <v Peter Wang>Yeah, I mean, the, is the, sorry, if you could pop up the question again, I was, I think it was just that PyCaret, yeah.
+00:35:15 You're now releasing without logging into a server and typing git pole and potentially injecting into it unintended changes from your version control.
 
-00:36:24 <v Peter Wang>So this, I guess I don't really see the, I don't see the problem.
+00:35:27 I mean, it's a peace of mind to be able to know and audit and know what you've released is exactly what you expected to get released.
 
-00:36:31 <v Peter Wang>Like this is a statement of fact, right?
+00:35:34 So I want to wrap up this container side of things with two thoughts.
 
-00:36:33 <v Peter Wang>The PyCaret only supports 3.11.
+00:35:39 First, I'm a big fan of dogs.
 
-00:36:35 <v Peter Wang>Are there features that you really want to see in 3.13 or that you really need to use in 3.13 or, I mean, there's...
+00:35:41 I don't know if you guys know, but I kind of understand what dogs say a little bit.
 
-00:36:43 <v Michael Kennedy>It could be that they work.
+00:35:44 It's a little weird.
 
-00:36:45 <v Michael Kennedy>Yeah, but it could be they get a new Linux machine <v Peter Wang>that's Ubuntu
+00:35:44 I believe Calvin's dog, I don't know, Peter, back me up here.
 
-00:36:48 <v Michael Kennedy>and it's got 3.12 on it.
+00:35:47 I believe Calvin's dog said, forget containers I edit in production.
 
-00:36:49 <v Peter Wang>Yep.
+00:35:51 I think that's what the dog said when it barked.
 
-00:36:50 <v Peter Wang>I mean, but you never...
+00:35:53 I'm not entirely sure.
 
-00:36:53 <v Peter Wang>Okay, this might be where the dog barks again, but you never use the system Python.
+00:35:54 I mean, he is a black dog.
 
-00:36:57 <v Peter Wang>Well, right.
+00:35:56 you can only. Yeah, you never know. You never know. They're known for being rebels. That's right.
 
-00:36:58 <v Michael Kennedy>It doesn't matter what the system ships with.
+00:36:02 Exactly. Not the black sheep, but the black lab. The black dog. And then the second one I want to kind of close this out with is see for yourself out on YouTube says, I like Python for low code ML with PyCaret. The problem is that Python is now up to 313.3 and very soon 314.0 folks, while PyCaret only supports up to 311. And I think this is a good place to touch on reproducibility and isolation, right?
 
-00:37:00 <v Michael Kennedy>What does macOS ship with?
+00:36:25 Like you could make a container that just runs 3.11 and it doesn't matter what your server has, right, Peter?
 
-00:37:02 <v Peter Wang>I don't know.
+00:36:30 Yeah, I mean, the, is the, sorry, if you could pop up the question again, I was, I think it was just that PyCaret, yeah.
 
-00:37:03 <v Peter Wang>You install...
+00:36:38 So this, I guess I don't really see the, I don't see the problem.
 
-00:37:04 <v Peter Wang>You either install a distribution like Anaconda, Miniconda or something like this or uv using Python standalone, the virtual environments there have their own ship, their own Python.
+00:36:45 Like this is a statement of fact, right?
 
-00:37:14 <v Peter Wang>This is now I because I am who I am, like on the Anaconda side of things, we've known that you have in order to really isolate your Python installation.
+00:36:47 The PyCaret only supports 3.11.
 
-00:37:23 <v Peter Wang>You really have to have the interpreter itself be built with the same tool chain and the same versions of the tool chain as all the libraries within it.
+00:36:49 Are there features that you really want to see in 3.13 or that you really need to use in 3.13 or, I mean, there's...
 
-00:37:31 <v Peter Wang>And so this is what the Conda universe, Conda Forge, BioConda, we've been doing this forever.
+00:36:57 It could be that they work.
 
-00:37:36 <v Peter Wang>And then with uv, I think uv has really pushed the spearheading the whole like install a separate Python bit.
+00:36:59 Yeah, but it could be they get a new Linux machine that's Ubuntu and it's got 3.12 on it.
 
-00:37:42 <v Peter Wang>I know that Pyan has been there, but like it's not, I don't think it was a standard part of,
+00:37:04 Yeah, that's true.
 
-00:37:47 <v Michael Kennedy>it was considered best practice, right?
+00:37:05 But you never...
 
-00:37:50 <v Michael Kennedy>For people, but, but I'm hoping that, you know, <v Peter Wang>that, that uv helps to change minds in this way as well.
+00:37:07 Okay, this might be where the dog barks again, but you never use the system Python.
 
-00:37:55 <v Peter Wang>But ultimately for, for, if you actually, if you do all the bits, right, you actually can have a isolated and separated, perfectly isolated Python install without needing to use containerization.
+00:37:11 Well, right.
 
-00:38:08 <v Peter Wang>Not that there's anything wrong with containerization, but just sort of saying like, this is a solvable problem.
+00:37:13 It doesn't matter what the system ships with.
 
-00:38:13 <v Peter Wang>It's just so darn complicated to try to give anyone best practices in the Python packaging world because some guidance can be wrong for somebody, right?
+00:37:15 What does macOS ship with?
 
-00:38:20 <v Michael Kennedy>But in this case, yes, <v Peter Wang>you could absolutely use containers to isolate that or look to use Konda or uv to create an isolated install with just that version of Python just to run then PyCaret inside it.
+00:37:16 I don't know.
 
-00:38:34 <v Calvin Hendrix-Parker>Yeah, I feel like containers a pure expression of an isolated environment where you can't get it messed up. If you do anything, just know that the system Python is not your Python. You shouldn't be allowed to use it. It should be almost in a user private bin path that's not usable by people.
+00:37:17 You either install a distribution like Anaconda, Miniconda or something like this or uv using Python standalone, the virtual environments there have their own, ship their own Python.
 
-00:38:53 <v Michael Kennedy>Calvin, I've been on a journey. It's a failed journey, but it was a long, long, solid attempt. I've been trying to remove Python from my system as a global concept, period. But I'm a big fan of Homebrew and too many things that Homebrew want it. And I know something's gone wrong when my app falls back to using Python 3.9. I'm like,
+00:37:28 This is now, because I am who I am, like on the Anaconda side of things, we've known that you have, in order to really isolate your Python installation, you really have to have the interpreter itself be built with the same tool chain and the same versions of the tool chain as all the libraries within it.
 
-00:39:12 <v Calvin Hendrix-Parker>no, Homebrew. I deleted all my local Pythons, Pyamv and Homebrew in any packages that depended on it.
+00:37:45 And so this is what the Conda universe, Conda Forge, BioConda, we've been doing this forever.
 
-00:39:18 <v Calvin Hendrix-Parker>And I went fully uv and uvx for any tools that would rely on it. And we've also moved to Nix.
+00:37:50 And then with uv, I think uv has really pushed the spearheading the whole like install a separate Python bit.
 
-00:39:24 <v Calvin Hendrix-Parker>We've started using Nix for our package management instead of Homebrew for that reason.
+00:37:57 I know that Pyan has been there, but like it's not, I don't think it was a standard part of,
 
-00:39:31 <v Michael Kennedy>This portion of Talk Python To Me is brought to you by Agency.
+00:38:02 it was considered best practice, right.
 
-00:39:34 <v Michael Kennedy>Build the future of multi-agent software with Agency, spelled A-G-N-T-C-Y.
+00:38:04 For people.
 
-00:39:40 <v Michael Kennedy>Now an open-source Linux foundation project, Agency is building the Internet of Things.
+00:38:05 But, but I'm hoping that, you know, that, that uv helps to change minds in this way as well.
 
-00:39:45 <v Michael Kennedy>Think of it as a collaboration layer where AI agents can discover, connect, and work across any framework.
+00:38:09 But ultimately for, for if you actually, if you do all the bits, right, you actually can have a isolated and separated perfectly isolated Python install without needing to, use containerization. Not that there's anything wrong with containerization, but just sort of saying like, this is a solvable problem. It's just so darn complicated to try to give anyone best practices in the Python packaging world because some guidance can be wrong for somebody, right?
 
-00:39:52 <v Michael Kennedy>Here's what that means for developers.
+00:38:34 But in this case, yes, you could absolutely use containers to isolate that or look to use
 
-00:39:54 <v Michael Kennedy>The core pieces engineers need to deploy multi-agent systems now belong to everyone who builds on Agency.
+00:38:41 conda or uv to create an isolated install with just that version of Python just to run
 
-00:40:00 <v Michael Kennedy>You get robust identity and access management, so every agent is authenticated and trusted before it interacts.
+00:38:47 then PyCaret inside it. Yeah. I feel like containers is a pure expression of an isolated environment where you can't get it messed up. Like the, if you, if you do anything, just know that the system Python is not your Python. It's near not, you shouldn't be allowed to use it. It should be almost in a user private bin, you know, path that's not usable by people. Calvin, I've been on
 
-00:40:06 <v Michael Kennedy>You get open, standardized tools for agent discovery, clean protocols for agent-to-agent communication, and modular components that let you compose scalable workflows instead of wiring up brittle glue code.
+00:39:08 a journey and it's a failed journey, but it was a long, long, solid attempt. I've been trying to remove Python from my system as a global concept, period.
 
-00:40:19 <v Michael Kennedy>Agency is not a walled garden.
+00:39:18 But I'm a big fan of Homebrew and too many things that Homebrew wanted.
 
-00:40:21 <v Michael Kennedy>You'll be contributing alongside developers from Cisco, Dell Technologies, Google Cloud, Oracle, Red Hat, and more than 75 supporting companies.
+00:39:22 And I know something's gone wrong when my app falls back to using Python 3.9.
 
-00:40:30 <v Michael Kennedy>The goal is simple.
+00:39:26 I'm like, no, Homebrew.
 
-00:40:32 <v Michael Kennedy>Build the next generation of AI infrastructure together in the open so agents can cooperate across tools, vendors, and runtimes.
+00:39:27 I deleted all my local Pythons, Pyamv and Homebrew, in any packages that depended on it.
 
-00:40:39 <v Michael Kennedy>Agencies dropping code, specs, and services with no strings attached.
+00:39:33 And I went fully uv and uvx for any tools that would rely on it.
 
-00:40:44 <v Michael Kennedy>Sound awesome?
+00:39:37 And we've also moved to Nix.
 
-00:40:45 <v Michael Kennedy>Well, visit talkpython.fm/agency to contribute.
+00:39:39 We've started using Nix for our package management instead of Homebrew for that reason.
 
-00:40:49 <v Michael Kennedy>that's talkpython.fm/agntcy the link is in your podcast player show notes and on the episode page thank you as always to agency for supporting talk python to me maybe the next one i want to throw out there to talk about is just is uv it's yeah it was compelling when it was uv pip install and uv venv but i think peter really hit the nail on the head when once it's it sort of jujitsu'd Python and said, okay, now here's the deal. We manage Python. Python doesn't manage us. It just uncorked the possibilities, right? Because you can say uv venv and specify a Python version, and it's not even on your machine. Two seconds later, it's both installed on your machine and you have a virtual environment based on it. And you don't have to think about it. You know, Peter, you talked about PyM. It's great, but it compiles Python on a machine that's super slow and error prone. Because if your build tools in your machine aren't quite right, then well,
+00:39:43 Okay.
 
-00:41:44 <v Peter Wang>Oh, yeah.
+00:39:45 This portion of Talk Python To Me is brought to you by Agency.
 
-00:41:44 <v Peter Wang>Compiling Python is no joke.
+00:39:48 Build the future of multi-agent software with Agency, spelled A-G-N-T-C-Y.
 
-00:41:46 <v Peter Wang>No, it isn't.
+00:39:54 Now an open source Linux foundation project, Agency is building the internet of agents.
 
-00:41:46 <v Michael Kennedy>I used to do it for a while for Talk Python in production.
+00:39:58 Think of it as a collaboration layer where AI agents can discover, connect, and work across any framework.
 
-00:41:49 <v Michael Kennedy>It was like a 10-minute deal.
+00:40:05 Here's what that means for developers.
 
-00:41:51 <v Peter Wang>I had it automated.
+00:40:07 The core pieces engineers need to deploy multi-agent systems now belong to everyone who builds on agency.
 
-00:41:52 <v Michael Kennedy>It was fine, but it took 10 minutes.
+00:40:13 You get robust identity and access management, so every agent is authenticated and trusted before it interacts.
 
-00:41:53 <v Michael Kennedy>There was no rush in it.
+00:40:20 You get open, standardized tools for agent discovery, clean protocols for agent-to-agent communication, and modular components that let you compose scalable workflows instead of wiring up brittle glue code.
 
-00:41:54 <v Michael Kennedy>And you don't need to spend.
+00:40:33 Agency is not a walled garden.
 
-00:41:56 <v Peter Wang>The great irony of this is that, again, we in the data science world have spent years trying to convince certain folks in the sort of non-data and science Python world that you can't solve the Python packaging problem without including the management of Python itself in it. And we just got nowhere. We're just repeatedly told PyCon after PyCon, packaging summit after packaging summit. The scope of a Python package manager is to manage the things inside site packages and anything outside of that system libraries, lib ping, lib tiff, you know, open CV, these things are outside of scope. And, you know, many distributions, There's Linux distros like Debian or Red Hat.
+00:40:35 You'll be contributing alongside developers from Cisco, Dell Technologies, Google Cloud, Oracle, Red Hat, and more than 75 supporting companies.
 
-00:42:42 <v Peter Wang>There's distribution vendors of like us and Akana that are cross-platform.
+00:40:44 The goal is simple.
 
-00:42:46 <v Peter Wang>We're trying to make the case for this, but we just kept not landing that argument.
+00:40:45 Build the next generation of AI infrastructure together in the open so agents can cooperate across tools, vendors, and runtimes.
 
-00:42:50 <v Peter Wang>UV comes along and does it.
+00:40:53 Agencies dropping code, specs, and services with no strings attached.
 
-00:42:51 <v Peter Wang>And everyone's like, oh, this is totally the way to do it.
+00:40:58 Sound awesome?
 
-00:42:54 <v Peter Wang>It's like, well, I guess the users finally have, you know, I think that we can follow, we can pave that cow path.
+00:40:59 Well, visit talkpython.fm/agency to contribute.
 
-00:42:59 <v Peter Wang>And I agree, it is utterly the way to do it.
+00:41:03 that's talkpython.fm/agntcy the link is in your podcast player show notes and on the episode page thank you as always to agency for supporting talk python to me maybe the next one i want to throw out there to talk about is just is uv it's yeah it was compelling when it was uv pip install and uv venv but i think peter really hit the nail on the head when once it's it sort of jujitsu'd Python and said, okay, now here's the deal. We manage Python. Python doesn't manage us. It just uncorked the possibilities, right? Because you can say uv venv and specify a Python version, and it's not even on your machine. Two seconds later, it's both installed on your machine and you have a virtual environment based on it. And you don't have to think about it. You know, Peter, you talked about PyM. It's great, but it compiles Python on a machine that's super slow and error prone. Because if your build tools in your machine aren't quite right,
 
-00:43:01 <v Peter Wang>And then what we're going to learn, I think, on the other side of that is, oh, not only is it great to manage Python as part of the whole thing, But now we actually should care how we build that Python, because your choice of clang, GCC, your choice of what particular libraries you link in, that determines the tool chain for compiling everything else as well.
+00:41:57 then well oh yeah no compiling python is no joke no it isn't i've done i used to do it for a while for talk python in production it it was like a 10 minute deal yeah i had it automated it was fine
 
-00:43:19 <v Peter Wang>And especially to talk about data, AI, ML kinds of libraries, there's incompatibilities that will emerge as you try to install this, install that.
+00:42:06 but it took 10 minutes there was no rush and the great you don't need to spend the great irony of
 
-00:43:27 <v Michael Kennedy>So I gave a talk at PyBay, sorry to sort of toot my own horn a little bit, but I gave a
+00:42:11 this is that again like we in the data science world have spent years trying to convince um certain folks in the um sort of non non data and science python world that you can't solve the Python packaging problem without including the management of Python itself in it. And we just got nowhere. We're just repeatedly told PyCon after PyCon, packaging summit after packaging summit. The scope of a Python package manager is to manage the things inside site packages and anything outside of that system libraries, lib ping, lib tiff, you know, open CV, these things are outside of scope. And, you know, many distributions, there's, you know, Linux distros like Debian or Red Hat, there's distribution vendors of like us and a content that are cross-platform.
 
-00:43:32 <v Peter Wang>talk at PyBay last fall about the five demons of Python packaging, where I try to unravel why is this perennial problem so gnarly and horrible?
+00:43:00 We were trying to make the case for this, but we just kept not landing that argument.
 
-00:43:42 <v Peter Wang>And it's because there's many dimensions of it.
+00:43:04 uv comes along and does it.
 
-00:43:44 <v Peter Wang>And most users only care about one and a half of those dimensions.
+00:43:06 And I was like, oh, this is totally the way to do it.
 
-00:43:47 <v Peter Wang>They just really want to install the damn package and just use it.
+00:43:08 It's like, well, I guess the users finally have, you know, I think that we can follow, we can pave that cow path.
 
-00:43:51 <v Peter Wang>But if you're a maintainer, that's right.
+00:43:14 And I agree, it is utterly the way to do it.
 
-00:43:53 <v Peter Wang>You got to have the obligatory Blade Runner.
+00:43:16 And then we're going to learn, I think on the other side of that is, oh, not only is it great to manage Python as part of the whole thing, But now we actually should care how we build that Python, because your choice of clang, GCC, your choice of what particular libraries you link in, that determines the tool chain for compiling everything else as well.
 
-00:43:56 <v Peter Wang>And anyway, so I put that talk together just to sort of get everyone on the same page to understand why we have different tools, why distribution vendors, whether it's an Anaconda or an Ubuntu, a Red Hat or Nix, right? Why homebrew? These things do matter. And there's a reason people depend on these tools.
+00:43:33 And especially to talk about data, AI, ML kinds of libraries, there's incompatibilities that will emerge as you try to install this, install that.
 
-00:44:14 <v Peter Wang>And anyway, I hope that people who care about Python packaging or want to understand more deeply go and look at this talk because I do try to put time at each of their own topics that make this so complicated. And for Python in particular, because I hear a lot of people talking about, why isn't it as easy as Rust? Or, oh, MPM is so nice. Well, I don't hear that very
+00:43:42 So I gave a talk at PyBay, sorry to sort of toot my own horn a little bit, but I gave
 
-00:44:34 <v Calvin Hendrix-Parker>often. Is it? No, no, no. Actually, I don't hear a lot of praise for npm. Well, like, why doesn't
+00:43:46 a talk at PyBay last fall about the five demons of Python packaging, where I try to unravel why is this perennial problem so gnarly and horrible?
 
-00:44:39 <v Peter Wang>JavaScript have this problem? It's like, well, JavaScript doesn't have a pile of Fortran involved in it, right? Many people don't know, but, you know, there's a fun thing in there. I talk about the fact that if you want to use MB convert, if you want to use MB convert to convert notebook into a PDF, you need a Haskell compiler because Pandoc depends on Haskell. So like there's just things like that that are just our ecosystem is replete with these things. And most users don't have to see it if the upstream folks or the distribution folks and packaging people are doing their jobs right. But that doesn't mean that it's not hard. It doesn't mean that it's not
+00:43:56 And it's because there's many dimensions of it.
 
-00:45:09 <v Michael Kennedy>real labor that goes into making it work. Yeah. Look in the chat, Pamela points out that even using uv, there are now multiple ways, which is tricky. And I would refer to myself as one of the old school people. I still use uv kind of in a agnostic way. Like if people don't want to use uv and they take one of my projects, they can still use pip and they can still use pip-tools. And things like uvvenv or uv pip install or you know pip compile especially to build out the pin requirements but if you don't like it you just pip install -r requirements.txt instead of using what i was doing right and then there's this other way of embracing like let it sort of manage your pyproject.tomal entirely and create it and so on so i think there is some a little bit
+00:43:58 And most users only care about one and a half of those dimensions.
 
-00:45:55 <v Calvin Hendrix-Parker>of confusion but i think yeah it's probably good to make you step forward for the python packaging community for sure it's good they made that compatibility path though it helps people be comfortable because change is hard as as humans we don't like change but this is a really good change that that speed is a feature that that charlie talks about is a hundred percent i'm on
+00:44:02 They just really want to install the damn package and just use it.
 
-00:46:13 <v Michael Kennedy>the on board yeah i agree and it's it's changed even my docker stuff now yeah i just i one of my docker layers is just uv python install or really i think it just creates a virtual environment which also installs the Python. And that's a two second, one time deal. And it's after the races. It's really, really nice. All right. We have probably time for a few more topics. However, if I put this out into the world, it may consume all of the time as it does pretty much all of the GPUs.
+00:44:05 But if you're a maintainer, that's right.
 
-00:46:41 <v Michael Kennedy>What are your thoughts on agent encoding? What are your thoughts on them? On LLMs and agent coding AI and that whole soup of craziness? I'm shocked how many people are not diving in
+00:44:08 You got to have the obligatory Blade Runner.
 
-00:46:54 <v Calvin Hendrix-Parker>headfirst on this. I literally started talking to some developer last week and I was like, hey, we tried Claude Code. And they were like, no, what's that? I was like, oh my.
+00:44:11 And anyway, so I put that talk together just to sort of get everyone on the same page to understand why we have different tools, why distribution vendors, whether it's an Anaconda or an Ubuntu, a Red Hat, or Nix, right?
 
-00:47:05 <v Michael Kennedy>What?
+00:44:24 Why homebrew?
 
-00:47:05 <v Calvin Hendrix-Parker>Yeah, exactly. Well, we've got Copilot. I think the issue is in the enterprise, a lot of people have opted to purchase Copilot because it's a checkbox and a one-click purchase.
+00:44:25 These things do matter.
 
-00:47:16 <v Calvin Hendrix-Parker>So it's easy, but they're not giving them Copilot Studio, which is the agentic version of it.
+00:44:26 And there's a reason people depend on these tools.
 
-00:47:21 <v Calvin Hendrix-Parker>They're just like, yeah, you've got your LLMs now.
+00:44:29 And anyway, I hope the people who care about Python packaging or want to understand more deeply go and look at this talk because I do try to put time at each of their own topics that make this so complicated.
 
-00:47:23 <v Calvin Hendrix-Parker>Go have fun.
+00:44:41 And for Python in particular, because I hear a lot of people talking about, why isn't it as easy as Rust?
 
-00:47:24 <v Calvin Hendrix-Parker>I think they're really missing out on the true power of like a tool that can inspect your file system, a tool that can like look at things and do actions.
+00:44:46 Or, oh, you know, npm is so nice.
 
-00:47:31 <v Calvin Hendrix-Parker>Now, obviously that introduces risk.
+00:44:48 Well, I don't hear that very often.
 
-00:47:33 <v Calvin Hendrix-Parker>So a lot of these security people in these environments are not excited about that level of risk.
+00:44:49 Is it?
 
-00:47:38 <v Calvin Hendrix-Parker>I don't have a good answer for that other than if you're a developer and you're going to turn on energetic coding, you kind of have to like sign up and be accountable for what it's going to do.
+00:44:50 No, no, no.
 
-00:47:46 <v Michael Kennedy>I've got some ideas and some concrete recommendations for you.
+00:44:51 Actually, I don't hear a lot of praise for MPM.
 
-00:47:49 <v Michael Kennedy>But Peter, I want to hear what you have to say first.
+00:44:53 Well, like, why doesn't JavaScript have this problem?
 
-00:47:51 <v Peter Wang>So first of all, I think vibe coding is simultaneously oversold.
+00:44:55 It's like, well, JavaScript doesn't have a pile of Fortran involved in it, right?
 
-00:47:56 <v Peter Wang>At the same time, I'm very bullish on where this can go.
+00:44:58 Many people don't know, but, you know, there's a fun thing in there.
 
-00:48:02 <v Peter Wang>Ultimately, the Transformers models and that style of current era AI has some structural mathematical limitations.
+00:45:01 I talk about the fact that if you want to use MB convert, if you want to use MB convert to convert notebook into a PDF, you need a Haskell compiler because Pandoc depends on Haskell.
 
-00:48:11 <v Peter Wang>The recent open AI paper about hallucinations are inevitable and sort of part of the math sort of shows that, yeah, we're going to end up.
+00:45:10 So, like, there's just things like that that are just our ecosystem is replete with these things.
 
-00:48:17 <v Peter Wang>It is, to some extent, glorious high-dimensional autocomplete.
+00:45:15 And most users don't have to see it if the upstream folks or the distribution folks and packaging people are doing their jobs right.
 
-00:48:21 <v Peter Wang>But oh my God, it's glorious when it's right.
+00:45:21 But that doesn't mean that it's not hard.
 
-00:48:23 <v Peter Wang>So it is steerable.
+00:45:22 It doesn't mean that it's not real labor that goes into making it work.
 
-00:48:24 <v Peter Wang>It's like trying to fly a very, very awkward airplane before we've really figured out aerodynamics.
+00:45:25 Yeah, look in the chat.
 
-00:48:29 <v Peter Wang>But it kind of still does work.
+00:45:26 Pamela points out that even using uv, there are now multiple ways, which is tricky.
 
-00:48:31 <v Peter Wang>So people should absolutely 100% be looking at what this can do for them.
+00:45:31 And I would refer to myself as one of the old school people.
 
-00:48:36 <v Peter Wang>And thinking really right now, I would say actually the limitations, the known, the visible limitations of VibeCoding, should actually, you should be grateful for that because that gives us time and space to think about how would we design projects?
+00:45:35 I still use uv kind of in a agnostic way.
 
-00:48:52 <v Peter Wang>Because I know for myself, the way I code is I write doc strings and comments and sort of class structures first.
+00:45:39 Like if people don't want to use uv and they take one of my projects, they can still use pip and they can still use pip-tools and so i'll use things like uv venv or uv pip install or you know pip compile especially to build out the pin requirements but if you don't like it you just pip install -r requirements.txt instead of using what i was doing right and then there's this other way of embracing like let it sort of manage your pyproject.tomal entirely and create it and
 
-00:48:59 <v Peter Wang>And then I think about what needs to play with what and you're writing documentation.
+00:46:06 so on so i think there is some a little bit of confusion but i think yeah it's probably good It's good they made that compatibility path, though.
 
-00:49:03 <v Peter Wang>And if I can just have the code itself just get filled out with that, like, holy crap, like, of course, right?
+00:46:16 It helps people be comfortable because change is hard.
 
-00:49:08 <v Peter Wang>So everyone should be doing this so they can think about it and really think about where this stuff will go because it's definitely going to get better.
+00:46:19 As humans, we don't like change.
 
-00:49:15 <v Peter Wang>But if you're worried about the data leakage and the compliance and all this other stuff, use local models.
+00:46:21 But this is a really good change.
 
-00:49:21 <v Peter Wang>Go and buy expense a couple of GPUs.
+00:46:23 That speed is a feature that Charlie talks about.
 
-00:49:24 <v Peter Wang>3090s actually work fine with the newer, smaller models.
+00:46:26 It's 100% I'm on board.
 
-00:49:26 <v Peter Wang>If you work for a richer employer, maybe you can get a couple of 5090s.
+00:46:28 Yeah, I agree.
 
-00:49:31 <v Michael Kennedy>Sacrifice a gaming PC. Come on.
+00:46:29 And it's changed even my Docker stuff.
 
-00:49:34 <v Michael Kennedy>It's also a gaming PC.
+00:46:32 Now, one of my Docker layers is just uv Python install.
 
-00:49:35 <v Peter Wang>It's also a gaming PC.
+00:46:37 Really, I think it just creates a virtual environment, which also installs the Python.
 
-00:49:36 <v Calvin Hendrix-Parker>An M4 Mac with 64.
+00:46:40 That's a two second, one time deal.
 
-00:49:38 <v Calvin Hendrix-Parker>I have an M4 Mac with 64 gig of RAM.
+00:46:42 And it's after the races.
 
-00:49:40 <v Calvin Hendrix-Parker>And it's wonderful.
+00:46:43 It's really, really nice.
 
-00:49:41 <v Calvin Hendrix-Parker>I've got DevStroll running.
+00:46:44 All right.
 
-00:49:42 <v Calvin Hendrix-Parker>I've got the OSS GPT running.
+00:46:45 We have probably time for a few more topics.
 
-00:49:45 <v Calvin Hendrix-Parker>All those tools run on a, on just base model on base model.
+00:46:48 However, if I put this out into the world, it may consume all of the time as it does pretty much all of the GPUs.
 
-00:49:49 <v Michael Kennedy>I have Mac.
+00:46:55 What are your thoughts on Agenda coding?
 
-00:49:51 <v Michael Kennedy>Yeah.
+00:46:59 What are your thoughts on them?
 
-00:49:51 <v Michael Kennedy>I have a 32 gig Mac mini running here and I'm running the 20 billion parameter open AI model on it just to be shared with all my computers, my laptop.
+00:47:00 On LLMs and Agenda coding AI and that whole soup of craziness.
 
-00:50:01 <v Peter Wang>Yeah.
+00:47:05 I'm shocked how many people are not diving in headfirst on this.
 
-00:50:01 <v Peter Wang>And there's, and there's, there's, there's also, you know, the Chinese models are really freaking good, you know?
+00:47:10 I literally started talking to some developer last week.
 
-00:50:07 <v Peter Wang>And, and the, I mean, I think, I don't know what we'll see what happens with CES next year, but I feel like, this year was the year of small models. This year was the year, I mean, we started the year with DeepSeek, right? And so it's like not just Chinese labs saying, we don't need your stinking whatever,
+00:47:14 And I was like, hey, we tried Claude Code.
 
-00:50:21 <v Michael Kennedy>but over the course of the year, we got Kimi, we got Gwen, we got GLM, we got, we're just going to
+00:47:16 And they were like, no, what's that?
 
-00:50:26 <v Peter Wang>keep getting these. And that's not even, that's just on the code and the text prompting side.
+00:47:18 I was like, oh my.
 
-00:50:30 <v Michael Kennedy>That's not even on image generation. So the Chinese image and video generation models are
+00:47:19 What?
 
-00:50:34 <v Peter Wang>just jaw-droppingly good. So I think what we're going to see here is by the beginning of next year, well, this is a 25 slash 26 podcast, right?
+00:47:20 Yeah, exactly.
 
-00:50:41 <v Peter Wang>So in 26, you probably have no excuse to say, why are you not, you know, like you're, you're, you know, professional CAD and engineering people have big workstations.
+00:47:21 Well, we've got Copilot.
 
-00:50:51 <v Peter Wang>As a dev, maybe you just have a big workstation now or a fat 128 gig, you know, unified memory for Mac.
+00:47:22 I think the issue is in the enterprise, a lot of people have opted to purchase Copilot because it's a checkbox and a one-click purchase.
 
-00:50:57 <v Peter Wang>But like, you're just going to have that as your coding station and everything is local.
+00:47:31 So it's easy.
 
-00:51:01 <v Peter Wang>You're going to be careful with tool use, of course, <v Calvin Hendrix-Parker>but still like you just run all locally.
+00:47:32 But they're not giving them Copilot Studio, which is the agentic version of it.
 
-00:51:05 <v Calvin Hendrix-Parker>But I think as a developer, the key, one of the key skills you should learn is going to be context engineering
+00:47:35 They're just like, yeah, you've got your LLMs now.
 
-00:51:11 <v Michael Kennedy>and using sub processes.
+00:47:37 Go have fun.
 
-00:51:14 <v Calvin Hendrix-Parker>The models now support basically spinning off parallel instances of themselves.
+00:47:38 I think they're really missing out on the true power of like a tool that can inspect your file system, a tool that can like look at things and do actions.
 
-00:51:18 <v Calvin Hendrix-Parker>And you can spin off parallel instances with a limited amount of context to kind of really shape how they understand things.
+00:47:45 Now, obviously that introduces risk.
 
-00:51:25 <v Calvin Hendrix-Parker>Because Google introduced the Gemini with like a 1 million token context window limit.
+00:47:47 So a lot of these security people in these environments are not excited about that level of risk.
 
-00:51:31 <v Calvin Hendrix-Parker>So what?
+00:47:52 I don't have a good answer for that other than if you're a developer and you're going to turn on energetic coding, you kind of have to like sign up and be accountable for what it's going to do.
 
-00:51:32 <v Calvin Hendrix-Parker>What are you going to do with that?
+00:48:00 I've got some ideas and some concrete recommendations for you.
 
-00:51:33 <v Calvin Hendrix-Parker>It's really not useful to just feed a million tokens into it because it can't, it just as much as you try to like stuff your brain.
+00:48:03 But Peter, I want to hear what you have to say first.
 
-00:51:39 <v Peter Wang>Well, it tapers off at the end as well.
+00:48:06 So first of all, I think vibe coding is simultaneously oversold at the same time.
 
-00:51:41 <v Peter Wang>It's not really a million tokens.
+00:48:13 I'm very bullish on where this can go.
 
-00:51:43 <v Calvin Hendrix-Parker>Right, you don't get a million tokens.
+00:48:15 The ultimately the Transformers models and that style of current era AI has some structural mathematical limitations.
 
-00:51:44 <v Calvin Hendrix-Parker>And it's also, it's just going to be thoroughly confused by all the context you just threw at it.
+00:48:25 The recent open AI paper about hallucinations are inevitable and sort of part of the math sort of shows that, yeah, we're going to end up.
 
-00:51:48 <v Calvin Hendrix-Parker>But if you can give a really narrow focus context, small diffs, that's one of the things I liked about Aider Chat.
+00:48:32 It is to some extent glorious high dimensional autocomplete.
 
-00:51:53 <v Calvin Hendrix-Parker>If you've not checked out Aider Chat, it has a diff mode
+00:48:35 But oh my God, is it glorious when it's right.
 
-00:51:56 <v Michael Kennedy>that really limits the amount of tokens it consumes.
+00:48:37 So it is steerable.
 
-00:51:58 <v Calvin Hendrix-Parker>So actually it's a little more efficient on tokens than like cloud code, even if you're using the Anthropic models the same way, because it'll do diffs and send smaller context.
+00:48:38 It's like trying to fly a very, very awkward airplane before we've really figured out aerodynamics.
 
-00:52:07 <v Calvin Hendrix-Parker>And if you can leverage that with like sub models or sub prompts and Goose, the chat agent from Block has recipes that actually operate in like a sub model.
+00:48:43 But it kind of still does work.
 
-00:52:17 <v Calvin Hendrix-Parker>So it's basically like you're building your own little tools that are just descriptions of like what MCP pieces it should use, what tools should be available and use this context and only pass me back that bit and throw away the extra context once you're done.
+00:48:45 So people should absolutely 100% be looking at what this can do for them.
 
-00:52:29 <v Calvin Hendrix-Parker>So you're not polluting your context window with a whole bunch of unneeded operation.
+00:48:50 And thinking really right now, like I would say actually the limitations, the known, the visible limitations of vibe coding should actually, you should be grateful for that.
 
-00:52:34 <v Calvin Hendrix-Parker>and now you get back really what's needed for whatever you're trying to work on.
+00:49:01 because that gives us time and space to think about how would we design projects?
 
-00:52:37 <v Michael Kennedy>Yeah.
+00:49:06 Because I know for myself, the way I code is I write doc strings and comments and sort of class structures first.
 
-00:52:38 <v Michael Kennedy>So I want to kind of take it a little bit higher level back real quick.
+00:49:13 And then I think about what needs to play with what and you're writing documentation.
 
-00:52:41 <v Michael Kennedy>How about I'm with you?
+00:49:17 And if I can just have the code itself just get filled out with that, like, holy crap, like, of course, right?
 
-00:52:42 <v Michael Kennedy>If you have not seen this, and I've talked to a lot of really smart devs who are like, yeah, I tried Copilot or I tried one of these things and their experience is largely, I think with the multi-line autocomplete.
+00:49:22 So everyone should be doing this so they can think about it and really think about where this stuff will go because it's definitely going to get better.
 
-00:52:54 <v Michael Kennedy>And to me, that, I just turned that off.
+00:49:29 But if you're worried about the data leakage and the compliance and all this other stuff, use local models.
 
-00:52:56 <v Michael Kennedy>That's like garbage.
+00:49:35 Go and buy expense a couple of GPUs.
 
-00:52:57 <v Michael Kennedy>I mean, it's not garbage, but it's, I'll put it, let me put it more kindly.
+00:49:38 3090s actually work fine with the newer, smaller models.
 
-00:53:01 <v Michael Kennedy>Like half of the time hitting tab is glorious.
+00:49:41 If you work for a richer employer, maybe you can get a couple of 5090s.
 
-00:53:04 <v Michael Kennedy>And the other half, I'm like, I want the first half, but the second half is wrong.
+00:49:46 Sacrifice a gaming PC.
 
-00:53:08 <v Michael Kennedy>So do I hit tab and then go down and delete it again?
+00:49:47 Come on.
 
-00:53:11 <v Michael Kennedy>Like, you know what I mean?
+00:49:48 It's also a gaming PC.
 
-00:53:11 <v Michael Kennedy>I got to like, it's giving me too much and it's not quite right.
+00:49:49 It's also a gaming PC.
 
-00:53:14 <v Michael Kennedy>But the agentic tool using part is stunning.
+00:49:51 An M4 Mac with 64.
 
-00:53:18 <v Michael Kennedy>Not with the cheap models, but with the models that cost like $20 a month.
+00:49:52 I have an M4 Mac with 64 gig of RAM.
 
-00:53:22 <v Michael Kennedy>It's a huge difference from the very cheap model to like.
+00:49:54 And it's wonderful.
 
-00:53:24 <v Peter Wang>Which is like, that's not even a latte a week, right?
+00:49:55 I've got DevStroll running.
 
-00:53:27 <v Peter Wang>Like just like we're talking to an audience of probably mostly professional developers, right?
+00:49:56 I've got the OSS GPT running.
 
-00:53:32 <v Peter Wang>Yes.
+00:49:59 all those tools run on a on just yeah base model on base model i have mac yeah i have a 32 gig
 
-00:53:32 <v Peter Wang>You know, a hundred bucks a month, $200 a month for what literally is transforming the future of your entire industry is worth it.
+00:50:08 mac mini running here and i'm running the 20 billion parameter open ai model on it just to be shared with all my computers my laptop yeah and there's and there's um there's there's also
 
-00:53:39 <v Calvin Hendrix-Parker>Like, why would you not subscribe to your and your employer should be paying for this?
+00:50:17 you know the chinese models are um really freaking good you know and and the i mean i think i don't know we'll see what happens with ces next year but i feel like this year was the year of small models. This year was the year, I mean, we started the year with DeepSeq, right? And so it's like, not just Chinese labs saying, we don't need your stinking whatever. But over the course of the
 
-00:53:42 <v Calvin Hendrix-Parker>Like they should be handing you all.
+00:50:37 year, we got Kimi, we got Quinn, we got GLM, we got, we're just going to keep getting these.
 
-00:53:44 <v Peter Wang>Well, but if they do actually.
+00:50:41 And that's not even, that's just on the code and the text prompting side. That's not even on image generation. So the Chinese image and video generation models are just jaw-droppingly good.
 
-00:53:45 <v Peter Wang>So here's the thing.
+00:50:49 So I think what we're going to see here is by the beginning of next year, well, this is a 25 slash 26 podcast, right? So in 26, you probably have no excuse to say, why are you not, you know, like you're, you're, you know, professional CAD and engineering people have big workstations as a dev. Maybe you just have a big workstation now, or a fat 128 gig, you know, a unified memory for Mac, but like, you're just going to have that as your coding station and everything is local.
 
-00:53:46 <v Peter Wang>I'm actually two minds of this.
+00:51:15 You're going to be careful with tool use, of course, but still like you just run all locally.
 
-00:53:47 <v Peter Wang>I think every dev for their own purposes, for their own application, you're paying for their own because the employers will have limitations on what they're allowed to use.
+00:51:19 I think as a developer, one of the key skills you should learn is going to be context engineering
 
-00:53:54 <v Peter Wang>They may have to sign up for an enterprise thing, which has then data, you know, data retention policies, yada, yada, yada. And you want to just go full blast. What is absolute cutting edge being released by various things. But I would still, again, my little, you know, nerd, like open source heart would not be stated unless I've made the comment here. Please play with local models. Please like have do work in a data sovereignty mode.
+00:51:25 and using sub processes.
 
-00:54:19 <v Peter Wang>Because this is actually the closest, the first time I think we've had real tech that could potentially move people away from a centralized computing model, which has been, I think, so deleterious to our world, actually.
+00:51:28 The models now support basically spinning off parallel instances of themselves.
 
-00:54:33 <v Peter Wang>And the last thing that we don't have time for, but the last thing I was going to just throw a shout out for was for people to check out Beware, because that is the way that we can build Python mobile applications and really be shipping applications that don't necessarily, like, we should be deploying to mobile.
+00:51:33 And you can spin off parallel instances with a limited amount of context to kind of really shape how they understand things.
 
-00:54:46 <v Peter Wang>so many web Python developers are web devs storing state in the Postgres somewhere.
+00:51:39 Because Google introduced the Gemini with like a 1 million token context window limit.
 
-00:54:50 <v Peter Wang>And we're part of that data concentration, data gravity problem.
+00:51:46 So what?
 
-00:54:53 <v Michael Kennedy>Yeah.
+00:51:46 What are you going to do with that?
 
-00:54:53 <v Peter Wang>Whereas if we flip the bit and just learn for ourselves, how do we vibe code an actual iOS platformer?
+00:51:47 it's really not useful to just feed a million tokens into it because it can't, it just as much as you try to like stuff your brain.
 
-00:54:59 <v Peter Wang>Like let's go do that.
+00:51:53 Well, it tapers off at the end as well.
 
-00:55:00 <v Peter Wang>Right.
+00:51:55 It's not really a million tokens.
 
-00:55:00 <v Peter Wang>Or an Android thing, which is a little bit easier to deal with.
+00:51:57 Right, you don't get a million tokens.
 
-00:55:02 <v Peter Wang>These are things that we can actually do.
+00:51:58 And it's also, it's just going to be thoroughly confused by all the context you just threw at it.
 
-00:55:04 <v Michael Kennedy>Yeah.
+00:52:02 But if you can give a really narrow focus context, small diffs, that's one of the things I liked about AiderChat.
 
-00:55:04 <v Michael Kennedy>Yeah.
+00:52:08 If you've not checked out AiderChat, it has a diff mode that really limits the amount of tokens it consumes.
 
-00:55:05 <v Michael Kennedy>Totally.
+00:52:12 So actually it's a little more efficient on tokens than like cloud code, even if you're using the anthropic models the same way, because it'll do diffs and send smaller context.
 
-00:55:05 <v Michael Kennedy>I want to give a shout out to you, Peter and Anaconda in general for all the support for beware and some of the PI script and some of those other projects.
+00:52:21 And if you can leverage that with like sub models or sub prompts and Goose, the chat agent from Block has recipes that actually operate in like a sub model.
 
-00:55:12 <v Michael Kennedy>Those are important ones.
+00:52:32 So it's basically like you're building your own little tools that are just descriptions of like what MCP pieces it should use, what tools should be available and use this context and only pass me back that bit and throw away the extra context once you're done.
 
-00:55:14 <v Michael Kennedy>And yeah, good work.
+00:52:44 So you're not polluting your context window with a whole bunch of unneeded operation.
 
-00:55:15 <v Peter Wang>Yeah.
+00:52:48 And now you get back really what's needed for whatever you're trying to work on.
 
-00:55:15 <v Peter Wang>Thank you.
+00:52:52 Yeah.
 
-00:55:16 <v Peter Wang>fight the good fight. Yeah, for sure. Thank you. I do want to, I'm not quite done with this AI
+00:52:52 So I want to kind of take it a little bit higher level back real quick.
 
-00:55:20 <v Michael Kennedy>thing though. I do, I do want to say, I do want to point out this thing called Klein that recently came out. That's really pretty interesting. Have you guys heard of this? Yep. Yep. Yep. Yeah. So it's open source. It's kind of like cursor, but the big difference is they don't charge for inference.
+00:52:55 How about I'm with you?
 
-00:55:35 <v Michael Kennedy>You just put in an API key and, or you put in a link to a URL to a local model. So you use local with it. Yeah. Yeah. Yeah. And I recommend if you're using local models and then we want to
+00:52:56 If you have not seen this, and I've talked to a lot of really smart devs who are like, yeah, I tried Copilot or I tried one of these things and their experience is largely, I think with the multi-line autocomplete.
 
-00:55:44 <v Calvin Hendrix-Parker>really want to go all in on the data sovereignty pieces use tools like little snitch on your mac to know if it's sending something someplace you're you didn't request it to send to you can be totally eyes wide open and maybe exercise a little more reckless abandon if you know that the tool like that can catch an outbound connection that you didn't expect yeah i think i'll give you i'm gonna
+00:53:08 And to me, that, I just turn that off.
 
-00:56:05 <v Michael Kennedy>how many how much i don't want to burn this i will give you guys an example that i think probably will If you've done a lot of web development and web design mix, this will probably catch your attention.
+00:53:10 That's like garbage.
 
-00:56:19 <v Michael Kennedy>So I want to add some new features to talkpython.fm.
+00:53:12 I mean, it's not garbage, But it's, I'll put it, let me put it more kindly.
 
-00:56:23 <v Michael Kennedy>I got some cool whole sections coming and announcements.
+00:53:15 Like half of the time hitting tab is glorious.
 
-00:56:27 <v Michael Kennedy>But talkpython.fm was originally created and designed in 2015 on Bootstrap.
+00:53:19 And the other half, I'm like, I want the first half, but the second half is wrong.
 
-00:56:33 <v Michael Kennedy>Do you know how out of date 2015 Bootstrap is with modern day front end frameworks?
+00:53:23 So do I hit tab and then go down and delete it again?
 
-00:56:37 <v Michael Kennedy>A lot.
+00:53:25 Like, you know what I mean?
 
-00:56:39 <v Michael Kennedy>But there's like 10,000 lines of HTML designed in Bootstrap, early Bootstrap.
+00:53:25 I got to like, it's giving me too much and it's not quite right.
 
-00:56:46 <v Peter Wang>It still renders great on my phone, though.
+00:53:29 But the agentic tool using part is stunning.
 
-00:56:48 <v Calvin Hendrix-Parker>And the LLMs are very aware of old Bootstrap documentation and issues.
+00:53:32 Not with the cheap models, but with the models that cost like $20 a month.
 
-00:56:53 <v Michael Kennedy>Peter, it looks great and it works well.
+00:53:36 It's a huge difference from the very cheap model to like.
 
-00:56:55 <v Michael Kennedy>But here's the thing.
+00:53:38 Which is like, that's not even a latte a week, right?
 
-00:56:56 <v Michael Kennedy>I want to add a whole bunch of new features and sections to it.
+00:53:41 Like just like we're talking to an audience of probably mostly professional developers, right?
 
-00:56:58 <v Michael Kennedy>I've got to design that from scratch.
+00:53:46 Yes.
 
-00:57:00 <v Michael Kennedy>I'm like, oh, I can't do this in Bootstrap 3.
+00:53:47 You know, a hundred bucks a month, $200 a month for what literally is transforming the future of your entire industry is worth it.
 
-00:57:02 <v Michael Kennedy>I just don't have the willpower for it.
+00:53:53 Like, why would you not subscribe to your employer and your employer should be paying for this?
 
-00:57:04 <v Michael Kennedy>It's going to make it so hard, you know?
+00:53:56 Like they should be handing you all.
 
-00:57:07 <v Michael Kennedy>And so I'm like, well, I really should redesign it, but that's got to be weeks of work.
+00:53:58 Well, but if they do actually.
 
-00:57:11 <v Michael Kennedy>And one evening around four o'clock, I'm just hanging out, you know, enjoying the outside, sitting, working on my computer, trying to take in a little more summer before it's gone.
+00:53:59 So here's the thing.
 
-00:57:19 <v Michael Kennedy>And I'm like, you know what?
+00:54:00 I'm actually two minds of this.
 
-00:57:20 <v Michael Kennedy>I bet, I bet, Claude Sonnet and I bet we could do this quicker than two hours later, the entire site, 5,000 lines of CSS, 10,000 lines of template, HTML files, all rewritten in Bulma, modern, clean, doesn't look at all different, except for the few parts. I'm like, Oh, I don't like that. Rewrite that actually to the point where you just take a screenshot of what you do want, throw it in there and go, make it look like this. Oh yeah. Okay. I see the picture. Let's make it look like that. And it's just a couple hours that would be pulling your hair out the most tedious, painful work for a week or two. And now it's, if I want to add something to the site, it's just, Oh yeah, it's just modern Bulma off it goes. Or I could have chose tailwind or whatever. I think Bulma works a little better with AIs because it's, it doesn't have build steps and all that kind of stuff. It's a little more straightforward, But those are the kinds of things that like, literally I wrote down a markdown plan.
+00:54:01 I think every dev for their own purposes, for their own application, you're paying for their own because the employers will have limitations on what they're allowed to use.
 
-00:58:08 <v Michael Kennedy>I said, here's what we're going to do.
+00:54:08 They may have to sign up for an enterprise thing, which has then data, you know, data retention policies, yada, yada, yada.
 
-00:58:10 <v Michael Kennedy>And I planned it out with AI.
+00:54:14 And you want to just go full blast.
 
-00:58:11 <v Michael Kennedy>Then I said, okay, step one, step two.
+00:54:16 What is absolute cutting edge being released by various things?
 
-00:58:13 <v Michael Kennedy>And then we just worked it through till it was done.
+00:54:19 Yes.
 
-00:58:14 <v Michael Kennedy>There's a few little glitches.
+00:54:19 But I would still, again, my little, you know, nerd like open source heart would not be stated unless I've made the comment here.
 
-00:58:16 <v Michael Kennedy>I'm like, this looks weird.
+00:54:27 Please play with local models.
 
-00:58:17 <v Michael Kennedy>Here's a screenshot, fix it.
+00:54:28 Please like have do work in a data sovereignty mode.
 
-00:58:18 <v Michael Kennedy>Okay.
+00:54:33 Because this is actually the closest, the first time I think we've had real tech that could potentially move people away from a centralized computing model, which has been, I think, so deleterious to our world, actually.
 
-00:58:18 <v Calvin Hendrix-Parker>AI is really good at these kinds of tasks.
+00:54:47 And the last thing that we don't have time for, but the last thing I was going to just throw a shout out for was for people to check out Beware, because that is the way that we can build Python mobile applications and really be shipping applications that don't necessarily, like, we should be deploying to mobile.
 
-00:58:20 <v Calvin Hendrix-Parker>Yeah.
+00:55:00 so many Python developers are web devs, storing state in the Postgres somewhere, and we're part of that data concentration, data gravity problem.
 
-00:58:21 <v Michael Kennedy>And if people have not seen this in action, I think it just doesn't.
+00:55:08 Whereas if we flip the bit and just learn for ourselves, how do we Vibecode an actual iOS platformer?
 
-00:58:24 <v Michael Kennedy>They're like, I tried to use ChatGPT and it gave me an answer, but it doesn't help that much.
+00:55:13 Like, let's go do that, right?
 
-00:58:28 <v Michael Kennedy>I could write that.
+00:55:14 Or an Android thing, which is a little bit easier to deal with.
 
-00:58:29 <v Michael Kennedy>Or I used a free cheap model and it got it wrong and I had to fix more than it helped me.
+00:55:16 These are things that we can actually do as Python.
 
-00:58:34 <v Michael Kennedy>There are these neutrals that are crazy.
+00:55:18 Totally doable, though, yeah.
 
-00:58:36 <v Peter Wang>There's something that people don't, I think, have an intuitive feeling for because they're encountering a cognitive reactive system for the first time.
+00:55:19 Yeah, totally doable.
 
-00:58:45 <v Peter Wang>I'm not saying sentient or conscious, by the way, but just cognitive.
+00:55:20 I want to give a shout out to you, Peter, and Anaconda in general for all the support for Beware and some of the PyScript and some of those other projects.
 
-00:58:48 <v Peter Wang>And so it's sort of like it's going to be as deep as how you probe it.
+00:55:27 Those are important ones, and yeah, good work.
 
-00:58:55 <v Peter Wang>So if you ask it a dumb, shallow thing, it will give you a dumb, shallow response.
+00:55:30 Yeah, thank you.
 
-00:58:59 <v Peter Wang>But if you get really deep or nerdy, and I was using early incarnations.
+00:55:30 Start to fight the good fight.
 
-00:59:04 <v Peter Wang>actually a couple of years back. I remember when I first figured out this effect, I was reading some philosophy books, as one does. And I was thinking, well, I could use this as a co-reading tutor.
+00:55:31 Yeah, for sure.
 
-00:59:13 <v Peter Wang>And I noticed I would just ask for some reason or give me some summaries. I'm like, well, that's reasonable, but you know, okay, whatever. But then as I got deeper into some of the content and I was asking for contrasting opinions about different from different other perspectives and some critiques and all this stuff, and I started getting into it, it would go very deep. And this is like GPT, just 4.0, it just come out kind of thing, like timeframe. So I think the same thing is true now, especially with like GPT-5 research. I've had feedback from friends who are like, yeah, some people say five is nothing burger, but five research is a thing because I'm able to do this. This is this other person, not me, but this other person saying, quote, I'm able to get graduate level feedback, like stuff that is deeply researched in arcane parts of mathematics.
+00:55:32 Thank you.
 
-00:59:54 <v Peter Wang>And I check it. And I mean, I use Claude to check the GPT-5 and it basically is correct from as far as I can tell. So I think the thing to go to these people with is like, if you're not getting
+00:55:32 I'm not quite done with this AI thing, though.
 
-01:00:04 <v Michael Kennedy>anything out of it, it's because you're not squeezing hard enough, right? Approach it as
+00:55:35 I do want to say, I do want to point out this thing called Klein that recently came out that's really pretty interesting.
 
-01:00:07 <v Peter Wang>if it were a super intelligence and see how little it disappoints you. Because it will not disappoint
+00:55:42 Have you guys heard of this?
 
-01:00:13 <v Michael Kennedy>you that often if you really get into it. Yeah. I want to take a slightly different take, but I a hundred percent agree. I think you should treat it a little bit like a junior developer who knows 80% of what you want, but he's kind of guessing that last 20%. And if you gave this work to a junior dev and they got it 95% wrong and there's a little mistake and you had to go and say, hey, really good, but this part you got to fix up a little bit. That would be a success for that junior developer. I don't know why we expect 100% perfection if there's any kind of flaw whatsoever from such a creation process that like, well, it's broken, it's junk. You're expected to make a few mistakes and you got to be there to guide it, but it's the huge amount it gets right
+00:55:43 Yep.
 
-01:00:53 <v Calvin Hendrix-Parker>is so valuable. This doesn't negate the standard like software development lifecycle process of in code review. Like you still need to have those kinds of things in place. And in the code reviews, you with, with your junior developer, who's the LLM now. Well, yeah, the SCLC isn't, isn't negated,
+00:55:44 Yep.
 
-01:01:07 <v Peter Wang>but, but the thing I think that's deeply counter to it is we're used to, I mean, the modality, think about the, the, the, the, how this manifests, we're typing things still into a text window.
+00:55:44 Yep.
 
-01:01:16 <v Peter Wang>Right. And so we, as developers are used to that being a very precise, predictable input, output, transformational process. We're not used to the idea of coding with a semantic paintbrush, right like a chinese or japanese calligrapher doesn't care exactly which horse hair got ink on which part of the paper they got a brush and they're like doing their calligraphy and i think we have to get over ourselves and think about i'm painting with a semantic paintbrush splattering it certainly using my fingers with keyboard but soon it'll be dictation right and and so we're really splattering ideas into this canvas and it's auto rendering the stuff for us into a formal system and i think just the modality of wow you can see the clouds are going over the sun and like my temperature changes in video.
+00:55:44 Yeah.
 
-01:01:59 <v Michael Kennedy>It's the AI doing it.
+00:55:45 So it's open source.
 
-01:02:01 <v Michael Kennedy>The AI is doing it because I'm getting passionate about this, right?
+00:55:46 It's kind of like Cursor.
 
-01:02:04 <v Peter Wang>So, no, but I think that's the key thing.
+00:55:47 But the big difference is they don't charge for inference.
 
-01:02:06 <v Peter Wang>So we are used to this modality of fingers on keyboard textual input being an input to a formal system, not an informal probabilistic system, which is what these things are.
+00:55:49 You just put in an API key or you put in a link to a URL to a local model.
 
-01:02:15 <v Peter Wang>So once you make that mental bit flip, then it's like you just learn to embrace it, right?
+00:55:54 So you use local with it.
 
-01:02:20 <v Calvin Hendrix-Parker>Yeah.
+00:55:55 Yeah.
 
-01:02:20 <v Calvin Hendrix-Parker>I think voice is a great option here.
+00:55:56 Yeah.
 
-01:02:23 <v Michael Kennedy>We use Fireflies for our meeting recording bot.
+00:55:56 Yeah.
 
-01:02:27 <v Calvin Hendrix-Parker>You can also just open up your phone and launch the Fireflies app and start talking to it.
+00:55:57 I recommend if you're using local models and you really want to go all in on the data sovereignty pieces, use tools like Little Snitch on your Mac to know if it's sending something someplace you didn't request it to send to.
 
-01:02:30 <v Calvin Hendrix-Parker>And it has an MCP server.
+00:56:07 You can be totally eyes wide open and maybe exercise a little more reckless abandon if you know that a tool like that can catch an outbound connection that you didn't expect.
 
-01:02:32 <v Calvin Hendrix-Parker>So you can go into Claude Code and be like, grab the last transcript where I was just talking about this and pull it in or have a discussion about the specifications, about the journey, the epic, the customer's story, and bring those in as artifacts really, really quickly now.
+00:56:16 Yeah, I think I'll give you how many, how much I know what I'm doing on this.
 
-01:02:47 <v Calvin Hendrix-Parker>Yeah.
+00:56:21 I will give you guys an example that I think probably will, if, let me put it this way, if you've done a lot of web development and web design mix, this will probably catch your attention.
 
-01:02:48 <v Calvin Hendrix-Parker>Older ballgame.
+00:56:33 So I want to add some new features to talkpython.fm.
 
-01:02:49 <v Michael Kennedy>It is a crazy ballgame.
+00:56:37 I got some cool whole sections coming and announcements, but talkpython.fm was originally created and designed in 2015 on Bootstrap.
 
-01:02:49 <v Michael Kennedy>That's something I learned.
+00:56:47 Do you know how out of date 2015 Bootstrap is with modern day front end frameworks a lot.
 
-01:02:50 <v Calvin Hendrix-Parker>It's a whole new ballgame.
+00:56:53 But there's like 10,000 lines of HTML designed in Bootstrap, early Bootstrap.
 
-01:02:51 <v Calvin Hendrix-Parker>Yeah.
+00:57:00 It still renders great on my phone though.
 
-01:02:53 <v Michael Kennedy>All right. Anything else that is burning on your list of topics that we should do a lightning round?
+00:57:02 And the LLMs are very aware of old Bootstrap documentation and issues.
 
-01:02:57 <v Michael Kennedy>Because we're out of time on.
+00:57:07 Peter, it looks great and it works well, but here's the thing.
 
-01:02:58 <v Calvin Hendrix-Parker>We should lightning round on DuckDB.
+00:57:10 I want to add a whole bunch of new features and sections to it.
 
-01:03:00 <v Calvin Hendrix-Parker>I think I agree.
+00:57:13 And I've got to design that from scratch.
 
-01:03:02 <v Michael Kennedy>You two riffed on it because I'm knowledgeable, but you all are the ones who use it.
+00:57:14 I'm like, oh, I can't do this in Bootstrap 3.
 
-01:03:06 <v Calvin Hendrix-Parker>If you've not played with it, it is an incredible little, you know, embedded, you know, like kind of SQLite, but way more.
+00:57:17 I just don't have the willpower for it.
 
-01:03:14 <v Calvin Hendrix-Parker>And if you've got files on a disk someplace, they're now your database.
+00:57:19 It's going to make it so hard, you know?
 
-01:03:18 <v Calvin Hendrix-Parker>If you've got stuff in an S3 bucket someplace, that's now your database.
+00:57:21 And so I'm like, well, I really should redesign it, but that's got to be weeks of work.
 
-01:03:22 <v Calvin Hendrix-Parker>Like it's incredibly flexible.
+00:57:25 And one evening around four o'clock, I'm just hanging out, you know, enjoying the outside, sitting, working on my computer, trying to take in a little more summer before it's gone.
 
-01:03:24 <v Calvin Hendrix-Parker>It's got so many like cool extensions built into it.
+00:57:34 And I'm like, you know what?
 
-01:03:26 <v Calvin Hendrix-Parker>Like it can do geospatial stuff.
+00:57:34 I bet, I bet, Claude Sonnet and I bet we could do this quicker than two hours later, the entire site, 5,000 lines of CSS, 10,000 lines of template, HTML files, all rewritten in Bulma. Modern, clean, doesn't look at all different except for the few parts. I'm like, oh, I don't like that. Rewrite that actually. To the point where you just take a screenshot of what you do want, throw it in there and go, make it look like this. Oh yeah. Okay. I see the picture.
 
-01:03:28 <v Calvin Hendrix-Parker>It's got JSON capabilities that are like really incredible.
+00:57:58 Let's make it look like that. And it's just a couple hours. That would be pulling your hair out the most tedious, painful work for a week or two. And now it's, if I want to add something to the
 
-01:03:31 <v Calvin Hendrix-Parker>I mean, the speed is a little bit mind blowing.
+00:58:08 site, it's just, oh yeah, it's just modern Bulma. Off it goes. Or I could have chose Tailwind or
 
-01:03:34 <v Calvin Hendrix-Parker>It's kind of like the first time you use uv or rough.
+00:58:13 whatever. I think Bulma works a little better with AIs because it doesn't have build steps and all that kind of stuff. It's a little more straightforward. But those are the kinds of things that like literally I wrote down a markdown plan. I said, here's what we're going to do.
 
-01:03:36 <v Calvin Hendrix-Parker>Like how is that so fast?
+00:58:24 And I planned it out with AI. Then I said, okay, step one, step two. And then we just worked it
 
-01:03:37 <v Calvin Hendrix-Parker>And then you use DuckDB and it's really, I think folks should go check it out and learn a little more because it may change how you think about deploying an at edge thing or a little local thing or even a big data analysis piece.
+00:58:28 through till it was done. There's a few little glitches. I'm like, this looks weird. Here's a
 
-01:03:51 <v Calvin Hendrix-Parker>you may actually be able to fit that into memory on your machine and DuckDB and get some incredible results out of it.
+00:58:31 screenshot. Fix it. Okay. AI is really good at these kinds of tasks. Yeah. And if people have
 
-01:03:56 <v Calvin Hendrix-Parker>I'm sure Peter has way more to talk about this than I do, but I don't use it that much.
+00:58:36 not seen this in action, I think it just doesn't. They're like, I tried to use ChatGPT and it gave me an answer, but it doesn't help that much. I could write that. Or I used a free cheap model and it got it wrong and I had to fix more than it helped me. There are these tools that are crazy.
 
-01:04:01 <v Calvin Hendrix-Parker>But man, if I had a use case for it, I would be 100% picking that tool up.
+00:58:51 There's something that people don't, I think, have an intuitive feeling for because they're encountering a cognitive reactive system for the first time. I'm not saying sentient or conscious, by the way, but just cognitive. And so it's going to be as deep as how you probe it.
 
-01:04:05 <v Peter Wang>Yeah, DuckDB is a fantastic little piece of technology.
+00:59:09 So if you ask it a dumb, shallow thing, it will give you a dumb, shallow response.
 
-01:04:08 <v Peter Wang>I don't mean little in a pejorative sense here, but at a technical level, I would say it is a highly portable, very efficient and very versatile database engine.
+00:59:13 If you, you know, but if you get really deep or nerdy, and I was using it to, I was using early incarnations actually a couple of years back.
 
-01:04:19 <v Peter Wang>So the name is almost wrong because it's exactly it liberates you from databases.
+00:59:19 I remember when I first figured out this effect, I was reading some philosophy books, as one does.
 
-01:04:25 <v Peter Wang>We are used to thinking of databases at places where data goes to, well, not die, but to be housed at rest and have an extreme amount of gravity attracted to it.
+00:59:24 And I was thinking, well, I could use this as a co-reading tutor.
 
-01:04:33 <v Peter Wang>And then DuckDB takes the opposite of that, says any data representation you have should be searchable or queryable if only you had the right engine.
+00:59:27 And I noticed I would just ask for some reason, give me some summaries and like, well, that's reasonable, but you know, okay, whatever.
 
-01:04:44 <v Peter Wang>And it's sort of like it inverts the whole thing, which is the brilliant piece of it.
+00:59:32 But then I still got deeper into some of the content and I was asking for contrasting opinions from different other perspectives and some critiques and all this stuff, and I started getting into it, it would go very deep.
 
-01:04:50 <v Peter Wang>and again, what data isn't just representation <v Michael Kennedy>it's somewhere on a disk or over a network or a memory
+00:59:42 And this is like GPT just 4.0, it just come out kind of thing, like timeframe.
 
-01:04:57 <v Peter Wang>so it pairs very nicely with the PyData stack of tools and so I know one of the topics we had on here as well was Arrow
+00:59:47 So I think the same thing is true now, especially with like GPT-5 research.
 
-01:05:04 <v Michael Kennedy>so if you care about representation for a variety of reasons
+00:59:50 I've had feedback from friends who are like, yeah, some people say 5.0 is a nothing burger, but 5.0 research is a thing.
 
-01:05:07 <v Peter Wang>then Arrow is great if you want a query interface you want a SQL style query interface that's agnostic as to representation that's your DuckDB and of course the fact that it plays so well with WebAssembly means Edge, Cloudflare workers or whatever or PyScript and WebAssembly workers we have some demonstration examples using PyScript where you have an entire analytics stack running entirely within the browser full on you got Pandas and Psychidimage, Psychidimage, Psychidlearn, Map, Plotlib stuff going on and you're hitting S3 buckets with full blown SQL queries using DuckDB because it all runs on WebAssembly and this is just a taste i mean none of this is mainstream yet i think some of these use cases are a little bit on the edge but the vision this takes us to as a world where we really are just we were living a much more portable world so your fees can just move and give someone a web page a static web page it's a full-blown app and actually if you look at web gpu and transformers js web lm kinds of stuff you can fit a little tiny model in there actually and you have a totally local entirely client-side experience with AI in it.
+00:59:57 Because I'm able to do, this is this other person, not me, but this other person saying, quote, I'm able to get graduate level feedback, like stuff that is deeply researched in arcane parts of mathematics.
 
-01:06:15 <v Peter Wang>So I'm very excited about this.
+01:00:08 And I check it.
 
-01:06:17 <v Calvin Hendrix-Parker>And DuckDB is really part of that equation.
+01:00:09 And I mean, I use Claude to check the GPT-5.
 
-01:06:19 <v Calvin Hendrix-Parker>Yeah, bring your query engine to where your data is.
+01:00:11 And it basically is correct as far as I can tell.
 
-01:06:22 <v Peter Wang>Exactly.
+01:00:14 So I think the thing to go to these people with is like, if you're not getting anything out of it, it's because you're not squeezing hard enough, right?
 
-01:06:22 <v Calvin Hendrix-Parker>That way around, which always takes time.
+01:00:21 Approach it as if it were a super intelligence and see how little it disappoints you.
 
-01:06:25 <v Michael Kennedy>Yeah, excellent.
+01:00:26 Because it will not disappoint you that often if you really get into it.
 
-01:06:27 <v Michael Kennedy>I know people are very excited about it.
+01:00:29 Yeah, I want to take a slightly different take, but I 100% agree.
 
-01:06:28 <v Michael Kennedy>It's got the built-in your program.
+01:00:32 I think you should treat it a little bit like a junior developer who knows 80% of what you want, but he's kind of guessing that last 20%.
 
-01:06:32 <v Michael Kennedy>You don't have to run another server aspect, which I think is good as well.
+01:00:40 And if you gave this work to a junior dev and they got it 95% wrong and there's a little mistake and you had to go and say, hey, really good, but this part you got to fix up a little bit.
 
-01:06:35 <v Michael Kennedy>And the WebAssembly stuff, maybe there won't be local DB and local SQL or WebSQL, all those things that we just do DuckDB in the browser with WebAssembly.
+01:00:50 That would be a success for that junior developer.
 
-01:06:46 <v Michael Kennedy>Be nice.
+01:00:52 Yeah.
 
-01:06:48 <v Michael Kennedy>So very interesting.
+01:00:53 I don't know why we expect 100% perfection.
 
-01:06:49 <v Michael Kennedy>We barely scratched the surface, you guys.
+01:00:55 If there's any kind of flaw whatsoever from such a creation process, they're like, well, it's broken.
 
-01:06:51 <v Michael Kennedy>Like there's more people need to know, <v Michael Kennedy>but I think these are probably some of the hotter topics.
+01:01:01 It's a joke.
 
-01:06:57 <v Michael Kennedy>We may have to do a part two, <v Michael Kennedy>but a 2026 edition that's just a continuation.
+01:01:02 You're expected to make a few mistakes and you've got to be there to guide it, but the huge amount it gets right is so valuable.
 
-01:07:01 <v Michael Kennedy>But if people take the time, invest in putting some energy into these things, it's going to make a big difference, I think.
+01:01:08 This doesn't negate the standard software development lifecycle process of having code review.
 
-01:07:08 <v Michael Kennedy>Thanks for being on the show.
+01:01:13 You still need to have those kinds of things in place and the code review is you with your junior developer who's an LLM now.
 
-01:07:09 <v Michael Kennedy>And yeah, it's been great.
+01:01:19 Well, yeah, the SCLC isn't negated, but the thing I think that's deeply counterintuitive is we're used to, I mean, the modality.
 
-01:07:10 <v Peter Wang>Yeah, this was awesome.
+01:01:25 Think about how this manifests.
 
-01:07:11 <v Calvin Hendrix-Parker>Thank you so much for having us.
+01:01:28 We're typing things still into a text window, right?
 
-01:07:12 <v Calvin Hendrix-Parker>Yeah, thanks, Michael.
+01:01:31 And so we as developers are used to that being a very precise, predictable input, output, transformational process.
 
-01:07:13 <v Calvin Hendrix-Parker>I enjoy talking about all the cool new tech and tools.
+01:01:37 We're not used to the idea of coding with a semantic paintbrush, right?
 
-01:07:15 <v Michael Kennedy>Yep.
+01:01:41 Like a Chinese or Japanese calligrapher doesn't care exactly which horsehair got ink on which part of the paper.
 
-01:07:15 <v Michael Kennedy>Bye, guys.
+01:01:47 They got a brush and they're like doing their calligraphy.
 
-01:07:17 <v Michael Kennedy>This has been another episode of Talk Python To Me.
+01:01:49 And I think we have to get over ourselves and think about I'm painting with a semantic paintbrush, splattering it, certainly using my fingers with keyboard.
 
-01:07:20 <v Michael Kennedy>Thank you to our sponsors.
+01:01:57 But soon it'll be dictation, right?
 
-01:07:21 <v Michael Kennedy>Be sure to check out what they're offering.
+01:01:58 And so we're really splattering ideas into this canvas and it's auto rendering the stuff for us into a formal system.
 
-01:07:23 <v Michael Kennedy>It really helps support the show.
+01:02:05 And I think just the modality of, wow, you can see the clouds are going over the sun and like my color temperature changes in my video.
 
-01:07:25 <v Michael Kennedy>Take some stress out of your life.
+01:02:14 It's the AI doing it.
 
-01:07:26 <v Michael Kennedy>Get notified immediately about errors and performance issues in your web or mobile applications with Sentry.
+01:02:15 The AI is doing it because I'm getting passionate about this, right.
 
-01:07:32 <v Michael Kennedy>Just visit talkpython.fm/sentry and get started for free.
+01:02:18 So no, but I think that's the key thing.
 
-01:07:37 <v Michael Kennedy>And be sure to use the promo code talkpython, all one word.
+01:02:20 We are used to this modality of fingers on keyboard textual input being an input to a formal system, not an informal probabilistic system, which is what these things are.
 
-01:07:41 <v Michael Kennedy>Agency. Discover agentic AI with agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y. Want to level up your Python? We have one of the largest catalogs of Python video courses over at Talk Python. Our content ranges from true beginners to deeply advanced topics like memory and async. And best of all, there's not a subscription in sight.
+01:02:30 So once you make that mental bit flip, then it's like you just learn to embrace it, right?
 
-01:08:09 <v Michael Kennedy>Check it out for yourself at training.talkpython.fm.
+01:02:34 Yeah, I think voice is a great option here.
 
-01:08:12 <v Michael Kennedy>Be sure to subscribe to the show, open your favorite podcast app, and search for Python.
+01:02:37 We use Fireflies for our meeting recording bot.
 
-01:08:16 <v Michael Kennedy>We should be right at the top.
+01:02:41 You can also just open up your phone and launch the Fireflies app and start talking to it.
 
-01:08:18 <v Michael Kennedy>You can also find the iTunes feed at /itunes, the Google Play feed at /play, and the direct RSS feed at /rss on talkpython.fm.
+01:02:45 And it has an MCP server.
 
-01:08:27 <v Michael Kennedy>We're live streaming most of our recordings these days.
+01:02:46 So you can go into Claude Code and be like, grab the last transcript where I was just talking about this and pull it in or have a discussion about the specifications, about the journey, the epic, the customer's story, and bring those in as artifacts really, really quickly now.
 
-01:08:30 <v Michael Kennedy>If you want to be part of the show and have your comments featured on the air, be sure to subscribe to our YouTube channel at  talkpython.fm/youtube.
+01:03:02 Yeah. Older than ballgame.
 
-01:08:38 <v Michael Kennedy>This is your host, Michael Kennedy.
+01:03:03 It is a crazy ballgame.
 
-01:08:40 <v Michael Kennedy>Thanks so much for listening.
+01:03:04 That's what I learned. It's a whole new ballgame.
 
-01:08:41 <v Michael Kennedy>I really appreciate it.
+01:03:05 Yeah.
 
-01:08:42 <v Michael Kennedy>Now get out there and write some Python code.
+01:03:07 All right. Anything else that is burning on your list of topics that we should do a lightning round because we're out of time on?
 
-01:09:06 <v Michael Kennedy>*MUHING*
+01:03:13 We should lightning round on DuckDB.
+
+01:03:15 Okay, you two riffed on it because I'm knowledgeable, but you all are the ones who use it.
+
+01:03:20 If you've not played with it, it is an incredible little embedded, like kind of SQLite, but way more.
+
+01:03:28 And if you've got files on a disk someplace, they're now your database.
+
+01:03:32 If you've got stuff in an S3 bucket someplace, that's now your database.
+
+01:03:36 It's incredibly flexible.
+
+01:03:38 It's got so many cool extensions built into it.
+
+01:03:40 It can do geospatial stuff.
+
+01:03:42 It's got JSON capabilities that are really incredible.
+
+01:03:45 I mean the speed is a little bit mind-blowing it's kind of like the first time you use uv or rough like how is that so fast and then you use duck db and it's it's really I think folks should go check it out and learn a little more because it's it may change how you think about deploying a an at edge thing or a little local thing or even a big data analysis piece you may actually be able to fit that into memory on your machine and duck db and get some incredible results out of it I'm sure Peter has way more to talk about this than I do, but I don't use it that much.
+
+01:04:16 But man, if I had a use case for it, I would be 100% picking that tool up.
+
+01:04:20 Yeah, it's a fantastic little piece of technology.
+
+01:04:23 I don't mean little in a pejorative sense here, but at a technical level, I would say it is a highly portable, very efficient and very versatile database engine.
+
+01:04:34 So the name is almost wrong because it's exactly it liberates you from databases.
+
+01:04:39 We are used to thinking of databases at places where data goes to, well, not die, but to be housed at rest and have an extreme amount of gravity attracted to it.
+
+01:04:47 And then DuckDB takes the opposite of that.
+
+01:04:50 It says any data representation you have should be searchable or queryable if only you had the right engine.
+
+01:04:58 And it inverts the whole thing, which is the brilliant piece of it.
+
+01:05:05 And again, what data isn't just representation.
+
+01:05:08 It's somewhere on a disk or over a network or a memory.
+
+01:05:11 So it pairs very nicely with the PyData stack of tools.
+
+01:05:15 And so I know one of the topics we had on here as well was Arrow.
+
+01:05:19 So if you care about representation for a variety of reasons, then Arrow is great.
+
+01:05:23 If you want a query interface, you want a SQL-style query interface that's agnostic as to representation, that's your DuckDB.
+
+01:05:32 And of course, the fact that it plays so well with WebAssembly means Edge, you know, worker, Cloudflare workers or whatever, or PyScript and WebAssembly workers.
+
+01:05:41 You know, we have some we have some demonstration examples using PyScript where you have an entire analytics stack running entirely within the browser full on.
+
+01:05:48 You know, you got pandas and psychic image, scikit-learn, you know, map, hot lip stuff going on.
+
+01:05:53 And you've got you're hitting S3 buckets through with query with real full blown SQL queries using DuckDB because it all runs on WebAssembly.
+
+01:06:01 and this is just a taste i mean none of this is mainstream yet i think some of these use cases are a little bit on the edge but the vision this takes us to as a world where we really are just we were living a much more portable world so your fees can just move and give someone a web page a static web page it's a full-blown app and actually if you look at web gpu and transformers js web lm kinds of stuff you can fit a little tiny model in there actually and you have a totally local entirely client-side experience with AI in it.
+
+01:06:30 So I'm very excited about this.
+
+01:06:32 And DuckDB is really part of that equation.
+
+01:06:33 Yeah, bring your query engine to where your data is.
+
+01:06:36 Exactly.
+
+01:06:37 That way around, which always takes time.
+
+01:06:39 Yeah, excellent.
+
+01:06:41 I know people are very excited about it.
+
+01:06:42 It's got the built-in your program.
+
+01:06:46 You don't have to run another server aspect, which I think is good as well.
+
+01:06:49 And the WebAssembly stuff, maybe there won't be local DB and local SQL or WebSQL, all those things that we can just do DuckDB in the browser with WebAssembly.
+
+01:07:00 Be nice.
+
+01:07:01 So very interesting.
+
+01:07:03 We barely scratched the surface, you guys.
+
+01:07:05 Like there's more people need to know, but I think these are probably some of the hotter topics.
+
+01:07:11 We may have to do a part two, but a 2026 edition.
+
+01:07:14 That's just a continuation.
+
+01:07:16 But if people take the time, invest in putting some energy into these things, it's going to make a big difference, I think.
+
+01:07:22 Thanks for being on the show.
+
+01:07:23 And yeah, it's been great.
+
+01:07:25 Yeah, this was awesome.
+
+01:07:25 Thank you so much for having us.
+
+01:07:27 Yeah, thanks, Michael.
+
+01:07:27 I enjoy talking about all the cool new tech and tools.
+
+01:07:29 Yep.
+
+01:07:30 Bye, guys.
+
+01:07:31 This has been another episode of Talk Python To Me.
+
+01:07:34 Thank you to our sponsors.
+
+01:07:35 Be sure to check out what they're offering.
+
+01:07:37 It really helps support the show.
+
+01:07:39 Take some stress out of your life.
+
+01:07:41 Get notified immediately about errors and performance issues in your web or mobile applications with Sentry.
+
+01:07:47 Just visit talkpython.fm/sentry and get started for free.
+
+01:07:51 And be sure to use the promo code TALKPYTHON, all one word.
+
+01:07:55 Agency. Discover agentic AI with agency. Their layer lets agents find, connect, and work together, any stack, anywhere. Start building the internet of agents at talkpython.fm/agency, spelled A-G-N-T-C-Y. If you or your team needs to learn Python, we have over 270 hours of beginner and advanced courses on topics ranging from complete beginners to async code, Flask, Django, HTMLX, and even LLMs.
+
+01:08:23 Best of all, there's not a subscription in sight.
+
+01:08:26 Browse the catalog at talkpython.fm.
+
+01:08:28 Be sure to subscribe to the show.
+
+01:08:30 Open your favorite podcast player app, search for Python, we should be right at the top.
+
+01:08:34 If you enjoy the Geeky Rap theme song, you can download the full track.
+
+01:08:38 The link is your podcast player's show notes.
+
+01:08:40 This is your host, Michael Kennedy.
+
+01:08:42 Thank you so much for listening.
+
+01:08:43 I really appreciate it.
+
+01:08:44 Now get out there and write some Python code.
+
+01:08:58 I'm out.
 

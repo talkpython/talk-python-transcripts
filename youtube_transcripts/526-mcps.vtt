@@ -1,0 +1,3743 @@
+WEBVTT
+
+00:00:00.600 --> 00:00:02.460
+<v Speaker 1>Den, welcome to Talk Python To Me.
+
+00:00:02.650 --> 00:00:03.180
+<v Speaker 1>Great to have you here.
+
+00:00:03.420 --> 00:00:03.780
+<v Speaker 2>Hello, hello.
+
+00:00:04.150 --> 00:00:05.140
+<v Speaker 2>I'm excited to be here.
+
+00:00:05.390 --> 00:00:07.840
+<v Speaker 2>I'm a big fan of Talk Python, I'm a big fan of you,
+
+00:00:07.870 --> 00:00:08.800
+<v Speaker 2>and I'm a big fan of Python.
+
+00:00:09.360 --> 00:00:10.520
+<v Speaker 2>So there we go.
+
+00:00:10.860 --> 00:00:11.740
+<v Speaker 1>Wow, thank you.
+
+00:00:12.250 --> 00:00:13.340
+<v Speaker 1>Thank you, and thank you.
+
+00:00:13.480 --> 00:00:15.780
+<v Speaker 1>Yes, and on Python's behalf as well, thanks.
+
+00:00:16.260 --> 00:00:17.640
+<v Speaker 1>No, it's great to be here.
+
+00:00:18.300 --> 00:00:21.260
+<v Speaker 1>I've been on your show, WorkItem, which was really fun.
+
+00:00:21.590 --> 00:00:22.380
+<v Speaker 1>Thank you for having me.
+
+00:00:22.520 --> 00:00:26.060
+<v Speaker 1>And now it's time to dive into your expertise.
+
+00:00:26.540 --> 00:00:33.780
+<v Speaker 1>We're going to talk agentic stuff, and especially we're going to talk model context protocol, MCP.
+
+00:00:35.340 --> 00:00:40.460
+<v Speaker 1>I think this is one of the really important layers that is kind of invisible, right?
+
+00:00:40.540 --> 00:00:48.500
+<v Speaker 1>A lot of the coding agents and coding AI and chat LLMs and all that, that's what people think when they hear all these things.
+
+00:00:48.740 --> 00:00:52.560
+<v Speaker 1>But there's got to be plumbing, right?
+
+00:00:52.780 --> 00:00:53.500
+<v Speaker 1>There has to be.
+
+00:00:54.020 --> 00:00:55.760
+<v Speaker 1>Nothing is more amazing than plumbing.
+
+00:00:56.020 --> 00:00:57.320
+<v Speaker 1>We all get excited about plumbing.
+
+00:00:57.980 --> 00:00:58.800
+<v Speaker 2>I know.
+
+00:00:59.220 --> 00:01:00.380
+<v Speaker 1>Technology plumbing is cool.
+
+00:01:01.910 --> 00:01:02.040
+<v Speaker 2>Yeah.
+
+00:01:02.380 --> 00:01:05.440
+<v Speaker 2>It's one of those things, too, that look at how fast it grew.
+
+00:01:06.140 --> 00:01:06.520
+<v Speaker 2>Think about it.
+
+00:01:06.760 --> 00:01:11.780
+<v Speaker 2>Last year at this time, at the time when we were recording the work item episode, MCP did not exist.
+
+00:01:12.980 --> 00:01:13.700
+<v Speaker 1>It's not a thing.
+
+00:01:13.700 --> 00:01:13.860
+<v Speaker 2>That's wild.
+
+00:01:14.560 --> 00:01:16.720
+<v Speaker 2>And now everybody's talking about MCP.
+
+00:01:16.840 --> 00:01:18.120
+<v Speaker 2>You talk to any big companies.
+
+00:01:18.790 --> 00:01:22.620
+<v Speaker 2>You talk to the banks, the healthcare, the gaming.
+
+00:01:23.600 --> 00:01:24.880
+<v Speaker 2>Everybody cares about MCP.
+
+00:01:25.020 --> 00:01:25.260
+<v Speaker 1>That's great.
+
+00:01:25.899 --> 00:01:31.340
+<v Speaker 1>It's very great. We're going to dive into it. Before we do, let's dive into you. Give us a
+
+00:01:31.380 --> 00:01:35.580
+<v Speaker 1>quick background on yourself. Absolutely. So I am Den Delamarski. I'm a principal product
+
+00:01:35.680 --> 00:01:42.080
+<v Speaker 2>engineer at Microsoft. I work in the core AI division. So we're focusing on, as the name
+
+00:01:42.240 --> 00:01:49.060
+<v Speaker 2>suggests, AI stuff, but applied to developers. So I'm very, very heavily in the developer ecosystem.
+
+00:01:49.580 --> 00:01:54.739
+<v Speaker 2>And I'm one of the core maintainers of the Moto Connors Protocol. So I say one of because there's
+
+00:01:54.760 --> 00:01:58.760
+<v Speaker 2>many of us it's not just me there's many wonderful talented people way smarter than me
+
+00:01:59.460 --> 00:02:06.880
+<v Speaker 1>and uh yeah that's a short intro okay so when we talk about mcp you're one of the people
+
+00:02:07.120 --> 00:02:12.560
+<v Speaker 2>helping build it that's incredible that that is that is correct yeah i i try to contribute as
+
+00:02:12.640 --> 00:02:18.180
+<v Speaker 1>much as i can well you know before we move on just how do you how do you get into that position
+
+00:02:18.820 --> 00:02:23.620
+<v Speaker 2>oh it all started with one of the things that was actually near and dear to my heart which is
+
+00:02:23.580 --> 00:02:29.200
+<v Speaker 2>security and authorization. So when MCP first came out, it had a auth spec. So we see on the screen
+
+00:02:29.460 --> 00:02:34.820
+<v Speaker 2>right now, Michael is showing the kind of the model context protocol specification page. But when MCP
+
+00:02:34.910 --> 00:02:41.140
+<v Speaker 2>first started, it had essentially a spec that outlines how to do authorization for MCP servers.
+
+00:02:41.700 --> 00:02:47.240
+<v Speaker 2>And that spec was a good start, but it made a lot of assumptions about the infrastructure and the
+
+00:02:47.320 --> 00:02:53.540
+<v Speaker 2>tooling and how developers build MCP servers that were, I want to say, a little flawed at scale. So
+
+00:02:53.840 --> 00:02:58.980
+<v Speaker 2>my thought was like, oh, I'll just get some smart people with me and we'll help rewrite this. And we
+
+00:02:59.500 --> 00:03:05.120
+<v Speaker 2>asked the MCP folks at Anthropic and they said yes. And so we did. And I basically like incorporated
+
+00:03:05.200 --> 00:03:10.020
+<v Speaker 2>all the feedback and iterated on it. And then again, it's a massive community effort. We pushed
+
+00:03:10.040 --> 00:03:16.160
+<v Speaker 2>it out and got it merged in the June version of the protocol. And then the folks at Anthropic just
+
+00:03:16.280 --> 00:03:21.420
+<v Speaker 2>reached out and said, hey, do you want to help shape the protocol? And here I am helping shape
+
+00:03:22.300 --> 00:03:26.040
+<v Speaker 1>You seem to know what you're talking about and you sure are participating a lot. Why don't you just hang around?
+
+00:03:26.580 --> 00:03:27.020
+<v Speaker 1>Yeah, basically.
+
+00:03:27.800 --> 00:03:33.280
+<v Speaker 1>Okay. That's great. And you work at Microsoft. What do you do there?
+
+00:03:33.390 --> 00:03:43.160
+<v Speaker 2>That's correct. At Microsoft, I work on developer tools. So think like if you ever use Copilot, if you ever use any, oh, by the way, GitHub spec kit for folks that have not heard about it.
+
+00:03:43.620 --> 00:03:47.940
+<v Speaker 2>We released it like last month, but that's something that I helped drive and help maintain.
+
+00:03:48.160 --> 00:03:53.960
+<v Speaker 2>It's how do you do spec-driven development with agentic tools, agentic coding tools.
+
+00:03:54.580 --> 00:03:55.620
+<v Speaker 2>Yeah, that's what I do.
+
+00:03:56.520 --> 00:03:57.200
+<v Speaker 1>Okay, cool.
+
+00:03:58.600 --> 00:04:04.900
+<v Speaker 1>So something that I've started to do a lot when I'm involving AI, I go in like spurts.
+
+00:04:05.240 --> 00:04:06.980
+<v Speaker 1>I'll work for a long time, just sort of writing regular.
+
+00:04:07.070 --> 00:04:12.240
+<v Speaker 1>And then I'm like, ah, this is really a lot of drudgery, not critical or central to what I'm doing.
+
+00:04:12.300 --> 00:04:16.120
+<v Speaker 1>and let me just uncork some agentic AI on it and let it go.
+
+00:04:16.660 --> 00:04:18.579
+<v Speaker 1>But one of the things I've started doing a lot,
+
+00:04:18.920 --> 00:04:22.040
+<v Speaker 1>and it has to do with the spec thing that you've touched on here,
+
+00:04:22.700 --> 00:04:27.120
+<v Speaker 1>is I will force, I'll pick a really high-level model,
+
+00:04:27.820 --> 00:04:31.380
+<v Speaker 1>like a complex smart model, and I'll say, I want to plan this out.
+
+00:04:31.780 --> 00:04:32.740
+<v Speaker 1>I've given you some ideas.
+
+00:04:33.400 --> 00:04:35.700
+<v Speaker 1>I want you to look at the code, and let's create a detailed plan
+
+00:04:35.740 --> 00:04:38.020
+<v Speaker 1>of what you're going to do, and I'll have it write a markdown file.
+
+00:04:38.140 --> 00:04:40.720
+<v Speaker 1>And even a lot of my projects, I have just a plans folder,
+
+00:04:40.840 --> 00:04:42.860
+<v Speaker 1>and it's just full of all these different projects.
+
+00:04:43.010 --> 00:04:45.780
+<v Speaker 1>You know, maybe they're sort of equivalent to a PR in the end.
+
+00:04:45.960 --> 00:04:46.120
+<v Speaker 2>Yeah.
+
+00:04:47.380 --> 00:04:48.400
+<v Speaker 1>And I'll plan that out really well.
+
+00:04:48.410 --> 00:04:51.620
+<v Speaker 1>Then I'll switch it down to a lower model, to a new context,
+
+00:04:51.650 --> 00:04:52.900
+<v Speaker 1>and say, let's just do phase one.
+
+00:04:53.100 --> 00:04:54.640
+<v Speaker 1>Let's do phase two and knock it out.
+
+00:04:55.500 --> 00:05:00.780
+<v Speaker 1>That sounds like a Michael just made up some stuff equivalent of the spec-based programming.
+
+00:05:00.990 --> 00:05:01.460
+<v Speaker 1>Is that right?
+
+00:05:01.620 --> 00:05:04.440
+<v Speaker 1>Like, how does that compare to what you're talking about here?
+
+00:05:04.640 --> 00:05:05.060
+<v Speaker 2>It's close.
+
+00:05:05.460 --> 00:05:05.860
+<v Speaker 2>It's very close.
+
+00:05:05.950 --> 00:05:08.800
+<v Speaker 2>And this is where when people talk about spec-driven development,
+
+00:05:08.960 --> 00:05:12.300
+<v Speaker 2>I want to emphasize the fact that there's no one correct approach.
+
+00:05:12.600 --> 00:05:17.180
+<v Speaker 2>People think that it's like, oh, I'm just going to wait for whatever company is going to come out and come up with the right thing.
+
+00:05:17.280 --> 00:05:18.500
+<v Speaker 2>It all depends on your experience.
+
+00:05:18.580 --> 00:05:19.800
+<v Speaker 2>It depends on your models.
+
+00:05:20.620 --> 00:05:25.940
+<v Speaker 2>The SpecKit project that we launched is our hypothesis, our experiment on how we believe it works.
+
+00:05:26.080 --> 00:05:27.940
+<v Speaker 2>And what it does is basically what you described.
+
+00:05:28.380 --> 00:05:30.060
+<v Speaker 2>You start with a spec.
+
+00:05:30.240 --> 00:05:33.180
+<v Speaker 2>You start outlining what and why I am building.
+
+00:05:33.620 --> 00:05:39.240
+<v Speaker 2>Then you focus on the technical implementation plan, which is like, okay, now what technology stack I'm using here.
+
+00:05:39.630 --> 00:05:51.020
+<v Speaker 2>And then you break that down into tasks, which are basically just consumable chunks that the AI can go and either iteratively or in parallel, execute and build the stuff that you want to build.
+
+00:05:51.220 --> 00:05:53.180
+<v Speaker 2>So all of it, again, is still an experiment.
+
+00:05:53.560 --> 00:05:59.400
+<v Speaker 2>So I'm not by any stretch claiming that what we have is the end of it all or the right way to do this.
+
+00:05:59.540 --> 00:06:00.840
+<v Speaker 2>There's many, many ways to do this.
+
+00:06:02.300 --> 00:06:09.040
+<v Speaker 1>Okay. And you even over on dev blogs wrote, diving into spec driven development with GitHub
+
+00:06:09.320 --> 00:06:13.740
+<v Speaker 2>spec kit. That is correct. There's also a GitHub blog that I highly recommend folks check out.
+
+00:06:14.040 --> 00:06:18.480
+<v Speaker 2>It's actually on the, on the GitHub blog. So you can go there and look for, there you go. Uh,
+
+00:06:18.800 --> 00:06:22.120
+<v Speaker 2>it's called spectrum development with AI gets started with a new open source toolkit.
+
+00:06:23.020 --> 00:06:27.300
+<v Speaker 2>And we do have an open source toolkit. All right. So how is this different than just what I've done?
+
+00:06:27.780 --> 00:06:29.140
+<v Speaker 1>I know I've seen this before.
+
+00:06:29.680 --> 00:06:29.740
+<v Speaker 1>Yeah.
+
+00:06:29.900 --> 00:06:30.020
+<v Speaker 1>Okay.
+
+00:06:30.620 --> 00:06:30.680
+<v Speaker 2>Yeah.
+
+00:06:30.900 --> 00:06:34.720
+<v Speaker 2>It just, all it does is think of it as this is the recipe book, right?
+
+00:06:34.860 --> 00:06:40.380
+<v Speaker 2>Like if you decided to like, oh, I want to cook up a new application and you're like,
+
+00:06:40.440 --> 00:06:41.200
+<v Speaker 2>well, what's the recipe?
+
+00:06:41.260 --> 00:06:43.060
+<v Speaker 2>Like this bundles the recipe for it.
+
+00:06:43.060 --> 00:06:47.260
+<v Speaker 2>And by the way, here's the box set of ingredients that you can just use to build this.
+
+00:06:47.880 --> 00:06:48.740
+<v Speaker 2>That's what this is.
+
+00:06:49.420 --> 00:06:49.980
+<v Speaker 2>That's Specget.
+
+00:06:51.180 --> 00:06:51.340
+<v Speaker 1>Okay.
+
+00:06:51.640 --> 00:06:52.420
+<v Speaker 1>Well, very exciting.
+
+00:06:54.680 --> 00:06:58.820
+<v Speaker 1>Let's maybe start to get into the main topic, though,
+
+00:06:59.260 --> 00:07:00.200
+<v Speaker 1>MCP servers.
+
+00:07:01.140 --> 00:07:06.240
+<v Speaker 1>I've heard this put out as sort of an analogy to the LSP,
+
+00:07:07.020 --> 00:07:10.140
+<v Speaker 1>which I know is--
+
+00:07:10.280 --> 00:07:12.020
+<v Speaker 1>I first heard of it in VS Code.
+
+00:07:12.110 --> 00:07:13.900
+<v Speaker 1>I don't know if it came from VS Code.
+
+00:07:14.020 --> 00:07:14.400
+<v Speaker 1>Maybe it did.
+
+00:07:14.560 --> 00:07:18.479
+<v Speaker 1>But it's the thing that allows so many different editors
+
+00:07:18.500 --> 00:07:24.920
+<v Speaker 1>to plug into tooling, like PyLance, or Pyrefly, or ty,
+
+00:07:25.200 --> 00:07:27.740
+<v Speaker 1>or a bunch of cool things are coming out around here,
+
+00:07:27.780 --> 00:07:30.380
+<v Speaker 1>different implementations of LSPs.
+
+00:07:30.980 --> 00:07:35.160
+<v Speaker 1>And I've heard that MCPs are kind of like that for AI.
+
+00:07:35.580 --> 00:07:38.940
+<v Speaker 1>Maybe contrast those a bit for people.
+
+00:07:39.340 --> 00:07:39.540
+<v Speaker 2>Yeah.
+
+00:07:40.200 --> 00:07:42.760
+<v Speaker 2>I mean, if you look at the MCP specification,
+
+00:07:43.040 --> 00:07:44.940
+<v Speaker 2>if you look through the website and just peruse
+
+00:07:44.980 --> 00:07:47.199
+<v Speaker 2>through the documentation, you might
+
+00:07:47.220 --> 00:07:52.140
+<v Speaker 2>have like faint echoes of LSP design decisions, faint echoes of kind of the LSP architecture.
+
+00:07:52.510 --> 00:07:56.900
+<v Speaker 2>But yes, basically think of it this way. The way the folks at Anthropic have been describing it,
+
+00:07:56.970 --> 00:08:06.240
+<v Speaker 2>it is USB-C for AI. And when I say that is the problem with a lot of the LLMs, a lot of the
+
+00:08:06.460 --> 00:08:13.600
+<v Speaker 2>modern models is the fact that it takes some amount of time to train them, which means that
+
+00:08:13.580 --> 00:08:20.460
+<v Speaker 2>inherently they get locked into a specific training date, if you will. So the corpus of knowledge that
+
+00:08:20.740 --> 00:08:25.000
+<v Speaker 2>gets embedded in them gets locked at a certain date. And when you talk to a lot of enterprise
+
+00:08:25.480 --> 00:08:28.980
+<v Speaker 2>customers, you talk to a lot of customers in the wild, it doesn't need to be enterprise, by the way,
+
+00:08:28.980 --> 00:08:35.099
+<v Speaker 2>it could be startups, could be hobbies, developers like, well, I want to use AI with this fresh data
+
+00:08:35.260 --> 00:08:40.820
+<v Speaker 2>that I have. Maybe I have, I don't know, a Dropbox account, and I want to use AI to sort my files,
+
+00:08:40.940 --> 00:08:50.040
+<v Speaker 2>Or maybe I want to use some data inside Salesforce to go and help me analyze my sales and find out outliers and maybe customers I want to focus on.
+
+00:08:50.700 --> 00:08:54.900
+<v Speaker 1>I just interviewed the people from Nice Guy, Nice GUI.
+
+00:08:55.500 --> 00:09:00.120
+<v Speaker 1>And they build robots that cruise around in architectural areas.
+
+00:09:01.600 --> 00:09:10.420
+<v Speaker 1>I want some way to ask AI, hey, look at how the robots are doing now.
+
+00:09:11.320 --> 00:09:18.080
+<v Speaker 1>and then or see if they're busy find a free one right that might be a thing huh yeah yeah no for
+
+00:09:18.080 --> 00:09:24.380
+<v Speaker 2>sure exactly it's like any kind of live data or managed data something that is more dynamic than
+
+00:09:24.540 --> 00:09:30.280
+<v Speaker 2>the corpus of knowledge that is embedded in these models by default and for those if i would ask you
+
+00:09:30.280 --> 00:09:36.899
+<v Speaker 2>like okay well let's imagine a world where mcp does not exist how would you go about plugging
+
+00:09:36.920 --> 00:09:43.960
+<v Speaker 2>this data in, like into your LLM, right? And like, there's different ways to do this. Like people
+
+00:09:44.300 --> 00:09:50.960
+<v Speaker 2>have done like the rags, people have done, you know, dump like CSV files and then be like,
+
+00:09:51.000 --> 00:09:56.480
+<v Speaker 2>oh, analyze the CSV file and all these like hacky solutions. But it feels like it's not universal.
+
+00:09:56.700 --> 00:10:01.680
+<v Speaker 2>It doesn't really work for all cases. And something that you've done in one LLM doesn't work in
+
+00:10:01.780 --> 00:10:06.140
+<v Speaker 2>another. And now you're locked into this environment. So it becomes very hard to manage.
+
+00:10:06.460 --> 00:10:08.980
+<v Speaker 2>So MCP is essentially the answer to that.
+
+00:10:09.140 --> 00:10:14.520
+<v Speaker 2>MCP says, look, we don't care what data you're connecting to, what applications, what actions.
+
+00:10:15.280 --> 00:10:29.080
+<v Speaker 2>We provide you a universal interface by which every single LLM, every single client that understands MCP can invoke those primitives, get the data and embed the data in the context that you're operating in.
+
+00:10:29.680 --> 00:10:30.840
+<v Speaker 2>And that's another important thing.
+
+00:10:31.000 --> 00:10:32.860
+<v Speaker 2>People think of MCP as the data connector.
+
+00:10:33.710 --> 00:10:34.920
+<v Speaker 2>But it's not only a data connector.
+
+00:10:35.140 --> 00:10:37.060
+<v Speaker 2>I want to call it like a primitive connector
+
+00:10:37.460 --> 00:10:40.140
+<v Speaker 2>because you can use MCP with a lot of wonderful things
+
+00:10:40.260 --> 00:10:41.920
+<v Speaker 2>that folks have probably seen already.
+
+00:10:42.160 --> 00:10:44.960
+<v Speaker 2>Like my favorite example here is Blender MCP.
+
+00:10:45.240 --> 00:10:45.900
+<v Speaker 2>Like for folks that don't know,
+
+00:10:46.060 --> 00:10:47.640
+<v Speaker 1>Blender is a 3D modeling tool.
+
+00:10:48.260 --> 00:10:49.180
+<v Speaker 2>And there's an MCP server
+
+00:10:49.220 --> 00:10:50.960
+<v Speaker 2>by which you can actually guide an LLM saying,
+
+00:10:51.100 --> 00:10:54.140
+<v Speaker 2>like, I am building this like medieval scene
+
+00:10:54.380 --> 00:10:56.000
+<v Speaker 2>with a dragon and the lighting.
+
+00:10:56.380 --> 00:10:59.340
+<v Speaker 2>And it goes and it just, it builds it for you, right?
+
+00:10:59.580 --> 00:11:00.360
+<v Speaker 2>Through this MCP.
+
+00:11:00.360 --> 00:11:03.860
+<v Speaker 2>And MCP is the connective layer between Blender,
+
+00:11:04.080 --> 00:11:05.740
+<v Speaker 2>which has its own native API.
+
+00:11:06.370 --> 00:11:07.660
+<v Speaker 2>And then there's the MCP server
+
+00:11:08.240 --> 00:11:10.440
+<v Speaker 2>that the LM knows how to talk to, right?
+
+00:11:10.600 --> 00:11:11.840
+<v Speaker 2>Because the LM wouldn't know how to like,
+
+00:11:11.890 --> 00:11:12.960
+<v Speaker 2>okay, how do you talk to Blender?
+
+00:11:13.540 --> 00:11:15.340
+<v Speaker 2>How do you go and set up the plugin
+
+00:11:15.840 --> 00:11:17.160
+<v Speaker 2>and whatever the web sockets,
+
+00:11:17.340 --> 00:11:18.140
+<v Speaker 2>whatever they might be using, right?
+
+00:11:18.200 --> 00:11:19.240
+<v Speaker 2>Like it's super complex.
+
+00:11:19.470 --> 00:11:20.320
+<v Speaker 2>So it needs expertise,
+
+00:11:20.430 --> 00:11:21.780
+<v Speaker 2>but an MCP server is essentially saying,
+
+00:11:22.320 --> 00:11:23.800
+<v Speaker 2>I have these set of primitives
+
+00:11:24.060 --> 00:11:25.320
+<v Speaker 2>that the LM can invoke at any time,
+
+00:11:25.600 --> 00:11:28.340
+<v Speaker 2>like create polygon or create scene
+
+00:11:28.520 --> 00:11:29.260
+<v Speaker 2>or create sphere.
+
+00:11:30.060 --> 00:11:31.280
+<v Speaker 2>And then based on that information,
+
+00:11:31.480 --> 00:11:32.220
+<v Speaker 2>go and iterate on it.
+
+00:11:32.400 --> 00:11:34.100
+<v Speaker 1>So MCP is that adapter.
+
+00:11:34.530 --> 00:11:34.660
+<v Speaker 1>Yeah.
+
+00:11:35.240 --> 00:11:35.600
+<v Speaker 1>I see.
+
+00:11:35.750 --> 00:11:39.880
+<v Speaker 1>So the LLM or agentic AI or whatever that you're working with,
+
+00:11:40.540 --> 00:11:42.200
+<v Speaker 1>it says, all right, I'm going to talk to Blender.
+
+00:11:42.600 --> 00:11:46.740
+<v Speaker 1>Blender says I have these core ideas, these core building blocks.
+
+00:11:46.830 --> 00:11:52.260
+<v Speaker 1>It sort of turns it more into Lego instead of just I'm going to have a saw
+
+00:11:52.270 --> 00:11:53.260
+<v Speaker 1>or whatever I can cut.
+
+00:11:53.340 --> 00:11:53.760
+<v Speaker 1>Exactly.
+
+00:11:54.100 --> 00:11:54.200
+<v Speaker 1>Okay.
+
+00:11:54.360 --> 00:11:55.000
+<v Speaker 1>I have spheres.
+
+00:11:55.230 --> 00:11:56.960
+<v Speaker 1>I have cylinders.
+
+00:11:57.480 --> 00:11:58.380
+<v Speaker 1>I have squares.
+
+00:11:58.770 --> 00:11:59.520
+<v Speaker 1>I have shading.
+
+00:12:00.320 --> 00:12:00.400
+<v Speaker 1>Yeah.
+
+00:12:00.760 --> 00:12:01.680
+<v Speaker 1>They've asked me to do this.
+
+00:12:01.840 --> 00:12:04.360
+<v Speaker 1>what can I build composing that sort of?
+
+00:12:04.540 --> 00:12:05.560
+<v Speaker 1>Exactly. Precisely.
+
+00:12:05.760 --> 00:12:08.280
+<v Speaker 2>Right. So you're operating on a set of primitives, right?
+
+00:12:08.360 --> 00:12:10.340
+<v Speaker 2>And this is where you don't even need to expose
+
+00:12:10.640 --> 00:12:12.900
+<v Speaker 2>the entirety of the surface of Blender APIs.
+
+00:12:13.100 --> 00:12:14.680
+<v Speaker 2>You can just say like, oh, I want to have like,
+
+00:12:15.020 --> 00:12:17.580
+<v Speaker 2>there's the 10 primitives that I think are the most valuable.
+
+00:12:17.720 --> 00:12:18.580
+<v Speaker 2>I'm going to go ahead and use those.
+
+00:12:19.400 --> 00:12:20.820
+<v Speaker 2>And out of those, you compose things.
+
+00:12:21.340 --> 00:12:23.180
+<v Speaker 1>And maybe there's an advantage to that too, right?
+
+00:12:23.320 --> 00:12:26.620
+<v Speaker 1>Maybe like, I want to use Blender to create 2D scenes.
+
+00:12:27.080 --> 00:12:30.499
+<v Speaker 1>So I'm only going to expose stuff or rotations
+
+00:12:30.520 --> 00:12:33.340
+<v Speaker 1>or whatever that preserve some sort of 2D view of the thing.
+
+00:12:33.420 --> 00:12:36.100
+<v Speaker 1>Like we're doing CAD where it's top down from the side.
+
+00:12:36.220 --> 00:12:37.460
+<v Speaker 1>Like those are the ways you're going to look at it.
+
+00:12:37.460 --> 00:12:38.700
+<v Speaker 1>You can't arbitrarily rotate it.
+
+00:12:39.040 --> 00:12:39.240
+<v Speaker 2>Yeah.
+
+00:12:39.540 --> 00:12:41.760
+<v Speaker 2>So essentially like the MCP servers in this case
+
+00:12:42.000 --> 00:12:43.600
+<v Speaker 2>act as a universal translation layer
+
+00:12:43.740 --> 00:12:46.400
+<v Speaker 2>between whatever's downstream of the MCP server,
+
+00:12:46.480 --> 00:12:50.340
+<v Speaker 2>which can be an application, an API, a database, like anything.
+
+00:12:51.160 --> 00:12:53.040
+<v Speaker 2>And the client, which knows like,
+
+00:12:53.120 --> 00:12:55.340
+<v Speaker 2>I know how to talk to MCP and nothing else.
+
+00:12:55.420 --> 00:12:56.520
+<v Speaker 2>I have no idea what's behind.
+
+00:12:56.680 --> 00:12:58.640
+<v Speaker 2>I don't know what the REST API you have,
+
+00:12:58.880 --> 00:13:00.740
+<v Speaker 2>What's the authentication authorization logic?
+
+00:13:01.670 --> 00:13:02.560
+<v Speaker 2>Just give an MCP server.
+
+00:13:03.380 --> 00:13:03.760
+<v Speaker 1>- Okay.
+
+00:13:04.640 --> 00:13:06.300
+<v Speaker 1>It sounds a little bit like an API.
+
+00:13:06.640 --> 00:13:08.040
+<v Speaker 1>And by API, I mean,
+
+00:13:08.820 --> 00:13:09.080
+<v Speaker 1>- Yes.
+
+00:13:09.080 --> 00:13:11.840
+<v Speaker 1>- The most general sense of the word, not,
+
+00:13:12.680 --> 00:13:15.960
+<v Speaker 1>oh, it's a REST API and it makes sure it uses the verbs
+
+00:13:16.100 --> 00:13:16.320
+<v Speaker 1>this way.
+
+00:13:16.510 --> 00:13:19.040
+<v Speaker 1>I mean, like anything that you could sort of call
+
+00:13:19.260 --> 00:13:21.620
+<v Speaker 1>and either get data or cause an action
+
+00:13:21.820 --> 00:13:24.020
+<v Speaker 1>that could be a REST API, but it could just be,
+
+00:13:25.760 --> 00:13:28.660
+<v Speaker 1>a West level API or something like that.
+
+00:13:28.840 --> 00:13:29.980
+<v Speaker 2>Yeah, totally.
+
+00:13:30.340 --> 00:13:34.440
+<v Speaker 2>I mean, all it is just a connective layer.
+
+00:13:35.030 --> 00:13:35.420
+<v Speaker 2>So, yeah.
+
+00:13:35.950 --> 00:13:39.580
+<v Speaker 2>And people often ask, well, couldn't you do this with REST APIs?
+
+00:13:39.860 --> 00:13:42.760
+<v Speaker 2>Couldn't you do this with GraphQL APIs instead?
+
+00:13:43.140 --> 00:13:44.440
+<v Speaker 2>Because it's been invented.
+
+00:13:44.660 --> 00:13:45.580
+<v Speaker 2>Why are we creating new things?
+
+00:13:46.120 --> 00:13:51.200
+<v Speaker 2>But the thing about this is, even if you look in the world of REST APIs,
+
+00:13:51.630 --> 00:13:52.040
+<v Speaker 2>think about it.
+
+00:13:52.040 --> 00:13:55.120
+<v Speaker 2>The last time you worked with a REST API from some vendor
+
+00:13:55.270 --> 00:13:56.820
+<v Speaker 2>and then switched another REST API from someone,
+
+00:13:56.880 --> 00:14:00.340
+<v Speaker 2>How much of that knowledge was like one-to-one reused?
+
+00:14:01.200 --> 00:14:02.280
+<v Speaker 2>Or the infrastructure that you built?
+
+00:14:02.350 --> 00:14:03.320
+<v Speaker 2>Or authentication logic?
+
+00:14:03.520 --> 00:14:07.760
+<v Speaker 2>You have these 17 different Dences by which you get the token, right?
+
+00:14:08.360 --> 00:14:12.360
+<v Speaker 2>And MCP essentially is the opinionated version of saying,
+
+00:14:12.980 --> 00:14:14.940
+<v Speaker 2>no, this is how you do auth.
+
+00:14:15.380 --> 00:14:18.480
+<v Speaker 2>This is how you do message passing between entities.
+
+00:14:18.740 --> 00:14:20.620
+<v Speaker 2>This is how you expose primitives.
+
+00:14:21.880 --> 00:14:23.280
+<v Speaker 2>It's a highly opinionated stack.
+
+00:14:23.900 --> 00:14:40.080
+<v Speaker 1>Yeah, and so then once implemented, we call them the hosts, like VS Code or PyCharm or Cursor or whatever, Claude Code, it knows, all right, here's how I inspect the capabilities of this thing.
+
+00:14:40.480 --> 00:14:45.000
+<v Speaker 1>Here's how I stream back the responses if it's going to take it 10 minutes to do what I asked it.
+
+00:14:46.600 --> 00:14:49.660
+<v Speaker 1>This is how you do it with streaming HTTP APIs and so on.
+
+00:14:50.300 --> 00:14:50.980
+<v Speaker 2>Precisely, right?
+
+00:14:51.140 --> 00:14:54.400
+<v Speaker 2>Because you only need to then implement once.
+
+00:14:55.100 --> 00:14:57.940
+<v Speaker 2>And especially if you use one of the existing MCP SDKs
+
+00:14:58.020 --> 00:14:59.240
+<v Speaker 2>that we're going to be talking down the line,
+
+00:15:00.399 --> 00:15:01.740
+<v Speaker 2>that's the core value prop.
+
+00:15:01.740 --> 00:15:03.820
+<v Speaker 2>It's like you do it once and it just works.
+
+00:15:03.880 --> 00:15:04.940
+<v Speaker 2>You don't need to worry about like,
+
+00:15:05.120 --> 00:15:07.920
+<v Speaker 2>oh, but this other MCP server decided to implement their auth
+
+00:15:08.020 --> 00:15:09.140
+<v Speaker 2>in a completely different way.
+
+00:15:09.260 --> 00:15:10.000
+<v Speaker 2>What do I do now?
+
+00:15:11.020 --> 00:15:11.180
+<v Speaker 1>Yeah.
+
+00:15:14.759 --> 00:15:17.260
+<v Speaker 1>Now, if I want to build one of these things,
+
+00:15:18.380 --> 00:15:22.820
+<v Speaker 1>Does it have to be implemented in an LLM?
+
+00:15:22.920 --> 00:15:34.300
+<v Speaker 1>Or can I build just a traditional FastAPI API that ultimately does queries against a database with no prompt?
+
+00:15:35.180 --> 00:15:35.420
+<v Speaker 2>Yeah.
+
+00:15:35.660 --> 00:15:44.600
+<v Speaker 2>No, I mean, like, MCP servers themselves are just essentially entities that are capable of exchanging JSON RPC messages.
+
+00:15:45.560 --> 00:15:49.920
+<v Speaker 2>Like you can write a client that is completely detached from an LLM and just invokes tools.
+
+00:15:50.600 --> 00:15:50.820
+<v Speaker 2>Right.
+
+00:15:51.170 --> 00:15:51.260
+<v Speaker 1>Okay.
+
+00:15:51.690 --> 00:15:51.780
+<v Speaker 1>Awesome.
+
+00:15:52.260 --> 00:15:53.600
+<v Speaker 2>You can if you want to.
+
+00:15:53.670 --> 00:15:56.240
+<v Speaker 2>I don't know why you would do that, but you absolutely can.
+
+00:15:57.940 --> 00:15:59.060
+<v Speaker 1>I'm sure people have a reason.
+
+00:15:59.800 --> 00:16:03.320
+<v Speaker 1>So I see a comment out in the audience from Frankie about RAG.
+
+00:16:03.370 --> 00:16:08.740
+<v Speaker 1>And also, you mentioned RAG at the beginning and say, well, maybe RAG is not working for you.
+
+00:16:09.160 --> 00:16:12.540
+<v Speaker 1>Let's just sort of contrast that a bit, right?
+
+00:16:12.740 --> 00:16:14.920
+<v Speaker 1>Like maybe not everyone knows what RAG is.
+
+00:16:15.480 --> 00:16:21.760
+<v Speaker 2>retrieval augmented generation what is this yeah essentially if you have a way for you to um
+
+00:16:24.300 --> 00:16:28.780
+<v Speaker 2>optimize basically the context for the llm i'll put i'll put it this way like in very layman terms
+
+00:16:28.800 --> 00:16:36.360
+<v Speaker 2>it's like i have a code base i have a code base that has a number of entities like classes and
+
+00:16:37.420 --> 00:16:42.819
+<v Speaker 2>you know functions and everything and in a rag you're essentially building a a vector database
+
+00:16:43.300 --> 00:16:46.360
+<v Speaker 2>that says like, okay, here's the list of things that exist.
+
+00:16:46.940 --> 00:16:49.740
+<v Speaker 2>And then the LLM, you can go and query this thing
+
+00:16:49.860 --> 00:16:51.800
+<v Speaker 2>and find out what exists in this code base.
+
+00:16:52.060 --> 00:16:53.160
+<v Speaker 2>So if you make decisions about like,
+
+00:16:53.260 --> 00:16:55.760
+<v Speaker 2>I want to build a authorization component,
+
+00:16:56.000 --> 00:16:56.500
+<v Speaker 2>how do I do this?
+
+00:16:56.500 --> 00:16:57.120
+<v Speaker 2>It's like, okay, well,
+
+00:16:57.860 --> 00:16:59.980
+<v Speaker 2>it can build out that context for itself.
+
+00:17:00.320 --> 00:17:03.380
+<v Speaker 2>This is kind of the very basic idea behind the rag.
+
+00:17:04.380 --> 00:17:04.640
+<v Speaker 1>Got it.
+
+00:17:04.860 --> 00:17:07.420
+<v Speaker 1>So instead of trying to put all the information
+
+00:17:07.540 --> 00:17:08.480
+<v Speaker 1>just into a prompt,
+
+00:17:08.660 --> 00:17:10.480
+<v Speaker 1>it has to read every time you can kind of
+
+00:17:11.240 --> 00:17:12.560
+<v Speaker 1>additionally train it on these things.
+
+00:17:12.760 --> 00:17:15.520
+<v Speaker 1>and then keep the question shorter
+
+00:17:15.579 --> 00:17:16.780
+<v Speaker 1>because it knows the details.
+
+00:17:17.620 --> 00:17:17.680
+<v Speaker 2>Right.
+
+00:17:17.740 --> 00:17:19.180
+<v Speaker 2>You essentially have a knowledge base
+
+00:17:19.400 --> 00:17:21.900
+<v Speaker 2>that's outside of the primary training set.
+
+00:17:22.100 --> 00:17:24.880
+<v Speaker 2>Like that's the core value prop of this
+
+00:17:24.980 --> 00:17:27.860
+<v Speaker 2>is you're augmenting the LLM
+
+00:17:28.120 --> 00:17:28.940
+<v Speaker 2>with additional knowledge
+
+00:17:29.260 --> 00:17:30.940
+<v Speaker 2>that you have in the context
+
+00:17:31.080 --> 00:17:31.740
+<v Speaker 2>that you're operating in.
+
+00:17:33.080 --> 00:17:33.240
+<v Speaker 1>Okay.
+
+00:17:34.700 --> 00:17:37.100
+<v Speaker 1>So something I've wanted to build for a while
+
+00:17:37.180 --> 00:17:39.380
+<v Speaker 1>and I do intend to,
+
+00:17:39.480 --> 00:17:40.819
+<v Speaker 1>but we'll see if I ever get there
+
+00:17:42.420 --> 00:17:47.360
+<v Speaker 1>is something where people could go and have like an AI conversation with this episode, for example,
+
+00:17:48.200 --> 00:17:52.980
+<v Speaker 1>right? With something on the podcast, I've got 10 years of transcripts. Yeah. You know,
+
+00:17:53.320 --> 00:17:59.620
+<v Speaker 1>like over a million words, I'm pretty sure that doesn't fit in most contexts. And even if it does,
+
+00:17:59.820 --> 00:18:10.800
+<v Speaker 1>it's problematic. Yeah. So it'd be great to do some sort of rag thing for Talk Python. Maybe
+
+00:18:10.960 --> 00:18:11.140
+<v Speaker 1>Yeah.
+
+00:18:11.500 --> 00:18:13.760
+<v Speaker 1>What could I do with MCPs in the podcast, do you think?
+
+00:18:14.640 --> 00:18:15.660
+<v Speaker 1>MCPs in a podcast.
+
+00:18:17.140 --> 00:18:19.360
+<v Speaker 2>So one of them, of course, is like querying the data,
+
+00:18:20.010 --> 00:18:23.300
+<v Speaker 2>which is I want to make sure that, you know,
+
+00:18:23.500 --> 00:18:27.740
+<v Speaker 2>find me all the episodes where I ever talked with Michael about AI.
+
+00:18:28.540 --> 00:18:28.620
+<v Speaker 2>Right.
+
+00:18:28.840 --> 00:18:28.920
+<v Speaker 2>Sure.
+
+00:18:29.080 --> 00:18:29.560
+<v Speaker 2>Could be one thing.
+
+00:18:30.360 --> 00:18:35.980
+<v Speaker 2>I actually think that because of the richness of the MCP capabilities,
+
+00:18:36.090 --> 00:18:37.460
+<v Speaker 2>to me, when it comes to like podcasts,
+
+00:18:37.860 --> 00:18:41.040
+<v Speaker 2>I envision a world where I can use MCPs to edit podcasts.
+
+00:18:42.019 --> 00:18:43.600
+<v Speaker 2>That's my dream of this.
+
+00:18:43.600 --> 00:18:45.860
+<v Speaker 2>And actually, this is something that I've been experimenting with
+
+00:18:47.500 --> 00:18:50.040
+<v Speaker 2>because I haven't fully wrapped around
+
+00:18:50.280 --> 00:18:52.540
+<v Speaker 2>how exactly that would look like.
+
+00:18:52.740 --> 00:18:54.000
+<v Speaker 2>But one of the things that I do,
+
+00:18:54.120 --> 00:18:55.640
+<v Speaker 2>as I'm sure you do when you edit the podcast,
+
+00:18:55.780 --> 00:18:58.780
+<v Speaker 2>you have to go through it, generate the transcript,
+
+00:18:59.280 --> 00:19:03.200
+<v Speaker 2>clean up things, then make sure that you add timestamps,
+
+00:19:03.380 --> 00:19:05.300
+<v Speaker 2>select the most interesting parts about the podcast.
+
+00:19:06.120 --> 00:19:12.320
+<v Speaker 2>So can I potentially go to an alarm and say, okay, here's where my MP3 file is.
+
+00:19:13.440 --> 00:19:19.980
+<v Speaker 2>Can you go and generate transcript, clean it up, and then find me the most interesting parts about this,
+
+00:19:20.520 --> 00:19:26.620
+<v Speaker 2>and then produce me a report that I can then use to maybe like a HTML-based web app,
+
+00:19:26.620 --> 00:19:29.460
+<v Speaker 2>and I can just like a one-click save, like publish, right?
+
+00:19:29.620 --> 00:19:35.400
+<v Speaker 2>And to me, like the value of maybe the MCP connector here is that maybe I can plug it in behind the scenes
+
+00:19:35.420 --> 00:19:37.500
+<v Speaker 2>with like FFmpeg to go and convert
+
+00:19:37.530 --> 00:19:39.360
+<v Speaker 2>the MP3 into a WAV file
+
+00:19:39.720 --> 00:19:41.360
+<v Speaker 2>and then use Whisper to go and generate
+
+00:19:41.520 --> 00:19:43.120
+<v Speaker 2>the transcript and then go and
+
+00:19:43.700 --> 00:19:45.340
+<v Speaker 2>extract things for it, right? And for a lot of
+
+00:19:45.440 --> 00:19:47.240
+<v Speaker 2>these pieces of the tasks
+
+00:19:47.240 --> 00:19:49.280
+<v Speaker 2>that you do, you would imagine that you would have a different
+
+00:19:49.740 --> 00:19:51.140
+<v Speaker 2>tool inside my MC server, which
+
+00:19:51.240 --> 00:19:52.680
+<v Speaker 2>tool is one of the primitives that basically
+
+00:19:53.220 --> 00:19:54.980
+<v Speaker 2>LLM invokes. And it says, oh,
+
+00:19:55.560 --> 00:19:57.360
+<v Speaker 2>let me generate the transcript. And there's a tool
+
+00:19:57.460 --> 00:19:58.900
+<v Speaker 2>that's called generate transcript and it's going to
+
+00:19:59.500 --> 00:20:01.180
+<v Speaker 2>use that to produce a transcript. And it's like,
+
+00:20:01.320 --> 00:20:02.560
+<v Speaker 1>okay, there's another tool that says
+
+00:20:03.200 --> 00:20:04.040
+<v Speaker 1>find interesting parts.
+
+00:20:04.760 --> 00:20:09.480
+<v Speaker 1>Yes, you could give, just give the LLM an episode number, 200 or something.
+
+00:20:09.920 --> 00:20:10.000
+<v Speaker 1>Yeah.
+
+00:20:10.300 --> 00:20:16.300
+<v Speaker 1>And it could go to your podcast MCP server and say, transcript for 200, even if it doesn't
+
+00:20:16.440 --> 00:20:19.600
+<v Speaker 1>exist, it'll figure it out and generate it, that kind of stuff.
+
+00:20:19.840 --> 00:20:20.100
+<v Speaker 2>Yes.
+
+00:20:20.400 --> 00:20:25.700
+<v Speaker 2>And also the wonderful thing about LLMs and MCP servers is that you're not actually using
+
+00:20:25.820 --> 00:20:27.100
+<v Speaker 2>just one MCP server, right?
+
+00:20:27.120 --> 00:20:31.640
+<v Speaker 2>So I might have an MCP server for myself that is basically, like I said, the one that generates
+
+00:20:31.660 --> 00:20:38.440
+<v Speaker 2>transcripts, you know, creates a landing page in my podcast website. And then based on that content,
+
+00:20:39.260 --> 00:20:44.340
+<v Speaker 2>there's also next steps. Now I have an MP3, I want to upload that MP3 to Cloudflare, where I host my
+
+00:20:44.420 --> 00:20:48.960
+<v Speaker 2>podcast. So there may be a Cloudflare MCP server that the LM is going to invoke and say, I need to
+
+00:20:49.040 --> 00:20:52.640
+<v Speaker 2>now upload this. And then it's going to invoke the other MCP server, right? So you have this
+
+00:20:53.580 --> 00:20:58.380
+<v Speaker 2>basically stack of MCP servers that you can start using one with another. And that's where the
+
+00:20:58.220 --> 00:21:01.820
+<v Speaker 2>superpower comes from like you're not just using one application and saying like okay hold on let
+
+00:21:01.820 --> 00:21:05.900
+<v Speaker 2>me let me finish a task for podcast production then i'll do other things like it can chain things
+
+00:21:06.040 --> 00:21:09.860
+<v Speaker 2>together and then say oh and by the way there's an mcp server maybe for audio conversion that
+
+00:21:09.980 --> 00:21:14.900
+<v Speaker 2>produces like 10 variations of the format let me invoke that and then you're going through this
+
+00:21:15.130 --> 00:21:20.840
+<v Speaker 1>process yeah i think that's one of the really big you know hints at one of the really big differences
+
+00:21:20.860 --> 00:21:23.860
+<v Speaker 1>between just using a chat LLM
+
+00:21:24.440 --> 00:21:28.320
+<v Speaker 1>versus some of the agent tool using types of things, right?
+
+00:21:29.700 --> 00:21:32.340
+<v Speaker 1>The ability to say, now I have to accomplish this task,
+
+00:21:32.360 --> 00:21:34.480
+<v Speaker 1>and I know I figured out there is some way
+
+00:21:34.660 --> 00:21:36.460
+<v Speaker 1>I'm capable of accomplishing that, right?
+
+00:21:36.520 --> 00:21:39.040
+<v Speaker 1>Either that's to list a directory, to look for a file,
+
+00:21:39.320 --> 00:21:42.160
+<v Speaker 1>or to communicate with the Cloudflare MCP
+
+00:21:42.420 --> 00:21:45.060
+<v Speaker 1>that we talked about, and so on.
+
+00:21:46.500 --> 00:21:48.560
+<v Speaker 1>Yeah, our is composability.
+
+00:21:48.620 --> 00:21:49.200
+<v Speaker 2>I'll put it this way.
+
+00:21:49.280 --> 00:21:55.900
+<v Speaker 2>It's the fact that you can compose things together and have them work together based on the prompts that you have and scenarios that you have.
+
+00:21:56.560 --> 00:21:57.040
+<v Speaker 1>Okay, cool.
+
+00:21:57.150 --> 00:22:04.460
+<v Speaker 1>So imagining the Cloudflare MCP thing exists, your podcast preparation MCP thing exists.
+
+00:22:05.920 --> 00:22:07.020
+<v Speaker 1>How does my AI know?
+
+00:22:07.340 --> 00:22:09.340
+<v Speaker 1>Let's keep it real basic.
+
+00:22:09.560 --> 00:22:12.740
+<v Speaker 1>Let's say I'm using Claude Code, but we could plug this into others.
+
+00:22:13.250 --> 00:22:16.600
+<v Speaker 1>But just even something just terminal-based, no UI or whatever.
+
+00:22:17.840 --> 00:22:17.980
+<v Speaker 1>Yeah.
+
+00:22:18.740 --> 00:22:21.120
+<v Speaker 1>Is it going to discover them just out of the blue?
+
+00:22:21.470 --> 00:22:22.480
+<v Speaker 1>Probably not all of them.
+
+00:22:22.510 --> 00:22:24.080
+<v Speaker 1>You got to point it at them.
+
+00:22:24.580 --> 00:22:27.380
+<v Speaker 1>And how does it know which ones it's allowed to use in this context?
+
+00:22:27.500 --> 00:22:29.820
+<v Speaker 1>How do I get it so I can actually use one of these?
+
+00:22:29.870 --> 00:22:31.100
+<v Speaker 1>And we'll talk about maybe building them.
+
+00:22:31.320 --> 00:22:31.680
+<v Speaker 2>Yeah.
+
+00:22:31.830 --> 00:22:38.340
+<v Speaker 2>So for MCP servers themselves, you add them explicitly to your host or your client,
+
+00:22:38.660 --> 00:22:39.080
+<v Speaker 2>whatever that might be.
+
+00:22:39.200 --> 00:22:41.320
+<v Speaker 2>VS Code, Claude Code, Cloud Desktop, doesn't matter.
+
+00:22:41.780 --> 00:22:46.820
+<v Speaker 2>So you explicitly say, I want to use my podcast MCP.
+
+00:22:47.040 --> 00:22:49.100
+<v Speaker 2>I want to be using my Cloudflare MCP server.
+
+00:22:49.110 --> 00:22:50.800
+<v Speaker 2>I want to use my, I don't know,
+
+00:22:51.020 --> 00:22:53.520
+<v Speaker 2>Descript MCP servers to remove the ums and uhs
+
+00:22:53.660 --> 00:22:54.540
+<v Speaker 2>from the podcast, right?
+
+00:22:54.640 --> 00:22:57.720
+<v Speaker 2>So you would essentially go through some means
+
+00:22:57.960 --> 00:22:59.660
+<v Speaker 2>in that client, on your client of choice,
+
+00:22:59.730 --> 00:23:01.000
+<v Speaker 2>to go and add those MCP servers.
+
+00:23:01.860 --> 00:23:03.840
+<v Speaker 2>Now, the question is, how do you discover those MCP servers?
+
+00:23:04.060 --> 00:23:06.820
+<v Speaker 2>So there's various places where you can go to.
+
+00:23:07.280 --> 00:23:09.240
+<v Speaker 2>We just launched the MCP registry
+
+00:23:09.840 --> 00:23:12.360
+<v Speaker 2>that is nothing short other than an API
+
+00:23:12.880 --> 00:23:15.800
+<v Speaker 2>that indexes all of the available MCP servers
+
+00:23:16.000 --> 00:23:16.680
+<v Speaker 2>that are out there.
+
+00:23:17.180 --> 00:23:21.720
+<v Speaker 2>right so uh we're looking right now at a blog post on the mcp blog it's called introducing the mcp
+
+00:23:21.880 --> 00:23:26.140
+<v Speaker 2>registry that got published september 8th of this year so not not that long ago but but basically
+
+00:23:26.660 --> 00:23:31.060
+<v Speaker 1>22 days or something like that and when you say we you're talking the official model context
+
+00:23:31.430 --> 00:23:36.800
+<v Speaker 1>protocol.io working yes yes the model context protocol folks uh and there's a bunch of them that
+
+00:23:36.800 --> 00:23:41.780
+<v Speaker 2>were specifically focused on the registry right and you see them in the authors like david sariapara
+
+00:23:41.800 --> 00:23:44.820
+<v Speaker 2>Adam Jones, Tadas, Toby, and Theo.
+
+00:23:45.630 --> 00:23:46.860
+<v Speaker 2>But they essentially were in charge
+
+00:23:46.910 --> 00:23:47.820
+<v Speaker 2>of kind of building this out.
+
+00:23:47.930 --> 00:23:51.160
+<v Speaker 2>And the registry is a centralized API,
+
+00:23:51.500 --> 00:23:54.420
+<v Speaker 2>essentially, that aggregates an index
+
+00:23:54.840 --> 00:23:56.000
+<v Speaker 2>of MCP servers that are out there.
+
+00:23:56.600 --> 00:23:58.640
+<v Speaker 2>So you can use the registry inside your client,
+
+00:23:58.920 --> 00:23:59.880
+<v Speaker 2>whatever client you might be using,
+
+00:24:00.700 --> 00:24:02.780
+<v Speaker 2>to find MCP servers for what you want.
+
+00:24:02.860 --> 00:24:04.660
+<v Speaker 2>Maybe there is a Playwright MCP server.
+
+00:24:04.900 --> 00:24:06.800
+<v Speaker 2>Maybe there is a Perflexity MCP server.
+
+00:24:07.560 --> 00:24:08.920
+<v Speaker 2>So it's all coming from the registry.
+
+00:24:10.260 --> 00:24:12.220
+<v Speaker 2>Okay. Sounds a little bit like Docker Hub.
+
+00:24:13.260 --> 00:24:25.660
+<v Speaker 2>Kind of. Yes. And just like Docker Hub, you actually don't need Docker Hub to install an MCP server or in this case, like a Docker container, right? Like you can just go to random GitHub repos and find somebody built an MCP server for what you're trying to do. And you can just plug it in.
+
+00:24:26.400 --> 00:24:32.960
+<v Speaker 1>Yeah, interesting. Yeah, that's how I use Docker Hub by not using Docker Hub for all the stuff I build. But you know, I get the foundations.
+
+00:24:34.620 --> 00:24:36.360
+<v Speaker 1>He's like, I'm like, ah, but I'm going to build it here.
+
+00:24:37.940 --> 00:24:40.780
+<v Speaker 1>It also has the concept of public and private registries.
+
+00:24:41.240 --> 00:24:41.440
+<v Speaker 2>Yes.
+
+00:24:42.260 --> 00:24:42.340
+<v Speaker 2>Yeah.
+
+00:24:42.580 --> 00:24:47.660
+<v Speaker 2>So public registry is essentially something that, like GitHub, by the way, maintains their own registry.
+
+00:24:48.060 --> 00:24:48.780
+<v Speaker 2>So it's public.
+
+00:24:49.440 --> 00:24:54.660
+<v Speaker 2>And you can just go and discover MCP servers through the GitHub registry or the public registry.
+
+00:24:55.300 --> 00:24:58.320
+<v Speaker 2>Also, we know that MCP servers are used within different companies.
+
+00:24:58.580 --> 00:25:06.420
+<v Speaker 2>You might have, let's say, some data that you're locking in behind seven gates that only certain people can access.
+
+00:25:07.280 --> 00:25:08.720
+<v Speaker 2>You can build internal MCP servers.
+
+00:25:08.790 --> 00:25:13.700
+<v Speaker 2>And for those things, you ship internal private registries where you can say, no, no, no.
+
+00:25:14.340 --> 00:25:18.940
+<v Speaker 2>I want my folks in my company to only access these servers and nothing else.
+
+00:25:20.100 --> 00:25:20.200
+<v Speaker 2>Right.
+
+00:25:20.800 --> 00:25:21.060
+<v Speaker 1>Sure.
+
+00:25:22.780 --> 00:25:23.300
+<v Speaker 1>Yeah, that makes sense.
+
+00:25:23.520 --> 00:25:28.180
+<v Speaker 1>Is there a place that I can go to the model context protocol registry,
+
+00:25:28.440 --> 00:25:32.420
+<v Speaker 1>the MCP registry, and browse it like you can, Docker?
+
+00:25:32.580 --> 00:25:32.720
+<v Speaker 1>Yeah.
+
+00:25:33.170 --> 00:25:33.320
+<v Speaker 2>Yeah.
+
+00:25:33.390 --> 00:25:36.280
+<v Speaker 2>So right now, you can't browse it through a UI,
+
+00:25:36.880 --> 00:25:40.860
+<v Speaker 2>but you can look at other registries that can consume some of the content from here.
+
+00:25:40.930 --> 00:25:43.960
+<v Speaker 2>So I believe GitHub registry is one of the consumers.
+
+00:25:44.070 --> 00:25:47.860
+<v Speaker 2>You can look at, I think it's gethub.com slash MCP.
+
+00:25:50.460 --> 00:25:50.840
+<v Speaker 2>There we go.
+
+00:25:51.180 --> 00:25:51.320
+<v Speaker 2>Yeah.
+
+00:25:52.400 --> 00:25:52.620
+<v Speaker 2>Okay.
+
+00:25:53.020 --> 00:25:54.040
+<v Speaker 2>And you can see some of the registries.
+
+00:25:54.090 --> 00:25:56.020
+<v Speaker 2>And you can see, like, if you click on one of the install buttons,
+
+00:25:56.500 --> 00:25:59.420
+<v Speaker 2>it's going to, like, allow you to take it directly into, like, VS Code
+
+00:25:59.680 --> 00:26:02.980
+<v Speaker 2>and then just bring it in and install it in the context of your editor.
+
+00:26:03.960 --> 00:26:04.320
+<v Speaker 1>Okay.
+
+00:26:04.810 --> 00:26:04.900
+<v Speaker 1>Yeah.
+
+00:26:05.230 --> 00:26:05.500
+<v Speaker 2>Very nice.
+
+00:26:09.640 --> 00:26:12.800
+<v Speaker 1>So some of these are, like, web crawling, Notion.
+
+00:26:13.120 --> 00:26:13.340
+<v Speaker 1>Okay.
+
+00:26:14.400 --> 00:26:16.720
+<v Speaker 1>I know Notion just added a big agentic AI thing,
+
+00:26:17.380 --> 00:26:19.120
+<v Speaker 1>and I've seen a lot of pushback.
+
+00:26:19.660 --> 00:26:22.360
+<v Speaker 1>There's probably a lot of happy users who just use it, but...
+
+00:26:22.900 --> 00:26:23.000
+<v Speaker 1>Yeah.
+
+00:26:23.360 --> 00:26:24.800
+<v Speaker 1>People are like, why is this in my way?
+
+00:26:24.820 --> 00:26:25.660
+<v Speaker 1>I just want to work with this.
+
+00:26:26.180 --> 00:26:30.600
+<v Speaker 1>But, you know, if you were, it'd be really cool to maybe plug that in instead of going,
+
+00:26:30.760 --> 00:26:35.680
+<v Speaker 1>we're going to try to use the API to download this embedded database with the information.
+
+00:26:36.060 --> 00:26:36.140
+<v Speaker 1>Exactly.
+
+00:26:36.400 --> 00:26:37.740
+<v Speaker 1>Like you just talk to it, right?
+
+00:26:38.220 --> 00:26:38.540
+<v Speaker 2>Exactly.
+
+00:26:38.760 --> 00:26:44.240
+<v Speaker 2>That's, again, what I like about MCP is that if I want to connect to Notion to get my notebook
+
+00:26:44.460 --> 00:26:48.160
+<v Speaker 2>and some notes from my stand-up meetings, I don't need to worry about how they structure
+
+00:26:48.240 --> 00:26:50.480
+<v Speaker 2>their API and how to use auth or something.
+
+00:26:50.640 --> 00:26:52.520
+<v Speaker 2>Just install the Notion MCP and then ask the alarm,
+
+00:26:52.650 --> 00:26:54.620
+<v Speaker 2>like pull the latest notes and summarize them for me.
+
+00:26:55.190 --> 00:26:55.980
+<v Speaker 2>And then it's going to know.
+
+00:26:57.660 --> 00:26:58.440
+<v Speaker 2>Is there a LinkedIn one?
+
+00:26:58.880 --> 00:27:00.120
+<v Speaker 2>Their API is so bad.
+
+00:27:00.360 --> 00:27:03.680
+<v Speaker 1>Oh, it makes me sad.
+
+00:27:03.860 --> 00:27:05.640
+<v Speaker 2>For any LinkedIn people watching this,
+
+00:27:05.790 --> 00:27:07.260
+<v Speaker 2>we need to have a LinkedIn MCP server.
+
+00:27:07.620 --> 00:27:08.460
+<v Speaker 1>Yes, I think so.
+
+00:27:08.830 --> 00:27:09.560
+<v Speaker 1>It might save me.
+
+00:27:10.760 --> 00:27:10.920
+<v Speaker 1>Okay.
+
+00:27:11.980 --> 00:27:13.040
+<v Speaker 1>Very interesting here.
+
+00:27:15.900 --> 00:27:18.100
+<v Speaker 1>I think people should come here and just kind of poke around.
+
+00:27:18.360 --> 00:27:24.940
+<v Speaker 1>You can see there's a lot of interesting things that I think might spark some ideas as you
+
+00:27:25.080 --> 00:27:27.280
+<v Speaker 1>start to play with it, like Postman.
+
+00:27:27.590 --> 00:27:30.440
+<v Speaker 1>So I guess one of the problems, not one of the problems, one of the things you're going
+
+00:27:30.440 --> 00:27:37.820
+<v Speaker 1>to want to deal with is a lot of these I see here, LaunchDarkly, Postman, Atlassian, Notion,
+
+00:27:38.000 --> 00:27:38.400
+<v Speaker 1>and so on.
+
+00:27:39.400 --> 00:27:46.720
+<v Speaker 1>You go to pass things like, I am this person, therefore I want to see my information, not
+
+00:27:46.640 --> 00:27:50.620
+<v Speaker 1>other people's or only public i gotta see private info but mine
+
+00:27:54.260 --> 00:27:57.560
+<v Speaker 1>there's a whole security side and i think that's kind of how you got pulled into it right
+
+00:27:57.920 --> 00:28:03.520
+<v Speaker 2>yeah oh yeah yeah yeah so for for these things yeah we just put like an api key in github and
+
+00:28:03.580 --> 00:28:08.380
+<v Speaker 1>just check that in and just use that when you're trying to don't do that don't put api keys in
+
+00:28:08.500 --> 00:28:14.520
+<v Speaker 2>github and check them in um what what can be done so starting with the latest spec of mcp that again
+
+00:28:14.540 --> 00:28:21.700
+<v Speaker 2>shipped in June, there is a formal way for services to do authorization. So it's based on OAuth, OAuth 2.1.
+
+00:28:22.180 --> 00:28:27.220
+<v Speaker 2>I know that there's people listening that's like, oh no, did you just say OAuth? I have to learn OAuth now?
+
+00:28:27.390 --> 00:28:31.640
+<v Speaker 2>You don't. Again, there's a lot of libraries that do this. If you're an MCP server developer,
+
+00:28:32.120 --> 00:28:35.420
+<v Speaker 2>it's solved for you. If you're an MCP server consumer, you don't even need to think about it.
+
+00:28:35.830 --> 00:28:41.900
+<v Speaker 2>So when you connect an MCP server, as a consumer, you'll essentially have the ability to log in with
+
+00:28:41.920 --> 00:28:47.260
+<v Speaker 2>your credentials. So if an MCP server, for example, for like we saw Chromo and we're like MongoDB,
+
+00:28:47.820 --> 00:28:51.720
+<v Speaker 2>that's on the screen here. If I use the MongoDB server and I want to connect to a database,
+
+00:28:52.640 --> 00:28:57.280
+<v Speaker 2>usually they provide you a way to either one. You go into your MCP server config and you say,
+
+00:28:57.420 --> 00:29:02.760
+<v Speaker 2>I will give you an API key if your server is using an API key. Or if it's using OAuth,
+
+00:29:03.040 --> 00:29:09.260
+<v Speaker 2>then you can just essentially snap to using OAuth the standard flow. Your client is going to
+
+00:29:09.240 --> 00:29:10.760
+<v Speaker 2>bootstrap the authentication flow.
+
+00:29:11.300 --> 00:29:13.840
+<v Speaker 2>You're going to go to the box, enter your credentials, log in.
+
+00:29:14.250 --> 00:29:18.120
+<v Speaker 2>The client is going to store the tokens, and then you access the server with your credentials
+
+00:29:18.440 --> 00:29:21.120
+<v Speaker 2>as you getting access to your data, not something else.
+
+00:29:23.360 --> 00:29:28.280
+<v Speaker 1>One thing that looks really interesting, and there's an example of it right here with the
+
+00:29:28.380 --> 00:29:28.560
+<v Speaker 1>Nux.
+
+00:29:30.520 --> 00:29:33.060
+<v Speaker 1>Never written a Nux app in my life, but here we have.
+
+00:29:33.070 --> 00:29:38.160
+<v Speaker 1>I have one that helps you understand your Vite Nux app.
+
+00:29:39.880 --> 00:29:44.720
+<v Speaker 1>one of the things that I think could be really interesting and probably MCPs could play a really
+
+00:29:44.940 --> 00:29:52.560
+<v Speaker 1>important role is we have these huge foundation models open AI and cloud opus and so on that are
+
+00:29:54.000 --> 00:29:58.840
+<v Speaker 1>generally knowledgeable about the whole world and are big expensive to train but I can see a future
+
+00:29:59.160 --> 00:30:08.160
+<v Speaker 1>where we get good enough to have a bunch of small models like this is the view.js model yeah you if
+
+00:30:08.180 --> 00:30:12.500
+<v Speaker 1>to know Vue.js. It's as good as anything, but it runs on your computer in a gig of RAM
+
+00:30:13.300 --> 00:30:19.920
+<v Speaker 1>because it's just trained so specifically on Vue. And I feel like maybe you could MCP your way
+
+00:30:20.140 --> 00:30:25.280
+<v Speaker 1>together. Like, well, I'm using this tech stack, so we're going to click together a bunch of things
+
+00:30:25.520 --> 00:30:31.380
+<v Speaker 1>that don't provide data, but provide information about what your architecture or something like
+
+00:30:31.410 --> 00:30:34.960
+<v Speaker 1>that. What do you think? Yeah. I mean, I think it can go both ways, right? Like there's a
+
+00:30:34.940 --> 00:30:39.940
+<v Speaker 2>specialized model and there's an argument for saying that the more general scenarios would
+
+00:30:39.970 --> 00:30:43.460
+<v Speaker 2>always work best like there's i think there's always two camps of those folks that i talked to
+
+00:30:44.020 --> 00:30:49.400
+<v Speaker 2>i personally think that i think for certain things there is a tremendous amount of value for hyper
+
+00:30:50.279 --> 00:30:56.580
+<v Speaker 2>centralized or hyper hyper local models i'll give an example right like i want to organize
+
+00:30:57.510 --> 00:31:01.880
+<v Speaker 2>the photos on my machine like maybe i have a lot of duplicates that you know because
+
+00:31:02.540 --> 00:31:04.580
+<v Speaker 2>when you take photos of your modern cell phones,
+
+00:31:04.720 --> 00:31:06.180
+<v Speaker 2>just click, click, click, click, click, and then you have
+
+00:31:06.530 --> 00:31:08.020
+<v Speaker 2>10 images of your dog. And you're like,
+
+00:31:08.080 --> 00:31:09.760
+<v Speaker 2>they're kind of the same, but I want to pick the best one.
+
+00:31:11.200 --> 00:31:12.240
+<v Speaker 2>From a privacy standpoint,
+
+00:31:12.510 --> 00:31:14.300
+<v Speaker 2>I don't want to send that off
+
+00:31:14.300 --> 00:31:16.300
+<v Speaker 2>to some server remotely somewhere with my photos,
+
+00:31:16.560 --> 00:31:18.160
+<v Speaker 2>which, you know, there's family
+
+00:31:18.530 --> 00:31:19.540
+<v Speaker 2>photos, there's all sorts of
+
+00:31:20.100 --> 00:31:22.100
+<v Speaker 2>stuff that I do not want to send off to some remote
+
+00:31:22.300 --> 00:31:24.260
+<v Speaker 2>server. For those things, I want to use a local
+
+00:31:24.580 --> 00:31:26.180
+<v Speaker 2>model, and maybe there's an MCP server that
+
+00:31:26.480 --> 00:31:28.200
+<v Speaker 2>allows me to basically be like, oh, I
+
+00:31:28.360 --> 00:31:30.140
+<v Speaker 2>can find the photos and then crop them
+
+00:31:30.440 --> 00:31:30.740
+<v Speaker 2>and like,
+
+00:31:31.880 --> 00:31:35.820
+<v Speaker 2>add some metadata or remove metadata or whatever I want to do. Right. So for those things, I
+
+00:31:36.140 --> 00:31:39.980
+<v Speaker 2>absolutely see the value in these like local models where I can just say, I want it to be
+
+00:31:40.250 --> 00:31:45.040
+<v Speaker 2>very good at this one specific task and that task only. And I will never use this photo model for
+
+00:31:45.150 --> 00:31:49.980
+<v Speaker 2>web app creation, but photos is going to be darn good. And I think there's a lot of value for that.
+
+00:31:50.220 --> 00:31:53.560
+<v Speaker 2>And if you augment it with MCP, I think it's superpowers right there.
+
+00:31:54.120 --> 00:31:59.980
+<v Speaker 1>Yeah, it does seem like it could be. It could be this little step would benefit from a local
+
+00:32:00.000 --> 00:32:03.740
+<v Speaker 1>model, but I don't want to constrain the entire problem solving to a local model.
+
+00:32:04.420 --> 00:32:04.640
+<v Speaker 1>Right.
+
+00:32:04.660 --> 00:32:04.800
+<v Speaker 1>Right.
+
+00:32:04.820 --> 00:32:06.420
+<v Speaker 1>I think that's kind of the problem.
+
+00:32:06.500 --> 00:32:12.460
+<v Speaker 1>Like I use LM Studio a lot and I've got, for example, I have the OpenAI 20 billion parameter
+
+00:32:13.180 --> 00:32:16.840
+<v Speaker 1>open weights model that I actually program against and it does all sorts of cool stuff
+
+00:32:17.020 --> 00:32:20.620
+<v Speaker 1>for me, but I don't use it for my general work because it's either too slow because
+
+00:32:20.640 --> 00:32:26.220
+<v Speaker 1>it's on my Mac mini or I just want something that is better, right?
+
+00:32:26.820 --> 00:32:26.880
+<v Speaker 1>Yeah.
+
+00:32:27.420 --> 00:32:35.640
+<v Speaker 1>And so if you're going to just start a, like, I'm using this model to solve this problem, like, that might not be the final outcome where we end up, right?
+
+00:32:36.180 --> 00:32:36.780
+<v Speaker 2>Yeah, for sure.
+
+00:32:37.220 --> 00:32:47.040
+<v Speaker 2>And especially because for a lot of the generalized models, you're, like, no matter how you look at this, you're not going to have the computer resources anywhere near what, like, OpenA Anthropic has.
+
+00:32:47.800 --> 00:32:47.900
+<v Speaker 2>Right.
+
+00:32:48.170 --> 00:32:50.340
+<v Speaker 2>So, like, in terms of speed and quality, what are you going to get?
+
+00:32:50.420 --> 00:32:55.280
+<v Speaker 2>You might get some, like, fine-tuned examples where some scenarios work very, very well.
+
+00:32:55.600 --> 00:33:01.140
+<v Speaker 2>But I think ultimately, if we look at the general use case, these generalizable models are going to be ahead.
+
+00:33:02.400 --> 00:33:03.840
+<v Speaker 1>Yeah, I definitely agree as well.
+
+00:33:04.360 --> 00:33:15.780
+<v Speaker 1>But I hadn't really considered how MCPs might allow you to use the really high-end models to compose specialized, not quite as generally smart, but specialized versions of different things.
+
+00:33:16.210 --> 00:33:16.620
+<v Speaker 1>It could be.
+
+00:33:17.060 --> 00:33:18.140
+<v Speaker 1>Yeah, MCP can do anything.
+
+00:33:18.660 --> 00:33:20.540
+<v Speaker 2>MCP, again, it's a pipe.
+
+00:33:21.020 --> 00:33:22.260
+<v Speaker 1>What you do with that pipe is up to you.
+
+00:33:22.920 --> 00:33:23.080
+<v Speaker 1>Yeah.
+
+00:33:23.860 --> 00:33:31.240
+<v Speaker 1>Well, let's talk about how one might build such pipes with Python.
+
+00:33:31.370 --> 00:33:35.960
+<v Speaker 1>So there's actually a model context protocol GitHub organization.
+
+00:33:36.970 --> 00:33:39.100
+<v Speaker 1>Within there, they have the Python-SDK,
+
+00:33:39.100 --> 00:33:42.260
+<v Speaker 1>the official Python SDK for the MCP servers and clients.
+
+00:33:43.080 --> 00:33:45.360
+<v Speaker 1>So that's also interesting, the clients bit.
+
+00:33:46.780 --> 00:33:47.860
+<v Speaker 1>So maybe we could kind of like,
+
+00:33:48.120 --> 00:33:51.260
+<v Speaker 1>there's a lot of concepts and things here,
+
+00:33:51.360 --> 00:33:53.660
+<v Speaker 1>and I don't want to dive too much into code,
+
+00:33:53.780 --> 00:33:58.000
+<v Speaker 1>but maybe we could work our way through some of the concepts and some of the steps of building
+
+00:33:58.500 --> 00:34:04.000
+<v Speaker 2>such a thing. Yeah, totally. Well, I mean, it all starts from just getting the SDK, right? And this
+
+00:34:04.000 --> 00:34:09.179
+<v Speaker 2>is for like anybody that's using Python. You can just get it through pip or uv. I'm a big fan of
+
+00:34:09.460 --> 00:34:13.620
+<v Speaker 2>the folks at Astral. I think they're doing a fantastic job with uv and uvx. Like I use it for
+
+00:34:13.780 --> 00:34:20.500
+<v Speaker 2>GitHub spec kit. So, you know, uv add MCP, MCP CLI. And there you go. You can be on your way. It's as
+
+00:34:20.520 --> 00:34:29.040
+<v Speaker 1>simple as that yeah okay that'll do it and then um yeah you can specify like the cli options or
+
+00:34:29.080 --> 00:34:35.320
+<v Speaker 1>whatever kind you want yeah yeah and also it's using fast mcp are you familiar with fast mcp
+
+00:34:36.280 --> 00:34:41.700
+<v Speaker 1>no i know some projects with fast in it but not mcp yeah so fast mcp is basically think of it like
+
+00:34:41.820 --> 00:34:47.440
+<v Speaker 2>fast api for mcp uh it's essentially like allowing you to compose mcp servers faster because it has
+
+00:34:47.379 --> 00:34:51.840
+<v Speaker 2>a lot of the primitives baked in. So things like authorization, which can be like kind of a pain
+
+00:34:52.080 --> 00:34:58.140
+<v Speaker 2>point. But if you use Fast MCP, it makes it a little easier. And Fast MCP is a integral part
+
+00:34:58.340 --> 00:35:04.400
+<v Speaker 2>of the Python SDK story for the actual like official Python SDK. Right. The programming model
+
+00:35:04.660 --> 00:35:13.620
+<v Speaker 1>looks like it would feel quite familiar to anyone who knows the Flask API or beyond. I think it's
+
+00:35:13.680 --> 00:35:20.240
+<v Speaker 1>Just a little sidebar, I think it's really interesting how Flask is quite popular, but
+
+00:35:20.400 --> 00:35:26.660
+<v Speaker 1>it's also spawned almost every single web app after it has kind of borrowed its programming
+
+00:35:26.820 --> 00:35:26.980
+<v Speaker 1>model.
+
+00:35:27.420 --> 00:35:32.620
+<v Speaker 1>So even if you're not exactly using Flask, if you're using Litestar or FastAPI or whatever,
+
+00:35:32.920 --> 00:35:35.040
+<v Speaker 1>you're still kind of doing that kind of programming.
+
+00:35:35.180 --> 00:35:36.620
+<v Speaker 1>And it's the same here, right?
+
+00:35:36.680 --> 00:35:39.060
+<v Speaker 1>You create an MCP as the app.
+
+00:35:39.260 --> 00:35:46.900
+<v Speaker 1>You say at mcp.tool or at mcp.prompt, and you put these onto functions, and they now become webized.
+
+00:35:47.720 --> 00:35:52.220
+<v Speaker 2>Isn't that like, okay, I write Python, but I'm not a Python expert.
+
+00:35:53.240 --> 00:35:54.900
+<v Speaker 2>I'm sorry, Brett Cannon, if you're watching this.
+
+00:35:56.619 --> 00:35:57.840
+<v Speaker 1>We'll take that part out, don't we?
+
+00:35:58.880 --> 00:36:00.740
+<v Speaker 2>As the stream's live, that's okay.
+
+00:36:04.179 --> 00:36:07.300
+<v Speaker 2>So in Python, do you call them decorators or is it like attributes?
+
+00:36:07.790 --> 00:36:08.700
+<v Speaker 2>In C#, it's attributes.
+
+00:36:09.060 --> 00:36:10.080
+<v Speaker 1>- Yeah, and C# is attributes,
+
+00:36:10.310 --> 00:36:11.120
+<v Speaker 1>you do it with square brackets.
+
+00:36:11.290 --> 00:36:13.280
+<v Speaker 1>In Python, it's decorators,
+
+00:36:13.330 --> 00:36:14.240
+<v Speaker 1>you can do it with the @ symbol.
+
+00:36:14.680 --> 00:36:16.200
+<v Speaker 2>- Okay, so the decorators themselves.
+
+00:36:16.420 --> 00:36:17.760
+<v Speaker 2>Look at like the simplicity of this.
+
+00:36:17.800 --> 00:36:19.500
+<v Speaker 2>We're looking at the screen right now of a sample
+
+00:36:19.920 --> 00:36:23.960
+<v Speaker 2>where we're looking at the actual Python SDK repo.
+
+00:36:24.450 --> 00:36:25.020
+<v Speaker 2>And one of the samples,
+
+00:36:25.200 --> 00:36:26.560
+<v Speaker 2>you literally have a Python function,
+
+00:36:26.590 --> 00:36:27.680
+<v Speaker 2>you have def add,
+
+00:36:28.030 --> 00:36:29.600
+<v Speaker 2>and there is like your arguments,
+
+00:36:29.690 --> 00:36:31.180
+<v Speaker 2>you would pass through a function, like two integers.
+
+00:36:31.940 --> 00:36:34.560
+<v Speaker 2>And then all you need to do to make that a tool
+
+00:36:34.740 --> 00:36:37.000
+<v Speaker 2>that an LM can invoke is just add that
+
+00:36:37.180 --> 00:36:38.240
+<v Speaker 2>@mcp.tool decorator.
+
+00:36:38.700 --> 00:36:45.320
+<v Speaker 2>That's it. You're not going and crafting elaborate JSON RPC envelopes and converters and all these things.
+
+00:36:45.480 --> 00:36:49.020
+<v Speaker 2>All the stuff is done for you. Add a decorator, boom, you have a tool. That's it.
+
+00:36:50.300 --> 00:36:53.500
+<v Speaker 1>Yeah, it's really, really simple to program.
+
+00:36:54.160 --> 00:37:02.280
+<v Speaker 1>And there's actually some fairly complicated data exchange stuff going on, like streaming partial results as they come in.
+
+00:37:02.360 --> 00:37:05.200
+<v Speaker 1>Because we're all used to two things.
+
+00:37:06.040 --> 00:37:07.720
+<v Speaker 1>AI requests taken a real long time.
+
+00:37:08.320 --> 00:37:11.480
+<v Speaker 1>but B, that you see the little dots thinking, thinking,
+
+00:37:11.630 --> 00:37:14.140
+<v Speaker 1>and periodically, like some stuff that's coming by to like,
+
+00:37:14.800 --> 00:37:16.420
+<v Speaker 1>oh yeah, okay, I see where it's going.
+
+00:37:17.560 --> 00:37:18.640
+<v Speaker 1>I don't know what it's going to come up with,
+
+00:37:18.690 --> 00:37:20.220
+<v Speaker 1>but at least we could see it's working, right?
+
+00:37:20.330 --> 00:37:21.920
+<v Speaker 1>So to sort of keep that flow going,
+
+00:37:22.800 --> 00:37:24.640
+<v Speaker 1>you've got the streaming style, right?
+
+00:37:25.319 --> 00:37:25.680
+<v Speaker 2>Exactly.
+
+00:37:26.390 --> 00:37:28.460
+<v Speaker 2>And all of this is like, again, I'm looking at the sample.
+
+00:37:28.800 --> 00:37:31.060
+<v Speaker 2>It's so, the way I would describe it
+
+00:37:31.080 --> 00:37:32.880
+<v Speaker 2>is a delightful developer experience.
+
+00:37:33.180 --> 00:37:36.500
+<v Speaker 2>If I'm a developer, I focus on writing the core functions.
+
+00:37:36.790 --> 00:37:37.800
+<v Speaker 2>I don't have to worry about like,
+
+00:37:37.920 --> 00:37:39.000
+<v Speaker 2>well, how do I make this into a tool?
+
+00:37:39.240 --> 00:37:39.900
+<v Speaker 2>Put a decorator on.
+
+00:37:40.020 --> 00:37:40.660
+<v Speaker 2>That's how you make it a tool.
+
+00:37:41.880 --> 00:37:42.520
+<v Speaker 1>Yeah, excellent.
+
+00:37:44.200 --> 00:37:45.540
+<v Speaker 1>So I have this server.
+
+00:37:46.780 --> 00:37:50.660
+<v Speaker 1>And you mentioned that it's a FastAPI or Flask-like.
+
+00:37:52.000 --> 00:37:52.860
+<v Speaker 1>How do I host it?
+
+00:37:53.220 --> 00:37:57.180
+<v Speaker 1>Once I call run or whatever I do on it, then what?
+
+00:37:58.140 --> 00:37:58.360
+<v Speaker 1>I know.
+
+00:37:58.360 --> 00:37:59.860
+<v Speaker 1>I probably don't put it straight on the internet.
+
+00:38:00.000 --> 00:38:00.300
+<v Speaker 1>Maybe I do.
+
+00:38:00.400 --> 00:38:00.760
+<v Speaker 1>I don't know.
+
+00:38:01.460 --> 00:38:03.000
+<v Speaker 2>So there's two types of servers that you can have.
+
+00:38:03.000 --> 00:38:04.540
+<v Speaker 2>You can have local MCP servers.
+
+00:38:05.260 --> 00:38:07.000
+<v Speaker 2>And local MCP servers are essentially
+
+00:38:08.480 --> 00:38:09.260
+<v Speaker 2>just a local application.
+
+00:38:09.820 --> 00:38:11.000
+<v Speaker 2>Think of it running like a console app
+
+00:38:11.300 --> 00:38:12.760
+<v Speaker 2>or like your regular Python script.
+
+00:38:13.040 --> 00:38:13.700
+<v Speaker 2>And what it does,
+
+00:38:14.500 --> 00:38:15.660
+<v Speaker 2>they might be referred to,
+
+00:38:15.680 --> 00:38:17.340
+<v Speaker 2>you might hear like they're called STDIO
+
+00:38:17.580 --> 00:38:18.640
+<v Speaker 2>for standard input output.
+
+00:38:19.380 --> 00:38:21.960
+<v Speaker 2>And it's using basically native OS constructs
+
+00:38:22.040 --> 00:38:24.320
+<v Speaker 2>to talk between processes, right?
+
+00:38:24.380 --> 00:38:25.860
+<v Speaker 2>The MCP client and the server.
+
+00:38:26.560 --> 00:38:28.440
+<v Speaker 2>So again, it's still JSON RPC,
+
+00:38:28.680 --> 00:38:30.360
+<v Speaker 2>but JSON RPC over STDIO pipes.
+
+00:38:31.000 --> 00:38:34.320
+<v Speaker 2>So the other one is streamable HTTP.
+
+00:38:34.760 --> 00:38:37.260
+<v Speaker 2>On stream of HTTP, it's an MCP server
+
+00:38:37.500 --> 00:38:39.740
+<v Speaker 2>that can be hosted somewhere in the cloud.
+
+00:38:40.240 --> 00:38:42.680
+<v Speaker 2>It can be hosted on your own home lab server if you want to,
+
+00:38:42.760 --> 00:38:43.880
+<v Speaker 2>and you give it an IP address.
+
+00:38:44.120 --> 00:38:47.460
+<v Speaker 2>You can be hosted in AWS or Azure GCP,
+
+00:38:48.020 --> 00:38:48.940
+<v Speaker 2>it doesn't really matter.
+
+00:38:49.480 --> 00:38:53.280
+<v Speaker 2>So for those servers, the JSON-RPC messages
+
+00:38:53.320 --> 00:38:54.760
+<v Speaker 2>are basically done through the HTTP pipe
+
+00:38:54.980 --> 00:38:56.260
+<v Speaker 2>with some set of HTTP conventions.
+
+00:38:56.920 --> 00:38:57.920
+<v Speaker 2>That's kind of where it is.
+
+00:38:58.480 --> 00:39:01.720
+<v Speaker 2>There's no constraint as to where you have to host it.
+
+00:39:01.920 --> 00:39:04.580
+<v Speaker 2>it's whoever supports running Python
+
+00:39:05.500 --> 00:39:06.400
+<v Speaker 2>can host your MCT server.
+
+00:39:07.100 --> 00:39:07.420
+<v Speaker 2>- Right, okay.
+
+00:39:08.440 --> 00:39:11.640
+<v Speaker 2>So I could put it behind engine X or caddy or whatever.
+
+00:39:11.840 --> 00:39:13.960
+<v Speaker 2>- Like toss it into a container and put it somewhere.
+
+00:39:14.820 --> 00:39:15.840
+<v Speaker 1>Like it's totally fine.
+
+00:39:16.600 --> 00:39:17.000
+<v Speaker 1>- Okay.
+
+00:39:18.020 --> 00:39:19.740
+<v Speaker 1>You know, you talked about all these sort of different
+
+00:39:21.600 --> 00:39:24.340
+<v Speaker 1>like private, but online, but not quite online,
+
+00:39:24.720 --> 00:39:25.940
+<v Speaker 1>you know, with like a home lab and stuff.
+
+00:39:26.740 --> 00:39:29.060
+<v Speaker 1>I just want to give a shout out to tail scale.
+
+00:39:29.160 --> 00:39:29.600
+<v Speaker 1>Like have you,
+
+00:39:30.320 --> 00:39:31.420
+<v Speaker 1>Have you tailscaled lately?
+
+00:39:31.740 --> 00:39:32.700
+<v Speaker 1>Oh, it is so good.
+
+00:39:32.960 --> 00:39:33.640
+<v Speaker 2>It is wonderful.
+
+00:39:33.880 --> 00:39:34.640
+<v Speaker 2>I love tailscaled.
+
+00:39:35.140 --> 00:39:36.240
+<v Speaker 2>It's my go-to thing.
+
+00:39:36.500 --> 00:39:37.140
+<v Speaker 2>And I'll tell you this.
+
+00:39:37.260 --> 00:39:39.680
+<v Speaker 2>Like, do you remember the days when you had to work?
+
+00:39:39.840 --> 00:39:42.480
+<v Speaker 2>This episode is not sponsored by tailscaled, for the record.
+
+00:39:43.579 --> 00:39:44.060
+<v Speaker 2>Should be.
+
+00:39:44.400 --> 00:39:44.660
+<v Speaker 1>Should be.
+
+00:39:44.740 --> 00:39:45.360
+<v Speaker 1>They can reach out.
+
+00:39:45.400 --> 00:39:45.480
+<v Speaker 1>Yeah.
+
+00:39:46.040 --> 00:39:46.360
+<v Speaker 2>Yeah.
+
+00:39:47.320 --> 00:39:47.400
+<v Speaker 2>Yeah.
+
+00:39:48.500 --> 00:39:48.620
+<v Speaker 2>Yeah.
+
+00:39:48.660 --> 00:39:49.500
+<v Speaker 2>Michael Talks is awesome.
+
+00:39:49.540 --> 00:39:50.160
+<v Speaker 2>You should sponsor it.
+
+00:39:50.220 --> 00:39:51.440
+<v Speaker 2>But anyway, so tailscaled is great.
+
+00:39:51.580 --> 00:39:55.080
+<v Speaker 2>Like, remember the olden days when you had to, like, set up an open VPN and be like, let
+
+00:39:55.080 --> 00:39:55.940
+<v Speaker 2>me generate the keys.
+
+00:39:56.600 --> 00:40:01.900
+<v Speaker 2>Let me email myself the key so I can open it on the iPhone and then add the key and then go through this process.
+
+00:40:02.130 --> 00:40:04.640
+<v Speaker 2>And it's just like, oh, man, such a pain.
+
+00:40:04.980 --> 00:40:05.480
+<v Speaker 2>Such a pain.
+
+00:40:05.620 --> 00:40:08.260
+<v Speaker 2>And tail scale, just like flip the switch and you're in.
+
+00:40:09.400 --> 00:40:09.560
+<v Speaker 1>Yeah.
+
+00:40:10.040 --> 00:40:10.260
+<v Speaker 1>Magic.
+
+00:40:10.260 --> 00:40:12.360
+<v Speaker 1>Or DynDNS where you.
+
+00:40:12.840 --> 00:40:13.480
+<v Speaker 2>Oh, yeah.
+
+00:40:13.570 --> 00:40:16.580
+<v Speaker 2>Because you have to bind your IP address to their domain.
+
+00:40:17.150 --> 00:40:20.040
+<v Speaker 2>And then you have to run this agent to constantly update it.
+
+00:40:20.200 --> 00:40:20.760
+<v Speaker 2>Oh, yes.
+
+00:40:20.920 --> 00:40:22.820
+<v Speaker 1>The agent goes down, your IP changes.
+
+00:40:23.020 --> 00:40:26.540
+<v Speaker 1>Well, then there's also all the NAT firewall and your local machine on your local network
+
+00:40:26.700 --> 00:40:26.840
+<v Speaker 1>change.
+
+00:40:26.960 --> 00:40:27.680
+<v Speaker 1>You're like, no, it doesn't work.
+
+00:40:28.120 --> 00:40:32.680
+<v Speaker 1>Oh, it's my machine on my, we had a power outage when the router rebooted.
+
+00:40:32.720 --> 00:40:33.480
+<v Speaker 1>I got a new IP.
+
+00:40:33.580 --> 00:40:35.420
+<v Speaker 1>It just, it was so bad.
+
+00:40:35.520 --> 00:40:38.200
+<v Speaker 1>And so why is this sidebar worth going into here, folks?
+
+00:40:39.039 --> 00:40:41.340
+<v Speaker 1>Because this is what's called an overlay network.
+
+00:40:42.140 --> 00:40:46.280
+<v Speaker 1>And so you can put it up on your iPhone, you can put it on your laptop, you can put it on
+
+00:40:46.340 --> 00:40:46.700
+<v Speaker 1>your desktop.
+
+00:40:47.200 --> 00:40:48.800
+<v Speaker 1>You can put it on your Linux server if you want.
+
+00:40:48.940 --> 00:40:54.400
+<v Speaker 1>And it basically exposes all of those things over a network
+
+00:40:54.620 --> 00:40:57.280
+<v Speaker 1>that's like a VPN, but the rest of your behavior
+
+00:40:57.400 --> 00:40:59.280
+<v Speaker 1>is just not VPN.
+
+00:40:59.500 --> 00:41:00.080
+<v Speaker 1>It's just normal.
+
+00:41:00.160 --> 00:41:03.540
+<v Speaker 1>But it just brings those in in just the most incredible way.
+
+00:41:03.700 --> 00:41:07.760
+<v Speaker 1>So for example, I have a high-end Mac mini here
+
+00:41:07.920 --> 00:41:10.440
+<v Speaker 1>that I use for the streaming that I'm talking to you on now.
+
+00:41:10.460 --> 00:41:12.560
+<v Speaker 1>It has tons of RAM and there's a Prochip and stuff.
+
+00:41:13.720 --> 00:41:17.620
+<v Speaker 1>So I just have my one LLM and my database servers running there.
+
+00:41:18.000 --> 00:41:22.380
+<v Speaker 1>And when I'm doing dev work, instead of my laptop,
+
+00:41:22.590 --> 00:41:24.300
+<v Speaker 1>my other machine, always running in replica,
+
+00:41:24.780 --> 00:41:26.500
+<v Speaker 1>it all just goes here to this.
+
+00:41:26.960 --> 00:41:30.140
+<v Speaker 1>And even if I'm in a coffee shop or I'm out for work,
+
+00:41:30.420 --> 00:41:33.300
+<v Speaker 1>as long as Tailscale's running, I do a database query
+
+00:41:33.780 --> 00:41:37.100
+<v Speaker 1>or an LLM call through an API, and it just hits this thing
+
+00:41:38.060 --> 00:41:38.780
+<v Speaker 1>just as if I was here.
+
+00:41:38.870 --> 00:41:39.980
+<v Speaker 1>And it's glorious.
+
+00:41:40.070 --> 00:41:40.880
+<v Speaker 1>And all that's for free, right?
+
+00:41:41.060 --> 00:41:42.640
+<v Speaker 1>There's paid versions, but you can do a lot.
+
+00:41:42.780 --> 00:41:43.960
+<v Speaker 2>Yeah, you can do a lot for free.
+
+00:41:44.480 --> 00:41:45.920
+<v Speaker 2>In their free tier, it's amazing.
+
+00:41:46.160 --> 00:41:47.480
+<v Speaker 2>And it's all WireGuard.
+
+00:41:47.820 --> 00:41:50.840
+<v Speaker 2>It's all using kind of the most modern secure standards.
+
+00:41:51.380 --> 00:41:59.100
+<v Speaker 2>I'll say like to me, like if you want to access things like, oh, your security cameras at home, you do not trust cloud providers to have access to your security home cameras.
+
+00:42:00.180 --> 00:42:01.860
+<v Speaker 2>Put them on your local network and use tail scale.
+
+00:42:02.180 --> 00:42:05.140
+<v Speaker 2>And then you can go somewhere, flip the switch in your phone.
+
+00:42:05.480 --> 00:42:05.560
+<v Speaker 2>Boom.
+
+00:42:05.960 --> 00:42:08.860
+<v Speaker 2>You can see your cameras from remote without exposing them to the broader Internet.
+
+00:42:09.040 --> 00:42:09.320
+<v Speaker 1>It's amazing.
+
+00:42:09.820 --> 00:42:13.060
+<v Speaker 1>You don't open up any ports on your router, nothing like that.
+
+00:42:13.540 --> 00:42:16.340
+<v Speaker 1>So why am I going on such an excited diversion?
+
+00:42:16.640 --> 00:42:20.520
+<v Speaker 1>One, it's just so awesome, and I just recently discovered it this year, so it's a thing.
+
+00:42:22.460 --> 00:42:23.640
+<v Speaker 1>But it's relevant.
+
+00:42:23.830 --> 00:42:34.980
+<v Speaker 1>If you've got an MCP server and you want to keep it local, even local from your server back to your company or something potentially, you could hide all that stuff behind Tailscale.
+
+00:42:35.180 --> 00:42:41.060
+<v Speaker 1>It's transparently available, but also there's no ports, there's no open internet.
+
+00:42:41.300 --> 00:42:44.560
+<v Speaker 1>The easiest way to secure stuff is to just not let the internet have at it.
+
+00:42:45.260 --> 00:42:46.000
+<v Speaker 2>Yep, no, exactly.
+
+00:42:46.320 --> 00:42:49.980
+<v Speaker 2>This is what I've been actually doing with one of my friends who was setting up a home lab.
+
+00:42:50.560 --> 00:42:56.120
+<v Speaker 2>And they were experimenting with some of the MCP servers for like, I believe it was like setting up for like a Minecraft server.
+
+00:42:56.620 --> 00:42:58.000
+<v Speaker 2>And we just tossed them on the same server.
+
+00:42:58.200 --> 00:43:05.040
+<v Speaker 2>And because it's tail scale and I connect them to the clients with a IP that tail scale gives me, it just magically works.
+
+00:43:05.560 --> 00:43:07.180
+<v Speaker 2>And I didn't need to expose this to the internet.
+
+00:43:07.340 --> 00:43:10.240
+<v Speaker 2>I didn't need to pay for any cloud providers in somebody's home lab.
+
+00:43:10.580 --> 00:43:10.920
+<v Speaker 2>It's just there.
+
+00:43:11.600 --> 00:43:11.900
+<v Speaker 1>Yeah, yeah.
+
+00:43:11.940 --> 00:43:13.780
+<v Speaker 1>And you don't need to use SSH across it.
+
+00:43:13.820 --> 00:43:15.240
+<v Speaker 1>Like you can just, it's just there.
+
+00:43:15.360 --> 00:43:16.380
+<v Speaker 1>It's all super, super good.
+
+00:43:17.740 --> 00:43:18.540
+<v Speaker 1>Okay, back.
+
+00:43:19.780 --> 00:43:20.720
+<v Speaker 1>Back to what I was asking.
+
+00:43:20.720 --> 00:43:21.900
+<v Speaker 1>Back to MCP from our...
+
+00:43:21.960 --> 00:43:23.540
+<v Speaker 1>Back to MCP, but I was asking,
+
+00:43:23.660 --> 00:43:24.400
+<v Speaker 1>how do you run it?
+
+00:43:24.400 --> 00:43:26.400
+<v Speaker 1>And you're like, we could run it on our home lab
+
+00:43:26.500 --> 00:43:28.160
+<v Speaker 1>or on Raspberry Pi or something, right?
+
+00:43:28.720 --> 00:43:31.760
+<v Speaker 1>This tail scale thing is a way to sort of really nicely
+
+00:43:33.160 --> 00:43:34.200
+<v Speaker 1>make that available to you.
+
+00:43:35.040 --> 00:43:38.700
+<v Speaker 1>Make that available to your AI agents or whatever
+
+00:43:39.080 --> 00:43:41.380
+<v Speaker 1>without going, well, now how do I host it
+
+00:43:41.480 --> 00:43:43.600
+<v Speaker 1>on like a server for real?
+
+00:43:44.400 --> 00:43:44.500
+<v Speaker 1>Yeah.
+
+00:43:46.480 --> 00:43:54.500
+<v Speaker 1>okay so let's see that is the registry there we go so i want to talk about a couple things
+
+00:43:54.980 --> 00:44:00.820
+<v Speaker 1>we talked about tools yeah and we talked about there's prompts there's resources let's maybe go
+
+00:44:00.960 --> 00:44:05.680
+<v Speaker 1>through each one real quick these are all just decorators you put on functions but they're all
+
+00:44:05.800 --> 00:44:09.859
+<v Speaker 1>they're slightly different yeah what is the purpose of a tool and why would i do that
+
+00:44:10.300 --> 00:44:13.680
+<v Speaker 2>yeah a tool basically is a function call right it's like you you're
+
+00:44:15.420 --> 00:44:20.220
+<v Speaker 2>tool equals function that's the way i describe it like that's basically like hey i want the llm to
+
+00:44:20.220 --> 00:44:27.620
+<v Speaker 2>go do something what does it need to do and this is where like get weather give me the sum it needs
+
+00:44:27.700 --> 00:44:34.180
+<v Speaker 2>to go and do this is what a tool is it's a primitive that does something insert record into
+
+00:44:34.200 --> 00:44:40.900
+<v Speaker 1>database or whatever this looks like you could probably find and replace fast mcp with fast api
+
+00:44:41.000 --> 00:44:46.640
+<v Speaker 1>and tool with get yeah yeah and and you or a post or something and you might be able to pretty much
+
+00:44:46.940 --> 00:44:53.100
+<v Speaker 1>that is kind of the closest match right yeah exactly yep yep that's basically it it's
+
+00:44:53.240 --> 00:44:58.840
+<v Speaker 2>i want to invoke some kind of action go do that action for me right and exactly at least in the
+
+00:44:58.740 --> 00:45:04.980
+<v Speaker 1>examples, there's no AI in the action. It's just... No. The AI knows that it needs to invoke the
+
+00:45:05.060 --> 00:45:10.440
+<v Speaker 2>action. Like if I go to the LLM and say, send an email to Michael that says the podcast was awesome.
+
+00:45:11.080 --> 00:45:16.200
+<v Speaker 2>And then it's going to go in and say, oh, let me go find the tool that is capable of sending emails.
+
+00:45:16.500 --> 00:45:21.100
+<v Speaker 2>Oh, there's a tool from like, I don't know, like MailChimp. Okay, let me go do that. There's a
+
+00:45:21.880 --> 00:45:25.780
+<v Speaker 2>tool in the MailChimp MCP server that says send email. That sounds great. I'm going to use that
+
+00:45:25.800 --> 00:45:26.700
+<v Speaker 2>to send the email, right?
+
+00:45:27.080 --> 00:45:29.140
+<v Speaker 2>And that tool itself doesn't use AI behind the scenes.
+
+00:45:29.280 --> 00:45:31.900
+<v Speaker 2>It's just like, it's just going to do SMTP send email.
+
+00:45:32.200 --> 00:45:32.660
+<v Speaker 2>That's all it does.
+
+00:45:33.260 --> 00:45:33.600
+<v Speaker 2>Yeah.
+
+00:45:34.110 --> 00:45:34.220
+<v Speaker 2>Awesome.
+
+00:45:36.060 --> 00:45:41.960
+<v Speaker 1>It also has other examples of sort of data exchange along the way, I guess.
+
+00:45:42.420 --> 00:45:42.680
+<v Speaker 1>Absolutely.
+
+00:45:43.270 --> 00:45:49.880
+<v Speaker 1>You can pass in this context and then the context can start pushing updates and information
+
+00:45:50.180 --> 00:45:52.700
+<v Speaker 1>back to the user, right?
+
+00:45:53.040 --> 00:45:54.440
+<v Speaker 1>And report progress back.
+
+00:45:54.640 --> 00:45:57.280
+<v Speaker 2>So for example, if your email takes like seven hops,
+
+00:45:57.300 --> 00:45:58.240
+<v Speaker 2>it's like, okay, let me first connect
+
+00:45:58.380 --> 00:45:59.580
+<v Speaker 2>to this SMTP server.
+
+00:45:59.640 --> 00:46:00.840
+<v Speaker 2>Let me then verify the credentials.
+
+00:46:01.580 --> 00:46:02.980
+<v Speaker 2>Like you can encode that basically
+
+00:46:03.260 --> 00:46:05.720
+<v Speaker 2>if you implement that, you might not,
+
+00:46:06.120 --> 00:46:07.840
+<v Speaker 2>but you can implement progress reporting
+
+00:46:07.900 --> 00:46:09.200
+<v Speaker 2>so that the client knows like,
+
+00:46:09.240 --> 00:46:11.700
+<v Speaker 2>oh, you're like 30% through your task
+
+00:46:12.020 --> 00:46:13.680
+<v Speaker 2>or you're like 40% through your task now
+
+00:46:13.820 --> 00:46:15.600
+<v Speaker 2>because it reports on the progress of what you're doing.
+
+00:46:16.480 --> 00:46:17.340
+<v Speaker 1>Yeah, super cool.
+
+00:46:18.700 --> 00:46:20.180
+<v Speaker 1>You can also do structured output,
+
+00:46:21.020 --> 00:46:21.920
+<v Speaker 1>which is pretty interesting.
+
+00:46:22.840 --> 00:46:24.700
+<v Speaker 1>There's many ways in which it can be done,
+
+00:46:24.980 --> 00:46:30.120
+<v Speaker 1>but the number one way, as in if it was an ordered list,
+
+00:46:30.240 --> 00:46:32.900
+<v Speaker 1>the first thing, would be Pydantic models, right?
+
+00:46:34.100 --> 00:46:37.200
+<v Speaker 1>Carrying on the FastAPI analogy here, right?
+
+00:46:37.860 --> 00:46:38.240
+<v Speaker 2>Yeah.
+
+00:46:38.660 --> 00:46:38.780
+<v Speaker 2>Yep.
+
+00:46:38.920 --> 00:46:40.440
+<v Speaker 2>For a lot of these things, again, it's very--
+
+00:46:40.480 --> 00:46:42.560
+<v Speaker 2>if you're a Python developer, a lot of these concepts
+
+00:46:42.560 --> 00:46:43.780
+<v Speaker 2>are going to be very much familiar to you.
+
+00:46:44.720 --> 00:46:48.560
+<v Speaker 1>Yeah, I think one of the challenges people have often
+
+00:46:48.580 --> 00:46:51.220
+<v Speaker 1>is structured data versus--
+
+00:46:51.840 --> 00:46:53.200
+<v Speaker 1>I got an LLM answer.
+
+00:46:54.160 --> 00:46:55.540
+<v Speaker 1>And it's a little different every time.
+
+00:46:56.780 --> 00:47:00.780
+<v Speaker 1>And they upgraded the model from 5.1 to 5.15.
+
+00:47:01.110 --> 00:47:02.760
+<v Speaker 1>And now it does something totally different.
+
+00:47:03.920 --> 00:47:05.160
+<v Speaker 1>How do I code against this?
+
+00:47:05.660 --> 00:47:08.760
+<v Speaker 1>And so using structured data can be a big bonus, right?
+
+00:47:09.100 --> 00:47:09.260
+<v Speaker 1>Yeah.
+
+00:47:11.119 --> 00:47:11.640
+<v Speaker 1>OK.
+
+00:47:12.480 --> 00:47:13.240
+<v Speaker 1>Super cool.
+
+00:47:13.620 --> 00:47:14.520
+<v Speaker 1>Let's see prompts.
+
+00:47:15.060 --> 00:47:17.000
+<v Speaker 1>Now it's starting to sound AI-like.
+
+00:47:17.900 --> 00:47:21.340
+<v Speaker 2>Yeah, so this is basically like the description says,
+
+00:47:21.540 --> 00:47:24.540
+<v Speaker 2>prompts are reusable templates that help LLMs interact with your server effectively.
+
+00:47:26.100 --> 00:47:29.580
+<v Speaker 2>If you have a server that does, I don't know, cooking recipes,
+
+00:47:29.780 --> 00:47:34.740
+<v Speaker 2>it might provide prompts for like what are the steps for a recipe
+
+00:47:34.830 --> 00:47:36.120
+<v Speaker 2>and what substitutions were needed.
+
+00:47:36.340 --> 00:47:40.580
+<v Speaker 2>So it allows you to basically pre-cook prompts that your server might be using.
+
+00:47:41.980 --> 00:47:42.120
+<v Speaker 1>Okay.
+
+00:47:43.260 --> 00:47:45.740
+<v Speaker 1>They might be passing these internally to...
+
+00:47:46.800 --> 00:47:47.780
+<v Speaker 2>- Yes, yeah.
+
+00:47:48.120 --> 00:47:49.960
+<v Speaker 1>- Or they return to the host AI.
+
+00:47:50.390 --> 00:47:51.860
+<v Speaker 1>You know, there's a lot of AIs involved here.
+
+00:47:52.760 --> 00:47:54.200
+<v Speaker 2>- Right, you know, essentially like,
+
+00:47:54.380 --> 00:47:55.860
+<v Speaker 2>think of like you're exposing prompt templates.
+
+00:47:56.720 --> 00:47:57.640
+<v Speaker 2>Like that's what it is.
+
+00:47:57.670 --> 00:47:59.000
+<v Speaker 2>Like, and saying like, oh, if you're a user,
+
+00:47:59.160 --> 00:48:00.820
+<v Speaker 2>if you're looking for like creating a recipe,
+
+00:48:01.200 --> 00:48:02.840
+<v Speaker 2>this is a template for that prompt for a recipe.
+
+00:48:04.420 --> 00:48:05.140
+<v Speaker 1>- Okay, cool.
+
+00:48:06.079 --> 00:48:08.580
+<v Speaker 1>There's also a little bit of a UI component,
+
+00:48:09.040 --> 00:48:09.520
+<v Speaker 1>which is interesting.
+
+00:48:09.650 --> 00:48:15.260
+<v Speaker 1>You can have a iconography representation of your actions.
+
+00:48:15.900 --> 00:48:18.140
+<v Speaker 2>Yeah, this is relatively new, but basically for some of them,
+
+00:48:18.210 --> 00:48:22.220
+<v Speaker 2>like bake in some of the icons to just make it easier to differentiate
+
+00:48:22.410 --> 00:48:23.020
+<v Speaker 2>between different actions.
+
+00:48:23.130 --> 00:48:26.380
+<v Speaker 2>Because especially, again, like different servers can have different tools
+
+00:48:26.580 --> 00:48:27.300
+<v Speaker 2>and there are many tools.
+
+00:48:27.370 --> 00:48:28.980
+<v Speaker 2>And how do you like just parse the strings?
+
+00:48:29.050 --> 00:48:30.200
+<v Speaker 2>Like just look at iconography.
+
+00:48:31.380 --> 00:48:31.500
+<v Speaker 1>Yeah.
+
+00:48:32.440 --> 00:48:35.900
+<v Speaker 1>Another thing that it has built in support for is working with images.
+
+00:48:36.880 --> 00:48:37.860
+<v Speaker 1>So that's pretty wild.
+
+00:48:39.560 --> 00:48:42.160
+<v Speaker 2>Yeah, I've noticed that for a lot of the stuff, it's also like it's baked into the,
+
+00:48:42.380 --> 00:48:45.120
+<v Speaker 2>these are not necessarily like MCP spec constructs.
+
+00:48:45.160 --> 00:48:47.880
+<v Speaker 2>is more like how the Python SDK exposes them
+
+00:48:47.910 --> 00:48:49.200
+<v Speaker 2>and allows you to operate on them, right?
+
+00:48:49.300 --> 00:48:51.060
+<v Speaker 2>Because like the fundamental constructs,
+
+00:48:51.060 --> 00:48:52.420
+<v Speaker 2>the primitives are we have tools,
+
+00:48:52.830 --> 00:48:53.440
+<v Speaker 2>we have prompts,
+
+00:48:54.100 --> 00:48:56.400
+<v Speaker 2>there is resources, which is another one.
+
+00:48:56.570 --> 00:48:57.500
+<v Speaker 2>And the resources is,
+
+00:48:58.020 --> 00:48:59.720
+<v Speaker 2>allows the LM to basically think of it
+
+00:48:59.940 --> 00:49:02.680
+<v Speaker 2>as how do you refer to databases
+
+00:49:03.320 --> 00:49:06.460
+<v Speaker 2>or files or entities within an API?
+
+00:49:07.640 --> 00:49:09.740
+<v Speaker 2>Those are, there's also elicitations
+
+00:49:09.940 --> 00:49:11.460
+<v Speaker 2>as what Michael's showing right now on the screen.
+
+00:49:11.840 --> 00:49:14.000
+<v Speaker 2>So we have elicitations is a way
+
+00:49:14.020 --> 00:49:16.760
+<v Speaker 2>for an MCP server to go to the client and say,
+
+00:49:17.280 --> 00:49:20.620
+<v Speaker 2>I want the client to provide me structured input
+
+00:49:20.800 --> 00:49:21.440
+<v Speaker 2>on a specific question.
+
+00:49:21.590 --> 00:49:24.880
+<v Speaker 2>Like, hey, can you give us your date of birth?
+
+00:49:26.319 --> 00:49:28.060
+<v Speaker 2>And I expect a date.
+
+00:49:28.740 --> 00:49:30.400
+<v Speaker 2>Can you give me a date back exactly
+
+00:49:30.450 --> 00:49:33.220
+<v Speaker 2>so I don't need to guess from the LLM context, right?
+
+00:49:33.600 --> 00:49:35.280
+<v Speaker 2>Or it can say like, you know,
+
+00:49:35.810 --> 00:49:37.060
+<v Speaker 2>what kind of pet do you have?
+
+00:49:37.060 --> 00:49:38.960
+<v Speaker 2>And it can give you a list of options
+
+00:49:39.220 --> 00:49:40.380
+<v Speaker 2>that you can actually have to pick from.
+
+00:49:40.410 --> 00:49:42.540
+<v Speaker 2>It's like, oh, dog, you know, pet, reptile,
+
+00:49:42.740 --> 00:49:49.100
+<v Speaker 2>like dog cat reptile whatever um it allows you have that structured controlled input that it's
+
+00:49:49.100 --> 00:49:54.620
+<v Speaker 2>not just you're typing into the chat box but you're selecting from a list that the server asks you to
+
+00:49:55.070 --> 00:49:59.380
+<v Speaker 1>so that's another neat thing that recently got added yeah that looks that looks quite
+
+00:49:59.560 --> 00:50:04.260
+<v Speaker 1>interesting it has to do with a little bit with the web socket type of exchange
+
+00:50:05.640 --> 00:50:11.420
+<v Speaker 1>as well right yeah not not exactly but it's going along it you've asked it something while it's
+
+00:50:11.440 --> 00:50:15.160
+<v Speaker 1>working on that it's come back and it's asking you to give it more information to carry on
+
+00:50:15.490 --> 00:50:19.780
+<v Speaker 1>yes exactly in that sense right yep yep so could this be
+
+00:50:22.860 --> 00:50:28.800
+<v Speaker 1>i i've worked on your requests i've used the database mcp or whatever and i've learned that
+
+00:50:28.920 --> 00:50:32.380
+<v Speaker 1>there's 20 records do you want to delete them like you asked or do you not want to delete them
+
+00:50:32.720 --> 00:50:39.240
+<v Speaker 2>yes yes exactly that or it can say hey i found like 10 conflicting records which ones do i need
+
+00:50:39.240 --> 00:50:45.380
+<v Speaker 2>to delete and then you can help and basically do yeah right so it it asks for structured input so
+
+00:50:45.520 --> 00:50:51.240
+<v Speaker 2>that you don't have to have it guess from whatever you type in the chat because if you type in the
+
+00:50:51.320 --> 00:50:55.960
+<v Speaker 2>chat it's like it's non-deterministic right because oh delete all the records with the name
+
+00:50:56.280 --> 00:51:00.980
+<v Speaker 2>john doe and it's like oh i'll delete everything with doe because somehow like that's what it
+
+00:51:01.040 --> 00:51:09.200
+<v Speaker 2>decides like oh no jane come back yeah um so it adds a little bit more structure yeah got it
+
+00:51:09.220 --> 00:51:11.860
+<v Speaker 1>And the programming model is super smooth here.
+
+00:51:11.900 --> 00:51:12.840
+<v Speaker 1>They did a great job.
+
+00:51:13.300 --> 00:51:17.100
+<v Speaker 1>So for example, you might be doing this elicitation
+
+00:51:17.360 --> 00:51:18.800
+<v Speaker 1>within a tool call.
+
+00:51:19.800 --> 00:51:21.960
+<v Speaker 1>And that's an async function, async web function.
+
+00:51:22.440 --> 00:51:25.840
+<v Speaker 1>And the way you do it is just await context.elicit
+
+00:51:25.980 --> 00:51:27.360
+<v Speaker 1>some message and schema.
+
+00:51:28.920 --> 00:51:33.300
+<v Speaker 1>And then when the person responds, the async thing
+
+00:51:33.560 --> 00:51:34.600
+<v Speaker 1>resumes, and off you go.
+
+00:51:34.880 --> 00:51:38.180
+<v Speaker 1>There's not some nested callbacks and all that kind of business.
+
+00:51:38.660 --> 00:51:40.120
+<v Speaker 1>That's a very smooth developer experience.
+
+00:51:40.230 --> 00:51:40.720
+<v Speaker 1>I love it.
+
+00:51:41.080 --> 00:51:42.420
+<v Speaker 1>Yeah, it definitely is.
+
+00:51:44.140 --> 00:51:44.300
+<v Speaker 1>Okay.
+
+00:51:46.980 --> 00:51:56.300
+<v Speaker 1>I do want to talk about some of the popular ones out there through an awesome list because I'm just a sucker for awesome lists.
+
+00:51:56.840 --> 00:52:02.180
+<v Speaker 1>But is there anything else that you feel like we should be covering here on the SDK?
+
+00:52:02.900 --> 00:52:06.600
+<v Speaker 2>Yeah, there's a lot of great work done with the Python SDK and the FastMCP folks.
+
+00:52:06.680 --> 00:52:09.480
+<v Speaker 2>I would say like go through the repo.
+
+00:52:09.960 --> 00:52:12.060
+<v Speaker 2>It's github.com/model context protocol
+
+00:52:12.190 --> 00:52:13.900
+<v Speaker 2>slash python dash SDK.
+
+00:52:15.000 --> 00:52:15.480
+<v Speaker 2>Go there.
+
+00:52:16.020 --> 00:52:17.860
+<v Speaker 2>There's some great samples to get you started.
+
+00:52:18.340 --> 00:52:20.520
+<v Speaker 2>And again, we're always open to feedback.
+
+00:52:20.570 --> 00:52:22.160
+<v Speaker 2>So if something's like, oh, this was too confusing.
+
+00:52:22.230 --> 00:52:22.800
+<v Speaker 2>I didn't understand.
+
+00:52:22.890 --> 00:52:25.160
+<v Speaker 2>The team is very receptive to feedback.
+
+00:52:25.250 --> 00:52:26.120
+<v Speaker 2>So please let them know.
+
+00:52:26.560 --> 00:52:26.880
+<v Speaker 1>Yeah.
+
+00:52:27.820 --> 00:52:28.700
+<v Speaker 1>143 contributors.
+
+00:52:29.940 --> 00:52:31.220
+<v Speaker 1>Last release five days ago.
+
+00:52:34.200 --> 00:52:35.960
+<v Speaker 1>Bunch of PRs, right?
+
+00:52:36.080 --> 00:52:42.000
+<v Speaker 1>It looks like it's pretty open, you know, 600 closed PRs, pretty open to people working.
+
+00:52:42.340 --> 00:52:55.500
+<v Speaker 1>Also, it looks kind of very beginner friendly in the sense that the issues are tagged with lots of stuff that you could search for, like needs motivation.
+
+00:52:55.880 --> 00:53:01.380
+<v Speaker 1>You know, you could go through and come up with some examples and help, even if you're not an expert in the SDK, for example.
+
+00:53:01.680 --> 00:53:02.140
+<v Speaker 2>Absolutely.
+
+00:53:02.500 --> 00:53:05.940
+<v Speaker 2>And there's also, I believe the Python might be using the good first issue, too.
+
+00:53:06.000 --> 00:53:08.400
+<v Speaker 2>So if you're a new contributor, you've never looked at it,
+
+00:53:08.400 --> 00:53:10.800
+<v Speaker 2>it's like, don't be intimidated.
+
+00:53:11.100 --> 00:53:11.540
+<v Speaker 2>There's plenty of-
+
+00:53:11.600 --> 00:53:12.820
+<v Speaker 2>Yeah, good first issue.
+
+00:53:12.820 --> 00:53:13.820
+<v Speaker 2>Good first issue.
+
+00:53:13.820 --> 00:53:17.000
+<v Speaker 2>Like there's plenty of things that you can just drop in
+
+00:53:17.010 --> 00:53:21.080
+<v Speaker 2>and see like, oh, I can help with that.
+
+00:53:21.370 --> 00:53:21.480
+<v Speaker 1>Yeah.
+
+00:53:23.220 --> 00:53:23.740
+<v Speaker 1>Love it.
+
+00:53:23.740 --> 00:53:23.980
+<v Speaker 1>Okay.
+
+00:53:23.980 --> 00:53:25.160
+<v Speaker 1>You too can be an AI developer.
+
+00:53:25.160 --> 00:53:25.860
+<v Speaker 1>I love it.
+
+00:53:25.860 --> 00:53:28.720
+<v Speaker 1>Now let's talk about awesome MCP servers.
+
+00:53:28.870 --> 00:53:30.400
+<v Speaker 1>Awesome MCP servers.
+
+00:53:31.700 --> 00:53:35.260
+<v Speaker 1>This comes to us from the very well-known Punk Pie.
+
+00:53:35.640 --> 00:53:37.100
+<v Speaker 2>The person behind Glamour.ai.
+
+00:53:37.940 --> 00:53:38.400
+<v Speaker 1>Yeah.
+
+00:53:39.240 --> 00:53:39.440
+<v Speaker 1>Awesome.
+
+00:53:39.720 --> 00:53:42.680
+<v Speaker 1>And 72,000 GitHub stars, no joke.
+
+00:53:42.860 --> 00:53:46.960
+<v Speaker 1>So there may be a fad, but maybe people will stick around.
+
+00:53:46.980 --> 00:53:47.260
+<v Speaker 1>I don't know.
+
+00:53:47.760 --> 00:53:51.060
+<v Speaker 1>So this actually has support for a lot of different languages.
+
+00:53:51.800 --> 00:53:56.140
+<v Speaker 1>And it's got scopes like it's cloud or local or embedded and so on.
+
+00:53:56.160 --> 00:53:58.200
+<v Speaker 1>But then you scroll down.
+
+00:53:59.420 --> 00:54:00.180
+<v Speaker 1>Look at the list.
+
+00:54:00.460 --> 00:54:00.820
+<v Speaker 1>It's massive.
+
+00:54:00.860 --> 00:54:03.500
+<v Speaker 1>The list is, I mean, look at the scroll bar.
+
+00:54:04.640 --> 00:54:05.560
+<v Speaker 2>It is massive.
+
+00:54:05.900 --> 00:54:07.380
+<v Speaker 1>Yeah, we keep scrolling and scrolling.
+
+00:54:07.760 --> 00:54:08.320
+<v Speaker 1>I don't know.
+
+00:54:08.320 --> 00:54:12.500
+<v Speaker 1>If I page down full speed and just pin page down the pinch down button,
+
+00:54:13.220 --> 00:54:17.140
+<v Speaker 1>it's something along the lines of like five seconds just to get through the list.
+
+00:54:17.140 --> 00:54:18.280
+<v Speaker 1>And these are one per line.
+
+00:54:18.730 --> 00:54:26.320
+<v Speaker 1>So, you know, it starts out as one should when they're building awesome lists with categories, right?
+
+00:54:26.500 --> 00:54:32.160
+<v Speaker 1>Command line, cloud platforms, biology medicine and bioinformatics.
+
+00:54:33.920 --> 00:54:34.880
+<v Speaker 1>There's one for everything.
+
+00:54:35.560 --> 00:54:35.940
+<v Speaker 1>I know.
+
+00:54:36.600 --> 00:54:38.460
+<v Speaker 1>You want to just jump around a bit and we can see what's here
+
+00:54:38.510 --> 00:54:39.660
+<v Speaker 1>when you riff on it?
+
+00:54:39.950 --> 00:54:40.040
+<v Speaker 1>Gaming.
+
+00:54:40.760 --> 00:54:44.300
+<v Speaker 2>MCB server for Unity 3D game engine integration for game to own.
+
+00:54:44.400 --> 00:54:44.980
+<v Speaker 2>That's kind of cool.
+
+00:54:46.900 --> 00:54:47.940
+<v Speaker 2>Go.Unity MCB.
+
+00:54:48.080 --> 00:54:48.680
+<v Speaker 2>MCB chess.
+
+00:54:49.280 --> 00:54:51.820
+<v Speaker 2>An MCB server playing chess against LLMs.
+
+00:54:53.220 --> 00:54:55.740
+<v Speaker 2>Did you ever think of like, can I beat an LLM at chess?
+
+00:54:56.620 --> 00:54:58.600
+<v Speaker 2>And you want to just get an MCB server to do that?
+
+00:54:58.660 --> 00:54:59.600
+<v Speaker 2>There is one for that.
+
+00:55:00.360 --> 00:55:02.599
+<v Speaker 1>I'm starting to feel like it's better to do the local models
+
+00:55:02.620 --> 00:55:04.000
+<v Speaker 1>for the chess playing against me one.
+
+00:55:05.540 --> 00:55:07.000
+<v Speaker 1>I don't want the really smart ones.
+
+00:55:07.700 --> 00:55:09.680
+<v Speaker 1>There's also chess MCP, which is,
+
+00:55:10.040 --> 00:55:10.500
+<v Speaker 1>this is interesting.
+
+00:55:10.680 --> 00:55:12.660
+<v Speaker 1>It's not the same as the other one.
+
+00:55:12.720 --> 00:55:15.400
+<v Speaker 1>This is accessyourchess.com player data
+
+00:55:15.600 --> 00:55:17.340
+<v Speaker 1>and records and other public info.
+
+00:55:18.400 --> 00:55:18.560
+<v Speaker 1>Yeah.
+
+00:55:18.720 --> 00:55:18.840
+<v Speaker 1>Right.
+
+00:55:19.480 --> 00:55:19.920
+<v Speaker 1>That's kind of cool.
+
+00:55:19.960 --> 00:55:20.740
+<v Speaker 1>So if you wanted to say,
+
+00:55:20.840 --> 00:55:22.840
+<v Speaker 1>hey, I'm building something
+
+00:55:23.160 --> 00:55:24.800
+<v Speaker 1>and I would like access to
+
+00:55:25.300 --> 00:55:27.400
+<v Speaker 1>sort of the Kaggle of chess players type of thing, right?
+
+00:55:27.640 --> 00:55:30.340
+<v Speaker 1>Like the list of competitive chess results.
+
+00:55:31.020 --> 00:55:31.220
+<v Speaker 1>Yeah.
+
+00:55:31.220 --> 00:55:31.620
+<v Speaker 1>That's kind of cool.
+
+00:55:31.880 --> 00:55:31.980
+<v Speaker 1>Yeah.
+
+00:55:32.140 --> 00:55:32.280
+<v Speaker 2>Yeah.
+
+00:55:32.960 --> 00:55:38.680
+<v Speaker 2>yeah i i personally have built one for uh halo i'm a big fan of halo the video game yeah and i
+
+00:55:38.980 --> 00:55:42.820
+<v Speaker 2>it's not on the list which now i need to go and contribute to that list okay let's do a pr
+
+00:55:43.500 --> 00:55:48.740
+<v Speaker 2>like that that's the thing that i have is basically analyze my halo stats and i'll tell
+
+00:55:48.740 --> 00:55:53.240
+<v Speaker 2>you what the lms are getting really good at analyzing the stats you give them the data
+
+00:55:53.820 --> 00:55:59.739
+<v Speaker 1>they can make some conclusions yeah i bet let's just keep it really um crazy let's do
+
+00:55:59.920 --> 00:56:00.920
+<v Speaker 1>I was going to do delivery.
+
+00:56:00.940 --> 00:56:01.500
+<v Speaker 1>We'll do that in a moment.
+
+00:56:01.700 --> 00:56:01.960
+<v Speaker 1>Marketing.
+
+00:56:02.880 --> 00:56:03.280
+<v Speaker 1>Marketing.
+
+00:56:04.240 --> 00:56:04.380
+<v Speaker 1>Yeah.
+
+00:56:05.120 --> 00:56:05.260
+<v Speaker 1>Yeah.
+
+00:56:05.420 --> 00:56:08.080
+<v Speaker 1>So I guess one of the things that looks,
+
+00:56:08.320 --> 00:56:10.460
+<v Speaker 1>I'm after just a very quick first impression,
+
+00:56:10.720 --> 00:56:13.580
+<v Speaker 1>like you're running ads on someone's platform
+
+00:56:13.880 --> 00:56:15.280
+<v Speaker 1>or you're doing marketing on someone's platform,
+
+00:56:15.720 --> 00:56:17.640
+<v Speaker 1>but you want visibility into how that's going.
+
+00:56:18.020 --> 00:56:20.820
+<v Speaker 1>So we've got the Facebook ads and PC server.
+
+00:56:20.980 --> 00:56:23.100
+<v Speaker 1>We've got the Google ads, MCP server,
+
+00:56:23.340 --> 00:56:25.580
+<v Speaker 1>and Amazon ads and so on, right?
+
+00:56:25.740 --> 00:56:26.520
+<v Speaker 1>But what else is, yeah,
+
+00:56:26.600 --> 00:56:28.700
+<v Speaker 1>that sounds about like most of it there, I suppose.
+
+00:56:28.960 --> 00:56:29.160
+<v Speaker 2>Yeah.
+
+00:56:29.520 --> 00:56:30.540
+<v Speaker 2>But think of it this way.
+
+00:56:30.590 --> 00:56:33.660
+<v Speaker 2>Like if you connect several of these MCP servers to your client,
+
+00:56:34.140 --> 00:56:36.960
+<v Speaker 2>then you connect them to all your ads accounts and then say,
+
+00:56:37.100 --> 00:56:40.880
+<v Speaker 2>how are my ads performing and which ones of them are the best this past week?
+
+00:56:42.420 --> 00:56:42.500
+<v Speaker 2>Right?
+
+00:56:42.700 --> 00:56:45.440
+<v Speaker 2>Like I don't need to click around dashboards and figure out like the filters
+
+00:56:45.730 --> 00:56:46.000
+<v Speaker 2>and everything.
+
+00:56:46.120 --> 00:56:48.140
+<v Speaker 2>Just ask the LLM, pull the data, make a conclusion.
+
+00:56:49.140 --> 00:56:51.360
+<v Speaker 2>Now you still need to verify the conclusion that make sure it's not
+
+00:56:51.540 --> 00:56:52.100
+<v Speaker 2>hallucinating things.
+
+00:56:52.300 --> 00:56:55.460
+<v Speaker 2>But nonetheless, it's kind of cool.
+
+00:56:56.600 --> 00:56:57.180
+<v Speaker 1>Yeah, it's very cool.
+
+00:56:58.220 --> 00:57:03.260
+<v Speaker 1>So one thing I realize now that we skipped over the Python SDK is we talked all about the server.
+
+00:57:03.450 --> 00:57:04.660
+<v Speaker 1>What about client things?
+
+00:57:04.880 --> 00:57:12.760
+<v Speaker 1>If I wanted to create an MCP server that is effectively the composition of some other MCP servers, could I do that?
+
+00:57:13.300 --> 00:57:14.480
+<v Speaker 1>You absolutely can.
+
+00:57:14.920 --> 00:57:15.480
+<v Speaker 2>Nothing stops you.
+
+00:57:15.590 --> 00:57:21.000
+<v Speaker 2>An MCP server can also act as an MCP client and then connect to other MCP servers.
+
+00:57:22.420 --> 00:57:23.820
+<v Speaker 2>There's no restriction to that, right?
+
+00:57:24.200 --> 00:57:24.360
+<v Speaker 2>Nice.
+
+00:57:25.240 --> 00:57:26.740
+<v Speaker 2>It's basically, it's very composable.
+
+00:57:26.840 --> 00:57:33.940
+<v Speaker 2>And a client, for all intents and purposes, is basically an entity that can connect to an MCP server, which can also be an MCP server.
+
+00:57:34.060 --> 00:57:34.600
+<v Speaker 2>It's kind of circular.
+
+00:57:35.300 --> 00:57:35.700
+<v Speaker 1>Yeah.
+
+00:57:36.700 --> 00:57:36.800
+<v Speaker 1>Yeah.
+
+00:57:37.440 --> 00:57:38.420
+<v Speaker 1>It's turtles all the way down.
+
+00:57:38.600 --> 00:57:39.500
+<v Speaker 1>But MCP this time.
+
+00:57:40.260 --> 00:57:40.340
+<v Speaker 1>Yeah.
+
+00:57:40.600 --> 00:57:41.500
+<v Speaker 1>It's AI turtles this time.
+
+00:57:41.980 --> 00:57:45.180
+<v Speaker 1>So delivery, we just have the DoorDash delivery MCP server.
+
+00:57:45.660 --> 00:57:46.300
+<v Speaker 1>Oh, man.
+
+00:57:46.740 --> 00:57:49.860
+<v Speaker 1>Hey, Claude, why is my food not here?
+
+00:57:50.320 --> 00:57:53.260
+<v Speaker 1>Have you ever seen those fail videos or whatever?
+
+00:57:53.680 --> 00:57:55.760
+<v Speaker 1>I watch weird YouTube stuff with my daughter sometimes,
+
+00:57:55.980 --> 00:57:59.540
+<v Speaker 1>and you'll see cops delivering DoorDash.
+
+00:57:59.640 --> 00:58:01.780
+<v Speaker 1>We'll say, sorry, we had to arrest your DoorDash delivery,
+
+00:58:02.100 --> 00:58:04.500
+<v Speaker 1>but we were pretty close, so we thought we'd just go and deliver your food.
+
+00:58:05.280 --> 00:58:06.960
+<v Speaker 1>I mean, I don't know what the server's going to say,
+
+00:58:07.080 --> 00:58:08.000
+<v Speaker 1>but it could say anything.
+
+00:58:08.680 --> 00:58:09.860
+<v Speaker 1>The police are on their way.
+
+00:58:10.820 --> 00:58:13.040
+<v Speaker 1>Yeah, people are generally really appreciative.
+
+00:58:13.160 --> 00:58:14.760
+<v Speaker 1>Like, well, thanks for getting me my dinner anyway.
+
+00:58:16.080 --> 00:58:17.240
+<v Speaker 1>Let's see what else is out here.
+
+00:58:19.520 --> 00:58:21.480
+<v Speaker 1>Got text-to-speech, which is interesting.
+
+00:58:22.660 --> 00:58:23.060
+<v Speaker 1>Sports.
+
+00:58:23.420 --> 00:58:23.820
+<v Speaker 1>Oh, yeah.
+
+00:58:25.120 --> 00:58:26.160
+<v Speaker 2>Oh, look at the Strava.
+
+00:58:26.440 --> 00:58:31.460
+<v Speaker 2>If you're running or biking, you can use this also to analyze your data.
+
+00:58:31.620 --> 00:58:34.080
+<v Speaker 2>There's a lot of MCB servers for data analysis, which is kind of cool.
+
+00:58:34.900 --> 00:58:38.900
+<v Speaker 1>Okay, I don't even – this one, this is the one that appeals to me.
+
+00:58:39.080 --> 00:58:43.260
+<v Speaker 1>So, Multivewer, this is actually not a thing that I would want,
+
+00:58:43.740 --> 00:58:45.160
+<v Speaker 1>but I think it's interesting.
+
+00:58:45.360 --> 00:58:48.860
+<v Speaker 1>So, Multivewer is a motorsports desktop client.
+
+00:58:48.960 --> 00:58:54.880
+<v Speaker 1>And what I think it does, it does for IndyCar, WAC, Formula One, and even like the feeder classes.
+
+00:58:55.960 --> 00:59:04.480
+<v Speaker 1>I think what it lets you do is put up both an overlay of telemetry onto watching the live stream,
+
+00:59:04.620 --> 00:59:10.480
+<v Speaker 1>but also put the multiple people up in live streams at the same time or something like that, right?
+
+00:59:11.020 --> 00:59:11.680
+<v Speaker 1>That's kind of cool.
+
+00:59:12.280 --> 00:59:12.760
+<v Speaker 1>That's cool.
+
+00:59:13.020 --> 00:59:17.260
+<v Speaker 1>So the reason I don't really like that is I don't watch any of those sports live.
+
+00:59:17.400 --> 00:59:19.000
+<v Speaker 1>I record them and so I can then pause it
+
+00:59:19.480 --> 00:59:20.320
+<v Speaker 1>and then skip the commercials.
+
+00:59:20.600 --> 00:59:22.720
+<v Speaker 1>And so this is like for a live stream sort of deal,
+
+00:59:22.840 --> 00:59:28.200
+<v Speaker 1>but the MCP server, it controls multi viewer for that.
+
+00:59:28.640 --> 00:59:29.980
+<v Speaker 1>So maybe you could set up an AI
+
+00:59:30.300 --> 00:59:31.660
+<v Speaker 1>that is watching what's going on
+
+00:59:32.280 --> 00:59:35.700
+<v Speaker 1>and switches the views around in the multi viewer for you.
+
+00:59:36.340 --> 00:59:36.400
+<v Speaker 1>- Yeah.
+
+00:59:37.260 --> 00:59:37.680
+<v Speaker 1>- That's wild.
+
+00:59:38.740 --> 00:59:40.580
+<v Speaker 2>- Or swaps to the most interesting telemetry
+
+00:59:40.780 --> 00:59:41.960
+<v Speaker 2>at the specific moment.
+
+00:59:42.400 --> 00:59:43.660
+<v Speaker 1>- Yeah, listen to the radio,
+
+00:59:43.800 --> 00:59:44.960
+<v Speaker 1>they start getting all frantic.
+
+00:59:45.200 --> 00:59:46.360
+<v Speaker 1>Like, all right, we're switching to that view.
+
+00:59:49.640 --> 00:59:54.280
+<v Speaker 2>yeah there's an nc server for everything like this list is massive i'm actually like every time i
+
+00:59:54.460 --> 00:59:57.240
+<v Speaker 2>discover these these things like we're looking at this right now i was like oh i didn't know there
+
+00:59:57.240 --> 01:00:00.460
+<v Speaker 2>was one for multi-viewer like i didn't know what multi-viewer is until we talked right now
+
+01:00:00.960 --> 01:00:06.860
+<v Speaker 1>yeah but wouldn't that be a cool demo yeah you know at a conference you're like i know you've
+
+01:00:06.940 --> 01:00:13.139
+<v Speaker 1>all seen the tic-tac-toe one but let me show you the final of f1 yeah yeah something right
+
+01:00:13.920 --> 01:00:16.900
+<v Speaker 2>various student observation because again like there's a lot of these like hello world kind of
+
+01:00:16.930 --> 01:00:20.420
+<v Speaker 2>things like oh look it's kind of neat it responded with a thing like give me a real thing this is
+
+01:00:20.540 --> 01:00:28.320
+<v Speaker 1>that real thing yeah yeah that's super neat all right i guess i've got the support one
+
+01:00:28.470 --> 01:00:33.100
+<v Speaker 1>that lassie and jira quick chat just whatever you want right that's the one to reduce your boring
+
+01:00:33.320 --> 01:00:37.040
+<v Speaker 2>work the jira mcp server like you don't want to triage your bugs just let the lm do it for you
+
+01:00:37.610 --> 01:00:40.379
+<v Speaker 2>hey can you go and find the things that are most important for me to work on today
+
+01:00:41.080 --> 01:00:41.760
+<v Speaker 2>give me the bug numbers.
+
+01:00:42.580 --> 01:00:44.920
+<v Speaker 1>Or if you see somebody assign a bug to me
+
+01:00:44.980 --> 01:00:45.300
+<v Speaker 1>close it.
+
+01:00:46.700 --> 01:00:47.100
+<v Speaker 1>Exactly.
+
+01:00:47.960 --> 01:00:49.340
+<v Speaker 2>Query all the bugs assigned to me
+
+01:00:49.860 --> 01:00:50.920
+<v Speaker 2>reassign them to somebody else.
+
+01:00:55.000 --> 01:00:55.460
+<v Speaker 1>Yeah crazy.
+
+01:00:55.760 --> 01:00:55.960
+<v Speaker 1>Exactly.
+
+01:00:57.280 --> 01:00:58.340
+<v Speaker 1>Not a good fit for this person.
+
+01:00:59.200 --> 01:00:59.980
+<v Speaker 2>No exactly.
+
+01:01:01.120 --> 01:01:02.540
+<v Speaker 2>These are the life hacks you learn
+
+01:01:02.820 --> 01:01:03.580
+<v Speaker 2>only from this podcast.
+
+01:01:04.140 --> 01:01:04.460
+<v Speaker 1>That's right.
+
+01:01:04.780 --> 01:01:06.980
+<v Speaker 1>If it involves MCP servers
+
+01:01:07.020 --> 01:01:08.000
+<v Speaker 1>and cool stuff I can code
+
+01:01:08.120 --> 01:01:08.740
+<v Speaker 1>give it to me otherwise.
+
+01:01:10.100 --> 01:01:10.960
+<v Speaker 1>- Send it somewhere else.
+
+01:01:11.200 --> 01:01:12.100
+<v Speaker 1>- Send it somewhere else.
+
+01:01:14.080 --> 01:01:15.700
+<v Speaker 1>All right, Den, I think we're getting pretty close
+
+01:01:15.880 --> 01:01:18.980
+<v Speaker 1>on time here in terms of what we got time to cover,
+
+01:01:19.120 --> 01:01:20.060
+<v Speaker 1>but this is super fun.
+
+01:01:21.620 --> 01:01:23.280
+<v Speaker 1>Maybe close things out for folks.
+
+01:01:23.540 --> 01:01:25.980
+<v Speaker 1>Like they want to get started with MCP servers,
+
+01:01:26.880 --> 01:01:28.640
+<v Speaker 1>either building them, consuming them,
+
+01:01:28.760 --> 01:01:29.500
+<v Speaker 1>building and consuming them,
+
+01:01:30.400 --> 01:01:32.340
+<v Speaker 1>plugging them into their tool chain.
+
+01:01:33.120 --> 01:01:33.520
+<v Speaker 1>What do you tell them?
+
+01:01:33.820 --> 01:01:35.360
+<v Speaker 2>- Yeah, so for folks that want to build
+
+01:01:36.220 --> 01:01:38.500
+<v Speaker 2>modelcontextprotocol.io, as simple as it gets,
+
+01:01:38.700 --> 01:01:41.740
+<v Speaker 2>go there, it has guides, tutorials, SDK starters,
+
+01:01:42.260 --> 01:01:42.700
+<v Speaker 2>everything is there.
+
+01:01:43.240 --> 01:01:46.840
+<v Speaker 2>If you are a consumer of the MCPs and you are like,
+
+01:01:46.930 --> 01:01:49.320
+<v Speaker 2>"Hey, I wanna do this like awesome thing with MC servers."
+
+01:01:49.480 --> 01:01:52.940
+<v Speaker 2>First of all, the GitHub MCP registry that we showed earlier
+
+01:01:53.200 --> 01:01:57.220
+<v Speaker 2>is one of those things is github.com/mcp, go explore.
+
+01:01:57.490 --> 01:01:59.040
+<v Speaker 2>And then of course on GitHub,
+
+01:01:59.240 --> 01:02:01.200
+<v Speaker 2>there's plenty of servers that are tagged with MCP.
+
+01:02:01.640 --> 01:02:02.600
+<v Speaker 2>You can also take a look there.
+
+01:02:02.940 --> 01:02:06.519
+<v Speaker 2>And there's other registries that also index MCP servers
+
+01:02:06.540 --> 01:02:09.640
+<v Speaker 2>of all sorts, like Glama AI from Punk Pie
+
+01:02:09.850 --> 01:02:10.660
+<v Speaker 2>that we talked about before,
+
+01:02:11.220 --> 01:02:13.140
+<v Speaker 2>is one such registry that you can also look at
+
+01:02:13.140 --> 01:02:14.740
+<v Speaker 2>and see if there's anything that's of interest.
+
+01:02:15.640 --> 01:02:19.240
+<v Speaker 2>I will say that as you are exploring MCP servers,
+
+01:02:20.280 --> 01:02:21.160
+<v Speaker 2>exercise caution,
+
+01:02:21.980 --> 01:02:24.100
+<v Speaker 2>just like you would exercise with any other software
+
+01:02:24.700 --> 01:02:26.640
+<v Speaker 2>and APIs and websites where you log in
+
+01:02:26.880 --> 01:02:29.940
+<v Speaker 2>because the responsibility is kind of on you
+
+01:02:30.320 --> 01:02:32.920
+<v Speaker 2>to figure out what's safe, what's not.
+
+01:02:32.980 --> 01:02:34.080
+<v Speaker 2>If you have an MCP server that's like,
+
+01:02:34.080 --> 01:02:36.500
+<v Speaker 2>oh, it's going to read all my iMessages
+
+01:02:36.900 --> 01:02:38.040
+<v Speaker 2>and sort them by importance.
+
+01:02:38.140 --> 01:02:39.620
+<v Speaker 2>I'm like, yes.
+
+01:02:40.200 --> 01:02:42.180
+<v Speaker 2>And do you know who built that
+
+01:02:42.200 --> 01:02:43.460
+<v Speaker 2>and where your messages are going?
+
+01:02:43.800 --> 01:02:45.220
+<v Speaker 1>So be careful with that.
+
+01:02:45.260 --> 01:02:46.460
+<v Speaker 1>Are they also scanning for credit card numbers?
+
+01:02:46.740 --> 01:02:46.900
+<v Speaker 1>Exactly.
+
+01:02:47.320 --> 01:02:48.280
+<v Speaker 1>Why not?
+
+01:02:48.760 --> 01:02:50.400
+<v Speaker 2>You messaged somebody with your social security number
+
+01:02:50.560 --> 01:02:50.920
+<v Speaker 2>the other day.
+
+01:02:51.080 --> 01:02:51.160
+<v Speaker 2>Nice.
+
+01:02:52.320 --> 01:02:52.400
+<v Speaker 2>Yeah.
+
+01:02:52.520 --> 01:02:53.560
+<v Speaker 2>So be careful with those.
+
+01:02:53.560 --> 01:02:54.820
+<v Speaker 2>But I'd say like explore them.
+
+01:02:55.020 --> 01:02:58.440
+<v Speaker 2>And then we are working on formalizing
+
+01:02:58.620 --> 01:02:59.400
+<v Speaker 2>discovery a bit better.
+
+01:02:59.600 --> 01:03:02.460
+<v Speaker 2>So your clients like VS Code and Cursor
+
+01:03:02.560 --> 01:03:04.240
+<v Speaker 2>and Claw Desktop are going to become better and better
+
+01:03:04.720 --> 01:03:06.140
+<v Speaker 2>with more discoverability afforDences.
+
+01:03:07.740 --> 01:03:12.380
+<v Speaker 1>awesome all right thank you so much for coming on the show i learned a ton i'm sure the listeners
+
+01:03:12.560 --> 01:03:17.200
+<v Speaker 1>did as well and it was a lot of fun thank you for having me yeah see you later bye
+

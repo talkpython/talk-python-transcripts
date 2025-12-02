@@ -1,0 +1,5123 @@
+1
+00:00:03,640 --> 00:00:06,640
+Michael Kennedy: Trevor, welcome to Talk Python To Me. Awesome to have you here. Thanks for coming.
+
+2
+00:00:07,020 --> 00:00:08,060
+Trevor Manz: Yeah, thanks for having me, Michael.
+
+3
+00:00:08,879 --> 00:00:15,360
+Michael Kennedy: Yeah. We're going to talk about building Lego blocks for data scientists. Is that maybe a good
+
+4
+00:00:15,380 --> 00:00:19,860
+Trevor Manz: way to put it? Yeah, definitely. Yeah, so we're going to talk about your project,
+
+5
+00:00:21,119 --> 00:00:25,760
+Michael Kennedy: AnyWidget, which is a super cool project that allows people to build
+
+6
+00:00:28,480 --> 00:00:34,860
+Michael Kennedy: more adaptable, more reusable widgets rather than just saying I'm going to build it for Jupyter or
+
+7
+00:00:35,240 --> 00:00:39,780
+Michael Kennedy: Remo or whatever. But I'm going to build something that can be used broadly through your platform
+
+8
+00:00:40,240 --> 00:00:45,580
+Michael Kennedy: and a lot simpler deployment as well. So I know a lot of people out there are excited.
+
+9
+00:00:47,060 --> 00:00:50,280
+Michael Kennedy: Not everyone necessarily wants to build widgets, but this also makes more widgets
+
+10
+00:00:50,680 --> 00:00:53,180
+Michael Kennedy: available for people, right? So super cool project.
+
+11
+00:00:55,540 --> 00:00:55,900
+Michael Kennedy: Yeah.
+
+12
+00:00:57,740 --> 00:01:01,780
+Michael Kennedy: And before we get into that, of course, maybe just tell us a bit about yourself.
+
+13
+00:01:02,340 --> 00:01:03,920
+Trevor Manz: Yeah, so I'm Trevor.
+
+14
+00:01:04,739 --> 00:01:06,560
+Trevor Manz: I'm a software engineer at Marimo.
+
+15
+00:01:06,860 --> 00:01:13,940
+Trevor Manz: But prior to being at Marimo, I was doing my PhD in data visualization at Harvard Medical School.
+
+16
+00:01:13,960 --> 00:01:20,880
+Trevor Manz: So I got into this whole Python web world from working on tools for biological scientists
+
+17
+00:01:21,230 --> 00:01:25,480
+Trevor Manz: to explore large genomics or spatial genomic data sets.
+
+18
+00:01:26,460 --> 00:01:28,640
+Michael Kennedy: That is a super interesting topic.
+
+19
+00:01:28,940 --> 00:01:34,420
+Michael Kennedy: I'm sure there were some really niche things you had to build, right?
+
+20
+00:01:35,380 --> 00:01:37,380
+Michael Kennedy: We have this crazy research machine.
+
+21
+00:01:37,640 --> 00:01:38,660
+Michael Kennedy: There's three of them in the world.
+
+22
+00:01:38,810 --> 00:01:41,060
+Michael Kennedy: And here's the data that comes out of it.
+
+23
+00:01:41,800 --> 00:01:44,420
+Michael Kennedy: How do I put that into notebooks or whatever, right?
+
+24
+00:01:45,560 --> 00:01:46,600
+Trevor Manz: Yeah, yeah, exactly.
+
+25
+00:01:46,850 --> 00:01:47,980
+Trevor Manz: And it's funny you mentioned that.
+
+26
+00:01:48,240 --> 00:01:51,720
+Trevor Manz: I think starting off in more like the visualization side,
+
+27
+00:01:51,900 --> 00:01:54,760
+Trevor Manz: we'd build these very bespoke and custom applications
+
+28
+00:01:55,050 --> 00:01:57,400
+Trevor Manz: for looking at large biological data sets.
+
+29
+00:01:57,980 --> 00:01:59,800
+Trevor Manz: And then I think a motivation for me
+
+30
+00:01:59,850 --> 00:02:01,800
+Trevor Manz: was realizing a lot of the folks that I was working with
+
+31
+00:02:01,920 --> 00:02:04,900
+Trevor Manz: to build these tools for worked in Python
+
+32
+00:02:05,090 --> 00:02:06,420
+Trevor Manz: and worked in notebooks specifically.
+
+33
+00:02:06,610 --> 00:02:08,160
+Trevor Manz: And so there was sort of this gap between
+
+34
+00:02:08,759 --> 00:02:10,940
+Trevor Manz: the research that we were doing to build these specialized tools
+
+35
+00:02:11,020 --> 00:02:12,840
+Trevor Manz: and trying to meet users where they were at
+
+36
+00:02:13,020 --> 00:02:15,080
+Trevor Manz: to actually use those tools in their research
+
+37
+00:02:15,440 --> 00:02:17,380
+Trevor Manz: and as a part of their data exploration workflows.
+
+38
+00:02:18,720 --> 00:02:19,840
+Michael Kennedy: And this was your PhD work?
+
+39
+00:02:20,360 --> 00:02:21,960
+Trevor Manz: Yes, yeah, this was my PhD work.
+
+40
+00:02:22,420 --> 00:02:22,780
+Michael Kennedy: Incredible.
+
+41
+00:02:23,960 --> 00:02:25,600
+Michael Kennedy: So I'm sure it wasn't just Python.
+
+42
+00:02:27,600 --> 00:02:27,700
+Michael Kennedy: No.
+
+43
+00:02:28,599 --> 00:02:29,800
+Michael Kennedy: What was involved with it?
+
+44
+00:02:30,460 --> 00:02:34,960
+Trevor Manz: So, yeah, I'd say the research community, at least in bio,
+
+45
+00:02:35,220 --> 00:02:36,900
+Trevor Manz: is sort of split between R and Python,
+
+46
+00:02:37,280 --> 00:02:39,560
+Trevor Manz: but specifically some of our closest collaborators
+
+47
+00:02:39,690 --> 00:02:40,820
+Trevor Manz: were in the Python ecosystem.
+
+48
+00:02:41,600 --> 00:02:47,700
+Trevor Manz: And then my team was building a lot of user interfaces for visual exploration of data sets.
+
+49
+00:02:47,960 --> 00:02:52,920
+Trevor Manz: And I think Notebook sort of became this base, and specifically Python Notebooks, where you
+
+50
+00:02:52,980 --> 00:02:56,660
+Trevor Manz: can really blend those programmatic and user interfaces together.
+
+51
+00:02:57,420 --> 00:03:02,580
+Trevor Manz: That's sort of why I centered on trying to solve some of the rough edges about bringing
+
+52
+00:03:02,650 --> 00:03:05,280
+Michael Kennedy: these interactive tools inside of Notebooks.
+
+53
+00:03:05,920 --> 00:03:06,640
+Michael Kennedy: That's cool.
+
+54
+00:03:07,180 --> 00:03:11,800
+Michael Kennedy: Did you do any other platforms?
+
+55
+00:03:12,210 --> 00:03:19,740
+Michael Kennedy: I'm thinking like Unity or the Real Engine for flying through data?
+
+56
+00:03:20,060 --> 00:03:21,080
+Michael Kennedy: What else did you all do?
+
+57
+00:03:21,630 --> 00:03:28,960
+Trevor Manz: Yeah, there were some folks on my team that are currently working in more spatial AR, VR type scenarios.
+
+58
+00:03:29,200 --> 00:03:31,060
+Trevor Manz: And that I think is based on the Unity engine.
+
+59
+00:03:31,580 --> 00:03:33,120
+Trevor Manz: Most of my work was web-based.
+
+60
+00:03:33,220 --> 00:03:43,220
+Trevor Manz: And specifically, and we'll probably get into it, I think the web is just a really important platform to develop for in the sense that, I mean, we're recording right now in a web browser.
+
+61
+00:03:43,760 --> 00:03:48,620
+Trevor Manz: It's a very capable platform that everyone sort of has an entry point to on some sort of device.
+
+62
+00:03:49,020 --> 00:03:57,320
+Trevor Manz: And so developing for the web often means that you can reuse a lot of that application amongst different devices and in different contexts.
+
+63
+00:03:59,820 --> 00:04:01,520
+Michael Kennedy: It's unbelievable what the web can do these days.
+
+64
+00:04:01,660 --> 00:04:14,600
+Michael Kennedy: I made the comment before we started, like, I can't believe this is a web browser that we're building, that we're doing this live streaming, video sharing, local recording, all this stuff is just like, it's so wild.
+
+65
+00:04:14,820 --> 00:04:18,959
+Michael Kennedy: And, you know, I built an app recently that I'm using to kind of help out with some of the interview stuff.
+
+66
+00:04:19,200 --> 00:04:20,640
+Michael Kennedy: And it's on the web.
+
+67
+00:04:20,709 --> 00:04:21,739
+Michael Kennedy: It just runs on my iPad.
+
+68
+00:04:22,000 --> 00:04:26,300
+Michael Kennedy: You know, I mean, it's like, it goes underappreciated some of the time.
+
+69
+00:04:26,310 --> 00:04:28,520
+Michael Kennedy: I think it was just like how far you can push it.
+
+70
+00:04:28,550 --> 00:04:28,660
+Michael Kennedy: Right.
+
+71
+00:04:28,780 --> 00:04:31,620
+Michael Kennedy: It's not just documents and Ajax.
+
+72
+00:04:32,340 --> 00:04:33,180
+Trevor Manz: Yeah, yeah.
+
+73
+00:04:33,480 --> 00:04:36,620
+Trevor Manz: The fact that a version of Photoshop runs in the browser is pretty amazing.
+
+74
+00:04:37,860 --> 00:04:40,580
+Trevor Manz: And Figma itself is all running in the web browser.
+
+75
+00:04:40,800 --> 00:04:42,540
+Trevor Manz: So it's definitely a capable platform.
+
+76
+00:04:42,860 --> 00:04:47,800
+Trevor Manz: But one thing it's not very good at is, or doesn't have the ecosystem for, is a lot of data work.
+
+77
+00:04:48,160 --> 00:04:49,640
+Trevor Manz: And I think that that's really the big divide.
+
+78
+00:04:50,060 --> 00:04:57,220
+Trevor Manz: So I see the web as really one of the most accessible platforms for building user interfaces and applications.
+
+79
+00:04:58,060 --> 00:05:02,420
+Trevor Manz: But then there's this whole other world, which is like tools that you actually do data science stuff in.
+
+80
+00:05:02,520 --> 00:05:09,340
+Trevor Manz: And that is not the web whatsoever, but has like a similar amount of maturity in terms of being very ergonomic and good at doing that type of work.
+
+81
+00:05:10,000 --> 00:05:18,940
+Michael Kennedy: Right. And those two worlds meet in the web, right?
+
+82
+00:05:19,120 --> 00:05:23,800
+Michael Kennedy: But the people doing the Python work, they aren't necessarily web developers.
+
+83
+00:05:24,500 --> 00:05:29,320
+Michael Kennedy: You gave a talk a year ago about any widget that I'll definitely link to.
+
+84
+00:05:29,960 --> 00:05:34,240
+Michael Kennedy: And you have this graphic here like, okay, we've got the front end,
+
+85
+00:05:35,240 --> 00:05:38,440
+Michael Kennedy: which often is Jupyter, not always, as we'll see in a minute.
+
+86
+00:05:39,060 --> 00:05:44,820
+Michael Kennedy: But often is Jupyter with the way you build for it is with all these web front end tools
+
+87
+00:05:45,300 --> 00:05:49,540
+Michael Kennedy: that even me doing web development is a lot of times I'm like,
+
+88
+00:05:49,640 --> 00:05:51,260
+Michael Kennedy: what is this and why is it so complicated?
+
+89
+00:05:52,000 --> 00:05:53,220
+Michael Kennedy: I just don't even know.
+
+90
+00:05:53,820 --> 00:05:55,260
+Michael Kennedy: And I do web stuff all the time.
+
+91
+00:05:55,680 --> 00:05:59,380
+Michael Kennedy: And then you've got the backend stuff where Python people live doing NumPy,
+
+92
+00:05:59,760 --> 00:06:01,960
+Michael Kennedy: pollers, at Plotlib, et cetera.
+
+93
+00:06:02,920 --> 00:06:05,260
+Michael Kennedy: Do you want to riff on that challenge a little bit?
+
+94
+00:06:05,260 --> 00:06:08,160
+Michael Kennedy: Because I know your project is really here to kind of solve some of this
+
+95
+00:06:09,080 --> 00:06:09,480
+Michael Kennedy: disjointedness.
+
+96
+00:06:09,800 --> 00:06:10,220
+Trevor Manz: Yeah.
+
+97
+00:06:10,440 --> 00:06:13,220
+Trevor Manz: I think one interesting thing, like taking a step back,
+
+98
+00:06:13,280 --> 00:06:15,640
+Trevor Manz: and I mentioned this in the talk that I gave a while back,
+
+99
+00:06:16,200 --> 00:06:20,000
+Trevor Manz: but the web and Python ecosystems have been around for almost the same exact
+
+100
+00:06:20,160 --> 00:06:20,680
+Trevor Manz: amount of time.
+
+101
+00:06:21,080 --> 00:06:25,660
+Trevor Manz: I think the first web page was around the same year that the first release of Python came out.
+
+102
+00:06:25,760 --> 00:06:29,780
+Trevor Manz: And so they sort of have been evolving in their own respective,
+
+103
+00:06:30,120 --> 00:06:33,080
+Trevor Manz: or developing their own respective ecosystems for that period of time.
+
+104
+00:06:33,820 --> 00:06:37,540
+Trevor Manz: And then as the web became really this platform for building user interfaces,
+
+105
+00:06:37,960 --> 00:06:45,460
+Trevor Manz: I think that some pretty visionary folks saw that you could connect these backend resources
+
+106
+00:06:45,920 --> 00:06:49,220
+Trevor Manz: to these very interactive applications that could be developed very quickly.
+
+107
+00:06:50,200 --> 00:06:53,840
+Trevor Manz: So over the years, these things that started off very far apart have now come very close together.
+
+108
+00:06:54,860 --> 00:06:58,960
+Trevor Manz: And now with WebAssembly, sometimes it's just turtles all the way down.
+
+109
+00:06:59,140 --> 00:07:00,320
+Trevor Manz: It's all actually running in the browser.
+
+110
+00:07:00,720 --> 00:07:02,200
+Trevor Manz: So it's pretty amazing.
+
+111
+00:07:02,680 --> 00:07:05,120
+Trevor Manz: But I think that there definitely is this friction.
+
+112
+00:07:05,460 --> 00:07:10,280
+Trevor Manz: And one thing I've also noticed from being in both the web and Python ecosystems for so long
+
+113
+00:07:10,440 --> 00:07:15,540
+Trevor Manz: is sort of these ebbs and flows of maturity or places that need to catch up to one another.
+
+114
+00:07:15,690 --> 00:07:19,160
+Trevor Manz: And so I came from definitely the web side originally.
+
+115
+00:07:19,480 --> 00:07:28,380
+Trevor Manz: And there's a lot that I took for granted, I guess, in that ecosystem of tooling that for a while, I think, gave the language a very bad rap.
+
+116
+00:07:28,620 --> 00:07:32,660
+Trevor Manz: Because it was sort of the scripting language that was invented, I think, famously in two weeks.
+
+117
+00:07:33,220 --> 00:07:35,600
+Trevor Manz: And now people are trying to build applications in it.
+
+118
+00:07:35,740 --> 00:07:40,060
+Trevor Manz: But over the years, there have been standards and things have matured.
+
+119
+00:07:40,060 --> 00:07:47,040
+Trevor Manz: And actually, the web is very backwards compatible and has some of these properties that are kind of amazing for something that's been around for that long.
+
+120
+00:07:47,780 --> 00:07:49,440
+Trevor Manz: And then I'd say in the last couple of years,
+
+121
+00:07:49,650 --> 00:07:55,140
+Trevor Manz: like we've seen a bunch of like new developer tool work
+
+122
+00:07:55,320 --> 00:07:57,580
+Trevor Manz: going into the Python ecosystem that in some part
+
+123
+00:07:57,580 --> 00:08:00,080
+Trevor Manz: is also inspired by some of the tooling in like the web ecosystem.
+
+124
+00:08:00,210 --> 00:08:02,520
+Trevor Manz: So I love to see sort of how these things go back and forth.
+
+125
+00:08:02,800 --> 00:08:06,860
+Trevor Manz: And I think if you haven't checked in on the ecosystem for a while,
+
+126
+00:08:06,950 --> 00:08:09,320
+Trevor Manz: you might think like it's, you know,
+
+127
+00:08:09,760 --> 00:08:12,260
+Trevor Manz: it isn't what it was five years ago as it is today.
+
+128
+00:08:12,450 --> 00:08:15,699
+Trevor Manz: And one of the goals of AnyWidget is to try to like demystify
+
+129
+00:08:15,720 --> 00:08:22,200
+Trevor Manz: some of the maybe those like prior bad experiences folks had developing and just you know get back
+
+130
+00:08:22,340 --> 00:08:26,980
+Trevor Manz: to like opening up some html and writing some javascript um and and getting your python data
+
+131
+00:08:27,240 --> 00:08:32,340
+Michael Kennedy: in the browser yeah yeah absolutely you know i wonder as you describe it being made in
+
+132
+00:08:32,820 --> 00:08:40,179
+Michael Kennedy: in uh two weeks which i also think this is this is true when it was made i think at mozilla right
+
+133
+00:08:42,760 --> 00:08:49,700
+Michael Kennedy: yeah anyway java one of the javascript's real issues is it doesn't have a real
+
+134
+00:08:50,520 --> 00:08:57,060
+Michael Kennedy: numerical system right everything is a float that has a lot of problems for data science when it
+
+135
+00:08:57,280 --> 00:09:02,020
+Michael Kennedy: really really has to be integers or whatever right like you need more control over the numbers
+
+136
+00:09:02,670 --> 00:09:09,699
+Michael Kennedy: i wonder how much of python's benefit in the data science space originates from people going
+
+137
+00:09:09,780 --> 00:09:14,880
+Michael Kennedy: JavaScript is super popular, but can't do numbers there. I do science, can't do JavaScript. What am
+
+138
+00:09:14,880 --> 00:09:17,420
+Michael Kennedy: I doing now? You know what I mean? What do you think about that? It just occurred to me.
+
+139
+00:09:17,800 --> 00:09:25,560
+Trevor Manz: Yeah. It's interesting. That is originally a constraint of the language and maybe when you're
+
+140
+00:09:25,760 --> 00:09:32,480
+Trevor Manz: picking ecosystems early on. Also, there was no server way to run JavaScript until 2010. So the
+
+141
+00:09:32,550 --> 00:09:39,580
+Trevor Manz: idea of just running this without a browser was also not very good. So yeah, I'm not quite sure,
+
+142
+00:09:39,680 --> 00:09:42,840
+Trevor Manz: but it's funny because JavaScript has reacted to that
+
+143
+00:09:43,020 --> 00:09:45,820
+Trevor Manz: by adding some big ints as a data type,
+
+144
+00:09:46,280 --> 00:09:48,680
+Trevor Manz: but also now there's a fourth language for the web,
+
+145
+00:09:48,780 --> 00:09:49,560
+Trevor Manz: which is WebAssembly,
+
+146
+00:09:49,770 --> 00:09:52,160
+Trevor Manz: and there are proper data types in WebAssembly.
+
+147
+00:09:53,720 --> 00:09:56,420
+Trevor Manz: I guess it is reactionary, but I haven't really seen.
+
+148
+00:09:57,060 --> 00:09:58,440
+Trevor Manz: Now you can run Python in the browser,
+
+149
+00:09:59,440 --> 00:10:02,940
+Trevor Manz: but you'd have to have all this ecosystem grift or migration
+
+150
+00:10:03,130 --> 00:10:04,880
+Trevor Manz: that I just don't think anybody wants.
+
+151
+00:10:05,320 --> 00:10:08,500
+Trevor Manz: Maybe these ecosystems can play a lot nicer together.
+
+152
+00:10:09,720 --> 00:10:10,200
+Michael Kennedy: Yeah.
+
+153
+00:10:11,000 --> 00:10:11,120
+Michael Kennedy: Yeah.
+
+154
+00:10:11,180 --> 00:10:14,280
+Michael Kennedy: And certainly they are with things like Jupyter and stuff, right?
+
+155
+00:10:15,360 --> 00:10:17,620
+Michael Kennedy: Most users of Jupyter don't write JavaScript.
+
+156
+00:10:19,040 --> 00:10:19,520
+Trevor Manz: Yes.
+
+157
+00:10:19,740 --> 00:10:21,700
+Trevor Manz: And I think that everyone's happy about that.
+
+158
+00:10:22,920 --> 00:10:23,400
+Michael Kennedy: Exactly.
+
+159
+00:10:23,780 --> 00:10:24,000
+Michael Kennedy: That's true.
+
+160
+00:10:24,120 --> 00:10:25,120
+Michael Kennedy: There's a lot of people are like, you know what?
+
+161
+00:10:25,160 --> 00:10:25,720
+Michael Kennedy: That's not for me.
+
+162
+00:10:26,320 --> 00:10:33,900
+Michael Kennedy: So, you know, you were at Harvard doing your work and now you're at Marimo.
+
+163
+00:10:34,580 --> 00:10:36,280
+Michael Kennedy: I always mess up saying this.
+
+164
+00:10:36,880 --> 00:10:37,980
+Michael Kennedy: Tell us how to do it.
+
+165
+00:10:38,200 --> 00:10:38,800
+Trevor Manz: It's Marimo.
+
+166
+00:10:39,400 --> 00:10:39,840
+Michael Kennedy: Marimo.
+
+167
+00:10:40,090 --> 00:10:40,680
+Michael Kennedy: Okay, Marimo.
+
+168
+00:10:41,300 --> 00:10:46,740
+Michael Kennedy: Yeah, and I'd actually on, and I know we talked a lot about it, and he set me straight, and then I drifted, I'm sure.
+
+169
+00:10:49,160 --> 00:10:52,100
+Michael Kennedy: So what's your experiences here?
+
+170
+00:10:52,600 --> 00:10:55,500
+Michael Kennedy: How's it coming from academia to this world?
+
+171
+00:10:56,660 --> 00:10:57,180
+Trevor Manz: It's been great.
+
+172
+00:10:57,340 --> 00:11:04,760
+Trevor Manz: I think that having worked with, so part of AnyWidget was trying to address some user needs working inside of notebooks,
+
+173
+00:11:05,120 --> 00:11:06,460
+Trevor Manz: and there's only so much that you can do
+
+174
+00:11:06,640 --> 00:11:07,580
+Trevor Manz: sort of as like a plugin
+
+175
+00:11:09,380 --> 00:11:11,660
+Trevor Manz: to get that extra bit to like help users.
+
+176
+00:11:11,910 --> 00:11:13,360
+Trevor Manz: And so I think one really exciting thing
+
+177
+00:11:13,560 --> 00:11:15,520
+Trevor Manz: about working on this team with Marimo
+
+178
+00:11:15,740 --> 00:11:16,920
+Trevor Manz: is they got very involved
+
+179
+00:11:17,260 --> 00:11:19,320
+Trevor Manz: or they were aware of AnyWidget like a while ago
+
+180
+00:11:19,820 --> 00:11:22,600
+Trevor Manz: and they kind of actually like legitimized AnyWidget
+
+181
+00:11:22,740 --> 00:11:25,140
+Trevor Manz: as like, hey, this is a standard
+
+182
+00:11:25,340 --> 00:11:26,540
+Trevor Manz: because we were able to like implement
+
+183
+00:11:26,960 --> 00:11:28,060
+Trevor Manz: around like this specification.
+
+184
+00:11:29,100 --> 00:11:30,580
+Trevor Manz: And so that got us together.
+
+185
+00:11:30,770 --> 00:11:32,660
+Trevor Manz: And then from there, it's just been super exciting
+
+186
+00:11:32,690 --> 00:11:34,820
+Trevor Manz: to work with the team that is like so passionate
+
+187
+00:11:34,820 --> 00:11:37,920
+Trevor Manz: about notebooks and thinking about this next generation of notebooks
+
+188
+00:11:38,740 --> 00:11:40,640
+Trevor Manz: and what that environment needs to look like.
+
+189
+00:11:40,680 --> 00:11:43,580
+Trevor Manz: And so there's much more that we can do inside of Marimo
+
+190
+00:11:43,900 --> 00:11:45,300
+Trevor Manz: beyond the AnyWidget specification,
+
+191
+00:11:45,960 --> 00:11:48,360
+Trevor Manz: but also AnyWidget is an important component of that.
+
+192
+00:11:48,560 --> 00:11:51,620
+Trevor Manz: So I like to be able to sort of think about both of these two worlds.
+
+193
+00:11:51,960 --> 00:11:52,360
+Michael Kennedy: That's cool.
+
+194
+00:11:52,440 --> 00:11:58,980
+Michael Kennedy: So when I use widgets in Marimo, it's often an AnyWidget?
+
+195
+00:11:59,640 --> 00:12:00,440
+Trevor Manz: Yep. Yeah, exactly.
+
+196
+00:12:00,800 --> 00:12:04,180
+Trevor Manz: So when folks usually come and they want to extend Marimo
+
+197
+00:12:04,180 --> 00:12:05,660
+Trevor Manz: with their own custom UI elements,
+
+198
+00:12:05,970 --> 00:12:09,000
+Trevor Manz: like our answer is you should make an AnyWidget.
+
+199
+00:12:09,850 --> 00:12:10,800
+Trevor Manz: So that's pretty exciting.
+
+200
+00:12:11,840 --> 00:12:13,720
+Trevor Manz: But then if you're using things in like the sidebar
+
+201
+00:12:13,960 --> 00:12:15,520
+Trevor Manz: or things that like sort of integrate outside
+
+202
+00:12:15,860 --> 00:12:16,720
+Trevor Manz: of like the notebook view,
+
+203
+00:12:16,940 --> 00:12:19,380
+Trevor Manz: those aren't more custom elements
+
+204
+00:12:19,510 --> 00:12:20,620
+Trevor Manz: that we've created at Marimo
+
+205
+00:12:20,820 --> 00:12:22,680
+Trevor Manz: that aren't necessarily based on AnyWidget.
+
+206
+00:12:23,040 --> 00:12:23,520
+Michael Kennedy: Mm-hmm.
+
+207
+00:12:24,860 --> 00:12:25,020
+Michael Kennedy: Yeah.
+
+208
+00:12:25,520 --> 00:12:26,740
+Michael Kennedy: So why Marimo?
+
+209
+00:12:27,080 --> 00:12:29,140
+Michael Kennedy: I know I had actually a lot of people talked about
+
+210
+00:12:29,280 --> 00:12:29,960
+Michael Kennedy: when I look at this,
+
+211
+00:12:30,050 --> 00:12:32,760
+Michael Kennedy: it feels like a super modern UI
+
+212
+00:12:32,780 --> 00:12:41,040
+Michael Kennedy: that it's just, it's got a lot of polish and a lot of, you know, it feels 2025 and working with it,
+
+213
+00:12:41,180 --> 00:12:47,340
+Michael Kennedy: right? And it solves some of the, you know, I consider Jupyter Notebooks like the world's
+
+214
+00:12:47,660 --> 00:12:52,740
+Michael Kennedy: most insane, not the world's most insane, second, the second most insane, like series of go-to
+
+215
+00:12:52,920 --> 00:12:56,940
+Michael Kennedy: statements that have no record of how you got the go-to, you know, it doesn't even say go to 10.
+
+216
+00:12:57,080 --> 00:13:00,900
+Michael Kennedy: It's like, well, what did you go and run? I don't know. Like, look at the numbers, but there's like
+
+217
+00:13:01,380 --> 00:13:06,480
+Michael Kennedy: potentially, you know, some lost as you rerun them. And it solves that problem as well. But like,
+
+218
+00:13:06,760 --> 00:13:12,900
+Trevor Manz: you know, what's the elevator pitch for Marimo? Yeah, my elevator pitch for Marimo is that I think
+
+219
+00:13:13,540 --> 00:13:19,060
+Trevor Manz: notebooks are incredibly important. And that it's hard to deny that like, they're a tool that many
+
+220
+00:13:19,220 --> 00:13:24,520
+Trevor Manz: folks use to do their daily work. But there are very few like guardrails to like help you do that
+
+221
+00:13:24,660 --> 00:13:29,320
+Trevor Manz: work and work on a team with other folks. And so one, like, I think one of the big selling points
+
+222
+00:13:29,340 --> 00:13:34,520
+Trevor Manz: to me with marimo is just that um you sort of get to free yourself from thinking about those go-to
+
+223
+00:13:34,600 --> 00:13:40,040
+Trevor Manz: statements and instead you have this very like um deterministic execution that sort of just feels
+
+224
+00:13:40,460 --> 00:13:46,460
+Trevor Manz: like natural like as you write cells they will re-execute um and then on top of that i think that
+
+225
+00:13:47,060 --> 00:13:51,420
+Trevor Manz: jupiter and marimo have like slightly different goals so jupiter like when i showed that diagram
+
+226
+00:13:51,490 --> 00:13:56,340
+Trevor Manz: we had that diagram before you have this split between these like diversity of front ends so
+
+227
+00:13:56,360 --> 00:13:59,940
+Trevor Manz: So that's like, you could use it in Colab, you could use a Jupyter kernel inside of VS Code,
+
+228
+00:14:00,010 --> 00:14:03,460
+Trevor Manz: you could use a Jupyter kernel sort of within the Jupyter CLI.
+
+229
+00:14:04,120 --> 00:14:08,520
+Trevor Manz: But then there's all another requirement of that ecosystem is to support many different kernels.
+
+230
+00:14:08,610 --> 00:14:11,900
+Trevor Manz: So it's not just Python, it could be an R kernel, it could be a Julia kernel.
+
+231
+00:14:12,250 --> 00:14:17,320
+Trevor Manz: And so I think ultimately attention that ends up happening is like a priority of that ecosystem
+
+232
+00:14:17,480 --> 00:14:19,900
+Trevor Manz: is to support all these languages and all these different front ends.
+
+233
+00:14:19,990 --> 00:14:25,540
+Trevor Manz: And instead, by just focusing on Python, we can like really try to develop like a really integrated
+
+234
+00:14:25,540 --> 00:14:28,760
+Trevor Manz: and rich experience specifically for Python notebooks.
+
+235
+00:14:29,540 --> 00:14:31,740
+Trevor Manz: So the trade-off there being some folks come and they say,
+
+236
+00:14:31,980 --> 00:14:33,340
+Trevor Manz: oh, we'd love Marimo, but for R.
+
+237
+00:14:33,360 --> 00:14:35,500
+Trevor Manz: And we're like, well, we can't really do that.
+
+238
+00:14:36,080 --> 00:14:37,060
+Michael Kennedy: It's called Jupyter Lab.
+
+239
+00:14:38,060 --> 00:14:39,840
+Trevor Manz: But we are hyper-focused on Python,
+
+240
+00:14:39,980 --> 00:14:42,940
+Trevor Manz: and that lets us integrate with other trends within the ecosystem too.
+
+241
+00:14:43,120 --> 00:14:45,900
+Trevor Manz: So we're a huge fan of all the work from the Astral folks.
+
+242
+00:14:46,540 --> 00:14:49,260
+Trevor Manz: And we have a tight integration with uv, for example,
+
+243
+00:14:49,560 --> 00:14:53,520
+Trevor Manz: to allow you to use that PEP 723 script metadata.
+
+244
+00:14:54,140 --> 00:15:05,460
+Trevor Manz: And as you're working, we'll install packages for you and write that metadata so that at the end, you can send that document to someone else and they can bootstrap their notebook and get all their dependencies and have their environment set up.
+
+245
+00:15:06,200 --> 00:15:13,160
+Trevor Manz: I think that type of last mile with these notebooks is something that's been hard to get at without really focusing on an ecosystem.
+
+246
+00:15:13,680 --> 00:15:15,900
+Michael Kennedy: That last mile, though, that's a lot of polish.
+
+247
+00:15:16,180 --> 00:15:23,100
+Michael Kennedy: And that's often what kind of gets lost in projects where, I don't know.
+
+248
+00:15:23,880 --> 00:15:26,120
+Michael Kennedy: It's not exactly the focus, right?
+
+249
+00:15:27,160 --> 00:15:29,840
+Michael Kennedy: It's something where you want to take on the most interesting features,
+
+250
+00:15:30,600 --> 00:15:33,620
+Michael Kennedy: and it's not like it's necessarily a company,
+
+251
+00:15:33,880 --> 00:15:34,600
+Michael Kennedy: and there's somebody who's like,
+
+252
+00:15:34,740 --> 00:15:37,480
+Michael Kennedy: no, we're polishing every little rough edge, period.
+
+253
+00:15:37,860 --> 00:15:38,300
+Michael Kennedy: You know what I mean?
+
+254
+00:15:38,680 --> 00:15:40,540
+Michael Kennedy: And I think you mentioned Astral and uv.
+
+255
+00:15:40,780 --> 00:15:44,360
+Michael Kennedy: I think that is an example of they got funding,
+
+256
+00:15:44,560 --> 00:15:47,380
+Michael Kennedy: and it's like, okay, we're not going to do 95% of the packaging.
+
+257
+00:15:47,520 --> 00:15:49,940
+Michael Kennedy: We're going to do 99.9% of the packaging.
+
+258
+00:15:50,080 --> 00:15:50,460
+Michael Kennedy: You know what I mean?
+
+259
+00:15:50,680 --> 00:15:52,380
+Michael Kennedy: And it's made a tremendous difference.
+
+260
+00:15:53,280 --> 00:15:53,400
+Trevor Manz: Yeah.
+
+261
+00:15:53,900 --> 00:15:56,700
+Trevor Manz: Yeah, I mean, I have plenty to say about Astro.
+
+262
+00:15:56,710 --> 00:15:58,700
+Trevor Manz: We love all their tooling over here too.
+
+263
+00:15:59,520 --> 00:16:00,180
+Michael Kennedy: Yeah, so do I.
+
+264
+00:16:00,350 --> 00:16:04,100
+Michael Kennedy: I switched all my stuff to Astro and it's to uv and rough and yeah.
+
+265
+00:16:05,440 --> 00:16:06,480
+Michael Kennedy: Super, super neat.
+
+266
+00:16:09,180 --> 00:16:15,680
+Michael Kennedy: Okay, so another thing that you all just released is a new VS Code plugin.
+
+267
+00:16:16,000 --> 00:16:22,240
+Michael Kennedy: So I guess one of the aspects of Marimo that is not necessarily apparent from looking at it going there
+
+268
+00:16:22,300 --> 00:16:25,320
+Michael Kennedy: is that it's backed by a Python file,
+
+269
+00:16:25,560 --> 00:16:28,300
+Michael Kennedy: not a JSON file that contains both the inputs and outputs,
+
+270
+00:16:28,860 --> 00:16:31,540
+Michael Kennedy: which is one of the big shortcomings of Jupyter.
+
+271
+00:16:32,120 --> 00:16:33,760
+Michael Kennedy: How much of Jupyter would have benefited
+
+272
+00:16:33,830 --> 00:16:35,760
+Michael Kennedy: if it just had an input and an output file?
+
+273
+00:16:36,960 --> 00:16:39,120
+Michael Kennedy: So you don't check in the output file, potentially.
+
+274
+00:16:39,310 --> 00:16:39,740
+Michael Kennedy: You know what I mean?
+
+275
+00:16:40,430 --> 00:16:40,980
+Trevor Manz: Yeah, yeah.
+
+276
+00:16:42,120 --> 00:16:43,480
+Trevor Manz: I think that was pretty visionary,
+
+277
+00:16:43,710 --> 00:16:47,840
+Trevor Manz: or maybe it's more that we have this ability
+
+278
+00:16:47,890 --> 00:16:50,520
+Trevor Manz: to observe what's happened in the Jupyter ecosystem
+
+279
+00:16:50,740 --> 00:16:51,820
+Trevor Manz: and make adjustments from there.
+
+280
+00:16:51,880 --> 00:16:54,040
+Michael Kennedy: A little bit of a second mover benefit of like, we saw that.
+
+281
+00:16:54,120 --> 00:16:55,100
+Michael Kennedy: That was 80% good.
+
+282
+00:16:56,300 --> 00:16:56,420
+Trevor Manz: Definitely.
+
+283
+00:16:56,900 --> 00:16:57,880
+Trevor Manz: Yeah, it was surprising.
+
+284
+00:16:58,280 --> 00:17:01,340
+Trevor Manz: I mean, I think to rip more on Marimo,
+
+285
+00:17:02,579 --> 00:17:04,560
+Trevor Manz: when people ask that question of like, why Marimo?
+
+286
+00:17:04,760 --> 00:17:06,300
+Trevor Manz: I think there are all these very small things,
+
+287
+00:17:06,640 --> 00:17:08,680
+Trevor Manz: but that in net, I think,
+
+288
+00:17:09,660 --> 00:17:11,740
+Trevor Manz: are certainly like an order of magnitude
+
+289
+00:17:11,980 --> 00:17:13,780
+Trevor Manz: kind of like richer experience for our users.
+
+290
+00:17:15,199 --> 00:17:17,520
+Trevor Manz: But it's funny how many times just the fact
+
+291
+00:17:17,640 --> 00:17:19,160
+Trevor Manz: that our notebooks are get-diffable,
+
+292
+00:17:19,360 --> 00:17:21,020
+Trevor Manz: that's one of the first things
+
+293
+00:17:21,040 --> 00:17:23,540
+Trevor Manz: that folks really latch onto and love about Marimo notebooks.
+
+294
+00:17:24,420 --> 00:17:25,420
+Michael Kennedy: Yeah, very cool.
+
+295
+00:17:27,080 --> 00:17:31,300
+Michael Kennedy: So the VS Code extension, how does this help us?
+
+296
+00:17:31,900 --> 00:17:37,340
+Trevor Manz: Yeah, so I think the best experience with using Marimo
+
+297
+00:17:37,440 --> 00:17:41,120
+Trevor Manz: will always be sort of our CLI or our web interface
+
+298
+00:17:41,300 --> 00:17:43,360
+Trevor Manz: that we've really curated around this experience.
+
+299
+00:17:44,160 --> 00:17:47,520
+Trevor Manz: But we have a broad range of users that want to collaborate
+
+300
+00:17:47,600 --> 00:17:48,840
+Trevor Manz: or work on Marimo documents.
+
+301
+00:17:49,160 --> 00:17:57,600
+Trevor Manz: And so some of them are like, you know, I live in my VS Code, my cursor, my Windsurf, my IDE, and like I never want to leave this environment.
+
+302
+00:17:57,900 --> 00:18:02,180
+Trevor Manz: And so getting them to come and like collaborate on these documents has been a little bit of a barrier there.
+
+303
+00:18:02,460 --> 00:18:10,620
+Trevor Manz: So they could, of course, edit a Python file on disk, but having like a native notebook view like they do for Jupyter was something that we sort of lacked in those environments.
+
+304
+00:18:11,040 --> 00:18:19,820
+Trevor Manz: And so we made it a priority shortly after I joined the team where we really wanted to address that user base of folks that want to live in that editor environment.
+
+305
+00:18:20,530 --> 00:18:30,740
+Trevor Manz: And sort of from the ground up wrote this new extension where we have a very integrated view with sort of reactive outputs, similarly to what we have in our user interface.
+
+306
+00:18:30,970 --> 00:18:35,620
+Trevor Manz: But it sort of lives inside of the VS Code ecosystem and uses the VS Code APIs.
+
+307
+00:18:36,720 --> 00:18:38,100
+Michael Kennedy: Yeah, that makes a lot of sense.
+
+308
+00:18:38,580 --> 00:18:40,260
+Michael Kennedy: and it's available on the, what is it,
+
+309
+00:18:40,400 --> 00:18:45,240
+Michael Kennedy: VSX Open Marketplace for like cursor and anti-gravity.
+
+310
+00:18:45,380 --> 00:18:47,000
+Michael Kennedy: That's a thing as of like three days ago.
+
+311
+00:18:47,960 --> 00:18:50,060
+Trevor Manz: Yes, all these different skins of VS Code,
+
+312
+00:18:52,260 --> 00:18:53,940
+Trevor Manz: our extension should work as well
+
+313
+00:18:53,980 --> 00:18:55,560
+Trevor Manz: and we publish it to both marketplaces
+
+314
+00:18:55,820 --> 00:18:57,760
+Trevor Manz: so folks should be able to install it and get started.
+
+315
+00:18:58,200 --> 00:18:59,280
+Michael Kennedy: It's a weird time for editors.
+
+316
+00:19:00,100 --> 00:19:00,360
+Michael Kennedy: Yes.
+
+317
+00:19:00,580 --> 00:19:02,220
+Michael Kennedy: It was really kind of straight.
+
+318
+00:19:02,700 --> 00:19:04,840
+Michael Kennedy: When I first started Talk Python 11 years ago
+
+319
+00:19:04,940 --> 00:19:05,580
+Michael Kennedy: or whatever it was,
+
+320
+00:19:06,060 --> 00:19:09,160
+Michael Kennedy: I would ask people what editor they use at the end of the show
+
+321
+00:19:09,270 --> 00:19:11,940
+Michael Kennedy: because I didn't know what they were going to say.
+
+322
+00:19:11,990 --> 00:19:12,860
+Michael Kennedy: It could have been anything.
+
+323
+00:19:13,220 --> 00:19:15,880
+Michael Kennedy: And then it just narrowed down to VS Code, PyCharm.
+
+324
+00:19:16,330 --> 00:19:16,940
+Michael Kennedy: Those were the answers.
+
+325
+00:19:17,500 --> 00:19:22,140
+Michael Kennedy: And now it's kind of back to a lot of options again.
+
+326
+00:19:23,520 --> 00:19:26,260
+Michael Kennedy: But it generally works in the VS Code variants as well.
+
+327
+00:19:26,700 --> 00:19:26,940
+Trevor Manz: Yeah.
+
+328
+00:19:29,080 --> 00:19:29,380
+Michael Kennedy: All right.
+
+329
+00:19:29,690 --> 00:19:30,000
+Michael Kennedy: Super cool.
+
+330
+00:19:31,480 --> 00:19:31,740
+Michael Kennedy: Okay.
+
+331
+00:19:33,540 --> 00:19:35,520
+Michael Kennedy: Let's talk about just what is a Jupyter widget.
+
+332
+00:19:36,560 --> 00:19:42,100
+Trevor Manz: Yeah, so like I mentioned before, Jupyter really reaches, and Marimo also, reach across
+
+333
+00:19:42,180 --> 00:19:46,640
+Trevor Manz: this chasm between your Python code that's running in some, we call it a kernel environment.
+
+334
+00:19:46,900 --> 00:19:50,120
+Trevor Manz: That's a stateful environment that has your variables, and when you run cells, things
+
+335
+00:19:50,220 --> 00:19:50,800
+Trevor Manz: update there.
+
+336
+00:19:51,740 --> 00:19:56,460
+Trevor Manz: And then on the front end, there's the cell outputs that are a reflection of whatever
+
+337
+00:19:56,510 --> 00:19:57,860
+Trevor Manz: is sort of living in the kernel.
+
+338
+00:19:58,660 --> 00:20:05,380
+Trevor Manz: And a Jupyter widget is a very interesting part of that crossing of that chasm.
+
+339
+00:20:05,440 --> 00:20:08,120
+Trevor Manz: in that you can actually author both the front-end code
+
+340
+00:20:08,280 --> 00:20:10,000
+Trevor Manz: and the back-end code to talk to one another.
+
+341
+00:20:10,240 --> 00:20:13,020
+Trevor Manz: So typically, it's like if you write a Python library,
+
+342
+00:20:13,030 --> 00:20:14,840
+Trevor Manz: you're only writing something that runs on the server.
+
+343
+00:20:15,340 --> 00:20:17,680
+Trevor Manz: And then if you're making a Jupyter extension, for example,
+
+344
+00:20:17,800 --> 00:20:19,440
+Trevor Manz: that's something that only lives in the front-end.
+
+345
+00:20:19,860 --> 00:20:23,500
+Trevor Manz: But a widget allows a library author to connect those two worlds together.
+
+346
+00:20:23,890 --> 00:20:28,140
+Trevor Manz: And so for your small object that lives in the Python kernel,
+
+347
+00:20:28,230 --> 00:20:30,500
+Trevor Manz: you can define ways that it can render itself
+
+348
+00:20:30,980 --> 00:20:33,040
+Trevor Manz: and also be updated from that front-end.
+
+349
+00:20:33,340 --> 00:20:38,340
+Trevor Manz: And so it's a very powerful mechanism that's officially a part of Jupyter that allows you
+
+350
+00:20:38,340 --> 00:20:43,360
+Trevor Manz: to sort of like extend your output cells with, I like to think of it as these like web-based
+
+351
+00:20:43,620 --> 00:20:46,560
+Trevor Manz: superpowers to be able to like update your code in the kernel.
+
+352
+00:20:48,380 --> 00:20:55,080
+Michael Kennedy: You have a really interesting point that you made in your SciPy talk saying, basically,
+
+353
+00:20:56,180 --> 00:21:06,640
+Michael Kennedy: We can do lots of UI stuff in notebooks, but often those are kind of like isolated snapshots, right?
+
+354
+00:21:07,760 --> 00:21:12,040
+Michael Kennedy: Maybe you have a graph and there's like outliers or something along those lines.
+
+355
+00:21:12,760 --> 00:21:20,100
+Michael Kennedy: But you can see them, but you can't like programmatically interact with them in the way that you could a widget.
+
+356
+00:21:20,280 --> 00:21:24,080
+Michael Kennedy: whereas you might drag and select to get a zoom area
+
+357
+00:21:24,220 --> 00:21:26,320
+Michael Kennedy: that actually becomes a data frame
+
+358
+00:21:26,660 --> 00:21:30,540
+Michael Kennedy: or you could move some widgets that then redraw the picture
+
+359
+00:21:30,610 --> 00:21:33,660
+Michael Kennedy: but also becomes something you could program against
+
+360
+00:21:33,980 --> 00:21:35,700
+Michael Kennedy: in like a machine learning algorithm or whatever, right?
+
+361
+00:21:36,880 --> 00:21:39,360
+Michael Kennedy: Maybe I think that's a pretty powerful distinction
+
+362
+00:21:40,240 --> 00:21:42,320
+Michael Kennedy: that people want to have in mind as we dive into any widget.
+
+363
+00:21:42,980 --> 00:21:43,460
+Trevor Manz: Yeah, definitely.
+
+364
+00:21:44,110 --> 00:21:46,160
+Trevor Manz: I like to think of it as like in a traditional
+
+365
+00:21:46,330 --> 00:21:47,660
+Trevor Manz: like REPL kind of environment,
+
+366
+00:21:48,180 --> 00:21:51,800
+Trevor Manz: your two modes of input are writing code and running cells.
+
+367
+00:21:52,560 --> 00:21:54,240
+Trevor Manz: You can write the code and you can run the cell
+
+368
+00:21:54,360 --> 00:21:55,380
+Trevor Manz: and then you can observe the output.
+
+369
+00:21:56,160 --> 00:21:58,620
+Trevor Manz: But in order to act on something that you see in that output
+
+370
+00:21:58,730 --> 00:21:59,760
+Trevor Manz: you have to write more code.
+
+371
+00:22:01,180 --> 00:22:02,860
+Trevor Manz: If you have a plot, for example,
+
+372
+00:22:03,340 --> 00:22:04,760
+Trevor Manz: that you produce from one of those outputs,
+
+373
+00:22:05,380 --> 00:22:06,420
+Trevor Manz: if there's some outliers or something,
+
+374
+00:22:06,450 --> 00:22:09,140
+Trevor Manz: a very natural thing to think is what is that point
+
+375
+00:22:09,410 --> 00:22:10,900
+Trevor Manz: and you want to circle that point.
+
+376
+00:22:11,180 --> 00:22:13,060
+Trevor Manz: That is much easier to do with a gesture
+
+377
+00:22:13,360 --> 00:22:16,259
+Trevor Manz: than it is to express as some sort of query
+
+378
+00:22:16,700 --> 00:22:18,880
+Trevor Manz: in typing out some program
+
+379
+00:22:19,520 --> 00:22:21,080
+Michael Kennedy: and kind of looking at the axes to say,
+
+380
+00:22:21,220 --> 00:22:22,200
+Trevor Manz: what are those points there?
+
+381
+00:22:22,800 --> 00:22:26,900
+Trevor Manz: And so I think widgets really allow for you to be creative
+
+382
+00:22:26,980 --> 00:22:29,740
+Trevor Manz: in terms of how you might,
+
+383
+00:22:30,340 --> 00:22:32,160
+Trevor Manz: like another mode of input
+
+384
+00:22:32,620 --> 00:22:34,160
+Trevor Manz: for adjusting things that might be in the kernel.
+
+385
+00:22:34,280 --> 00:22:35,000
+Trevor Manz: And like you were saying,
+
+386
+00:22:35,600 --> 00:22:36,800
+Trevor Manz: now you can transform a selection
+
+387
+00:22:37,040 --> 00:22:38,640
+Trevor Manz: into just a data frame that you get out
+
+388
+00:22:38,880 --> 00:22:40,560
+Trevor Manz: and then you're off to the races
+
+389
+00:22:40,660 --> 00:22:42,020
+Trevor Manz: with running the next part of your program.
+
+390
+00:22:42,200 --> 00:22:44,659
+Trevor Manz: And so I think it adds this degree of freedom
+
+391
+00:22:44,660 --> 00:22:48,980
+Trevor Manz: to let the algorithms and data use code when that's useful.
+
+392
+00:22:49,360 --> 00:22:51,620
+Trevor Manz: And then for those pieces where you want to step in as a human
+
+393
+00:22:51,720 --> 00:22:55,680
+Trevor Manz: and maybe use a gesture and that's easier to express as a gesture,
+
+394
+00:22:55,980 --> 00:23:00,280
+Trevor Manz: then we have that mechanism now to allow you to extend your analyses.
+
+395
+00:23:01,080 --> 00:23:01,160
+Michael Kennedy: Right.
+
+396
+00:23:01,560 --> 00:23:03,800
+Michael Kennedy: If you don't need pictures and interaction,
+
+397
+00:23:03,920 --> 00:23:05,840
+Michael Kennedy: just do it in Python straight.
+
+398
+00:23:06,440 --> 00:23:06,860
+Michael Kennedy: You know what I mean?
+
+399
+00:23:06,980 --> 00:23:08,600
+Michael Kennedy: You don't need notebooks.
+
+400
+00:23:08,920 --> 00:23:14,079
+Michael Kennedy: And part of the value of notebooks is this mix of a visual plus
+
+401
+00:23:15,220 --> 00:23:18,800
+Michael Kennedy: code plus visual and the sort of iterative back and forth between those.
+
+402
+00:23:19,780 --> 00:23:25,260
+Michael Kennedy: And widgets reconnect the visual back to the code, I guess, right?
+
+403
+00:23:25,620 --> 00:23:26,260
+Trevor Manz: Yeah, exactly.
+
+404
+00:23:26,520 --> 00:23:28,540
+Trevor Manz: I like to think of it as like notebooks are,
+
+405
+00:23:28,720 --> 00:23:31,920
+Trevor Manz: like the types of workflows in notebooks are not typically like batch scripts.
+
+406
+00:23:32,100 --> 00:23:35,340
+Trevor Manz: I mean, in Marimo, you can write your notebook and run it as a script,
+
+407
+00:23:35,580 --> 00:23:36,760
+Trevor Manz: but like because it's just Python.
+
+408
+00:23:37,160 --> 00:23:40,820
+Trevor Manz: But often when people are working and like really getting their hands on data,
+
+409
+00:23:41,020 --> 00:23:47,120
+Trevor Manz: These are like long-lived sessions where you have a lot of data in memory and you really want to get your hands on that data.
+
+410
+00:23:47,220 --> 00:23:55,540
+Trevor Manz: And I think if you only had the ability to like kind of write and run cells and not sort of add that extra dimension, like it'd be pretty limited to what you could actually do.
+
+411
+00:23:55,760 --> 00:24:06,680
+Trevor Manz: And so something like widgets allows you to really extend and be creative with how you'd like to like explore that data and sort of like debug your data as it's in memory and get your hands on it.
+
+412
+00:24:07,360 --> 00:24:07,500
+Michael Kennedy: Yeah.
+
+413
+00:24:08,400 --> 00:24:11,940
+Michael Kennedy: Yeah, I mean, that's what blew the world open when all that came around, right?
+
+414
+00:24:12,320 --> 00:24:12,540
+Michael Kennedy: Yeah.
+
+415
+00:24:12,740 --> 00:24:17,180
+Michael Kennedy: So that brings us to AnyWidget.
+
+416
+00:24:18,560 --> 00:24:19,780
+Michael Kennedy: Why a new widget framework?
+
+417
+00:24:19,960 --> 00:24:23,740
+Michael Kennedy: Why not just IPy widgets or whatever the...
+
+418
+00:24:24,960 --> 00:24:25,820
+Trevor Manz: Yeah, it's a great question.
+
+419
+00:24:26,090 --> 00:24:31,200
+Trevor Manz: And it's something that when I started my PhD, like I was not, I guess I didn't really have a hand on either.
+
+420
+00:24:31,640 --> 00:24:38,160
+Trevor Manz: But AnyWidget was definitely born out of a need of myself to solve a problem that I was running into during the PhD.
+
+421
+00:24:38,400 --> 00:24:42,300
+Trevor Manz: So as I mentioned before, we had all these visualization tools that we were building.
+
+422
+00:24:43,740 --> 00:24:48,480
+Trevor Manz: And specifically, one of the tools I was building was a web-based genome browser.
+
+423
+00:24:48,730 --> 00:24:51,880
+Trevor Manz: And so this is something that people put their genomes into.
+
+424
+00:24:52,200 --> 00:24:53,600
+Trevor Manz: And you can align different tracks.
+
+425
+00:24:53,650 --> 00:24:59,020
+Trevor Manz: And you can zoom in and try to understand different types of functional assays and genomics.
+
+426
+00:25:00,480 --> 00:25:03,040
+Trevor Manz: And then we had users that wanted to use these inside of computational notebooks.
+
+427
+00:25:03,580 --> 00:25:06,420
+Trevor Manz: and that one thing that immediately happened
+
+428
+00:25:06,730 --> 00:25:08,600
+Trevor Manz: when we tried to build these integrations for notebooks
+
+429
+00:25:08,960 --> 00:25:10,740
+Trevor Manz: is that you'd spend all this engineering effort
+
+430
+00:25:10,970 --> 00:25:13,600
+Trevor Manz: trying to build an integration for a specific notebook
+
+431
+00:25:14,460 --> 00:25:16,600
+Trevor Manz: but then like someone would come in and say
+
+432
+00:25:16,740 --> 00:25:18,560
+Trevor Manz: oh I'd actually want this to work in Google Colab
+
+433
+00:25:18,650 --> 00:25:20,020
+Trevor Manz: or I need this to work in VS Code
+
+434
+00:25:20,110 --> 00:25:22,380
+Trevor Manz: or I need this to work in this other environment
+
+435
+00:25:22,740 --> 00:25:27,460
+Trevor Manz: and that's sort of all of those environments
+
+436
+00:25:27,530 --> 00:25:29,000
+Trevor Manz: are very similar on the back end side
+
+437
+00:25:29,120 --> 00:25:30,580
+Trevor Manz: but they're very different on the front end
+
+438
+00:25:30,630 --> 00:25:32,299
+Trevor Manz: in terms of the way that you can register
+
+439
+00:25:32,320 --> 00:25:33,580
+Trevor Manz: like front-end code.
+
+440
+00:25:33,620 --> 00:25:36,520
+Trevor Manz: And so I ended up putting a lot on a library author
+
+441
+00:25:36,680 --> 00:25:38,460
+Trevor Manz: like myself to try to build those adapters
+
+442
+00:25:38,580 --> 00:25:39,640
+Trevor Manz: for each of those environments.
+
+443
+00:25:40,160 --> 00:25:43,620
+Trevor Manz: And so any widget was sort of an attempt to standardize
+
+444
+00:25:43,760 --> 00:25:45,780
+Trevor Manz: maybe how we can write that front-end code
+
+445
+00:25:46,560 --> 00:25:47,500
+Trevor Manz: such that it's more,
+
+446
+00:25:47,740 --> 00:25:49,720
+Trevor Manz: and then we can build those adapters in one place
+
+447
+00:25:49,920 --> 00:25:52,060
+Trevor Manz: that then we can support all those different environments.
+
+448
+00:25:52,120 --> 00:25:52,740
+Michael Kennedy: Right, right.
+
+449
+00:25:52,800 --> 00:25:53,960
+Michael Kennedy: We talked about building the widgets
+
+450
+00:25:54,560 --> 00:25:56,080
+Michael Kennedy: largely in JavaScript earlier already,
+
+451
+00:25:57,820 --> 00:26:00,959
+Michael Kennedy: but I think what people maybe who haven't tried this
+
+452
+00:26:01,000 --> 00:26:08,380
+Michael Kennedy: don't realize is how many variations you would have to build to say have I also I wanted to work
+
+453
+00:26:08,480 --> 00:26:14,380
+Michael Kennedy: in Jupyter and I wanted to work in Colab and you've got to build and publish the PyPI and NPM
+
+454
+00:26:15,040 --> 00:26:22,060
+Michael Kennedy: and right there's like so everyone who built one of those had and wanted to cross use they had to
+
+455
+00:26:22,220 --> 00:26:27,519
+Michael Kennedy: do all those adaptation adaptation so and your thought was basically well I could create an
+
+456
+00:26:27,540 --> 00:26:31,040
+Michael Kennedy: adapter that everyone could use and that we don't have to do this ever again.
+
+457
+00:26:31,660 --> 00:26:35,060
+Trevor Manz: Yeah, exactly. And to what you're saying as well, I think
+
+458
+00:26:37,780 --> 00:26:39,380
+Trevor Manz: that adapter craziness
+
+459
+00:26:39,640 --> 00:26:43,060
+Trevor Manz: that's in the web ecosystem of like, oh my gosh, I had to
+
+460
+00:26:44,740 --> 00:26:47,540
+Trevor Manz: transpile my code into all these different formats. It's kind of a nightmare
+
+461
+00:26:47,710 --> 00:26:51,440
+Trevor Manz: in terms of tooling. And it's something that came as a result of
+
+462
+00:26:51,640 --> 00:26:54,759
+Trevor Manz: the state of the JavaScript ecosystem being pretty immature
+
+463
+00:26:56,060 --> 00:26:56,500
+Trevor Manz: 2018.
+
+464
+00:26:58,210 --> 00:27:02,420
+Trevor Manz: And then we, and basically because JavaScript didn't have like a module system.
+
+465
+00:27:03,100 --> 00:27:05,460
+Trevor Manz: And so everyone had to come up with a way to like bundle code.
+
+466
+00:27:05,620 --> 00:27:07,380
+Trevor Manz: And there are all these third party adapters.
+
+467
+00:27:07,410 --> 00:27:10,640
+Trevor Manz: They're figuring out a way that they could like load JavaScript modules.
+
+468
+00:27:11,060 --> 00:27:15,420
+Trevor Manz: And so whatever these tools chose in the way that they chose their front, to load their
+
+469
+00:27:15,560 --> 00:27:18,880
+Trevor Manz: front end code would affect like the way that me as the library author would need to like
+
+470
+00:27:18,960 --> 00:27:19,780
+Trevor Manz: package up the code.
+
+471
+00:27:20,500 --> 00:27:24,140
+Michael Kennedy: By modules and loading, you're talking where people might see the word require.
+
+472
+00:27:24,460 --> 00:27:26,740
+Michael Kennedy: a thing at the top or something like that.
+
+473
+00:27:26,790 --> 00:27:27,660
+Michael Kennedy: Kind of like our import.
+
+474
+00:27:28,300 --> 00:27:30,760
+Trevor Manz: Yes, exactly. It's very much like import statements
+
+475
+00:27:30,910 --> 00:27:32,160
+Trevor Manz: in Python. And in fact,
+
+476
+00:27:33,200 --> 00:27:34,440
+Trevor Manz: if you open up your browser,
+
+477
+00:27:34,490 --> 00:27:36,760
+Trevor Manz: you can use a syntax
+
+478
+00:27:37,040 --> 00:27:38,800
+Trevor Manz: that's called ES modules
+
+479
+00:27:39,110 --> 00:27:40,480
+Trevor Manz: and type in import.
+
+480
+00:27:41,060 --> 00:27:42,960
+Trevor Manz: And you can import a bit
+
+481
+00:27:42,960 --> 00:27:44,480
+Trevor Manz: of JavaScript code via URL.
+
+482
+00:27:45,200 --> 00:27:47,160
+Trevor Manz: And this just works natively
+
+483
+00:27:47,270 --> 00:27:48,640
+Trevor Manz: in the browsers today.
+
+484
+00:27:49,360 --> 00:27:51,120
+Trevor Manz: But it wasn't standardized
+
+485
+00:27:51,330 --> 00:27:52,200
+Trevor Manz: until late 2015.
+
+486
+00:27:53,010 --> 00:27:53,760
+Trevor Manz: Or late 2018.
+
+487
+00:27:54,180 --> 00:27:58,140
+Trevor Manz: So you mentioned require, that's actually a different module system.
+
+488
+00:27:58,220 --> 00:28:00,040
+Trevor Manz: That's not based in browsers.
+
+489
+00:28:00,180 --> 00:28:02,900
+Trevor Manz: And if you were to type require in your browser, that would not work.
+
+490
+00:28:03,160 --> 00:28:05,960
+Trevor Manz: And that is sort of like the tension that was the JavaScript ecosystem.
+
+491
+00:28:06,880 --> 00:28:09,860
+Trevor Manz: So I was aware of some of the trends and things that have happened
+
+492
+00:28:10,540 --> 00:28:13,440
+Trevor Manz: post this new module system because I'd been working in the web ecosystem.
+
+493
+00:28:13,960 --> 00:28:16,300
+Trevor Manz: And yet when I came to work on like Jupyter widgets specifically,
+
+494
+00:28:17,260 --> 00:28:21,720
+Trevor Manz: I felt like I was writing code like I had been a while ago for the browser.
+
+495
+00:28:22,180 --> 00:28:24,120
+Trevor Manz: And so the idea behind any widget was to like,
+
+496
+00:28:24,680 --> 00:28:26,660
+Trevor Manz: let's just simplify this so like that my source
+
+497
+00:28:27,160 --> 00:28:28,040
+Trevor Manz: and the code that I publish
+
+498
+00:28:28,480 --> 00:28:30,800
+Trevor Manz: is more like what the browser understands natively.
+
+499
+00:28:31,170 --> 00:28:33,300
+Trevor Manz: And then we take care of this like transpilation stuff
+
+500
+00:28:34,980 --> 00:28:38,000
+Trevor Manz: once for everybody and package that up inside of any widget
+
+501
+00:28:38,480 --> 00:28:40,500
+Trevor Manz: to deal with sort of like the legacy module systems
+
+502
+00:28:40,680 --> 00:28:44,160
+Trevor Manz: of like JupyterLab, VS Code and a Google collab.
+
+503
+00:28:45,060 --> 00:28:45,120
+Michael Kennedy: - Yeah.
+
+504
+00:28:47,140 --> 00:28:50,060
+Michael Kennedy: Trying to decide if I feel like it's in the interest,
+
+505
+00:28:50,760 --> 00:28:54,540
+Michael Kennedy: If the motivation of any of those platforms would have been to create something like this,
+
+506
+00:28:55,540 --> 00:28:55,640
+Michael Kennedy: right?
+
+507
+00:28:55,860 --> 00:28:57,840
+Michael Kennedy: Like the Jupyter people are like, I don't know the problem.
+
+508
+00:28:57,840 --> 00:28:59,120
+Michael Kennedy: You just write for Jupyter and it works.
+
+509
+00:28:59,400 --> 00:29:02,060
+Michael Kennedy: And the CoLab people are like, I don't see a problem.
+
+510
+00:29:02,080 --> 00:29:03,760
+Michael Kennedy: You just write for CoLab and it works, right?
+
+511
+00:29:04,320 --> 00:29:11,380
+Michael Kennedy: What is the platform people's motivation to create integrations and smooth the transition
+
+512
+00:29:11,440 --> 00:29:12,240
+Michael Kennedy: to the other ones?
+
+513
+00:29:13,320 --> 00:29:13,880
+Michael Kennedy: That's one tension.
+
+514
+00:29:13,980 --> 00:29:17,920
+Michael Kennedy: On the other, though, they might have more stuff come to them if they make it more reusable
+
+515
+00:29:18,140 --> 00:29:18,820
+Michael Kennedy: across them, right?
+
+516
+00:29:18,920 --> 00:29:20,980
+Michael Kennedy: So it's interesting that none of them actually did that.
+
+517
+00:29:21,340 --> 00:29:26,320
+Trevor Manz: Yeah, I think, I mean, in hindsight, it makes sense why someone in my position, like, I guess,
+
+518
+00:29:26,560 --> 00:29:30,920
+Trevor Manz: focused on this because it was like, I had two widgets and then times the number of platforms.
+
+519
+00:29:31,200 --> 00:29:33,840
+Trevor Manz: And then if something broke, you'd have to go fix it a bunch of different places.
+
+520
+00:29:34,160 --> 00:29:36,500
+Trevor Manz: And like, it just becomes a maintenance nightmare.
+
+521
+00:29:38,820 --> 00:29:43,020
+Trevor Manz: But one thing that's been really interesting is I think that there is a good pressure to like,
+
+522
+00:29:43,580 --> 00:29:45,580
+Trevor Manz: support like a healthy ecosystem.
+
+523
+00:29:46,040 --> 00:29:51,360
+Trevor Manz: So I'd say before any widget, it was pretty complicated to create custom widgets.
+
+524
+00:29:51,640 --> 00:30:01,380
+Trevor Manz: And so one of my goals was I want the feeling of being able to author a widget to be very similar to the way that you can copy and paste code into a notebook, but move it into a file.
+
+525
+00:30:01,580 --> 00:30:03,180
+Trevor Manz: And then you could publish that to PyPI.
+
+526
+00:30:03,560 --> 00:30:05,520
+Trevor Manz: And that workflow always worked for Python.
+
+527
+00:30:06,240 --> 00:30:11,500
+Trevor Manz: But there was no way to start prototyping a widget inside of a notebook before and then move it out.
+
+528
+00:30:11,880 --> 00:30:14,780
+Trevor Manz: And I really wanted to bring sort of to lower that barrier to entry.
+
+529
+00:30:16,500 --> 00:30:19,600
+Trevor Manz: And then what I think came out of that is you get a much richer ecosystem
+
+530
+00:30:19,690 --> 00:30:22,520
+Trevor Manz: of people that are willing to try and make things.
+
+531
+00:30:23,260 --> 00:30:25,380
+Trevor Manz: And then when there's a cool widget that comes out,
+
+532
+00:30:25,470 --> 00:30:27,920
+Trevor Manz: then that's a good positive pressure for other ecosystems
+
+533
+00:30:28,150 --> 00:30:29,440
+Trevor Manz: because then people are trying to request.
+
+534
+00:30:29,450 --> 00:30:31,860
+Trevor Manz: They go, hey, I want this widget to work in your environment.
+
+535
+00:30:31,990 --> 00:30:34,520
+Trevor Manz: And that puts more pressure on various environments
+
+536
+00:30:34,820 --> 00:30:37,260
+Trevor Manz: to implement sort of a more standardized approach.
+
+537
+00:30:37,920 --> 00:30:40,840
+Michael Kennedy: Or adopt an adapting layer like any widget.
+
+538
+00:30:41,400 --> 00:30:42,140
+Michael Kennedy: Yep, yeah, exactly.
+
+539
+00:30:42,760 --> 00:30:44,240
+Michael Kennedy: Yeah, to sort of back you up here,
+
+540
+00:30:45,400 --> 00:30:47,600
+Michael Kennedy: Kostal says, "Thank you for building any widget.
+
+541
+00:30:48,040 --> 00:30:49,740
+Michael Kennedy: Having gone through creating an IPy widget,
+
+542
+00:30:49,920 --> 00:30:51,040
+Michael Kennedy: it was a lot of work."
+
+543
+00:30:51,040 --> 00:30:53,040
+Michael Kennedy: So yeah, exactly.
+
+544
+00:30:54,240 --> 00:30:54,700
+Michael Kennedy: Exactly.
+
+545
+00:30:57,200 --> 00:31:00,640
+Michael Kennedy: Let's just take a tour through the widget gallery.
+
+546
+00:31:01,660 --> 00:31:03,200
+Michael Kennedy: What widgets are available here?
+
+547
+00:31:05,240 --> 00:31:06,460
+Michael Kennedy: Got some favorites?
+
+548
+00:31:06,820 --> 00:31:08,240
+Trevor Manz: Yeah, we definitely have some favorites.
+
+549
+00:31:09,440 --> 00:31:12,360
+Trevor Manz: I would say that one of the early adopters of AnyWidget
+
+550
+00:31:12,460 --> 00:31:14,680
+Trevor Manz: is a fairly popular plotting library called Altair.
+
+551
+00:31:16,600 --> 00:31:19,960
+Trevor Manz: And it allows to do exactly what you were talking about earlier
+
+552
+00:31:20,040 --> 00:31:23,600
+Trevor Manz: with selecting points and allowing you to get those back
+
+553
+00:31:23,620 --> 00:31:24,880
+Trevor Manz: as data frames in the kernel.
+
+554
+00:31:25,160 --> 00:31:27,260
+Trevor Manz: So for a while, the way that Altair worked,
+
+555
+00:31:27,860 --> 00:31:34,580
+Trevor Manz: and I think it still by default works inside of a Jupyter environment,
+
+556
+00:31:34,660 --> 00:31:36,980
+Trevor Manz: is that it creates sort of an interactive output
+
+557
+00:31:37,220 --> 00:31:38,640
+Trevor Manz: that isn't connected back to the kernel.
+
+558
+00:31:39,000 --> 00:31:47,020
+Michael Kennedy: It feels interactive because you can zoom in and you can select and you can do all the things, but it's just a view.
+
+559
+00:31:47,670 --> 00:31:52,660
+Trevor Manz: Exactly. That state, I like to think of it as trapped in the output and you can't get it back in the notebook.
+
+560
+00:31:52,950 --> 00:32:00,020
+Trevor Manz: And so what the AnyWidget does behind the scenes is it allows for that output to communicate back with the kernel,
+
+561
+00:32:00,470 --> 00:32:06,640
+Trevor Manz: which then allows you to update an object or a selection and then run your cell again and view some output.
+
+562
+00:32:06,800 --> 00:32:15,780
+Trevor Manz: And just that bi-directional communication between your kernel and your front end allows you to do things like create a data frame that is updated when you select.
+
+563
+00:32:17,740 --> 00:32:17,820
+Michael Kennedy: Yeah.
+
+564
+00:32:18,280 --> 00:32:18,640
+Michael Kennedy: Nice.
+
+565
+00:32:19,380 --> 00:32:23,220
+Michael Kennedy: Yeah, it's sort of that example we talked about, the outliers before, right?
+
+566
+00:32:23,740 --> 00:32:24,260
+Trevor Manz: Yeah, exactly.
+
+567
+00:32:27,940 --> 00:32:29,120
+Michael Kennedy: Altair's super cool.
+
+568
+00:32:29,680 --> 00:32:32,760
+Michael Kennedy: I talked to Jake Vanderplass about it when it first came out.
+
+569
+00:32:32,880 --> 00:32:34,860
+Michael Kennedy: And it's very beautiful.
+
+570
+00:32:35,900 --> 00:32:40,340
+Trevor Manz: Yeah, Altair was actually, I think, how I got into open source contributions forever
+
+571
+00:32:40,470 --> 00:32:40,580
+Trevor Manz: ago.
+
+572
+00:32:41,040 --> 00:32:47,499
+Trevor Manz: I made documentation examples, and it was very fun to come full circle to actually have a
+
+573
+00:32:48,220 --> 00:32:51,360
+Trevor Manz: dependency that somehow got back into that library many years later.
+
+574
+00:32:51,820 --> 00:32:58,060
+Michael Kennedy: Yeah, now you built something that supercharges Altair because now it has bidirectional data
+
+575
+00:32:58,260 --> 00:32:59,860
+Michael Kennedy: integration sort of thing.
+
+576
+00:33:00,280 --> 00:33:01,060
+Michael Kennedy: Yeah, that's wild.
+
+577
+00:33:01,960 --> 00:33:03,780
+Michael Kennedy: Maybe just talk to people really quick about that.
+
+578
+00:33:05,300 --> 00:33:09,120
+Michael Kennedy: You don't have to write a revolutionary feature to be part of open source.
+
+579
+00:33:10,340 --> 00:33:11,600
+Trevor Manz: Yeah, definitely.
+
+580
+00:33:11,920 --> 00:33:17,600
+Trevor Manz: I think my entry to open source was just I got interested in a plotting library,
+
+581
+00:33:17,940 --> 00:33:21,220
+Trevor Manz: and they had some open tickets for making examples for their documentation.
+
+582
+00:33:21,820 --> 00:33:24,060
+Trevor Manz: And I wanted to learn how to use the plotting library,
+
+583
+00:33:24,280 --> 00:33:25,920
+Trevor Manz: so then I started contributing to them.
+
+584
+00:33:26,100 --> 00:33:28,820
+Trevor Manz: And it was really like those interactions, I think, with maintainers
+
+585
+00:33:29,360 --> 00:33:31,760
+Trevor Manz: that kind of got a tick in my head where I was like,
+
+586
+00:33:31,820 --> 00:33:35,280
+Trevor Manz: oh, I think I like this way of working and communicate.
+
+587
+00:33:35,380 --> 00:33:37,880
+Trevor Manz: Like there's a lot of, I don't know,
+
+588
+00:33:38,120 --> 00:33:39,520
+Trevor Manz: oftentimes the challenges in open source
+
+589
+00:33:39,720 --> 00:33:41,460
+Trevor Manz: aren't so technical as they are just social
+
+590
+00:33:41,660 --> 00:33:43,720
+Trevor Manz: and figuring out how to communicate expectations
+
+591
+00:33:44,140 --> 00:33:44,940
+Trevor Manz: to different users.
+
+592
+00:33:45,140 --> 00:33:47,380
+Trevor Manz: And I think specifically interacting
+
+593
+00:33:47,440 --> 00:33:49,460
+Trevor Manz: with Jake Vander Plaas in some of those issues,
+
+594
+00:33:49,540 --> 00:33:53,080
+Trevor Manz: I think I learned a lot about that
+
+595
+00:33:53,320 --> 00:33:55,920
+Trevor Manz: and I was attracted to trying to find new ways
+
+596
+00:33:56,140 --> 00:33:58,480
+Trevor Manz: to work on problems in open source.
+
+597
+00:33:59,200 --> 00:33:59,920
+Michael Kennedy: Yeah, awesome.
+
+598
+00:34:01,400 --> 00:34:01,640
+Michael Kennedy: All right.
+
+599
+00:34:01,800 --> 00:34:05,580
+Michael Kennedy: Well, that's number one with 10,000 favorites out of the community.
+
+600
+00:34:07,080 --> 00:34:07,660
+Michael Kennedy: What are some others?
+
+601
+00:34:08,179 --> 00:34:12,679
+Trevor Manz: Some of the other, I would say like, so Vincent Womerdam, who is one of my colleagues and
+
+602
+00:34:12,800 --> 00:34:14,879
+Trevor Manz: you've had it on the podcast many times before.
+
+603
+00:34:14,960 --> 00:34:15,620
+Michael Kennedy: A couple of times, yeah.
+
+604
+00:34:15,879 --> 00:34:18,179
+Trevor Manz: Yeah, has created this draw data widget.
+
+605
+00:34:18,320 --> 00:34:25,040
+Trevor Manz: And I would say when this widget came out, this was very much, it demos very well.
+
+606
+00:34:25,320 --> 00:34:29,399
+Trevor Manz: So the idea is that you have like a canvas that you can draw some points and you get
+
+607
+00:34:29,419 --> 00:34:31,060
+Trevor Manz: those points back out as a data frame.
+
+608
+00:34:33,040 --> 00:34:35,919
+Trevor Manz: And yes, so Vincent has a nice Marimo notebook
+
+609
+00:34:36,159 --> 00:34:37,879
+Trevor Manz: that's running in the browser, I think.
+
+610
+00:34:38,260 --> 00:34:38,879
+Michael Kennedy: - Yeah, that's right.
+
+611
+00:34:39,060 --> 00:34:39,639
+Michael Kennedy: - There we go.
+
+612
+00:34:40,200 --> 00:34:42,220
+Trevor Manz: And I believe if you draw some points.
+
+613
+00:34:42,740 --> 00:34:43,260
+Michael Kennedy: - I don't like the brush.
+
+614
+00:34:43,419 --> 00:34:44,159
+Michael Kennedy: I'm gonna change the brush side.
+
+615
+00:34:44,620 --> 00:34:45,639
+Michael Kennedy: We've got precise data here.
+
+616
+00:34:45,740 --> 00:34:46,060
+Michael Kennedy: So no.
+
+617
+00:34:47,040 --> 00:34:47,820
+Michael Kennedy: - I think if we go--
+
+618
+00:34:47,820 --> 00:34:49,520
+Michael Kennedy: - So you could have one kind of data set here,
+
+619
+00:34:49,600 --> 00:34:50,899
+Michael Kennedy: and then you could go like, okay, we're gonna do,
+
+620
+00:34:52,080 --> 00:34:52,960
+Michael Kennedy: you know, this is super interesting
+
+621
+00:34:53,139 --> 00:34:55,980
+Michael Kennedy: because maybe you say like the data kind of looks like this
+
+622
+00:34:56,020 --> 00:34:57,520
+Michael Kennedy: and I wanna run an algorithm against it,
+
+623
+00:34:57,920 --> 00:34:59,580
+Michael Kennedy: but there's a ton of work to get the data
+
+624
+00:34:59,580 --> 00:35:00,140
+Michael Kennedy: in the right format.
+
+625
+00:35:00,460 --> 00:35:06,080
+Michael Kennedy: You could just start kind of just visually doing these things,
+
+626
+00:35:06,680 --> 00:35:09,540
+Michael Kennedy: and then you can go on and analyze it
+
+627
+00:35:09,600 --> 00:35:14,160
+Michael Kennedy: and do all sorts of stuff by just literally by drawing.
+
+628
+00:35:14,500 --> 00:35:14,960
+Trevor Manz: Yeah.
+
+629
+00:35:16,640 --> 00:35:19,040
+Trevor Manz: Educators are quite excited about this kind of widget
+
+630
+00:35:19,280 --> 00:35:20,380
+Trevor Manz: because it's like, hey, here's this.
+
+631
+00:35:21,360 --> 00:35:22,820
+Trevor Manz: How does a random forest algorithm work?
+
+632
+00:35:23,040 --> 00:35:24,520
+Trevor Manz: It's like, okay, we can just draw a data set,
+
+633
+00:35:24,530 --> 00:35:27,520
+Trevor Manz: and then we can actually view how a classification would work
+
+634
+00:35:27,580 --> 00:35:29,160
+Trevor Manz: over a specific type of data set.
+
+635
+00:35:29,380 --> 00:35:35,740
+Trevor Manz: And I think it's really that type of interplay between something that you can play with to create something with the data.
+
+636
+00:35:35,870 --> 00:35:39,480
+Trevor Manz: And then maybe you take scikit-learn or something and apply an algorithm.
+
+637
+00:35:39,940 --> 00:35:50,640
+Trevor Manz: And you can help build intuition for how these algorithms work just by plugging in with the actual workhorse of doing the operations and computing your classifier.
+
+638
+00:35:50,840 --> 00:35:57,260
+Trevor Manz: But instead, you have this new input, which is allowing for a bit more play with learning how those algorithms work.
+
+639
+00:35:57,320 --> 00:35:58,060
+Trevor Manz: Yeah.
+
+640
+00:35:58,060 --> 00:35:58,540
+Michael Kennedy: Yeah.
+
+641
+00:35:58,780 --> 00:36:06,880
+Michael Kennedy: You're, you have an algorithm and you say, I want to see how, if the data looked like
+
+642
+00:36:07,000 --> 00:36:07,840
+Michael Kennedy: this, what would happen?
+
+643
+00:36:07,860 --> 00:36:09,560
+Michael Kennedy: If the data looked like that, what would happen?
+
+644
+00:36:10,080 --> 00:36:15,600
+Michael Kennedy: And a lot of times people will result to generating that data with code, either by writing,
+
+645
+00:36:16,200 --> 00:36:19,860
+Michael Kennedy: writing it themselves, using a library like Faker or something like that, you know, to
+
+646
+00:36:20,000 --> 00:36:21,260
+Michael Kennedy: like, how am I going to get it?
+
+647
+00:36:21,720 --> 00:36:22,580
+Michael Kennedy: What if it looks like this?
+
+648
+00:36:22,680 --> 00:36:26,060
+Michael Kennedy: And here you just say, what if it looks like this and you draw it?
+
+649
+00:36:26,360 --> 00:36:28,520
+Michael Kennedy: Then you run your algorithm based on the output of it
+
+650
+00:36:28,600 --> 00:36:30,680
+Michael Kennedy: because it's a widget, an AnyWidget widget.
+
+651
+00:36:31,580 --> 00:36:32,840
+Michael Kennedy: And then you just keep going.
+
+652
+00:36:33,020 --> 00:36:34,180
+Michael Kennedy: It's super neat, actually.
+
+653
+00:36:34,980 --> 00:36:35,780
+Trevor Manz: Yeah, yeah.
+
+654
+00:36:36,060 --> 00:36:38,920
+Trevor Manz: So to go back to, I think,
+
+655
+00:36:39,440 --> 00:36:40,720
+Trevor Manz: something you mentioned before as well,
+
+656
+00:36:41,260 --> 00:36:43,560
+Trevor Manz: like AnyWidget sort of serves two communities.
+
+657
+00:36:43,800 --> 00:36:45,140
+Trevor Manz: So I think for one, there are folks
+
+658
+00:36:45,300 --> 00:36:47,960
+Trevor Manz: that never will ever need to touch or learn any JavaScript
+
+659
+00:36:48,100 --> 00:36:49,480
+Trevor Manz: but can just use these libraries
+
+660
+00:36:49,560 --> 00:36:50,940
+Trevor Manz: like they would Python packages.
+
+661
+00:36:51,320 --> 00:36:53,860
+Trevor Manz: So the idea is, hey, I can pip install draw data
+
+662
+00:36:54,140 --> 00:36:55,279
+Trevor Manz: and now I get to use a scatter widget
+
+663
+00:36:55,300 --> 00:37:00,260
+Trevor Manz: it. And I don't care at all how it works, but now I get to understand how this algorithm works.
+
+664
+00:37:00,980 --> 00:37:06,080
+Trevor Manz: But for those that are interested, they can go and learn maybe a little bit of JavaScript,
+
+665
+00:37:06,480 --> 00:37:10,860
+Trevor Manz: progressively a little bit more JavaScript, to create something and package it up for
+
+666
+00:37:11,740 --> 00:37:14,940
+Trevor Manz: many different platforms. So you sort of have people that want to make libraries,
+
+667
+00:37:15,150 --> 00:37:19,560
+Trevor Manz: and then you have library consumers. And depending on how much front-end stuff you want to learn,
+
+668
+00:37:19,940 --> 00:37:24,439
+Trevor Manz: that's how deep you can go into either of those sides. But I'd say probably many more people are
+
+669
+00:37:24,460 --> 00:37:29,660
+Trevor Manz: just widget users and happily wire them together and don't worry about it and move on with their
+
+670
+00:37:29,740 --> 00:37:34,660
+Trevor Manz: day. And then there's some folks that maybe go a little bit deeper on the JS side and learn how
+
+671
+00:37:34,660 --> 00:37:39,280
+Michael Kennedy: to create these interactive experiences. When you say wire them together, do you mean like put
+
+672
+00:37:39,780 --> 00:37:44,320
+Michael Kennedy: one in a notebook in one cell and then another in another cell, but then say the input of it
+
+673
+00:37:44,480 --> 00:37:48,620
+Michael Kennedy: is the output of the other, that kind of wire together? Exactly. Yeah. So you can really think
+
+674
+00:37:48,630 --> 00:37:52,860
+Trevor Manz: of these as like building blocks that you can like compose inside of a notebook environment.
+
+675
+00:37:53,320 --> 00:38:00,400
+Trevor Manz: And I think specifically in Marimo, a really cool thing is that when you update that value that lives in the kernel, that cell below will rerun.
+
+676
+00:38:00,520 --> 00:38:04,700
+Trevor Manz: So now it's not just like you do the thing and then you have to manually rerun the cell.
+
+677
+00:38:04,720 --> 00:38:13,300
+Trevor Manz: You actually start to build up, based off our reactivity graph, like a little bit of an application of like I select some cells and now that reruns this Python code.
+
+678
+00:38:13,660 --> 00:38:19,020
+Trevor Manz: And if I have more cells that run after that, it all is sort of wired up from this new input, which is your widget.
+
+679
+00:38:20,160 --> 00:38:22,420
+Michael Kennedy: Yeah, I kind of riffed on this a little bit
+
+680
+00:38:22,500 --> 00:38:24,140
+Michael Kennedy: when I said the world's craziest go-to.
+
+681
+00:38:24,200 --> 00:38:27,340
+Michael Kennedy: And I said the second craziest because the most crazy is Excel.
+
+682
+00:38:28,900 --> 00:38:32,500
+Michael Kennedy: But that's because the way Marimo solves that
+
+683
+00:38:32,620 --> 00:38:35,300
+Michael Kennedy: is it actually understands the way these variables
+
+684
+00:38:35,560 --> 00:38:36,300
+Michael Kennedy: used across cells.
+
+685
+00:38:36,360 --> 00:38:38,420
+Michael Kennedy: So when I move a widget in one, it redraws.
+
+686
+00:38:38,500 --> 00:38:40,980
+Michael Kennedy: It's like, oh, the thing that depended upon it
+
+687
+00:38:41,780 --> 00:38:42,580
+Michael Kennedy: also now has to change.
+
+688
+00:38:42,680 --> 00:38:46,000
+Michael Kennedy: And then it cascades that execution across the widgets,
+
+689
+00:38:46,220 --> 00:38:46,300
+Michael Kennedy: right?
+
+690
+00:38:46,620 --> 00:38:46,900
+Trevor Manz: Exactly.
+
+691
+00:38:47,380 --> 00:38:48,679
+Trevor Manz: And that would normally just happen
+
+692
+00:38:48,700 --> 00:38:52,200
+Trevor Manz: if you use our built-in UI elements or if you rerun cells.
+
+693
+00:38:53,030 --> 00:38:56,700
+Trevor Manz: And because it's just this reactive model where we trace the dependency,
+
+694
+00:38:56,980 --> 00:39:00,040
+Trevor Manz: we just track what the dependencies are statically between your cells.
+
+695
+00:39:00,720 --> 00:39:03,380
+Trevor Manz: We know that when you update this property on a widget,
+
+696
+00:39:03,640 --> 00:39:06,140
+Trevor Manz: we know it sells that you have to update that depend on that widget.
+
+697
+00:39:06,350 --> 00:39:10,200
+Trevor Manz: And so, yeah, it just sort of all falls out of this simple idea
+
+698
+00:39:10,460 --> 00:39:11,800
+Trevor Manz: of your notebooks are a graph.
+
+699
+00:39:11,920 --> 00:39:14,880
+Trevor Manz: They're not just like this manual.
+
+700
+00:39:15,860 --> 00:39:19,220
+Trevor Manz: I think of it as like a lot of running cells
+
+701
+00:39:19,320 --> 00:39:20,380
+Trevor Manz: is like manual callbacks.
+
+702
+00:39:20,680 --> 00:39:22,340
+Trevor Manz: Like you do something and you're like,
+
+703
+00:39:22,380 --> 00:39:24,340
+Trevor Manz: oh, I have to click a callback and run it.
+
+704
+00:39:24,520 --> 00:39:27,540
+Trevor Manz: And by modeling it as a graph, we can run those for you.
+
+705
+00:39:27,920 --> 00:39:31,200
+Trevor Manz: And so that we know exactly what needs to update
+
+706
+00:39:31,500 --> 00:39:35,320
+Trevor Manz: when this dependency of that part of the graph is invalidated.
+
+707
+00:39:36,520 --> 00:39:38,340
+Michael Kennedy: - I've talked to some data scientists who are like,
+
+708
+00:39:39,940 --> 00:39:42,400
+Michael Kennedy: that is both a feature and a problem
+
+709
+00:39:42,680 --> 00:39:45,300
+Michael Kennedy: that you can just be so free form in Jupyter Notebooks, right?
+
+710
+00:39:45,520 --> 00:39:47,440
+Michael Kennedy: Like I can just iterate and play.
+
+711
+00:39:47,730 --> 00:39:51,400
+Michael Kennedy: And I think while you're iterating and playing, that freedom is great.
+
+712
+00:39:51,530 --> 00:39:56,860
+Michael Kennedy: But as soon as you want to start making decisions, then it becomes like a real danger point, right?
+
+713
+00:39:57,500 --> 00:39:57,600
+Michael Kennedy: Yeah.
+
+714
+00:39:58,170 --> 00:39:59,920
+Trevor Manz: I think there's kind of a nice balance.
+
+715
+00:40:00,180 --> 00:40:09,140
+Trevor Manz: So specifically in Marimo, there are some requirements for how you have to write your Python code that are slightly more limiting than within a Jupyter environment.
+
+716
+00:40:09,400 --> 00:40:14,460
+Trevor Manz: And one that often trips folks up is that you can't redeclare variables across cells or else it would be ambiguous.
+
+717
+00:40:15,380 --> 00:40:19,320
+Trevor Manz: Like what is this the cell that defines X or is this the cell that defines X?
+
+718
+00:40:20,540 --> 00:40:21,740
+Trevor Manz: But I like to think about it.
+
+719
+00:40:21,740 --> 00:40:22,760
+Michael Kennedy: Which order did you run it in?
+
+720
+00:40:22,880 --> 00:40:23,280
+Michael Kennedy: That's the one.
+
+721
+00:40:23,840 --> 00:40:24,560
+Trevor Manz: Yeah, exactly.
+
+722
+00:40:25,000 --> 00:40:25,360
+Michael Kennedy: That's tricky.
+
+723
+00:40:25,820 --> 00:40:27,740
+Trevor Manz: So we're fairly strict on that.
+
+724
+00:40:27,900 --> 00:40:32,340
+Trevor Manz: But what we believe is if you buy into this like constraint, then we can give you all these properties,
+
+725
+00:40:32,660 --> 00:40:38,800
+Trevor Manz: which are deterministic execution order and the ability to, you know, turn these scripts into reproducible,
+
+726
+00:40:39,840 --> 00:40:43,340
+Trevor Manz: or turn these sort of open-ended workflows
+
+727
+00:40:43,720 --> 00:40:44,940
+Trevor Manz: into more reproducible artifacts
+
+728
+00:40:45,480 --> 00:40:47,640
+Trevor Manz: that have a deterministic execution order.
+
+729
+00:40:48,760 --> 00:40:50,480
+Trevor Manz: And so I like to think of it a little bit as like,
+
+730
+00:40:50,620 --> 00:40:52,560
+Trevor Manz: I used to type Python code without type hints.
+
+731
+00:40:53,100 --> 00:40:54,220
+Trevor Manz: Then I started using type hints,
+
+732
+00:40:54,300 --> 00:40:56,980
+Trevor Manz: and now I can't imagine not having any autocomplete.
+
+733
+00:40:57,500 --> 00:40:59,320
+Trevor Manz: And now I think maybe our type,
+
+734
+00:40:59,620 --> 00:41:01,500
+Trevor Manz: when you start working with data in long-lived sessions,
+
+735
+00:41:01,720 --> 00:41:04,300
+Trevor Manz: having some of these guardrails actually help you keep on track
+
+736
+00:41:04,880 --> 00:41:06,700
+Trevor Manz: such that if you accidentally delete a variable,
+
+737
+00:41:07,580 --> 00:41:09,140
+Trevor Manz: we'll let you know that you deleted it.
+
+738
+00:41:09,180 --> 00:41:11,200
+Trevor Manz: And it's not something that the next time you boot up the notebook,
+
+739
+00:41:11,400 --> 00:41:12,420
+Trevor Manz: you're just missing that variable.
+
+740
+00:41:12,920 --> 00:41:14,980
+Trevor Manz: So it's something that you buy into,
+
+741
+00:41:15,120 --> 00:41:17,580
+Trevor Manz: but then I think has all these nice consequences that come out.
+
+742
+00:41:18,460 --> 00:41:21,500
+Michael Kennedy: As a newbie, you'll see like these things are not defined
+
+743
+00:41:21,520 --> 00:41:22,620
+Michael Kennedy: or this library doesn't exist.
+
+744
+00:41:22,800 --> 00:41:23,920
+Michael Kennedy: And you know what it does exist?
+
+745
+00:41:23,960 --> 00:41:26,220
+Michael Kennedy: You just skipped running the top import cell.
+
+746
+00:41:26,600 --> 00:41:28,460
+Michael Kennedy: That stuff's a little frustrating.
+
+747
+00:41:29,940 --> 00:41:33,540
+Michael Kennedy: So during this talk you talked about, during your talk previously,
+
+748
+00:41:33,740 --> 00:41:38,860
+Michael Kennedy: You talked about how any widget allows you to write just enough JavaScript.
+
+749
+00:41:40,520 --> 00:41:41,340
+Michael Kennedy: What do you mean by that?
+
+750
+00:41:41,420 --> 00:41:42,920
+Trevor Manz: What do I mean by just enough JavaScript?
+
+751
+00:41:43,240 --> 00:41:43,300
+Michael Kennedy: Yeah.
+
+752
+00:41:44,440 --> 00:41:46,240
+Michael Kennedy: So one person's just enough JavaScript.
+
+753
+00:41:46,390 --> 00:41:48,580
+Michael Kennedy: There's another person like, whoa, way too much JavaScript.
+
+754
+00:41:49,180 --> 00:41:49,440
+Trevor Manz: Sure.
+
+755
+00:41:49,790 --> 00:41:55,380
+Trevor Manz: So when I first started learning any front-end code, my experience was I opened up an HTML
+
+756
+00:41:55,720 --> 00:41:57,860
+Trevor Manz: file and I just wrote some JavaScript on the page.
+
+757
+00:41:58,020 --> 00:42:05,320
+Trevor Manz: And I completely love this workflow for playing and learning how to write code for the first time in the browser.
+
+758
+00:42:06,120 --> 00:42:14,400
+Trevor Manz: But I think over the years, as people have started to build things like Figma and Adobe in the browser,
+
+759
+00:42:14,840 --> 00:42:18,580
+Trevor Manz: there's a ton of tooling that has come up to help build those types of applications.
+
+760
+00:42:19,300 --> 00:42:26,580
+Trevor Manz: So many people's first experience with writing JavaScript is someone telling them that they need to learn React or learn a specific framework.
+
+761
+00:42:27,480 --> 00:42:30,380
+Trevor Manz: And then it's a bit like, well, this isn't technically JavaScript.
+
+762
+00:42:30,600 --> 00:42:32,600
+Trevor Manz: This is like a flavor of JavaScript that we transform.
+
+763
+00:42:33,860 --> 00:42:42,940
+Trevor Manz: And so the experience that I wanted for any widget was to write sort of this like standardized JavaScript code as sort of the entry point to your widgets.
+
+764
+00:42:43,680 --> 00:42:49,320
+Trevor Manz: So it should feel as simple as you could just open up the browser console and start typing in code.
+
+765
+00:42:49,740 --> 00:42:52,960
+Trevor Manz: And the code that you write is exactly what the browser understands.
+
+766
+00:42:53,180 --> 00:42:55,780
+Trevor Manz: And so it should be dead simple from the beginning,
+
+767
+00:42:57,040 --> 00:42:59,980
+Trevor Manz: just learning some APIs and probably pattern matching
+
+768
+00:43:00,150 --> 00:43:01,820
+Trevor Manz: between, okay, this is some syntax,
+
+769
+00:43:01,990 --> 00:43:03,360
+Trevor Manz: but it should feel pretty familiar.
+
+770
+00:43:04,620 --> 00:43:06,100
+Trevor Manz: Should you want to learn those frameworks
+
+771
+00:43:06,210 --> 00:43:06,980
+Trevor Manz: or use those frameworks,
+
+772
+00:43:07,780 --> 00:43:10,000
+Trevor Manz: those all have the ability to be transformed
+
+773
+00:43:10,270 --> 00:43:12,840
+Trevor Manz: into this standardized JavaScript.
+
+774
+00:43:12,950 --> 00:43:15,100
+Trevor Manz: And in fact, they have to be in order to run in the browser.
+
+775
+00:43:15,280 --> 00:43:16,080
+Michael Kennedy: That's how that all works.
+
+776
+00:43:16,660 --> 00:43:19,720
+Trevor Manz: So I wanted that initial experience to be,
+
+777
+00:43:20,060 --> 00:43:22,020
+Trevor Manz: if you want to learn and you've never tried it out before,
+
+778
+00:43:22,940 --> 00:43:26,980
+Trevor Manz: you know, send a variable and you can console log that variable and it just works.
+
+779
+00:43:27,520 --> 00:43:30,900
+Trevor Manz: But should you want to build something very ambitious and like a lot of our most popular
+
+780
+00:43:31,740 --> 00:43:35,160
+Trevor Manz: complicated widgets do use some of these frameworks, that's something that you can learn.
+
+781
+00:43:35,700 --> 00:43:43,460
+Michael Kennedy: So I could do a view or an Alpine JS or I could do a React and all of that kind of stuff if I want.
+
+782
+00:43:43,780 --> 00:43:48,700
+Trevor Manz: Yeah. So in our documentation, there is like a, I think it's, I call it, we call it,
+
+783
+00:43:49,060 --> 00:43:51,420
+Trevor Manz: We have a little CLI to bootstrap a project
+
+784
+00:43:51,640 --> 00:43:53,080
+Trevor Manz: that's ready to be used with React.
+
+785
+00:43:55,180 --> 00:43:59,460
+Trevor Manz: I think we had a contributor contribute one for Vue and Svelte as well.
+
+786
+00:44:00,520 --> 00:44:01,960
+Trevor Manz: The whole idea there is, yes,
+
+787
+00:44:04,160 --> 00:44:05,920
+Trevor Manz: the trade-off is that now you are introducing
+
+788
+00:44:06,270 --> 00:44:09,480
+Trevor Manz: some JavaScript build tooling into this process,
+
+789
+00:44:09,900 --> 00:44:12,120
+Trevor Manz: but hopefully if you're familiar with those frameworks,
+
+790
+00:44:12,280 --> 00:44:15,280
+Trevor Manz: that isn't a big overhead to trying out some of those things.
+
+791
+00:44:16,420 --> 00:44:22,140
+Trevor Manz: Versus for the Python beginner that wants to learn something in the front end,
+
+792
+00:44:22,220 --> 00:44:24,060
+Trevor Manz: and they're just trying to get their data into the front end,
+
+793
+00:44:24,200 --> 00:44:26,660
+Trevor Manz: I just don't want them to have to worry about TypeScript or React
+
+794
+00:44:26,860 --> 00:44:29,200
+Trevor Manz: or any of these things that they might hear about.
+
+795
+00:44:29,420 --> 00:44:32,680
+Trevor Manz: And instead, they can just get started with trying to paint some pixels on the screen
+
+796
+00:44:32,860 --> 00:44:36,920
+Trevor Manz: and then progressively learn outside of that ecosystem.
+
+797
+00:44:37,280 --> 00:44:41,180
+Trevor Manz: So the entry point will always be sort of this simple front-end standard.
+
+798
+00:44:41,680 --> 00:44:44,780
+Trevor Manz: And then how far you want to go into that ecosystem,
+
+799
+00:44:45,120 --> 00:44:47,380
+Trevor Manz: then you can experience more of the tooling there
+
+800
+00:44:47,780 --> 00:44:51,220
+Trevor Manz: to help with reactivity and things in the front end.
+
+801
+00:44:51,480 --> 00:44:53,760
+Michael Kennedy: Yeah, that's super interesting to think of injecting
+
+802
+00:44:54,450 --> 00:44:57,640
+Michael Kennedy: little miniature view applications and stuff
+
+803
+00:44:58,680 --> 00:44:59,580
+Michael Kennedy: to allow that work.
+
+804
+00:44:59,650 --> 00:45:00,880
+Michael Kennedy: But they are super powerful
+
+805
+00:45:01,010 --> 00:45:03,000
+Michael Kennedy: if you're willing to go through the build steps
+
+806
+00:45:03,180 --> 00:45:06,240
+Michael Kennedy: and all the hoops that those different frameworks
+
+807
+00:45:06,740 --> 00:45:08,540
+Michael Kennedy: ask you to do to get it to run.
+
+808
+00:45:08,640 --> 00:45:09,840
+Michael Kennedy: Once you get it set up, it's like,
+
+809
+00:45:09,850 --> 00:45:12,620
+Michael Kennedy: okay, these things all bidirectionally data bind
+
+810
+00:45:12,720 --> 00:45:13,660
+Michael Kennedy: to each other internally.
+
+811
+00:45:14,000 --> 00:45:16,440
+Michael Kennedy: And so I can see how that plays just perfectly naturally
+
+812
+00:45:16,760 --> 00:45:20,720
+Michael Kennedy: with the already binding of the dynamic interaction here.
+
+813
+00:45:21,240 --> 00:45:21,760
+Trevor Manz: Yeah, exactly.
+
+814
+00:45:22,280 --> 00:45:26,140
+Trevor Manz: So we model this as we have the standard,
+
+815
+00:45:26,460 --> 00:45:28,260
+Trevor Manz: which is like this ECMAScript standard,
+
+816
+00:45:28,430 --> 00:45:30,440
+Trevor Manz: which is the JavaScript code that you write.
+
+817
+00:45:31,520 --> 00:45:33,980
+Trevor Manz: And then all of the libraries are modeled as adapters
+
+818
+00:45:34,050 --> 00:45:35,040
+Trevor Manz: on top of that standard.
+
+819
+00:45:35,240 --> 00:45:36,160
+Trevor Manz: I think we call them bridges.
+
+820
+00:45:36,530 --> 00:45:39,440
+Trevor Manz: So in React, you get hooks that you can call,
+
+821
+00:45:39,660 --> 00:45:42,580
+Trevor Manz: and then you're writing code that looks kind of like idiomatic React,
+
+822
+00:45:42,820 --> 00:45:45,460
+Trevor Manz: but behind the scenes, it's like calling any widget APIs.
+
+823
+00:45:46,740 --> 00:45:49,640
+Trevor Manz: And our Vue bridge does the same thing, but with Vue APIs.
+
+824
+00:45:49,960 --> 00:45:53,920
+Trevor Manz: So you get to write front-end code that feels like it's Vue-like or React-like,
+
+825
+00:45:53,950 --> 00:45:56,560
+Trevor Manz: but behind the scenes, you have sort of these custom bridges
+
+826
+00:45:56,760 --> 00:45:58,560
+Trevor Manz: that are written by folks that are familiar with those frameworks
+
+827
+00:45:59,120 --> 00:46:01,360
+Trevor Manz: for how they should interface with our standard specification.
+
+828
+00:46:01,960 --> 00:46:02,740
+Michael Kennedy: Yeah, wild.
+
+829
+00:46:03,500 --> 00:46:05,120
+Michael Kennedy: Let's talk about not using one of those,
+
+830
+00:46:05,320 --> 00:46:09,640
+Michael Kennedy: but instead talking through building a simple widget.
+
+831
+00:46:09,880 --> 00:46:14,640
+Michael Kennedy: Now, just to be clear, I know we can't read all of the code audio version because most
+
+832
+00:46:14,760 --> 00:46:15,700
+Michael Kennedy: people just listen to the show.
+
+833
+00:46:16,380 --> 00:46:18,660
+Michael Kennedy: But maybe just give us a sense going through this.
+
+834
+00:46:18,990 --> 00:46:20,760
+Michael Kennedy: You have a build a counter widget.
+
+835
+00:46:21,420 --> 00:46:21,600
+Michael Kennedy: Yeah.
+
+836
+00:46:21,840 --> 00:46:23,300
+Michael Kennedy: Or I can click a button and it counts or something.
+
+837
+00:46:24,300 --> 00:46:27,600
+Michael Kennedy: Yeah, just walk us through just to give people a sense of what does it mean to build one of
+
+838
+00:46:27,610 --> 00:46:28,480
+Michael Kennedy: these AnyWidget widgets.
+
+839
+00:46:29,220 --> 00:46:33,900
+Trevor Manz: Yeah, so the idea within AnyWidget is that you create a class that extends from a single
+
+840
+00:46:35,110 --> 00:46:37,440
+Trevor Manz: class that's in AnyWidget called AnyWidget.
+
+841
+00:46:38,060 --> 00:46:40,740
+Trevor Manz: And that is what you define both your view,
+
+842
+00:46:40,920 --> 00:46:42,620
+Trevor Manz: so the front end part of that code,
+
+843
+00:46:43,400 --> 00:46:45,520
+Trevor Manz: and then also the back end code for that.
+
+844
+00:46:45,720 --> 00:46:48,040
+Trevor Manz: So it fully encapsulates the idea of a widget
+
+845
+00:46:48,280 --> 00:46:50,320
+Trevor Manz: that has both a back end and a front end component.
+
+846
+00:46:51,600 --> 00:46:53,300
+Michael Kennedy: Yeah, and just to be clear for people,
+
+847
+00:46:53,460 --> 00:46:54,620
+Michael Kennedy: when you say a class,
+
+848
+00:46:54,780 --> 00:46:58,320
+Michael Kennedy: it's not one of those weird prototype JavaScript type things.
+
+849
+00:46:58,420 --> 00:47:01,480
+Michael Kennedy: It's the more modern class keyword,
+
+850
+00:47:02,400 --> 00:47:03,720
+Michael Kennedy: but in ECMAScript, is that right?
+
+851
+00:47:03,980 --> 00:47:04,460
+Trevor Manz: Oh, sorry.
+
+852
+00:47:04,620 --> 00:47:08,020
+Trevor Manz: So what we're looking at here is just a Python class
+
+853
+00:47:08,040 --> 00:47:12,460
+Michael Kennedy: Oh, this is a Python class. Okay. A Python class. Great. And so you create a Python class,
+
+854
+00:47:12,460 --> 00:47:18,840
+Trevor Manz: but then it has the JavaScript CSS in it. Exactly. So ESM is like a private field that defines a
+
+855
+00:47:19,020 --> 00:47:24,180
+Trevor Manz: front end module. And the whole idea there is that you define a function that's called render
+
+856
+00:47:24,720 --> 00:47:30,840
+Trevor Manz: that takes in two arguments, a model and an element. So the model is like this object that
+
+857
+00:47:30,980 --> 00:47:36,140
+Trevor Manz: talks back to the kernel. And an element is whatever the front end, like Jupyter or VS Code
+
+858
+00:47:36,160 --> 00:47:38,360
+Trevor Manz: gives you is like the output on the screen.
+
+859
+00:47:39,110 --> 00:47:40,180
+Trevor Manz: And so those two things combined,
+
+860
+00:47:40,550 --> 00:47:43,180
+Trevor Manz: you can call methods on that model
+
+861
+00:47:43,340 --> 00:47:45,200
+Trevor Manz: to set a value or get a value.
+
+862
+00:47:45,910 --> 00:47:47,780
+Trevor Manz: And then you can update some part of the UI.
+
+863
+00:47:49,059 --> 00:47:49,600
+Michael Kennedy: I see.
+
+864
+00:47:49,610 --> 00:47:51,920
+Michael Kennedy: So you're past like a DOM element,
+
+865
+00:47:52,980 --> 00:47:54,240
+Michael Kennedy: which might be a div or whatever.
+
+866
+00:47:54,410 --> 00:47:56,180
+Michael Kennedy: And then you can just inject JavaScript
+
+867
+00:47:56,420 --> 00:47:58,640
+Michael Kennedy: like a pen child and other stuff
+
+868
+00:47:58,860 --> 00:47:59,780
+Michael Kennedy: and set a class and whatever.
+
+869
+00:47:59,910 --> 00:48:01,800
+Michael Kennedy: And that builds out the little,
+
+870
+00:48:02,300 --> 00:48:03,560
+Michael Kennedy: the part of the DOM that you control
+
+871
+00:48:03,740 --> 00:48:04,360
+Michael Kennedy: or it's given to you.
+
+872
+00:48:04,820 --> 00:48:05,000
+Trevor Manz: Exactly.
+
+873
+00:48:05,560 --> 00:48:07,500
+Trevor Manz: And then you can style that however way that you want.
+
+874
+00:48:08,980 --> 00:48:12,380
+Trevor Manz: And then the key thing is that as a part of this adapter,
+
+875
+00:48:13,320 --> 00:48:16,160
+Trevor Manz: when you call methods on this model object that you get,
+
+876
+00:48:16,700 --> 00:48:18,580
+Trevor Manz: I think there's only a few methods that are on it,
+
+877
+00:48:18,660 --> 00:48:20,260
+Trevor Manz: like get, set, and save changes.
+
+878
+00:48:21,020 --> 00:48:23,500
+Trevor Manz: And that just synchronizes values back and forth
+
+879
+00:48:23,780 --> 00:48:25,120
+Trevor Manz: between the front end and the back end.
+
+880
+00:48:26,160 --> 00:48:29,500
+Trevor Manz: And that same sort of API is on the Python side as well.
+
+881
+00:48:29,660 --> 00:48:31,700
+Trevor Manz: And so you can react to those values as they update
+
+882
+00:48:32,180 --> 00:48:34,180
+Trevor Manz: or set them as well on the Python side.
+
+883
+00:48:35,100 --> 00:48:37,640
+Trevor Manz: So, and then we'll deal for the most part,
+
+884
+00:48:37,790 --> 00:48:40,700
+Trevor Manz: like with serialization of simple data types to one.
+
+885
+00:48:40,750 --> 00:48:42,300
+Trevor Manz: So if you have a float or an int in Python,
+
+886
+00:48:42,450 --> 00:48:44,080
+Trevor Manz: we'll just map that to a number data type.
+
+887
+00:48:45,020 --> 00:48:46,280
+Trevor Manz: We have that mapping in our documentation.
+
+888
+00:48:47,220 --> 00:48:49,360
+Trevor Manz: If you want to serialize to something like JSON,
+
+889
+00:48:49,680 --> 00:48:50,380
+Trevor Manz: that's totally fine too.
+
+890
+00:48:52,540 --> 00:48:53,840
+Trevor Manz: And then you just send that over the wire.
+
+891
+00:48:54,420 --> 00:48:54,520
+Michael Kennedy: Yeah.
+
+892
+00:48:55,960 --> 00:48:56,320
+Michael Kennedy: That's wild.
+
+893
+00:48:56,400 --> 00:48:57,580
+Michael Kennedy: So how does it actually,
+
+894
+00:48:58,700 --> 00:49:00,000
+Michael Kennedy: so we've got a Python class,
+
+895
+00:49:00,090 --> 00:49:01,720
+Michael Kennedy: which I guess probably lives in the kernel.
+
+896
+00:49:02,740 --> 00:49:07,060
+Michael Kennedy: and then it's got HTML JavaScript stuff it's doing,
+
+897
+00:49:07,790 --> 00:49:08,700
+Michael Kennedy: then it's setting values.
+
+898
+00:49:11,720 --> 00:49:12,860
+Michael Kennedy: What's this exchange?
+
+899
+00:49:13,220 --> 00:49:15,240
+Michael Kennedy: Where do different pieces run?
+
+900
+00:49:15,330 --> 00:49:16,660
+Michael Kennedy: How do they communicate?
+
+901
+00:49:17,200 --> 00:49:17,460
+Trevor Manz: Sure.
+
+902
+00:49:17,760 --> 00:49:19,580
+Trevor Manz: So that is up to the implementation.
+
+903
+00:49:19,970 --> 00:49:22,300
+Trevor Manz: So whoever builds an adapter for any widget.
+
+904
+00:49:22,800 --> 00:49:25,580
+Trevor Manz: But the idea is that the front-end code that you write
+
+905
+00:49:25,740 --> 00:49:27,040
+Trevor Manz: is in the standardized form.
+
+906
+00:49:27,360 --> 00:49:28,620
+Trevor Manz: So you can just call import
+
+907
+00:49:28,950 --> 00:49:31,780
+Trevor Manz: and import this JavaScript module that you have.
+
+908
+00:49:32,460 --> 00:49:38,300
+Trevor Manz: And then the front end is responsible for when these different methods get called on model
+
+909
+00:49:38,500 --> 00:49:44,020
+Trevor Manz: for sending that data back and communicating over some sort of mechanism to the back end.
+
+910
+00:49:44,540 --> 00:49:46,700
+Michael Kennedy: Jupyter already has defined something like that.
+
+911
+00:49:46,850 --> 00:49:49,100
+Trevor Manz: So Jupyter has a notion of something called a com,
+
+912
+00:49:49,580 --> 00:49:53,340
+Trevor Manz: and that is implemented over a web socket to communicate back and forth.
+
+913
+00:49:53,750 --> 00:49:56,460
+Trevor Manz: And similar in Marimo, we're not based on Jupyter at all,
+
+914
+00:49:56,900 --> 00:50:01,160
+Trevor Manz: but our any-witted adapter just talks over a web socket with some different messages.
+
+915
+00:50:01,840 --> 00:50:05,600
+Trevor Manz: But basically, we call this a host platform
+
+916
+00:50:05,860 --> 00:50:07,020
+Trevor Manz: that takes care of that implementation
+
+917
+00:50:07,540 --> 00:50:08,700
+Trevor Manz: and wires up those two ends.
+
+918
+00:50:09,080 --> 00:50:10,920
+Trevor Manz: But then as the widget author, you just care about,
+
+919
+00:50:11,500 --> 00:50:13,700
+Trevor Manz: here's my JavaScript module, here's my Python code.
+
+920
+00:50:14,140 --> 00:50:14,980
+Trevor Manz: And they use these APIs.
+
+921
+00:50:15,480 --> 00:50:17,120
+Trevor Manz: And then it's someone else's problem to figure out
+
+922
+00:50:17,120 --> 00:50:18,160
+Trevor Manz: how to wire those up together.
+
+923
+00:50:18,720 --> 00:50:19,820
+Michael Kennedy: Yeah, super neat.
+
+924
+00:50:21,300 --> 00:50:23,320
+Michael Kennedy: Kasaasa, interesting thought here.
+
+925
+00:50:23,380 --> 00:50:25,820
+Michael Kennedy: I'd be super interested to see this working purely in Python.
+
+926
+00:50:26,260 --> 00:50:27,520
+Michael Kennedy: Front end running in WASM.
+
+927
+00:50:27,860 --> 00:50:29,740
+Michael Kennedy: New need for JavaScript strings in Python.
+
+928
+00:50:30,280 --> 00:50:30,880
+Michael Kennedy: What do you think here?
+
+929
+00:50:31,340 --> 00:50:31,820
+Trevor Manz: Yeah, yeah.
+
+930
+00:50:32,160 --> 00:50:35,680
+Trevor Manz: I think, you know, I haven't played around
+
+931
+00:50:35,820 --> 00:50:38,220
+Trevor Manz: with some of the PyDide or like the...
+
+932
+00:50:38,220 --> 00:50:39,620
+Michael Kennedy: The PyScript stuff, maybe.
+
+933
+00:50:40,080 --> 00:50:40,220
+Trevor Manz: PyScript APIs.
+
+934
+00:50:40,660 --> 00:50:42,260
+Trevor Manz: I think that that would probably be possible.
+
+935
+00:50:43,180 --> 00:50:44,900
+Trevor Manz: The example that you had of draw data before
+
+936
+00:50:46,000 --> 00:50:48,560
+Trevor Manz: for the Marimo notebook that Vincent had,
+
+937
+00:50:49,140 --> 00:50:50,660
+Trevor Manz: that is entirely running in the browser.
+
+938
+00:50:50,980 --> 00:50:55,300
+Trevor Manz: So that is like the Marimo Python kernel is running in Wasm
+
+939
+00:50:55,320 --> 00:50:57,400
+Trevor Manz: and then we're also loading like the JavaScript code.
+
+940
+00:50:57,660 --> 00:51:01,280
+Trevor Manz: So we do have folks that just like create a Marimo notebook
+
+941
+00:51:01,300 --> 00:51:03,460
+Trevor Manz: And then compile it to WebAssembly.
+
+942
+00:51:03,610 --> 00:51:07,460
+Trevor Manz: And then they have a static website that has both of these bits together.
+
+943
+00:51:08,060 --> 00:51:08,500
+Michael Kennedy: OK.
+
+944
+00:51:09,340 --> 00:51:10,820
+Michael Kennedy: That's actually pretty wild, isn't it?
+
+945
+00:51:11,200 --> 00:51:11,420
+Michael Kennedy: Yeah.
+
+946
+00:51:13,900 --> 00:51:17,120
+Michael Kennedy: So I've seen that there's some other places that I can--
+
+947
+00:51:17,250 --> 00:51:19,260
+Michael Kennedy: any widget, like Myst.
+
+948
+00:51:19,700 --> 00:51:20,100
+Trevor Manz: Yeah.
+
+949
+00:51:21,640 --> 00:51:22,800
+Michael Kennedy: And also Mosaic.
+
+950
+00:51:22,870 --> 00:51:23,440
+Michael Kennedy: Tell us about these.
+
+951
+00:51:23,860 --> 00:51:24,700
+Trevor Manz: Yeah, yeah, definitely.
+
+952
+00:51:25,160 --> 00:51:28,880
+Trevor Manz: So Myst, I think on our community page,
+
+953
+00:51:28,910 --> 00:51:30,360
+Trevor Manz: we have a notion of widgets.
+
+954
+00:51:30,800 --> 00:51:34,920
+Trevor Manz: And then we have a notion of host platforms.
+
+955
+00:51:35,230 --> 00:51:38,060
+Trevor Manz: And so the two primary host platforms right now
+
+956
+00:51:38,360 --> 00:51:39,920
+Trevor Manz: are things that are Jupyter-based,
+
+957
+00:51:40,040 --> 00:51:48,360
+Trevor Manz: so like VS Code, Notebooks, Google Colab, Binder,
+
+958
+00:51:48,840 --> 00:51:50,740
+Trevor Manz: all these things that are based off of a Jupyter kernel
+
+959
+00:51:50,850 --> 00:51:52,420
+Trevor Manz: and run Python behind the scenes.
+
+960
+00:51:53,980 --> 00:51:56,140
+Trevor Manz: Then Marimo is another host platform,
+
+961
+00:51:56,520 --> 00:51:58,840
+Trevor Manz: and Mist is currently working on an integration
+
+962
+00:51:59,180 --> 00:52:02,440
+Trevor Manz: around that specification for the front-end code.
+
+963
+00:52:02,800 --> 00:52:05,120
+Trevor Manz: And so the idea is as long as they have a way to,
+
+964
+00:52:05,380 --> 00:52:07,860
+Trevor Manz: and I'm not sure how far along that is at the moment,
+
+965
+00:52:08,040 --> 00:52:10,240
+Trevor Manz: but as long as there is a way to run Python code
+
+966
+00:52:10,440 --> 00:52:12,280
+Trevor Manz: and sort of maintain that relationship
+
+967
+00:52:12,580 --> 00:52:14,080
+Trevor Manz: between that front-end code and back-end code,
+
+968
+00:52:14,240 --> 00:52:16,820
+Trevor Manz: then you could drop any widgets
+
+969
+00:52:17,080 --> 00:52:19,160
+Trevor Manz: within your MIST markdown, for example, as well.
+
+970
+00:52:19,160 --> 00:52:20,480
+Michael Kennedy: Yeah. MIST is wild.
+
+971
+00:52:20,540 --> 00:52:22,840
+Michael Kennedy: I had that team on the podcast a while ago.
+
+972
+00:52:22,960 --> 00:52:26,260
+Michael Kennedy: It's like, you want to create an e-book based on notebooks
+
+973
+00:52:26,420 --> 00:52:31,160
+Michael Kennedy: or whatever, LaTeX paper, or you name it, right?
+
+974
+00:52:31,520 --> 00:52:31,720
+Trevor Manz: Yeah.
+
+975
+00:52:33,620 --> 00:52:35,880
+Michael Kennedy: And yeah, I haven't done anything with Mosaic.
+
+976
+00:52:37,220 --> 00:52:40,200
+Trevor Manz: Yeah, Mosaic, I think this is a really cool project.
+
+977
+00:52:40,600 --> 00:52:44,340
+Trevor Manz: So at its core, Mosaic is a bit more of like an architecture.
+
+978
+00:52:44,640 --> 00:52:45,740
+Trevor Manz: And this is probably one of the things
+
+979
+00:52:45,820 --> 00:52:47,120
+Trevor Manz: that I'm most excited about,
+
+980
+00:52:48,060 --> 00:52:50,860
+Trevor Manz: like the ability that AnyWidget is bringing to folks
+
+981
+00:52:51,060 --> 00:52:54,140
+Trevor Manz: to experiment with new types of like architectures
+
+982
+00:52:54,160 --> 00:52:56,360
+Trevor Manz: for building high-performance visualizations.
+
+983
+00:52:57,980 --> 00:53:01,840
+Trevor Manz: Inside of Mosaic, you have a notion of some database source
+
+984
+00:53:02,140 --> 00:53:03,860
+Trevor Manz: that I believe typically is DuckDB.
+
+985
+00:53:05,400 --> 00:53:06,980
+Trevor Manz: Then you write a bunch of front-end code
+
+986
+00:53:07,000 --> 00:53:10,360
+Trevor Manz: that basically expresses all of the data that it needs
+
+987
+00:53:10,420 --> 00:53:11,600
+Trevor Manz: as queries to that database.
+
+988
+00:53:11,940 --> 00:53:13,860
+Trevor Manz: Then there's a lot of optimizations that can happen
+
+989
+00:53:14,000 --> 00:53:16,520
+Trevor Manz: between those individual views and the database
+
+990
+00:53:17,280 --> 00:53:18,180
+Trevor Manz: that can all be coordinated
+
+991
+00:53:18,480 --> 00:53:21,260
+Trevor Manz: and allow for very scalable data visualizations.
+
+992
+00:53:22,640 --> 00:53:27,080
+Trevor Manz: One cool thing about Mosaic is that this architecture lends itself very well to notebooks
+
+993
+00:53:27,450 --> 00:53:32,320
+Trevor Manz: because you can keep that database, that DuckDB running completely in the kernel,
+
+994
+00:53:33,040 --> 00:53:34,400
+Trevor Manz: and then you just have your front-end client.
+
+995
+00:53:35,020 --> 00:53:39,800
+Trevor Manz: But then there's also an option where you just completely compile everything into WebAssembly,
+
+996
+00:53:40,060 --> 00:53:42,180
+Trevor Manz: and then that DuckDB is running in the browser as well.
+
+997
+00:53:42,380 --> 00:53:44,340
+Trevor Manz: And so you get to reuse a lot of this architecture,
+
+998
+00:53:46,300 --> 00:53:47,740
+Trevor Manz: and it allows just a lot of code reuse.
+
+999
+00:53:48,450 --> 00:53:50,100
+Trevor Manz: And you're just kind of moving that lever of like,
+
+1000
+00:53:50,370 --> 00:53:52,040
+Trevor Manz: okay, do I need high-performance compute?
+
+1001
+00:53:52,260 --> 00:53:54,360
+Trevor Manz: okay, let me put my database in my HPC
+
+1002
+00:53:54,460 --> 00:53:56,840
+Trevor Manz: and then I'll just have a thin client on top of it
+
+1003
+00:53:56,980 --> 00:53:58,780
+Trevor Manz: versus, okay, actually I wanna look at everything
+
+1004
+00:53:58,840 --> 00:54:00,940
+Trevor Manz: in the browser, like maybe we can just compile
+
+1005
+00:54:01,300 --> 00:54:03,340
+Trevor Manz: to WebAssembly and let someone drop in a CSV
+
+1006
+00:54:03,560 --> 00:54:05,500
+Trevor Manz: and then we can reuse the same visualization.
+
+1007
+00:54:06,200 --> 00:54:07,200
+Trevor Manz: So very flexible. - Yeah, this is super,
+
+1008
+00:54:07,700 --> 00:54:08,420
+Michael Kennedy: yeah, that's super flexible.
+
+1009
+00:54:09,260 --> 00:54:12,960
+Michael Kennedy: DuckDB has a very interesting WebAssembly story as well, so.
+
+1010
+00:54:13,600 --> 00:54:14,040
+Michael Kennedy: - Yeah, definitely.
+
+1011
+00:54:14,980 --> 00:54:17,200
+Michael Kennedy: - It's definitely catching a lot of attention
+
+1012
+00:54:17,440 --> 00:54:18,820
+Michael Kennedy: and people use, you know,
+
+1013
+00:54:19,920 --> 00:54:22,280
+Michael Kennedy: It's the data science SQLite.
+
+1014
+00:54:23,460 --> 00:54:23,520
+Michael Kennedy: Yeah.
+
+1015
+00:54:24,320 --> 00:54:27,900
+Trevor Manz: And I'd say a growing trend that I've seen by being able to...
+
+1016
+00:54:27,900 --> 00:54:32,420
+Trevor Manz: One thing I wasn't fully aware of when I started on AnyWidget,
+
+1017
+00:54:32,520 --> 00:54:33,420
+Trevor Manz: but it's been fun to see,
+
+1018
+00:54:34,100 --> 00:54:36,420
+Trevor Manz: is because it became easier to start playing
+
+1019
+00:54:36,860 --> 00:54:39,200
+Trevor Manz: with both front-end code and Python code in the same environment,
+
+1020
+00:54:40,380 --> 00:54:42,320
+Trevor Manz: there have been a lot more, I think,
+
+1021
+00:54:43,080 --> 00:54:46,300
+Trevor Manz: experimentations around trying out new types of architectures
+
+1022
+00:54:46,600 --> 00:54:48,460
+Trevor Manz: for building visualizations.
+
+1023
+00:54:48,800 --> 00:54:50,880
+Trevor Manz: So one trend that I've noticed in our community gallery
+
+1024
+00:54:51,340 --> 00:54:53,100
+Trevor Manz: is that a lot of our most popular widgets
+
+1025
+00:54:53,800 --> 00:54:57,800
+Trevor Manz: are taking advantage of new data formats like Apache Arrow
+
+1026
+00:54:58,460 --> 00:55:00,580
+Trevor Manz: to be able to send lots of data to the browser
+
+1027
+00:55:00,700 --> 00:55:02,900
+Trevor Manz: to put on the GPU and render very quickly.
+
+1028
+00:55:03,600 --> 00:55:07,340
+Trevor Manz: And so basically there's a really cool example
+
+1029
+00:55:07,420 --> 00:55:08,760
+Trevor Manz: of a widget called Lawnboard,
+
+1030
+00:55:09,080 --> 00:55:11,320
+Trevor Manz: which is like a geospatial visualization widget,
+
+1031
+00:55:11,900 --> 00:55:14,980
+Trevor Manz: which is a wrapper around a front-end library called DeckGL
+
+1032
+00:55:14,980 --> 00:55:18,100
+Trevor Manz: that was made by Uber to do geospatial visualization.
+
+1033
+00:55:19,020 --> 00:55:20,580
+Trevor Manz: and the previous Jupyter integration
+
+1034
+00:55:21,839 --> 00:55:23,020
+Trevor Manz: serialized data to JSON
+
+1035
+00:55:23,330 --> 00:55:26,120
+Trevor Manz: to be able to render inside of DeckGL.
+
+1036
+00:55:26,210 --> 00:55:27,360
+Trevor Manz: So the moment that you had to render
+
+1037
+00:55:27,530 --> 00:55:28,380
+Trevor Manz: maybe a few million points,
+
+1038
+00:55:28,530 --> 00:55:29,720
+Trevor Manz: it's like you're spending a ton of time
+
+1039
+00:55:30,080 --> 00:55:30,800
+Trevor Manz: serializing that data
+
+1040
+00:55:30,950 --> 00:55:32,420
+Trevor Manz: to be able to put it in the browser.
+
+1041
+00:55:33,119 --> 00:55:34,460
+Michael Kennedy: It's like using an ORM.
+
+1042
+00:55:34,560 --> 00:55:36,020
+Michael Kennedy: They're great until you try to do a query
+
+1043
+00:55:36,180 --> 00:55:37,120
+Michael Kennedy: with 100,000 records.
+
+1044
+00:55:37,240 --> 00:55:38,280
+Michael Kennedy: You're like, why is this so slow?
+
+1045
+00:55:38,540 --> 00:55:38,980
+Trevor Manz: Exactly.
+
+1046
+00:55:39,150 --> 00:55:40,680
+Trevor Manz: And so I think there's an example
+
+1047
+00:55:40,860 --> 00:55:43,980
+Trevor Manz: with Lawnboard where some data set
+
+1048
+00:55:44,040 --> 00:55:45,180
+Trevor Manz: with like 3.5 million rows
+
+1049
+00:55:45,380 --> 00:55:46,579
+Trevor Manz: just like crashed in the previous
+
+1050
+00:55:47,099 --> 00:55:49,500
+Trevor Manz: or never render, maybe it took a few seconds to render
+
+1051
+00:55:50,480 --> 00:55:51,780
+Trevor Manz: or a minute to render.
+
+1052
+00:55:53,480 --> 00:55:55,460
+Trevor Manz: But Lawnboard uses Apache Arrow
+
+1053
+00:55:55,780 --> 00:55:58,760
+Trevor Manz: and grabs that data from either Arrow, Parquet
+
+1054
+00:55:58,940 --> 00:56:00,080
+Trevor Manz: or all these different file formats.
+
+1055
+00:56:00,620 --> 00:56:03,820
+Trevor Manz: And that's very fast to do because you just copy that buffer
+
+1056
+00:56:03,930 --> 00:56:05,860
+Trevor Manz: and ship it to the front end and put it on the GPU.
+
+1057
+00:56:06,450 --> 00:56:08,220
+Trevor Manz: And so it can do that same example in, I think,
+
+1058
+00:56:08,790 --> 00:56:11,080
+Trevor Manz: one or two seconds on modern machines.
+
+1059
+00:56:11,310 --> 00:56:13,860
+Trevor Manz: And so it really is this, get your data into a data frame
+
+1060
+00:56:13,970 --> 00:56:16,560
+Trevor Manz: and dump it on the GPU and visualize it
+
+1061
+00:56:16,800 --> 00:56:21,200
+Trevor Manz: And that whole idea of, oh, what format do I need to convert to, to be able to use this
+
+1062
+00:56:22,960 --> 00:56:24,380
+Trevor Manz: tool, this visualization tool that I've heard?
+
+1063
+00:56:24,500 --> 00:56:26,220
+Trevor Manz: It's like, no, no, no, just load it as a data frame.
+
+1064
+00:56:26,460 --> 00:56:31,720
+Trevor Manz: And then as long as you get your data as a data frame, we can throw it into the web browser.
+
+1065
+00:56:32,040 --> 00:56:32,900
+Michael Kennedy: Yeah, super neat.
+
+1066
+00:56:33,560 --> 00:56:36,800
+Michael Kennedy: That's the kind of stuff that normal web people don't think about, right?
+
+1067
+00:56:36,920 --> 00:56:39,720
+Michael Kennedy: You're like, well, how much is it to serialize a little JSON response?
+
+1068
+00:56:40,460 --> 00:56:42,500
+Michael Kennedy: Or, you know, we're talking about a million of them.
+
+1069
+00:56:42,680 --> 00:56:42,760
+Michael Kennedy: Oh.
+
+1070
+00:56:43,619 --> 00:56:44,720
+Trevor Manz: Yeah, yeah, exactly.
+
+1071
+00:56:45,520 --> 00:56:54,880
+Trevor Manz: I guess one thing I've been impressed with is just at times where my understanding of how good computers have gotten is like, it's just shocking.
+
+1072
+00:56:55,080 --> 00:57:03,120
+Trevor Manz: It's more like, oh, I think we're holding ourselves back at times by maybe some of the standard practices versus like, yeah, hardware has gotten very good.
+
+1073
+00:57:03,440 --> 00:57:11,040
+Trevor Manz: And if you can make use of that hardware efficiently, there's quite a bit that you can do on very low powered devices and visualize a ton of data.
+
+1074
+00:57:12,220 --> 00:57:16,460
+Michael Kennedy: Yeah, quite a while ago, like really long time ago, I did some OpenGL programming.
+
+1075
+00:57:17,560 --> 00:57:21,540
+Michael Kennedy: And you see, you know, like here, we gave this scene 100,000 triangles,
+
+1076
+00:57:22,100 --> 00:57:24,100
+Michael Kennedy: and it's rendering at 200 frames a second.
+
+1077
+00:57:24,360 --> 00:57:28,660
+Michael Kennedy: You're like, how many operations is that?
+
+1078
+00:57:28,720 --> 00:57:29,620
+Michael Kennedy: Like, that is insane.
+
+1079
+00:57:29,640 --> 00:57:31,100
+Michael Kennedy: You know, this is like 30 years ago, even.
+
+1080
+00:57:31,160 --> 00:57:32,960
+Michael Kennedy: It's like, that just blows my mind.
+
+1081
+00:57:33,020 --> 00:57:35,360
+Michael Kennedy: Yeah, I think people underestimate what computers can do sometimes.
+
+1082
+00:57:36,240 --> 00:57:37,640
+Michael Kennedy: Especially if you work with them, right?
+
+1083
+00:57:37,680 --> 00:57:42,460
+Michael Kennedy: you're not doing three levels of serialization and deserialization and so on.
+
+1084
+00:57:42,780 --> 00:57:43,880
+Michael Kennedy: Yeah, yeah, exactly.
+
+1085
+00:57:44,200 --> 00:57:44,680
+Michael Kennedy: That's wild.
+
+1086
+00:57:46,400 --> 00:57:48,700
+Michael Kennedy: So what about publishing one of these things?
+
+1087
+00:57:48,730 --> 00:57:52,680
+Michael Kennedy: If we go and write, I've created an AnyWidget,
+
+1088
+00:57:53,360 --> 00:57:54,900
+Michael Kennedy: and it's amazing for me to use,
+
+1089
+00:57:55,040 --> 00:57:58,600
+Michael Kennedy: but I want to put it on PyPI so people can UVPIP install it
+
+1090
+00:57:58,600 --> 00:58:00,620
+Michael Kennedy: or whatever in their notebook.
+
+1091
+00:58:03,220 --> 00:58:04,980
+Trevor Manz: Yeah, so I have a couple.
+
+1092
+00:58:05,720 --> 00:58:08,160
+Trevor Manz: One I would recommend, if folks are really interested in it,
+
+1093
+00:58:08,300 --> 00:58:10,100
+Trevor Manz: there's a couple videos I have on my YouTube
+
+1094
+00:58:10,310 --> 00:58:12,820
+Trevor Manz: of just publishing some widgets,
+
+1095
+00:58:12,950 --> 00:58:14,760
+Trevor Manz: and they're linked in any widget documentation.
+
+1096
+00:58:15,320 --> 00:58:17,380
+Trevor Manz: But that file that you see there,
+
+1097
+00:58:17,980 --> 00:58:20,100
+Trevor Manz: that's open in the current view that we have,
+
+1098
+00:58:21,460 --> 00:58:22,880
+Trevor Manz: if you know how to publish a Python file,
+
+1099
+00:58:23,020 --> 00:58:25,740
+Trevor Manz: you can just publish that to PyPI, and it should just work.
+
+1100
+00:58:26,340 --> 00:58:28,240
+Trevor Manz: So, yeah.
+
+1101
+00:58:28,900 --> 00:58:32,260
+Trevor Manz: The one caveat I'd have is you're looking at an inline string here,
+
+1102
+00:58:32,390 --> 00:58:35,560
+Trevor Manz: and that's not always the nicest way to write your front-end code.
+
+1103
+00:58:35,820 --> 00:58:40,240
+Trevor Manz: So you can also just import, like you can require that as a file instead.
+
+1104
+00:58:40,390 --> 00:58:43,260
+Trevor Manz: And so you can put that code into a separate file, type check that,
+
+1105
+00:58:43,410 --> 00:58:46,060
+Trevor Manz: or like lint it or like format it as JavaScript.
+
+1106
+00:58:46,610 --> 00:58:49,660
+Michael Kennedy: So write a JavaScript file and then somehow set just,
+
+1107
+00:58:50,260 --> 00:58:54,740
+Michael Kennedy: would I just read that in Python and then just set the text result?
+
+1108
+00:58:54,830 --> 00:58:57,340
+Michael Kennedy: Like use path and say read text and then jam it in there?
+
+1109
+00:58:57,740 --> 00:58:57,960
+Trevor Manz: Yeah.
+
+1110
+00:58:58,240 --> 00:59:03,000
+Trevor Manz: We support if you just pass a path, lib path to ESM, we'll read it for you.
+
+1111
+00:59:03,940 --> 00:59:04,400
+Michael Kennedy: Okay, perfect.
+
+1112
+00:59:04,550 --> 00:59:04,660
+Michael Kennedy: Yeah.
+
+1113
+00:59:05,180 --> 00:59:05,280
+Michael Kennedy: Yeah.
+
+1114
+00:59:05,380 --> 00:59:11,880
+Michael Kennedy: Yeah. So as long as I have a package and the package points out that these JavaScript files
+
+1115
+00:59:12,140 --> 00:59:14,300
+Michael Kennedy: are to be included at build, then you're good to go?
+
+1116
+00:59:14,840 --> 00:59:20,120
+Trevor Manz: Yep. And our starter kit template is all configured with Hatchling to do that for you.
+
+1117
+00:59:20,480 --> 00:59:28,620
+Michael Kennedy: Yeah. Very nice. Okay. And I've been using uv build, uv publish these days, and it's pretty seamless.
+
+1118
+00:59:29,580 --> 00:59:34,500
+Trevor Manz: Yeah. Yeah. I think maybe we might need to update the build script to have uv build as the backend.
+
+1119
+00:59:34,980 --> 00:59:35,320
+Trevor Manz: So yeah.
+
+1120
+00:59:35,660 --> 00:59:37,900
+Michael Kennedy: Yeah, even if you do uv build against something
+
+1121
+00:59:38,060 --> 00:59:40,220
+Michael Kennedy: with a different backend, I think uv just runs that backend
+
+1122
+00:59:40,620 --> 00:59:40,720
+Michael Kennedy: instead.
+
+1123
+00:59:40,860 --> 00:59:44,200
+Michael Kennedy: So not a big deal.
+
+1124
+00:59:44,460 --> 00:59:44,980
+Michael Kennedy: Not a big deal.
+
+1125
+00:59:46,820 --> 00:59:48,720
+Michael Kennedy: So what are maybe some of the rough edges
+
+1126
+00:59:48,940 --> 00:59:51,440
+Michael Kennedy: that people need to look out for these days?
+
+1127
+00:59:52,440 --> 00:59:54,160
+Michael Kennedy: It's got a lot of stuff that makes things easy,
+
+1128
+00:59:54,400 --> 00:59:56,480
+Michael Kennedy: but what should they be maybe on the lookout for?
+
+1129
+00:59:57,000 --> 01:00:01,440
+Trevor Manz: I think the thing that if folks are getting--
+
+1130
+01:00:02,100 --> 01:00:04,080
+Trevor Manz: hopefully if you want to try out a widget,
+
+1131
+01:00:04,420 --> 01:00:06,820
+Trevor Manz: it should be as simple as installing any other Python package.
+
+1132
+01:00:07,080 --> 01:00:09,260
+Trevor Manz: And that is really a goal that we've had for the project,
+
+1133
+01:00:09,560 --> 01:00:13,700
+Trevor Manz: is that if you want to use this like you would some algorithm library
+
+1134
+01:00:13,780 --> 01:00:15,220
+Trevor Manz: that just does computation,
+
+1135
+01:00:15,580 --> 01:00:19,160
+Trevor Manz: we want that to be as simple as pip installing and getting started.
+
+1136
+01:00:20,600 --> 01:00:22,420
+Trevor Manz: I would say probably the highest barrier to entry
+
+1137
+01:00:22,680 --> 01:00:28,220
+Trevor Manz: is that it is just this idea of just enough JavaScript.
+
+1138
+01:00:28,440 --> 01:00:31,719
+Trevor Manz: And so one thing that I try to emphasize in the docs
+
+1139
+01:00:31,740 --> 01:00:34,860
+Trevor Manz: is that I'd really start with a very simple example
+
+1140
+01:00:35,470 --> 01:00:37,020
+Trevor Manz: if you've never played around in the browser
+
+1141
+01:00:37,570 --> 01:00:40,860
+Trevor Manz: and get used to opening up your developer tools
+
+1142
+01:00:41,260 --> 01:00:43,540
+Trevor Manz: and logging things and just understanding
+
+1143
+01:00:43,750 --> 01:00:46,300
+Trevor Manz: how to develop maybe a little bit in the front end.
+
+1144
+01:00:46,760 --> 01:00:48,020
+Trevor Manz: If you're coming from the front end side,
+
+1145
+01:00:48,520 --> 01:00:51,200
+Trevor Manz: then it would be learning a little bit more of how does Python work
+
+1146
+01:00:51,230 --> 01:00:54,320
+Trevor Manz: and how do I debug things on the Python side.
+
+1147
+01:00:54,640 --> 01:00:57,220
+Michael Kennedy: What is PyPI and how do I even work with that thing?
+
+1148
+01:00:57,480 --> 01:00:57,860
+Michael Kennedy: Exactly.
+
+1149
+01:00:59,020 --> 01:01:01,700
+Trevor Manz: I'd say most of the rough edges are just these problems
+
+1150
+01:01:01,720 --> 01:01:03,180
+Trevor Manz: working with two language ecosystems.
+
+1151
+01:01:03,680 --> 01:01:06,100
+Trevor Manz: But that's also been a very important part of AnyWidget
+
+1152
+01:01:06,180 --> 01:01:08,500
+Trevor Manz: because we don't want people that are ambitious
+
+1153
+01:01:08,680 --> 01:01:10,720
+Trevor Manz: to build things that sort of bridge this gap
+
+1154
+01:01:10,880 --> 01:01:13,060
+Trevor Manz: to feel restricted from either using things
+
+1155
+01:01:13,180 --> 01:01:15,260
+Trevor Manz: in the Python ecosystem or the web ecosystem.
+
+1156
+01:01:15,540 --> 01:01:16,860
+Trevor Manz: Because we could always write wrappers
+
+1157
+01:01:16,980 --> 01:01:19,420
+Trevor Manz: to make things easier for authors,
+
+1158
+01:01:19,760 --> 01:01:21,840
+Trevor Manz: but then we'll probably get a bunch of issues
+
+1159
+01:01:21,980 --> 01:01:23,460
+Trevor Manz: that then say, hey, I want to use this API,
+
+1160
+01:01:23,540 --> 01:01:24,420
+Trevor Manz: and you haven't exposed it.
+
+1161
+01:01:24,780 --> 01:01:26,340
+Michael Kennedy: And they're like, hey, we'd like to use Vue.
+
+1162
+01:01:26,440 --> 01:01:27,980
+Michael Kennedy: You're like, well, you use our Python thing
+
+1163
+01:01:28,100 --> 01:01:28,760
+Michael Kennedy: that defines the DOM.
+
+1164
+01:01:28,760 --> 01:01:29,480
+Michael Kennedy: I'm like, oh, okay.
+
+1165
+01:01:30,180 --> 01:01:30,820
+Michael Kennedy: Yeah, exactly.
+
+1166
+01:01:30,900 --> 01:01:36,080
+Trevor Manz: Exactly. So with great power comes great responsibility, but we want to give that to
+
+1167
+01:01:36,270 --> 01:01:38,140
+Trevor Manz: people that want to build these types of integrations.
+
+1168
+01:01:38,360 --> 01:01:38,480
+Michael Kennedy: Yeah.
+
+1169
+01:01:39,980 --> 01:01:46,640
+Michael Kennedy: So what about agentic AI for this kind of stuff? I know five years ago, you have to learn every
+
+1170
+01:01:46,860 --> 01:01:52,340
+Michael Kennedy: step of the JavaScript. How much can I say, take my inline JavaScript, put it into a JS file,
+
+1171
+01:01:52,490 --> 01:01:59,740
+Michael Kennedy: and then point it at, ask Claude Sonnet, hey, this is an any widget widget, and this is the
+
+1172
+01:01:59,740 --> 01:02:05,780
+Michael Kennedy: JavaScript and here's what I'm trying to accomplish. Like I bet you could go pretty far with a marginal
+
+1173
+01:02:06,060 --> 01:02:10,580
+Michael Kennedy: understanding of JavaScript and as a Python person plus some kind of AI. What do you think?
+
+1174
+01:02:11,200 --> 01:02:18,240
+Trevor Manz: Oh yeah, absolutely. I think, like I mentioned earlier, Vincent works and I work very closely
+
+1175
+01:02:18,380 --> 01:02:22,800
+Trevor Manz: together. And his joke that he likes to tell is that I created any widgets so that he could make
+
+1176
+01:02:22,820 --> 01:02:29,660
+Trevor Manz: any widgets and he uh he's um the ability to like vibe code sort of the front end for
+
+1177
+01:02:30,480 --> 01:02:34,740
+Trevor Manz: like an object really is eye-opening if you've never tried it before if you're like working with
+
+1178
+01:02:34,760 --> 01:02:41,120
+Trevor Manz: your data and i think one of the barriers maybe of like trying out or of like knowing when uh
+
+1179
+01:02:42,000 --> 01:02:46,020
+Trevor Manz: or thinking about how to use any widget is like knowing when it might be useful and really it's
+
+1180
+01:02:46,020 --> 01:02:49,940
+Trevor Manz: like anytime you have an object that like you might want to visualize in a particular way
+
+1181
+01:02:50,080 --> 01:02:54,060
+Trevor Manz: or maybe extend with some extra capabilities
+
+1182
+01:02:54,540 --> 01:02:55,680
+Trevor Manz: in your notebook environment,
+
+1183
+01:02:56,120 --> 01:03:00,100
+Trevor Manz: that's a perfect time to open up some agentic tool
+
+1184
+01:03:00,400 --> 01:03:03,060
+Trevor Manz: and start trying to explain what you're thinking about.
+
+1185
+01:03:03,300 --> 01:03:05,740
+Trevor Manz: And because it's just JavaScript
+
+1186
+01:03:05,920 --> 01:03:07,860
+Trevor Manz: and not a custom framework that we wrote,
+
+1187
+01:03:09,780 --> 01:03:12,120
+Trevor Manz: they're very good at writing this type of code.
+
+1188
+01:03:12,700 --> 01:03:16,040
+Trevor Manz: Sometimes we have a set of rules to try to help it,
+
+1189
+01:03:16,460 --> 01:03:18,380
+Trevor Manz: make sure it doesn't try to do React or something,
+
+1190
+01:03:18,720 --> 01:03:20,360
+Trevor Manz: but it can go very far.
+
+1191
+01:03:20,740 --> 01:03:23,440
+Trevor Manz: And because it's just like a view on top of like your data,
+
+1192
+01:03:23,640 --> 01:03:25,300
+Trevor Manz: it's like, it's kind of the perfect thing
+
+1193
+01:03:25,360 --> 01:03:27,180
+Trevor Manz: to play around with vibe coding, I think.
+
+1194
+01:03:28,100 --> 01:03:30,160
+Michael Kennedy: It's incredible how far you can go with this stuff.
+
+1195
+01:03:30,180 --> 01:03:32,820
+Michael Kennedy: You can give it your data source and say,
+
+1196
+01:03:32,900 --> 01:03:34,500
+Michael Kennedy: here's the data source, here's what I'm trying to do.
+
+1197
+01:03:34,640 --> 01:03:36,680
+Michael Kennedy: And because the data sources often can be
+
+1198
+01:03:36,940 --> 01:03:38,620
+Michael Kennedy: really foundational like CSV or whatever.
+
+1199
+01:03:39,000 --> 01:03:42,560
+Michael Kennedy: And then importantly, because it's just pure JavaScript,
+
+1200
+01:03:43,900 --> 01:03:46,600
+Michael Kennedy: AI can go, AI goes crazy on pure JavaScript
+
+1201
+01:03:46,760 --> 01:03:47,800
+Michael Kennedy: and pure Python, right?
+
+1202
+01:03:47,880 --> 01:03:49,640
+Michael Kennedy: It's unleashed.
+
+1203
+01:03:49,840 --> 01:03:50,420
+Michael Kennedy: Yeah, it's crazy.
+
+1204
+01:03:50,700 --> 01:03:54,120
+Trevor Manz: So to plug it back to Marimo for a second,
+
+1205
+01:03:54,310 --> 01:03:57,840
+Trevor Manz: I think because it's just Python and just JavaScript,
+
+1206
+01:03:58,080 --> 01:04:00,940
+Trevor Manz: it's a really fun environment to actually create any widgets in.
+
+1207
+01:04:01,050 --> 01:04:05,840
+Trevor Manz: And we have some integrations with AI chat within our editor
+
+1208
+01:04:07,710 --> 01:04:10,560
+Trevor Manz: where we actually will inspect some of your Python variables
+
+1209
+01:04:10,800 --> 01:04:13,420
+Trevor Manz: and include that in the prompts as you're trying to work on things.
+
+1210
+01:04:13,540 --> 01:04:14,940
+Trevor Manz: So if you're saying, hey, I want to make a widget
+
+1211
+01:04:15,760 --> 01:04:17,580
+Trevor Manz: and I want to visualize this data frame,
+
+1212
+01:04:17,700 --> 01:04:21,940
+Trevor Manz: you can actually tag the object that you want to start programming around.
+
+1213
+01:04:22,520 --> 01:04:24,440
+Trevor Manz: And that will include things like the schema and stuff
+
+1214
+01:04:24,580 --> 01:04:25,580
+Trevor Manz: as it gives it to the model,
+
+1215
+01:04:25,860 --> 01:04:28,980
+Trevor Manz: such that then that sort of grounds it,
+
+1216
+01:04:29,000 --> 01:04:30,420
+Trevor Manz: at least when it's writing that JavaScript code,
+
+1217
+01:04:30,440 --> 01:04:32,640
+Trevor Manz: to grab the right columns and things off the data set
+
+1218
+01:04:32,920 --> 01:04:33,880
+Trevor Manz: and get to the ground running
+
+1219
+01:04:34,000 --> 01:04:36,360
+Trevor Manz: without you having to procure those things as well.
+
+1220
+01:04:36,500 --> 01:04:39,500
+Trevor Manz: So it's a pretty fun environment to create these things.
+
+1221
+01:04:40,080 --> 01:04:41,900
+Michael Kennedy: It's a weird time, isn't it, that we live in?
+
+1222
+01:04:41,960 --> 01:04:44,820
+Michael Kennedy: Kind of magical and also scary, but just weird.
+
+1223
+01:04:45,240 --> 01:04:45,940
+Michael Kennedy: Yeah, definitely.
+
+1224
+01:04:46,280 --> 01:04:47,860
+Michael Kennedy: but very much fun as well.
+
+1225
+01:04:49,120 --> 01:04:49,780
+Michael Kennedy: I would throw out there,
+
+1226
+01:04:50,120 --> 01:04:51,020
+Michael Kennedy: if people are interested,
+
+1227
+01:04:51,480 --> 01:04:54,160
+Michael Kennedy: check out the Matt Makai episode I did
+
+1228
+01:04:54,240 --> 01:04:55,320
+Michael Kennedy: on HNTech programming
+
+1229
+01:04:56,220 --> 01:04:57,300
+Michael Kennedy: three or four episodes ago
+
+1230
+01:04:58,380 --> 01:04:59,200
+Michael Kennedy: and choose a good model.
+
+1231
+01:04:59,540 --> 01:05:00,420
+Michael Kennedy: I find people are like,
+
+1232
+01:05:00,420 --> 01:05:01,700
+Michael Kennedy: I tried this, it did a bunch of junk.
+
+1233
+01:05:01,880 --> 01:05:03,540
+Michael Kennedy: It's like, yeah, but use the free tier, right?
+
+1234
+01:05:03,640 --> 01:05:03,980
+Michael Kennedy: I see.
+
+1235
+01:05:05,500 --> 01:05:06,180
+Michael Kennedy: There's a big difference
+
+1236
+01:05:06,420 --> 01:05:07,520
+Michael Kennedy: between the top tier models
+
+1237
+01:05:08,260 --> 01:05:09,500
+Michael Kennedy: and the cheaper ones.
+
+1238
+01:05:11,180 --> 01:05:12,980
+Michael Kennedy: All right, where are we going?
+
+1239
+01:05:13,620 --> 01:05:15,240
+Michael Kennedy: What's the roadmap look like for any widget?
+
+1240
+01:05:15,840 --> 01:05:32,700
+Trevor Manz: Yeah, so the roadmap for AnyWidget, I think, looks a lot like trying to get authors to understand some of these patterns that are emerging in the ecosystem for building some of these maybe more high-performance visualization tools.
+
+1241
+01:05:34,020 --> 01:05:38,360
+Trevor Manz: In terms of the library itself, there may be a few features that we want to add for users.
+
+1242
+01:05:38,480 --> 01:05:48,140
+Trevor Manz: But I think one of the most important things is that we just ensure that we stay backwards compatible now that we have something that people are building around.
+
+1243
+01:05:48,400 --> 01:05:59,260
+Trevor Manz: And so my call to action is just to try to get more folks, if they are curious, to try out building new widgets and try to let's keep this ecosystem pretty healthy.
+
+1244
+01:05:59,760 --> 01:06:13,600
+Trevor Manz: And then on top of that, if there are places where folks are running into limitations of the specification as is, then getting invested parties either from the implementers to try to understand what APIs we need to add to support things in the future.
+
+1245
+01:06:13,960 --> 01:06:14,960
+Michael Kennedy: So, yeah.
+
+1246
+01:06:15,320 --> 01:06:15,820
+Michael Kennedy: Amazing.
+
+1247
+01:06:18,400 --> 01:06:22,560
+Michael Kennedy: It was on my mind, but I forgot to ask it when we were talking about this, where things run.
+
+1248
+01:06:22,620 --> 01:06:29,460
+Michael Kennedy: And if this is running in the kernel and you're doing HPC type stuff, I could potentially
+
+1249
+01:06:29,720 --> 01:06:32,300
+Michael Kennedy: use Rust or C++ as part of building my widget.
+
+1250
+01:06:32,500 --> 01:06:32,760
+Michael Kennedy: Is that right?
+
+1251
+01:06:33,280 --> 01:06:33,980
+Trevor Manz: Yeah, definitely.
+
+1252
+01:06:34,540 --> 01:06:39,860
+Trevor Manz: So one pattern we've seen is you just try to do as little as you, just the interactive
+
+1253
+01:06:40,120 --> 01:06:41,640
+Trevor Manz: bits that you want in the front end.
+
+1254
+01:06:41,890 --> 01:06:46,940
+Trevor Manz: And then you have the full resources of anything that you can do in Python on the backend side.
+
+1255
+01:06:47,140 --> 01:06:51,540
+Trevor Manz: And because Python is such a language that has sort of grown to be able to be extended
+
+1256
+01:06:51,560 --> 01:06:53,900
+Trevor Manz: with all these systems-level programming languages,
+
+1257
+01:06:54,240 --> 01:06:56,420
+Trevor Manz: there's a lot that you can tap into there
+
+1258
+01:06:56,440 --> 01:06:58,360
+Trevor Manz: in terms of high-performance compute.
+
+1259
+01:07:00,120 --> 01:07:02,980
+Trevor Manz: So my hope is that really we push user
+
+1260
+01:07:03,160 --> 01:07:05,260
+Trevor Manz: or push any widget authors of creating
+
+1261
+01:07:06,080 --> 01:07:07,140
+Trevor Manz: interesting interactive elements
+
+1262
+01:07:07,440 --> 01:07:10,220
+Trevor Manz: that then allow us to really have that extra input
+
+1263
+01:07:10,440 --> 01:07:15,320
+Trevor Manz: into these really scalable data ecosystem
+
+1264
+01:07:15,340 --> 01:07:16,660
+Trevor Manz: that we have on the Python side.
+
+1265
+01:07:16,880 --> 01:07:17,280
+Michael Kennedy: Awesome.
+
+1266
+01:07:18,660 --> 01:07:19,400
+Michael Kennedy: PR is accepted?
+
+1267
+01:07:20,099 --> 01:07:20,900
+Trevor Manz: Absolutely, yeah.
+
+1268
+01:07:21,280 --> 01:07:27,580
+Michael Kennedy: Yeah, yeah. Okay. So yeah, people can check it out here on GitHub. Of course, we'll link to that.
+
+1269
+01:07:29,160 --> 01:07:32,520
+Michael Kennedy: Yeah. You got ideas? All right. Get in there and add it.
+
+1270
+01:07:33,640 --> 01:07:39,620
+Trevor Manz: Yeah. And we also have a Discord. So folks, like you open up a notebook and you run into something
+
+1271
+01:07:39,790 --> 01:07:46,280
+Trevor Manz: or you just, you have an idea, like there's plenty of folks or I'm in there. And I love to try to get
+
+1272
+01:07:46,300 --> 01:07:50,820
+Trevor Manz: people for their first bit of JavaScript ever. I think it's pretty fun when someone has an idea
+
+1273
+01:07:51,210 --> 01:07:56,120
+Michael Kennedy: and we help them get there. But it's JavaScript. No, no, you're going to be okay. It's not that
+
+1274
+01:07:56,220 --> 01:07:59,820
+Michael Kennedy: much. It's just enough JavaScript, right? Exactly. Whatever that means to you.
+
+1275
+01:08:00,940 --> 01:08:07,080
+Michael Kennedy: Exactly. Just enough so that my thing works. All right. Trevor, thank you so much for being on the
+
+1276
+01:08:07,220 --> 01:08:13,160
+Michael Kennedy: show. I really appreciate it. And congrats on any widget. Looks super cool. It definitely looks
+
+1277
+01:08:13,180 --> 01:08:15,100
+Michael Kennedy: so I could solve any need and easy to work with.
+
+1278
+01:08:15,579 --> 01:08:16,960
+Trevor Manz: - Yeah, thanks so much for having me.
+
+1279
+01:08:17,520 --> 01:08:18,000
+Michael Kennedy: - Yeah, you bet.
+
+1280
+01:08:18,440 --> 01:08:18,660
+Michael Kennedy: See you later.
+
+1281
+01:08:18,920 --> 01:08:19,359
+Trevor Manz: - See ya.
