@@ -1,0 +1,2138 @@
+00:00:00 <v Michael Kennedy>Today on Talk Python, the creators behind FastAPI, Flask, Django, Quart, and Litestar
+
+00:00:05 <v Michael Kennedy>get practical about running apps based on their frameworks in production.
+
+00:00:10 <v Michael Kennedy>Deployment patterns, async gotchas, servers, scalings, and the stuff that you only learn
+
+00:00:15 <v Michael Kennedy>at 2 a.m. when the pager starts going off.
+
+00:00:17 <v Michael Kennedy>For Django, we have Carlton Gibson and Jeff Triplich.
+
+00:00:21 <v Michael Kennedy>For Flask, we have David Lord and Phil Jones.
+
+00:00:23 <v Michael Kennedy>And on Team Litestar, we have Yannick Noverde and Cody Fincher.
+
+00:00:28 <v Michael Kennedy>And finally, Sebastian Ramirez from FastAPI is here as well.
+
+00:00:32 <v Michael Kennedy>Let's jump in.
+
+00:00:33 <v Michael Kennedy>This is Talk Python To Me, episode 533, recorded December 17th, 2025.
+
+00:00:55 <v Michael Kennedy>Welcome to Talk Python To Me.
+
+00:00:57 <v Michael Kennedy>the number one Python podcast for developers and data scientists.
+
+00:01:01 <v Michael Kennedy>This is your host, Michael Kennedy.
+
+00:01:02 <v Michael Kennedy>I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:07 <v Michael Kennedy>Let's connect on social media.
+
+00:01:08 <v Michael Kennedy>You'll find me and Talk Python on Mastodon, Bluesky, and X.
+
+00:01:11 <v Michael Kennedy>The social links are all in your show notes.
+
+00:01:14 <v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:18 <v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:21 <v Michael Kennedy>That's right.
+
+00:01:22 <v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:26 <v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:30 <v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:35 <v Michael Kennedy>Hey, before we jump into the interview, I just want to send a little message to all the companies
+
+00:01:39 <v Michael Kennedy>out there with products and services trying to reach developers.
+
+00:01:44 <v Michael Kennedy>That is the listeners of this show.
+
+00:01:46 <v Michael Kennedy>As we're rolling into 2026, I have a bunch of spots open.
+
+00:01:50 <v Michael Kennedy>So please reach out to me if you're looking to sponsor a podcast or just generally sponsor
+
+00:01:56 <v Michael Kennedy>things in the community and you haven't necessarily considered podcasts, you really should.
+
+00:02:00 <v Michael Kennedy>Reach out to me and I'll help you connect with the Talk Python audience.
+
+00:02:05 <v Michael Kennedy>Thanks everyone for listening all of 2025. And here we go into 2026. Cheers.
+
+00:02:11 <v Michael Kennedy>Hello, hello, Carlton, Sebastian, David, Cody, Yannick, Phil, Jeff, welcome back to Talk Python,
+
+00:02:19 <v Michael Kennedy>all of you. Thanks for having us. Thank you for having us. Happy to be here again. We're here for
+
+00:02:22 <v Michael Kennedy>what may be my favorite topic for sure. Something I spend most of my time on is web API stuff,
+
+00:02:30 <v Michael Kennedy>which is awesome. So excited to have you here to give your inside look at how people should
+
+00:02:36 <v Michael Kennedy>be running your framework, at least the one that you significantly contribute to, depending on
+
+00:02:42 <v Michael Kennedy>which framework we're talking about, right? It's going to be a lot of fun, and I'm really excited
+
+00:02:47 <v Michael Kennedy>to talk about it. However, there's an interesting fact that I've been throwing out a lot lately is
+
+00:02:51 <v Michael Kennedy>that fully half of the people doing professional Python development have only been doing it for two
+
+00:02:56 <v Michael Kennedy>years or less. And some of you been on the show, it was maybe two years longer than that. Let's just
+
+00:03:01 <v Michael Kennedy>do a quick round of introductions for people who don't necessarily know you. We'll go around the
+
+00:03:06 <v Michael Kennedy>squares here in the screen sharing. So Carlton, you're up first. Oh, I get to go first. Brilliant.
+
+00:03:11 <v Carlton Gibson>Well, I'm Carlton. I work on the Django Red framework mostly. I'm a former Django fellow.
+
+00:03:16 <v Carlton Gibson>I maintain a number of packages in the ecosystem. And the last few years I've been back to building
+
+00:03:20 <v Carlton Gibson>stuff with Django rather than working on it. So I run a build startup that's, well, we're still
+
+00:03:25 <v Michael Kennedy>going. So I'm quite excited about that. Awesome. How is it to be building with Django than building
+
+00:03:30 <v Carlton Gibson>Django? Oh, I'm literally having the time of my life. Like I spent five years as a Django fellow
+
+00:03:36 <v Carlton Gibson>working on Django and I just built up this backlog of things I wanted to do and I had no time and no
+
+00:03:42 <v Carlton Gibson>capacity and no, no sort of nothing to work on with them. And it's just, it's just a delight.
+
+00:03:46 <v Carlton Gibson>And every day I sit down on my computer thinking, oh, what's today?
+
+00:03:50 <v Carlton Gibson>I look at the background.
+
+00:03:51 <v Carlton Gibson>Oh, yes.
+
+00:03:52 <v Carlton Gibson>And every day, a delight.
+
+00:03:54 <v Carlton Gibson>So I'm still just loving it.
+
+00:03:56 <v Carlton Gibson>That's awesome.
+
+00:03:57 <v Michael Kennedy>So more often you're appreciating your former self than cursing your former self
+
+00:04:01 <v Michael Kennedy>for the way you built.
+
+00:04:04 <v Michael Kennedy>Yeah, that's an interesting one.
+
+00:04:05 <v Michael Kennedy>I think we should move on before.
+
+00:04:07 <v Michael Kennedy>All right.
+
+00:04:08 <v Michael Kennedy>All right.
+
+00:04:09 <v Michael Kennedy>Speaking of building with and for Sebastian, FastAPI.
+
+00:04:14 <v Michael Kennedy>Hello.
+
+00:04:14 <v Michael Kennedy>Hello.
+
+00:04:15 <v Michael Kennedy>So, okay, intro for the ones that don't know me.
+
+00:04:18 <v Michael Kennedy>I'm Sebastian Ramirez.
+
+00:04:19 <v Michael Kennedy>I created FastAPI.
+
+00:04:21 <v Michael Kennedy>Yeah, that's pretty much it.
+
+00:04:23 <v Michael Kennedy>And now I have been building a company since the last two years, FastAPI Cloud, to deploy
+
+00:04:27 <v Michael Kennedy>FastAPI.
+
+00:04:28 <v Michael Kennedy>So, I get to drink from funny cups, as you can see.
+
+00:04:33 <v Michael Kennedy>The world's best boss.
+
+00:04:35 <v Michael Kennedy>Amazing.
+
+00:04:36 <v Michael Kennedy>So, I think you deserve to give a bit of a shout out to FastAPI Cloud.
+
+00:04:39 <v Michael Kennedy>That's a big deal.
+
+00:04:40 <v Michael Kennedy>Thank you.
+
+00:04:40 <v Michael Kennedy>Thank you very much.
+
+00:04:41 <v Michael Kennedy>Yeah, it's super fun.
+
+00:04:42 <v Michael Kennedy>And the idea is to make it super simple to deploy FastAPI applications.
+
+00:04:47 <v Michael Kennedy>The idea with FastAPI was to make it very simple to build applications, build APIs,
+
+00:04:52 <v Michael Kennedy>and get the idea from idea to product in record time.
+
+00:04:57 <v Michael Kennedy>That was the idea with FastAPI.
+
+00:04:59 <v Michael Kennedy>But then deploying that, in many cases, is just too cumbersome.
+
+00:05:02 <v Michael Kennedy>It's too complicated.
+
+00:05:03 <v Michael Kennedy>There are just so many things to that.
+
+00:05:05 <v Michael Kennedy>So I wanted to bring something for people to be able to say, like,
+
+00:05:09 <v Michael Kennedy>hey, just one command FastAPI deploy, and we take care of the rest.
+
+00:05:12 <v Michael Kennedy>And then we and the team, I have an amazing thing <v Michael Kennedy>that I've been able to work with.
+
+00:05:17 <v Michael Kennedy>We suffer all the cloud pains so that people <v Michael Kennedy>don't have to deal with that.
+
+00:05:21 <v Michael Kennedy>And yeah, it's painful to build, but it's so cool to use it.
+
+00:05:25 <v Michael Kennedy>You know, like that's the part when I say like, yes, <v Michael Kennedy>this was worth it.
+
+00:05:29 <v Michael Kennedy>When I get to use the thing myself, that is super cool.
+
+00:05:32 <v Michael Kennedy>MARK MANDEL: Yeah, I'm assuming you build FastAPI <v Michael Kennedy>Cloud with FastAPI somewhat.
+
+00:05:35 <v Michael Kennedy>FRANCISCO MOLIN: Yes, yes, yes, exactly.
+
+00:05:37 <v Michael Kennedy>FastAPI Cloud runs on FastAPI Cloud.
+
+00:05:40 <v Michael Kennedy>And I get just like now random things in there and like, yes.
+
+00:05:44 <v Michael Kennedy>Congrats to that again.
+
+00:05:45 <v Michael Kennedy>That's super cool.
+
+00:05:46 <v Michael Kennedy>David Lord, welcome.
+
+00:05:47 <v Michael Kennedy>Welcome back.
+
+00:05:48 <v David Lord>Yeah.
+
+00:05:48 <v David Lord>Hello.
+
+00:05:49 <v David Lord>I'm David Lord.
+
+00:05:49 <v David Lord>I'm the lead maintainer of Pallets, which is Flask, Jinja, Click, Berkswag.
+
+00:05:55 <v David Lord>It's dangerous, markup safe.
+
+00:05:56 <v David Lord>And now Pallets Eco, which is a bunch of the famous extensions for Flask that are getting
+
+00:06:02 <v David Lord>community maintenance now.
+
+00:06:04 <v David Lord>I've been doing that since, I think I've been the lead maintainer since like 2019, but a
+
+00:06:08 <v David Lord>maintainer since like 2017.
+
+00:06:09 <v David Lord>So it's been a while.
+
+00:06:10 <v Michael Kennedy>That's been a while.
+
+00:06:11 <v Michael Kennedy>We're coming up on seven, eight years.
+
+00:06:14 <v Michael Kennedy>That's crazy.
+
+00:06:15 <v Michael Kennedy>Time flies.
+
+00:06:15 <v David Lord>It's always funny because I always feel like I've been doing it for way, way longer.
+
+00:06:18 <v David Lord>And then I look at the actual date that I got added as a maintainer.
+
+00:06:21 <v David Lord>I'm like, well, it couldn't have been that late.
+
+00:06:22 <v Michael Kennedy>I was doing stuff before that, right?
+
+00:06:24 <v Michael Kennedy>Well, I'm sure you were deep in flask before you got added as a maintainer of it, right?
+
+00:06:28 <v Michael Kennedy>Yeah.
+
+00:06:28 <v Michael Kennedy>Phil Jones, since you are also on the same org, next.
+
+00:06:32 <v Michael Kennedy>Hey, welcome back.
+
+00:06:32 <v Michael Kennedy>Hello.
+
+00:06:33 <v Phil Jones>Yeah, I'm Phil Jones.
+
+00:06:34 <v Phil Jones>I am the author of Quartz, which is also part of Palette.
+
+00:06:37 <v Phil Jones>I also work on Berkshagen and Flask and help out there.
+
+00:06:42 <v Phil Jones>And I've done a server called Hypercorn as well.
+
+00:06:44 <v Phil Jones>So a bit of interest in that part of the ecosystem.
+
+00:06:47 <v Phil Jones>What is Quart for people who don't know?
+
+00:06:50 <v Phil Jones>Quart is basically Flask with async await.
+
+00:06:53 <v Phil Jones>And that was the idea behind it really to make it possible to do async await.
+
+00:06:57 <v Phil Jones>So yeah, that's pretty much it.
+
+00:06:58 <v Phil Jones>If we, when we manage to merge them, we will.
+
+00:07:00 <v David Lord>And the goal now with Quart as part of palettes is to eventually have it be one code base with Flask.
+
+00:07:07 <v David Lord>But given that we both have small children now, we're moving a lot slower.
+
+00:07:13 <v Michael Kennedy>Having kids is great.
+
+00:07:14 <v Michael Kennedy>I have three kids.
+
+00:07:15 <v Michael Kennedy>Productivity is not a thing that they are known to imbue on the parents, right?
+
+00:07:20 <v Michael Kennedy>Especially in the early days.
+
+00:07:21 <v Michael Kennedy>I want to say, Phil, thank you.
+
+00:07:23 <v Michael Kennedy>I've been running Quart for a couple of my websites lately, and it's been amazing.
+
+00:07:26 <v Phil Jones>Nice.
+
+00:07:27 <v Phil Jones>Yeah, I also use it at work.
+
+00:07:29 <v Phil Jones>We've got all our stuff in Quart, which is, yeah, it's really good fun.
+
+00:07:31 <v Phil Jones>A bit like Carlton.
+
+00:07:32 <v Michael Kennedy>So when people, if they get, if they listen to the show or they go to the website of the show and they're not on YouTube, then that somehow involves court.
+
+00:07:39 <v Janek Nouvertné>Janek, welcome.
+
+00:07:40 <v Janek Nouvertné>Hey.
+
+00:07:41 <v Janek Nouvertné>Yeah, I'm Janek de Vietni.
+
+00:07:42 <v Janek Nouvertné>I work on Litestar.
+
+00:07:44 <v Janek Nouvertné>I just looked up how long it's been because I was curious myself.
+
+00:07:48 <v Janek Nouvertné>I also had the same feeling that it's been a lot longer than, it's actually only been three years.
+
+00:07:53 <v Janek Nouvertné>Yeah.
+
+00:07:53 <v Janek Nouvertné>And I also, I noticed something with all you guys here in the room.
+
+00:07:57 <v Janek Nouvertné>I use almost all of the projects you maintain at work,
+
+00:08:01 <v Janek Nouvertné>which is quite nice.
+
+00:08:04 <v Janek Nouvertné>We have a very big Django deployment.
+
+00:08:06 <v Janek Nouvertné>We have some Flask deployments.
+
+00:08:08 <v Janek Nouvertné>We have a few FastAPI deployments.
+
+00:08:10 <v Janek Nouvertné>I think we have one core deployment <v Janek Nouvertné>and we also have two Light Store deployments,
+
+00:08:15 <v Janek Nouvertné>which obviously is a lot of fun to work with.
+
+00:08:17 <v Janek Nouvertné>And I find it really, really nice actually <v Janek Nouvertné>to work with all these different things.
+
+00:08:23 <v Janek Nouvertné>It's super interesting also because like everything <v Janek Nouvertné>has its own niche that it's really good at.
+
+00:08:29 <v Janek Nouvertné>And even, you know, you think <v Janek Nouvertné>if you maintain a framework yourself,
+
+00:08:33 <v Janek Nouvertné>you tend to always recommend it for everything.
+
+00:08:36 <v Janek Nouvertné>But I noticed it's not actually true.
+
+00:08:38 <v Janek Nouvertné>There's actually quite a few cases <v Janek Nouvertné>where I don't recommend Litestar.
+
+00:08:42 <v Janek Nouvertné>I recommend, you know, just, you know, <v Janek Nouvertné>use Django for this or, you know,
+
+00:08:47 <v Janek Nouvertné>use Flask for that or use FastAPI for this <v Janek Nouvertné>because, well, they are quite different after all.
+
+00:08:52 <v Janek Nouvertné>And I find that really, really interesting <v Janek Nouvertné>and nice. And I think it's a good sign of a healthy ecosystem if it's not just, you know,
+
+00:09:00 <v Janek Nouvertné>the same thing, but different, but it actually brings something very unique and different to
+
+00:09:04 <v Michael Kennedy>the table. I think that's a great attitude. And it's very interesting. You know, I feel like
+
+00:09:08 <v Michael Kennedy>there's a lot of people who feel like they've kind of got to pick their tech team for everything.
+
+00:09:13 <v Michael Kennedy>I'm going to build a static site. Like, well, I've got to have a Python-based static site builder.
+
+00:09:17 <v Michael Kennedy>Like, well, it's a static site. Who cares what technology makes it turn? You're writing Markdown,
+
+00:09:21 <v Michael Kennedy>and out comes HTML.
+
+00:09:22 <v Michael Kennedy>Who cares what's in the middle, for example, right?
+
+00:09:24 <v Michael Kennedy>And, you know, I feel like that's kind of a life lessons learned.
+
+00:09:28 <v Michael Kennedy>Absolutely, yeah.
+
+00:09:29 <v Michael Kennedy>Yeah, that's awesome.
+
+00:09:30 <v Michael Kennedy>Cody, hello, hello.
+
+00:09:31 <v Cody Fincher>Yeah, hey guys, I'm Cody Fincher.
+
+00:09:32 <v Cody Fincher>I'm also one of the maintainers of Litestar.
+
+00:09:34 <v Cody Fincher>I've been there just a little bit longer than Yannick.
+
+00:09:37 <v Cody Fincher>And so it's been about four years now.
+
+00:09:40 <v Cody Fincher>And Yannick actually teed this up perfectly <v Cody Fincher>because I was going to say something very similar.
+
+00:09:43 <v Cody Fincher>I currently work for Google.
+
+00:09:44 <v Cody Fincher>I've been there for about three and a half years now.
+
+00:09:46 <v Cody Fincher>And we literally have every one of the frameworks <v Cody Fincher>you guys just mentioned,
+
+00:09:50 <v Cody Fincher>and they're all in production.
+
+00:09:51 <v Cody Fincher>And so one of the things that you'll see <v Cody Fincher>on the Litestar org and part of the projects
+
+00:09:56 <v Cody Fincher>that we maintain are that we have these optional batteries
+
+00:09:59 <v Cody Fincher>and most of the batteries that we have <v Cody Fincher>all work with the frameworks for you guys.
+
+00:10:03 <v Cody Fincher>And so it's nice to be able to use that stuff, <v Cody Fincher>you know, regardless of what tooling you've got
+
+00:10:08 <v Cody Fincher>or what project it is.
+
+00:10:10 <v Cody Fincher>And so, yeah, having that interoperability <v Cody Fincher>and the ability to kind of go between the frameworks
+
+00:10:14 <v Cody Fincher>that work the best for the right situation is crucial.
+
+00:10:16 <v Cody Fincher>And so I'm glad you mentioned that, Yannick.
+
+00:10:18 <v Cody Fincher>But yeah, nice to see you guys <v Michael Kennedy>on the show. Cody, tell people what Litestar is. I know I had both you guys and Jacob on a while
+
+00:10:25 <v Michael Kennedy>ago, but it's been a couple of years, I think. Litestar at its core is really a web framework
+
+00:10:30 <v Cody Fincher>that kind of sits somewhere in between, I'd say, Flask and FastAPI and Django. So whereas, you know,
+
+00:10:36 <v Cody Fincher>Flask doesn't really, you know, bundle a lot of batteries. There's a huge amount of, you know,
+
+00:10:41 <v Cody Fincher>third-party libraries and ecosystem that's built around it that people can add into it, but there's
+
+00:10:44 <v Cody Fincher>not really like, for instance, a database adapter or a database plugin or plugins for
+
+00:10:50 <v Cody Fincher>VEAT or something like that, right, for front end development. And so what we have been doing
+
+00:10:54 <v Cody Fincher>is building a API framework that is very similar in concept to FastAPI that is also extensible.
+
+00:10:59 <v Cody Fincher>So if you want to use the batteries, they're there for you. But if you don't want to use
+
+00:11:03 <v Cody Fincher>them, you don't have to, right? And so a lot of the tooling that we built for LightStore
+
+00:11:07 <v Cody Fincher>was birthed out of a startup that I was in prior to joining Google. And so having all
+
+00:11:12 <v Cody Fincher>this boilerplate, really, it needed somewhere to go.
+
+00:11:15 <v Cody Fincher>And so a lot of this stuff ended up being plugins, <v Cody Fincher>which is what we bundled into Litestar
+
+00:11:19 <v Cody Fincher>so that you can kind of add in this extra functionality.
+
+00:11:22 <v Cody Fincher>And so I know I'm getting long-winded.
+
+00:11:24 <v Cody Fincher>It's somewhere between Django and Flask, <v Cody Fincher>if you were to think about it in terms of a spectrum,
+
+00:11:29 <v Cody Fincher>in terms of what it gives you in terms of a web framework.
+
+00:11:32 <v Cody Fincher>But in short, it does everything that all the other guys do.
+
+00:11:35 <v Michael Kennedy>Very neat. It's definitely a framework I admire.
+
+00:11:37 <v Michael Kennedy>Jeff Triplett, so glad you could make it.
+
+00:11:39 <v Jeff Triplett>Yeah, thanks for having me.
+
+00:11:40 <v Jeff Triplett>Yeah, I'm Jeff Triplett. I'm out of Lawrence, Kansas.
+
+00:11:42 <v Jeff Triplett>I'm a consultant at a company called Revolution Systems.
+
+00:11:45 <v Jeff Triplett>I was on, some people know me from being on the Python Software Foundation board.
+
+00:11:48 <v Jeff Triplett>I've been off that for a few years.
+
+00:11:50 <v Jeff Triplett>As of last week, I'm the president of the Django Software Foundation.
+
+00:11:53 <v Jeff Triplett>So I've been on that board for a year.
+
+00:11:54 <v Jeff Triplett>I'm kind of a Django power user, I guess.
+
+00:11:56 <v Jeff Triplett>I've used it for about 20 years.
+
+00:11:58 <v Jeff Triplett>And I've kind of not really worked on, I don't even think I have a patch anymore in Django.
+
+00:12:02 <v Jeff Triplett>But I've done a lot with the community.
+
+00:12:04 <v Jeff Triplett>I've done a lot with contributing through conferences and using utilities.
+
+00:12:09 <v Jeff Triplett>I try to promote Carleton's applications like Neapolitan.
+
+00:12:12 <v Jeff Triplett>And if I like tools, Python tools in general, I try to advocate for it.
+
+00:12:16 <v Jeff Triplett>I've also used all of these applications.
+
+00:12:18 <v Jeff Triplett>Litestar, I haven't, but I have a friend who talks about it a lot.
+
+00:12:21 <v Jeff Triplett>And so I feel like I know a lot from it.
+
+00:12:23 <v Jeff Triplett>As a consultant, we tend to go with the best tool for the job.
+
+00:12:25 <v Jeff Triplett>So I've done a little bit of FastAPI.
+
+00:12:27 <v Jeff Triplett>I worked with Flask a lot over the years, even though we're primarily a Django shop.
+
+00:12:31 <v Jeff Triplett>It just depends on what the client needs.
+
+00:12:32 <v Michael Kennedy>And you see a lot of different sizes of web app deployments.
+
+00:12:36 <v Michael Kennedy>So I think that's going to be an interesting angle for sure.
+
+00:12:38 <v Jeff Triplett>Yeah, absolutely.
+
+00:12:39 <v Jeff Triplett>Small ones to hundreds of servers.
+
+00:12:42 <v Jeff Triplett>We don't see it as much anymore the last four or five years, especially with like CDNs and caching.
+
+00:12:46 <v Jeff Triplett>We just don't see load like we did, you know, 10 years ago or so.
+
+00:12:50 <v Jeff Triplett>And then I also do a lot of like small, I kind of call them some of them little dumb projects, but some are just fun.
+
+00:12:55 <v Jeff Triplett>Like I've got a FastAPI web ring that I wrote a year ago for April Fool's Day.
+
+00:13:00 <v Jeff Triplett>And for some reason that kind of took off and people liked it, even though it was kind of a joke.
+
+00:13:03 <v Jeff Triplett>So I started like peppering it on a bunch of sites and I maintain like Django packages.
+
+00:13:08 <v Jeff Triplett>I do a newsletter, Django News newsletter, just kind of lots of fun stuff.
+
+00:13:11 <v Michael Kennedy>Definitely looking forward to hearing all of your opinions.
+
+00:13:14 <v Michael Kennedy>So I've got a bunch of different your app in production topics
+
+00:13:17 <v Michael Kennedy>I thought we could just work around or talk over.
+
+00:13:20 <v Michael Kennedy>So I thought maybe the first one is what would you recommend,
+
+00:13:24 <v Michael Kennedy>or if you don't really have a strong recommendation, <v Michael Kennedy>what would you choose for yourself to put your app in your framework in production?
+
+00:13:32 <v Michael Kennedy>I'm thinking app servers, reverse proxies like Nginx or Caddy.
+
+00:13:36 <v Michael Kennedy>Do you go for threaded?
+
+00:13:37 <v Michael Kennedy>Try to scale out with threads.
+
+00:13:39 <v Michael Kennedy>you try to scale out with processes, Docker, no Docker, Kubernetes. What are we doing here,
+
+00:13:44 <v Michael Kennedy>folks? Carlton. I think we'll just keep going around the circle here. So you may get the first
+
+00:13:49 <v Michael Kennedy>round of everyone. No, I'll try to mix it up, but let's do it this time.
+
+00:13:52 <v Carlton Gibson>I do the oldest school thing in the book. I run Nginx as my front end. I'll stick a
+
+00:14:00 <v Carlton Gibson>WSGI server behind it with a pre-fork, a few workers, depending on CPU size, depending on
+
+00:14:05 <v Carlton Gibson>the kind of requests I'm handling. These days, in order to handle long-lived requests,
+
+00:14:10 <v Carlton Gibson>like server-sent events, that kind of, or WebSocket type things, I'll run an ASGII server as a kind
+
+00:14:14 <v Carlton Gibson>of sidecar. I've been thinking about this a lot, actually. But yeah, this is interesting.
+
+00:14:18 <v Carlton Gibson>If you're running a small site and you want long-lived requests, just run ASGII. Just use
+
+00:14:22 <v Carlton Gibson>ASGII. Because any of the servers, Hypercorn, Uvacorn, Daphne, Grannion is the new hot kid on
+
+00:14:29 <v Carlton Gibson>the bot, right? All of those will handle your traffic, no problem. But for me, the scaling
+
+00:14:34 <v Carlton Gibson>paddles and whiskey are so well known and just like i can do the maths on the back of the pencil i know
+
+00:14:39 <v Carlton Gibson>exactly how to scale it up having done it for so long for me for my core application i would still
+
+00:14:45 <v Carlton Gibson>rather use the whiskey server and then limit the async stuff to just to the use cases where it's
+
+00:14:51 <v Carlton Gibson>particularly suited so i'll do that um process manager i deploy using systemd if i want to if i
+
+00:14:58 <v Carlton Gibson>want a container i'll use podman by systemd it's as old school as it gets i'll very often run a
+
+00:15:03 <v Carlton Gibson>a Redis instance on localhost for caching, <v Carlton Gibson>and that will be it.
+
+00:15:08 <v Carlton Gibson>And that will get me an awful long way.
+
+00:15:09 <v Carlton Gibson>If I have to schedule, <v Carlton Gibson>I just get a bigger box.
+
+00:15:12 <v Carlton Gibson>And a bigger box.
+
+00:15:13 <v Carlton Gibson>Yeah, yeah, yeah.
+
+00:15:13 <v Carlton Gibson>I really, really, really need multiple boxes.
+
+00:15:16 <v Carlton Gibson>Well, then we'll talk.
+
+00:15:16 <v Michael Kennedy>I feel like you and I are in a similar vibe.
+
+00:15:18 <v Michael Kennedy>But one thing I want to sort of throw out there to you,
+
+00:15:20 <v Michael Kennedy>but also sort of the others is, <v Michael Kennedy>what are we talking with databases?
+
+00:15:24 <v Michael Kennedy>Like, who is bold enough to go SQLite?
+
+00:15:26 <v Michael Kennedy>Anyone's going SQLite out there?
+
+00:15:28 <v Cody Fincher>Yeah, it depends, right?
+
+00:15:30 <v Cody Fincher>It just depends on what you're doing, right?
+
+00:15:31 <v Cody Fincher>And how many concurrent users you're going to have.
+
+00:15:33 <v Cody Fincher>It really is amazing there.
+
+00:15:34 <v David Lord>The Palette's website is running on Flask, <v David Lord>which I wasn't doing for a while.
+
+00:15:38 <v David Lord>I was doing a static site generator.
+
+00:15:39 <v David Lord>Then I got inspired by Andrew Godwin's static dynamic sites.
+
+00:15:43 <v David Lord>And so it loads up all these markdown files, <v David Lord>static markdown files into a SQLite database at runtime
+
+00:15:50 <v David Lord>and then serves off of that <v David Lord>because you can query really fast.
+
+00:15:53 <v David Lord>Oh, that's awesome. I love it.
+
+00:15:54 <v David Lord>So I am using SQLite for the Palette's website.
+
+00:15:56 <v Janek Nouvertné>Yeah, I also do have a few small apps that use SQLite.
+
+00:16:00 <v Janek Nouvertné>And one recently that's Cody's fault <v Janek Nouvertné>because he put me on that track
+
+00:16:05 <v Janek Nouvertné>where it's running a SQLite database in the browser <v Janek Nouvertné>because nowadays it's quite easy to do that.
+
+00:16:12 <v Janek Nouvertné>And then you can do all sorts of stuff with it, <v Janek Nouvertné>like hook into it with DuckDB and perform some analysis.
+
+00:16:19 <v Janek Nouvertné>So you don't actually need to run any sort of server at all.
+
+00:16:23 <v Janek Nouvertné>You can just throw some files into Nginx and serve your data.
+
+00:16:26 <v Janek Nouvertné>And as long as that's static, <v Janek Nouvertné>you have a super, super simple deployment.
+
+00:16:30 <v Janek Nouvertné>So yeah, definitely SQLite.
+
+00:16:32 <v Michael Kennedy>If you can, I like it.
+
+00:16:34 <v Michael Kennedy>I agree.
+
+00:16:35 <v Michael Kennedy>It's interesting.
+
+00:16:36 <v Michael Kennedy>The database probably won't go down with that, probably.
+
+00:16:38 <v Michael Kennedy>Let's do this by framework.
+
+00:16:40 <v Michael Kennedy>So we'll do vertical slices in the visual here.
+
+00:16:42 <v Michael Kennedy>So Jeff.
+
+00:16:43 <v Jeff Triplett>Yeah, Django, Postgres, pretty old school stack.
+
+00:16:46 <v Jeff Triplett>I think putting a CD in front of anything is just a win.
+
+00:16:49 <v Jeff Triplett>So whether you like Fastly or Cloudflare, <v Jeff Triplett>you get a lot of mileage out of it.
+
+00:16:52 <v Jeff Triplett>You learn a lot about caching <v Jeff Triplett>because it's kind of hard to cache Django by default.
+
+00:16:56 <v Jeff Triplett>So you get to play with curl <v Jeff Triplett>and kind of figure out why very headers are there.
+
+00:16:59 <v Jeff Triplett>And it's a good learning experience to get through that.
+
+00:17:02 <v Jeff Triplett>I also like Coolify, which is kind of new, at least new to me and new to Michael.
+
+00:17:06 <v Jeff Triplett>We talk about this in our spare time a lot.
+
+00:17:08 <v Jeff Triplett>It's just kind of a boring service that'll launch a bunch of containers for you.
+
+00:17:12 <v Jeff Triplett>There's a bunch of one-click installs, so Postgres is a one-click.
+
+00:17:15 <v Jeff Triplett>It also does backups for you, which is really nice to have for free.
+
+00:17:18 <v Jeff Triplett>I run a couple dozen sites through it and really like it.
+
+00:17:21 <v Jeff Triplett>You can either do a hosted forum, I don't get any money from it, or you can run the open-source version.
+
+00:17:26 <v Jeff Triplett>I do both.
+
+00:17:27 <v Jeff Triplett>I've got like a home lab that I just run stuff using the open-source version.
+
+00:17:30 <v Jeff Triplett>And for five bucks a month, it's worth it to run a couple servers.
+
+00:17:33 <v Jeff Triplett>And like Carlton said, you can just scale up.
+
+00:17:35 <v Michael Kennedy>Yeah, it's got a bunch of one-click deploy for self-hosted SaaS things as well.
+
+00:17:40 <v Michael Kennedy>Like I want an analytics stack of containers that run in its own isolated bit.
+
+00:17:44 <v Michael Kennedy>Just click here and go.
+
+00:17:46 <v Jeff Triplett>Yeah, one-click, it's installed and you're up.
+
+00:17:48 <v Jeff Triplett>And then once you get one Django, Flask, FastAPI site working with it,
+
+00:17:53 <v Jeff Triplett>and it uses like a Docker container.
+
+00:17:54 <v Jeff Triplett>Once you get that set up, it's really easy to just kind of duplicate that site,
+
+00:17:58 <v Jeff Triplett>plug it in to GitHub or whatever your Git provider is.
+
+00:18:01 <v Jeff Triplett>And it's a nice experience for what normally is just our syncing files
+
+00:18:05 <v Jeff Triplett>and life's too short for that.
+
+00:18:06 <v Michael Kennedy>Sebastian, I want to have you go last on this one <v Michael Kennedy>because I think you've got something pretty interesting
+
+00:18:12 <v Michael Kennedy>with FastAPI Cloud to dive into.
+
+00:18:14 <v Michael Kennedy>But let's do Litestar next. Cody.
+
+00:18:16 <v Cody Fincher>I have actually bought all the way in on Gradient.
+
+00:18:19 <v Cody Fincher>So for the ASCII server, I've actually been running Gradient now
+
+00:18:22 <v Cody Fincher>for I'd say a year in production.
+
+00:18:24 <v Cody Fincher>It's worked pretty well.
+
+00:18:26 <v Cody Fincher>There's a couple of new things that I'm actually kind of
+
+00:18:28 <v Cody Fincher>with. I don't know how well they're going to work out. So I'm going to go ahead and throw this out
+
+00:18:31 <v Cody Fincher>there. But Granian is one of the few ASCII servers that supports HTTP2. And it actually can do HTTP2
+
+00:18:38 <v Cody Fincher>clear text. And so this is part of the next thing I'm going to say. Because I work for Google, I'm
+
+00:18:42 <v Cody Fincher>actively using lots of Kubernetes and Cloud Run mainly. And so most of the things that I deploy
+
+00:18:47 <v Cody Fincher>are containerized on Cloud Run. And I typically would suggest if you're not using something like
+
+00:18:53 <v Cody Fincher>SystemD and deploying it directly on bare metal, then you are going to want to let the container
+
+00:18:57 <v Cody Fincher>or whatever you're using to manage your processes, <v Cody Fincher>manage that and spin that up.
+
+00:19:01 <v Cody Fincher>And so I typically try to allocate, <v Cody Fincher>you know, like one CPU for the container
+
+00:19:05 <v Cody Fincher>and let the actual framework scale it up and down as needed.
+
+00:19:09 <v Cody Fincher>Cloud Run itself has a, like an ingress, <v Cody Fincher>like a load balancer that sits in front
+
+00:19:13 <v Cody Fincher>that it automatically configures.
+
+00:19:14 <v Cody Fincher>And you're required to basically serve up <v Cody Fincher>clear text traffic in when you run Cloud Run.
+
+00:19:19 <v Cody Fincher>And because now Gradient supports HTTP2 <v Cody Fincher>and Cloud Run supports HTTP2 clear text,
+
+00:19:25 <v Cody Fincher>you can now serve Granian as HTTP2 traffic.
+
+00:19:28 <v Cody Fincher>The good thing about that is that you get an unlimited upload size.
+
+00:19:31 <v Cody Fincher>And so there are max thresholds to what you can upload <v Cody Fincher>into the various cloud environments.
+
+00:19:35 <v Cody Fincher>HTTP2 usually circumvents that or gets around it <v Cody Fincher>because of the way the protocol works.
+
+00:19:39 <v Cody Fincher>And so you get additional features and functionality because of that.
+
+00:19:42 <v Cody Fincher>So anyway, that's what I typically do.
+
+00:19:44 <v Cody Fincher>And most of my databases are usually Postgres, <v Cody Fincher>AlloyDB if it needs to be something that's on the analytical side.
+
+00:19:50 <v Michael Kennedy>Yeah, I'm on Team Granian as well.
+
+00:19:52 <v Michael Kennedy>I think that's a super neat framework.
+
+00:19:53 <v Michael Kennedy>I had Giovanni on who's behind it a while ago.
+
+00:19:57 <v Michael Kennedy>It seems like it's not as popular, <v Michael Kennedy>but it's based on Hyper from the Rust world,
+
+00:20:02 <v Michael Kennedy>which has like 130,000 projects based on it or something.
+
+00:20:05 <v Michael Kennedy>So, you know, at its core, it's still pretty battle-tested.
+
+00:20:11 <v Michael Kennedy>this portion of talk python to me is brought to you by our course just enough python for data
+
+00:20:16 <v Michael Kennedy>scientists if you live in notebooks but need your work to hold up in the real world check out just
+
+00:20:21 <v Michael Kennedy>enough python for data scientists it's a focused code first course that tightens the python you
+
+00:20:26 <v Michael Kennedy>actually use and adds the habits that make results repeatable we refactor messy cells into functions
+
+00:20:33 <v Michael Kennedy>and packages, use Git on easy mode, lock environments with uv, and even ship with Docker.
+
+00:20:39 <v Michael Kennedy>Keep your notebook speed, add engineering reliability.
+
+00:20:42 <v Michael Kennedy>Find it at Talk Python Training.
+
+00:20:44 <v Michael Kennedy>Just click courses in the navbar at talkpython.fm.
+
+00:20:47 <v Michael Kennedy>Yannick, how about you?
+
+00:20:49 <v Michael Kennedy>You've got a variety, it sounds like.
+
+00:20:50 <v Michael Kennedy>Yeah, definitely.
+
+00:20:53 <v Janek Nouvertné>There's a pretty clear split between what I do at work and what I do outside of that.
+
+00:20:59 <v Janek Nouvertné>So at work, it's Kubernetes deployments.
+
+00:21:01 <v Janek Nouvertné>And we managed that pretty much the same way that Cody described.
+
+00:21:05 <v Janek Nouvertné>So it's one or two processes per pod max.
+
+00:21:10 <v Janek Nouvertné>So you can have Kubernetes scaled or even manually easily scale that up.
+
+00:21:14 <v Janek Nouvertné>You can just go into Kubernetes and say, OK, do me one to five more pods or whatever.
+
+00:21:20 <v Janek Nouvertné>And don't have to worry.
+
+00:21:21 <v Janek Nouvertné>Don't have to start calculating whatever.
+
+00:21:23 <v Janek Nouvertné>Most of the stuff we run nowadays with uv corn or Django deployment
+
+00:21:28 <v Janek Nouvertné>up until I think three months ago or so was running under the Unicorn,
+
+00:21:34 <v Janek Nouvertné>but we switched that actually.
+
+00:21:35 <v Janek Nouvertné>And it's been a really great experience.
+
+00:21:38 <v Janek Nouvertné>I think we tried that a year ago and it didn't work out quite so well.
+
+00:21:42 <v Janek Nouvertné>There was some things that didn't work as expected or didn't perform great
+
+00:21:47 <v Janek Nouvertné>or Django was throwing some errors or Uvicorn was throwing some errors.
+
+00:21:52 <v Janek Nouvertné>And then apparently all of that got fixed <v Janek Nouvertné>because now it runs without any issue for the production.
+
+00:21:58 <v Michael Kennedy>Yeah, for people who don't know, the vibe used to be run G Unicorn, but then with UVicorn workers, if you're doing async stuff.
+
+00:22:06 <v Michael Kennedy>And then UVicorn kind of stepped up its game and said, you can actually treat us as our own app server.
+
+00:22:12 <v Michael Kennedy>We'll manage lifecycle and stuff.
+
+00:22:14 <v Michael Kennedy>And so that's the path you took, right?
+
+00:22:16 <v Janek Nouvertné>Yeah, exactly.
+
+00:22:16 <v Janek Nouvertné>Before that.
+
+00:22:17 <v Janek Nouvertné>Well, no, actually, before that, we didn't because our Django is fully synchronous.
+
+00:22:22 <v Janek Nouvertné>It doesn't do any async.
+
+00:22:24 <v Janek Nouvertné>So it was just bare metal G Unicorn.
+
+00:22:26 <v Janek Nouvertné>And it's still synchronous with just running it under UVcorn.
+
+00:22:30 <v Janek Nouvertné>But interestingly, still quite a bit faster in a few cases.
+
+00:22:34 <v Janek Nouvertné>We tried that out and we low tested it in a couple of scenarios
+
+00:22:38 <v Janek Nouvertné>and we found that it makes a lot of sense.
+
+00:22:41 <v Janek Nouvertné>But outside of that, I do have a lot of, well, <v Janek Nouvertné>very simplistic deployments that are also just systemd
+
+00:22:48 <v Janek Nouvertné>and a couple of Docker compose files and containers <v Janek Nouvertné>that are managed through some old coupled together Ansible things.
+
+00:22:59 <v Janek Nouvertné>But I think the oldest one that I have still running is from 2017.
+
+00:23:03 <v Janek Nouvertné>And it's been running without a change for like four or five years.
+
+00:23:07 <v Janek Nouvertné>That is awesome.
+
+00:23:08 <v Janek Nouvertné>I don't see a reason to do anything about it because the app works.
+
+00:23:11 <v Janek Nouvertné>It's being used productively.
+
+00:23:14 <v Janek Nouvertné>So why change anything about that?
+
+00:23:16 <v Janek Nouvertné>No need to introduce.
+
+00:23:17 <v Janek Nouvertné>Just don't touch it.
+
+00:23:18 <v Janek Nouvertné>Yeah, I was actually looking into Coolify that you two guys mentioned.
+
+00:23:22 <v Janek Nouvertné>I was thinking about, you know, maybe upgrading it to that, but I played around with it and I thought, well, why?
+
+00:23:28 <v Janek Nouvertné>You know, if I have to look into that deployment maybe once a year.
+
+00:23:31 <v Janek Nouvertné>So that's really nothing to gain for me to make it more complicated.
+
+00:23:36 <v Janek Nouvertné>David, Team Flask.
+
+00:23:38 <v David Lord>I mentioned this before the show started, but I think I'm pretty sure I've said this the last time I was on Talk Python,
+
+00:23:45 <v David Lord>but the projects I do for work typically have less than 100 users.
+
+00:23:51 <v David Lord>And so my deployment is usually really simple.
+
+00:23:54 <v David Lord>And usually they've chosen like Azure or AWS already.
+
+00:23:58 <v David Lord>So we just have a Docker container <v David Lord>and we put it on the relevant Docker container host
+
+00:24:03 <v David Lord>in that service and it just works for them.
+
+00:24:05 <v David Lord>We have a Postgres database and we have like Redis.
+
+00:24:08 <v David Lord>But I never really had to deal with like scaling <v David Lord>or that sort of stuff.
+
+00:24:13 <v David Lord>But the funny thing is like, at least for my work, <v David Lord>I'm always, we're often replacing older systems.
+
+00:24:19 <v David Lord>And so even a single Docker container running a Flask application is way more performant and responsive than anything they're used to from like some 20 year old or 30 year old Java system.
+
+00:24:32 <v David Lord>Right. And it can just respond on a small container with like a little bit of CPU and a little bit of memory.
+
+00:24:38 <v David Lord>They're always shocked at like, how much do we need to pay for?
+
+00:24:41 <v David Lord>Oh, just like it'll run a potato.
+
+00:24:44 <v David Lord>You know, there's only 100 users and they're like, that's a lot of users.
+
+00:24:48 <v David Lord>So my recommendation is always start small and then scale up from there.
+
+00:24:52 <v David Lord>Don't try to overthink it ahead of time.
+
+00:24:55 <v David Lord>Yeah, for my personal stuff, I'm using like Docker containers now and fly.io.
+
+00:24:59 <v David Lord>I haven't gotten in.
+
+00:25:00 <v David Lord>So I do want to look into Granian and Coolify, but I haven't gotten there yet.
+
+00:25:04 <v David Lord>And for the Docker container, I can definitely recommend pythonspeed.org.
+
+00:25:09 <v David Lord>I don't remember off the top of my head who writes that, but it's somebody in the Python
+
+00:25:13 <v David Lord>ecosystem.
+
+00:25:14 <v David Lord>And they have a whole series of articles on how to optimize your Docker container.
+
+00:25:18 <v David Lord>And that sounds really complicated, but you end up with a Docker file that's like 20 lines
+
+00:25:22 <v David Lord>long or something.
+
+00:25:23 <v David Lord>So it's not like there's crazy things.
+
+00:25:26 <v David Lord>It's just you have to know how to structure it.
+
+00:25:28 <v David Lord>And then I just copy and paste that to the next project.
+
+00:25:30 <v David Lord>Nice.
+
+00:25:30 <v David Lord>Yeah.
+
+00:25:31 <v Michael Kennedy>I resisted doing Docker for a long time because I'm like, I don't want that extra complexity.
+
+00:25:34 <v Michael Kennedy>But then I realized the stuff you put in the Docker file is really what you just type in
+
+00:25:38 <v Michael Kennedy>the terminal once and then you forget.
+
+00:25:41 <v David Lord>I mean, always using Postgres, Redis, probably if I need some background.
+
+00:25:44 <v David Lord>tasks, just plain SMTP server for email. I wrote for all three of those things. I wrote new
+
+00:25:51 <v David Lord>extensions in the Flask ecosystem that I'm trying to get more people to know about now. So Flask
+
+00:25:56 <v David Lord>SQLAlchemy Lite, L-I-T-E, instead of Flask SQLAlchemy, takes a much more lightweight approach to
+
+00:26:02 <v David Lord>integrating SQLAlchemy with Flask. And then Flask Redis, I revived from like 10 years of
+
+00:26:08 <v David Lord>non-maintenance. And then I wrote this whole system, this whole pluggable email system called
+
+00:26:12 <v David Lord>email simplified, kind of inspired by Django, Django's pluggable system, except, and so there's
+
+00:26:18 <v David Lord>like Flask email simplified to integrate that with Flask. But unlike Django, you can use email
+
+00:26:23 <v David Lord>simplified in any library you're writing, in any Python application you're writing. It doesn't have
+
+00:26:27 <v David Lord>to be a Flask web framework. It's pluggable as the library itself. And then you can also integrate
+
+00:26:32 <v David Lord>it with Flask or something else. So Flask email simplified. I get like three downloads a month
+
+00:26:38 <v Michael Kennedy>right now. So it needs some popularity. Awesome. I've been doing the non-simplified email lately.
+
+00:26:43 <v Michael Kennedy>So I'm happy to hear that there might be a better way. Yeah. I think people do underappreciate just
+
+00:26:48 <v Michael Kennedy>how much performance you got out of Python web apps. You know, they're like, oh, we're going to
+
+00:26:53 <v Michael Kennedy>need to rewrite this and something else because the GIL or whatever. Like I decided just to make
+
+00:26:59 <v Michael Kennedy>a point to pull up the tail till my log running court, by the way. And each one of these requests
+
+00:27:04 <v Michael Kennedy>doing like multiple db calls and it's like 23 milliseconds six milliseconds three milliseconds
+
+00:27:10 <v Michael Kennedy>you know nine milliseconds it's like that's good enough for that's a lot of requests per second
+
+00:27:16 <v Michael Kennedy>per worker until you gotta you gotta have a lot of traffic speaking of court phil what's your take
+
+00:27:21 <v Phil Jones>on this one i think it's very similar i also build docker containers and uh with a postgres database
+
+00:27:27 <v Phil Jones>on the back end and i run hypercorn as the ascii server and put them behind a aws load balancer
+
+00:27:34 <v Phil Jones>and just run them in ECS.
+
+00:27:36 <v Phil Jones>And I think it's pretty simple, <v Phil Jones>but I guess it depends on your biases.
+
+00:27:39 <v Phil Jones>But yeah, that's all we do really.
+
+00:27:41 <v Phil Jones>And it goes a long way.
+
+00:27:42 <v Phil Jones>There are multiple ECS tasks, <v Phil Jones>mostly because if one falls over rather than scaling,
+
+00:27:47 <v Phil Jones>it's usually the database that you need to scale, I find.
+
+00:27:50 <v Phil Jones>But yeah, that's how we run it.
+
+00:27:52 <v Phil Jones>The nice thing for me about Hypercorn <v Phil Jones>is that I can play with HTTP 3.
+
+00:27:56 <v Phil Jones>So that's what we're doing at times.
+
+00:27:57 <v Michael Kennedy>Oh, HTTP 3, okay.
+
+00:27:59 <v Michael Kennedy>I've just been getting my HTTP 2 game down, <v Michael Kennedy>so I'm already behind the game.
+
+00:28:03 <v Michael Kennedy>What's the deal with HTTP/3?
+
+00:28:05 <v Phil Jones>It's obviously a totally new way of doing it over UDP now <v Phil Jones>rather than TCP.
+
+00:28:10 <v Phil Jones>Although at the application level, <v Phil Jones>you can't tell any difference really.
+
+00:28:13 <v Phil Jones>But I mean, I just find it interesting.
+
+00:28:15 <v Phil Jones>I'm not really sure it will help too much.
+
+00:28:17 <v Phil Jones>And it's probably best if you've got users who have not that
+
+00:28:21 <v Phil Jones>great a network connection.
+
+00:28:22 <v Phil Jones>But for most other cases, I don't think it matters too much.
+
+00:28:25 <v Michael Kennedy>Just keep blasting packets until some of them get through.
+
+00:28:29 <v Michael Kennedy>OK, fine.
+
+00:28:30 <v Michael Kennedy>We'll give you a page eventually.
+
+00:28:31 <v Michael Kennedy>There's three pages, actually.
+
+00:28:32 <v Michael Kennedy>All right, Sebastian, you are running not just FastAPI from your experience, but you're running FastAPI for a ton of people through FastAPI Cloud at, I'm sure, many different levels.
+
+00:28:43 <v Michael Kennedy>This probably sounds like a shameless plug, and it kind of is, but it's sort of expected.
+
+00:28:48 <v Michael Kennedy>I will deploy FastAPI or FastAPI Cloud.
+
+00:28:51 <v Michael Kennedy>Just because, well, the idea is just to make it super simple to do that.
+
+00:28:54 <v Michael Kennedy>You know, like if you are being able to run the command FastAPI run.
+
+00:28:58 <v Michael Kennedy>So FastAPI run has like the production server <v Michael Kennedy>that is using Ubicorn underneath.
+
+00:29:03 <v Michael Kennedy>And if you can run that, <v Michael Kennedy>then you can run also FastAPI deploy.
+
+00:29:06 <v Michael Kennedy>And then like, you know, like it will most probably just work.
+
+00:29:10 <v Michael Kennedy>And, you know, we just wrap everything and like deploy,
+
+00:29:13 <v Michael Kennedy>build, install, deploy, handle HTTPS, all the stuff <v Michael Kennedy>without needing any Docker file or anything like that.
+
+00:29:19 <v Michael Kennedy>And I think for many use cases, <v Michael Kennedy>it's just like simpler being able just to do that.
+
+00:29:23 <v Michael Kennedy>There are so many projects that I have been now building,
+
+00:29:25 <v Michael Kennedy>like random stuff that is not really important, but now I can.
+
+00:29:30 <v Michael Kennedy>And before it was like, yeah, well, I know how to deploy this thing like fully with like
+
+00:29:34 <v Michael Kennedy>all the bells and whistles, but it's just so much work that yeah, I know later.
+
+00:29:38 <v Michael Kennedy>So for that, I would end up just like going with that.
+
+00:29:41 <v Michael Kennedy>Now if I didn't...
+
+00:29:42 <v Michael Kennedy>Well, what I was going to ask is how much are you willing to tell us how things run inside
+
+00:29:47 <v Michael Kennedy>FastAPI Cloud?
+
+00:29:48 <v Michael Kennedy>Oh, I can't, it's just so much stuff that is going on.
+
+00:29:52 <v Michael Kennedy>And it's also, it's fun that nowadays that they're like,
+
+00:29:57 <v Michael Kennedy>we have Docker and we have Docker Swarm and there was Nomad
+
+00:30:00 <v Michael Kennedy>and Kubernetes and oh, Kubernetes won.
+
+00:30:02 <v Michael Kennedy>And then we have the cloud providers and there's AWS <v Michael Kennedy>and Google and Azure.
+
+00:30:08 <v Michael Kennedy>And you will expect that all these things <v Michael Kennedy>and all this complexity is like, now that it's like, okay,
+
+00:30:14 <v Michael Kennedy>these are the clear winners.
+
+00:30:15 <v Michael Kennedy>So it's like a lot of complexity to take on, <v Michael Kennedy>but once you do it all works, but it doesn't.
+
+00:30:21 <v Michael Kennedy>And it's just like so much work to get things to work together, to work correctly.
+
+00:30:27 <v Michael Kennedy>And the official resources from the different providers and things,
+
+00:30:32 <v Michael Kennedy>in many cases, it's like, oh, the solution is hidden in this issue somewhere in GitHub
+
+00:30:36 <v Michael Kennedy>because the previous version was obsolete, <v Michael Kennedy>but now the new version of this package or whatever is like, it's just, it's crazy.
+
+00:30:43 <v Michael Kennedy>But like, yeah, so if I didn't have FastAPI Cloud, I will probably use containers.
+
+00:30:50 <v Michael Kennedy>I will probably use Docker.
+
+00:30:51 <v Michael Kennedy>If it's like something simple, <v Michael Kennedy>I will deploy with Docker Compose,
+
+00:30:55 <v Michael Kennedy>probably try to scale minimum replicas.
+
+00:30:57 <v Michael Kennedy>I don't remember Docker Compose has that.
+
+00:30:59 <v Michael Kennedy>I remember that Docker Swarm had that, <v Michael Kennedy>but then Docker Swarm sort of lost against where Net is.
+
+00:31:05 <v Michael Kennedy>I will put a traffic load balancer in front <v Michael Kennedy>to handle HTTPS and, yeah, well, like regular load balancing.
+
+00:31:12 <v Michael Kennedy>And, yeah, just regular YubiCorn.
+
+00:31:14 <v Michael Kennedy>What some of the folks we were talking about before, <v Michael Kennedy>At some point, we needed to have Unicorn on top of Uvicorn
+
+00:31:22 <v Michael Kennedy>because Uvicorn wouldn't be able to handle workers.
+
+00:31:25 <v Michael Kennedy>But now Uvicorn can handle its workers like everything
+
+00:31:27 <v Michael Kennedy>and handle the main thing was some VE processes <v Michael Kennedy>and reaping the processes and handling the stuff.
+
+00:31:34 <v Michael Kennedy>Now it can't just do that.
+
+00:31:35 <v Michael Kennedy>So you can just run plain Uvicorn.
+
+00:31:37 <v Michael Kennedy>So if you're using FastAPI and you say FastAPI run, <v Michael Kennedy>that already does that.
+
+00:31:41 <v Michael Kennedy>So if you're deploying on your own, <v Michael Kennedy>you can just use the FastAPI run command.
+
+00:31:44 <v Michael Kennedy>Then, of course, you have to deal with the scaling <v Michael Kennedy>and HTTPS and a lot of balancing
+
+00:31:48 <v Michael Kennedy>and all the stuff, <v Michael Kennedy>but the core server,
+
+00:31:51 <v Michael Kennedy>you can just run it directly.
+
+00:31:53 <v Michael Kennedy>If going beyond that, <v Michael Kennedy>then there will probably be
+
+00:31:56 <v Michael Kennedy>some cluster Kubernetes <v Michael Kennedy>and trying to scale things,
+
+00:32:00 <v Michael Kennedy>figure out the ways to scale things <v Michael Kennedy>based on the load of the requests,
+
+00:32:05 <v Michael Kennedy>like scaling automatically.
+
+00:32:08 <v Michael Kennedy>Having normally one container per process <v Michael Kennedy>to be able to scale that more dynamically
+
+00:32:13 <v Michael Kennedy>without depending on the local memory <v Michael Kennedy>for each one of the servers
+
+00:32:15 <v Michael Kennedy>and things like that, <v Michael Kennedy>I'm probably saying too much.
+
+00:32:17 <v Michael Kennedy>But yeah, actually, you know, like if I didn't have a CPI cloud,
+
+00:32:20 <v Michael Kennedy>I will probably use one of the providers that abstract those things a little bit away,
+
+00:32:27 <v Michael Kennedy>you know, like render, railway, fly, like, I don't know.
+
+00:32:31 <v Michael Kennedy>Like, I don't really think that a regular developer should be dealing with,
+
+00:32:36 <v Michael Kennedy>you know, like the big hyperscalers and like Kubernetes
+
+00:32:39 <v Michael Kennedy>and like all that complexity for a common app.
+
+00:32:42 <v Michael Kennedy>Most of the cases, I think it's just really too much complexity to real with.
+
+00:32:47 <v Michael Kennedy>It's kind of eye-watering to open up the AWS console or Azure or something.
+
+00:32:52 <v Michael Kennedy>Whoa.
+
+00:32:52 <v Michael Kennedy>Oh, the other day, you know, like the other day I had to, in one of the AWS accounts, I had to change the account email.
+
+00:32:59 <v Michael Kennedy>I think I spent four hours.
+
+00:33:01 <v Michael Kennedy>I know.
+
+00:33:01 <v Michael Kennedy>Because I had to create the delegate account that has the right permissions to roll.
+
+00:33:05 <v Michael Kennedy>And they're like, oh, no, this is, you know, like, <v Michael Kennedy>sometimes it's just overwhelming the amount of complexity
+
+00:33:11 <v Michael Kennedy>that needs to be dealt with.
+
+00:33:13 <v Michael Kennedy>And, yeah, I mean, it's great to really have, like, <v Michael Kennedy>you know, like the infra people that I have working with me
+
+00:33:20 <v Michael Kennedy>at the company that I can deal with all that mess <v Michael Kennedy>and, like, can make sure that everything is just running perfectly
+
+00:33:26 <v Michael Kennedy>and it just works.
+
+00:33:27 <v Michael Kennedy>So it's like, you know, like, sort of SRE as a service,
+
+00:33:30 <v Michael Kennedy>DevOps as a service for everyone.
+
+00:33:32 <v Michael Kennedy>It's like a cloud product that provides DevOps as a service,
+
+00:33:36 <v Cody Fincher>I spent a number of years doing nothing but cloud migrations to these hyperscalers for enterprises.
+
+00:33:42 <v Cody Fincher>And I can tell you that when you mentioned the eye-watering comment about the network and all that stuff,
+
+00:33:48 <v Cody Fincher>it's so incredibly complicated now, right?
+
+00:33:49 <v Cody Fincher>There's literally every kind of concept that you need to know to deploy these enterprises now,
+
+00:33:55 <v Cody Fincher>move them from on-prem to the cloud.
+
+00:33:56 <v Cody Fincher>So it does get incredibly complicated.
+
+00:33:58 <v Cody Fincher>Having something simple like what Sebastian is talking about, I think, is super helpful
+
+00:34:02 <v Cody Fincher>when you're just trying to get started <v Cody Fincher>and get something up and running quickly.
+
+00:34:06 <v Michael Kennedy>I've got a lot of questions <v Michael Kennedy>and I realize that we will not be getting through all of them.
+
+00:34:10 <v Michael Kennedy>So I want to pick carefully.
+
+00:34:12 <v Michael Kennedy>So let's do this one next.
+
+00:34:15 <v Michael Kennedy>Performance, what's your best low effort tip?
+
+00:34:18 <v Michael Kennedy>Not like something super complicated, <v Michael Kennedy>but I know there's a bunch of low hanging fruit
+
+00:34:23 <v Michael Kennedy>that people maybe missed out on.
+
+00:34:26 <v Michael Kennedy>And this time let's start with Litestar.
+
+00:34:28 <v Michael Kennedy>Cody, back at you.
+
+00:34:29 <v Cody Fincher>I'm going to stick to what I know, <v Cody Fincher>which is databases because I deal with that.
+
+00:34:32 <v Cody Fincher>every single day. There's a couple of things that I see as like gotchas that I constantly see over
+
+00:34:38 <v Cody Fincher>and over. One, SQLAlchemy kind of obfuscates the way it's going to execute things and what kind of
+
+00:34:45 <v Cody Fincher>queries it's going to actually execute. So it's really easy if you're not kind of fluent in how
+
+00:34:49 <v Cody Fincher>it works to create N plus one types of issues. And so when people start talking about sync or async,
+
+00:34:55 <v Cody Fincher>it's really, in my mind, it's less of that because you're going to spend more time waiting on the
+
+00:34:59 <v Cody Fincher>network and database and those kind of things, then you're going to spend serializing just
+
+00:35:04 <v Cody Fincher>generally, right? And or processing things on the web framework. And so, one, making sure that you,
+
+00:35:10 <v Cody Fincher>your relationships dialed in correctly so that you don't have N plus one queries. The other thing is
+
+00:35:15 <v Cody Fincher>oversized connection pooling into Postgres and just databases in general, because what people don't
+
+00:35:21 <v Cody Fincher>tend to know is that each of those connections takes up CPU cycles and RAM of the database.
+
+00:35:26 <v Cody Fincher>And so when you slam the database with hundreds of connections, you're just taking away processing power that can be done for other things, right?
+
+00:35:33 <v Cody Fincher>And so you end up ultimately slowing things down.
+
+00:35:35 <v Cody Fincher>So I've seen databases that have had so many connections that all of the CPU and all the stuff is actually doing things, just managing connections and can't actually do any database work.
+
+00:35:44 <v Michael Kennedy>And so what about this socket?
+
+00:35:45 <v Michael Kennedy>Is it busy?
+
+00:35:46 <v Michael Kennedy>What about this socket?
+
+00:35:46 <v Michael Kennedy>Is it busy?
+
+00:35:47 <v Michael Kennedy>It's just round robin that, right?
+
+00:35:48 <v Cody Fincher>Paying attention to the database is kind of my first kind of rule of thumb.
+
+00:35:52 <v Michael Kennedy>100%.
+
+00:35:52 <v Michael Kennedy>I like that one a lot.
+
+00:35:53 <v David Lord>I'll throw in putting stuff or identifying work that doesn't need to be done immediately for the user and putting in a background task.
+
+00:36:02 <v David Lord>Having a background worker defer things till later.
+
+00:36:05 <v David Lord>So sending email is an example, although there's nuances there about knowing that it's sent and everything.
+
+00:36:10 <v David Lord>But yeah, if you user kicks off some process and then you wait to do that process in the worker, you're holding that worker up, which is more relevant in WSGI than ASGI.
+
+00:36:20 <v David Lord>but and you're making them wait for their page to load again versus record what they wanted to do
+
+00:36:26 <v David Lord>send it off to the background let them see the status of it but let the background worker handle
+
+00:36:30 <v Michael Kennedy>it all right yeah like i said as you guys go for it i'm not sure if that's some sort of
+
+00:36:35 <v Janek Nouvertné>it's not really a trick or a tip or more more like a i think the most common mistake i see when i
+
+00:36:41 <v Janek Nouvertné>is ascii specific but when i look at ascii apps that people have written who are maybe not as
+
+00:36:46 <v Janek Nouvertné>familiar with ASCII or async Python at all, if you make something an async function, you should be
+
+00:36:53 <v Janek Nouvertné>absolutely sure that it's non-blocking. Because if you're running an ASCII app and you're blocking
+
+00:36:59 <v Janek Nouvertné>anywhere, your whole application server is blocked completely. It doesn't handle any other requests
+
+00:37:04 <v Janek Nouvertné>at the same time. It's blocked. I don't think I've had any mistake more times when I've looked through
+
+00:37:11 <v Janek Nouvertné>some apps that someone has written or that i've came across somewhere so this is really it's super
+
+00:37:18 <v Janek Nouvertné>super common and it has such a such a big impact on the overall performance in every every metric
+
+00:37:26 <v Janek Nouvertné>imaginable so i would say unless and that's nowadays what i tell people unless you're 100
+
+00:37:33 <v Janek Nouvertné>sure that you know what you're doing and you know it's it's non-blocking don't make it async put it
+
+00:37:39 <v Janek Nouvertné>in a thread pool, execute it in a thread, whatever.
+
+00:37:42 <v Janek Nouvertné>All of the ASCII frameworks and Django <v Janek Nouvertné>give you a lot of tools at hand to translate your stuff
+
+00:37:49 <v Janek Nouvertné>to from sync to async so you can still run it.
+
+00:37:52 <v Janek Nouvertné>Do that unless you're very sure that it actually fully supports
+
+00:37:57 <v Janek Nouvertné>async.
+
+00:37:57 <v Michael Kennedy>MARK MANDEL: Yeah, that's good advice.
+
+00:37:58 <v Michael Kennedy>Sebastian.
+
+00:37:59 <v Michael Kennedy>SEBASTIAN BASTIAN: Hey, I'm actually going to second, Yannick.
+
+00:38:02 <v Michael Kennedy>I think, yeah, like it's--
+
+00:38:04 <v Michael Kennedy>and it's maybe counterintuitive that one <v Michael Kennedy>of the tips of performance is to try to not optimize that much performance at the beginning.
+
+00:38:13 <v Michael Kennedy>You know, like, I think the idea with async is like, oh, you can get so much performance
+
+00:38:17 <v Michael Kennedy>and throughput in terms of accuracy, whatever.
+
+00:38:20 <v Michael Kennedy>But the thing is, in most of the cases, you know, like, till apps grow so large, they
+
+00:38:26 <v Michael Kennedy>actually don't need that much extra throughput, that much extra performance.
+
+00:38:30 <v Michael Kennedy>And in a framework like, you know, like, as Yannick was saying, well, in my case, I know
+
+00:38:35 <v Michael Kennedy>FastAPI, but like, you know, like also many others.
+
+00:38:38 <v Michael Kennedy>If you define the function with async, it's going to be run async.
+
+00:38:41 <v Michael Kennedy>If you define it non-async and regular def, <v Michael Kennedy>it's going to be run on a thread worker automatically.
+
+00:38:46 <v Michael Kennedy>So it's just going to do the smart thing automatically.
+
+00:38:50 <v Michael Kennedy>So it's like fair, you know, like it's going to be good enough.
+
+00:38:54 <v Michael Kennedy>And then you can just start with that and just keep blocking code everywhere.
+
+00:38:58 <v Michael Kennedy>You know, like just not use async until you actually know
+
+00:39:01 <v Michael Kennedy>that you really need to use async.
+
+00:39:03 <v Michael Kennedy>And once you do, you have to be, as Yannick was saying,
+
+00:39:05 <v Michael Kennedy>you know, like 100% sure that you are not running blocking code inside of it.
+
+00:39:11 <v Michael Kennedy>And if you need to run blocking code inside of Async code,
+
+00:39:14 <v Michael Kennedy>then make sure that you are sending it to a thread worker.
+
+00:39:17 <v Michael Kennedy>Sending it to a thread worker sounds the own thing, <v Michael Kennedy>but yeah, like, you know, like Django has tools,
+
+00:39:23 <v Michael Kennedy>any IO has tools.
+
+00:39:23 <v Michael Kennedy>I also built something on top of any IO called AsyncR,
+
+00:39:27 <v Michael Kennedy>that is just to simplify these things, <v Michael Kennedy>to asyncify a blocking function,
+
+00:39:31 <v Michael Kennedy>keeping all the type information <v Michael Kennedy>so that you get autocompletion and inline errors and everything.
+
+00:39:35 <v Michael Kennedy>even though it's actually doing all the stuff <v Michael Kennedy>of sending the thing to the thread work.
+
+00:39:40 <v Michael Kennedy>So the code is super simple.
+
+00:39:42 <v Michael Kennedy>You keep very simple code, <v Michael Kennedy>but then underneath it's just like doing
+
+00:39:45 <v Michael Kennedy>all the stuff that should be done.
+
+00:39:46 <v Michael Kennedy>But you know, like that's normally <v Michael Kennedy>when you actually need to hyper-optimize things.
+
+00:39:51 <v Michael Kennedy>In most of the cases, <v Michael Kennedy>you can just start with just not using async at first.
+
+00:39:55 <v Michael Kennedy>Also, now that you're going to have Python multi-threaded,
+
+00:39:58 <v Michael Kennedy>then suddenly you're going to have <v Michael Kennedy>just so much more performance out of the blue
+
+00:40:02 <v Michael Kennedy>without even having to do much more.
+
+00:40:05 <v Michael Kennedy>So, yeah, actually that's, you know, like, sorry, I kept speaking so much, but here's a tip for improving performance.
+
+00:40:12 <v Michael Kennedy>Upgrade your Python version.
+
+00:40:14 <v Michael Kennedy>I was just chatting today with Savannah.
+
+00:40:17 <v Michael Kennedy>She was adding the benchmarks to the, you know, like Python benchmark, the official Python benchmarks that they run for the CPython, the faster CPython program.
+
+00:40:29 <v Michael Kennedy>And the change from Python 3.10 to Python 3.14 <v Michael Kennedy>when running FastAPI is like almost double the performance
+
+00:40:40 <v Michael Kennedy>or something like that.
+
+00:40:40 <v Michael Kennedy>It was like, it was crazy.
+
+00:40:42 <v Michael Kennedy>It was just crazy improvement in performance.
+
+00:40:44 <v Michael Kennedy>So you can just upgrade your Python version.
+
+00:40:46 <v Michael Kennedy>You're gonna get so much better performance just out of that.
+
+00:40:50 <v Michael Kennedy>- Yeah, that's an awesome piece of advice <v Michael Kennedy>that I think is often overlooked.
+
+00:40:53 <v Michael Kennedy>And it's not only CPU speed, <v Michael Kennedy>it's also memory gets a lot lower.
+
+00:40:57 <v Michael Kennedy>Whoever's gonna jump in, go ahead.
+
+00:40:58 <v David Lord>Last year, I was looking at MarkupSafe, which is an HTML escaping library that we use and
+
+00:41:04 <v David Lord>has a C extension for speedups.
+
+00:41:05 <v David Lord>And I almost convinced myself that I can stop maintaining the C extension because just Python
+
+00:41:11 <v David Lord>itself got way faster.
+
+00:41:13 <v David Lord>But then it turned out that I could do something to the C extension to make it faster also.
+
+00:41:17 <v David Lord>So I'm still maintaining.
+
+00:41:18 <v David Lord>But just the fact that I almost convinced myself like, oh, I can drop a C extension for just
+
+00:41:23 <v David Lord>a Python upgrade instead was pretty impressive.
+
+00:41:26 <v David Lord>They've done a lot, especially with like string handling <v David Lord>and, you know, which you're going to use
+
+00:41:30 <v David Lord>for templating for web apps.
+
+00:41:32 <v Phil Jones>Phil.
+
+00:41:32 <v Phil Jones>Yeah, well, I definitely echo looking at your DB queries <v Phil Jones>because by far and large, that's always where
+
+00:41:38 <v Phil Jones>our performance issues have been.
+
+00:41:39 <v Phil Jones>It's either badly written query or we're returning <v Phil Jones>most of the database when the user just wants to know
+
+00:41:44 <v Phil Jones>about one thing or something silly like that.
+
+00:41:46 <v Phil Jones>I was thinking about low-hanging ones, <v Phil Jones>which I think you asked about.
+
+00:41:48 <v Phil Jones>So I'd say uv loop, which is still a noticeable improvement.
+
+00:41:53 <v Phil Jones>And also, because I think it's likely a lot of us are returning JSON, often changing the
+
+00:41:59 <v Phil Jones>JSON serializer to one of the faster ones can be noticeable as well and obviously quite easy to do.
+
+00:42:04 <v Michael Kennedy>So yeah, that's my key.
+
+00:42:05 <v Michael Kennedy>That's really good advice.
+
+00:42:06 <v Michael Kennedy>I didn't think about the JSON serializer.
+
+00:42:08 <v Michael Kennedy>What one do you recommend?
+
+00:42:09 <v Michael Kennedy>I think, is it you, JSON?
+
+00:42:11 <v Michael Kennedy>Or is it all JSON?
+
+00:42:12 <v Phil Jones>I can't remember which one was deprecated.
+
+00:42:15 <v Phil Jones>But yeah, if you look at the Tech Empower benchmarks, everyone's changing the JSON serializer
+
+00:42:21 <v Phil Jones>to get that bit extra speed.
+
+00:42:22 <v Michael Kennedy>But yeah, you're like, our framework looks bad because our JSON serializer is like third
+
+00:42:27 <v Michael Kennedy>of the performance.
+
+00:42:28 <v Phil Jones>We changed, well, David added a JSON provider to Flask.
+
+00:42:31 <v Phil Jones>And yeah, you could see it make a difference in the tech and power benchmarks.
+
+00:42:35 <v Phil Jones>So that was really good.
+
+00:42:36 <v Phil Jones>Yeah, cool.
+
+00:42:36 <v David Lord>Yeah, it's pluggable now.
+
+00:42:37 <v David Lord>But if you're not installing Flask or JSON, I mean, I don't know what other JSON library
+
+00:42:43 <v David Lord>you'd be using at this point, unless you're already using one.
+
+00:42:45 <v David Lord>But or JSON is very, very fast.
+
+00:42:47 <v Michael Kennedy>Okay, this is something I'm going to be looking at you later.
+
+00:42:49 <v Michael Kennedy>So over to Django, Jeff, David talked about running stuff in the background and was it Django 5 or Django 6 that got the background task thing?
+
+00:42:57 <v Jeff Triplett>Yeah, Django 6 just came out a couple of weeks ago.
+
+00:43:00 <v Jeff Triplett>And I'll hand that off to Carlton in a second because I think Carlton's had more to do with the actual plumbing being on the steering council.
+
+00:43:07 <v Jeff Triplett>My advice to people is the best way to scale something is just to not do it, avoid the process completely.
+
+00:43:12 <v Jeff Triplett>So like I mentioned to CDN earlier, it's content heavy sites, cache the crap out of stuff.
+
+00:43:16 <v Jeff Triplett>It doesn't even have to hit your servers.
+
+00:43:17 <v Jeff Triplett>You can go a lot, as we mentioned earlier, too, just by doubling the amount of resources a project has.
+
+00:43:22 <v Jeff Triplett>Django is pretty efficient these days, especially with async views.
+
+00:43:25 <v Jeff Triplett>Like everybody else has said, too, any blocking code, move off to threads, move off to a background queue.
+
+00:43:31 <v Jeff Triplett>Django Q2 is my favorite one to use because you can use a database.
+
+00:43:35 <v Jeff Triplett>So for those little side projects where you just want to run one or two processes, you can use it.
+
+00:43:39 <v Jeff Triplett>It works great.
+
+00:43:40 <v Jeff Triplett>And Carlton, if you want to talk about Django internals.
+
+00:43:43 <v Carlton Gibson>Yeah, OK.
+
+00:43:43 <v Carlton Gibson>So the new task framework I just mentioned, the main thing, the main sort of bit about it is that it's, again, this pluggable Django API.
+
+00:43:51 <v Carlton Gibson>So it gives a standard task API.
+
+00:43:53 <v Carlton Gibson>So if you're writing a third-party library and you, I know, you need to send an email.
+
+00:43:57 <v Carlton Gibson>It's the canonical example, right?
+
+00:43:58 <v Carlton Gibson>You need to send an email in your third-party library.
+
+00:44:01 <v Carlton Gibson>Before, you'd have had to tie yourself to a specific queue implementation, whereas now Django is providing a kind of like an ORM of tasks.
+
+00:44:07 <v Carlton Gibson>Right, right.
+
+00:44:08 <v Michael Kennedy>You got to do Redis, you got to do Celery, and you got to manage things and all that.
+
+00:44:11 <v Carlton Gibson>You don't have to pick that now as the third-party package author.
+
+00:44:14 <v Carlton Gibson>You can just say, right, just use Django, <v Carlton Gibson>wrap this as a Django task and queue it.
+
+00:44:18 <v Carlton Gibson>And then the developer, when they come to choose their backend,
+
+00:44:22 <v Carlton Gibson>if they want to use Celery or they want to use Django Q2
+
+00:44:25 <v Carlton Gibson>or they want to use the Django task backend, <v Carlton Gibson>which Jake Howard, who wrote this for Django provided as well,
+
+00:44:30 <v Carlton Gibson>you can just plug that in.
+
+00:44:32 <v Carlton Gibson>So it's a pluggable interface for tasks, <v Carlton Gibson>which is, I think, the really nice thing about it.
+
+00:44:37 <v Carlton Gibson>In terms of quick wins, everybody's mentioned almost all of mine.
+
+00:44:40 <v Carlton Gibson>I'm going to, Cody and Phil, they mentioned the database.
+
+00:44:43 <v Carlton Gibson>That's the big one.
+
+00:44:44 <v Carlton Gibson>Django, the ORM, because it does lazy related lookups,
+
+00:44:48 <v Carlton Gibson>it's very easy to trigger in M plus one where, you know,
+
+00:44:51 <v Carlton Gibson>the book has multiple authors and suddenly you're iterating through the books
+
+00:44:55 <v Carlton Gibson>and you're iterating through the authors and it's a lookup.
+
+00:44:57 <v Carlton Gibson>So you need to do things like prefetch related, select related.
+
+00:45:00 <v Carlton Gibson>You need to just check that you've got those.
+
+00:45:02 <v Carlton Gibson>Django debug toolbars are a great thing to run in development
+
+00:45:05 <v Carlton Gibson>where you can see the queries and it'll tell you where you've got the duplicates.
+
+00:45:08 <v Carlton Gibson>And then the slightly bigger one is to just check your indexes.
+
+00:45:11 <v Carlton Gibson>The ORM will create the right indexes if you're leaning,
+
+00:45:14 <v Carlton Gibson>if you're going through primary keys or unique fields.
+
+00:45:16 <v Carlton Gibson>But sometimes you're doing a filter on some field, <v Carlton Gibson>and then there's not the right index there,
+
+00:45:21 <v Carlton Gibson>and that can really slow you down.
+
+00:45:22 <v Carlton Gibson>So again, you can do the SQL explain on that and find that.
+
+00:45:26 <v Carlton Gibson>And then the thing I was going to say originally was caching,
+
+00:45:30 <v Carlton Gibson>is get a Redis instance, stick it next to your Django app,
+
+00:45:34 <v Carlton Gibson>and as Jeff said, don't do the work.
+
+00:45:36 <v Carlton Gibson>If you're continually rendering the same page and it never changes,
+
+00:45:40 <v Carlton Gibson>cache it and pull it from the cache rather than rendering.
+
+00:45:43 <v Carlton Gibson>Because template DB queries are one of your biggest things.
+
+00:45:45 <v Carlton Gibson>The second one's always going to be serialization.
+
+00:45:47 <v Carlton Gibson>It's either serialization or template rendering.
+
+00:45:49 <v Michael Kennedy>So if you can avoid that by caching, you can save an awful lot of time on your account.
+
+00:45:53 <v Michael Kennedy>Yeah.
+
+00:45:54 <v Michael Kennedy>I was wondering if somebody would come back with database indexes,
+
+00:45:56 <v Michael Kennedy>because that's like a 100x multiplier for free almost.
+
+00:46:01 <v Michael Kennedy>It's such a big deal.
+
+00:46:03 <v Carlton Gibson>It really can be.
+
+00:46:03 <v Carlton Gibson>If you're making a particular query and it's doing a full table scan
+
+00:46:06 <v Carlton Gibson>all of a sudden you put the index in, it's instant. It's like, oh, wow. You don't have to be a DBA or
+
+00:46:12 <v Michael Kennedy>master information architect sort of thing. I don't know about Postgres. I'm sure it has it.
+
+00:46:16 <v Michael Kennedy>Somebody can tell me. But with Mongo, you can turn on in the database, I want you to log all
+
+00:46:21 <v Michael Kennedy>slow queries and slow for me means 20 millisecond or whatever. Like you put a number in and then
+
+00:46:27 <v Michael Kennedy>you run your app for a while and you go, look at what's slow by slowest. And then you can see,
+
+00:46:31 <v Michael Kennedy>well, maybe that needs an index, right? Like just let your app tell you what you got to do.
+
+00:46:35 <v Carlton Gibson>Yeah, there is a post.
+
+00:46:37 <v Carlton Gibson>I'm just trying to see if I can quickly look it up now.
+
+00:46:38 <v Carlton Gibson>There's a Postgres extension, <v Carlton Gibson>which will automatically run explain
+
+00:46:42 <v Carlton Gibson>on the slow queries and log them for you.
+
+00:46:44 <v Carlton Gibson>So it'll...
+
+00:46:45 <v Carlton Gibson>There you go.
+
+00:46:46 <v Cody Fincher>See if I can find...
+
+00:46:47 <v Cody Fincher>It's pgstat statements, I think, <v Cody Fincher>is what you're thinking about.
+
+00:46:49 <v Cody Fincher>Right, okay.
+
+00:46:49 <v Michael Kennedy>If you're unsure about your database indexes, <v Michael Kennedy>do this, or at least go back and review your queries.
+
+00:46:55 <v Michael Kennedy>Yeah, I agree.
+
+00:46:56 <v Michael Kennedy>Very good.
+
+00:46:57 <v Michael Kennedy>All right, I can see we're blazing through these questions.
+
+00:47:00 <v David Lord>I had one more.
+
+00:47:01 <v David Lord>If I can mention one.
+
+00:47:01 <v David Lord>No, please go ahead.
+
+00:47:02 <v Michael Kennedy>Yeah, go ahead, David.
+
+00:47:03 <v David Lord>If you want to like get some more responsive parts of your website, like make your website a little more responsive or interactive with the user, HTMX or Datastar, especially like if you're using Cort or another ASGI where you can do SSE, server sent events or WebSockets, streaming little bits of changes to the web front end and then rendering them with the same HTML you're already writing can make things a lot more responsive.
+
+00:47:28 <v David Lord>We had talk about that from Chris May at FlaskCon last year, which you can find on YouTube.
+
+00:47:33 <v Michael Kennedy>This is not one of the questions, but let me just start out for a quick riff on this, folks.
+
+00:47:38 <v Michael Kennedy>Out in the audience, someone was asking, what about HTMX?
+
+00:47:41 <v Michael Kennedy>And I think more broadly, I am actually a huge fan of server-side-based, template-based apps.
+
+00:47:48 <v Michael Kennedy>I think it just keeps things simpler in a lot of ways, unless you need a lot of interactivity.
+
+00:47:51 <v Michael Kennedy>But things like HTMX or a little bit of JavaScript can reduce a lot of the traffic and stuff.
+
+00:47:57 <v Michael Kennedy>Where do people land on those kinds of things?
+
+00:47:59 <v Janek Nouvertné>I absolutely love HTMLX, not just because you don't have to write a lot of JavaScript or whatever,
+
+00:48:06 <v Janek Nouvertné>but mostly because if I'm just building a simple app that needs a bit more than just be a static HTML page,
+
+00:48:14 <v Janek Nouvertné>it needs some interactivity, a little bit of reactivity.
+
+00:48:18 <v Janek Nouvertné>I feel like having the whole overhead of building an SPA or whatever tools you need for the whole JavaScript, TypeScript, whatever stack, it's just so much work to get a little bit to make a simple thing a little bit nicer, a little bit more reactive.
+
+00:48:34 <v Janek Nouvertné>And I feel like HTMX just fits right in there.
+
+00:48:37 <v Janek Nouvertné>It's super great.
+
+00:48:39 <v Janek Nouvertné>I've built a couple of things with it now, <v Janek Nouvertné>a few of my own projects, a few things that work.
+
+00:48:45 <v Janek Nouvertné>And it makes things so much easier <v Janek Nouvertné>where the work probably wouldn't have been done
+
+00:48:50 <v Janek Nouvertné>if it was just because it's too much.
+
+00:48:52 <v Janek Nouvertné>If you're doing a whole front end thing <v Janek Nouvertné>that you have then to deploy and build and whatever,
+
+00:48:57 <v Janek Nouvertné>or it would have been less nice.
+
+00:48:59 <v Janek Nouvertné>So it's an amazing, really amazing thing.
+
+00:49:02 <v Cody Fincher>As the maintainer and author, though, one of the things that is not frustrating, but it's understandable is that HTMX is not for everybody, right?
+
+00:49:10 <v Cody Fincher>There's not like you can't use HTMX in all occasions or Datastar, right?
+
+00:49:15 <v Cody Fincher>And so there are people that are always going to want to use React and there's going to be people that want to use all these other frameworks.
+
+00:49:20 <v Cody Fincher>And so having some cohesive way to make them all talk together, I think, is important.
+
+00:49:24 <v Cody Fincher>I don't have that answer yet, but I just know that like I can't always say HTMX is it, right?
+
+00:49:29 <v Cody Fincher>And then you'll have a great time because I'll inevitably meet somebody that says I need to do this.
+
+00:49:33 <v Cody Fincher>And it's right. And it's in a single page application or something is more appropriate for that.
+
+00:49:37 <v Cody Fincher>And so it's obviously the right tool for the right job when you need it.
+
+00:49:41 <v Cody Fincher>But, you know, I want to make something that is cohesive depending on whatever library you want to use.
+
+00:49:45 <v Jeff Triplett>I would throw one thing in there, though.
+
+00:49:47 <v Jeff Triplett>I would rather somebody start with HTMX than I would start with React if you don't need it.
+
+00:49:51 <v Jeff Triplett>Because React can be total overkill. It can be great for some applications.
+
+00:49:54 <v Jeff Triplett>But oftentimes the consultant, we see people like having an about page and they throw a React at it.
+
+00:49:59 <v Jeff Triplett>Like, why do you need that?
+
+00:50:00 <v Jeff Triplett>Like, especially for small things with partials.
+
+00:50:02 <v Jeff Triplett>Do you mean you don't want to start with Angular?
+
+00:50:03 <v Jeff Triplett>You know, it's fine if you need it, <v Jeff Triplett>but I don't think you really need it.
+
+00:50:07 <v Jeff Triplett>Like, introduce tools as you need them.
+
+00:50:10 <v Jeff Triplett>Django 6.0 just added template partials, <v Jeff Triplett>and I guess my job here is to hand off to Carlton
+
+00:50:14 <v Jeff Triplett>because this is his feature.
+
+00:50:15 <v Michael Kennedy>Yeah, I was happy to see that come in there, Carlton.
+
+00:50:17 <v Michael Kennedy>Nice job.
+
+00:50:17 <v Carlton Gibson>No, it's okay.
+
+00:50:19 <v Carlton Gibson>Plug the new feature.
+
+00:50:20 <v Carlton Gibson>So, I mean, I stepped down as a fellow in 2023 <v Carlton Gibson>into a new business,
+
+00:50:25 <v Carlton Gibson>and I read the essay about template fragments <v Carlton Gibson>on the htmx website where it's this like named reusable bits in the in the templates and i was
+
+00:50:34 <v Carlton Gibson>like i need that so i built django template partials released as a third-party package and it's now just
+
+00:50:38 <v Carlton Gibson>been merged into core for django 6.0 and i have to say about htms it's really changed the way i write
+
+00:50:44 <v Carlton Gibson>websites before i was the fellow i used to write mobile applications and do the back do the front
+
+00:50:49 <v Carlton Gibson>end of the mobile application then the back end in django using django rest framework and i was
+
+00:50:52 <v Carlton Gibson>that's how i got into you know open source was by django rest framework and since starting the
+
+00:50:58 <v Carlton Gibson>we're three years in we've hardly got a json endpoint in sight it's like two three four of
+
+00:51:02 <v Carlton Gibson>them in the whole application and it's oh it's just a delight again you know you asked me at the
+
+00:51:08 <v Carlton Gibson>beginning michael am i having fun yeah i really am having fun and htmx is the reason i do grant
+
+00:51:12 <v Michael Kennedy>there are you know these use cases awesome all right let's talk about our last topic and we have
+
+00:51:18 <v Michael Kennedy>five minutes ish to do that so we gotta we gotta stay on target quick but let's just go around
+
+00:51:24 <v Michael Kennedy>run real quick here we talked about upgrading the python version getting better performance out of
+
+00:51:29 <v Michael Kennedy>it i mentioned the lower memory side but i think one of the underappreciated aspects of this you
+
+00:51:36 <v Michael Kennedy>know the instagram team did a huge talk you know on it a while ago is the memory that you run into
+
+00:51:43 <v Michael Kennedy>when you start to scale out your stuff on the server because you're like oh i want to have four
+
+00:51:47 <v Michael Kennedy>workers so i can have more concurrency because of the gills so now you've got four copies of
+
+00:51:51 <v Michael Kennedy>everything that you cache in memory and just like the runtime and now you need eight gigs instead of
+
+00:51:56 <v Michael Kennedy>what would have been one or who knows right but with free threaded python coming on which i've
+
+00:52:02 <v Michael Kennedy>seen a couple of comments in the chat like hey tell us about this like it's we could have true
+
+00:52:08 <v Michael Kennedy>concurrency and we wouldn't need to scale as much on the process side i think giving us both better
+
+00:52:13 <v Michael Kennedy>performance and the ability to say well you actually have four times less memory so you could
+
+00:52:17 <v Michael Kennedy>run smaller servers or whatever what's the free threaded story for all the frameworks carlton
+
+00:52:22 <v Carlton Gibson>let's go back to you for do it in reverse i'm really excited about it i don't know how it's
+
+00:52:26 <v Carlton Gibson>going to play out but i'm really excited about it all it can do is help django the async story in
+
+00:52:31 <v Carlton Gibson>django is nice and mature now uh but still most of it's sync like you know you're still going to
+
+00:52:36 <v Carlton Gibson>default the sync you're still going to write your sync views you still got template rendering you
+
+00:52:39 <v Carlton Gibson>know django's template template based kind of framework really you're still going to want to
+
+00:52:43 <v Carlton Gibson>run things synchronously, concurrently, and proper threads are going to be, yeah, they can't but help.
+
+00:52:50 <v Carlton Gibson>I don't know how it's going to roll out. I'll let someone else go because I'm getting locked up.
+
+00:52:53 <v Michael Kennedy>Yeah, I just like elaborated that for people out there before we move on is you could set up your
+
+00:52:59 <v Michael Kennedy>worker process to say, I want you to actually run eight threads in this one worker process.
+
+00:53:05 <v Michael Kennedy>And when multiple requests come in, they could both be sent off to the same worker to be processed.
+
+00:53:10 <v Michael Kennedy>And that allows that worker to do more unless the GIL comes along and says, stop, you only
+
+00:53:15 <v Michael Kennedy>get to do one thing in threads in Python.
+
+00:53:17 <v Michael Kennedy>And all of a sudden, a lot of that falls down.
+
+00:53:19 <v Michael Kennedy>This basically uncorks that and makes that easy all of a sudden.
+
+00:53:22 <v Michael Kennedy>Even if you yourself are not writing async, your server can be more async.
+
+00:53:26 <v Carlton Gibson>Yeah.
+
+00:53:26 <v Carlton Gibson>And this is the thing that we found with ASCII is that you dispatch to a, you know, using
+
+00:53:31 <v Carlton Gibson>to async or you dispatch it to a thread, a thread pool executor, but Python doesn't run
+
+00:53:36 <v Carlton Gibson>that concurrently.
+
+00:53:37 <v Carlton Gibson>And so it's like, or in parallel.
+
+00:53:39 <v Carlton Gibson>So it's like, ah, it doesn't actually go as fast as you want it to.
+
+00:53:42 <v Carlton Gibson>And so you end up wanting multiple processes still.
+
+00:53:45 <v Carlton Gibson>All right, let's keep it with Django.
+
+00:53:46 <v Carlton Gibson>Jeff, what do you think?
+
+00:53:47 <v Jeff Triplett>I'm going to defer to the others on this.
+
+00:53:48 <v Jeff Triplett>I have the least thoughts.
+
+00:53:49 <v Michael Kennedy>All right, write down the stack, Sebastian.
+
+00:53:51 <v Michael Kennedy>Write down the video, not website, web framework.
+
+00:53:55 <v Michael Kennedy>I think it's going to be awesome.
+
+00:53:56 <v Michael Kennedy>This is going to help so much, so many things.
+
+00:53:59 <v Michael Kennedy>The challenge is going to be third-party libraries used by each individual application
+
+00:54:05 <v Michael Kennedy>and if they are compatible or not.
+
+00:54:07 <v Michael Kennedy>That's where the challenge is going to be.
+
+00:54:08 <v Michael Kennedy>But other than that, it's just going to be free extra performance for everyone.
+
+00:54:13 <v Michael Kennedy>Just, you know, like just upgrading the version of Python.
+
+00:54:15 <v Michael Kennedy>So that's going to be us.
+
+00:54:16 <v Michael Kennedy>Cody.
+
+00:54:16 <v Cody Fincher>Yeah, I'm going to echo what Sebastian just said.
+
+00:54:18 <v Cody Fincher>The third party libraries, I think, are going to be the big kind of sticky point here.
+
+00:54:21 <v Cody Fincher>I'm looking forward to seeing what we can do.
+
+00:54:23 <v Cody Fincher>I'm going to kind of hold my thoughts on that.
+
+00:54:24 <v Cody Fincher>Yannick kind of speak a little bit on it because I know that he's looked at msgspec specifically
+
+00:54:28 <v Cody Fincher>and some of the other things that might, you know, give some better context here.
+
+00:54:31 <v Cody Fincher>But yes, the third party libraries are going to be the kind of the sticky issue.
+
+00:54:36 <v Cody Fincher>but I'm looking forward to seeing what we can make happen.
+
+00:54:38 <v Janek Nouvertné>I'm super excited, actually, specifically about async stuff,
+
+00:54:43 <v Janek Nouvertné>because for most of the time, it's like, <v Janek Nouvertné>if you can already saturate your CPU,
+
+00:54:50 <v Janek Nouvertné>async doesn't help you much.
+
+00:54:51 <v Janek Nouvertné>Well, now, if you have proper threads, <v Janek Nouvertné>you can actually do that in async as well.
+
+00:54:56 <v Janek Nouvertné>And I think it's going to speed up a lot of applications
+
+00:55:00 <v Janek Nouvertné>just by default, <v Janek Nouvertné>because almost all async applications out there
+
+00:55:06 <v Janek Nouvertné>use threads in some capacity because, well, most of things aren't async by nature.
+
+00:55:12 <v Janek Nouvertné>So they will use a thread pool and it will run more concurrently.
+
+00:55:16 <v Janek Nouvertné>And so that's going to be better.
+
+00:55:18 <v Janek Nouvertné>But I'm also a bit scared about a few things that mainly, as a few others have said now,
+
+00:55:26 <v Janek Nouvertné>third-party libraries extension is specifically those that are Python C extensions.
+
+00:55:33 <v Janek Nouvertné>just recently, I think like three weeks ago, <v Janek Nouvertné>so got a msgspec released for Python 3.14
+
+00:55:40 <v Janek Nouvertné>and proper free threading support.
+
+00:55:42 <v Janek Nouvertné>And that took a lot of work.
+
+00:55:44 <v Janek Nouvertné>Fortunately, a few of the Python core devs <v Janek Nouvertné>chimed in and contributed to PRs
+
+00:55:49 <v Janek Nouvertné>and helped out with that.
+
+00:55:52 <v Janek Nouvertné>And all around the ecosystem, <v Janek Nouvertné>the last few years,
+
+00:55:55 <v Janek Nouvertné>there's been a lot of work going on.
+
+00:55:57 <v Janek Nouvertné>But especially for more niche libraries <v Janek Nouvertné>that are still here and there,
+
+00:56:02 <v Janek Nouvertné>I think there's still a lot to do and possibly also quite a few bugs lurking here and there
+
+00:56:09 <v Janek Nouvertné>that haven't been found or are really hard to track down.
+
+00:56:13 <v Janek Nouvertné>I'm curious and a bit maybe scarce, too hard of work, but I'm cautious.
+
+00:56:18 <v Michael Kennedy>It's going to be a little bit of a bumpy ride as people turn that on
+
+00:56:22 <v Michael Kennedy>and then the reality of what's happening.
+
+00:56:24 <v Michael Kennedy>However, I want to take Cody's warning and turn it on its head
+
+00:56:28 <v Michael Kennedy>about these third-party libraries, <v Michael Kennedy>Because I think it's also an opportunity for regular Python developers who are not async fanatics to actually capture some of that capability.
+
+00:56:39 <v Michael Kennedy>Say if some library says, hey, I realize that if we actually implement this lower level thing, you don't actually see the implementation of in true threading.
+
+00:56:48 <v Michael Kennedy>And then you use it, but you don't actually do threading.
+
+00:56:50 <v Michael Kennedy>You just call even a blocking function.
+
+00:56:52 <v Michael Kennedy>You might get a huge performance boost, a little bit like David was talking about with markup safe.
+
+00:56:57 <v Michael Kennedy>And you could just all of a sudden, with doing nothing
+
+00:57:00 <v Michael Kennedy>with your code, goes five times faster on an eight core
+
+00:57:04 <v Michael Kennedy>machine or something in little places where it used to matter.
+
+00:57:06 <v Janek Nouvertné>I'm super excited for--
+
+00:57:09 <v Janek Nouvertné>we currently focused on the things that are out there
+
+00:57:12 <v Janek Nouvertné>right now and that might need to be updated.
+
+00:57:15 <v Janek Nouvertné>But I'm super excited for what else might come of this,
+
+00:57:19 <v Janek Nouvertné>new things that will be developed or stuff <v Janek Nouvertné>that we are currently not thinking about
+
+00:57:25 <v Janek Nouvertné>or have that hadn't been considered for the past 30 years or so,
+
+00:57:29 <v Janek Nouvertné>because it just wasn't feasible or wasn't possible or didn't make sense at all.
+
+00:57:33 <v Janek Nouvertné>I think it would pay off definitely.
+
+00:57:36 <v Janek Nouvertné>All right. Team Flask.
+
+00:57:37 <v Phil Jones>You guys got the final word.
+
+00:57:39 <v Phil Jones>I think it would probably be more advantageous to whiskey apps
+
+00:57:42 <v Phil Jones>than it will for ASCII apps.
+
+00:57:44 <v Phil Jones>And when I've been playing with it, it's mostly on the whiskey flask side
+
+00:57:47 <v Phil Jones>where I'm quite excited about it.
+
+00:57:48 <v Phil Jones>At the same time, like the others are a bit worried because not clear to me,
+
+00:57:52 <v Phil Jones>for example, that green threading is going to work that well
+
+00:57:55 <v Phil Jones>with free threading.
+
+00:57:56 <v Phil Jones>And that may have been fixed, <v Phil Jones>but I don't think it has yet.
+
+00:57:58 <v Phil Jones>And that might then break a lot of whiskey apps.
+
+00:58:02 <v Phil Jones>So next, I think.
+
+00:58:03 <v Phil Jones>But yeah, very excited for Flask in particular.
+
+00:58:06 <v David Lord>Thanks for bringing up green threading.
+
+00:58:07 <v David Lord>I added that to my notes <v David Lord>of mention right now.
+
+00:58:11 <v David Lord>So Flask already has emphasized <v David Lord>for years and years and years
+
+00:58:16 <v David Lord>that don't store stuff globally, <v David Lord>don't have global state,
+
+00:58:19 <v David Lord>bind stuff to the request response cycle <v David Lord>if you need to store stuff,
+
+00:58:23 <v David Lord>look stuff up from a cache otherwise.
+
+00:58:24 <v David Lord>And my impression is that that emphasis is pretty successful.
+
+00:58:27 <v David Lord>I don't, there's any well-known extensions using like global state or anything like that.
+
+00:58:31 <v David Lord>It's helped that the dev server that we have is threaded by default.
+
+00:58:36 <v David Lord>Like it's not going for performance, obviously, it's just running on your local machine, but
+
+00:58:39 <v David Lord>it's already like running in a threaded environment, running your application in a
+
+00:58:42 <v David Lord>threaded environment, not a process-based one by default.
+
+00:58:45 <v David Lord>I don't know if anybody even knows that you can run the dev server as process-based.
+
+00:58:49 <v David Lord>And we also already had for a decade or more than a decade,
+
+00:58:53 <v David Lord>Gevent to enable the exact same thing that free threading is enabling for Flask,
+
+00:58:59 <v David Lord>which is concurrent work and connections.
+
+00:59:03 <v David Lord>And so plenty of applications are already deployed that way
+
+00:59:06 <v David Lord>using Gevent to do what kind of ASCII is enabling.
+
+00:59:10 <v David Lord>I've run all the test suites with pytest FreeThreaded, <v David Lord>which checks that your tests can run concurrently in the free threaded builds.
+
+00:59:18 <v David Lord>so go check that out by Anthony Shaw.
+
+00:59:20 <v David Lord>And I'm pretty sure Granian already supports free-threading.
+
+00:59:23 <v David Lord>Not sure though, I haven't looked into Granian enough.
+
+00:59:25 <v Michael Kennedy>But like-
+
+00:59:26 <v Michael Kennedy>You know, I'm not sure either.
+
+00:59:27 <v Michael Kennedy>It does have a runtime threaded mode <v Michael Kennedy>but I don't know if that's truly free-threaded or not.
+
+00:59:32 <v David Lord>All of those things combined make me pretty optimistic <v David Lord>that Flask will be able to take advantage of this
+
+00:59:38 <v David Lord>without much work from us.
+
+00:59:40 <v David Lord>I mean, I know that's a big statement right there <v David Lord>and I haven't tested it
+
+00:59:43 <v David Lord>but the fact that we've emphasized <v David Lord>all these different parts for so long already
+
+00:59:47 <v David Lord>makes me confident about it.
+
+00:59:48 <v Michael Kennedy>I'm also super excited about it.
+
+00:59:49 <v Michael Kennedy>And just one final thought I'll throw out there <v Michael Kennedy>before we call it a show,
+
+00:59:52 <v Michael Kennedy>because we could go on for much longer, <v Michael Kennedy>but we're out of time.
+
+00:59:55 <v Michael Kennedy>I think once this comes along, <v Michael Kennedy>whatever framework out of this choice you're using out there,
+
+01:00:01 <v Michael Kennedy>there's a bunch of inner working pieces.
+
+01:00:04 <v Michael Kennedy>One of them may have some kind of issue.
+
+01:00:06 <v Michael Kennedy>And I think it's worth doing some proper load testing
+
+01:00:08 <v Michael Kennedy>on your app, you know, point something like locus.io at it
+
+01:00:12 <v Michael Kennedy>and just say, well, what if we gave it 10,000 concurrent users
+
+01:00:14 <v Michael Kennedy>for an hour?
+
+01:00:15 <v Michael Kennedy>Does it stop working?
+
+01:00:16 <v Michael Kennedy>Does it crash?
+
+01:00:17 <v Michael Kennedy>Or does it just keep going?
+
+01:00:18 <v Michael Kennedy>You're like, so that seems like a pretty good thing to do the first time before you deploy
+
+01:00:22 <v Michael Kennedy>your first free threaded version.
+
+01:00:23 <v Michael Kennedy>Yeah.
+
+01:00:24 <v Michael Kennedy>All right, everyone.
+
+01:00:25 <v Michael Kennedy>I would love to talk somewhere.
+
+01:00:26 <v Michael Kennedy>This is such a good conversation, but I also want to respect your time and all that.
+
+01:00:31 <v Michael Kennedy>So thank you for being here.
+
+01:00:32 <v Michael Kennedy>It's been an honor to get you all together and have this conversation.
+
+01:00:35 <v Michael Kennedy>Thank you very much for having us.
+
+01:00:37 <v Janek Nouvertné>Thank you.
+
+01:00:37 <v Janek Nouvertné>Yeah.
+
+01:00:37 <v Janek Nouvertné>Thanks for having us all.
+
+01:00:38 <v Janek Nouvertné>Thanks, everybody.
+
+01:00:39 <v Janek Nouvertné>Yeah.
+
+01:00:39 <v Janek Nouvertné>It's nice being here.
+
+01:00:40 <v Janek Nouvertné>Yeah.
+
+01:00:40 <v Janek Nouvertné>Thanks for having us.
+
+01:00:41 <v Michael Kennedy>Thanks for having us all.
+
+01:00:42 <v Michael Kennedy>Bye.
+
+01:00:42 <v Michael Kennedy>Bye-bye.
+
+01:00:44 <v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:00:47 <v Michael Kennedy>Thank you to our sponsors.
+
+01:00:48 <v Michael Kennedy>Be sure to check out what they're offering.
+
+01:00:49 <v Michael Kennedy>It really helps support the show.
+
+01:00:51 <v Michael Kennedy>If you or your team needs to learn Python, <v Michael Kennedy>we have over 270 hours of beginner and advanced courses
+
+01:00:57 <v Michael Kennedy>on topics ranging from complete beginners to async code,
+
+01:01:00 <v Michael Kennedy>Flask, Django, HTMX, and even LLMs.
+
+01:01:03 <v Michael Kennedy>Best of all, there's no subscription in sight.
+
+01:01:06 <v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:01:09 <v Michael Kennedy>And if you're not already subscribed to the show <v Michael Kennedy>on your favorite podcast player, what are you waiting for?
+
+01:01:14 <v Michael Kennedy>Just search for Python in your podcast player.
+
+01:01:16 <v Michael Kennedy>We should be right at the top.
+
+01:01:17 <v Michael Kennedy>If you enjoyed that geeky rap song, you can download the full track.
+
+01:01:20 <v Michael Kennedy>The link is actually in your podcast blog or share notes.
+
+01:01:23 <v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:01:24 <v Michael Kennedy>Thank you so much for listening.
+
+01:01:26 <v Michael Kennedy>I really appreciate it.
+
+01:01:27 <v Michael Kennedy>I'll see you next time.
+
+01:01:38 I started to meet.
+
+01:01:40 And we're ready to roll.
+
+01:01:43 Upgrade the code.
+
+01:01:45 No fear of getting whole.
+
+01:01:48 We tapped into that modern vibe over King Storm.
+
+01:01:53 Talk Python To Me, I-Sync is the norm.
+
+01:02:24 Редактор субтитров А.Семкин Корректор А.Егорова
+
