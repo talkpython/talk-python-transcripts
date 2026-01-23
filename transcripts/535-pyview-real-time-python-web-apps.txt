@@ -1,0 +1,2336 @@
+00:00:00 <v Michael Kennedy>Building on the web is like working with the perfect clay.
+
+00:00:02 <v Michael Kennedy>It's malleable and can become almost anything.
+
+00:00:05 <v Michael Kennedy>Too often, frameworks try to hide the web's best parts away from us.
+
+00:00:10 <v Michael Kennedy>Today, we're looking at PyView, a project that brings real-time power of Phoenix LiveView
+
+00:00:15 <v Michael Kennedy>directly into your Python world while keeping the web elements front and center.
+
+00:00:21 <v Michael Kennedy>I'm joined by Larry Ogrenek to dive into PyView.
+
+00:00:24 <v Michael Kennedy>This is Talk Python To Me, episode 535, recorded January 9th, 2026.
+
+00:00:47 <v Michael Kennedy>Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:00:52 <v Michael Kennedy>This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
+
+00:00:58 <v Michael Kennedy>Let's connect on social media.
+
+00:00:59 <v Michael Kennedy>You'll find me and Talk Python on Mastodon, BlueSky, and X.
+
+00:01:03 <v Michael Kennedy>The social links are all in your show notes.
+
+00:01:05 <v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:09 <v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:13 <v Michael Kennedy>That's right.
+
+00:01:13 <v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:17 <v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:22 <v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:26 <v Michael Kennedy>Hey, everyone.
+
+00:01:27 <v Michael Kennedy>A quick announcement.
+
+00:01:27 <v Michael Kennedy>I recently added a pair of features to talk Python to me to make it work way better with AI.
+
+00:01:32 <v Michael Kennedy>For example, you can ask questions such as, what was the last episode?
+
+00:01:36 <v Michael Kennedy>Or which episodes featured David Lord?
+
+00:01:38 <v Michael Kennedy>The AI can use a couple of endpoints, a new MCP server implemented in Quart,
+
+00:01:43 <v Michael Kennedy>and the emerging llms.txt standard to answer those questions with 100% accuracy and real-time data.
+
+00:01:50 <v Michael Kennedy>If you use an AI that supports MCP, then take just a moment and install our MCP server.
+
+00:01:56 <v Michael Kennedy>If not, you can always point your AI at talkpython.fm/llms.txt to get it started talking about the show.
+
+00:02:04 <v Michael Kennedy>Weirdly, ChatGPT says it can't read that file on our website and it gets a 400 response code,
+
+00:02:09 <v Michael Kennedy>even though asking it to do so results in a 200 okay from the open AI bot in our logs.
+
+00:02:16 <v Michael Kennedy>Oh well, for chat, you'll just have to copy the contents into your prompt until they fix whatever weirdness this is.
+
+00:02:22 <v Michael Kennedy>I did a write-up for this on the Talk Python blog called Announcing Talk Python AI Integrations at talkpython.fm/blog.
+
+00:02:29 <v Michael Kennedy>The full link is in your later show notes.
+
+00:02:31 <v Michael Kennedy>I hope you enjoy this new way to interact with our over 7.5 million words of content at Talk Python To Me.
+
+00:02:38 <v Michael Kennedy>Thanks for listening. Now let's get on to the show.
+
+00:02:41 <v Michael Kennedy>Larry, welcome to Talk Python To Me. Awesome to have you here.
+
+00:02:43 <v Michael Kennedy>Yeah, thanks, Michael. It's great to be here.
+
+00:02:45 <v Michael Kennedy>I saw your project, PyView, and you're like, oh, hey, maybe you could just give it a little shout-out.
+
+00:02:51 <v Michael Kennedy>And I'm like, this is super neat, the way this thing works.
+
+00:02:54 <v Michael Kennedy>And as most people know who listen, I'm a big fan of web development.
+
+00:02:58 <v Michael Kennedy>The last episode that we just released, not actually the one,
+
+00:03:03 <v Michael Kennedy>time shifting because of recording podcasts, <v Michael Kennedy>was with all the creators of the popular Python web frameworks as a panel.
+
+00:03:09 <v Michael Kennedy>And that was super popular.
+
+00:03:11 <v Michael Kennedy>So here we are back with another web topic, PyView.
+
+00:03:14 <v Michael Kennedy>And it's got a really, really unique twist.
+
+00:03:18 <v Michael Kennedy>And I think people are going to dig it.
+
+00:03:20 <v Larry Ogrodnek>It's quite interesting.
+
+00:03:22 <v Larry Ogrodnek>Gosh, I've been doing technology for a long time now, <v Larry Ogrodnek>and I think the web has always just been amazing, right?
+
+00:03:26 <v Larry Ogrodnek>It's an amazing platform, and so I think that's why people
+
+00:03:28 <v Larry Ogrodnek>kind of gravitate towards web frameworks <v Larry Ogrodnek>and interesting web technologies and what can you do now
+
+00:03:34 <v Larry Ogrodnek>and how can we make it easier?
+
+00:03:35 <v Larry Ogrodnek>Yeah, it's funny.
+
+00:03:36 <v Larry Ogrodnek>I did think PyView would resonate with you a little bit
+
+00:03:37 <v Larry Ogrodnek>just because I know that, I don't know if this is true,
+
+00:03:40 <v Larry Ogrodnek>but it seems like you do appreciate really not just like,
+
+00:03:43 <v Larry Ogrodnek>you know, obviously Python, but web technologies <v Larry Ogrodnek>and especially like embracing web technologies
+
+00:03:47 <v Larry Ogrodnek>and maybe not necessarily kind of hiding them.
+
+00:03:50 <v Michael Kennedy>Yeah, exactly. That is one of the things that really appealed to me because there are some Python frameworks that build webmaps, but their goal is to pretend that HTML and CSS is really bad. It's like, you don't want to write a simile. We're going to put that away from you. You don't need to see this HTML or the CSS or any of those things. Get it away. And I feel like something is lost there.
+
+00:04:14 <v Michael Kennedy>Like building on the web is just, it's like the perfect clay, right?
+
+00:04:19 <v Michael Kennedy>It's, it is so malleable and it can become almost anything that you want it to be.
+
+00:04:24 <v Michael Kennedy>And a lot of those frameworks, I think they just miss that.
+
+00:04:26 <v Michael Kennedy>And I don't feel like what you built does.
+
+00:04:28 <v Michael Kennedy>So I'm going to be, I think we're having a good time talking about it.
+
+00:04:31 <v Larry Ogrodnek>No, thanks.
+
+00:04:32 <v Larry Ogrodnek>Yeah, I'm excited to get into it.
+
+00:04:33 <v Larry Ogrodnek>But quick introduction, Larry, who are you?
+
+00:04:36 <v Larry Ogrodnek>Thanks.
+
+00:04:37 <v Larry Ogrodnek>Yeah.
+
+00:04:37 <v Larry Ogrodnek>So my name is Larry Ogranik.
+
+00:04:39 <v Larry Ogrodnek>I've been a software developer for, you know, I guess let's just say over 25 years now.
+
+00:04:44 <v Larry Ogrodnek>I don't age myself too much. But through that time, obviously, I've done a bunch of different
+
+00:04:48 <v Larry Ogrodnek>things and worked at startups. I worked at big companies. I've worked at freelancing for a few
+
+00:04:54 <v Larry Ogrodnek>years even. And so my early career, it was more kind of on the C pro side, a lot of backend work,
+
+00:05:03 <v Larry Ogrodnek>diving into Java and then Scala. And when I was doing freelancing, obviously the language of the
+
+00:05:09 <v Larry Ogrodnek>tech kind of depended on the client wanted to do and what the project entailed. But that's kind of
+
+00:05:13 <v Larry Ogrodnek>to get more serious about using Python.
+
+00:05:16 <v Larry Ogrodnek>And nowadays, I work at a startup in the construction industry.
+
+00:05:20 <v Larry Ogrodnek>And we think of ourselves--
+
+00:05:21 <v Larry Ogrodnek>JOHN MUELLER: Oh, really?
+
+00:05:21 <v Larry Ogrodnek>Yes.
+
+00:05:22 <v Larry Ogrodnek>But we're really trying to invest heavily in technology
+
+00:05:26 <v Larry Ogrodnek>and software.
+
+00:05:27 <v Larry Ogrodnek>We're trying to be a technology-enabled home builder.
+
+00:05:29 <v Larry Ogrodnek>And so we have a huge investment.
+
+00:05:31 <v Larry Ogrodnek>And we have-- I mean, not necessarily a huge tech team,
+
+00:05:34 <v Larry Ogrodnek>but spending any money and employment on tech <v Larry Ogrodnek>is kind of a big deal in this industry.
+
+00:05:41 <v Larry Ogrodnek>And I think it's an industry that hasn't really had technology get great adoption.
+
+00:05:48 <v Larry Ogrodnek>Different people are doing different things, but overall, there's been a hard time to kind of get it in that process.
+
+00:05:53 <v Larry Ogrodnek>But there's a lot of areas for improvement.
+
+00:05:54 <v Larry Ogrodnek>And so, you know, we're trying to make that process better, faster, smoother.
+
+00:05:59 <v Michael Kennedy>I think there's a lot of possibility for pick your underserved by tech specialization and build businesses around there.
+
+00:06:08 <v Michael Kennedy>If you're a Python developer or any kind of developer.
+
+00:06:10 <v Michael Kennedy>But if you really have the skill to build things like connecting APIs and automations and stuff,
+
+00:06:18 <v Michael Kennedy>it's just such fertile ground.
+
+00:06:20 <v Michael Kennedy>It's like, wow, there's nobody building stuff here that is like, good.
+
+00:06:23 <v Michael Kennedy>Let's go.
+
+00:06:24 <v Michael Kennedy>I could do this, right?
+
+00:06:26 <v Larry Ogrodnek>100%.
+
+00:06:26 <v Larry Ogrodnek>And I think, yeah, like, Tim, maybe to your point, there's a lot of kind of low-hanging fruit
+
+00:06:30 <v Larry Ogrodnek>where it's just like just even getting some of the information in people's heads in a structured
+
+00:06:34 <v Larry Ogrodnek>way and even having, like, different processes defined in a structured way.
+
+00:06:38 <v Larry Ogrodnek>Like, you get huge improvements from that.
+
+00:06:40 <v Larry Ogrodnek>And this is kind of just like why we love technology, right?
+
+00:06:42 <v Larry Ogrodnek>Is you have these building blocks and it's like, oh, now that we have this in a structured
+
+00:06:45 <v Larry Ogrodnek>format, we can actually do these interesting things with it that we couldn't do before
+
+00:06:48 <v Larry Ogrodnek>because it was just on someone's notepad or whatever.
+
+00:06:51 <v Larry Ogrodnek>And so, yeah, you're right.
+
+00:06:52 <v Larry Ogrodnek>I think there's still a lot of issues like that.
+
+00:06:54 <v Larry Ogrodnek>And home building is for sure a big one.
+
+00:06:58 <v Larry Ogrodnek>And yeah, it's been interesting.
+
+00:06:59 <v Larry Ogrodnek>I mean, our main, actually, construction platform that manages our construction projects.
+
+00:07:05 <v Larry Ogrodnek>So we have an interesting part of that, what you were saying, is it can be hard in underserved
+
+00:07:10 <v Larry Ogrodnek>There are underserved areas to sort of have that domain expertise.
+
+00:07:14 <v Larry Ogrodnek>And so you have to find a good partner.
+
+00:07:15 <v Larry Ogrodnek>And one of the things we've done is we actually build the homes.
+
+00:07:18 <v Larry Ogrodnek>So we're not just writing software for other builders to use, but we're building homes ourselves.
+
+00:07:22 <v Larry Ogrodnek>And that's been a huge benefit because we have people building homes that we can sit down with and say, like, does this make sense?
+
+00:07:28 <v Larry Ogrodnek>Like, does it not make sense?
+
+00:07:29 <v Larry Ogrodnek>Like, why, why not?
+
+00:07:30 <v Larry Ogrodnek>And, you know, we have to obviously push on both sides sometimes because we are trying to change things.
+
+00:07:35 <v Larry Ogrodnek>Right.
+
+00:07:36 <v Larry Ogrodnek>But that's been, I think it'd be almost impossible to do without.
+
+00:07:41 <v Michael Kennedy>It's the dog fooding equivalent, the software dog fooding, right?
+
+00:07:45 <v Michael Kennedy>Exactly.
+
+00:07:46 <v Michael Kennedy>You're building.
+
+00:07:47 <v Michael Kennedy>They're building, you're building.
+
+00:07:48 <v Michael Kennedy>So then you can.
+
+00:07:50 <v Larry Ogrodnek>I know.
+
+00:07:50 <v Larry Ogrodnek>And it can be frustrating to get these phone calls like, why is this working?
+
+00:07:54 <v Larry Ogrodnek>Like, you're going to make me late for this or that.
+
+00:07:55 <v Larry Ogrodnek>But, you know, again, like those having those really strong partnerships, like, I don't know, it's critical to be able to get something that actually works.
+
+00:08:02 <v Michael Kennedy>Yeah.
+
+00:08:02 <v Michael Kennedy>Well, it sounds actually super exciting.
+
+00:08:04 <v Michael Kennedy>I mean, I know you sold it.
+
+00:08:05 <v Michael Kennedy>It's like, oh, we're just building.
+
+00:08:06 <v Michael Kennedy>Just working in a building.
+
+00:08:07 <v Michael Kennedy>No, this is cool.
+
+00:08:09 <v Larry Ogrodnek>It's cool, yeah.
+
+00:08:10 <v Larry Ogrodnek>And for the last couple of years, I've been doing a lot on our kind of more AI services team.
+
+00:08:15 <v Larry Ogrodnek>And I'm not a machine learning researcher, but most of the work I've been doing has been around kind of productionizing that work and building services around it.
+
+00:08:24 <v Larry Ogrodnek>And we've done really cool stuff like with, I mean, just like pricing models for the homes, which is kind of more traditional machine learning stuff.
+
+00:08:30 <v Larry Ogrodnek>and then like schedule simulation stuff.
+
+00:08:33 <v Larry Ogrodnek>And more recently, a lot of LLM-based stuff, <v Larry Ogrodnek>both for kind of like, you know,
+
+00:08:37 <v Larry Ogrodnek>rag style chat workflows.
+
+00:08:38 <v Larry Ogrodnek>Like you can imagine you're in the field <v Larry Ogrodnek>and you're like, you know,
+
+00:08:40 <v Larry Ogrodnek>is this the right tile pattern?
+
+00:08:42 <v Larry Ogrodnek>And maybe that's buried on like page 500 <v Larry Ogrodnek>of a Google spreadsheet or something like that.
+
+00:08:46 <v Larry Ogrodnek>And being able to pull up quickly is huge.
+
+00:08:49 <v Larry Ogrodnek>And now some of the stuff we're trying to do <v Larry Ogrodnek>is more around automating schedule updates.
+
+00:08:53 <v Larry Ogrodnek>So someone can kind of walk through a home <v Larry Ogrodnek>and just, you know,
+
+00:08:56 <v Larry Ogrodnek>do kind of stream of consciousness.
+
+00:08:58 <v Larry Ogrodnek>Like, you know, this is the status of like this, like, you know, this is running late, whatever.
+
+00:09:04 <v Larry Ogrodnek>And then we kind of, we have a multi-stage process, but we kind of, you know, turn the video into images and turn the transcription into notes and then try and like see what we can, what's in the photo, right?
+
+00:09:14 <v Larry Ogrodnek>Like, is that the right tile pattern? Is that the right stove? And use LLMs for different parts of this process to kind of, you know, come up with recommendations at the end.
+
+00:09:23 <v Larry Ogrodnek>like, oh, it actually looks like the drywall is totally installed and we can mark that as done
+
+00:09:27 <v Larry Ogrodnek>or whatever. And, you know, having the automation is actually super helpful because having up-to-date
+
+00:09:33 <v Larry Ogrodnek>schedules drives a lot of stuff, right? It's just like the efficiency of making sure people are on
+
+00:09:38 <v Larry Ogrodnek>site and not delayed is huge. So that's been really-
+
+00:09:41 <v Michael Kennedy>There's so many touch points of so many subcontractors and things, right? Like,
+
+00:09:46 <v Michael Kennedy>when is the plumber going to be here? Well, they need to be here when the inspection for plumbing
+
+00:09:49 <v Michael Kennedy>is here but that got you know like it's people who haven't gone through like somehow some kind of
+
+00:09:55 <v Michael Kennedy>a house like i had a big home home improvement it's not quite the right word but like this big
+
+00:10:00 <v Michael Kennedy>outside project with like a barbecue thing and so on done and wow after doing that i'm like there's
+
+00:10:05 <v Michael Kennedy>i've got a lot of ideas for making this better this is bad no i know right and some of those
+
+00:10:11 <v Larry Ogrodnek>delays are like super costly and it's funny because like a lot of things even in terms of
+
+00:10:14 <v Larry Ogrodnek>like budgeting like right like if you buy too much material that's bad because you're wasting money
+
+00:10:19 <v Larry Ogrodnek>But if you buy too little, that's actually even worse because like maybe, you know, you need more whatever lumber and maybe there's, you know, two weeks, you know, turnaround time to get it.
+
+00:10:28 <v Larry Ogrodnek>And so and again, if you have to reschedule things like inspections, who knows when the next available one is, it might push the project out, you know, weeks.
+
+00:10:34 <v Larry Ogrodnek>And so, yeah, there's a lot of interdependencies, a lot of, like you said, people and communication remains a very tricky problem.
+
+00:10:43 <v Michael Kennedy>That's always one of the things.
+
+00:10:44 <v Michael Kennedy>Well, it sounds awesome. And I'm also interested to see if your project at all touches on that. But let's dive in. Let's dive into PyView. Now, the first thing I want to point out here with PyView is it is not PyWebView, which has been around for three or four years at minimum. And I imagine that like a lot of people have seen this. PyWebView is a way to embed basically a browser into something that you can wrap as a desktop app. PyView, totally different. What's the elevator pitch on PyView?
+
+00:11:13 <v Larry Ogrodnek>Totally different. Yeah. So the later pitch in PyView is basically, you know, it's one of those self-referential things. Hopefully I won't try and say Phoenix LiveView, but, you know, when you're building, when you're building modern web apps, and this is one of the things that I've seen, right, is, you know, if you want to have this rich interactivity, you want to have like a really rich client experience, maybe you reach for something like React or Vue. And, you know, those are great frameworks.
+
+00:11:38 <v Larry Ogrodnek>But then you also have your backend server maybe managing the state and the database and those relationships and maybe talking to other servers.
+
+00:11:44 <v Larry Ogrodnek>Maybe that's in Python or another language, whatever.
+
+00:11:47 <v Larry Ogrodnek>And you kind of have to manage these two different pieces and they each have their own state.
+
+00:11:51 <v Larry Ogrodnek>And it's very, you know, there can be a lot of complexity when you, yeah, the client is showing something slightly different than the server or vice versa and having to synchronize that state and keep them in sync.
+
+00:12:02 <v Larry Ogrodnek>Plus, often there's a lot of glue code in between them, right?
+
+00:12:05 <v Larry Ogrodnek>Like having to just go from the Python backend to the JavaScript frontend and back and forth.
+
+00:12:11 <v Larry Ogrodnek>Even when things are in the same language, like I've worked on TypeScript apps where it's TypeScript backend and frontend,
+
+00:12:16 <v Larry Ogrodnek>it's kind of rare that you actually share a lot of code for that layer.
+
+00:12:20 <v Larry Ogrodnek>Things end up kind of drifting anyway and being different.
+
+00:12:23 <v Larry Ogrodnek>And so PyView, the idea is, you know, what if you can have your backend server manage all your state, you're writing all your application logic in Python, you're just rendering HTML like you would for a static site.
+
+00:12:38 <v Larry Ogrodnek>But when different interactions happen, like when you just click a button or enters a form field or, you know, different things happen on the friend end, we send an event to the server.
+
+00:12:48 <v Larry Ogrodnek>The server processes the event and changes its state.
+
+00:12:50 <v Larry Ogrodnek>So for example, maybe, I mean, this is a simple counter example, but you press plus on the counter.
+
+00:12:55 <v Larry Ogrodnek>Then the server increments the count by one.
+
+00:12:57 <v Larry Ogrodnek>It does a full re-render, but it does kind of a diff and says, oh, actually, looking at this full page, all I need to do is tell the front end to change zero to one.
+
+00:13:06 <v Larry Ogrodnek>And so it efficiently sends that over a WebSocket connection.
+
+00:13:10 <v Larry Ogrodnek>And I feel like there's already a lot there that maybe that wasn't the clearest description.
+
+00:13:13 <v Larry Ogrodnek>But the idea is kind of more like, can we get SPA level interactivity, you know, including things like multi-user presence stuff, server push, really fast UI updates, you know, really fast local navigation, not doing full page reloads.
+
+00:13:27 <v Larry Ogrodnek>But on the back end, our mental model really is something like a traditional static, you know, not static site generator, but like a static rendering thing.
+
+00:13:36 <v Larry Ogrodnek>So I don't know.
+
+00:13:37 <v Larry Ogrodnek>Was that clear?
+
+00:13:39 <v Larry Ogrodnek>I think.
+
+00:13:42 <v Michael Kennedy>Yes.
+
+00:13:43 <v Michael Kennedy>It sounds like a lot.
+
+00:13:44 <v Michael Kennedy>And what I think is cool about PyView <v Michael Kennedy>is that it takes a lot of that
+
+00:13:49 <v Michael Kennedy>and it just makes it automatic <v Michael Kennedy>over a simple programming API, right?
+
+00:13:52 <v Larry Ogrodnek>Yeah, exactly.
+
+00:13:53 <v Larry Ogrodnek>So that's the thing is you don't have to think <v Larry Ogrodnek>about a lot of this kind of plumbing.
+
+00:13:57 <v Larry Ogrodnek>And this is the one kind of, <v Larry Ogrodnek>I mean, we'll get into this more.
+
+00:13:59 <v Larry Ogrodnek>Like this is something that I, <v Larry Ogrodnek>an idea that I came up with.
+
+00:14:01 <v Larry Ogrodnek>This is something that has been around <v Larry Ogrodnek>for a little while on,
+
+00:14:05 <v Larry Ogrodnek>in the Elixir side.
+
+00:14:06 <v Larry Ogrodnek>It comes from this, <v Larry Ogrodnek>this thing called Phoenix Live View.
+
+00:14:09 <v Larry Ogrodnek>But yeah, you know, <v Larry Ogrodnek>a framework actually can take care
+
+00:14:11 <v Larry Ogrodnek>of a lot of this for us.
+
+00:14:13 <v Larry Ogrodnek>And so as developers, all we really <v Larry Ogrodnek>need to worry about is updating our state when events come in
+
+00:14:19 <v Larry Ogrodnek>and rendering, doing a render of this.
+
+00:14:22 <v Larry Ogrodnek>Given the state, what should we render to the back end?
+
+00:14:24 <v Larry Ogrodnek>And the framework manages the Webseq connection.
+
+00:14:26 <v Larry Ogrodnek>It manages the messages.
+
+00:14:28 <v Larry Ogrodnek>It manages doing the diffing.
+
+00:14:30 <v Larry Ogrodnek>And so we don't have to think about any of that.
+
+00:14:32 <v Larry Ogrodnek>We really just need to think about how do I update my state
+
+00:14:35 <v Larry Ogrodnek>and how do I render the website?
+
+00:14:37 <v Larry Ogrodnek>And so it ends up being really powerful just having <v Larry Ogrodnek>these very simple building blocks.
+
+00:14:41 <v Larry Ogrodnek>And this is the kind of thing that--
+
+00:14:43 <v Larry Ogrodnek>I mean, I'm not anti-JavaScript in general, <v Larry Ogrodnek>but obviously we're using JavaScript on the front end.
+
+00:14:47 <v Larry Ogrodnek>But by having this very generic JavaScript layer that just
+
+00:14:51 <v Larry Ogrodnek>knows really simple things like, here's <v Larry Ogrodnek>how I send messages when a button is pressed
+
+00:14:58 <v Larry Ogrodnek>or when a text field changes.
+
+00:15:00 <v Larry Ogrodnek>There's very simple building blocks, <v Larry Ogrodnek>but you end up being this very powerful system
+
+00:15:04 <v Larry Ogrodnek>when you bring them together.
+
+00:15:05 <v Larry Ogrodnek>And you don't really have to write JavaScript <v Larry Ogrodnek>for these interactions because, again, most of the things
+
+00:15:10 <v Larry Ogrodnek>are very simple.
+
+00:15:11 <v Larry Ogrodnek>It's like, you know, I need to change whatever.
+
+00:15:14 <v Michael Kennedy>Your project is pretty new, which I'm hoping to shine a light on it because I think it's going to get a lot of attention.
+
+00:15:20 <v Michael Kennedy>Out in the audience, Alessio points out that, hey, this is kind of like HTMX and Django with fragments, but over WebSockets.
+
+00:15:29 <v Michael Kennedy>And yeah, I feel like it does have some HTMX vibes.
+
+00:15:34 <v Michael Kennedy>And for those of you who haven't tried it, HTMX is like, you sprinkle just a couple of extra attributes on there.
+
+00:15:39 <v Michael Kennedy>And then somehow behind the scenes, <v Michael Kennedy>there's additional communication that you don't worry about.
+
+00:15:44 <v Michael Kennedy>It's just say, oh, if somebody clicks this image, <v Michael Kennedy>actually do this server thing and replace part of the page--
+
+00:15:49 <v Michael Kennedy>maybe the image, maybe something else--
+
+00:15:51 <v Michael Kennedy>with the server HTML response.
+
+00:15:54 <v Michael Kennedy>How do you feel that PyView, Phoenix LiveView sort of
+
+00:15:57 <v Michael Kennedy>relates to that and like Datastar, who I'm going to have on the--
+
+00:16:01 <v Larry Ogrodnek>Yeah.
+
+00:16:02 <v Larry Ogrodnek>No, I think that's right.
+
+00:16:03 <v Larry Ogrodnek>I think that's a very thoughtful comment, <v Larry Ogrodnek>because I think that is a lot of it.
+
+00:16:09 <v Larry Ogrodnek>And if I had to think in terms of comparisons <v Larry Ogrodnek>to different frameworks, I think doing something with HTMX
+
+00:16:16 <v Larry Ogrodnek>probably is the closest comparison.
+
+00:16:18 <v Larry Ogrodnek>Because again, it's HTML based.
+
+00:16:21 <v Larry Ogrodnek>We are responding to events and wiring up to the server
+
+00:16:25 <v Larry Ogrodnek>and processing them and sending back HTML fragments.
+
+00:16:28 <v Larry Ogrodnek>I think the difference is that PyView <v Larry Ogrodnek>is a little more structured, right?
+
+00:16:32 <v Larry Ogrodnek>Because with HTMX, you have a lot more control, <v Larry Ogrodnek>which can be a good thing.
+
+00:16:38 <v Larry Ogrodnek>But it's a little more--
+
+00:16:40 <v Larry Ogrodnek>you're kind of wiring up these things yourself <v Larry Ogrodnek>to a certain extent, saying like, when you click on this,
+
+00:16:45 <v Larry Ogrodnek>call this back end route and replace the contents of this
+
+00:16:51 <v Larry Ogrodnek>element with the response from that.
+
+00:16:53 <v Larry Ogrodnek>And on the back end, you're sending full HTML <v Larry Ogrodnek>and things like that.
+
+00:16:56 <v Larry Ogrodnek>So that's one difference.
+
+00:16:58 <v Larry Ogrodnek>So yes, it is over WebSockets with PyView versus HTMX.
+
+00:17:01 <v Larry Ogrodnek>The other thing is we do have this kind of diffing technology
+
+00:17:05 <v Larry Ogrodnek>where we're only sending what actually changed.
+
+00:17:08 <v Larry Ogrodnek>So I mean, we can go into more detail at some point <v Larry Ogrodnek>about how the templating works.
+
+00:17:15 <v Larry Ogrodnek>But for something like changing the encounter from 0 to 1,
+
+00:17:17 <v Larry Ogrodnek>it's like we're really just sending back the 1.
+
+00:17:21 <v Larry Ogrodnek>And obviously, as the page gets more complex, <v Larry Ogrodnek>the diffs get more complex.
+
+00:17:25 <v Larry Ogrodnek>But we're just sending the diffs.
+
+00:17:26 <v Larry Ogrodnek>And again, the framework kind of handles--
+
+00:17:28 <v Larry Ogrodnek>no, you don't have-- as a developer, <v Larry Ogrodnek>you don't have to think about what part of the page
+
+00:17:31 <v Larry Ogrodnek>do I update.
+
+00:17:32 <v Larry Ogrodnek>And it's kind of encoded to a certain extent in your template.
+
+00:17:34 <v Larry Ogrodnek>you know, it's kind of more hands-off.
+
+00:17:38 <v Larry Ogrodnek>And so you do give up some flexibility, <v Larry Ogrodnek>but then, you know, the framework kind of gets to handle
+
+00:17:43 <v Larry Ogrodnek>a lot of things for you in a smoother integrated way, <v Larry Ogrodnek>I would say.
+
+00:17:47 <v Michael Kennedy>Just handles it.
+
+00:17:48 <v Michael Kennedy>Yeah.
+
+00:17:49 <v Michael Kennedy>With HTMLX, which I am a fan of, <v Michael Kennedy>you have to think about every little piece.
+
+00:17:53 <v Michael Kennedy>And you say, if somebody interacts with this part, <v Michael Kennedy>then I want this action to happen.
+
+00:17:58 <v Michael Kennedy>And then this thing over here, you know, <v Michael Kennedy>these parts of the pages are going to be
+
+00:18:02 <v Michael Kennedy>where the response of the server gets redirected back into.
+
+00:18:06 <v Michael Kennedy>And it seems like it's more just handled a little bit here.
+
+00:18:10 <v Michael Kennedy>Let's talk a little bit about Phoenix Live View, <v Michael Kennedy>because while your project is pretty new, Phoenix Live View has,
+
+00:18:17 <v Michael Kennedy>I don't know how old it is, a couple of years, it looks like,
+
+00:18:21 <v Michael Kennedy>but it's got 6,700 stars.
+
+00:18:24 <v Michael Kennedy>So it's a really solid foundation.
+
+00:18:26 <v Michael Kennedy>And your project, what's the relationship between <v Michael Kennedy>PyView and Phoenix LiveView?
+
+00:18:32 <v Larry Ogrodnek>Right.
+
+00:18:32 <v Larry Ogrodnek>So LiveView is obviously the inspiration for PyView.
+
+00:18:35 <v Larry Ogrodnek>I think, you know, when I mean, I don't know, when I started thinking about like,
+
+00:18:40 <v Larry Ogrodnek>you know, there's got to be a better way to building these kinds of apps in Python, I came
+
+00:18:44 <v Larry Ogrodnek>across Phoenix LiveView and kind of really loved this model, especially just, I don't
+
+00:18:48 <v Larry Ogrodnek>know, I kind of, I do like thinking this event kind of base system.
+
+00:18:52 <v Larry Ogrodnek>And it seemed like, yeah, you get all the really nice things for free.
+
+00:18:55 <v Larry Ogrodnek>So definitely was the inspiration.
+
+00:18:57 <v Larry Ogrodnek>And then when I started working on PyView, I had the thought like, well, they've already kind of figured out a good model for how this works and how things fit together.
+
+00:19:04 <v Larry Ogrodnek>And they already have a good client side story for implementing the client side component of this.
+
+00:19:09 <v Larry Ogrodnek>So what I tried to do with PyView is actually use, you know, I ship their Phoenix LiveView front end client JavaScript is what you're running in a PyView app on your front end.
+
+00:19:20 <v Larry Ogrodnek>And I kind of implemented a Python backend.
+
+00:19:23 <v Larry Ogrodnek>So if you think about LiveView as a protocol, which to be clear, it is not.
+
+00:19:28 <v Larry Ogrodnek>There's sort of just some, you know, have to do some reverse engineering of how things work.
+
+00:19:32 <v Larry Ogrodnek>It's not really documented because I think, you know, on their end, it really is an internal implementation detail about how the front end communicates with the back end.
+
+00:19:40 <v Larry Ogrodnek>But, you know, we get the, that really was a huge boost for me because I get to use their client JavaScript, which handles all the diffing.
+
+00:19:48 <v Larry Ogrodnek>And again, a big part of it too is just kind of they do have a really nice design.
+
+00:19:51 <v Larry Ogrodnek>So like you mentioned, Phoenix Live View has been around for a while.
+
+00:19:54 <v Larry Ogrodnek>It's a very popular project.
+
+00:19:55 <v Larry Ogrodnek>I think if you are in this ecosystem, so it's written in Elixir, which is a different programming
+
+00:20:01 <v Larry Ogrodnek>language that runs on the Erlang virtual machine.
+
+00:20:04 <v Larry Ogrodnek>And just to be clear, it's a totally great language.
+
+00:20:08 <v Larry Ogrodnek>It has a lot of really cool features.
+
+00:20:09 <v Larry Ogrodnek>It's nothing against Elixir.
+
+00:20:11 <v Larry Ogrodnek>It's just that for different reasons, I wanted this paradigm in the Python world because I'm
+
+00:20:17 <v Larry Ogrodnek>I'm working, you know, especially at work, I'm working on Python apps.
+
+00:20:20 <v Larry Ogrodnek>And that's the kind of world I live in.
+
+00:20:22 <v Larry Ogrodnek>And, you know, it's, it's, we can't change everything over to different languages.
+
+00:20:26 <v Michael Kennedy>Just, you know, I'll throw it out there for you.
+
+00:20:28 <v Michael Kennedy>You don't have to take the bullets.
+
+00:20:30 <v Michael Kennedy>But I think functional programming languages are super interesting.
+
+00:20:34 <v Michael Kennedy>They apply really well in certain to solve certain problems.
+
+00:20:38 <v Michael Kennedy>And I know some people, it's the hammer for all nails.
+
+00:20:42 <v Michael Kennedy>But for most people, functional programming is, it's just not what they're working in.
+
+00:20:47 <v Michael Kennedy>you know, things where you can change variables and have state turn out to be more productive
+
+00:20:53 <v Michael Kennedy>ways to write code, even if it maybe is not provably as correct or as thread safe or whatever,
+
+00:20:59 <v Michael Kennedy>right?
+
+00:20:59 <v Michael Kennedy>Like, so if most people are going to adopt it, most people are not using functional programming
+
+00:21:05 <v Michael Kennedy>languages and Erlang in particular, Python happens to be more popular than Erlang.
+
+00:21:09 <v Michael Kennedy>Yeah.
+
+00:21:09 <v Larry Ogrodnek>Yeah.
+
+00:21:10 <v Larry Ogrodnek>Well, there's different, I'll let you take those bullets, Michael.
+
+00:21:13 <v Larry Ogrodnek>But yeah, I mean, look, different languages are good for different use cases, right?
+
+00:21:16 <v Larry Ogrodnek>And but again, I think it's a really great idea that I thought, let me steal this.
+
+00:21:20 <v Larry Ogrodnek>And so, yeah, this is something that was written by, I think, Chris McCord is like the author of Live View.
+
+00:21:24 <v Larry Ogrodnek>And it's been around, yeah, for a long time.
+
+00:21:26 <v Larry Ogrodnek>It's gone through different iterations.
+
+00:21:28 <v Larry Ogrodnek>But yeah, it's incredibly popular in that ecosystem.
+
+00:21:32 <v Larry Ogrodnek>And yeah, they've done, I think, really great, great things with it.
+
+00:21:35 <v Michael Kennedy>Yeah.
+
+00:21:35 <v Michael Kennedy>And let's I just want to give a little shout out.
+
+00:21:38 <v Michael Kennedy>If you go to the Phoenix Live View GitHub, which, of course, I'll link in the show notes, there's a live demo on Fly that you can check out.
+
+00:21:46 <v Michael Kennedy>And there's also a two minute video.
+
+00:21:49 <v Michael Kennedy>Watch the two minute video.
+
+00:21:50 <v Michael Kennedy>It really shows like, okay, this is a quite an interesting and quite capable technology.
+
+00:21:56 <v Michael Kennedy>It might sound like, oh, you can't do very much with this because I don't know.
+
+00:22:00 <v Michael Kennedy>It seems like it's only built to make a few things easy.
+
+00:22:03 <v Michael Kennedy>I, after watching what he built there with this app with Phoenix Live View, I was impressed.
+
+00:22:08 <v Michael Kennedy>It's quite flexible.
+
+00:22:09 <v Larry Ogrodnek>No, for sure.
+
+00:22:09 <v Larry Ogrodnek>And there's a lot of, I think it took a lot of work to get there too, right?
+
+00:22:12 <v Larry Ogrodnek>Just to give, you know, them a little more, a lot of credit, like, because a lot of the
+
+00:22:16 <v Larry Ogrodnek>I mean, it's interesting because like once you take this approach to being having everything over WebSockets, well, then actually it's pretty great because it opens up a lot of things that could be hard, like things like, yeah, like presence, like knowing different users that are, you know, on the same documenter page as you or like server pushes.
+
+00:22:29 <v Larry Ogrodnek>You kind of get a lot of that stuff, not, you know, for free, but it's easy when that's kind of your base layer is everything over WebSockets.
+
+00:22:35 <v Larry Ogrodnek>But then some things like file uploads, like as part of this, they invented a way to kind of do file uploads over WebSockets.
+
+00:22:43 <v Larry Ogrodnek>Oh, that's interesting.
+
+00:22:44 <v Larry Ogrodnek>Yeah, because how do you do that, right?
+
+00:22:48 <v Larry Ogrodnek>And WebSecrets do support both like text and binary messages.
+
+00:22:51 <v Larry Ogrodnek>So it's not as crazy as you would think, but there is like a limit to, you know, you have to kind of, you know, chunk it and stuff like that.
+
+00:22:55 <v Larry Ogrodnek>But so it supports that.
+
+00:22:58 <v Larry Ogrodnek>And, you know, I mean, again, we can talk more about file, but there are other options for also going like direct to S3 or, you know, different things.
+
+00:23:04 <v Larry Ogrodnek>But, yeah, you know, a lot of work has gone into this and including around the optimization.
+
+00:23:08 <v Larry Ogrodnek>Like, what is that message format?
+
+00:23:09 <v Larry Ogrodnek>Like, how do you send minimal diffs for not just things like, you know, simple template changes?
+
+00:23:14 <v Larry Ogrodnek>but when you have lists or components or maybe you have huge lists of things,
+
+00:23:20 <v Larry Ogrodnek>how do you efficiently manage that on both the server side and the client side? And so I think
+
+00:23:24 <v Larry Ogrodnek>there's a lot of great ideas for dealing with this that were pioneered by Phoenix Live View that I
+
+00:23:29 <v Larry Ogrodnek>get to come along and kind of just steal. That's cool. Here's the downtime version.
+
+00:23:36 <v Larry Ogrodnek>Yeah, exactly. And I think that's kind of was like a lot of the focus early on was trying to
+
+00:23:40 <v Larry Ogrodnek>to stick to this just because, again, PyView, like you said, it is very early days and it is just
+
+00:23:47 <v Larry Ogrodnek>kind of like a personal side project. Although I am using it at my day job for a couple of production
+
+00:23:51 <v Larry Ogrodnek>apps now, which has been fantastic. But as a single developer with a Python web framework as a side
+
+00:23:59 <v Larry Ogrodnek>project, it was great to have a little bit of a roadmap on if I follow these patterns, I'm probably
+
+00:24:03 <v Larry Ogrodnek>going to end up in a good place. And I did. Of course, I did try and make things more Pythonic
+
+00:24:08 <v Larry Ogrodnek>where I could.
+
+00:24:11 <v Larry Ogrodnek>So PyView is very heavily typed.
+
+00:24:13 <v Larry Ogrodnek>So we're using obviously Python types for everything.
+
+00:24:15 <v Larry Ogrodnek>Whereas Elixir, I think they're adding types now.
+
+00:24:19 <v Larry Ogrodnek>It's been an ongoing thing to add some gradual typing <v Larry Ogrodnek>like Python has done.
+
+00:24:23 <v Larry Ogrodnek>But Python is a little further along <v Larry Ogrodnek>in terms of the typing story there.
+
+00:24:27 <v Larry Ogrodnek>And I think over time, maybe we'll diverge a little bit
+
+00:24:31 <v Larry Ogrodnek>in terms of making the APIs more Pythonic <v Larry Ogrodnek>to the extent anything is not.
+
+00:24:36 <v Larry Ogrodnek>But yeah, for sure, having this kind of at least <v Larry Ogrodnek>this core level protocol has been useful to follow.
+
+00:24:42 <v Michael Kennedy>Yeah, they've kind of worked out how the exchange works
+
+00:24:46 <v Michael Kennedy>and all those different things.
+
+00:24:47 <v Michael Kennedy>You're like, OK, let me do the--
+
+00:24:48 <v Larry Ogrodnek>Yeah, and I sort of have a roadmap to like, <v Larry Ogrodnek>oh, these are the problems you're going to get into.
+
+00:24:51 <v Larry Ogrodnek>Because that's when I first started PyView.
+
+00:24:55 <v Larry Ogrodnek>So I did start it a couple years ago, just as a very--
+
+00:24:58 <v Larry Ogrodnek>but again, very sparse.
+
+00:25:00 <v Larry Ogrodnek>Like, can I get anything to show up on the page over Websockets?
+
+00:25:03 <v Larry Ogrodnek>And then kind of iterated.
+
+00:25:05 <v Larry Ogrodnek>And it's interesting to--
+
+00:25:07 <v Larry Ogrodnek>when I started the first version of the LiveView client
+
+00:25:09 <v Larry Ogrodnek>JavaScript I used, then figuring out <v Larry Ogrodnek>what changed between that and the next version
+
+00:25:12 <v Larry Ogrodnek>and the next version and the next version.
+
+00:25:13 <v Larry Ogrodnek>You get to see the gradual progression of like, <v Larry Ogrodnek>oh, these are some problems we're going to run into,
+
+00:25:17 <v Larry Ogrodnek>because they've sort of addressed that in this future version.
+
+00:25:20 <v Larry Ogrodnek>But I still have to deal with it, <v Larry Ogrodnek>but I'll get there at some point.
+
+00:25:23 <v Michael Kennedy>Yeah, go look at the closed GitHub issues, <v Larry Ogrodnek>and you're like, whoa, there's a lot of conversation
+
+00:25:27 <v Larry Ogrodnek>around this one.
+
+00:25:28 <v Michael Kennedy>Yeah.
+
+00:25:29 <v Michael Kennedy>Interesting.
+
+00:25:30 <v Michael Kennedy>So I think a nice thing to do for people <v Michael Kennedy>would be to just do a quick walkthrough,
+
+00:25:36 <v Michael Kennedy>because you've got a nice little getting started thing.
+
+00:25:40 <v Michael Kennedy>You've just got to be careful that most people are listening, not seeing.
+
+00:25:43 <v Michael Kennedy>But let's talk through, let's maybe talk through what it means to create
+
+00:25:46 <v Michael Kennedy>just like a real simple program in PyView.
+
+00:25:49 <v Larry Ogrodnek>Sure.
+
+00:25:50 <v Larry Ogrodnek>Yeah, so I do, yeah, so the documentation is something, again,
+
+00:25:54 <v Larry Ogrodnek>it's a work in progress, but I did try to get to start getting some things together.
+
+00:25:57 <v Larry Ogrodnek>So yeah, I do have a cookie cutter project.
+
+00:25:59 <v Larry Ogrodnek>And I think, you know, the first one in documentation,
+
+00:26:02 <v Larry Ogrodnek>if you check out the cookie cutter project, <v Larry Ogrodnek>It gives you like a very quick project setup.
+
+00:26:08 <v Larry Ogrodnek>Sorry, I'm just going to go.
+
+00:26:09 <v Michael Kennedy>Yeah, for people who don't know, <v Michael Kennedy>like Cookie Cutter is a way to take
+
+00:26:12 <v Michael Kennedy>a pre-structured set of source files <v Michael Kennedy>of all varieties, even images and other things,
+
+00:26:18 <v Michael Kennedy>and say, I'm going to ask you a few questions, <v Michael Kennedy>I'm going to do a little text replace,
+
+00:26:21 <v Michael Kennedy>and then I'm going to generate that structure for you.
+
+00:26:23 <v Michael Kennedy>So a very nice way to kind of go like, <v Michael Kennedy>all right, we got everything set up
+
+00:26:27 <v Michael Kennedy>for you to get started, right?
+
+00:26:29 <v Larry Ogrodnek>Right, exactly.
+
+00:26:29 <v Larry Ogrodnek>Because I really wanted to get, you know, <v Larry Ogrodnek>And part of the thought with PyView
+
+00:26:33 <v Larry Ogrodnek>is I really do want it to be super easy to get started,
+
+00:26:37 <v Larry Ogrodnek>not just for other people, but also for myself.
+
+00:26:39 <v Larry Ogrodnek>Like, if I have a new idea of something, <v Larry Ogrodnek>it's like I want to go from zero to one super quickly.
+
+00:26:43 <v Larry Ogrodnek>And that's kind of been part of the motivation.
+
+00:26:45 <v Larry Ogrodnek>And so this cookie cutter is a great way to--
+
+00:26:46 <v Larry Ogrodnek>so you check out the cookie cutter, <v Larry Ogrodnek>and then you basically have a working example right away
+
+00:26:50 <v Larry Ogrodnek>with just the simple counter.
+
+00:26:51 <v Larry Ogrodnek>And so this example uses poetry for dependency management.
+
+00:26:56 <v Larry Ogrodnek>So if you do poetry install, and then--
+
+00:26:59 <v Larry Ogrodnek>It also includes Just, which is a command line runner.
+
+00:27:02 <v Larry Ogrodnek>So Just, it's kind of like--
+
+00:27:03 <v Larry Ogrodnek>I don't know if you've talked about this before, <v Larry Ogrodnek>but if anyone's ever used Makefiles or things
+
+00:27:07 <v Larry Ogrodnek>like that for doing common project tasks, <v Larry Ogrodnek>Just is a tool like that, but specifically written
+
+00:27:14 <v Larry Ogrodnek>for these types of things.
+
+00:27:15 <v Larry Ogrodnek>And so if you use Makefiles, you know <v Larry Ogrodnek>there's a lot of tricks you have to do
+
+00:27:18 <v Larry Ogrodnek>to kind of get it to work in the way you want <v Larry Ogrodnek>versus as a build tool.
+
+00:27:22 <v Larry Ogrodnek>And so Just kind of works the right way a lot easier, <v Larry Ogrodnek>and it's something that kind of--
+
+00:27:27 <v Larry Ogrodnek>Yeah, exactly.
+
+00:27:28 <v Larry Ogrodnek>I'm using more and more.
+
+00:27:29 <v Larry Ogrodnek>So if you check out the-- if you run the cookie cutter,
+
+00:27:32 <v Larry Ogrodnek>run poetry install, and then run just, <v Larry Ogrodnek>it'll tell you to open localhost to 8,000 in your browser.
+
+00:27:39 <v Larry Ogrodnek>And you'll have a counter example up and running already.
+
+00:27:42 <v Larry Ogrodnek>And the kind of interesting thing, <v Larry Ogrodnek>if you want to play along with this more--
+
+00:27:46 <v Larry Ogrodnek>and I do have this in the docs in terms of what's going on here.
+
+00:27:48 <v Larry Ogrodnek>But it's a really good example to kind of open up <v Larry Ogrodnek>in Firefox or Chrome, and then open the developer tools
+
+00:27:57 <v Larry Ogrodnek>and the network tab.
+
+00:27:58 <v Larry Ogrodnek>And when you load the page, what you'll see is--
+
+00:28:02 <v Larry Ogrodnek>and this is kind of the Live View model, right?
+
+00:28:05 <v Larry Ogrodnek>There's an initial page load, which is like the server--
+
+00:28:08 <v Larry Ogrodnek>so it goes to your view, and it runs your templating logic.
+
+00:28:13 <v Larry Ogrodnek>And it returns that as just straight HTML, <v Larry Ogrodnek>like a normal web page.
+
+00:28:16 <v Larry Ogrodnek>So if you had turned off JavaScript, <v Larry Ogrodnek>you'd still get the page back.
+
+00:28:20 <v Larry Ogrodnek>But if you have JavaScript on, which is obviously intention,
+
+00:28:22 <v Larry Ogrodnek>then what happens is included in that initial page load
+
+00:28:24 <v Larry Ogrodnek>is some JavaScript that comes back.
+
+00:28:26 <v Larry Ogrodnek>- Oh, obviously you have it open, Michael.
+
+00:28:27 <v Larry Ogrodnek>Yeah, so if you, if you, yeah, exactly.
+
+00:28:29 <v Larry Ogrodnek>So the HTML is right there.
+
+00:28:31 <v Larry Ogrodnek>So that's like the full HTML of the page.
+
+00:28:32 <v Larry Ogrodnek>So yeah, if you had turned off JavaScript, <v Larry Ogrodnek>that part would still work.
+
+00:28:35 <v Larry Ogrodnek>But then if you click on the, <v Larry Ogrodnek>do you see in there a WebSocket connection in your--
+
+00:28:39 <v Michael Kennedy>- Oh yeah, somewhere, socket, yep.
+
+00:28:42 <v Larry Ogrodnek>- So if you click on that, <v Larry Ogrodnek>you can see the messages back and forth.
+
+00:28:44 <v Larry Ogrodnek>So when you click on the messages tab there, yeah.
+
+00:28:47 <v Larry Ogrodnek>And so you can see--
+
+00:28:49 <v Michael Kennedy>- Interesting.
+
+00:28:49 <v Larry Ogrodnek>- Right.
+
+00:28:50 <v Michael Kennedy>- Yeah, so there's a whole set of examples, <v Michael Kennedy>or live interactive examples,
+
+00:28:56 <v Michael Kennedy>people can just go to pyv.rocks and click live examples and do this to see it right yeah yeah
+
+00:29:02 <v Larry Ogrodnek>okay this is super cool yeah that message you have right there it says diff zero one so like zero is
+
+00:29:07 <v Larry Ogrodnek>like the kind of slot in the template and so it says now that should be one so you click you know
+
+00:29:11 <v Larry Ogrodnek>plus again then the new message will be diff you know whatever and you can see this message says
+
+00:29:14 <v Larry Ogrodnek>event increment so this is what goes to your back end is you're getting a click event for increment
+
+00:29:19 <v Michael Kennedy>and you're sending back a response um and so yeah it's so does it like uh instrument your html with
+
+00:29:26 <v Michael Kennedy>of identifiers or something like that to then be able to do this?
+
+00:29:29 <v Larry Ogrodnek>Yeah, and so that was one of the things that I've been so unhappy with for a while
+
+00:29:34 <v Larry Ogrodnek>with PyView is because when I first started doing this, I was like, okay, I want a nice
+
+00:29:39 <v Larry Ogrodnek>HTML templating language, right? Or maybe even it'd be better if it was pluggable,
+
+00:29:44 <v Larry Ogrodnek>if you could use whatever templating language you want. But the problem is, most Python templating
+
+00:29:49 <v Larry Ogrodnek>languages, the input is your template and some data, and the output is a string.
+
+00:29:55 <v Larry Ogrodnek>And for this, what we're trying to produce is like a render tree.
+
+00:30:00 <v Larry Ogrodnek>And so really the mental model is a lot more like t-strings, if people are familiar with t-strings, where you have like a template, right?
+
+00:30:08 <v Larry Ogrodnek>Your HTML template, and it's separated into static parts, like strings, and dynamic parts, like things to be evaluated.
+
+00:30:15 <v Larry Ogrodnek>And that's kind of the live view model.
+
+00:30:17 <v Larry Ogrodnek>And the pie view model is like, basically, we take a template and we convert it into a list of statics and dynamics.
+
+00:30:22 <v Larry Ogrodnek>And each dynamic, like each evaluation spot itself <v Larry Ogrodnek>has static parts and dynamic parts.
+
+00:30:30 <v Larry Ogrodnek>And so we have to take an HTML template <v Larry Ogrodnek>and turn it into this render tree.
+
+00:30:34 <v Larry Ogrodnek>And so again, this is like a huge pain point <v Larry Ogrodnek>because I couldn't find a templating language that would
+
+00:30:41 <v Larry Ogrodnek>let me kind of get that level of control.
+
+00:30:42 <v Larry Ogrodnek>And maybe there is one, and I'm not familiar with it.
+
+00:30:44 <v Larry Ogrodnek>Or maybe there is a way to get to these internals.
+
+00:30:46 <v Larry Ogrodnek>I'm not familiar with it.
+
+00:30:47 <v Larry Ogrodnek>But what I am doing was there is this library called IBIS,
+
+00:30:52 <v Larry Ogrodnek>which someone had wrote an open source as a tutorial <v Larry Ogrodnek>on how to write your own templating language.
+
+00:30:57 <v Larry Ogrodnek>And so it's very similar to Jinja 2, but a lot simpler.
+
+00:31:01 <v Larry Ogrodnek>And so that was the initial templating language for PyView
+
+00:31:04 <v Larry Ogrodnek>because I could hack it just enough to get both HTML <v Larry Ogrodnek>and also this more template-like view that I need.
+
+00:31:15 <v Larry Ogrodnek>This is one of the things that I'm <v Larry Ogrodnek>very excited about with now that we have t-strings in 3.14
+
+00:31:21 <v Larry Ogrodnek>is that I think that model just maps so directly to this.
+
+00:31:24 <v Larry Ogrodnek>And I'm hopeful that we'll have a lot of different rendering
+
+00:31:27 <v Larry Ogrodnek>libraries or templating language for HTML.
+
+00:31:29 <v Larry Ogrodnek>Like I know there's already a good one, <v Larry Ogrodnek>or it's a work in progress called T-DOM
+
+00:31:34 <v Larry Ogrodnek>that people are working on to make t-strings more HTML--
+
+00:31:38 <v Larry Ogrodnek>not friendly, not that they're not already, <v Larry Ogrodnek>but there are certain things you want.
+
+00:31:42 <v Larry Ogrodnek>Like obviously, you want to be able to just <v Larry Ogrodnek>automatically scaping of user input so it's not malicious.
+
+00:31:47 <v Larry Ogrodnek>Maybe even merging things in HTML attributes.
+
+00:31:50 <v Larry Ogrodnek>Like there's nicer things you can kind of do when you're thinking about the HTML use case, right?
+
+00:31:55 <v Larry Ogrodnek>But I like having like a template as like the core building block, because if you can get to a template, that's super easy to turn into like the structure we need for a live view.
+
+00:32:03 <v Larry Ogrodnek>And I imagine there'll be multiple ways to do that in the future, you know?
+
+00:32:06 <v Michael Kennedy>Yeah, very interesting.
+
+00:32:08 <v Michael Kennedy>It sounds a little bit like almost a concrete syntax tree of the DOM that you've got to like, okay, we've got to understand all the pieces and what parts get pushed down.
+
+00:32:18 <v Michael Kennedy>Like from here down is the chunk we got to send down because this part changed.
+
+00:32:23 <v Larry Ogrodnek>Exactly, exactly.
+
+00:32:24 <v Larry Ogrodnek>And yeah, like you said, it is a little bit like that.
+
+00:32:26 <v Larry Ogrodnek>I mean, because there's, you know, it's not even as simple as like this,
+
+00:32:29 <v Larry Ogrodnek>because there is like some special handling for things like components, you know,
+
+00:32:35 <v Larry Ogrodnek>are sort of managed slightly differently.
+
+00:32:38 <v Larry Ogrodnek>And then even kind of that, like if you had, this is like not a great example,
+
+00:32:41 <v Larry Ogrodnek>but if you had multiple counters on your page, maybe you'd want to optimize like,
+
+00:32:44 <v Larry Ogrodnek>well, they really just need one set of static content for all the counters.
+
+00:32:48 <v Larry Ogrodnek>even though we kind of want to manage them separately.
+
+00:32:50 <v Larry Ogrodnek>And so there's different optimizations like that that are done.
+
+00:32:53 <v Larry Ogrodnek>But yeah, it is.
+
+00:32:54 <v Larry Ogrodnek>Everything comes from this kind of render tree <v Larry Ogrodnek>is how we can do those diffs.
+
+00:32:58 <v Michael Kennedy>Okay.
+
+00:32:59 <v Michael Kennedy>Let's talk through these examples a tad more.
+
+00:33:01 <v Michael Kennedy>And we don't necessarily need this going.
+
+00:33:03 <v Michael Kennedy>But, you know, back to the Alessio pointed out, <v Michael Kennedy>the HTMX example.
+
+00:33:07 <v Michael Kennedy>If you go to the HTMX website, <v Michael Kennedy>there's a bunch of cool live examples there as well.
+
+00:33:11 <v Michael Kennedy>And literally in the page, <v Michael Kennedy>Carson has put it such that you see these exchanges
+
+00:33:16 <v Michael Kennedy>as you interact with it.
+
+00:33:17 <v Michael Kennedy>You know what I mean?
+
+00:33:17 <v Michael Kennedy>That's how significant that is.
+
+00:33:20 <v Michael Kennedy>So maybe let's pick out just a couple of the examples here
+
+00:33:24 <v Michael Kennedy>that we could talk through that you think are worth pointing out.
+
+00:33:27 <v Michael Kennedy>Some of the capabilities are inspiring, but not insane.
+
+00:33:31 <v Michael Kennedy>I don't know.
+
+00:33:31 <v Larry Ogrodnek>JOHN MCWHORTER: Sure.
+
+00:33:32 <v Larry Ogrodnek>I mean, a really quick one is this volume control, <v Larry Ogrodnek>like the third one up at the top, which
+
+00:33:36 <v Larry Ogrodnek>it's not a super interesting example.
+
+00:33:39 <v Larry Ogrodnek>But just the thing about it is that it has keyboard control.
+
+00:33:43 <v Larry Ogrodnek>So you can see it's super easy to just do keyboard bindings.
+
+00:33:47 <v Larry Ogrodnek>And this is one of those things where like--
+
+00:33:48 <v Larry Ogrodnek>- Just arrow keys.
+
+00:33:49 <v Larry Ogrodnek>- Yeah, I mean, which seems like a small thing.
+
+00:33:51 <v Larry Ogrodnek>- I'm not using the mouse, right?
+
+00:33:52 <v Larry Ogrodnek>There it goes.
+
+00:33:53 <v Larry Ogrodnek>- Seems like a small thing, <v Larry Ogrodnek>but it's one of those things when you start to dive into,
+
+00:33:56 <v Larry Ogrodnek>right, like, you know, even like, you know, <v Larry Ogrodnek>sometimes you might wonder like, you know,
+
+00:34:01 <v Larry Ogrodnek>why are there all these different HTML component libraries
+
+00:34:03 <v Larry Ogrodnek>that do things like a button?
+
+00:34:04 <v Larry Ogrodnek>It's just like, well, you know, <v Larry Ogrodnek>when you wanna think about things like accessibility
+
+00:34:08 <v Larry Ogrodnek>and different languages and blah, blah, blah, <v Larry Ogrodnek>like there's actually a lot that goes into it.
+
+00:34:11 <v Larry Ogrodnek>And so something like keyboard bindings <v Larry Ogrodnek>is something I honestly would never take the time
+
+00:34:16 <v Larry Ogrodnek>to add to all that before because it seems like such an undertaking,
+
+00:34:19 <v Larry Ogrodnek>even though you could say, oh, it's simple.
+
+00:34:20 <v Larry Ogrodnek>You just add event handlers to all your things and blah, blah, blah.
+
+00:34:23 <v Larry Ogrodnek>But yeah, it was just slightly out of adding to an example project.
+
+00:34:27 <v Larry Ogrodnek>But now it's because it's built into the framework.
+
+00:34:29 <v Larry Ogrodnek>It's super easy, and it gets treated the same as any other event.
+
+00:34:33 <v Larry Ogrodnek>So pressing a key up or key down, send it to the event,
+
+00:34:35 <v Larry Ogrodnek>just clicking the button.
+
+00:34:37 <v Larry Ogrodnek>And so it's one of those things.
+
+00:34:39 <v Larry Ogrodnek>It's a simple example, but it's--
+
+00:34:41 <v Larry Ogrodnek>JOSHUA SHARFSTEIN: Yeah, so let me describe it for listeners.
+
+00:34:43 <v Michael Kennedy>So you've got this progress bar looking thing.
+
+00:34:46 <v Michael Kennedy>That's the volume control, like, you know, your standard macOS looking thing.
+
+00:34:49 <v Michael Kennedy>And it's got a mute button, a max volume, an up and down button.
+
+00:34:52 <v Michael Kennedy>And these are like buttons that, you know, you might be used to, but also you can just,
+
+00:34:57 <v Michael Kennedy>you know, use the arrow keys and it's just as if you're clicking the button and it all
+
+00:35:01 <v Michael Kennedy>updates even with like probably one of those CSS transitions to make it feel a little animated
+
+00:35:06 <v Michael Kennedy>instead of jumping.
+
+00:35:07 <v Michael Kennedy>Yeah.
+
+00:35:07 <v Michael Kennedy>Looks really nice.
+
+00:35:08 <v Michael Kennedy>So what about the source?
+
+00:35:12 <v Michael Kennedy>I think there's a couple interesting things here.
+
+00:35:14 <v Michael Kennedy>First of all, the volume.html, this looks Tailwind.
+
+00:35:18 <v Michael Kennedy>Is that right?
+
+00:35:19 <v Larry Ogrodnek>Yeah, this is using Tailwind.
+
+00:35:21 <v Larry Ogrodnek>Yeah.
+
+00:35:21 <v Larry Ogrodnek>Okay.
+
+00:35:21 <v Larry Ogrodnek>Yeah.
+
+00:35:23 <v Larry Ogrodnek>It's interesting.
+
+00:35:24 <v Larry Ogrodnek>I feel like it's one of those things where my first pass of this example's website used
+
+00:35:28 <v Larry Ogrodnek>almost no HTML CSS and was like super ugly.
+
+00:35:30 <v Larry Ogrodnek>But I kind of wanted the focus to be on like what is the, like what is like the really,
+
+00:35:35 <v Larry Ogrodnek>what are you really writing versus like what is, you know.
+
+00:35:38 <v Larry Ogrodnek>But I kind of gave in and used Talens because it looks a lot nicer.
+
+00:35:42 <v Larry Ogrodnek>It looks more professional, something people would want to pick up, right?
+
+00:35:45 <v Michael Kennedy>Yeah, I think this gets lost sometimes in different projects because, you know, I look at a lot of people send me projects all the time.
+
+00:35:52 <v Michael Kennedy>And like, hey, do you think this is what we're talking about in various venues or whatever?
+
+00:35:57 <v Michael Kennedy>Having something that looks like, oh, I wish my app looked like that or it did like that is highly inspiring.
+
+00:36:04 <v Michael Kennedy>It's not, you know, if you had like, hey, look, we have all of our live demos and they're exactly like 1993 web view, like appearance, but see how easy the program is.
+
+00:36:17 <v Michael Kennedy>I know if you look at this, the source, it's full of, you know, like P8 for padding eight and, you know, such and such.
+
+00:36:25 <v Michael Kennedy>It's worth it.
+
+00:36:25 <v Michael Kennedy>Right.
+
+00:36:26 <v Michael Kennedy>It's so worth it.
+
+00:36:27 <v Michael Kennedy>And the HTML is just pure HTML, except for you have these sort of attribute-driven things, right?
+
+00:36:35 <v Michael Kennedy>Right, exactly.
+
+00:36:36 <v Michael Kennedy>Can we talk about how is the HTML different then?
+
+00:36:39 <v Larry Ogrodnek>That's exactly it, yeah.
+
+00:36:40 <v Larry Ogrodnek>So for this example, the difference is, right, for a button, we have this phx click attribute,
+
+00:36:49 <v Larry Ogrodnek>which is what tells, you know, wires up with Phoenix Live View that when someone clicks on this,
+
+00:36:53 <v Larry Ogrodnek>we should send this event call.
+
+00:36:54 <v Larry Ogrodnek>So the first one says phx click equals down.
+
+00:36:57 <v Larry Ogrodnek>And so when someone clicks on that button, we send an event to the server that just says,
+
+00:37:00 <v Larry Ogrodnek>like, you know, click down.
+
+00:37:02 <v Larry Ogrodnek>And there's also this PHS, PHX window key down and PHX key.
+
+00:37:07 <v Larry Ogrodnek>So, you know, basically we're sending like a key update, you know, for this arrow down
+
+00:37:12 <v Larry Ogrodnek>is like one of the keys.
+
+00:37:14 <v Larry Ogrodnek>And so these parts are not something that I, again, this is like just the straight Phoenix,
+
+00:37:19 <v Larry Ogrodnek>like if you're an Elixir app, it would work exactly the same way.
+
+00:37:21 <v Larry Ogrodnek>You could take this HTML and run it on Elixir app.
+
+00:37:24 <v Larry Ogrodnek>And if you had the Elixir backend, it would work exactly the same way.
+
+00:37:28 <v Larry Ogrodnek>So that side looks exactly the same.
+
+00:37:30 <v Michael Kennedy>Yeah, I mean, what's the value in renaming that to PYW or something?
+
+00:37:34 <v Larry Ogrodnek>Yeah, I know.
+
+00:37:35 <v Larry Ogrodnek>And actually, I think you could.
+
+00:37:37 <v Larry Ogrodnek>I think they do have it configurable with the client JavaScript
+
+00:37:42 <v Larry Ogrodnek>where you can do a different specifier if you wanted to.
+
+00:37:44 <v Larry Ogrodnek>But it's kind of nice this way.
+
+00:37:46 <v Larry Ogrodnek>I mean, I think the other thing is, too, in the age of LLMs,
+
+00:37:49 <v Larry Ogrodnek>and just even examples, at this point, <v Larry Ogrodnek>there's a ton more Phoenix Live View code than there is
+
+00:37:54 <v Larry Ogrodnek>And so if you find a good LiveView example, <v Larry Ogrodnek>it's like you can get it to work in PyView hopefully.
+
+00:37:59 <v Larry Ogrodnek>- Yeah, that's interesting.
+
+00:37:59 <v Michael Kennedy>So in a sense, the front end stuff is API compatible <v Michael Kennedy>with both backends maybe.
+
+00:38:06 <v Michael Kennedy>Is that it?
+
+00:38:07 <v Larry Ogrodnek>- Yeah, sort of.
+
+00:38:08 <v Larry Ogrodnek>I mean, like, yeah, and like conceptually, <v Larry Ogrodnek>I mean, I think that the thing is the Phoenix LiveView
+
+00:38:15 <v Larry Ogrodnek>has a different templating language.
+
+00:38:18 <v Larry Ogrodnek>So things like loops or conditionals <v Larry Ogrodnek>look totally different, right?
+
+00:38:23 <v Larry Ogrodnek>So you might be able to pull up an example and go, <v Larry Ogrodnek>I see how I'll do it here, but it's not identical.
+
+00:38:27 <v Larry Ogrodnek>Right, exactly.
+
+00:38:28 <v Larry Ogrodnek>Or if you see something in an example where it's just like,
+
+00:38:29 <v Larry Ogrodnek>I'm trying to do a form, but my PHX update isn't firing,
+
+00:38:33 <v Larry Ogrodnek>it's like it's probably the same solution in both places.
+
+00:38:36 <v Michael Kennedy>Got it.
+
+00:38:37 <v Michael Kennedy>Got it.
+
+00:38:38 <v Michael Kennedy>So then you've got the HTML side, which is pretty interesting.
+
+00:38:43 <v Michael Kennedy>Tell us about how this-- what do we write over here on--
+
+00:38:47 <v Michael Kennedy>Yeah, so--
+
+00:38:48 <v Michael Kennedy>The data exchange looks like-- sorry.
+
+00:38:50 <v Michael Kennedy>The data exchange looks like you're exchanging data classes,
+
+00:38:52 <v Michael Kennedy>like the DTO sort of API aspect?
+
+00:38:55 <v Larry Ogrodnek>Yeah, exactly.
+
+00:38:56 <v Larry Ogrodnek>So, well, you can, yeah, so each live view, like page,
+
+00:39:01 <v Larry Ogrodnek>is basically like you would type it to a specific, <v Larry Ogrodnek>you know, I call it a context,
+
+00:39:06 <v Larry Ogrodnek>like which is like what, <v Larry Ogrodnek>basically what's going into your template.
+
+00:39:08 <v Larry Ogrodnek>And so you can do, I mean, it doesn't have to be, <v Larry Ogrodnek>I like using data classes.
+
+00:39:12 <v Larry Ogrodnek>It can be a data class, it can be a type dict, <v Larry Ogrodnek>it could be a Pydantic class,
+
+00:39:17 <v Larry Ogrodnek>it could probably just be a regular dict.
+
+00:39:19 <v Larry Ogrodnek>I don't know that I've ever tried that, <v Larry Ogrodnek>but I think that should work.
+
+00:39:21 <v Larry Ogrodnek>But it's just really just for the typing.
+
+00:39:25 <v Larry Ogrodnek>And it's what we'll get past here in template.
+
+00:39:27 <v Larry Ogrodnek>And then so maybe it's worth talking through.
+
+00:39:29 <v Larry Ogrodnek>Like there are these sort of different lifecycle components.
+
+00:39:32 <v Larry Ogrodnek>And so with your view, the first thing that gets called
+
+00:39:37 <v Larry Ogrodnek>is there's this mount command.
+
+00:39:39 <v Larry Ogrodnek>And that gets called any time--
+
+00:39:41 <v Larry Ogrodnek>I mean, when your view gets instantiated.
+
+00:39:43 <v Larry Ogrodnek>So when someone visits the page, we're <v Larry Ogrodnek>going to create an instance of your class, your LiveView class.
+
+00:39:48 <v Larry Ogrodnek>And mount will get called with the socket, <v Larry Ogrodnek>which is probably going to be more detailed than that,
+
+00:39:53 <v Larry Ogrodnek>but that's kind of like your interface to the communication.
+
+00:39:56 <v Larry Ogrodnek>It's not the web socket necessarily.
+
+00:39:58 <v Larry Ogrodnek>It's more like how you interoperate with the system.
+
+00:40:03 <v Larry Ogrodnek>And then also the session.
+
+00:40:04 <v Larry Ogrodnek>So if you want to copy stuff over from the HTTP session,
+
+00:40:07 <v Larry Ogrodnek>like user information or whatever, <v Larry Ogrodnek>you can copy that over in the mount to your data.
+
+00:40:12 <v Larry Ogrodnek>Then after that-- and it actually gets called--
+
+00:40:15 <v Larry Ogrodnek>well, I'll talk about that later.
+
+00:40:17 <v Larry Ogrodnek>But then after that, there's an optional--
+
+00:40:19 <v Larry Ogrodnek>it's not shown in this example, but there's <v Larry Ogrodnek>optional like handle params change, which gets called with path parameters or URL parameters.
+
+00:40:27 <v Larry Ogrodnek>And the reason that's separate is because your class might get just instantiated once
+
+00:40:31 <v Larry Ogrodnek>on when the page is viewed, but you might have like programmatic navigation that's not real
+
+00:40:36 <v Larry Ogrodnek>navigation. It's like JavaScript navigation where maybe for things like filter options or
+
+00:40:42 <v Larry Ogrodnek>pagination options, you want to put those in the URL so that it's kind of bookmarkable and shareable.
+
+00:40:47 <v Larry Ogrodnek>you don't want to do a full page reload and so anytime those get changed including on the initial
+
+00:40:51 <v Larry Ogrodnek>page load we'll call a handle prams method and you don't have to implement that if you don't care
+
+00:40:55 <v Michael Kennedy>about it um so that gets called in this case a volume is the volume it doesn't matter where
+
+00:40:59 <v Larry Ogrodnek>the volume exactly yeah but you might want to like be able to bookmark like this is a good volume or
+
+00:41:04 <v Larry Ogrodnek>whatever and i think the counting example does does have that just to kind of show how it would work
+
+00:41:08 <v Michael Kennedy>um i see so in that sense you get a bit of a deep linking into it exactly that's cool yeah okay yeah
+
+00:41:14 <v Larry Ogrodnek>Yeah, and again, it takes advantage of this kind of like JavaScript navigation that you can initiate from the front end or from the back end.
+
+00:41:21 <v Larry Ogrodnek>Like on the front end, you can initiate like a navigation transition that will like basically tell the back end, hey, change your prams to this.
+
+00:41:28 <v Larry Ogrodnek>And the browser takes care of like reading the prams and changing the, or the back end takes care of reading the prams and changing the state.
+
+00:41:34 <v Larry Ogrodnek>Or on the back end, you can also tell the front end like, oh, hey, because you did this, I want you to change the URL to be blah, blah, blah.
+
+00:41:41 <v Larry Ogrodnek>And here's what the new URL should be.
+
+00:41:43 <v Larry Ogrodnek>So you can do it both ways.
+
+00:41:44 <v Larry Ogrodnek>And then the render method gets called.
+
+00:41:47 <v Larry Ogrodnek>And it's not shown here because the base class, basically,
+
+00:41:50 <v Larry Ogrodnek>for the render method, it looks for a template <v Larry Ogrodnek>file called whatever.
+
+00:41:57 <v Larry Ogrodnek>This is volume.py.
+
+00:41:58 <v Larry Ogrodnek>So it looks for volume.html.
+
+00:42:00 <v Larry Ogrodnek>And it uses that as your template.
+
+00:42:01 <v Larry Ogrodnek>It also will look to see if there's a volume.css.
+
+00:42:04 <v Larry Ogrodnek>And it will just inject that in as the CSS for this.
+
+00:42:08 <v Larry Ogrodnek>It exists.
+
+00:42:09 <v Larry Ogrodnek>But if you wanted to override render, you can.
+
+00:42:11 <v Larry Ogrodnek>And that's how the T-Street rendering works, <v Larry Ogrodnek>is you basically do provide a render method
+
+00:42:15 <v Larry Ogrodnek>that returns a T string.
+
+00:42:17 <v Larry Ogrodnek>So after all that is done--
+
+00:42:19 <v Larry Ogrodnek>so that actually happens twice.
+
+00:42:20 <v Larry Ogrodnek>It happens once for the HTML render, <v Larry Ogrodnek>and then it happens again for the LiveView render.
+
+00:42:25 <v Larry Ogrodnek>And those are handled separately, <v Larry Ogrodnek>partially because that's how Phoenix LiveView does it,
+
+00:42:29 <v Larry Ogrodnek>but also because some things are different.
+
+00:42:31 <v Larry Ogrodnek>For the initial HTML render, some things are not available.
+
+00:42:34 <v Larry Ogrodnek>You can't do Pub/Sub stuff to subscribe to channels.
+
+00:42:37 <v Larry Ogrodnek>You can't do scheduling stuff.
+
+00:42:40 <v Larry Ogrodnek>It's a little bit more limited to what you can do.
+
+00:42:43 <v Larry Ogrodnek>But anyway, that's a separate step.
+
+00:42:44 <v Larry Ogrodnek>And then after render, if an event comes in, <v Larry Ogrodnek>this handle event gets called.
+
+00:42:48 <v Larry Ogrodnek>And what you're showing here for the volume control <v Larry Ogrodnek>is kind of like my V1 of the event method that basically just
+
+00:42:54 <v Larry Ogrodnek>takes an event.
+
+00:42:55 <v Larry Ogrodnek>So there's one method called handle event <v Larry Ogrodnek>that takes the event and a payload, which
+
+00:42:58 <v Larry Ogrodnek>is like a dict of the options.
+
+00:43:01 <v Larry Ogrodnek>Then you have the socket.
+
+00:43:01 <v Larry Ogrodnek>And so you can see here, it's just a bunch of if else.
+
+00:43:04 <v Larry Ogrodnek>It's like if the event is key update, <v Larry Ogrodnek>then just take the key as the event name.
+
+00:43:08 <v Larry Ogrodnek>If it's on or off, change the--
+
+00:43:11 <v Larry Ogrodnek>If it's off or they hit the left arrow, then set the volume to 0.
+
+00:43:15 <v Larry Ogrodnek>If it's on or they hit the right arrow, set the volume to 100.
+
+00:43:19 <v Larry Ogrodnek>And then there's some stuff that just bound the volume at the end.
+
+00:43:22 <v Larry Ogrodnek>And so that's all you do is you basically--
+
+00:43:24 <v Larry Ogrodnek>this handle event method gets called.
+
+00:43:27 <v Larry Ogrodnek>You're updating your state.
+
+00:43:28 <v Larry Ogrodnek>And then after this gets called, automatically, <v Larry Ogrodnek>your render method gets called again.
+
+00:43:33 <v Larry Ogrodnek>And basically, you're just re-rendering with the new state.
+
+00:43:36 <v Larry Ogrodnek>And then again, on the back end, we're figuring out, <v Larry Ogrodnek>Like, okay, last time you rendered this tree,
+
+00:43:41 <v Larry Ogrodnek>now you're rendering this tree.
+
+00:43:43 <v Larry Ogrodnek>What changed?
+
+00:43:43 <v Larry Ogrodnek>I'm just going to send what changed.
+
+00:43:45 <v Michael Kennedy>It looks very, I don't know, view or data binding like in here.
+
+00:43:52 <v Michael Kennedy>So when things start up, you say the context of this thing is an instance of the volume class.
+
+00:43:59 <v Michael Kennedy>And then all you write in your code is like socket.context.volume equals the various,
+
+00:44:05 <v Michael Kennedy>you know, plus equals 10, minus equals 10.
+
+00:44:08 <v Michael Kennedy>Exactly.
+
+00:44:09 <v Michael Kennedy>And somehow, iView says, okay, I've wrapped this thing in some kind of responsive or something that detects the changes, right, somehow?
+
+00:44:19 <v Larry Ogrodnek>Right. Well, yeah, actually, yeah, I mean, we're not even that smart right now.
+
+00:44:21 <v Larry Ogrodnek>I mean, we could be, and I think FinisLiveView is a little smarter about it, where they do wrap and kind of see if they, but like for this, basically, we just always render.
+
+00:44:30 <v Michael Kennedy>I see. So you re-render the page and just go, what is actually different about, oh, I see, when I re-rendered with new data, then the volume value changes.
+
+00:44:38 <v Michael Kennedy>Exactly.
+
+00:44:39 <v Larry Ogrodnek>But it is really nice because like you're saying, <v Larry Ogrodnek>it's like you don't really--
+
+00:44:42 <v Larry Ogrodnek>like your application logic becomes really simple <v Larry Ogrodnek>because it's really just, yeah, I update my state.
+
+00:44:49 <v Larry Ogrodnek>And then I know how to render my state object.
+
+00:44:51 <v Larry Ogrodnek>And I don't really care about whatever.
+
+00:44:54 <v Larry Ogrodnek>And even this handle event method, it's not really--
+
+00:44:57 <v Larry Ogrodnek>I mean, I don't know.
+
+00:44:59 <v Larry Ogrodnek>It feels like it'd be a little bit of a stretch <v Larry Ogrodnek>to call it stateless because you're mutating state.
+
+00:45:02 <v Larry Ogrodnek>But at the same time, you don't really <v Larry Ogrodnek>care where this state object came from.
+
+00:45:06 <v Larry Ogrodnek>It's like, given this event, how would I <v Michael Kennedy>this state. Yeah, and it's got a very strong view.js feel like I just changed the properties of the
+
+00:45:14 <v Michael Kennedy>thing and something makes it happen that it goes back to everywhere this value is used. It changes.
+
+00:45:20 <v Larry Ogrodnek>Exactly. And that's really how it works. I mean, that's the kind of cool thing, you know, where
+
+00:45:23 <v Larry Ogrodnek>we're talking about HTMX, where, you know, you have to be really intentional about like, OK,
+
+00:45:27 <v Larry Ogrodnek>like how do I want to segment, you know, what I'm changing? And, you know, when I do this, I know I
+
+00:45:31 <v Larry Ogrodnek>want to change this part of the render, this part of the render. And with this, you don't really have
+
+00:45:34 <v Larry Ogrodnek>to think about it, right? Like you just change what you want to change. And the part of the template
+
+00:45:37 <v Larry Ogrodnek>that needs to change will naturally change <v Larry Ogrodnek>because we're treating it as this diff operation.
+
+00:45:43 <v Michael Kennedy>Yeah, yeah, cool.
+
+00:45:44 <v Michael Kennedy>Let's do one more example, something that kind of shows
+
+00:45:47 <v Michael Kennedy>off what's possible.
+
+00:45:48 <v Larry Ogrodnek>OK, well, gosh, there's two things I'd want to show.
+
+00:45:53 <v Larry Ogrodnek>But we could do the maps thing, which <v Larry Ogrodnek>is just a way how to integrate with JavaScript,
+
+00:45:59 <v Larry Ogrodnek>and then also maybe one of the newer things, <v Larry Ogrodnek>or maybe the T Street version of the counter, just to--
+
+00:46:05 <v Larry Ogrodnek>yeah, so we'd look at the maps one.
+
+00:46:07 <v Larry Ogrodnek>And so this is very simple, but this is a thing that--
+
+00:46:11 <v Larry Ogrodnek>I think the thing with like frameworks with PyView <v Larry Ogrodnek>and other frameworks is I think maybe people try to bucket
+
+00:46:17 <v Larry Ogrodnek>into like, oh, you hate JavaScript or whatever.
+
+00:46:19 <v Larry Ogrodnek>And like, no, I don't hate JavaScript.
+
+00:46:21 <v Larry Ogrodnek>JavaScript's great at doing JavaScript things.
+
+00:46:23 <v Larry Ogrodnek>And you do need to integrate with JavaScript a lot of the times.
+
+00:46:27 <v Larry Ogrodnek>And there's a lot of really great, rich, interactive JavaScript
+
+00:46:29 <v Larry Ogrodnek>things that wouldn't really make sense to do in the server.
+
+00:46:32 <v Larry Ogrodnek>So this is an example of a Maps thing using leaflet.js,
+
+00:46:36 <v Larry Ogrodnek>It's like a JavaScript library that uses OpenStreet map data.
+
+00:46:39 <v Larry Ogrodnek>We're doing a Google Maps kind of style maps <v Larry Ogrodnek>view with tiles and stuff like that.
+
+00:46:45 <v Larry Ogrodnek>And so this example just kind of shows the events.
+
+00:46:49 <v Larry Ogrodnek>Basically, there's this hooks system, <v Larry Ogrodnek>is what they call it on the Phoenix Live View side,
+
+00:46:53 <v Larry Ogrodnek>and call it the same thing.
+
+00:46:55 <v Larry Ogrodnek>But basically, it's a way to kind of--
+
+00:46:57 <v Larry Ogrodnek>we saw things like PHX key click blah, blah, blah, <v Larry Ogrodnek>is kind of built-in event system.
+
+00:47:04 <v Larry Ogrodnek>So running JavaScript hooks is a way <v Larry Ogrodnek>to kind of let you integrate custom JavaScript
+
+00:47:10 <v Larry Ogrodnek>and have access to that same event system.
+
+00:47:13 <v Larry Ogrodnek>So for this, there is a JavaScript component, <v Larry Ogrodnek>which is kind of like a wrapper over--
+
+00:47:17 <v Larry Ogrodnek>not really a wrapper, but a wrapper over some JavaScript
+
+00:47:19 <v Larry Ogrodnek>stuff that handles this.
+
+00:47:21 <v Larry Ogrodnek>And so we have events going two ways.
+
+00:47:23 <v Larry Ogrodnek>And so when you click on one of the things in the sidebar,
+
+00:47:28 <v Larry Ogrodnek>it sends something to the back end saying, <v Larry Ogrodnek>oh, update your state to say you have this national park
+
+00:47:32 <v Larry Ogrodnek>selected.
+
+00:47:33 <v Larry Ogrodnek>And then the back end also sends a--
+
+00:47:36 <v Larry Ogrodnek>I'm getting mixed up with this.
+
+00:47:38 <v Larry Ogrodnek>I think when you click on the marker, <v Larry Ogrodnek>that's where the JavaScript sends the event to the back end.
+
+00:47:41 <v Michael Kennedy>MARK MIRCHANDANI: Yeah, yeah.
+
+00:47:42 <v Michael Kennedy>Literally, this is cool.
+
+00:47:43 <v Michael Kennedy>If I click-- so let me describe it for people.
+
+00:47:46 <v Michael Kennedy>So we've got on one side a map of the United States, <v Michael Kennedy>and on the left a nice list of the different national parks,
+
+00:47:53 <v Michael Kennedy>the famous ones.
+
+00:47:55 <v Michael Kennedy>If I go entirely into this JavaScript thing <v Michael Kennedy>and I click on something in the map, one
+
+00:48:00 <v Michael Kennedy>of the points of interest, which is one of these parks,
+
+00:48:03 <v Michael Kennedy>It communicates back to PyView and is selecting it in the list, right?
+
+00:48:07 <v Michael Kennedy>The Python bit.
+
+00:48:08 <v Michael Kennedy>But then again, if I click in the Python bit, like Glacier National Park or one near me, the Olympic National Park, right?
+
+00:48:14 <v Michael Kennedy>Then it will then drive the JavaScript.
+
+00:48:17 <v Michael Kennedy>So this is the bi-directional thing you're talking about.
+
+00:48:19 <v Michael Kennedy>This is very cool.
+
+00:48:20 <v Larry Ogrodnek>Right, exactly.
+
+00:48:21 <v Larry Ogrodnek>Yeah.
+
+00:48:21 <v Larry Ogrodnek>So the JavaScript part has access to a similar component system where it's just like, oh, if I get this event, I think I call it highlight park.
+
+00:48:27 <v Larry Ogrodnek>Then I know that, oh, I need to turn this marker on.
+
+00:48:31 <v Larry Ogrodnek>And going the other way, the JavaScript <v Larry Ogrodnek>has its own handling, like, oh, when this happens,
+
+00:48:35 <v Larry Ogrodnek>then I should call this method on the LiveView.
+
+00:48:38 <v Larry Ogrodnek>And so your LiveView side, like your Python side, <v Larry Ogrodnek>stays the same where it's still doing event handling
+
+00:48:45 <v Larry Ogrodnek>and also sending events if needed to the front end.
+
+00:48:47 <v Larry Ogrodnek>But you can get access to--
+
+00:48:49 <v Larry Ogrodnek>so maps, drag and drop stuff is a big one, <v Larry Ogrodnek>even really rich editors.
+
+00:48:54 <v Larry Ogrodnek>I've done something with using CodeMirror, <v Larry Ogrodnek>which is a really nice IDE kind of editing experience
+
+00:49:02 <v Larry Ogrodnek>in the browser.
+
+00:49:03 <v Larry Ogrodnek>And so you can still--
+
+00:49:04 <v Larry Ogrodnek>I think the thing with PyView, right, is it's not--
+
+00:49:07 <v Larry Ogrodnek>I don't know, for me anyway, it's not <v Larry Ogrodnek>about technology-focused.
+
+00:49:10 <v Larry Ogrodnek>I only want to use Python.
+
+00:49:11 <v Larry Ogrodnek>It's like, I want to have great web experiences, <v Larry Ogrodnek>whatever that takes, but in a simple way
+
+00:49:16 <v Larry Ogrodnek>that I can understand and debug and test.
+
+00:49:19 <v Larry Ogrodnek>So yeah.
+
+00:49:20 <v Michael Kennedy>JOHN MUELLER: Yeah, this is a very impressive--
+
+00:49:22 <v Michael Kennedy>that's an app.
+
+00:49:23 <v Michael Kennedy>Yeah.
+
+00:49:24 <v Michael Kennedy>I mean, I look at it, it's like, wow, that would be kind of a big
+
+00:49:27 <v Michael Kennedy>project to build and my feeling is it wasn't that big of a deal with pi. No it's very yeah that's
+
+00:49:32 <v Larry Ogrodnek>kind of part of the fun thing with like making these little examples is like super fun and also
+
+00:49:35 <v Larry Ogrodnek>like pretty easy yeah so similar one there's like that combat and board one just to quickly talk
+
+00:49:39 <v Larry Ogrodnek>it just is a similar thing with drag and drop but the same kind of concept. I want to throw out maybe
+
+00:49:44 <v Michael Kennedy>like just thinking back to that map one real quick before we move on it feels like this would actually
+
+00:49:48 <v Michael Kennedy>be quite relevant for data scientists as well right like I don't think you build it as data science
+
+00:49:53 <v Michael Kennedy>But there's a lot of like, oh, we need to build a dashboard that updates based on whatever.
+
+00:49:59 <v Michael Kennedy>And we need these different visualizations.
+
+00:50:00 <v Michael Kennedy>And with the JavaScript integration, I feel like you probably could do some pretty cool stuff.
+
+00:50:04 <v Larry Ogrodnek>Yeah, no, for sure.
+
+00:50:05 <v Larry Ogrodnek>Yeah, for sure.
+
+00:50:06 <v Larry Ogrodnek>And I've done, and I think there are a lot of really great JavaScript, like graphing libraries.
+
+00:50:11 <v Larry Ogrodnek>Like one that I've used before is something that I learned about just from figuring out that it's what like Google Notebook, like Google Collab, you know, their like Jupyter Notebooks thing uses called Altair.
+
+00:50:20 <v Larry Ogrodnek>And that's something which is cool because there's basically a Python backend for generating the graph data, but then the front end is this JavaScript thing.
+
+00:50:27 <v Larry Ogrodnek>And so I don't think I should put an example of that, but I've used it at work where we just have a very simple graph hook that wraps the Altair library and the backend generates the graph in Python code.
+
+00:50:38 <v Larry Ogrodnek>And it's just super easy to display and things like that.
+
+00:50:41 <v Larry Ogrodnek>And to your point, Michael, one of the really cool things
+
+00:50:43 <v Larry Ogrodnek>with PyView is because everything is over WebSockets, <v Larry Ogrodnek>any server push stuff, like if data comes in or data changes,
+
+00:50:51 <v Larry Ogrodnek>it's really no work to get to tell the browser <v Larry Ogrodnek>to update to the new state.
+
+00:50:55 <v Larry Ogrodnek>It's super, super easy to do, which is cool.
+
+00:50:58 <v Larry Ogrodnek>MICHAEL WOLFF: That's awesome.
+
+00:50:59 <v Larry Ogrodnek>MICHAEL WOLFF: Yeah, so the one other thing <v Larry Ogrodnek>I wanted to touch on quickly is just
+
+00:51:02 <v Larry Ogrodnek>because I think the first example we looked at the volume
+
+00:51:04 <v Larry Ogrodnek>was using the older events.
+
+00:51:05 <v Larry Ogrodnek>So if you look at maybe the basic counter t-string version,
+
+00:51:08 <v Larry Ogrodnek>like the source for that, I mean, <v Larry Ogrodnek>It's the same kind of counter example.
+
+00:51:11 <v Larry Ogrodnek>But the source is like, I think there's <v Larry Ogrodnek>a count tstring5 probably to click on.
+
+00:51:16 <v Larry Ogrodnek>And then it's the third one in the list there.
+
+00:51:18 <v Larry Ogrodnek>But so this is just to talk a little bit about--
+
+00:51:22 <v Larry Ogrodnek>again, it's kind of a work in progress.
+
+00:51:23 <v Larry Ogrodnek>But the first version of the events <v Larry Ogrodnek>was kind of like, oh, there's a handle event method
+
+00:51:27 <v Larry Ogrodnek>that all events go to.
+
+00:51:28 <v Larry Ogrodnek>But that kind of gets to be a little bit of a drag.
+
+00:51:29 <v Larry Ogrodnek>And so we added this @EventDecorator.
+
+00:51:32 <v Larry Ogrodnek>And so you can kind of--
+
+00:51:34 <v Larry Ogrodnek>instead of having handle event, oh, was the method increment?
+
+00:51:36 <v Larry Ogrodnek>Was it decrement?
+
+00:51:37 <v Larry Ogrodnek>You can just say @Event, decrement, @Event, <v Larry Ogrodnek>increment and have those separate functions.
+
+00:51:43 <v Larry Ogrodnek>And then this is also showing the kind of T string templating
+
+00:51:46 <v Larry Ogrodnek>where you use two strings to generate it.
+
+00:51:48 <v Larry Ogrodnek>And the cool thing with this too is on line 58, <v Larry Ogrodnek>you can see basically we're calling self.button,
+
+00:51:55 <v Larry Ogrodnek>which is a T string template, and then we're <v Larry Ogrodnek>passing in self.decrement, which is the method.
+
+00:51:59 <v Larry Ogrodnek>And so you can kind of--
+
+00:52:00 <v Larry Ogrodnek>I mean, it's basically just doing that binding for you
+
+00:52:03 <v Michael Kennedy>automatically where it ends up--
+
+00:52:05 <v Michael Kennedy>- Okay, hold on, hold on, hold on.
+
+00:52:05 <v Michael Kennedy>So people, you have a T string, <v Michael Kennedy>which is kind of Jinja-like,
+
+00:52:13 <v Michael Kennedy>and in here you have a format statement, <v Michael Kennedy>and one of the values you're putting in here
+
+00:52:18 <v Michael Kennedy>is literally the function that has the decorator <v Michael Kennedy>that is an event,
+
+00:52:23 <v Michael Kennedy>and then that gets called back through all the magic.
+
+00:52:25 <v Larry Ogrodnek>- Yeah, and it's like, <v Larry Ogrodnek>it's like, I think it's cool that it looks like magic,
+
+00:52:31 <v Larry Ogrodnek>but it's, I mean, it's really not magic.
+
+00:52:32 <v Larry Ogrodnek>I mean, the thing, <v Larry Ogrodnek>the simplest possible thing where basically it's just it's saving you from um like if you look at
+
+00:52:39 <v Larry Ogrodnek>that that button method um the button template it's saying like button phx click click equals
+
+00:52:46 <v Michael Kennedy>okay so you've created a wrapper function that then basically writes the component
+
+00:52:51 <v Michael Kennedy>yeah that that'll wire up all exactly yeah that's pretty cool yeah but this is something i'm i think
+
+00:52:57 <v Larry Ogrodnek>i'm really excited about because it's like um you know like one of the things that you really want
+
+00:53:02 <v Larry Ogrodnek>want to have, like after you've been making a complex app,
+
+00:53:05 <v Larry Ogrodnek>is a way to have components.
+
+00:53:08 <v Larry Ogrodnek>And that was kind of challenging in the templating system
+
+00:53:10 <v Larry Ogrodnek>that I originally started using, not just to have components
+
+00:53:13 <v Larry Ogrodnek>because you can have includes and stuff like that, <v Larry Ogrodnek>but to fit into the Phoenix Live View component system.
+
+00:53:17 <v Larry Ogrodnek>But I think t-strings are exciting for me <v Larry Ogrodnek>because it makes things like this really powerful.
+
+00:53:22 <v Larry Ogrodnek>And you think about just even things <v Larry Ogrodnek>like having really smart forms and form binding.
+
+00:53:27 <v Larry Ogrodnek>And I have some of that, but it's a little clunky.
+
+00:53:30 <v Larry Ogrodnek>And I think being able to have like really nice, <v Larry Ogrodnek>reasonable components that leverage t-strings,
+
+00:53:35 <v Larry Ogrodnek>make it so you have something that kind of looks very magically,
+
+00:53:37 <v Larry Ogrodnek>but it's, you know, it's basically just, you know, templating.
+
+00:53:41 <v Larry Ogrodnek>So, but I'm excited about it.
+
+00:53:42 <v Larry Ogrodnek>I think it'll make a lot of things easier <v Larry Ogrodnek>and easier to kind of share, you know, components.
+
+00:53:46 <v Michael Kennedy>I love it.
+
+00:53:47 <v Michael Kennedy>I really like the programming here, the API.
+
+00:53:50 <v Michael Kennedy>We've got a little bit, not a lot, a little bit of time left here.
+
+00:53:53 <v Michael Kennedy>So let's just, let's touch on actually just a couple of things.
+
+00:53:56 <v Michael Kennedy>I think one of the issues that, you know, <v Michael Kennedy>I talked about some of the magic, like some of these frameworks,
+
+00:54:01 <v Michael Kennedy>like hide away all the things.
+
+00:54:03 <v Michael Kennedy>Another one where there's these front end, back end, <v Michael Kennedy>connected all Python, they feel like sometimes you're like,
+
+00:54:09 <v Michael Kennedy>OK, and the way that works is you run it on our cloud system.
+
+00:54:13 <v Michael Kennedy>You know what I mean?
+
+00:54:13 <v Michael Kennedy>Or you run it on our special bit of infrastructure.
+
+00:54:17 <v Michael Kennedy>And then thoughts immediately go to like, well, how durable?
+
+00:54:21 <v Michael Kennedy>How proven is that?
+
+00:54:22 <v Michael Kennedy>Like, could we use Kubernetes?
+
+00:54:24 <v Michael Kennedy>Could we do it there?
+
+00:54:25 <v Michael Kennedy>Like, gosh, I don't even know.
+
+00:54:27 <v Michael Kennedy>So let's talk about some of the internals.
+
+00:54:28 <v Michael Kennedy>And at its heart, this is Starlet, right, <v Michael Kennedy>which is the same as FastAPI in a sense
+
+00:54:34 <v Michael Kennedy>in terms of how it runs, right?
+
+00:54:35 <v Larry Ogrodnek>JOHN MUELLER: Exactly.
+
+00:54:36 <v Larry Ogrodnek>Yeah, Starlette is doing all the heavy lifting.
+
+00:54:43 <v Larry Ogrodnek>And it handles the WebSockets and everything for you, right?
+
+00:54:46 <v Larry Ogrodnek>JOHN MUELLER: Yeah, the WebSockets, the HTTP, <v Larry Ogrodnek>the routing, even middleware, also the authentication,
+
+00:54:51 <v Larry Ogrodnek>like using it for the authentication.
+
+00:54:53 <v Larry Ogrodnek>Like I had to do a little bit of work to kind of make that available at the, you know, the web socket level in terms of like, because it handles like all the routing.
+
+00:55:06 <v Larry Ogrodnek>But just the way live view works is there's really one web socket connection that's getting managed.
+
+00:55:12 <v Larry Ogrodnek>And then internally there's routing that's done by the framework.
+
+00:55:15 <v Larry Ogrodnek>I see.
+
+00:55:16 <v Michael Kennedy>Because you never set that up, right?
+
+00:55:17 <v Michael Kennedy>You don't manage different sockets in like different.
+
+00:55:20 <v Michael Kennedy>Exactly.
+
+00:55:20 <v Michael Kennedy>You're just like, I just want to handle event.
+
+00:55:22 <v Larry Ogrodnek>Exactly.
+
+00:55:23 <v Larry Ogrodnek>Yeah.
+
+00:55:23 <v Larry Ogrodnek>But yeah, but another cover is we're using their auth system and framework.
+
+00:55:29 <v Larry Ogrodnek>And so if you have used that or familiar with it, it's exactly the same.
+
+00:55:34 <v Larry Ogrodnek>It's just that we make it also available at the LiveView specific layer.
+
+00:55:40 <v Larry Ogrodnek>But yeah, so anywhere you can run Starlet.
+
+00:55:43 <v Larry Ogrodnek>And I've been mostly using it.
+
+00:55:46 <v Larry Ogrodnek>So that examples website that we're looking at, that is itself a PyView app that is using just Uvacorn,
+
+00:55:53 <v Larry Ogrodnek>deploy as a Docker container.
+
+00:55:55 <v Larry Ogrodnek>And that's primarily how I've been using it for apps <v Larry Ogrodnek>that I've been writing or at work is like, yeah,
+
+00:56:00 <v Larry Ogrodnek>it's just a Docker app with Uvocorn.
+
+00:56:04 <v Larry Ogrodnek>But presumably, yeah, any HGI thing you could use.
+
+00:56:11 <v Larry Ogrodnek>So yeah, there's no magic there.
+
+00:56:12 <v Larry Ogrodnek>Yeah, anywhere you want to run it.
+
+00:56:13 <v Larry Ogrodnek>The one thing is-- this is something that's <v Larry Ogrodnek>kind of more of a future thing, but part of--
+
+00:56:18 <v Larry Ogrodnek>that you don't have to use for a lot of apps, <v Larry Ogrodnek>but some of the stuff like presence, like PubSub stuff
+
+00:56:23 <v Larry Ogrodnek>have built in, just because it's kind of something you want to have when you have this kind of
+
+00:56:26 <v Larry Ogrodnek>framework, but you can do stuff very easily. I have an example of this, but like, oh, this user
+
+00:56:32 <v Larry Ogrodnek>joined this page, this user left the page, and doing things like that. I don't have a way right
+
+00:56:35 <v Larry Ogrodnek>now for that to be multi-machine. It's really just single machine pub supplementation. And so
+
+00:56:39 <v Larry Ogrodnek>something I'm kind of working on for the future. But yeah, there's no special requirements. Anywhere
+
+00:56:43 <v Larry Ogrodnek>you're running a Starlette app or Fest API app or whatever should be totally fine. You do want to
+
+00:56:49 <v Larry Ogrodnek>have sticky sessions set up because it does require you
+
+00:56:53 <v Larry Ogrodnek>going to the same machine because we have this persistent state
+
+00:56:56 <v Larry Ogrodnek>for the user.
+
+00:56:56 <v Michael Kennedy>MARK MANDEL: Yeah, that is tricky with WebSockets.
+
+00:56:59 <v Michael Kennedy>I've been dealing with that for a project I'm working on.
+
+00:57:01 <v Michael Kennedy>And it's challenging because the natural inclination <v Michael Kennedy>and a lot of the recommendation is, oh, how many workers
+
+00:57:08 <v Michael Kennedy>do you want your uveacorn or your granion to run?
+
+00:57:12 <v Michael Kennedy>MARK MANDEL: Yeah.
+
+00:57:12 <v Michael Kennedy>MARK MANDEL: And oh, if you need to scale up, <v Michael Kennedy>you just put it behind a load balancer.
+
+00:57:15 <v Larry Ogrodnek>MARK MANDEL: Yeah, I agree with you.
+
+00:57:18 <v Larry Ogrodnek>It is challenging, but I think it's a solvable challenge.
+
+00:57:21 <v Larry Ogrodnek>And I think also it depends on kind of the app that you want.
+
+00:57:24 <v Larry Ogrodnek>Like for some use cases, I mean, you know, the sticky part you kind of need right now anyway.
+
+00:57:29 <v Larry Ogrodnek>But for some use cases, maybe you don't care about the PubSub or the presence,
+
+00:57:32 <v Larry Ogrodnek>or maybe you have a way to deal with that already.
+
+00:57:35 <v Larry Ogrodnek>Right.
+
+00:57:35 <v Michael Kennedy>If you don't care about PubSub or presence, then as long as it just sticks to.
+
+00:57:38 <v Larry Ogrodnek>As long as it just sticks.
+
+00:57:39 <v Larry Ogrodnek>And even the stickiness, I feel like there's potential solutions there, right?
+
+00:57:42 <v Larry Ogrodnek>Because like with the model, it really is like, you know, like we saw in examples,
+
+00:57:48 <v Larry Ogrodnek>like you get past this context to operate on, <v Larry Ogrodnek>you make changes to it,
+
+00:57:53 <v Larry Ogrodnek>and you don't really care like where that came from <v Larry Ogrodnek>or where it's running.
+
+00:57:57 <v Larry Ogrodnek>And so theoretically, I think it feels like <v Larry Ogrodnek>there could be a situation where that is somehow distributed
+
+00:58:01 <v Larry Ogrodnek>or there's some kind of shared storage or, you know, <v Larry Ogrodnek>it doesn't seem like impossible.
+
+00:58:05 <v Larry Ogrodnek>I don't know that it'd be worth the complexity <v Larry Ogrodnek>for a lot of use cases,
+
+00:58:08 <v Larry Ogrodnek>but I feel like there's sort of a challenge.
+
+00:58:10 <v Larry Ogrodnek>And the PubSub stuff, I think is something that, you know,
+
+00:58:12 <v Larry Ogrodnek>I plan to kind of address.
+
+00:58:13 <v Larry Ogrodnek>So I think, again, it's like, <v Larry Ogrodnek>if you're okay with running Redis,
+
+00:58:16 <v Larry Ogrodnek>that's a very solvable problem too having like multi-machine pub sub um right right right redis
+
+00:58:21 <v Michael Kennedy>or valky have like this web socket broker thing kind of which we manage uh basically i imagine
+
+00:58:28 <v Michael Kennedy>like your web socket connection talks to your server which then like puts you in the session
+
+00:58:33 <v Michael Kennedy>of of a redis or valky one but then that thing actually does the pub sub across yeah and that
+
+00:58:38 <v Larry Ogrodnek>could be that could be interesting for like i mean like one of the early things i was thinking is
+
+00:58:41 <v Larry Ogrodnek>like oh could i could deploy this with like abys lambda you know which like seems kind of impossible
+
+00:58:46 <v Larry Ogrodnek>And they do have, with their API gateway, <v Larry Ogrodnek>they have a WebSocket broker.
+
+00:58:52 <v Larry Ogrodnek>They manage WebSocket connections.
+
+00:58:54 <v Larry Ogrodnek>And you just kind of get events like, <v Larry Ogrodnek>oh, this WebSocket client 125 joined, whatever.
+
+00:59:00 <v Larry Ogrodnek>And then you kind of manage that.
+
+00:59:01 <v Larry Ogrodnek>And it kind of would be cool, just, I don't know, <v Larry Ogrodnek>if a proof of concept or just if you really wanted to host on Lambda
+
+00:59:06 <v Larry Ogrodnek>or something like that.
+
+00:59:07 <v Larry Ogrodnek>But it's not.
+
+00:59:08 <v Larry Ogrodnek>I don't know that I'll get to that anytime soon.
+
+00:59:10 <v Larry Ogrodnek>Yeah.
+
+00:59:11 <v Michael Kennedy>Well, certainly an interesting project with the way it is.
+
+00:59:15 <v Michael Kennedy>Could certainly go farther.
+
+00:59:17 <v Michael Kennedy>A lot of the frameworks that are good at this scale out,
+
+00:59:19 <v Michael Kennedy>they don't have any presence or collaboration.
+
+00:59:23 <v Michael Kennedy>It's fine, right?
+
+00:59:24 <v Larry Ogrodnek>Yeah.
+
+00:59:24 <v Michael Kennedy>No, it's a good problem to have.
+
+00:59:26 <v Larry Ogrodnek>But yeah, it's something we'll figure out at some point.
+
+00:59:30 <v Larry Ogrodnek>But I think there's still a lot of co-ops you can write without it.
+
+00:59:32 <v Michael Kennedy>So it hasn't been a huge priority.
+
+00:59:34 <v Michael Kennedy>No, it's very, very neat.
+
+00:59:35 <v Michael Kennedy>All right.
+
+00:59:35 <v Michael Kennedy>So I got two quick questions for you here.
+
+00:59:39 <v Michael Kennedy>One, you mentioned LLMs at the beginning.
+
+00:59:42 <v Michael Kennedy>How do LLMs do with writing PyView?
+
+00:59:45 <v Michael Kennedy>and do you have tips for making it more knowledgeable?
+
+00:59:49 <v Michael Kennedy>Are there, do you have like some sort of specification file
+
+00:59:52 <v Michael Kennedy>you can give to, you know, Claude or something and say,
+
+00:59:56 <v Michael Kennedy>I know you might not be familiar with this, <v Michael Kennedy>but here's what it is.
+
+00:59:59 <v Michael Kennedy>Now I'm going to ask you questions to work with it.
+
+01:00:02 <v Larry Ogrodnek>That's a really good push.
+
+01:00:04 <v Larry Ogrodnek>I feel like I should do something like that.
+
+01:00:06 <v Larry Ogrodnek>So I have used LMS to like write, you know, <v Larry Ogrodnek>like application code, not, you know,
+
+01:00:12 <v Larry Ogrodnek>like application code, like using PyView framework <v Larry Ogrodnek>like you're describing at work a lot.
+
+01:00:16 <v Larry Ogrodnek>And it's been mostly successful.
+
+01:00:19 <v Larry Ogrodnek>I think one of the things is it helps <v Larry Ogrodnek>that the templating language--
+
+01:00:23 <v Larry Ogrodnek>we're not using 3.14 at work yet for these projects.
+
+01:00:27 <v Larry Ogrodnek>And so we're using the older style templates.
+
+01:00:29 <v Larry Ogrodnek>It helps that that language is very, very similar to Jinja 2.
+
+01:00:32 <v Larry Ogrodnek>And so that's been great.
+
+01:00:35 <v Larry Ogrodnek>It does get confused sometimes where, obviously, <v Larry Ogrodnek>we don't have the same set of built-in filters.
+
+01:00:39 <v Larry Ogrodnek>And so I might try to use a filter that's only in Jinja 2
+
+01:00:41 <v Larry Ogrodnek>that we don't have or that includes syntax <v Larry Ogrodnek>is slightly different.
+
+01:00:45 <v Larry Ogrodnek>So those that gets tripped up on.
+
+01:00:47 <v Larry Ogrodnek>I think I've had a lot of success <v Larry Ogrodnek>with just really simple prompts like this is PyView.
+
+01:00:53 <v Larry Ogrodnek>It's Phoenix LiveView, but in Python.
+
+01:00:55 <v Larry Ogrodnek>And that's gotten a lot of mileage, <v Larry Ogrodnek>just even something basic like that.
+
+01:01:00 <v Michael Kennedy>It sounds like you could create a Claude skill <v Michael Kennedy>or an agent or just a set of really structured rules files
+
+01:01:07 <v Michael Kennedy>and maybe put it on the docs and say, here, grab it.
+
+01:01:09 <v Michael Kennedy>And throw this in.
+
+01:01:10 <v Larry Ogrodnek>I for sure should do that.
+
+01:01:12 <v Larry Ogrodnek>Yeah, I don't think that'd be helpful for me too.
+
+01:01:13 <v Larry Ogrodnek>I think that's something that I kind of, <v Larry Ogrodnek>yeah, just even personally want to get better at
+
+01:01:16 <v Larry Ogrodnek>is like, yeah, I've been using these tools <v Larry Ogrodnek>a lot for development and they've been great,
+
+01:01:19 <v Larry Ogrodnek>but I've been somewhat, you know, <v Larry Ogrodnek>lazy in terms of like improving my workflow.
+
+01:01:23 <v Larry Ogrodnek>And I do see how it's like very successful <v Larry Ogrodnek>when people kind of structure these things
+
+01:01:27 <v Larry Ogrodnek>a little better in terms of like <v Larry Ogrodnek>having custom commands or yeah,
+
+01:01:30 <v Larry Ogrodnek>like agents that know about specific things.
+
+01:01:32 <v Larry Ogrodnek>It does seem like-
+
+01:01:33 <v Michael Kennedy>Yeah, but I do think that your cookie cutter helps.
+
+01:01:35 <v Michael Kennedy>Right.
+
+01:01:35 <v Michael Kennedy>Right.
+
+01:01:36 <v Michael Kennedy>Because it says, okay, here's the structure.
+
+01:01:38 <v Michael Kennedy>Here's a little working bit of it.
+
+01:01:40 <v Michael Kennedy>now keep building on that.
+
+01:01:41 <v Michael Kennedy>That goes a long ways.
+
+01:01:42 <v Michael Kennedy>So--
+
+01:01:42 <v Larry Ogrodnek>- No, for sure.
+
+01:01:43 <v Larry Ogrodnek>And I think even like having things like the just file
+
+01:01:46 <v Larry Ogrodnek>seemed to help in terms of like, <v Larry Ogrodnek>it doesn't, you know, it knows like,
+
+01:01:49 <v Larry Ogrodnek>oh, to run tests, I run just tests.
+
+01:01:51 <v Larry Ogrodnek>To run type check, I run just type check.
+
+01:01:52 <v Larry Ogrodnek>Like it kind of knows a lot of this stuff.
+
+01:01:55 <v Larry Ogrodnek>Doesn't have to guess about it, <v Larry Ogrodnek>but it kind of would be useful.
+
+01:01:58 <v Larry Ogrodnek>I do find it like, it's funny.
+
+01:01:59 <v Larry Ogrodnek>It seems like the LLM get confused a lot about like, <v Larry Ogrodnek>oh, do I need to run poetry run versus just Python?
+
+01:02:04 <v Larry Ogrodnek>And it seems to always forget like <v Larry Ogrodnek>how your project is set up, you know?
+
+01:02:09 <v Michael Kennedy>Yeah, I know.
+
+01:02:10 <v Michael Kennedy>You got to keep reminding it.
+
+01:02:12 <v Michael Kennedy>All right, so that was question one.
+
+01:02:14 <v Michael Kennedy>Question two, final question.
+
+01:02:16 <v Michael Kennedy>What's the roadmap?
+
+01:02:17 <v Michael Kennedy>You open to contributors.
+
+01:02:19 <v Michael Kennedy>Where are we?
+
+01:02:20 <v Larry Ogrodnek>Yeah, so like you mentioned, it's very early days.
+
+01:02:24 <v Larry Ogrodnek>And I've tried to not be conservative about breaking <v Larry Ogrodnek>changes, but I think as we start getting closer to 1.0--
+
+01:02:30 <v Larry Ogrodnek>I think I'm at 0.8.0--
+
+01:02:32 <v Larry Ogrodnek>there probably will be some breaking changes, <v Larry Ogrodnek>because as we've already seen in some of the examples,
+
+01:02:36 <v Larry Ogrodnek>I've gone through multiple iterations of how <v Larry Ogrodnek>do I make this easier?
+
+01:02:39 <v Larry Ogrodnek>how do I make this easier?
+
+01:02:40 <v Larry Ogrodnek>And that's been a big focus for me <v Larry Ogrodnek>is making it really developer-friendly and simple.
+
+01:02:44 <v Larry Ogrodnek>And so I think I'll try and make some stuff <v Larry Ogrodnek>a little more cohesive.
+
+01:02:46 <v Larry Ogrodnek>So there may be some breaking changes.
+
+01:02:49 <v Larry Ogrodnek>But yeah, I mean, you know, <v Larry Ogrodnek>I want it to be super easy to get up and running.
+
+01:02:52 <v Larry Ogrodnek>And I feel like there's work to do there.
+
+01:02:53 <v Larry Ogrodnek>I think, you know, the short-term roadmap is, <v Larry Ogrodnek>again, I want to keep working on documentation,
+
+01:02:57 <v Larry Ogrodnek>updates, examples.
+
+01:02:59 <v Larry Ogrodnek>I saw a really great, you know, <v Larry Ogrodnek>YouTube talk recently called like Verbs, Not Nouns
+
+01:03:03 <v Larry Ogrodnek>about Brian McDonald about like <v Larry Ogrodnek>how to make your documentation more kind of like task-based.
+
+01:03:07 <v Larry Ogrodnek>Like what is the person trying to do <v Larry Ogrodnek>versus explaining technology.
+
+01:03:10 <v Larry Ogrodnek>So I want to do that.
+
+01:03:11 <v Larry Ogrodnek>Like I said, I think the T-string templating <v Larry Ogrodnek>is very exciting in terms of making that better,
+
+01:03:17 <v Larry Ogrodnek>figuring out the CSS story around that.
+
+01:03:20 <v Larry Ogrodnek>That's one thing that's annoying <v Larry Ogrodnek>is writing CSS in t-strings
+
+01:03:22 <v Larry Ogrodnek>because you have to double escape all the curly braces.
+
+01:03:26 <v Larry Ogrodnek>Better form support.
+
+01:03:27 <v Larry Ogrodnek>I have some initial form support <v Larry Ogrodnek>that kind of uses Pydantic.
+
+01:03:33 <v Larry Ogrodnek>But I kind of want to make that a little better.
+
+01:03:35 <v Larry Ogrodnek>And I've had situations where we have <v Larry Ogrodnek>like very complex, like nested forms.
+
+01:03:40 <v Larry Ogrodnek>And I would love to get to a point where it's just like,
+
+01:03:41 <v Larry Ogrodnek>yeah, you just throw, here's my pandemic data model, <v Larry Ogrodnek>make a form with error handling
+
+01:03:46 <v Larry Ogrodnek>and all this stuff and validation.
+
+01:03:47 <v Larry Ogrodnek>And I kind of want to get there.
+
+01:03:48 <v Larry Ogrodnek>And then I think again, like larger examples, <v Larry Ogrodnek>like I think you called out the Phoenix Live View,
+
+01:03:54 <v Larry Ogrodnek>like PyBeats example, <v Larry Ogrodnek>like they have this very big music player.
+
+01:03:57 <v Larry Ogrodnek>And I have some things like that <v Larry Ogrodnek>where I have like an AI chat example
+
+01:04:01 <v Larry Ogrodnek>that are slightly larger, <v Larry Ogrodnek>but kind of going to some more examples
+
+01:04:03 <v Larry Ogrodnek>to kind of inspire people, <v Larry Ogrodnek>like what can actually be done.
+
+01:04:06 <v Michael Kennedy>Could you fully implement the live beats thing in PyView?
+
+01:04:10 <v Larry Ogrodnek>Yes, I can.
+
+01:04:12 <v Larry Ogrodnek>And I was thinking about doing it.
+
+01:04:13 <v Larry Ogrodnek>I think it's interesting, the history there, I mean, I don't know.
+
+01:04:18 <v Larry Ogrodnek>But my intuition is that part of it was that as they were building certain technologies,
+
+01:04:22 <v Larry Ogrodnek>they wanted to show them off and have a good test bed.
+
+01:04:24 <v Larry Ogrodnek>And so the way that it works is based on file uploads.
+
+01:04:27 <v Larry Ogrodnek>You upload MP3s that you want to play.
+
+01:04:30 <v Larry Ogrodnek>And I feel like that's because they wanted to show off the file upload stuff, which was
+
+01:04:33 <v Larry Ogrodnek>new at the time, I think.
+
+01:04:34 <v Larry Ogrodnek>And I could do that.
+
+01:04:35 <v Larry Ogrodnek>support. In fact, I have like even multi-part S3, like very advanced file upload support.
+
+01:04:42 <v Larry Ogrodnek>But I was thinking about doing it, but just doing streaming. I found a streaming service that is
+
+01:04:47 <v Larry Ogrodnek>for like royalty-free music if you're using it in a non-commercial way. And I think that might be
+
+01:04:51 <v Larry Ogrodnek>more exciting to show off like present stuff and even some JavaScript integration stuff and like
+
+01:04:55 <v Larry Ogrodnek>synchronizing stuff. And I think also I have a simple AI chat thing, but I think maybe
+
+01:05:00 <v Larry Ogrodnek>beefing up a little bit would be kind of cool too, because I know people are into AI stuff.
+
+01:05:03 <v Larry Ogrodnek>But you mentioned contributions, and I think, yeah, for sure, I think the thing that, to be honest, would be the most helpful is to have people try it, try writing a simple app or a complex app, whatever.
+
+01:05:16 <v Larry Ogrodnek>And I really want to hear what works well, what's rough, what's confusing, what could be better, any feedback.
+
+01:05:24 <v Michael Kennedy>Yeah, more than people contributing features is people just using it to make sure it works and giving feedback on how it should be, right?
+
+01:05:30 <v Larry Ogrodnek>Yeah, no, and contribution features are good, too.
+
+01:05:32 <v Larry Ogrodnek>I mean, I recently set up, like, also just a call, like, on GitHub, the repo.
+
+01:05:36 <v Larry Ogrodnek>There's also, like, a discussions thing.
+
+01:05:38 <v Larry Ogrodnek>It doesn't have a lot of things or anything.
+
+01:05:39 <v Larry Ogrodnek>I mean, there's two topics right now.
+
+01:05:41 <v Larry Ogrodnek>But, you know, because I do want to get more feedback and encourage feedback.
+
+01:05:44 <v Larry Ogrodnek>And, like, I think that's a great place to put features suggestions.
+
+01:05:46 <v Larry Ogrodnek>But, yeah, I mean, contributions are also welcome.
+
+01:05:50 <v Larry Ogrodnek>But, yeah, I just can't underscore enough how much, like, I want to have feedback.
+
+01:05:55 <v Larry Ogrodnek>Because, again, I want it to be, like, I mean, I want it to be a really great app that people feel is fun to use.
+
+01:06:00 <v Larry Ogrodnek>And they like using it.
+
+01:06:01 <v Larry Ogrodnek>And it's easy to get started.
+
+01:06:02 <v Larry Ogrodnek>And I know that it's not there yet, <v Larry Ogrodnek>but any help to getting there would be great.
+
+01:06:08 <v Michael Kennedy>Yeah, very cool.
+
+01:06:09 <v Michael Kennedy>Larry, thanks for being on the show.
+
+01:06:10 <v Michael Kennedy>Very cool project.
+
+01:06:11 <v Michael Kennedy>I think people should certainly at least give it a look
+
+01:06:14 <v Michael Kennedy>to see maybe it'll help them go get their app up <v Michael Kennedy>and running a nice little interactive app
+
+01:06:19 <v Michael Kennedy>way quicker than maybe they thought they could.
+
+01:06:21 <v Larry Ogrodnek>Yeah, thanks so much, Michael.
+
+01:06:21 <v Larry Ogrodnek>Yeah, I really appreciate the chance to come on <v Larry Ogrodnek>and talk to you about this.
+
+01:06:24 <v Larry Ogrodnek>It's been a lot of fun.
+
+01:06:25 <v Larry Ogrodnek>I can't believe how much we talked about <v Larry Ogrodnek>and how much more we could talk about.
+
+01:06:29 <v Larry Ogrodnek>So it was really fun.
+
+01:06:31 <v Michael Kennedy>We've got a browser full of tabs of things we didn't even get to.
+
+01:06:34 <v Michael Kennedy>So yeah, sorry.
+
+01:06:37 <v Michael Kennedy>Now that's how it goes.
+
+01:06:37 <v Michael Kennedy>All right.
+
+01:06:38 <v Michael Kennedy>Thanks for being here.
+
+01:06:39 <v Michael Kennedy>Catch you later.
+
+01:06:39 <v Michael Kennedy>Bye everyone.
+
+01:06:40 <v Michael Kennedy>Bye.
+
+01:06:41 <v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:06:44 <v Michael Kennedy>Thank you to our sponsors.
+
+01:06:45 <v Michael Kennedy>Be sure to check out what they're offering.
+
+01:06:46 <v Michael Kennedy>It really helps support the show.
+
+01:06:48 <v Michael Kennedy>If you or your team needs to learn Python, <v Michael Kennedy>we have over 270 hours of beginner and advanced courses on topics ranging from
+
+01:06:55 <v Michael Kennedy>complete beginners to async code, Flask, Django, HTMX, and even LLMs.
+
+01:07:01 <v Michael Kennedy>Best of all, there's no subscription in sight.
+
+01:07:04 <v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:07:06 <v Michael Kennedy>And if you're not already subscribed to the show <v Michael Kennedy>on your favorite podcast player,
+
+01:07:10 <v Michael Kennedy>what are you waiting for?
+
+01:07:11 <v Michael Kennedy>Just search for Python in your podcast player.
+
+01:07:13 <v Michael Kennedy>We should be right at the top.
+
+01:07:14 <v Michael Kennedy>If you enjoyed that geeky rap song, <v Michael Kennedy>you can download the full track.
+
+01:07:17 <v Michael Kennedy>The link is actually in your podcast blur show notes.
+
+01:07:20 <v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:07:22 <v Michael Kennedy>Thank you so much for listening.
+
+01:07:23 <v Michael Kennedy>I really appreciate it.
+
+01:07:24 <v Michael Kennedy>I'll see you next time.
+
+01:07:35 I thought of me, and we ready to roll, upgrading the code, no fear of getting whole, we tapped
+
+01:07:46 into that modern vibe, overcame each storm, talk Python and me, I-sync is the norm.
+
+01:07:54 you
+
