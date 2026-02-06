@@ -1,0 +1,3872 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:04.000
+<v Michael Kennedy>A lot of people building software today never took the traditional computer science path.
+
+00:00:04.500 --> 00:00:09.420
+<v Michael Kennedy>They arrived through curiosity, or a job that needed automating, or a late-night itch that
+
+00:00:09.540 --> 00:00:14.280
+<v Michael Kennedy>made something work. This week, David Kopech joins me to talk about computer science for
+
+00:00:14.560 --> 00:00:18.420
+<v Michael Kennedy>exactly these folks, the ones who learned to program first and are now ready to understand
+
+00:00:18.520 --> 00:00:23.580
+<v Michael Kennedy>the deeper ideas that power the tools they use every day. This is Talk Python To Me,
+
+00:00:23.740 --> 00:00:27.540
+<v Michael Kennedy>episode 529, recorded October 26, 2025.
+
+00:00:44.860 --> 00:00:49.180
+<v Michael Kennedy>Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:00:49.760 --> 00:00:55.000
+<v Michael Kennedy>This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
+
+00:00:55.560 --> 00:00:56.700
+<v Michael Kennedy>Let's connect on social media.
+
+00:00:57.180 --> 00:01:00.240
+<v Michael Kennedy>You'll find me and Talk Python on Mastodon, Bluesky, and X.
+
+00:01:00.520 --> 00:01:02.360
+<v Michael Kennedy>The social links are all in your show notes.
+
+00:01:03.120 --> 00:01:06.640
+<v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:06.820 --> 00:01:10.000
+<v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:10.380 --> 00:01:10.840
+<v Michael Kennedy>That's right.
+
+00:01:11.050 --> 00:01:14.300
+<v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:14.880 --> 00:01:19.300
+<v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:19.560 --> 00:01:23.180
+<v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:23.820 --> 00:01:25.720
+<v Michael Kennedy>This episode is brought to you by Sentry.
+
+00:01:26.040 --> 00:01:27.280
+<v Michael Kennedy>Don't let those errors go unnoticed.
+
+00:01:27.560 --> 00:01:29.080
+<v Michael Kennedy>Use Sentry like we do here at Talk Python.
+
+00:01:29.580 --> 00:01:32.440
+<v Michael Kennedy>Sign up at talkpython.fm/sentry.
+
+00:01:33.000 --> 00:01:34.980
+<v Michael Kennedy>And it's brought to you by NordStellar.
+
+00:01:35.539 --> 00:01:38.020
+<v Michael Kennedy>NordStellar is a threat exposure management platform
+
+00:01:38.600 --> 00:01:39.840
+<v Michael Kennedy>from the Nord security family,
+
+00:01:40.240 --> 00:01:41.260
+<v Michael Kennedy>the folks behind NordVPN,
+
+00:01:41.800 --> 00:01:43.440
+<v Michael Kennedy>that combines dark web intelligence,
+
+00:01:44.080 --> 00:01:45.600
+<v Michael Kennedy>session hijacking prevention,
+
+00:01:46.200 --> 00:01:48.200
+<v Michael Kennedy>brand and domain abuse detection,
+
+00:01:48.520 --> 00:01:50.280
+<v Michael Kennedy>and external attack surface management.
+
+00:01:50.840 --> 00:01:53.000
+<v Michael Kennedy>Learn more and get started keeping your team safe
+
+00:01:53.020 --> 00:01:55.800
+<v Michael Kennedy>at talkpython.fm/Nordstellar.
+
+00:01:56.520 --> 00:01:58.100
+<v Michael Kennedy>David, welcome back to Talk Bythonomy.
+
+00:01:58.410 --> 00:01:59.980
+<v David Kopec>Thank you so much for having me back, Michael.
+
+00:02:00.140 --> 00:02:00.680
+<v David Kopec>It's really an honor.
+
+00:02:01.000 --> 00:02:04.220
+<v Michael Kennedy>Got some really fun stuff to talk about,
+
+00:02:04.360 --> 00:02:05.960
+<v Michael Kennedy>computer science from scratch.
+
+00:02:06.320 --> 00:02:07.140
+<v Michael Kennedy>What does that even mean?
+
+00:02:07.460 --> 00:02:08.320
+<v Michael Kennedy>We're going to find out
+
+00:02:08.869 --> 00:02:10.340
+<v Michael Kennedy>because you wrote the book on it.
+
+00:02:10.500 --> 00:02:11.300
+<v David Kopec>Yeah, I'm excited.
+
+00:02:11.640 --> 00:02:13.020
+<v David Kopec>And this book just came out,
+
+00:02:13.130 --> 00:02:14.700
+<v David Kopec>so it's kind of fresh off the press.
+
+00:02:14.830 --> 00:02:15.880
+<v David Kopec>And I want to thank you
+
+00:02:15.930 --> 00:02:17.140
+<v David Kopec>for being the technical reviewer
+
+00:02:17.140 --> 00:02:17.860
+<v David Kopec>on the book, actually.
+
+00:02:18.320 --> 00:02:19.020
+<v Michael Kennedy>Yeah, it was really fun.
+
+00:02:19.020 --> 00:02:19.920
+<v Michael Kennedy>You reached out and asked me,
+
+00:02:20.070 --> 00:02:21.880
+<v Michael Kennedy>and I don't normally do things like that,
+
+00:02:21.890 --> 00:02:22.520
+<v Michael Kennedy>but I'm like, you know,
+
+00:02:22.660 --> 00:02:26.500
+<v Michael Kennedy>that'd be kind of fun. It would be a good experience. And I do think it was. It taught
+
+00:02:26.600 --> 00:02:31.140
+<v Michael Kennedy>me some about creating books and I guess that pays off as well. And congratulations, by the way,
+
+00:02:31.360 --> 00:02:36.340
+<v David Kopec>on Talk Python in production coming out. Yeah, thanks. I started that last December and it came
+
+00:02:36.480 --> 00:02:41.340
+<v Michael Kennedy>out, I think the beginning of this month, maybe end of September, something like that, but pretty
+
+00:02:41.600 --> 00:02:45.640
+<v Michael Kennedy>recently. So yeah, I really appreciate it. It's going really well. We're in kind of the same phase
+
+00:02:45.780 --> 00:02:50.340
+<v David Kopec>because computer science from scratch officially came out end of September also. So we're just in
+
+00:02:50.360 --> 00:02:55.060
+<v David Kopec>this kind of, you know, one month out from these books coming out. And so it's both, I think it's
+
+00:02:55.060 --> 00:02:59.080
+<v David Kopec>an exciting time for both of us. And I've started reading Talk Python in production, and I'm really
+
+00:02:59.240 --> 00:03:03.400
+<v Michael Kennedy>loving it. So congrats on it. Awesome. Thank you. And I really enjoyed your book. And I had to read
+
+00:03:03.420 --> 00:03:08.080
+<v Michael Kennedy>it with a little more detail than just appreciate it, right? I had to like take notes and help you
+
+00:03:08.100 --> 00:03:12.380
+<v Michael Kennedy>with some feedback. So that was a really cool experience. And thanks. You know, it's been six,
+
+00:03:12.640 --> 00:03:16.400
+<v Michael Kennedy>almost a little, it's over five years, let's put it that way. It's been over five years since you've
+
+00:03:16.420 --> 00:03:21.720
+<v Michael Kennedy>on the show, we talked about classic computer science programs in Python, I believe it was.
+
+00:03:22.510 --> 00:03:26.820
+<v Michael Kennedy>And yeah, that was really a fun and popular episode. But let's do a quick refresher,
+
+00:03:26.830 --> 00:03:30.320
+<v Michael Kennedy>a quick introduction for you to everyone who's new to the show in the last five years.
+
+00:03:30.740 --> 00:03:35.120
+<v David Kopec>Okay. So I'm a computer. My name is David Kopech. I'm a computer science professor
+
+00:03:35.520 --> 00:03:40.740
+<v David Kopec>at Albright College in Redding, Pennsylvania. Actually just moved over here from Champlain
+
+00:03:40.990 --> 00:03:45.620
+<v David Kopec>College, where I was for the past nine years in a similar role. And I'm also the program director
+
+00:03:45.640 --> 00:03:49.580
+<v David Kopec>of Computer Science and Information Technology. We're launching three new majors, a little plug
+
+00:03:49.700 --> 00:03:55.100
+<v David Kopec>for Albright, a revamped computer science major, an artificial intelligence major, and cybersecurity.
+
+00:03:55.760 --> 00:04:01.820
+<v David Kopec>And so I'm managing the launch of those for fall 2026. My background is for the past decade,
+
+00:04:02.120 --> 00:04:06.580
+<v David Kopec>obviously, as a computer science educator. I've written five books on computer science and
+
+00:04:06.880 --> 00:04:10.680
+<v David Kopec>programming, the most successful of which was Classic Computer Science, Problems in Python,
+
+00:04:11.100 --> 00:04:16.780
+<v David Kopec>which of course I was on the show five years ago about. And this book, Computer Science from Scratch,
+
+00:04:17.100 --> 00:04:22.400
+<v David Kopec>is kind of for a similar audience. Both books are for Python programmers, folks who are intermediate
+
+00:04:22.820 --> 00:04:28.060
+<v David Kopec>or advanced Python programmers, but maybe who want to fill in the kind of computer science topics
+
+00:04:28.340 --> 00:04:31.720
+<v David Kopec>that they don't know, maybe because they're self-educated. Maybe they learned Python on
+
+00:04:31.730 --> 00:04:36.000
+<v David Kopec>their own. They didn't have a formal CS degree, or maybe they did have a formal CS degree,
+
+00:04:36.080 --> 00:04:41.040
+<v David Kopec>but now they're preparing for interviews or transitioning to a more CS in-depth role.
+
+00:04:41.370 --> 00:04:43.100
+<v David Kopec>And they want to refresh on some of these topics.
+
+00:04:43.720 --> 00:04:48.220
+<v David Kopec>So both books are for folks who know Python, but want to go deeper on CS.
+
+00:04:48.760 --> 00:04:53.020
+<v Michael Kennedy>Right. They're not, here's how you do a loop in Python, or here's what InterTools is.
+
+00:04:53.300 --> 00:04:56.420
+<v Michael Kennedy>It's true computer science topics, right?
+
+00:04:56.720 --> 00:05:00.320
+<v David Kopec>Right. And I think somebody at that stage will be very frustrated by the books.
+
+00:05:00.690 --> 00:05:03.100
+<v David Kopec>They really are. And so we have to put that preface in.
+
+00:05:03.140 --> 00:05:06.060
+<v David Kopec>And they really are for intermediate or advanced Python programmers.
+
+00:05:07.020 --> 00:05:12.160
+<v David Kopec>So, you know, so I'm trying to reach the same audience, but they're totally different books
+
+00:05:12.220 --> 00:05:13.860
+<v David Kopec>in terms of the type of topics they cover.
+
+00:05:14.300 --> 00:05:18.380
+<v David Kopec>So classic computer science problems in Python was more of a data structures and algorithms
+
+00:05:18.520 --> 00:05:23.880
+<v David Kopec>type of book, did some AI type topics as well, but very much on the algorithm side.
+
+00:05:24.240 --> 00:05:28.979
+<v David Kopec>Computer science from scratch is more, let's build up the layers of the software stack from
+
+00:05:29.000 --> 00:05:33.960
+<v David Kopec>the bottom up that Python kind of runs on top of. So you understand what's actually happening under
+
+00:05:33.980 --> 00:05:39.460
+<v David Kopec>the hood. So how does an interpreter work? What's the hardware software interface like? We get that
+
+00:05:39.600 --> 00:05:44.160
+<v David Kopec>with emulators. And then there is still some algorithmic stuff as well, different topics than
+
+00:05:44.300 --> 00:05:49.580
+<v David Kopec>in the prior book, but stuff like a little computer art stuff, a little bit of machine learning. So
+
+00:05:49.900 --> 00:05:54.000
+<v David Kopec>we try, it's still a survey book. It's still pretty broad, but it's more about the layers of
+
+00:05:54.000 --> 00:05:58.180
+<v David Kopec>the software stack than classic computer science problems in Python was. Yeah. And there's some
+
+00:05:58.120 --> 00:06:02.240
+<v Michael Kennedy>pretty low-level stuff and it's interesting you're doing in python you know a lot of i think a lot of
+
+00:06:02.340 --> 00:06:09.180
+<v Michael Kennedy>times that would be taught in um at least a pointer based language you know like c or even c c being
+
+00:06:09.280 --> 00:06:13.680
+<v Michael Kennedy>taught in assembly like you're talking to the machine like literally absolutely and you know
+
+00:06:13.710 --> 00:06:19.160
+<v David Kopec>if you took these classes like if you took an um architecture class which i'm going to be teaching
+
+00:06:19.260 --> 00:06:23.779
+<v David Kopec>next semester at albright it's going to be an assembly language right and if you took a compilers
+
+00:06:23.800 --> 00:06:29.240
+<v David Kopec>course, it's usually in something like C or today it might be in a Rust, a low level language where
+
+00:06:29.270 --> 00:06:34.860
+<v David Kopec>you do have that direct access to memory. But I wanted to make the book accessible. And Python is
+
+00:06:34.940 --> 00:06:38.360
+<v David Kopec>the most accessible language in the world. It's the most popular language in the world. And it's
+
+00:06:38.360 --> 00:06:42.540
+<v David Kopec>the language that we're increasingly using in computer science education anyway. So it is
+
+00:06:42.650 --> 00:06:48.339
+<v David Kopec>actually a little unusual to cover some of these topics in Python, but it makes the topics accessible
+
+00:06:48.360 --> 00:06:49.700
+<v David Kopec>to a much wider audience.
+
+00:06:50.200 --> 00:06:52.660
+<v Michael Kennedy>It definitely makes it accessible to a wider audience.
+
+00:06:53.540 --> 00:06:56.960
+<v Michael Kennedy>Let's take a step back and talk about this role you have
+
+00:06:56.990 --> 00:06:59.760
+<v Michael Kennedy>in this new college, university you're at.
+
+00:06:59.960 --> 00:07:01.980
+<v Michael Kennedy>You said that you're revamping the CS program.
+
+00:07:02.420 --> 00:07:04.120
+<v Michael Kennedy>You're adding AI and cybersecurity.
+
+00:07:04.760 --> 00:07:05.600
+<v Michael Kennedy>That's a big shift.
+
+00:07:05.720 --> 00:07:08.440
+<v Michael Kennedy>Do you want to just talk to people about how that's changing,
+
+00:07:08.840 --> 00:07:10.200
+<v Michael Kennedy>why you decided to change?
+
+00:07:10.760 --> 00:07:12.520
+<v Michael Kennedy>I look at a lot of CS programs,
+
+00:07:12.940 --> 00:07:15.540
+<v Michael Kennedy>and I don't know how connected they are to the real world.
+
+00:07:15.800 --> 00:07:20.680
+<v Michael Kennedy>So imagine some of these changes are to sort of realign it with what's happened recently.
+
+00:07:21.000 --> 00:07:21.220
+<v David Kopec>Absolutely.
+
+00:07:21.620 --> 00:07:21.720
+<v David Kopec>Yeah.
+
+00:07:22.180 --> 00:07:26.880
+<v David Kopec>So I'm coming from a college, the Champlain College in Vermont, where I was at for nine
+
+00:07:27.080 --> 00:07:29.300
+<v David Kopec>years, which was a professionally focused college.
+
+00:07:29.710 --> 00:07:33.000
+<v David Kopec>So it was a college where we were preparing students for their careers.
+
+00:07:33.600 --> 00:07:36.200
+<v David Kopec>I moved now to Albright, which is a liberal arts college.
+
+00:07:36.310 --> 00:07:40.040
+<v David Kopec>So it's a college that's more teaching people how to think, creating great citizens.
+
+00:07:40.640 --> 00:07:42.980
+<v David Kopec>And hopefully we prepare them for their careers very well, too.
+
+00:07:43.260 --> 00:07:45.780
+<v David Kopec>but there's that liberal arts foundation underneath everything.
+
+00:07:46.340 --> 00:07:49.440
+<v David Kopec>So one of the challenges in developing these three new majors
+
+00:07:50.000 --> 00:07:52.260
+<v David Kopec>was how do you fit them into a liberal arts curriculum?
+
+00:07:52.780 --> 00:07:54.420
+<v David Kopec>And how do you make them relevant to careers
+
+00:07:54.720 --> 00:07:56.280
+<v David Kopec>while still being true to the liberal arts?
+
+00:07:56.620 --> 00:07:58.580
+<v David Kopec>And so what I found the best way to do it
+
+00:07:58.720 --> 00:08:02.700
+<v David Kopec>is to still focus on how to help people think computationally.
+
+00:08:03.020 --> 00:08:05.800
+<v David Kopec>And so there's a firm foundation of computer science
+
+00:08:05.940 --> 00:08:07.940
+<v David Kopec>and mathematics throughout all three majors.
+
+00:08:08.380 --> 00:08:09.540
+<v David Kopec>So whether you're doing cybersecurity,
+
+00:08:10.040 --> 00:08:11.920
+<v David Kopec>artificial intelligence, or computer science,
+
+00:08:12.440 --> 00:08:16.780
+<v David Kopec>you're going to have a lot of classes in common with one another. And we also need to infuse some
+
+00:08:16.780 --> 00:08:21.200
+<v David Kopec>of the issues we see in the workforce today. Like all of them will have a computer ethics course
+
+00:08:21.680 --> 00:08:25.980
+<v David Kopec>that's incorporated. And all of them will have an internship course that's incorporated. So
+
+00:08:26.160 --> 00:08:29.340
+<v David Kopec>students are getting real world experience as they're going through these majors.
+
+00:08:29.960 --> 00:08:34.960
+<v David Kopec>I think that's a great idea. It's really important to have done software engineering
+
+00:08:35.700 --> 00:08:39.020
+<v Michael Kennedy>hands-on with other companies, real products, and real product managers,
+
+00:08:39.380 --> 00:08:42.219
+<v Michael Kennedy>in addition to just knowing the algorithms and foundations.
+
+00:08:42.740 --> 00:08:48.300
+<v David Kopec>Absolutely. I couldn't agree more. And so we're trying to blend the two. And that's been one of
+
+00:08:48.300 --> 00:08:52.280
+<v David Kopec>the exciting things. And you asked why I changed. I was excited about this opportunity to build these
+
+00:08:52.310 --> 00:08:57.260
+<v David Kopec>new majors from the ground up. We'll be one of the first teaching colleges, small teaching colleges,
+
+00:08:57.350 --> 00:09:01.900
+<v David Kopec>to offer an artificial intelligence major. It's just been in the last five years that we've seen
+
+00:09:02.160 --> 00:09:06.679
+<v David Kopec>colleges start to offer an undergraduate major in artificial intelligence. And it's mostly been
+
+00:09:06.700 --> 00:09:14.140
+<v David Kopec>big name brand colleges like CMU that are offering these first artificial intelligence bachelor's
+
+00:09:14.180 --> 00:09:19.200
+<v David Kopec>degrees. But we get to be at the forefront of how do you fit that into a small liberal arts college
+
+00:09:19.640 --> 00:09:23.140
+<v David Kopec>and still make it career relevant and still have that firm liberal arts foundation.
+
+00:09:23.680 --> 00:09:28.300
+<v Michael Kennedy>Are you concerned about letting all these hackers in on your network if you're teaching a cybersecurity?
+
+00:09:28.820 --> 00:09:32.540
+<v David Kopec>Well, I won't be teaching the cybersecurity courses. So I'm firmly just in the computer
+
+00:09:32.540 --> 00:09:36.260
+<v David Kopec>science education course, and we're hiring additional faculty in cybersecurity and in
+
+00:09:36.420 --> 00:09:41.720
+<v David Kopec>artificial intelligence. I'm more on the management side of those two programs. But, you know, look,
+
+00:09:41.840 --> 00:09:46.060
+<v David Kopec>it's more relevant than ever. When you look at actually the number of students going to college
+
+00:09:46.460 --> 00:09:51.840
+<v David Kopec>for cybersecurity, it's been exploding over the last decade. You know, I just talked about how
+
+00:09:52.040 --> 00:09:56.500
+<v David Kopec>artificial intelligence has just come about as a bachelor's degree. Cybersecurity was kind of there
+
+00:09:56.660 --> 00:10:01.699
+<v David Kopec>15 years ago. So cybersecurity started out as maybe you took a computer security course at the
+
+00:10:01.660 --> 00:10:05.480
+<v David Kopec>end of your computer science degree. Then it became a concentration you could do within some
+
+00:10:05.710 --> 00:10:10.280
+<v David Kopec>computer science degrees. And then in the 2010s, it broke out and became its own bachelor's degree.
+
+00:10:10.640 --> 00:10:14.460
+<v David Kopec>And so we're seeing the same thing right now with AI. It started out, you know, when you did
+
+00:10:14.960 --> 00:10:19.360
+<v David Kopec>undergrad computer science, maybe in the 90s, or like me and the OOs, you might have one course,
+
+00:10:19.510 --> 00:10:23.840
+<v David Kopec>like an intro to AI course that you have at the end of your bachelor's degree. Then it started to
+
+00:10:23.880 --> 00:10:27.359
+<v David Kopec>be something where you do a concentration at Champlain. I developed a concentration in
+
+00:10:27.380 --> 00:10:31.620
+<v David Kopec>artificial intelligence. Now, just in the last five years, we're seeing it break out from being
+
+00:10:31.710 --> 00:10:38.000
+<v David Kopec>just a part of a CS degree to being its whole own, you know, adjacent degree. So I think it's an
+
+00:10:38.180 --> 00:10:42.460
+<v David Kopec>exciting time for that. Of course, there's a hype cycle right now about AI. So a lot of colleges
+
+00:10:42.630 --> 00:10:47.820
+<v David Kopec>are jumping in and I think some of them are doing it the right way. And, you know, having that firm
+
+00:10:47.960 --> 00:10:51.980
+<v David Kopec>foundation in computer science and mathematics, so it's durable. And some of them are doing it in
+
+00:10:52.120 --> 00:10:56.579
+<v Michael Kennedy>kind of a shallow way. We're trying to do it the right way. Yeah, that sounds great. And obviously
+
+00:10:56.600 --> 00:11:00.840
+<v Michael Kennedy>cybersecurity is one of those things that's highly valuable. Nobody wants to be in the news
+
+00:11:01.480 --> 00:11:05.500
+<v Michael Kennedy>for that reason, right? So companies are certainly looking for people with those skills.
+
+00:11:06.440 --> 00:11:12.620
+<v Michael Kennedy>Let's talk one more thing about the university and not the AI focus, but just AI. One of the
+
+00:11:12.630 --> 00:11:19.220
+<v Michael Kennedy>things I think is of all the places that's getting the most scrambled, changed, under pressure,
+
+00:11:19.480 --> 00:11:23.980
+<v Michael Kennedy>whatever you call it, from AI, I think it's education in general. And I'm not talking just
+
+00:11:24.000 --> 00:11:28.000
+<v Michael Kennedy>college. I'm talking, I don't know, like third grade. As soon as the kids can start using AI,
+
+00:11:28.220 --> 00:11:32.120
+<v Michael Kennedy>they're like, this is like the calculator with a rocket booster on it. You know what I mean? Like
+
+00:11:32.200 --> 00:11:38.200
+<v Michael Kennedy>this will solve the problems. And I think there's a really big challenge for you as universities to
+
+00:11:38.480 --> 00:11:43.700
+<v Michael Kennedy>connect with students, keep academic integrity as well. But there's also a huge problem, I think,
+
+00:11:43.760 --> 00:11:49.500
+<v Michael Kennedy>for the students to not let it undercut their education and end up going, well, all I know
+
+00:11:49.480 --> 00:11:54.560
+<v David Kopec>to do is to do ChatGPT. You're absolutely right. I mean, it's a huge challenge in computer science
+
+00:11:54.920 --> 00:12:00.060
+<v David Kopec>education. And I don't think the computer science education community has yet completely figured it
+
+00:12:00.240 --> 00:12:05.460
+<v David Kopec>out. Well, basically what it breaks down to is exactly what you said. Students are just using
+
+00:12:05.620 --> 00:12:12.060
+<v David Kopec>ChatGPT or GitHub Copilot to do their homework. And if you're in a first year or second year class,
+
+00:12:12.460 --> 00:12:17.459
+<v David Kopec>I've been mostly teaching upper level CS for the past like six plus years. And I'm teaching an
+
+00:12:17.440 --> 00:12:22.680
+<v David Kopec>intro class for the first time in a long time this semester. And it's been eye-opening for me
+
+00:12:22.960 --> 00:12:28.180
+<v David Kopec>to see how many students are trying to just do every assignment with ChatGPT. And we still have
+
+00:12:28.180 --> 00:12:32.840
+<v David Kopec>to give them basic assignments. When you're first learning how to do a for loop or what a function
+
+00:12:33.100 --> 00:12:36.660
+<v David Kopec>is or what an if statement is even, right? You got to write some of those things.
+
+00:12:36.660 --> 00:12:39.880
+<v Michael Kennedy>You can't say implement a database and get back to me next week. You got to start somewhere.
+
+00:12:40.260 --> 00:12:45.439
+<v David Kopec>So we still have to teach these fundamentals, but we have this opponent to us in some sense
+
+00:12:45.440 --> 00:12:51.320
+<v David Kopec>of this ease of access to something that can just do all the work for you. And so I'm sure that,
+
+00:12:51.430 --> 00:12:55.640
+<v David Kopec>you know, like you mentioned, mathematics educators had similar challenges in the 1970s,
+
+00:12:55.860 --> 00:13:02.500
+<v David Kopec>1980s as calculators became prominent. So what I've done and I've been adjusting as since chat
+
+00:13:02.580 --> 00:13:07.940
+<v David Kopec>GPT came out in fall 2022, I've been constantly adjusting and reevaluating, but I have had to go
+
+00:13:08.040 --> 00:13:12.700
+<v David Kopec>back to the future a little bit and people might find this a little anachronistic, but I've heard
+
+00:13:12.660 --> 00:13:17.860
+<v David Kopec>about it from other CS educators as well, going back to doing some paper exams. I know that sounds
+
+00:13:18.300 --> 00:13:23.760
+<v David Kopec>crazy and I know that sounds like bizarre, but at some point you need to evaluate if students
+
+00:13:24.180 --> 00:13:29.180
+<v David Kopec>actually know how to write a for loop because, you know, while we think, some people think LLMs are
+
+00:13:29.180 --> 00:13:33.300
+<v David Kopec>going to replace software engineers in the next two years, you still need to understand what it's
+
+00:13:33.440 --> 00:13:36.260
+<v David Kopec>outputting. And I don't think it's, I don't know about you, Michael, but I don't think they're
+
+00:13:36.420 --> 00:13:41.220
+<v Michael Kennedy>completely replacing software engineers in the next couple of years. And that's coming, I don't
+
+00:13:41.180 --> 00:13:46.900
+<v Michael Kennedy>know how many people maybe don't necessarily. I'm a huge fan of agentic coding and what it can do
+
+00:13:47.000 --> 00:13:53.160
+<v Michael Kennedy>for productivity. And it's incredibly powerful, but it's one of those things that it needs someone to
+
+00:13:53.300 --> 00:13:58.300
+<v Michael Kennedy>guide it who knows how to do that. And then it becomes a superpower. If you don't, you end up
+
+00:13:58.300 --> 00:14:02.800
+<v Michael Kennedy>with like, how do we end up on React? I thought this was a Rust project. You're like, what happened
+
+00:14:02.920 --> 00:14:06.619
+<v David Kopec>here? Yeah. And you need to understand when it makes mistakes, you need to know how to correct
+
+00:14:06.640 --> 00:14:11.880
+<v David Kopec>those mistakes. And of course, you need to be understanding everything that it's outputting,
+
+00:14:11.880 --> 00:14:18.120
+<v Michael Kennedy>so you're auditing it. This portion of Talk Python To Me is brought to you by Sentry's Seer.
+
+00:14:18.820 --> 00:14:24.960
+<v Michael Kennedy>I'm excited to share a new tool from Sentry, Seer. Seer is your AI-driven pair programmer that finds,
+
+00:14:25.160 --> 00:14:30.999
+<v Michael Kennedy>diagnoses, and fixes code issues in your Python app faster than ever. If you're already using
+
+00:14:31.020 --> 00:14:37.240
+<v Michael Kennedy>Sentry, you are already using Sentry, right? Then using Seer is as simple as enabling a feature on
+
+00:14:37.240 --> 00:14:42.600
+<v Michael Kennedy>your already existing project. Seer taps into all the rich context Sentry has about an error.
+
+00:14:43.220 --> 00:14:48.580
+<v Michael Kennedy>Stack traces, logs, commit history, performance data, essentially everything. Then it employs its
+
+00:14:48.880 --> 00:14:54.020
+<v Michael Kennedy>agentic AI code capabilities to figure out what is wrong. It's like having a senior developer
+
+00:14:54.360 --> 00:15:00.260
+<v Michael Kennedy>pair programming with you on bug fixes. Seer then proposes a solution, generating a patch for your
+
+00:15:00.180 --> 00:15:05.700
+<v Michael Kennedy>code and even opening a GitHub pull request. This leaves the developers in charge because it's up to
+
+00:15:05.700 --> 00:15:11.780
+<v Michael Kennedy>them to actually approve the PR. But it can reduce the time from error detection to fix dramatically.
+
+00:15:12.500 --> 00:15:17.120
+<v Michael Kennedy>Developers who've tried it found it can fix errors in one shot that would have taken them
+
+00:15:17.430 --> 00:15:25.439
+<v Michael Kennedy>hours to debug. SEER boasts a 94.5% accuracy in identifying root causes. SEER also prioritizes
+
+00:15:25.460 --> 00:15:31.860
+<v Michael Kennedy>actionable issues with an actionability score, so you know what to fix first. This transforms
+
+00:15:32.240 --> 00:15:38.000
+<v Michael Kennedy>Sentry errors into actionable fixes, turning a pile of error reports into an ordered to-do list.
+
+00:15:38.660 --> 00:15:43.800
+<v Michael Kennedy>If you could use an always-on-call AI agent to help track down errors and propose fixes before
+
+00:15:43.900 --> 00:15:50.120
+<v Michael Kennedy>you even have time to read the notification, check out Sentry's Seer. Just visit talkpython.fm
+
+00:15:50.260 --> 00:15:54.840
+<v Michael Kennedy>slash Seer, S-E-E-R. The link is in your podcast player's show notes.
+
+00:15:55.360 --> 00:16:01.160
+<v Michael Kennedy>be sure to use our code talkpython one word all caps thank you dysentery for supporting talk
+
+00:16:01.320 --> 00:16:08.160
+<v David Kopec>pythonomy so we are having a real challenge especially in those intro classes of how do you
+
+00:16:08.300 --> 00:16:13.240
+<v David Kopec>kind of force students to not use these tools essentially because you're not learning anything
+
+00:16:13.310 --> 00:16:18.600
+<v David Kopec>if the tool writes the for loop for you when you're first learning how to do a for loop and so you have
+
+00:16:18.600 --> 00:16:24.900
+<v David Kopec>to find ways to to encourage it to to win hearts and minds i think of course that's a big part of it
+
+00:16:24.920 --> 00:16:30.940
+<v David Kopec>is convincing students and being dynamic and enthusiastic about how good it feels to really
+
+00:16:31.140 --> 00:16:36.020
+<v David Kopec>understand how this actually works. But then there has to be enforcement too. And sometimes that feels
+
+00:16:36.050 --> 00:16:41.560
+<v David Kopec>a little anachronistic being forceful about it or going back to doing tests on paper. But we have to
+
+00:16:41.700 --> 00:16:46.920
+<v David Kopec>have ways of ensuring the knowledge is actually there. I feel like this is not just a college
+
+00:16:47.140 --> 00:16:52.860
+<v Michael Kennedy>student issue, but I think it's especially relevant in that part of your career that the struggle is
+
+00:16:52.880 --> 00:16:59.380
+<v Michael Kennedy>not in the way. The struggle is often part of what unlocks your thinking. It's part of what
+
+00:16:59.600 --> 00:17:03.500
+<v Michael Kennedy>cements the knowledge and makes you feel a true sense of accomplishment. When you're like,
+
+00:17:03.720 --> 00:17:08.920
+<v Michael Kennedy>I tried this and I couldn't get it to work. But three hours later, I finally figured it out. And
+
+00:17:09.020 --> 00:17:15.100
+<v Michael Kennedy>I now understand iterators. Finally. You know what I mean? And it's just so easy to push the easy
+
+00:17:15.449 --> 00:17:21.380
+<v Michael Kennedy>button and just say, chat, why? Yeah. You know? And that's what feels good about being a teacher
+
+00:17:21.400 --> 00:17:24.380
+<v David Kopec>is being there for those aha moments with students.
+
+00:17:24.730 --> 00:17:26.319
+<v David Kopec>I had some moments like that last week
+
+00:17:26.430 --> 00:17:27.480
+<v David Kopec>and they reminded me,
+
+00:17:27.959 --> 00:17:29.420
+<v David Kopec>this is why you're in this career.
+
+00:17:31.280 --> 00:17:34.460
+<v David Kopec>It's really something that can become addictive
+
+00:17:34.860 --> 00:17:35.600
+<v David Kopec>to students actually.
+
+00:17:35.810 --> 00:17:37.160
+<v David Kopec>When they start having those aha moments,
+
+00:17:37.320 --> 00:17:39.840
+<v David Kopec>they want more of them and it spurs on.
+
+00:17:40.300 --> 00:17:41.940
+<v Michael Kennedy>That's how you end up at like 3 a.m.
+
+00:17:42.440 --> 00:17:43.000
+<v Michael Kennedy>really hungry,
+
+00:17:43.790 --> 00:17:44.860
+<v Michael Kennedy>wondering why you haven't gone to sleep
+
+00:17:45.000 --> 00:17:45.640
+<v Michael Kennedy>but still programming.
+
+00:17:45.810 --> 00:17:47.660
+<v Michael Kennedy>You're like, this is amazing, I can't stop.
+
+00:17:48.140 --> 00:17:48.700
+<v David Kopec>Right, right, right.
+
+00:17:48.840 --> 00:17:53.420
+<v David Kopec>And it takes a certain mindset to be able to appreciate those moments.
+
+00:17:54.500 --> 00:18:02.760
+<v David Kopec>And, you know, this is like a sidebar, but one thing we're also seeing in computer science education is we see a lot of folks who go into it sometimes for the wrong reasons.
+
+00:18:03.560 --> 00:18:07.760
+<v David Kopec>Folks sometimes go into computer science just because they hear, this is a great way to get a good job.
+
+00:18:08.560 --> 00:18:15.240
+<v David Kopec>And if that's your only motivation going into it, you're probably not going to be successful in it, unfortunately.
+
+00:18:15.760 --> 00:18:17.400
+<v Michael Kennedy>It's going to be tough. Yeah, it's going to be tough.
+
+00:18:17.700 --> 00:18:20.900
+<v Michael Kennedy>But a lot of people are there for the right reasons. So I think that that's good.
+
+00:18:21.160 --> 00:18:25.520
+<v David Kopec>Absolutely. And I hope with a book like this, folks who came in from the other side,
+
+00:18:25.900 --> 00:18:31.780
+<v David Kopec>folks who came in because they had that interest, but they didn't have the chance to either go to
+
+00:18:31.900 --> 00:18:35.220
+<v David Kopec>university, maybe they couldn't afford it, maybe they studied something else and they're later in
+
+00:18:35.300 --> 00:18:41.680
+<v David Kopec>their career. This will hopefully give them a bunch of those aha moments and about topics that
+
+00:18:41.680 --> 00:18:46.720
+<v David Kopec>are deeper than just how to write a for loop. Yeah, absolutely. Well, good. I mean, I feel like
+
+00:18:46.740 --> 00:18:51.000
+<v Michael Kennedy>there's probably some middle ground you might be able to accomplish if you're like, all right,
+
+00:18:51.320 --> 00:18:56.440
+<v Michael Kennedy>we're going to give you a laptop, a testing laptop that has no internet. Like we've gone in there and
+
+00:18:56.720 --> 00:19:01.240
+<v Michael Kennedy>crushed the network card. Yeah. Here, take the test. And here's your thumb drive to submit your
+
+00:19:01.400 --> 00:19:04.660
+<v Michael Kennedy>work and potentially, you know, potentially. Yeah. Yeah. And when we do stuff like that,
+
+00:19:04.780 --> 00:19:10.320
+<v David Kopec>like I just did a test on, you know, an online test for my students and I'm just monitoring to
+
+00:19:10.400 --> 00:19:15.300
+<v David Kopec>make sure nobody's using the tools. You know, but there is something said still for paper exams.
+
+00:19:15.380 --> 00:19:19.660
+<v David Kopec>I'll tell you why. Sometimes even today on today's tools for giving exams, sometimes you want students
+
+00:19:19.710 --> 00:19:23.520
+<v David Kopec>to draw something, especially if it's a data structures and algorithms class, you might want
+
+00:19:23.550 --> 00:19:27.740
+<v David Kopec>them to draw a tree and it's just actually easier for them to do that on paper. So when people hear
+
+00:19:27.860 --> 00:19:31.320
+<v David Kopec>paper, they might be like, oh my goodness, what are you doing that for? No, there's real reasons.
+
+00:19:32.280 --> 00:19:37.220
+<v David Kopec>Yeah, of course. But yeah, we have monitoring tools too. Yeah, very good. All right. Let's maybe
+
+00:19:37.680 --> 00:19:41.480
+<v Michael Kennedy>take a couple of different examples or different chapters in the book and talk through them.
+
+00:19:41.960 --> 00:19:47.860
+<v Michael Kennedy>The first one, the first main topic is the smallest possible programming language, right?
+
+00:19:48.240 --> 00:19:49.040
+<v David Kopec>Yes, yes.
+
+00:19:49.660 --> 00:19:50.240
+<v Michael Kennedy>Tell us about this.
+
+00:19:50.560 --> 00:19:55.860
+<v David Kopec>Yeah, the premise of the chapter is what's the minimum that we need to have a programming language?
+
+00:19:56.380 --> 00:19:57.620
+<v David Kopec>And there's a famous programming language.
+
+00:19:57.760 --> 00:20:02.560
+<v David Kopec>I'm actually not going to use the name of the language on the show, I think, just because it has the F word in it.
+
+00:20:02.620 --> 00:20:03.960
+<v David Kopec>And I didn't make up the name of the language.
+
+00:20:04.520 --> 00:20:07.540
+<v David Kopec>It was developed 30 years ago, but we'll just call it BF, okay?
+
+00:20:07.800 --> 00:20:07.880
+<v David Kopec>Yeah.
+
+00:20:09.160 --> 00:20:10.160
+<v David Kopec>Brain F star.
+
+00:20:10.620 --> 00:20:11.300
+<v David Kopec>Yeah, sure.
+
+00:20:11.620 --> 00:20:17.240
+<v David Kopec>or in AppStar. This language, it only has eight symbols in it. I mean, it literally only has eight
+
+00:20:17.360 --> 00:20:22.000
+<v David Kopec>symbols in it, yet it's what we call Turing complete. And I'm not going to, I won't go into
+
+00:20:22.000 --> 00:20:25.300
+<v David Kopec>the full details of what it means for something to be Turing complete, but let me put it this way.
+
+00:20:25.540 --> 00:20:30.740
+<v David Kopec>A language that is Turing complete can theoretically solve any of the same algorithmic
+
+00:20:31.020 --> 00:20:35.000
+<v David Kopec>problems as any other language that's Turing complete. And every programming language that
+
+00:20:35.000 --> 00:20:39.159
+<v David Kopec>you use is Turing complete, whether it's Java, Python, C, whatever, of course, they're all
+
+00:20:39.100 --> 00:20:44.120
+<v David Kopec>Turing complete. This language with only eight symbols in it is also Turing complete. So while
+
+00:20:44.150 --> 00:20:49.820
+<v David Kopec>you could code something like Quicksort in Python, you could also code it in BF with just eight
+
+00:20:50.000 --> 00:20:55.920
+<v David Kopec>symbols. While you could code a JSON parser in Python, you could also code a JSON parser in BF.
+
+00:20:56.260 --> 00:21:00.740
+<v David Kopec>So by learning this really, really basic language and actually implementing it,
+
+00:21:00.750 --> 00:21:04.500
+<v David Kopec>so implementing an interpreter for it, something that can actually run programs written in it,
+
+00:21:04.540 --> 00:21:09.120
+<v David Kopec>you really get to understand just how little we need to solve computational problems.
+
+00:21:09.340 --> 00:21:10.180
+<v David Kopec>We don't need much.
+
+00:21:10.960 --> 00:21:19.800
+<v David Kopec>We need very minimum amount of computing machinery and very minimum amount of syntax to be able to solve most problems.
+
+00:21:20.320 --> 00:21:22.220
+<v David Kopec>Now, would you want to solve most problems in PF?
+
+00:21:22.340 --> 00:21:22.860
+<v David Kopec>Of course not.
+
+00:21:23.320 --> 00:21:28.940
+<v David Kopec>We just use it as an illustrative example to show this is how simple a programming language can really be
+
+00:21:29.400 --> 00:21:33.320
+<v David Kopec>and still have all the same capabilities as a more advanced programming language.
+
+00:21:33.700 --> 00:21:36.800
+<v David Kopec>And you might wonder then why do we have such much more advanced programming languages?
+
+00:21:37.300 --> 00:21:39.020
+<v David Kopec>Because they give us a lot more developer productivity.
+
+00:21:39.200 --> 00:21:43.380
+<v David Kopec>They have more abstractions that let us think as human beings instead of thinking like machines.
+
+00:21:43.800 --> 00:21:45.080
+<v David Kopec>The expressiveness, absolutely.
+
+00:21:45.880 --> 00:21:48.440
+<v David Kopec>And so that's great that we have all of that.
+
+00:21:48.800 --> 00:21:54.600
+<v David Kopec>But if you really want to understand essentially what the language is doing at the lowest levels, you only need these few bits.
+
+00:21:55.040 --> 00:21:56.980
+<v Michael Kennedy>So what's the key message here?
+
+00:21:57.160 --> 00:22:00.480
+<v Michael Kennedy>Obviously, you're not trying to get people to become BF experts, right?
+
+00:22:00.660 --> 00:22:04.020
+<v Michael Kennedy>I mean, maybe learn Cobalt over BF these days.
+
+00:22:05.200 --> 00:22:06.840
+<v David Kopec>It could work for the Social Security Administration.
+
+00:22:07.340 --> 00:22:08.120
+<v David Kopec>Yes, exactly.
+
+00:22:08.300 --> 00:22:10.360
+<v Michael Kennedy>There's going to be some high-paying Cobalt jobs out there.
+
+00:22:11.400 --> 00:22:18.760
+<v Michael Kennedy>But this is more about writing an actual interpreter, very much like CPython itself, in a sense, conceptually.
+
+00:22:19.620 --> 00:22:20.060
+<v David Kopec>Conceptually.
+
+00:22:20.250 --> 00:22:22.180
+<v David Kopec>I mean, much, much, much simpler.
+
+00:22:22.440 --> 00:22:28.020
+<v David Kopec>And actually, in the next chapter, we get to writing a basic interpreter, which is just one step up from BF.
+
+00:22:28.510 --> 00:22:29.760
+<v David Kopec>And we can talk about that in a minute.
+
+00:22:29.820 --> 00:22:34.120
+<v David Kopec>But yeah, it's about understanding how it works at a low level.
+
+00:22:34.350 --> 00:22:35.480
+<v David Kopec>Like what's it actually doing?
+
+00:22:35.620 --> 00:22:38.440
+<v David Kopec>And, you know, it feels good to make something that can run programs.
+
+00:22:39.800 --> 00:22:44.420
+<v David Kopec>A lot of people, when they get into computer science, are actually excited about like making their own language.
+
+00:22:45.020 --> 00:22:48.700
+<v David Kopec>So by doing these first couple of chapters of the book, you're actually on the path to that.
+
+00:22:48.750 --> 00:22:57.400
+<v David Kopec>I think after reading these first two chapters, you could go implement your own simple language and really make that kind of dream that a lot of us have come true.
+
+00:22:57.860 --> 00:22:59.500
+<v David Kopec>So it's about understanding how it works at a low level.
+
+00:22:59.720 --> 00:23:02.240
+<v David Kopec>I have to say the book is not a practical book.
+
+00:23:02.360 --> 00:23:04.460
+<v David Kopec>It's not like talk Python in production
+
+00:23:05.020 --> 00:23:05.820
+<v David Kopec>where you're going to learn,
+
+00:23:06.070 --> 00:23:07.820
+<v David Kopec>you know, here's some useful tools
+
+00:23:08.020 --> 00:23:09.240
+<v David Kopec>and tips and strategies.
+
+00:23:09.610 --> 00:23:11.240
+<v Michael Kennedy>Install this thing and set up that config
+
+00:23:11.410 --> 00:23:12.100
+<v Michael Kennedy>and then run it this way.
+
+00:23:12.100 --> 00:23:12.900
+<v David Kopec>To do something right now.
+
+00:23:13.480 --> 00:23:13.560
+<v David Kopec>Right.
+
+00:23:13.920 --> 00:23:14.720
+<v David Kopec>Computer Science from Scratch
+
+00:23:14.720 --> 00:23:16.700
+<v David Kopec>is not going to help you build your next app
+
+00:23:16.940 --> 00:23:17.960
+<v David Kopec>like that you're building.
+
+00:23:18.680 --> 00:23:19.240
+<v David Kopec>Not directly.
+
+00:23:19.660 --> 00:23:20.260
+<v David Kopec>Not directly,
+
+00:23:20.520 --> 00:23:21.960
+<v David Kopec>but it is going to help you understand
+
+00:23:22.110 --> 00:23:24.060
+<v David Kopec>a lot more about what's happening
+
+00:23:24.190 --> 00:23:24.840
+<v David Kopec>under the covers,
+
+00:23:25.370 --> 00:23:27.100
+<v David Kopec>which is ultimately going to make you think
+
+00:23:27.360 --> 00:23:29.139
+<v David Kopec>more broadly as a software developer
+
+00:23:29.140 --> 00:23:32.500
+<v David Kopec>and understand different strategies that you might be able to use.
+
+00:23:32.500 --> 00:23:34.400
+<v David Kopec>I'll give you an example with this interpreter stuff.
+
+00:23:35.100 --> 00:23:39.080
+<v David Kopec>You might be writing a program that needs to have some kind of configuration files,
+
+00:23:39.620 --> 00:23:43.040
+<v David Kopec>and you want to maybe be able to parse those configuration files.
+
+00:23:43.520 --> 00:23:46.180
+<v David Kopec>Well, part of writing an interpreter is writing a parser,
+
+00:23:46.580 --> 00:23:49.940
+<v David Kopec>something that understands the syntax of the programming languages
+
+00:23:50.130 --> 00:23:51.720
+<v David Kopec>and starts to get towards the semantics.
+
+00:23:52.180 --> 00:23:54.860
+<v David Kopec>And you might want to be able to write a parser later on
+
+00:23:55.000 --> 00:23:58.579
+<v David Kopec>for some very specific configuration type format that you've come up with
+
+00:23:58.800 --> 00:24:02.720
+<v David Kopec>for some, or maybe even just a file format for more of like an office type program.
+
+00:24:03.240 --> 00:24:08.140
+<v David Kopec>And you're going to need some way of understanding the techniques of how to parse that. Learning how
+
+00:24:08.140 --> 00:24:12.240
+<v David Kopec>an interpreter works will help you write that program later on. So it's about learning computational
+
+00:24:12.660 --> 00:24:16.760
+<v David Kopec>techniques, learning problem solving techniques more than it is about like something that's going to
+
+00:24:17.040 --> 00:24:20.700
+<v David Kopec>necessarily be, this is exactly how you do this for the next app you're going to build.
+
+00:24:20.940 --> 00:24:28.560
+<v Michael Kennedy>It's not something that you would just stumble across most of the time, I think, right? You'll
+
+00:24:28.580 --> 00:24:32.920
+<v Michael Kennedy>across, you know, oh, here's an ML library or something, but you don't typically stumble across
+
+00:24:33.260 --> 00:24:37.880
+<v Michael Kennedy>and here's how you build a parser from scratch. Right. And so, you know, there has to be that
+
+00:24:38.080 --> 00:24:43.160
+<v David Kopec>curiosity there. So I will admit that, you know, if you have no interest and you're not the type
+
+00:24:43.160 --> 00:24:46.380
+<v David Kopec>of person who wants to understand how things work, you won't like this book. And you know,
+
+00:24:46.480 --> 00:24:50.540
+<v David Kopec>that is some folks and that's okay. There's folks who go into programming because they're only
+
+00:24:50.800 --> 00:24:55.500
+<v David Kopec>interested in what they can build and they're not so interested in how things work. And if that's
+
+00:24:55.520 --> 00:24:59.860
+<v David Kopec>you, this is probably not the book for you. But if you're the type of person who has that curiosity
+
+00:24:59.960 --> 00:25:04.660
+<v David Kopec>and you really want to understand how everything's actually working under the covers, then this is a
+
+00:25:04.660 --> 00:25:10.520
+<v Michael Kennedy>great book. Yeah, absolutely. And it's a simple enough thing that you can grasp the ideas pretty
+
+00:25:10.700 --> 00:25:15.840
+<v Michael Kennedy>quickly with this BF language, right? It's not so complicated that you, you know, a day later,
+
+00:25:15.980 --> 00:25:21.740
+<v David Kopec>still trying to make the thing parse. Absolutely. I mean, what's crazy is to interpret BF,
+
+00:25:22.200 --> 00:25:25.980
+<v David Kopec>you only need about 30 lines of code, 30 lines of Python.
+
+00:25:26.380 --> 00:25:30.520
+<v David Kopec>And then you actually have something that can run any program written in this language.
+
+00:25:31.240 --> 00:25:36.720
+<v Michael Kennedy>And to be clear, you have like something.bf files that you can put the language into,
+
+00:25:36.860 --> 00:25:40.200
+<v Michael Kennedy>and then you say Python, this module, that file,
+
+00:25:40.280 --> 00:25:43.600
+<v Michael Kennedy>and it'll run it as if it were an interpreter for that thing, right?
+
+00:25:43.860 --> 00:25:44.520
+<v David Kopec>Exactly. Yeah.
+
+00:25:44.680 --> 00:25:47.740
+<v David Kopec>You're literally implementing the whole programming language in like 30 lines of Python.
+
+00:25:48.260 --> 00:25:50.100
+<v David Kopec>And I think what's great about this too,
+
+00:25:50.540 --> 00:25:52.960
+<v David Kopec>is it takes away the feeling that everything is magic.
+
+00:25:54.300 --> 00:25:56.280
+<v David Kopec>That's another thing I love when people read
+
+00:25:56.320 --> 00:25:58.500
+<v David Kopec>also class computer science problems in Python
+
+00:25:58.660 --> 00:26:01.620
+<v David Kopec>is sometimes when you think about how these things work,
+
+00:26:01.800 --> 00:26:04.200
+<v David Kopec>like in that book, we cover the A-star algorithm,
+
+00:26:04.260 --> 00:26:06.520
+<v David Kopec>which is something that Google Maps work uses.
+
+00:26:06.960 --> 00:26:08.080
+<v David Kopec>When you think about Google Maps,
+
+00:26:08.740 --> 00:26:10.360
+<v David Kopec>it feels like magic when you use it.
+
+00:26:10.920 --> 00:26:12.980
+<v David Kopec>But actually there's really understandable,
+
+00:26:13.200 --> 00:26:15.580
+<v David Kopec>logical algorithms that are underneath the surface.
+
+00:26:16.060 --> 00:26:16.780
+<v David Kopec>It's the same thing here.
+
+00:26:17.000 --> 00:26:19.260
+<v David Kopec>Python itself might feel like magic to a lot of folks.
+
+00:26:19.600 --> 00:26:26.540
+<v David Kopec>But by the time you get through these first couple chapters, especially through the basic interpreter chapter, you'll start to be on the road to think, oh, you know what?
+
+00:26:26.570 --> 00:26:32.280
+<v David Kopec>I bet I could dive into the CPython source code with enough additional training and really understand it.
+
+00:26:32.290 --> 00:26:35.280
+<v David Kopec>It gives you that confidence that this is not just magic.
+
+00:26:35.480 --> 00:26:39.480
+<v Michael Kennedy>You just got to look at the byte codes and look at it go.
+
+00:26:40.100 --> 00:26:40.200
+<v David Kopec>Yeah.
+
+00:26:40.520 --> 00:26:44.540
+<v David Kopec>Not to say there's not a lot more there, but it just gets you on that journey and makes you see it's not magic.
+
+00:26:44.840 --> 00:26:45.060
+<v Michael Kennedy>Right.
+
+00:26:45.280 --> 00:26:49.080
+<v Michael Kennedy>Well, it's that zero to one sort of gap that's the hardest to cross.
+
+00:26:49.480 --> 00:26:49.580
+<v Michael Kennedy>Yeah.
+
+00:26:49.960 --> 00:26:50.140
+<v Michael Kennedy>Yeah.
+
+00:26:50.420 --> 00:26:54.980
+<v Michael Kennedy>You know, like the second language, second programming language you learn or the third
+
+00:26:55.080 --> 00:26:58.080
+<v Michael Kennedy>or the fourth, they only get easier to learn, not harder to learn.
+
+00:26:58.620 --> 00:27:01.640
+<v Michael Kennedy>Whereas, you know, maybe when you're first starting out and you're trying to get something
+
+00:27:01.660 --> 00:27:04.860
+<v Michael Kennedy>to compile and it won't even run, you're like, oh my God, how am I going to do?
+
+00:27:04.860 --> 00:27:05.820
+<v Michael Kennedy>I can't even learn this one.
+
+00:27:06.000 --> 00:27:07.360
+<v Michael Kennedy>There's all these things I'm going to have to know.
+
+00:27:07.540 --> 00:27:09.200
+<v Michael Kennedy>And it's really kind of upside down.
+
+00:27:09.500 --> 00:27:09.980
+<v David Kopec>Yeah, absolutely.
+
+00:27:10.680 --> 00:27:15.320
+<v David Kopec>And so, you know, when we think about understanding how Python itself works, I think the second
+
+00:27:15.560 --> 00:27:19.360
+<v David Kopec>chapter of the book about basic gets us, you know, a lot further along on that journey.
+
+00:27:19.420 --> 00:27:21.580
+<v David Kopec>because here this isn't just a made up.
+
+00:27:22.160 --> 00:27:24.400
+<v David Kopec>BF is, it's a language that's been around
+
+00:27:24.440 --> 00:27:26.300
+<v David Kopec>in computer science education for like 30 years,
+
+00:27:26.720 --> 00:27:28.980
+<v David Kopec>but it's not a real language that people actually used.
+
+00:27:29.300 --> 00:27:30.100
+<v Michael Kennedy>And the second factor-
+
+00:27:30.100 --> 00:27:33.280
+<v Michael Kennedy>Very few people ever said that they were BF programmers
+
+00:27:33.280 --> 00:27:34.840
+<v Michael Kennedy>at a dinner party, right?
+
+00:27:35.440 --> 00:27:35.880
+<v David Kopec>Absolutely.
+
+00:27:35.880 --> 00:27:38.540
+<v David Kopec>But plenty of people said they were basic programmers.
+
+00:27:38.540 --> 00:27:40.140
+<v David Kopec>And it was the first programming language
+
+00:27:40.140 --> 00:27:42.160
+<v David Kopec>of a lot of people who grew up in the 70s, 80s,
+
+00:27:42.160 --> 00:27:42.800
+<v David Kopec>or even the 90s.
+
+00:27:42.800 --> 00:27:44.660
+<v David Kopec>It was my first programming language.
+
+00:27:44.660 --> 00:27:47.680
+<v David Kopec>And there was a dialect of basic called tiny basic
+
+00:27:47.680 --> 00:27:49.120
+<v David Kopec>that came out in the late 1970s.
+
+00:27:49.160 --> 00:27:54.860
+<v David Kopec>it was actually one of the first free software projects. And it would run on machines that just
+
+00:27:55.040 --> 00:28:01.260
+<v David Kopec>had two or four kilobytes of RAM. So that's why it was called Tiny Basic. I mean, it truly was
+
+00:28:01.400 --> 00:28:06.700
+<v David Kopec>tiny. And so we re-implement a dialect of Tiny Basic in chapter two. So this is re-implementing
+
+00:28:06.700 --> 00:28:12.440
+<v David Kopec>a real programming language that people actually used for real work in the late 1970s and up to the
+
+00:28:12.520 --> 00:28:17.560
+<v David Kopec>early 1980s. And it can run real programs from that period. So you could go download a program
+
+00:28:17.560 --> 00:28:22.000
+<v David Kopec>from the late 70s, we were missing like one or two features from the real language.
+
+00:28:22.540 --> 00:28:25.560
+<v David Kopec>But if you have a pro, not all programs use all those features, you could actually run
+
+00:28:25.660 --> 00:28:26.340
+<v David Kopec>it in this interpreter.
+
+00:28:26.580 --> 00:28:30.940
+<v David Kopec>So we go from the first language where it's really esoteric, educational, you know, weird
+
+00:28:31.140 --> 00:28:32.520
+<v David Kopec>language to the second chapter.
+
+00:28:32.780 --> 00:28:33.560
+<v David Kopec>This was a real thing.
+
+00:28:33.820 --> 00:28:34.620
+<v Michael Kennedy>Yeah, absolutely.
+
+00:28:34.660 --> 00:28:37.620
+<v Michael Kennedy>It was, you know, I'm just going to give a little shout out to Visual Basic.
+
+00:28:38.080 --> 00:28:38.180
+<v David Kopec>Yeah.
+
+00:28:38.600 --> 00:28:39.020
+<v Michael Kennedy>I don't know.
+
+00:28:39.260 --> 00:28:40.180
+<v Michael Kennedy>Did you ever do Visual Basic?
+
+00:28:40.560 --> 00:28:40.920
+<v David Kopec>I did.
+
+00:28:41.020 --> 00:28:43.340
+<v David Kopec>And I did a version on the Mac called Real Basic.
+
+00:28:43.900 --> 00:28:45.460
+<v David Kopec>So this is really esoteric.
+
+00:28:45.540 --> 00:28:48.520
+<v David Kopec>But anyone who used real basic, late 90s, I'm in your camp.
+
+00:28:48.720 --> 00:28:49.160
+<v Michael Kennedy>There you go.
+
+00:28:50.100 --> 00:28:56.920
+<v Michael Kennedy>I don't know if we even today still have something as approachable and productive as Visual Basic was.
+
+00:28:57.340 --> 00:28:59.360
+<v Michael Kennedy>For people who haven't used it, you're like, there's just no way.
+
+00:28:59.560 --> 00:29:00.600
+<v Michael Kennedy>There's no way that it's basic.
+
+00:29:01.180 --> 00:29:02.700
+<v Michael Kennedy>But you would just get a visual thing.
+
+00:29:02.700 --> 00:29:07.560
+<v Michael Kennedy>You would drag it together to build your, you know, here, I want to have, literally, you would drag over.
+
+00:29:07.740 --> 00:29:08.600
+<v Michael Kennedy>Here's a web browser.
+
+00:29:08.920 --> 00:29:09.780
+<v Michael Kennedy>Here's the address bar.
+
+00:29:09.940 --> 00:29:10.620
+<v Michael Kennedy>Here's a go button.
+
+00:29:11.040 --> 00:29:14.760
+<v Michael Kennedy>And then you would double click the go button and would create an event handler.
+
+00:29:14.820 --> 00:29:19.320
+<v Michael Kennedy>and then you would go webbrowser.gototext.value or whatever.
+
+00:29:19.520 --> 00:29:21.240
+<v Michael Kennedy>I mean, that was literally, you could do it in five minutes.
+
+00:29:21.340 --> 00:29:22.560
+<v Michael Kennedy>You could like create something
+
+00:29:22.700 --> 00:29:24.940
+<v Michael Kennedy>that is a functional web browser without much.
+
+00:29:25.480 --> 00:29:26.280
+<v Michael Kennedy>It was incredible.
+
+00:29:26.560 --> 00:29:28.340
+<v Michael Kennedy>And so, yeah, I'm just thinking back
+
+00:29:28.500 --> 00:29:29.620
+<v Michael Kennedy>to a few things I've built with it.
+
+00:29:29.620 --> 00:29:30.060
+<v Michael Kennedy>It was amazing.
+
+00:29:30.380 --> 00:29:32.000
+<v David Kopec>You know, Michael, a lot of people agree with you.
+
+00:29:32.120 --> 00:29:35.060
+<v David Kopec>There's a lot of articles that I've seen on blogs and stuff
+
+00:29:35.140 --> 00:29:36.880
+<v David Kopec>where people reminisce about Visual Basic.
+
+00:29:37.460 --> 00:29:38.360
+<v David Kopec>And I agree.
+
+00:29:38.520 --> 00:29:40.200
+<v David Kopec>I mean, for desktop app development,
+
+00:29:40.660 --> 00:29:42.340
+<v David Kopec>it was incredibly productive.
+
+00:29:42.380 --> 00:29:47.820
+<v David Kopec>I mean, I think it still rivals some of the tools we have for building web apps today.
+
+00:29:47.980 --> 00:29:50.400
+<v David Kopec>When you think about how easy it was to lay out a user interface.
+
+00:29:51.100 --> 00:29:55.260
+<v David Kopec>And for designers, it was great too, because designers didn't need to know how to code.
+
+00:29:55.600 --> 00:29:59.140
+<v David Kopec>And they could lay out the interface in the same way that it would really appear in the program,
+
+00:29:59.640 --> 00:30:02.940
+<v David Kopec>which is different from how designers work today, where they'll often do mock-ups.
+
+00:30:03.220 --> 00:30:06.040
+<v David Kopec>And the developer will have to take the mock-up and turn it into code.
+
+00:30:06.660 --> 00:30:12.360
+<v David Kopec>And so you kind of lose something there with the designer being able to have the final product
+
+00:30:12.380 --> 00:30:14.660
+<v David Kopec>in front of them as they're changing around how things look.
+
+00:30:15.520 --> 00:30:17.160
+<v David Kopec>So there were elements of it
+
+00:30:17.260 --> 00:30:18.620
+<v David Kopec>that were still missing today, I think.
+
+00:30:18.820 --> 00:30:20.940
+<v Michael Kennedy>- Yeah, I think it really hasn't been matched.
+
+00:30:21.100 --> 00:30:24.120
+<v Michael Kennedy>Windows forms from.NET kind of approached that,
+
+00:30:24.300 --> 00:30:25.700
+<v Michael Kennedy>but it was still, itself was also
+
+00:30:25.730 --> 00:30:26.900
+<v Michael Kennedy>a little bit more complicated.
+
+00:30:27.440 --> 00:30:29.000
+<v Michael Kennedy>There was something special about that.
+
+00:30:29.420 --> 00:30:31.020
+<v Michael Kennedy>And now, don't get me wrong,
+
+00:30:31.200 --> 00:30:33.000
+<v Michael Kennedy>it's not like I'm saying we should just go back to it
+
+00:30:33.000 --> 00:30:35.200
+<v Michael Kennedy>because the software we build is way more advanced,
+
+00:30:35.580 --> 00:30:36.380
+<v Michael Kennedy>does a lot of other things,
+
+00:30:36.570 --> 00:30:39.800
+<v Michael Kennedy>but there's just that lower area is just kind of missing.
+
+00:30:41.720 --> 00:30:44.240
+<v Michael Kennedy>This portion of Talk Python To Me is brought to you by NordStellar.
+
+00:30:44.880 --> 00:30:48.600
+<v Michael Kennedy>NordStellar is a threat exposure management platform from the Nord security family,
+
+00:30:48.820 --> 00:30:52.460
+<v Michael Kennedy>the folks behind NordVPN that combines dark web intelligence,
+
+00:30:53.060 --> 00:30:55.900
+<v Michael Kennedy>session hijacking prevention, brand abuse detection,
+
+00:30:56.260 --> 00:30:58.100
+<v Michael Kennedy>and external attack service management.
+
+00:30:58.580 --> 00:31:01.920
+<v Michael Kennedy>Keeping your team and your company secure is a daunting challenge.
+
+00:31:02.580 --> 00:31:04.600
+<v Michael Kennedy>That's why you need NordStellar on your side.
+
+00:31:04.880 --> 00:31:08.120
+<v Michael Kennedy>It's a comprehensive set of services, monitoring, and alerts
+
+00:31:08.140 --> 00:31:11.000
+<v Michael Kennedy>to limit your exposure to breaches and attacks
+
+00:31:11.660 --> 00:31:13.920
+<v Michael Kennedy>and act instantly if something does happen.
+
+00:31:14.420 --> 00:31:14.980
+<v Michael Kennedy>Here's how it works.
+
+00:31:15.480 --> 00:31:17.400
+<v Michael Kennedy>Nordstellar detects compromised employee
+
+00:31:17.800 --> 00:31:18.780
+<v Michael Kennedy>and consumer credentials.
+
+00:31:19.440 --> 00:31:21.920
+<v Michael Kennedy>It detects stolen authentication cookies
+
+00:31:22.200 --> 00:31:25.060
+<v Michael Kennedy>found in InfoStealer logs and dark web sources
+
+00:31:25.520 --> 00:31:27.040
+<v Michael Kennedy>and flags compromised devices,
+
+00:31:27.660 --> 00:31:31.300
+<v Michael Kennedy>reducing MFA bypass ATOs without extra code in your app.
+
+00:31:31.700 --> 00:31:33.300
+<v Michael Kennedy>Nordstellar scans the dark web
+
+00:31:33.480 --> 00:31:35.340
+<v Michael Kennedy>for cyber threats targeting your company.
+
+00:31:36.080 --> 00:31:41.820
+<v Michael Kennedy>It monitors forums, markets, ransomware blogs, and over 25,000 cybercrime telegram channels
+
+00:31:42.170 --> 00:31:46.420
+<v Michael Kennedy>with alerting and searchable contexts you can route to Slack or your IRR tool.
+
+00:31:47.100 --> 00:31:49.440
+<v Michael Kennedy>Nordstellar adds brand and domain protection.
+
+00:31:50.060 --> 00:31:56.080
+<v Michael Kennedy>It detects cyber squats and lookalikes via visual, content similarity, and search transparency logs,
+
+00:31:56.320 --> 00:32:03.180
+<v Michael Kennedy>plus broader brand abuse takedowns across the web, social, and app stores to cut the phishing risk for your users.
+
+00:32:03.680 --> 00:32:05.540
+<v Michael Kennedy>They don't just alert you about impersonation.
+
+00:32:05.760 --> 00:32:07.440
+<v Michael Kennedy>they file and manage the removals.
+
+00:32:08.000 --> 00:32:10.120
+<v Michael Kennedy>Finally, NordStellar is developer-friendly.
+
+00:32:10.720 --> 00:32:13.320
+<v Michael Kennedy>It's available as a platform and an API.
+
+00:32:14.000 --> 00:32:14.960
+<v Michael Kennedy>No agents to install.
+
+00:32:15.420 --> 00:32:17.360
+<v Michael Kennedy>If security is important to you and your organization,
+
+00:32:17.720 --> 00:32:18.540
+<v Michael Kennedy>check out NordStellar.
+
+00:32:19.020 --> 00:32:21.260
+<v Michael Kennedy>Visit talkpython.fm/nordstellar.
+
+00:32:21.400 --> 00:32:23.120
+<v Michael Kennedy>The link is in your podcast player's show notes
+
+00:32:23.400 --> 00:32:24.300
+<v Michael Kennedy>and on the episode page.
+
+00:32:24.760 --> 00:32:27.440
+<v Michael Kennedy>Please use our link, talkpython.fm/nordstellar,
+
+00:32:27.880 --> 00:32:30.940
+<v Michael Kennedy>so that they know that you heard about their service from us.
+
+00:32:31.300 --> 00:32:32.420
+<v Michael Kennedy>And you know what time of year it is.
+
+00:32:32.680 --> 00:32:33.740
+<v Michael Kennedy>It's late fall.
+
+00:32:34.160 --> 00:32:36.420
+<v Michael Kennedy>That means Black Friday is in play as well.
+
+00:32:36.500 --> 00:32:40.480
+<v Michael Kennedy>So the folks at Nord Stellar gave us a coupon, BlackFriday20.
+
+00:32:41.000 --> 00:32:44.080
+<v Michael Kennedy>That's Black Friday, all one word, all caps, 20, two, zero.
+
+00:32:44.580 --> 00:32:45.960
+<v Michael Kennedy>That grants you 20% off.
+
+00:32:45.980 --> 00:32:47.740
+<v Michael Kennedy>So if you're going to sign up for them soon,
+
+00:32:48.320 --> 00:32:50.520
+<v Michael Kennedy>go ahead and use BlackFriday20 as a code,
+
+00:32:50.720 --> 00:32:52.060
+<v Michael Kennedy>and you might as well save 20%.
+
+00:32:52.180 --> 00:32:54.680
+<v Michael Kennedy>It's good until December 10th, 2025.
+
+00:32:55.620 --> 00:32:57.580
+<v Michael Kennedy>Thank you to the whole Nord security team
+
+00:32:57.820 --> 00:32:58.960
+<v Michael Kennedy>for supporting Talk Python To Me.
+
+00:33:00.200 --> 00:33:01.020
+<v Michael Kennedy>And I want to talk,
+
+00:33:01.220 --> 00:33:03.740
+<v Michael Kennedy>sort of transition from that to something else really.
+
+00:33:03.820 --> 00:33:08.100
+<v Michael Kennedy>We're looking at these two examples of the BF language interpreter and the basic interpreter.
+
+00:33:08.480 --> 00:33:14.560
+<v Michael Kennedy>I hear that to really understand computer science, really to work on these things, I have to.
+
+00:33:14.710 --> 00:33:15.780
+<v Michael Kennedy>I don't, it's not preferable.
+
+00:33:15.850 --> 00:33:19.580
+<v Michael Kennedy>I have to do a language with pointers, malloc, free.
+
+00:33:20.020 --> 00:33:20.740
+<v Michael Kennedy>I've got to.
+
+00:33:21.080 --> 00:33:21.840
+<v Michael Kennedy>I've got to work at that level.
+
+00:33:22.140 --> 00:33:23.100
+<v Michael Kennedy>I just won't understand anything.
+
+00:33:23.820 --> 00:33:26.020
+<v Michael Kennedy>And Python, we don't really have those concepts.
+
+00:33:26.360 --> 00:33:31.100
+<v Michael Kennedy>And the irony, I think, is Python has more pointers than C++ because there's like no stack at all.
+
+00:33:31.270 --> 00:33:31.960
+<v Michael Kennedy>Not at all.
+
+00:33:32.520 --> 00:33:32.880
+<v Michael Kennedy>Really?
+
+00:33:32.900 --> 00:33:37.460
+<v Michael Kennedy>I mean, in the interpreter there is, but not in your writing. Even a number one is just a pointer.
+
+00:33:37.880 --> 00:33:41.280
+<v Michael Kennedy>So Python's full of pointers, but not in the way that computer science thinks about it.
+
+00:33:41.660 --> 00:33:45.880
+<v Michael Kennedy>What are your thoughts about that sort of tension? On one hand, you have this really
+
+00:33:46.060 --> 00:33:52.560
+<v Michael Kennedy>understandable language talking about these ideas, but the computer is calling malloc on a page of
+
+00:33:52.680 --> 00:33:57.180
+<v Michael Kennedy>memory and that's what's happening and they're not seeing it. Okay. So let me talk about it from a
+
+00:33:57.200 --> 00:34:02.660
+<v David Kopec>pedagogy standpoint. So at my last institution, Champlain College, we had a big debate over my
+
+00:34:02.840 --> 00:34:08.679
+<v David Kopec>nine years there. Should we do our first three classes in Python or in C++? And when I came in,
+
+00:34:08.800 --> 00:34:12.700
+<v David Kopec>the first three classes were in C++. And we actually decided over the years to keep it there
+
+00:34:13.040 --> 00:34:17.020
+<v David Kopec>for exactly what you mentioned. We wanted to give students both that high level experience with
+
+00:34:17.120 --> 00:34:21.280
+<v David Kopec>object-oriented programming, but we also wanted them to have experience with pointers, with memory
+
+00:34:21.540 --> 00:34:26.340
+<v David Kopec>management, and understand how things work at a low level. But in that same period of time, many
+
+00:34:26.280 --> 00:34:30.179
+<v David Kopec>schools have moved to Python because of the other thing we talked about, which is accessibility.
+
+00:34:31.200 --> 00:34:37.280
+<v David Kopec>I think Python simply is an easier language to learn than C++. I don't think that most people
+
+00:34:37.320 --> 00:34:42.580
+<v David Kopec>who know both languages would really debate that. And so if we're trying to make those first ramp
+
+00:34:42.700 --> 00:34:48.360
+<v David Kopec>up classes where you're first learning CS as easy as possible, I think Python is the way to go if
+
+00:34:48.360 --> 00:34:51.659
+<v David Kopec>we want to encourage more people into the discipline. That doesn't mean there shouldn't
+
+00:34:51.679 --> 00:35:02.360
+<v David Kopec>Maybe a C or C++ course later on where folks, maybe when they take operating systems or even as part of an architecture class to see how the assembly language matches to a C program, that kind of thing.
+
+00:35:03.320 --> 00:35:06.660
+<v David Kopec>You know, it doesn't mean there shouldn't be C or C++ in the curriculum or Rust or whatever.
+
+00:35:07.660 --> 00:35:13.920
+<v David Kopec>But if we're thinking about what's best for a student who's just coming into the field, I think we need to think about accessibility.
+
+00:35:15.020 --> 00:35:20.940
+<v David Kopec>But at the same time, my advice to all students is learn one language well before you learn any other language.
+
+00:35:21.420 --> 00:35:31.540
+<v David Kopec>So whether you're starting with Python or you're starting with C++, spend a year or two on it and become really decent at it before you go and learn another language.
+
+00:35:31.980 --> 00:35:34.740
+<v David Kopec>And that's the biggest mistake I see folks who are self-taught make.
+
+00:35:35.160 --> 00:35:39.500
+<v David Kopec>The biggest mistake I see folks who are self-taught make is constantly switch around from language to language.
+
+00:35:39.960 --> 00:35:40.880
+<v David Kopec>I need to know this.
+
+00:35:41.100 --> 00:35:41.800
+<v Michael Kennedy>Okay, I got it.
+
+00:35:41.900 --> 00:35:43.020
+<v Michael Kennedy>Now it's time to learn this.
+
+00:35:43.120 --> 00:35:45.440
+<v Michael Kennedy>And they're trying to fill all these gaps, right?
+
+00:35:45.940 --> 00:35:46.340
+<v David Kopec>Right, right.
+
+00:35:46.480 --> 00:35:51.040
+<v David Kopec>Because once you learn Python well, a lot of the stuff in C or C++ will make sense to you.
+
+00:35:51.040 --> 00:35:55.340
+<v David Kopec>The pointers might not, but a lot of the other stuff, like how does a function work?
+
+00:35:55.380 --> 00:35:56.120
+<v David Kopec>How does a loop work?
+
+00:35:56.560 --> 00:35:57.300
+<v David Kopec>What are variables?
+
+00:35:57.980 --> 00:35:58.900
+<v David Kopec>What's a global versus local?
+
+00:35:58.960 --> 00:35:59.620
+<v David Kopec>All that kind of stuff.
+
+00:36:00.220 --> 00:36:01.340
+<v David Kopec>That's going to make sense to you.
+
+00:36:01.340 --> 00:36:05.660
+<v David Kopec>And that's going to be transferable skills once you've really learned it in any one language
+
+00:36:05.880 --> 00:36:06.700
+<v David Kopec>across any other language.
+
+00:36:06.820 --> 00:36:08.460
+<v David Kopec>And then pointers, you can learn later on.
+
+00:36:08.460 --> 00:36:11.440
+<v David Kopec>You don't need to learn that at the beginning of your CS education.
+
+00:36:12.960 --> 00:36:15.200
+<v David Kopec>People make it sound like it's a totally mystical topic.
+
+00:36:16.020 --> 00:36:22.660
+<v David Kopec>If you are able to do calculus, which basically every CS degree requires calculus one, you can learn pointers.
+
+00:36:23.440 --> 00:36:24.120
+<v David Kopec>You'll be okay.
+
+00:36:24.240 --> 00:36:25.180
+<v David Kopec>You can learn pointers.
+
+00:36:26.040 --> 00:36:26.740
+<v Michael Kennedy>Yeah, exactly.
+
+00:36:27.000 --> 00:36:29.900
+<v Michael Kennedy>Like double integrals and all that kind of stuff is way worse.
+
+00:36:30.280 --> 00:36:32.120
+<v Michael Kennedy>I feel like you could also cycle, right?
+
+00:36:32.360 --> 00:36:38.840
+<v Michael Kennedy>So you could start with Python for a couple of classes, then go deeper, closer to the machine with C.
+
+00:36:38.980 --> 00:36:45.800
+<v Michael Kennedy>But then you could come back and say, let's look at Python again with new eyes and try to understand interpreted dynamic languages better.
+
+00:36:45.860 --> 00:36:48.720
+<v Michael Kennedy>because now you can take the red pill
+
+00:36:48.920 --> 00:36:51.360
+<v Michael Kennedy>and you can see the arenas
+
+00:36:51.500 --> 00:36:53.620
+<v Michael Kennedy>and the blocks of the memory allocator
+
+00:36:53.880 --> 00:36:56.540
+<v Michael Kennedy>and the GC and all that kind of stuff, right?
+
+00:36:56.640 --> 00:36:57.780
+<v Michael Kennedy>You could go, actually,
+
+00:36:58.280 --> 00:36:59.240
+<v Michael Kennedy>you didn't know any of this stuff.
+
+00:36:59.240 --> 00:37:00.980
+<v Michael Kennedy>You didn't, nobody probably even thought
+
+00:37:01.060 --> 00:37:02.220
+<v Michael Kennedy>to think is this here
+
+00:37:02.700 --> 00:37:03.800
+<v Michael Kennedy>and yet look at what's underneath
+
+00:37:04.120 --> 00:37:05.100
+<v Michael Kennedy>that you're taking,
+
+00:37:05.240 --> 00:37:06.740
+<v Michael Kennedy>you're building on top of, right?
+
+00:37:07.020 --> 00:37:08.880
+<v David Kopec>Yeah, and also remember how long
+
+00:37:08.920 --> 00:37:10.180
+<v David Kopec>an academic semester is.
+
+00:37:10.220 --> 00:37:11.060
+<v David Kopec>It's 15 weeks.
+
+00:37:11.480 --> 00:37:12.860
+<v David Kopec>So if you're taking a class in college,
+
+00:37:13.040 --> 00:37:15.240
+<v David Kopec>you're forced to be doing that same language
+
+00:37:15.260 --> 00:37:19.440
+<v David Kopec>for 15 weeks. That's really the challenge for self-taught folks is they could just spend two
+
+00:37:19.440 --> 00:37:22.820
+<v David Kopec>days on one, two days on another, right? But absolutely, you're right. Once you've had enough
+
+00:37:23.000 --> 00:37:27.720
+<v David Kopec>time in one, you can cycle to the others back and forth. Yeah, fun. I personally am a fan of
+
+00:37:27.990 --> 00:37:33.680
+<v Michael Kennedy>it being in Python because I feel like one of the biggest challenges to keeping people in computer
+
+00:37:33.860 --> 00:37:40.700
+<v Michael Kennedy>science and programming is that they don't get enough early wins and early like, yes, aha, right?
+
+00:37:40.860 --> 00:37:45.980
+<v Michael Kennedy>It's like, okay, in week 12, we'll let you write a program, but we're going to talk pointers for a while.
+
+00:37:46.360 --> 00:37:48.300
+<v Michael Kennedy>And then you'll finally get to make some, you know what I mean?
+
+00:37:48.380 --> 00:37:53.540
+<v Michael Kennedy>Like it's just so delayed and that's fine for certain people, but there's a lot of people are like, oh, forget this.
+
+00:37:54.140 --> 00:37:55.260
+<v Michael Kennedy>This is not what I thought.
+
+00:37:55.260 --> 00:37:55.660
+<v Michael Kennedy>I'm out.
+
+00:37:55.840 --> 00:37:59.300
+<v David Kopec>And a huge part of that is the Python library ecosystem.
+
+00:37:59.760 --> 00:38:05.960
+<v David Kopec>How easy it is to drop Pygame into an intro class and get somebody building a really simple game.
+
+00:38:06.880 --> 00:38:14.400
+<v David Kopec>You know, it's much harder in C or C++ to start integrating libraries and start having students understand how to use those libraries.
+
+00:38:14.540 --> 00:38:20.200
+<v David Kopec>And it usually requires a lot more knowledge buildup to be able to use pointers and stuff with those libraries.
+
+00:38:20.650 --> 00:38:22.440
+<v David Kopec>So Python just makes everything more accessible.
+
+00:38:22.880 --> 00:38:23.080
+<v David Kopec>Awesome.
+
+00:38:23.480 --> 00:38:23.540
+<v Michael Kennedy>Cool.
+
+00:38:23.800 --> 00:38:24.060
+<v Michael Kennedy>All right.
+
+00:38:24.400 --> 00:38:30.720
+<v Michael Kennedy>The next area that was pretty interesting and a little bit, maybe a little artsy.
+
+00:38:31.100 --> 00:38:31.280
+<v Michael Kennedy>Yeah.
+
+00:38:31.500 --> 00:38:33.000
+<v Michael Kennedy>Is the computational art.
+
+00:38:33.180 --> 00:38:33.820
+<v Michael Kennedy>Tell us about that.
+
+00:38:33.860 --> 00:38:39.480
+<v David Kopec>Yeah. So there's two chapters in the book on computational art. The first one is really
+
+00:38:39.720 --> 00:38:44.620
+<v David Kopec>starting to understand what a pixel is on the screen. And the way we do that is we take modern
+
+00:38:44.890 --> 00:38:50.760
+<v David Kopec>photos and then we want to display them on like an ancient Mac, a Mac from the 1980s,
+
+00:38:51.080 --> 00:38:56.500
+<v David Kopec>like the Mac Plus. And so we're going to take that modern photo and use what's called a dithering
+
+00:38:56.680 --> 00:39:02.520
+<v David Kopec>algorithm to break it down into patterns of black and white pixels because those early Macs were
+
+00:39:02.400 --> 00:39:06.720
+<v David Kopec>only black and white, that will then still kind of look like the photo in black and white with
+
+00:39:06.740 --> 00:39:10.920
+<v David Kopec>these specialized patterns. So you're learning a bunch of things by doing this. One thing you're
+
+00:39:11.020 --> 00:39:15.060
+<v David Kopec>learning is you're learning really what is a pixel. And a pixel is really pretty simple at its base.
+
+00:39:15.180 --> 00:39:19.980
+<v David Kopec>I mean, it's just a color and a location. And so understanding how those pixels are organized
+
+00:39:20.800 --> 00:39:26.140
+<v David Kopec>and really they're just organized usually as an array or, you know, as a list in Python or a
+
+00:39:26.200 --> 00:39:32.360
+<v David Kopec>numpy array or whatever. And then we're understanding some algorithmic stuff. So
+
+00:39:32.380 --> 00:39:34.540
+<v David Kopec>is giving us some algorithmic practice.
+
+00:39:35.120 --> 00:39:36.320
+<v David Kopec>And then a cool thing we do at the end
+
+00:39:36.320 --> 00:39:38.360
+<v David Kopec>is we actually convert it into a file format
+
+00:39:38.780 --> 00:39:42.620
+<v David Kopec>called Mac Paint for displaying on an ancient Mac.
+
+00:39:42.940 --> 00:39:44.940
+<v David Kopec>And that Mac Paint format uses
+
+00:39:45.420 --> 00:39:47.600
+<v David Kopec>a very simple compression scheme
+
+00:39:47.880 --> 00:39:48.900
+<v David Kopec>called run length encoding.
+
+00:39:49.320 --> 00:39:51.440
+<v David Kopec>So we're getting some other kind of algorithmic practice
+
+00:39:51.590 --> 00:39:52.320
+<v David Kopec>in there as well,
+
+00:39:52.900 --> 00:39:54.620
+<v David Kopec>understanding a simple compression algorithm.
+
+00:39:55.020 --> 00:39:57.260
+<v David Kopec>And we're understanding something about file formats too,
+
+00:39:57.560 --> 00:40:00.560
+<v David Kopec>which is really kind of an interesting CS topic as well.
+
+00:40:00.570 --> 00:40:01.380
+<v David Kopec>Yeah, it sure is, yeah.
+
+00:40:01.400 --> 00:40:06.200
+<v David Kopec>to properly format the file so the Mac Paint program on the ancient Mac will open it correctly.
+
+00:40:06.560 --> 00:40:11.040
+<v Michael Kennedy>So yeah, that was something actually when I first got into programming, I feel like I just stuck
+
+00:40:11.100 --> 00:40:16.920
+<v Michael Kennedy>with text oriented files pretty much as long as I could. Because, you know, looking at a binary file,
+
+00:40:17.060 --> 00:40:22.540
+<v Michael Kennedy>like, okay, it has a header and we read the first few bytes and then the value of that byte tells
+
+00:40:22.560 --> 00:40:26.880
+<v Michael Kennedy>you how long the rest of the header is and then like what this means. And then you skip. And I
+
+00:40:26.900 --> 00:40:31.640
+<v Michael Kennedy>don't know. That was just, it was a bridge too far for me in my early programming days. And I was
+
+00:40:31.800 --> 00:40:35.640
+<v Michael Kennedy>like, wow, this is intense. And I was in awe of people like, yeah, we just read the header and we
+
+00:40:35.680 --> 00:40:42.620
+<v David Kopec>do this. I'm like, okay, if you say so. You know, it's a classic CS trade-off between time and space.
+
+00:40:43.120 --> 00:40:48.260
+<v David Kopec>Anything that we do in a binary file, we could do in a text file. But binary files can be more
+
+00:40:48.400 --> 00:40:53.960
+<v David Kopec>efficient because they can be more compact and they can be faster to read from for certain kinds
+
+00:40:53.980 --> 00:41:00.200
+<v David Kopec>of data. So, you know, it's not that we have to use binary files, but understanding what a binary
+
+00:41:00.360 --> 00:41:05.600
+<v David Kopec>file format is like can be eye-opening to some readers. And if you think about like modern file
+
+00:41:05.800 --> 00:41:09.600
+<v David Kopec>formats, of course, text formats are much more explainable, right? That's why we have the rise
+
+00:41:09.600 --> 00:41:15.240
+<v David Kopec>of things like XML in the late nineties up to today, or even JSON as a data interchange format.
+
+00:41:15.500 --> 00:41:20.160
+<v David Kopec>There's alternatives to JSON, of course, that are much more efficient for coding your web app in
+
+00:41:20.180 --> 00:41:25.800
+<v David Kopec>for distributing the data back and forth. But JSON is human readable. Yeah, yeah, yeah. But JSON is
+
+00:41:25.920 --> 00:41:31.360
+<v David Kopec>human readable. So we can right away understand what it's supposed to represent and debug it really
+
+00:41:31.680 --> 00:41:34.780
+<v David Kopec>well. And so it's, you know, it's one of those classic trade-offs. We can have something more
+
+00:41:34.920 --> 00:41:40.460
+<v David Kopec>efficient or we can have something that might take up a little bit more time, but actually,
+
+00:41:40.880 --> 00:41:44.980
+<v David Kopec>you know, is better for us as human beings. Yeah. It's just, I think it's a good skill.
+
+00:41:45.060 --> 00:41:53.820
+<v Michael Kennedy>And also something that was prevalent throughout the book is juggling bits, bits and bytes, not just juggling bytes, but bits and bit flipping and shifting.
+
+00:41:54.110 --> 00:41:59.180
+<v Michael Kennedy>And there's a lot of that going on, especially in the emulator layers and stuff like that.
+
+00:41:59.480 --> 00:42:04.540
+<v David Kopec>Yeah. And even in the Mac paint chapter, because the way Mac paint stores pixels is as individual bits.
+
+00:42:05.040 --> 00:42:09.080
+<v David Kopec>So you have like a one or a zero representing a black or a white pixel on the screen.
+
+00:42:09.540 --> 00:42:22.600
+<v David Kopec>And so you have to find a way to take those bits and compact them into bytes and then run the right run length encoding algorithm compress it. It's yeah, but there's a lot of that. And, you know, when you do really low level work in computing, you need to understand bits and bytes.
+
+00:42:23.060 --> 00:42:31.300
+<v David Kopec>If you're going to work on device drivers or operating systems or file formats, you really need to understand this stuff at an intimate level.
+
+00:42:31.520 --> 00:42:42.420
+<v David Kopec>So we try to make fun projects in the book that you get something that's interesting as a way of making this a little of sugar to help the medicine go down kind of thing.
+
+00:42:43.480 --> 00:42:45.620
+<v David Kopec>And we were talking about the computer graphics chapters.
+
+00:42:45.800 --> 00:42:50.240
+<v David Kopec>I also wanted to mention chapter four because I love the program in that called Impressionist.
+
+00:42:50.300 --> 00:42:56.320
+<v David Kopec>It makes images that look like an impressionist painter painted a photograph.
+
+00:42:56.850 --> 00:43:01.260
+<v David Kopec>So you give it a photograph and then it builds kind of abstract art out of that photograph.
+
+00:43:01.470 --> 00:43:06.820
+<v David Kopec>And people usually think you need a neural network for that or you need some kind of really advanced machine learning algorithm for that.
+
+00:43:07.440 --> 00:43:11.560
+<v David Kopec>But actually, we show in the chapter that you can do it using a pretty simple algorithm.
+
+00:43:11.580 --> 00:43:23.160
+<v David Kopec>All the algorithm does is it puts a vector shape on the screen and it tries to position the vector shape so that it overlaps a region of color on the original photo that is close to the color in the vector shape.
+
+00:43:23.460 --> 00:43:30.080
+<v David Kopec>And if you keep doing that and you put enough vector shapes on the screen, you start to have like abstract shapes that look like the original photo.
+
+00:43:30.540 --> 00:43:38.820
+<v David Kopec>And so I think that's that chapter is kind of powerful because it shows you how a simple technique, a simple computational technique can really have some pretty powerful output.
+
+00:43:38.940 --> 00:43:42.640
+<v Michael Kennedy>it. Yeah, it's a really interesting idea and it comes out looking great. It's sort of,
+
+00:43:42.800 --> 00:43:46.500
+<v Michael Kennedy>it's approaching the problem from a different perspective, which I suspect is probably a pretty
+
+00:43:46.660 --> 00:43:52.200
+<v Michael Kennedy>interesting CS lesson. You know, there's these problems that are incredibly expensive and
+
+00:43:52.560 --> 00:43:57.920
+<v Michael Kennedy>difficult to compute the one true answer, but then there's amazingly fast ways to get a,
+
+00:43:58.240 --> 00:44:02.340
+<v Michael Kennedy>that's pretty much it, answer. I'm thinking like Monte Carlo simulations and stuff like that.
+
+00:44:02.540 --> 00:44:08.900
+<v Michael Kennedy>You're like, this could take two weeks or three milliseconds, which would you prefer? You're
+
+00:44:08.920 --> 00:44:12.380
+<v David Kopec>And, you know, that that's we talked about, like, why is the book in Python?
+
+00:44:12.940 --> 00:44:20.660
+<v David Kopec>And, you know, that is one of the challenges of writing the book in Python is simply Python doesn't have great performance when you write in pure Python.
+
+00:44:21.540 --> 00:44:28.140
+<v David Kopec>And so, you know, we've all seen the benchmarks where Python's like 50 or 70 times slower than C on certain benchmarks.
+
+00:44:28.480 --> 00:44:38.060
+<v David Kopec>Right. And yeah, honestly, for some of the programs in this book, you really see that performance deficit you have with Python, like the abstract art chapter,
+
+00:44:38.140 --> 00:44:42.880
+<v David Kopec>where if I wrote that same program in C using some C graphics library instead of in Python
+
+00:44:43.300 --> 00:44:47.360
+<v David Kopec>with Pillow, even though Pillow, I think, is mostly implemented in C anyway, but still just
+
+00:44:47.450 --> 00:44:53.840
+<v David Kopec>with the overhead of having our algorithmic part of it in Python, that program is probably 30,
+
+00:44:54.020 --> 00:44:58.860
+<v David Kopec>50 times slower than it would be in C. So you have to wait like 20 minutes to see that abstract art
+
+00:44:59.300 --> 00:45:03.840
+<v Michael Kennedy>that would have been like less than a minute in a C program. Not that it's relevant to the book or
+
+00:45:03.860 --> 00:45:11.580
+<v Michael Kennedy>of the courses, but you probably could bring in some optimizations like Cython or Numba,
+
+00:45:12.120 --> 00:45:17.800
+<v Michael Kennedy>a couple of the things that'll take just the inner two loops and just make them go different,
+
+00:45:18.040 --> 00:45:22.920
+<v David Kopec>but it's not the point of the book. That's true. And so I put that as an exercise for the reader
+
+00:45:23.280 --> 00:45:28.160
+<v David Kopec>in the NES emulator chapter, because the NES emulator chapter where we actually build up
+
+00:45:28.400 --> 00:45:32.760
+<v David Kopec>a real NES emulator. So I didn't write in the book for legal reasons, but it can actually play
+
+00:45:32.800 --> 00:45:36.880
+<v David Kopec>Donkey Kong. So it can play Donkey Kong from the original Nintendo Entertainment System.
+
+00:45:36.980 --> 00:45:40.400
+<v Michael Kennedy>Let's talk about the NES, the Nintendo Entertainment System.
+
+00:45:40.840 --> 00:45:45.380
+<v David Kopec>Yeah. So, I mean, the NES, a lot of us remember growing up with, and if you're of a younger
+
+00:45:45.640 --> 00:45:51.420
+<v David Kopec>generation, this was like the main video game system of the 1980s to early 1990s that everyone
+
+00:45:51.580 --> 00:45:56.880
+<v David Kopec>had. It's where the original Super Mario came out, the original Legend of Zelda. And, you know,
+
+00:45:57.040 --> 00:46:01.400
+<v David Kopec>it's actually, of course, like all video game systems, it's a computer. And being a video game
+
+00:46:01.440 --> 00:46:06.680
+<v David Kopec>system for the 1980s. It's a pretty simple computer, actually. It has a 6502 microprocessor,
+
+00:46:07.100 --> 00:46:12.320
+<v David Kopec>which is the same microprocessor that was in the Apple II or the Commodore 64 or the TRS,
+
+00:46:12.380 --> 00:46:21.120
+<v David Kopec>I think the TRS-80 also. And that microprocessor, it only has 56 instructions, the NES version of it.
+
+00:46:21.440 --> 00:46:25.600
+<v David Kopec>And so you can write an interpreter for that microprocessor pretty compactly,
+
+00:46:26.020 --> 00:46:31.380
+<v David Kopec>not quite as compact as the BF interpreter in chapter one, but compactly enough that it's only
+
+00:46:31.400 --> 00:46:37.820
+<v David Kopec>lines of Python to be able to really write a simulator of that CPU. And so the NES is just
+
+00:46:37.980 --> 00:46:43.400
+<v David Kopec>that CPU plus a graphics processor called the picture processing unit plus an audio processor.
+
+00:46:43.840 --> 00:46:49.320
+<v David Kopec>So in the chapter, we implement the full CPU. We implement a simplified version of the PPU,
+
+00:46:49.720 --> 00:46:53.700
+<v David Kopec>not advanced enough to run Super Mario Brothers, but it is advanced enough to run Donkey Kong.
+
+00:46:54.599 --> 00:46:59.240
+<v David Kopec>And we don't implement the APU. So the audio processing unit is a little more complicated
+
+00:46:59.260 --> 00:47:00.320
+<v David Kopec>We don't do the audio.
+
+00:47:00.860 --> 00:47:02.120
+<v David Kopec>But we do all of this in the chapter
+
+00:47:02.200 --> 00:47:03.800
+<v David Kopec>so you can run real NES games.
+
+00:47:04.600 --> 00:47:06.440
+<v David Kopec>And what you're getting is you're getting to understand
+
+00:47:06.720 --> 00:47:07.900
+<v David Kopec>that software hardware interface.
+
+00:47:08.120 --> 00:47:12.320
+<v David Kopec>You're starting to understand how does our software
+
+00:47:12.920 --> 00:47:14.420
+<v David Kopec>actually get run on hardware
+
+00:47:14.920 --> 00:47:17.760
+<v David Kopec>by re-implementing what a CPU actually does.
+
+00:47:18.120 --> 00:47:19.740
+<v David Kopec>And you're re-implementing the memory map too.
+
+00:47:19.840 --> 00:47:21.540
+<v David Kopec>So how does a CPU connect to memory?
+
+00:47:21.940 --> 00:47:23.940
+<v David Kopec>How does a CPU connect to the graphics processor?
+
+00:47:24.680 --> 00:47:26.480
+<v David Kopec>You're doing all of that in that chapter.
+
+00:47:26.940 --> 00:47:27.700
+<v David Kopec>And so it's kind of like-
+
+00:47:27.940 --> 00:47:34.260
+<v Michael Kennedy>Sure. You talked about like writing an interpreter for the BF in basic languages. Here you're
+
+00:47:34.600 --> 00:47:41.980
+<v Michael Kennedy>completely emulating the hardware of the NES and you're giving it the potentially given it
+
+00:47:42.440 --> 00:47:45.160
+<v Michael Kennedy>open source NES games and it can run them, right?
+
+00:47:45.520 --> 00:47:49.840
+<v David Kopec>Correct. Yeah. It runs several NES open source games. Like I said, I didn't put it for legal
+
+00:47:50.000 --> 00:47:54.280
+<v David Kopec>reasons, but it can run real commercial games as well for the NES. And so you're doing the whole
+
+00:47:54.300 --> 00:47:59.920
+<v David Kopec>soup to nuts like entire system except the audio. But it is Python and it's pure Python, except for,
+
+00:48:00.000 --> 00:48:05.040
+<v David Kopec>of course, the library we're using. We're using Pygame for displaying the window, which is written
+
+00:48:05.090 --> 00:48:12.020
+<v David Kopec>a lot of in C. But because it's pure Python, the emulator doesn't run at full speed. So it runs on
+
+00:48:12.260 --> 00:48:18.180
+<v David Kopec>my Mac. It runs at about 15 frames per second. The real NES ran at 60 frames per second. So we leave
+
+00:48:18.180 --> 00:48:24.260
+<v David Kopec>as an exercise to the reader. Yeah, go use Cython or something like that. And I'm sure you can get
+
+00:48:24.280 --> 00:48:25.540
+<v David Kopec>up with several different techniques,
+
+00:48:25.620 --> 00:48:26.940
+<v David Kopec>not just with, definitely with Cython,
+
+00:48:27.280 --> 00:48:28.160
+<v David Kopec>but with several different techniques,
+
+00:48:28.300 --> 00:48:29.920
+<v David Kopec>you could get this up to 60 frames per second,
+
+00:48:29.960 --> 00:48:31.140
+<v David Kopec>but you're going to have to incorporate
+
+00:48:32.520 --> 00:48:34.560
+<v David Kopec>something that is, you know, using,
+
+00:48:35.760 --> 00:48:37.140
+<v David Kopec>that gets outside of just pure Python.
+
+00:48:37.420 --> 00:48:37.640
+<v Michael Kennedy>Sure.
+
+00:48:38.000 --> 00:48:39.640
+<v Michael Kennedy>You know, one, there's a bunch of ways
+
+00:48:39.760 --> 00:48:40.200
+<v Michael Kennedy>that you already mentioned,
+
+00:48:40.280 --> 00:48:43.400
+<v Michael Kennedy>but one new way that's kind of officially new,
+
+00:48:43.740 --> 00:48:46.300
+<v Michael Kennedy>just this month is free-threaded Python.
+
+00:48:46.800 --> 00:48:47.460
+<v Michael Kennedy>And I've been doing,
+
+00:48:47.640 --> 00:48:50.020
+<v Michael Kennedy>I went back to my async programming course
+
+00:48:50.440 --> 00:48:52.140
+<v Michael Kennedy>where there's a lot of examples of like,
+
+00:48:52.260 --> 00:48:53.220
+<v Michael Kennedy>let's do this synchronously.
+
+00:48:53.360 --> 00:48:54.460
+<v Michael Kennedy>Now let's do it with threads.
+
+00:48:54.600 --> 00:48:55.780
+<v Michael Kennedy>Let's do it with multiprocessing.
+
+00:48:55.790 --> 00:48:57.260
+<v Michael Kennedy>Now let's do it with asyncio, right?
+
+00:48:57.260 --> 00:48:58.580
+<v Michael Kennedy>And see like how those all compare.
+
+00:48:58.920 --> 00:49:00.700
+<v Michael Kennedy>And the threads one, anything was computational.
+
+00:49:01.000 --> 00:49:02.040
+<v Michael Kennedy>It's like, yeah, it's the same speed
+
+00:49:02.090 --> 00:49:03.440
+<v Michael Kennedy>or maybe even slower, right?
+
+00:49:03.760 --> 00:49:08.200
+<v Michael Kennedy>But then I ran it with, I did uv run --Python
+
+00:49:08.590 --> 00:49:11.620
+<v Michael Kennedy>3.14 T and it went 10 times faster
+
+00:49:12.080 --> 00:49:14.280
+<v Michael Kennedy>or eight times faster on my 10 core machine.
+
+00:49:14.820 --> 00:49:16.320
+<v Michael Kennedy>And it's literally just running on the,
+
+00:49:16.370 --> 00:49:19.140
+<v Michael Kennedy>I didn't change the codes from pre-threaded Python
+
+00:49:19.360 --> 00:49:20.040
+<v Michael Kennedy>and it just took off.
+
+00:49:20.240 --> 00:49:29.540
+<v Michael Kennedy>So I'm thinking here there's graphics amongst many things is primed for this like embarrassingly parallel processing.
+
+00:49:29.930 --> 00:49:30.060
+<v Michael Kennedy>Yeah.
+
+00:49:30.060 --> 00:49:34.880
+<v Michael Kennedy>You could break up the screen into like little chunks and go, well, we got 10 chunks and 10 cores.
+
+00:49:35.460 --> 00:49:35.940
+<v Michael Kennedy>Let's go at it.
+
+00:49:36.340 --> 00:49:38.080
+<v Michael Kennedy>What do you think about it as a plausibility?
+
+00:49:39.220 --> 00:49:46.180
+<v David Kopec>Unfortunately, for a lot of emulators, especially emulators that are for more modern systems, threading would be a huge advantage.
+
+00:49:46.620 --> 00:49:50.360
+<v David Kopec>For the NES, it's not because of the way that everything was timed.
+
+00:49:51.080 --> 00:49:59.960
+<v David Kopec>So every time that the CPU does one cycle, the PPU, the picture processing unit, has to be timed to do exactly three cycles.
+
+00:50:00.540 --> 00:50:04.700
+<v David Kopec>So you can't just go ahead and, you know, and you don't just give it work.
+
+00:50:04.780 --> 00:50:07.440
+<v David Kopec>It's not like a modern GPU where you just give it a bunch of chunks of work.
+
+00:50:07.450 --> 00:50:10.280
+<v David Kopec>It works on its own and then provides that to the screen.
+
+00:50:10.740 --> 00:50:12.640
+<v David Kopec>It's completely synchronized to the CPU.
+
+00:50:13.120 --> 00:50:15.060
+<v David Kopec>And so is the audio processing unit, too.
+
+00:50:15.240 --> 00:50:18.020
+<v David Kopec>So it all has to kind of be synchronized within a single thread.
+
+00:50:18.300 --> 00:50:20.780
+<v Michael Kennedy>And all the games assume that that's how it works, right?
+
+00:50:20.980 --> 00:50:21.980
+<v Michael Kennedy>That's how they have it all set.
+
+00:50:22.050 --> 00:50:22.180
+<v Michael Kennedy>Yeah.
+
+00:50:22.580 --> 00:50:22.760
+<v David Kopec>Yeah.
+
+00:50:22.940 --> 00:50:23.000
+<v David Kopec>Yeah.
+
+00:50:23.140 --> 00:50:28.120
+<v David Kopec>And what they had, what was called a V blank period, which was a period where it had already
+
+00:50:28.340 --> 00:50:32.160
+<v David Kopec>drawn the screen and then it actually tells the CPU, hey, I'm done drawing the screen.
+
+00:50:32.340 --> 00:50:35.700
+<v David Kopec>Now you can do all kinds of work and be ready for the next time that you draw the next frame
+
+00:50:35.790 --> 00:50:35.900
+<v David Kopec>again.
+
+00:50:36.550 --> 00:50:40.360
+<v David Kopec>So they had really tight synchronization between the graphics and the CPU.
+
+00:50:40.880 --> 00:50:41.100
+<v David Kopec>Interesting.
+
+00:50:41.450 --> 00:50:41.840
+<v Michael Kennedy>Still cool.
+
+00:50:42.160 --> 00:50:42.740
+<v Michael Kennedy>Still pretty cool.
+
+00:50:43.220 --> 00:50:44.300
+<v Michael Kennedy>There's a lot going on there.
+
+00:50:44.360 --> 00:50:47.820
+<v Michael Kennedy>If you want to understand hardware, that's a pretty low level look at it, right?
+
+00:50:48.080 --> 00:50:50.180
+<v David Kopec>I think it's kind of the crown jewel of the book.
+
+00:50:50.460 --> 00:50:53.700
+<v David Kopec>You know, there's a lot of people who are interested in emulators.
+
+00:50:54.080 --> 00:51:00.400
+<v David Kopec>And what I found before writing the book is there's not a single book out there that talks
+
+00:51:00.620 --> 00:51:04.040
+<v David Kopec>about writing an NES emulator, which is the most common emulator that people want to write.
+
+00:51:04.420 --> 00:51:07.700
+<v David Kopec>So I think this is the first book that has a chapter on writing an NES emulator.
+
+00:51:08.020 --> 00:51:12.020
+<v David Kopec>I will admit I was a little scared of like if Nintendo's legal team is going to like
+
+00:51:12.360 --> 00:51:14.080
+<v David Kopec>be upset about the book or something like that.
+
+00:51:14.160 --> 00:51:15.600
+<v David Kopec>but we did research on it.
+
+00:51:15.600 --> 00:51:17.300
+<v David Kopec>I mean, everything we're doing is perfectly legal
+
+00:51:17.750 --> 00:51:19.280
+<v David Kopec>in the book in the United States, at least.
+
+00:51:20.140 --> 00:51:22.560
+<v David Kopec>So, you know, but anyway.
+
+00:51:22.590 --> 00:51:22.900
+<v David Kopec>Scary, right?
+
+00:51:23.160 --> 00:51:23.980
+<v David Kopec>Yeah, absolutely.
+
+00:51:24.320 --> 00:51:26.760
+<v David Kopec>And we put a big disclaimer at the top of the chapter
+
+00:51:26.810 --> 00:51:27.460
+<v David Kopec>as you remember reading.
+
+00:51:28.500 --> 00:51:32.160
+<v Michael Kennedy>I have a legal, I have a Nintendo story for you.
+
+00:51:32.420 --> 00:51:32.660
+<v Michael Kennedy>Great.
+
+00:51:32.840 --> 00:51:33.900
+<v Michael Kennedy>From when I was young.
+
+00:51:34.070 --> 00:51:38.420
+<v Michael Kennedy>And this was, I think this is very late 80s,
+
+00:51:38.560 --> 00:51:40.220
+<v Michael Kennedy>early 90s, last century.
+
+00:51:40.580 --> 00:51:42.720
+<v Michael Kennedy>Now, this was not me, someone I knew,
+
+00:51:42.960 --> 00:51:44.980
+<v Michael Kennedy>someone I was friends with had a,
+
+00:51:45.150 --> 00:51:46.380
+<v Michael Kennedy>I think it was a super NES.
+
+00:51:47.040 --> 00:51:47.140
+<v Michael Kennedy>Okay.
+
+00:51:47.280 --> 00:51:48.860
+<v Michael Kennedy>And people may not remember,
+
+00:51:49.240 --> 00:51:51.940
+<v Michael Kennedy>but they had these big honking cartridges go chonk.
+
+00:51:51.940 --> 00:51:53.560
+<v Michael Kennedy>And you would chunk them down in there.
+
+00:51:53.830 --> 00:51:54.560
+<v Michael Kennedy>You would turn on,
+
+00:51:54.740 --> 00:51:58.080
+<v Michael Kennedy>you would basically reboot the NES and it would boot up from the,
+
+00:51:58.250 --> 00:52:00.520
+<v Michael Kennedy>the big cartridge game cartridge you put in there.
+
+00:52:00.820 --> 00:52:03.980
+<v Michael Kennedy>And there was this guy that they've,
+
+00:52:04.280 --> 00:52:05.820
+<v Michael Kennedy>they found somehow I don't,
+
+00:52:05.960 --> 00:52:06.660
+<v Michael Kennedy>cause there's no internet.
+
+00:52:06.880 --> 00:52:08.020
+<v Michael Kennedy>Maybe it's through a BBS.
+
+00:52:08.090 --> 00:52:09.200
+<v Michael Kennedy>I don't know how this was found,
+
+00:52:09.440 --> 00:52:12.460
+<v Michael Kennedy>but they found this guy who built a thing that the,
+
+00:52:12.720 --> 00:52:19.020
+<v Michael Kennedy>bottom half of it looked like a game cartridge. The top was this whole computer that at the top of it,
+
+00:52:19.220 --> 00:52:25.480
+<v Michael Kennedy>it had a 3.5 inch floppy drive. Wow. So you would go to your BBS, you would find a game,
+
+00:52:25.760 --> 00:52:30.900
+<v Michael Kennedy>you would put it on a floppy, and then you would slot this huge extra computer down into the NES
+
+00:52:31.140 --> 00:52:36.500
+<v Michael Kennedy>and you would turn it on and it would like delegate the file IO through the little fake cartridge
+
+00:52:37.040 --> 00:52:41.320
+<v Michael Kennedy>back to it. And it worked like crazy. It was perfect. That guy was not in business for very
+
+00:52:41.340 --> 00:52:46.540
+<v Michael Kennedy>long the guy who sold them not my not my friend but the person he got it from wasn't available
+
+00:52:46.780 --> 00:52:53.000
+<v David Kopec>after a while so this is so super nes comes out in like 91 um so this might have been a regular
+
+00:52:53.440 --> 00:52:57.740
+<v Michael Kennedy>no i wasn't i think i might have been in college so yeah it would be it would be 91 onward yeah
+
+00:52:58.020 --> 00:53:03.520
+<v David Kopec>okay i mean that is 93 that is very advanced like for that time when you think about the type of
+
+00:53:03.700 --> 00:53:08.119
+<v David Kopec>stuff people like were modding at that time that guy was a genius yeah he was he should have been
+
+00:53:08.100 --> 00:53:13.900
+<v Michael Kennedy>hired if he wasn't you know what i mean yeah yeah absolutely yeah he was building himself out of his
+
+00:53:14.180 --> 00:53:18.860
+<v Michael Kennedy>dorm room or something i don't know it was i think it was in uh manhattan in uh kansas state
+
+00:53:18.970 --> 00:53:23.640
+<v Michael Kennedy>university i'm not sure where the guy was but wow anyway yeah that guy was playing with fire
+
+00:53:24.410 --> 00:53:30.920
+<v David Kopec>yeah absolutely and you know what um sometimes like understanding how the rom cartridge works
+
+00:53:31.140 --> 00:53:36.700
+<v David Kopec>right like we think again that it's like all magic right but actually what those big cartridges that
+
+00:53:36.720 --> 00:53:41.420
+<v David Kopec>we had, that we like inserted in the NES were is they were mostly plastic, like that did nothing.
+
+00:53:41.900 --> 00:53:46.180
+<v David Kopec>And there was a little ROM chip, like inside the big hunk of plastic and the ROM chip,
+
+00:53:46.380 --> 00:53:50.700
+<v David Kopec>ROM just stands for read only memory. So most of them were just like a big chunk of memory
+
+00:53:51.180 --> 00:53:55.320
+<v David Kopec>with a very tiny bit of logic chips that were called mappers on the NES that said like,
+
+00:53:55.500 --> 00:53:59.560
+<v David Kopec>read this memory at this time. But again, it wasn't really magic. And those cartridges look
+
+00:53:59.640 --> 00:54:04.440
+<v Michael Kennedy>so intimidating, but they were really just a big piece of memory. Yeah. Think about how much you've
+
+00:54:04.460 --> 00:54:10.200
+<v Michael Kennedy>got to make that work right before you ship it. Yeah. There's no patches. There's no download and
+
+00:54:10.360 --> 00:54:14.600
+<v Michael Kennedy>update. Once it's shipped, it's shipped and it's burned into the ROM and that's it.
+
+00:54:14.820 --> 00:54:19.880
+<v David Kopec>I have some friends who work in game development and like before they even ship the 1.0,
+
+00:54:20.300 --> 00:54:24.940
+<v David Kopec>nowadays they're working on the first patch, like, and they just know they're not going to ship like
+
+00:54:24.950 --> 00:54:30.400
+<v David Kopec>the perfect program in 1.0. Now, to be fair, games were much simpler in the 1980s, right?
+
+00:54:30.560 --> 00:54:35.300
+<v David Kopec>than they are today, but they had to be perfect, like literally had to be perfect. and so
+
+00:54:35.400 --> 00:54:41.200
+<v David Kopec>there was a certain, I think different attitude around,  game development then, than there is
+
+00:54:41.340 --> 00:54:46.160
+<v David Kopec>today. And remember they were also working in assembly language. so it was easy language
+
+00:54:46.360 --> 00:54:51.340
+<v David Kopec>to work. I don't know if people like this word, but I would call it kind of hardcore,  writing
+
+00:54:51.600 --> 00:54:57.580
+<v Michael Kennedy>NES games in the 1980s. It was, you know, that kind of programming it's, it's just, it was just
+
+00:54:57.600 --> 00:55:03.360
+<v Michael Kennedy>different. It was just different. You had to be so detail oriented and you had to be so thorough.
+
+00:55:03.720 --> 00:55:08.540
+<v Michael Kennedy>It's almost like writing spaceship control software type of thing. Not quite, but almost.
+
+00:55:08.940 --> 00:55:16.140
+<v David Kopec>And the machines were so slow. The NES, which we emulate in chapter six, ran on a 1.8 megahertz
+
+00:55:16.640 --> 00:55:25.340
+<v David Kopec>CPU, 6502, 1.8 megahertz. So Super Mario was like an incredible accomplishment on a 1.8 megahertz.
+
+00:55:25.580 --> 00:55:36.420
+<v David Kopec>So people had to worry about all these computer science topics in a way that they don't today as programmers, because you had to squeeze every last bit of algorithmic performance out of the machine.
+
+00:55:36.960 --> 00:55:42.060
+<v David Kopec>And so today, I think we have sloppier software today because we have an embarrassment of riches.
+
+00:55:42.250 --> 00:55:47.840
+<v David Kopec>We got such powerful computers with so much memory that people don't worry about writing things as efficiently as possible.
+
+00:55:48.190 --> 00:55:55.140
+<v David Kopec>And so we end up with inefficient software sometimes because people don't bother to do the algorithms right.
+
+00:55:55.360 --> 00:56:00.240
+<v Michael Kennedy>Yes, but I'm going to put a little double dagger, like see the footnote by your comment.
+
+00:56:00.900 --> 00:56:04.700
+<v Michael Kennedy>Absolutely true for software, not necessarily true for software developers.
+
+00:56:05.160 --> 00:56:05.500
+<v Michael Kennedy>Agreed.
+
+00:56:05.570 --> 00:56:12.880
+<v Michael Kennedy>The efficiency of writing a 99.9% correct Python program, how quickly that gets done versus
+
+00:56:13.380 --> 00:56:16.360
+<v Michael Kennedy>like something in assembly language straight on a ROM.
+
+00:56:16.740 --> 00:56:16.920
+<v Michael Kennedy>Yep.
+
+00:56:17.180 --> 00:56:17.580
+<v Michael Kennedy>You know what I mean?
+
+00:56:17.830 --> 00:56:22.140
+<v Michael Kennedy>These are the, I think this is an interesting arc and maybe you could speak to it a little
+
+00:56:22.100 --> 00:56:27.120
+<v Michael Kennedy>bit from your academic perspective, but I think it's a really interesting arc of, it used to be
+
+00:56:27.200 --> 00:56:32.260
+<v Michael Kennedy>really hard to program and we'd solve small problems with lots of effort and it's getting
+
+00:56:32.640 --> 00:56:37.260
+<v Michael Kennedy>easier. And a lot of times it gets easier. People say, well, there it goes, job's over. There's not
+
+00:56:37.260 --> 00:56:41.700
+<v Michael Kennedy>going to be programmers anymore because everyone can do it. And we just solve bigger, more complex
+
+00:56:41.920 --> 00:56:47.820
+<v Michael Kennedy>problems. And that just keeps building, you know, like the, a web app, a basic e-commerce app from
+
+00:56:47.840 --> 00:56:55.260
+<v Michael Kennedy>today was a keynote presentation of how like a fortune 500 company pulled it off in 1990 you
+
+00:56:55.300 --> 00:57:00.280
+<v Michael Kennedy>know what i mean like yeah yeah here's how we got the ssl termination special machines to handle the
+
+00:57:00.480 --> 00:57:06.020
+<v Michael Kennedy>ssl decryption so that we could do this under two seconds of request i mean like crazy stuff yeah
+
+00:57:06.140 --> 00:57:09.940
+<v Michael Kennedy>what do you think about this well it's not an either or i mean we want developers to be productive
+
+00:57:10.300 --> 00:57:15.340
+<v David Kopec>and we also want efficient software so i mean the good news is that means that after we have make it
+
+00:57:15.120 --> 00:57:19.840
+<v David Kopec>it easier and easier to build software, we still need folks who are going to work on optimizing that
+
+00:57:19.980 --> 00:57:24.140
+<v David Kopec>software after it's built. So there's still jobs for software developers who are interested in that.
+
+00:57:24.500 --> 00:57:28.420
+<v David Kopec>I think you actually touched on this in talk Python in production to some degree, because you
+
+00:57:28.580 --> 00:57:33.760
+<v David Kopec>talk about in the book, the appropriate level of complexity for the type of app that you're
+
+00:57:33.960 --> 00:57:38.320
+<v David Kopec>building. And so you talk about like, you know, maybe you don't need a Kubernetes cluster if
+
+00:57:38.420 --> 00:57:43.900
+<v David Kopec>you're just building, you know, something for 10 million requests a month and not something for a
+
+00:57:43.920 --> 00:57:48.360
+<v Michael Kennedy>million requests a month. And it's going to be run by one person or one person part-time versus a
+
+00:57:48.540 --> 00:57:55.180
+<v Michael Kennedy>team or somebody who's a DevOps expert, right? Right, right, right. So if I'm working on a run
+
+00:57:55.320 --> 00:58:00.000
+<v David Kopec>of the mill e-commerce thing, maybe I don't worry about squeezing out every last bit of performance
+
+00:58:00.200 --> 00:58:04.220
+<v David Kopec>because I want to productively make something that, like you said, is 99.9% of the way there
+
+00:58:04.780 --> 00:58:10.920
+<v David Kopec>as quickly as possible. But if I'm building a 3D game, they still build most 3D games in C++
+
+00:58:10.940 --> 00:58:14.060
+<v David Kopec>because they need to squeeze out every last bit of performance,
+
+00:58:14.670 --> 00:58:17.240
+<v David Kopec>even if it's a little less efficient for the programmers.
+
+00:58:17.310 --> 00:58:18.820
+<v David Kopec>The programmers could write the games faster,
+
+00:58:18.970 --> 00:58:21.120
+<v David Kopec>maybe in another language or another framework
+
+00:58:21.300 --> 00:58:21.860
+<v David Kopec>than they're using, whatever.
+
+00:58:22.320 --> 00:58:24.400
+<v David Kopec>But they use something that squeezes out
+
+00:58:24.660 --> 00:58:25.460
+<v David Kopec>every last bit of performance.
+
+00:58:25.820 --> 00:58:26.900
+<v David Kopec>So I think you have to think about
+
+00:58:26.990 --> 00:58:28.260
+<v David Kopec>what is the app that we're building?
+
+00:58:28.480 --> 00:58:29.820
+<v David Kopec>What is the domain that we're in?
+
+00:58:30.110 --> 00:58:31.920
+<v David Kopec>And it's also just not an either or.
+
+00:58:32.200 --> 00:58:34.060
+<v David Kopec>Like, you know, we want to have software
+
+00:58:34.220 --> 00:58:36.760
+<v David Kopec>that's both developer productive to build,
+
+00:58:37.220 --> 00:58:38.680
+<v David Kopec>but also that's efficient to run.
+
+00:58:39.200 --> 00:58:40.480
+<v David Kopec>And it's an ongoing process.
+
+00:58:40.840 --> 00:58:44.240
+<v David Kopec>We might need to make that trade-off more in the way when we're first building it in developer
+
+00:58:44.500 --> 00:58:48.460
+<v David Kopec>productivity. And then as we're maintaining it, maybe we go more towards the efficiency side.
+
+00:58:48.680 --> 00:58:53.380
+<v David Kopec>But if you don't think about some of the efficiency things up front, you can end up in a bad spot
+
+00:58:53.800 --> 00:58:58.780
+<v David Kopec>because you can get some technical debt. You could end up in a situation where it's hard to undo
+
+00:58:59.400 --> 00:59:03.140
+<v David Kopec>some of the algorithmic mistakes that you made early on and the system starts to depend on.
+
+00:59:03.380 --> 00:59:04.820
+<v David Kopec>So you should think about it at least a little bit.
+
+00:59:05.180 --> 00:59:09.020
+<v Michael Kennedy>Yeah, absolutely. And I think you're talking about they've got to squeeze out that little
+
+00:59:09.040 --> 00:59:12.820
+<v Michael Kennedy>extra bit of performance because they want high frame rates they might have to squeeze out that
+
+00:59:12.890 --> 00:59:17.580
+<v Michael Kennedy>little bit extra performance because it's either possible or not possible you know you look at some
+
+00:59:17.580 --> 00:59:23.000
+<v Michael Kennedy>of the stuff in the unreal engine these days you're like that's real time that's the game
+
+00:59:23.180 --> 00:59:30.520
+<v Michael Kennedy>that looks like a rendered cgi movie not a game yeah yeah yeah yeah yeah and i mean so a lot of it
+
+00:59:30.560 --> 00:59:34.820
+<v David Kopec>is being done for us today by library authors right so library authors are thinking about a
+
+00:59:34.820 --> 00:59:39.600
+<v David Kopec>lot of the low-level stuff. So us as like run-of-the-mill developers don't need to, which is
+
+00:59:39.730 --> 00:59:44.640
+<v David Kopec>great. But if you're doing something really de novo, something, you know, with an innovative
+
+00:59:44.980 --> 00:59:50.180
+<v David Kopec>algorithm, you still need to consider efficiency at least. Right. And the other thing is it,
+
+00:59:50.400 --> 00:59:55.180
+<v Michael Kennedy>you can write really slow code in C and you can write really fast code in Python or vice versa.
+
+00:59:55.420 --> 01:00:00.420
+<v Michael Kennedy>It's easier to make it slow in Python, to be fair. But algorithms and data structures are
+
+01:00:01.500 --> 01:00:05.720
+<v Michael Kennedy>tremendous influences, right? If you're using, you should have been using a set or a dictionary and
+
+01:00:05.820 --> 01:00:10.580
+<v Michael Kennedy>you're using a list. Yeah. You're probably having a real bad time performance. And you caught me
+
+01:00:10.780 --> 01:00:15.120
+<v David Kopec>multiple times on the technical review in places where I should have used a set and I used a list.
+
+01:00:15.140 --> 01:00:19.200
+<v David Kopec>So thank you for that. But, but that's absolutely, that's a great example. I mean,
+
+01:00:19.400 --> 01:00:24.960
+<v David Kopec>just knowing that, that basic fact that, you know, in this situation, just swapping out,
+
+01:00:25.140 --> 01:00:29.800
+<v David Kopec>which is a simple switch, by the way, you know, one data structure for another can totally change
+
+01:00:29.820 --> 01:00:34.120
+<v David Kopec>performance characteristics. That's the type of things you do learn in the CS degree that you
+
+01:00:34.320 --> 01:00:37.920
+<v David Kopec>don't necessarily learn when you're a self-taught programmer kind of hacking everything out on your
+
+01:00:38.040 --> 01:00:41.940
+<v David Kopec>own, which is why a book like classic computer science problems in Python, or maybe computer
+
+01:00:42.040 --> 01:00:47.260
+<v Michael Kennedy>science from scratch is good for that. Yeah. It exposes you to this. Here's a data structure you
+
+01:00:47.440 --> 01:00:51.600
+<v Michael Kennedy>haven't thought about, but here's why we're using it and the advantages and stuff. Yeah, absolutely.
+
+01:00:51.940 --> 01:00:57.220
+<v Michael Kennedy>Well, we've covered a lot. We've covered pretty much solved computer science in 2025. That's good.
+
+01:00:57.300 --> 01:01:04.300
+<v Michael Kennedy>And then the book is bringing computer science to so many people who are self-taught, you know, like me.
+
+01:01:04.580 --> 01:01:09.100
+<v Michael Kennedy>I went to college, but I studied many, many years of math and found my way into programming.
+
+01:01:09.400 --> 01:01:11.860
+<v Michael Kennedy>So I took a few CS programs, but not so many.
+
+01:01:12.060 --> 01:01:15.400
+<v Michael Kennedy>So, you know, it certainly showed me many things that I hadn't seen.
+
+01:01:15.420 --> 01:01:18.200
+<v Michael Kennedy>Like I've never emulated hardware before, for example.
+
+01:01:18.380 --> 01:01:19.260
+<v Michael Kennedy>That was wild.
+
+01:01:19.960 --> 01:01:26.060
+<v David Kopec>And, you know, Michael, I was reading in Talk Python in production that you actually worked on Windows desktop apps.
+
+01:01:26.240 --> 01:01:26.660
+<v David Kopec>Is that right?
+
+01:01:26.660 --> 01:01:26.860
+<v Michael Kennedy>I did.
+
+01:01:27.220 --> 01:01:29.640
+<v Michael Kennedy>Yeah, for 10 years, more than 10 years.
+
+01:01:29.720 --> 01:01:30.800
+<v Michael Kennedy>I'm almost 15 years, yeah.
+
+01:01:31.120 --> 01:01:32.760
+<v David Kopec>Wow, so I'm curious,
+
+01:01:33.400 --> 01:01:35.800
+<v David Kopec>how did you feel about that experience
+
+01:01:36.420 --> 01:01:38.800
+<v David Kopec>versus the kind of Python GUI frameworks
+
+01:01:39.160 --> 01:01:39.760
+<v David Kopec>that exist today?
+
+01:01:40.800 --> 01:01:42.280
+<v Michael Kennedy>You heard my rant about Visual Basic.
+
+01:01:42.470 --> 01:01:43.960
+<v Michael Kennedy>Yeah, and I was thinking of that.
+
+01:01:44.600 --> 01:01:46.120
+<v Michael Kennedy>I started actually in C++,
+
+01:01:46.800 --> 01:01:49.120
+<v Michael Kennedy>starting the hard way, doing MFC.
+
+01:01:49.330 --> 01:01:51.180
+<v Michael Kennedy>I don't know if you ever played with that or heard of that.
+
+01:01:51.330 --> 01:01:52.180
+<v Michael Kennedy>Yeah, Microsoft Foundation classes.
+
+01:01:52.490 --> 01:01:53.780
+<v Michael Kennedy>Yeah, yeah, and that was actually pretty decent
+
+01:01:54.000 --> 01:01:55.180
+<v Michael Kennedy>for a C++ framework.
+
+01:01:55.220 --> 01:01:59.100
+<v Michael Kennedy>And then as soon as I found Visual Basic and C#, I'm like, this is so much better.
+
+01:01:59.640 --> 01:02:03.680
+<v Michael Kennedy>It goes from weeks to days of UI work, you know, and stuff like that.
+
+01:02:03.720 --> 01:02:07.940
+<v Michael Kennedy>And it took me a while to really appreciate building for the web.
+
+01:02:08.520 --> 01:02:10.460
+<v Michael Kennedy>You know, I think I probably made that switch around the year 2000.
+
+01:02:11.080 --> 01:02:14.020
+<v Michael Kennedy>There's a little bit after that, but I really like the web these days.
+
+01:02:14.120 --> 01:02:15.160
+<v Michael Kennedy>I think the web is special.
+
+01:02:15.560 --> 01:02:20.540
+<v Michael Kennedy>I just wish it was easier to take apps from the web and get them to people.
+
+01:02:20.820 --> 01:02:24.060
+<v Michael Kennedy>For example, Firefox canceled progressive web apps.
+
+01:02:24.480 --> 01:02:27.560
+<v Michael Kennedy>iOS has them, but they're kind of, let's not talk about those.
+
+01:02:27.750 --> 01:02:30.400
+<v Michael Kennedy>And if you know the secret, you can probably install one, but you probably shouldn't.
+
+01:02:30.470 --> 01:02:35.640
+<v Michael Kennedy>And we're going to, you know, like if it's just, it's like right on the verge of one more
+
+01:02:35.880 --> 01:02:39.680
+<v Michael Kennedy>step and the web would be really, a really good replacement for those.
+
+01:02:39.920 --> 01:02:43.740
+<v Michael Kennedy>And now we have things like Electron and so on, which I'm not a huge fan of, but it's,
+
+01:02:44.040 --> 01:02:48.620
+<v Michael Kennedy>it's kind of what we need to make that happen, but we don't necessarily need Electron, right?
+
+01:02:48.680 --> 01:02:49.400
+<v Michael Kennedy>It would be really great.
+
+01:02:49.580 --> 01:02:50.820
+<v Michael Kennedy>I'm also really excited.
+
+01:02:50.890 --> 01:02:53.740
+<v Michael Kennedy>I don't know how you feel about, I'm really excited about PyScript.
+
+01:02:54.320 --> 01:02:56.100
+<v Michael Kennedy>and the possibility of running Python
+
+01:02:56.560 --> 01:02:57.580
+<v Michael Kennedy>for your front-end stuff?
+
+01:02:57.820 --> 01:03:00.080
+<v David Kopec>Well, I guess what I was getting at is
+
+01:03:00.400 --> 01:03:02.940
+<v David Kopec>why do you think Python has not taken off more
+
+01:03:03.360 --> 01:03:04.680
+<v David Kopec>for desktop GUI development?
+
+01:03:04.900 --> 01:03:06.520
+<v David Kopec>So like we've seen things like KIVI,
+
+01:03:06.680 --> 01:03:09.980
+<v David Kopec>of course we have PyQT and several other frameworks
+
+01:03:10.160 --> 01:03:13.060
+<v David Kopec>that wrap into older C++ GUI frameworks.
+
+01:03:13.640 --> 01:03:16.360
+<v David Kopec>But like Python now is so mature,
+
+01:03:16.410 --> 01:03:17.820
+<v David Kopec>it's the most popular language in the world.
+
+01:03:18.180 --> 01:03:19.480
+<v David Kopec>There's nothing preventing it.
+
+01:03:19.680 --> 01:03:20.820
+<v Michael Kennedy>Yeah, there's nothing preventing it
+
+01:03:20.980 --> 01:03:22.540
+<v Michael Kennedy>from making a really nice platform
+
+01:03:22.560 --> 01:03:25.880
+<v Michael Kennedy>for native app development, right?
+
+01:03:26.380 --> 01:03:27.760
+<v Michael Kennedy>Fundamentally, you could wrap,
+
+01:03:28.100 --> 01:03:29.100
+<v Michael Kennedy>you could come up with a framework
+
+01:03:29.320 --> 01:03:31.480
+<v Michael Kennedy>that abstracts talking to Objective-C,
+
+01:03:32.080 --> 01:03:34.460
+<v Michael Kennedy>the APIs there, or the Win32 API.
+
+01:03:34.960 --> 01:03:36.700
+<v Michael Kennedy>You know, one of the things I'm starting to realize
+
+01:03:36.980 --> 01:03:39.180
+<v Michael Kennedy>that makes desktop development really different
+
+01:03:39.440 --> 01:03:41.440
+<v Michael Kennedy>from back in the day, if you will,
+
+01:03:41.700 --> 01:03:44.500
+<v Michael Kennedy>is there are so many gatekeepers and barriers
+
+01:03:44.650 --> 01:03:47.020
+<v Michael Kennedy>to getting your app onto a machine, right?
+
+01:03:47.140 --> 01:03:50.420
+<v Michael Kennedy>If I built a cool desktop app and I gave it to you,
+
+01:03:50.760 --> 01:03:52.100
+<v Michael Kennedy>your Mac would go, no,
+
+01:03:52.320 --> 01:03:56.520
+<v Michael Kennedy>we're not running that. We moved it to the trash for you because it wasn't notarized.
+
+01:03:56.780 --> 01:04:02.700
+<v Michael Kennedy>Right. And something similar happens on Windows. And so there's these steps you got to jump through.
+
+01:04:03.100 --> 01:04:10.480
+<v Michael Kennedy>And I think there's just been too many gotchas and steps for anybody to push a framework or a way of
+
+01:04:10.600 --> 01:04:15.920
+<v Michael Kennedy>doing this all the way through. I mean, in a sense, the web is kind of like good enough that we don't
+
+01:04:16.120 --> 01:04:21.280
+<v Michael Kennedy>have to figure out a way to build this. I think honestly, if I were to be more concerned, I'd be
+
+01:04:21.180 --> 01:04:26.400
+<v Michael Kennedy>more concerned that we can't create truly straightforward mobile apps with Python than
+
+01:04:26.580 --> 01:04:30.540
+<v David Kopec>desktop apps. Yeah. What do you think? That's where I was going to go to next. Yeah. And I mean,
+
+01:04:30.720 --> 01:04:36.740
+<v David Kopec>Kivy has been an attempt at that. But, you know, I don't really think it's gotten a ton of track
+
+01:04:36.860 --> 01:04:41.080
+<v David Kopec>from what I see. It doesn't look like it's gotten a ton of traction in the way people in the Python
+
+01:04:41.340 --> 01:04:47.200
+<v Michael Kennedy>community hoped it would. So, you know, I don't have to do good work, but it's also not there yet.
+
+01:04:47.340 --> 01:04:53.920
+<v David Kopec>I don't think. I wonder if some of the performance issues, you know, are part of this. So, you know,
+
+01:04:54.140 --> 01:04:59.580
+<v David Kopec>people expect one of the reasons we like desktop apps and native mobile apps over web apps is
+
+01:04:59.700 --> 01:05:04.660
+<v David Kopec>because we get instantaneous feedback and, you know, really high performance in our user interfaces.
+
+01:05:05.180 --> 01:05:12.260
+<v David Kopec>And, you know, I still find even a PyQT app sometimes a little bit slower than, you know,
+
+01:05:12.340 --> 01:05:19.560
+<v David Kopec>a regular QT app. And, you know, it's unfortunate. For me, like the big want for the whole Python
+
+01:05:19.840 --> 01:05:24.180
+<v David Kopec>ecosystem is what started to be the focus, I think, of the core developers, which is performance
+
+01:05:24.440 --> 01:05:28.600
+<v David Kopec>improvements. Like, I think that performance improvements would make everyone's lives in the
+
+01:05:28.800 --> 01:05:35.381
+<v David Kopec>ecosystem so much better, you know. And so I think rightly that this has become like one of the central
+
+01:05:35.400 --> 01:05:41.960
+<v Michael Kennedy>focuses of, you know, of the core developers. Yeah. Guido, Mark Shannon, Grant Booker,
+
+01:05:42.300 --> 01:05:45.520
+<v Michael Kennedy>a bunch of people whose names I'm not including, they've all done really good work over the last
+
+01:05:45.620 --> 01:05:50.220
+<v Michael Kennedy>three or four years. I was a little bit sad to see Microsoft cancel that project or cancel the
+
+01:05:50.360 --> 01:05:54.980
+<v Michael Kennedy>funding for that project. I mean, the project continues, but still, you know, what has happened
+
+01:05:55.080 --> 01:05:59.540
+<v Michael Kennedy>is so, so much better. That is really a big deal. Yeah. Yeah. And, you know, I even saw it in the
+
+01:05:59.630 --> 01:06:05.360
+<v David Kopec>course of writing the book. I started writing the book in 2021 and that NES emulator on the same
+
+01:06:05.380 --> 01:06:09.380
+<v David Kopec>was something like 12 frames per second in 2021.
+
+01:06:10.050 --> 01:06:12.560
+<v David Kopec>And by 2025, it was like 17 frames
+
+01:06:12.590 --> 01:06:13.620
+<v David Kopec>or 15 or 17 frames per second.
+
+01:06:13.620 --> 01:06:13.900
+<v David Kopec>Yeah, nice.
+
+01:06:15.280 --> 01:06:17.880
+<v David Kopec>I really saw it in these computationally intensive
+
+01:06:18.660 --> 01:06:19.360
+<v David Kopec>programs in the book.
+
+01:06:19.640 --> 01:06:20.860
+<v Michael Kennedy>I'm pretty positive for it.
+
+01:06:20.860 --> 01:06:23.920
+<v Michael Kennedy>I mean, there's a lot of things that could be better,
+
+01:06:24.100 --> 01:06:26.700
+<v Michael Kennedy>but I think one of the real superpowers is
+
+01:06:27.080 --> 01:06:29.520
+<v Michael Kennedy>it's approachable, but it's ceiling of Python.
+
+01:06:29.720 --> 01:06:31.640
+<v Michael Kennedy>That is, it's ceiling of what you can accomplish
+
+01:06:31.840 --> 01:06:33.100
+<v Michael Kennedy>is not that low, right?
+
+01:06:33.180 --> 01:06:36.860
+<v Michael Kennedy>You can go pretty far if you have CS skills and ideas.
+
+01:06:37.160 --> 01:06:39.600
+<v Michael Kennedy>And then, you know, pip install, uv install.
+
+01:06:40.240 --> 01:06:44.240
+<v Michael Kennedy>The options of what is out there to just build and click together are incredible.
+
+01:06:44.600 --> 01:06:47.680
+<v David Kopec>What do you think about, and I know you talked about it on the show before.
+
+01:06:47.770 --> 01:06:53.560
+<v David Kopec>I heard about a while ago on the show about Mojo and about, you know, a total attempt
+
+01:06:53.860 --> 01:07:00.160
+<v David Kopec>that, you know, let's just redo it and we'll get to keep the language syntax, but not the
+
+01:07:00.300 --> 01:07:00.460
+<v Michael Kennedy>runtime.
+
+01:07:01.120 --> 01:07:01.680
+<v David Kopec>Right, right, right.
+
+01:07:01.900 --> 01:07:05.080
+<v David Kopec>And I mean, PyPy is also, of course, kind of an attempt at that as well.
+
+01:07:05.440 --> 01:07:07.140
+<v David Kopec>But and some people call for it, right?
+
+01:07:07.150 --> 01:07:10.620
+<v David Kopec>I see sometimes people are like, why don't they replace CPython with PyPy?
+
+01:07:10.960 --> 01:07:14.820
+<v David Kopec>What do you think about kind of just like the whole is too big a topic for the end?
+
+01:07:14.820 --> 01:07:15.820
+<v David Kopec>No, no, it's interesting.
+
+01:07:16.060 --> 01:07:18.060
+<v Michael Kennedy>I think all of those are interesting.
+
+01:07:18.370 --> 01:07:21.580
+<v Michael Kennedy>I think the Mojo performance story is very powerful.
+
+01:07:22.080 --> 01:07:27.940
+<v Michael Kennedy>It's also really hard to bring over to CPython because there's so many different ways that it's used.
+
+01:07:28.140 --> 01:07:34.200
+<v Michael Kennedy>There's so many, you know, it runs on this piece of hardware doing this thing that we just could never optimize for, you know?
+
+01:07:34.620 --> 01:07:43.280
+<v Michael Kennedy>So, and then, like I said, with 600,000 or whatever there are packages, you know, how much of that are you willing to carve away to get a faster language?
+
+01:07:43.800 --> 01:07:51.380
+<v Michael Kennedy>And what I think also is a really interesting aspect that people might not think about or take into account that often is you'll see a lot of these benchmarks.
+
+01:07:51.650 --> 01:07:56.360
+<v Michael Kennedy>Like here's the three body, solving the three body problem in Python, and here's solving it in Mojo.
+
+01:07:56.520 --> 01:07:58.680
+<v Michael Kennedy>Here's solving the three-body problem in Rust.
+
+01:07:58.760 --> 01:07:59.800
+<v Michael Kennedy>And look at that huge difference.
+
+01:08:00.280 --> 01:08:01.960
+<v Michael Kennedy>But what often happens in Python
+
+01:08:02.620 --> 01:08:04.900
+<v Michael Kennedy>is you find yourself orchestrating native code anyway.
+
+01:08:05.160 --> 01:08:07.440
+<v Michael Kennedy>Like, okay, we're going to use Polars
+
+01:08:07.620 --> 01:08:08.500
+<v Michael Kennedy>and we're going to do this thing.
+
+01:08:08.720 --> 01:08:10.180
+<v Michael Kennedy>But when I call the Polars functions,
+
+01:08:10.460 --> 01:08:12.080
+<v Michael Kennedy>I'm no longer running Python.
+
+01:08:12.340 --> 01:08:15.180
+<v Michael Kennedy>I'm running like a drop of Python and a bunch of Rust.
+
+01:08:15.700 --> 01:08:16.799
+<v Michael Kennedy>And then you write back in the same,
+
+01:08:16.980 --> 01:08:19.040
+<v Michael Kennedy>or I'm talking to a database layer,
+
+01:08:20.020 --> 01:08:23.859
+<v Michael Kennedy>or my web app is running on a Rust-based server.
+
+01:08:23.980 --> 01:08:25.520
+<v Michael Kennedy>There's just all these little parts
+
+01:08:25.520 --> 01:08:28.480
+<v Michael Kennedy>where a lot of times your code speed
+
+01:08:29.000 --> 01:08:30.920
+<v Michael Kennedy>is more about how you're putting the pieces together.
+
+01:08:31.400 --> 01:08:31.540
+<v Michael Kennedy>Yeah.
+
+01:08:31.779 --> 01:08:32.220
+<v Michael Kennedy>Not always.
+
+01:08:32.319 --> 01:08:34.040
+<v Michael Kennedy>If you're doing computational stuff,
+
+01:08:34.520 --> 01:08:35.440
+<v Michael Kennedy>that's out the window potentially.
+
+01:08:35.640 --> 01:08:36.980
+<v Michael Kennedy>But when you're kind of, you know,
+
+01:08:36.980 --> 01:08:39.380
+<v Michael Kennedy>you do machine learning, you're doing web apps,
+
+01:08:39.520 --> 01:08:40.359
+<v Michael Kennedy>you're doing database calls.
+
+01:08:40.520 --> 01:08:42.200
+<v Michael Kennedy>A lot of these are like just a layer
+
+01:08:42.720 --> 01:08:43.339
+<v Michael Kennedy>and then off it goes.
+
+01:08:44.420 --> 01:08:45.640
+<v David Kopec>Yeah, that's totally makes sense.
+
+01:08:45.859 --> 01:08:48.160
+<v David Kopec>But then I think it is holding Python back
+
+01:08:48.500 --> 01:08:50.140
+<v David Kopec>from some of those, you know,
+
+01:08:50.200 --> 01:08:51.819
+<v David Kopec>some of these real interesting domains
+
+01:08:52.319 --> 01:08:53.859
+<v David Kopec>that people want to get into,
+
+01:08:54.500 --> 01:08:56.500
+<v David Kopec>especially when they're first learning programming,
+
+01:08:56.720 --> 01:08:57.540
+<v David Kopec>like 3D games.
+
+01:09:02.200 --> 01:09:03.060
+<v David Kopec>Let's stick with that
+
+01:09:03.180 --> 01:09:04.540
+<v David Kopec>because I'm thinking of ones for people
+
+01:09:04.759 --> 01:09:05.799
+<v David Kopec>in computer science education.
+
+01:09:06.520 --> 01:09:08.700
+<v David Kopec>A lot of people who study computer science
+
+01:09:08.799 --> 01:09:10.259
+<v David Kopec>is because they want to make a game, right?
+
+01:09:10.359 --> 01:09:10.420
+<v David Kopec>Sure.
+
+01:09:10.819 --> 01:09:12.040
+<v David Kopec>And when they want to make a game-
+
+01:09:12.040 --> 01:09:12.839
+<v Michael Kennedy>And I can see a world,
+
+01:09:12.839 --> 01:09:14.720
+<v Michael Kennedy>like look at one of the biggest game companies
+
+01:09:14.720 --> 01:09:16.120
+<v Michael Kennedy>in the world, it's Unity.
+
+01:09:16.359 --> 01:09:16.460
+<v Michael Kennedy>Yeah.
+
+01:09:16.900 --> 01:09:17.279
+<v Michael Kennedy>Right?
+
+01:09:17.279 --> 01:09:18.299
+<v Michael Kennedy>As a foundational,
+
+01:09:18.299 --> 01:09:21.120
+<v Michael Kennedy>like building your game with not creator of games.
+
+01:09:21.120 --> 01:09:22.960
+<v Michael Kennedy>They're built, I believe in C-sharp and.net,
+
+01:09:22.960 --> 01:09:23.960
+<v Michael Kennedy>if I remember correctly.
+
+01:09:24.220 --> 01:09:28.040
+<v Michael Kennedy>And that's a faster language, but it's not raging fast.
+
+01:09:28.270 --> 01:09:33.299
+<v Michael Kennedy>You know, it's a lot faster, but it's still a decent way from a C,
+
+01:09:33.750 --> 01:09:35.420
+<v Michael Kennedy>like a pure C language, right?
+
+01:09:35.660 --> 01:09:35.759
+<v Michael Kennedy>Yeah.
+
+01:09:35.900 --> 01:09:37.020
+<v Michael Kennedy>A pure C implementation.
+
+01:09:37.640 --> 01:09:39.880
+<v Michael Kennedy>And they're really, really successful.
+
+01:09:39.950 --> 01:09:41.100
+<v Michael Kennedy>They got close enough.
+
+01:09:41.560 --> 01:09:45.520
+<v Michael Kennedy>I could easily see some company go, we're going to build a game engine.
+
+01:09:45.970 --> 01:09:48.940
+<v Michael Kennedy>We're going to use Python as the language to get as many people
+
+01:09:48.990 --> 01:09:52.380
+<v Michael Kennedy>who have been left out in the cold, in a sense, to do it.
+
+01:09:52.540 --> 01:09:54.320
+<v Michael Kennedy>but we're going to do a mojo-like thing.
+
+01:09:54.390 --> 01:09:55.520
+<v Michael Kennedy>Or we're going to do something where
+
+01:09:55.790 --> 01:09:57.120
+<v Michael Kennedy>you don't get to use every library,
+
+01:09:57.280 --> 01:09:59.560
+<v Michael Kennedy>but do you really need Flask in your game?
+
+01:10:00.100 --> 01:10:00.880
+<v Michael Kennedy>Not in your game.
+
+01:10:01.320 --> 01:10:01.680
+<v Michael Kennedy>You know what I mean?
+
+01:10:01.800 --> 01:10:02.220
+<v David Kopec>Yeah, yeah, yeah.
+
+01:10:02.400 --> 01:10:05.100
+<v Michael Kennedy>We're going to build like a smaller focused,
+
+01:10:05.400 --> 01:10:06.320
+<v Michael Kennedy>high performance version
+
+01:10:06.720 --> 01:10:08.900
+<v Michael Kennedy>that looks as close as it could be.
+
+01:10:09.200 --> 01:10:10.780
+<v Michael Kennedy>And we're going to sell you a game engine
+
+01:10:11.200 --> 01:10:13.000
+<v Michael Kennedy>in a way to ship those games on Steam,
+
+01:10:13.490 --> 01:10:16.480
+<v Michael Kennedy>a way to ship those games on Metal to macOS, et cetera.
+
+01:10:16.680 --> 01:10:16.740
+<v Michael Kennedy>Right?
+
+01:10:16.830 --> 01:10:18.200
+<v Michael Kennedy>Like I could see that world happen.
+
+01:10:18.620 --> 01:10:19.040
+<v David Kopec>Yeah, yeah.
+
+01:10:19.090 --> 01:10:20.380
+<v Michael Kennedy>I don't see me making that world,
+
+01:10:20.430 --> 01:10:21.240
+<v Michael Kennedy>but I could see that happen.
+
+01:10:21.420 --> 01:10:22.800
+<v Michael Kennedy>And then actually, I think it would be okay.
+
+01:10:23.410 --> 01:10:23.900
+<v Michael Kennedy>How do you feel?
+
+01:10:24.040 --> 01:10:25.260
+<v Michael Kennedy>Like, do you see that as possible?
+
+01:10:25.540 --> 01:10:26.620
+<v David Kopec>No, that makes total sense.
+
+01:10:26.870 --> 01:10:29.420
+<v David Kopec>I think another thing we think about is like,
+
+01:10:29.640 --> 01:10:31.920
+<v David Kopec>how much are skills becoming more transferable
+
+01:10:32.110 --> 01:10:33.120
+<v David Kopec>because of LLMs?
+
+01:10:33.500 --> 01:10:36.040
+<v David Kopec>So can somebody who already learned Python well
+
+01:10:36.580 --> 01:10:38.960
+<v David Kopec>now quickly pick up C# in Unity
+
+01:10:39.440 --> 01:10:43.200
+<v David Kopec>because the LLM is doing a lot of the detailed syntax for them
+
+01:10:43.620 --> 01:10:45.620
+<v David Kopec>and they just have to understand the programmatic ideas.
+
+01:10:46.180 --> 01:10:48.840
+<v David Kopec>So is like, you know, maybe Python will continue
+
+01:10:48.860 --> 01:10:51.520
+<v David Kopec>to always be this great first language for everybody.
+
+01:10:52.030 --> 01:10:54.220
+<v David Kopec>And it'll be easier for people to now transition
+
+01:10:54.440 --> 01:10:56.500
+<v David Kopec>to other languages for specific domains.
+
+01:10:57.140 --> 01:10:59.020
+<v David Kopec>And so it matters less that we have everything
+
+01:10:59.800 --> 01:11:01.300
+<v David Kopec>in the original language.
+
+01:11:01.800 --> 01:11:03.840
+<v Michael Kennedy>Okay, out in the chat,
+
+01:11:04.860 --> 01:11:07.220
+<v Michael Kennedy>there's the recommendation for, that's GoDot.
+
+01:11:07.460 --> 01:11:09.620
+<v Michael Kennedy>If you want to go, I'm not super familiar with it.
+
+01:11:09.800 --> 01:11:11.720
+<v David Kopec>I think it's an open source game engine.
+
+01:11:12.260 --> 01:11:13.300
+<v David Kopec>Yes, that much I know,
+
+01:11:13.380 --> 01:11:14.720
+<v Michael Kennedy>but that's where my knowledge stops.
+
+01:11:15.220 --> 01:11:16.600
+<v David Kopec>Right, and I think it has like,
+
+01:11:16.800 --> 01:11:21.580
+<v David Kopec>it's like a Godot script or something or G script or something is it's it's language which I think
+
+01:11:21.580 --> 01:11:26.720
+<v David Kopec>has more of a Python like syntax somebody in the chat can correct me yeah interesting okay but I
+
+01:11:26.880 --> 01:11:31.380
+<v Michael Kennedy>I think if you took an end-to-end thing you know it's not just a matter of like you can run the
+
+01:11:31.540 --> 01:11:36.520
+<v Michael Kennedy>game engine with this you've got to take it all the way to here's how you ship your games because
+
+01:11:37.040 --> 01:11:40.920
+<v Michael Kennedy>soon what is the very first thing you want to do once you get your game working and fun you want
+
+01:11:40.920 --> 01:11:45.940
+<v Michael Kennedy>to show your friends you know what I mean and you've got to find a way to send it out so this
+
+01:11:45.940 --> 01:11:50.220
+<v David Kopec>goes back to what you were talking about earlier is all the hurdles around you know getting something
+
+01:11:50.220 --> 01:11:56.440
+<v David Kopec>on the mac app store steam or you know or whatever um and how and that goes also to another big thing
+
+01:11:56.490 --> 01:12:01.680
+<v David Kopec>that we're trying to solve in the python ecosystem which is the packaging story right um which there
+
+01:12:01.680 --> 01:12:06.660
+<v David Kopec>are many solutions for but just not one decided on let's make this the standard like you know as
+
+01:12:06.670 --> 01:12:10.840
+<v Michael Kennedy>easy as possible thing yeah it's getting better things are definitely getting better but it's still
+
+01:12:11.100 --> 01:12:15.800
+<v Michael Kennedy>there is no Python build --format equals EXE.
+
+01:12:16.060 --> 01:12:16.120
+<v Michael Kennedy>Right.
+
+01:12:16.320 --> 01:12:20.820
+<v Michael Kennedy>You know, where, where, what comes out and then some sort of tooling that automatically
+
+01:12:21.680 --> 01:12:25.040
+<v Michael Kennedy>signs that stuff with your certificate you've got as a windows developer.
+
+01:12:25.200 --> 01:12:26.900
+<v Michael Kennedy>So it doesn't get flags as malware.
+
+01:12:27.580 --> 01:12:31.220
+<v Michael Kennedy>There's just, even if you get the thing to build, there's like these three or four other
+
+01:12:31.480 --> 01:12:33.500
+<v Michael Kennedy>steps, you know, I'm thinking about an iOS.
+
+01:12:33.780 --> 01:12:37.960
+<v Michael Kennedy>It's like, okay, we got it to run Python, but, but really what we needed to do is like
+
+01:12:37.980 --> 01:12:43.180
+<v Michael Kennedy>integrate with Swift UI and have storyboards where I can like, I can weave it. And you're like,
+
+01:12:43.280 --> 01:12:47.720
+<v Michael Kennedy>well, that's no, that's a long ways away. Like I know, but that's, you got to go through those
+
+01:12:48.080 --> 01:12:52.120
+<v Michael Kennedy>stages to get it. I don't know. It's just, there's, there's a little bit, a little bit further to go,
+
+01:12:52.200 --> 01:12:55.100
+<v Michael Kennedy>I guess, but I would love to see it. And I'm, I think it'll happen probably.
+
+01:12:55.360 --> 01:12:57.920
+<v David Kopec>It's not that you can't do it. It's just, there's too much friction right now.
+
+01:12:58.260 --> 01:13:02.600
+<v Michael Kennedy>Yeah. Yeah. Yeah. Well, hopefully you've given some people some ideas. Somebody's going to go
+
+01:13:02.620 --> 01:13:09.180
+<v Michael Kennedy>start the unity the pie unity company or whatever and let's let's let's make it happen
+
+01:13:09.660 --> 01:13:16.080
+<v Michael Kennedy>yeah yeah oh and also just um real-time follow-up out there godo is apparently the pronunciation
+
+01:13:16.540 --> 01:13:20.760
+<v Michael Kennedy>it's french sorry okay no no i didn't know it either um i think honestly just shout out to
+
+01:13:20.860 --> 01:13:25.580
+<v Michael Kennedy>everyone if you have a weird name for your project on github put an mp3 and say this is how you say
+
+01:13:25.580 --> 01:13:31.680
+<v David Kopec>it just get it let's let's help us out and not that french is weird but just you know we should
+
+01:13:31.700 --> 01:13:36.340
+<v David Kopec>actually do that with english projects too right um yeah yeah absolutely to make them accessible to
+
+01:13:36.460 --> 01:13:41.260
+<v Michael Kennedy>the yeah as simple yeah it has nothing to do with french i'm thinking even as something simple as
+
+01:13:41.700 --> 01:13:46.880
+<v Michael Kennedy>g unicorn is often said gunicorn and half the people out there are probably thinking michael
+
+01:13:47.000 --> 01:13:53.300
+<v Michael Kennedy>you're wrong it's gunicorn not unicorn but their logo is a green unicorn yeah i'm like well it's
+
+01:13:53.460 --> 01:13:57.860
+<v Michael Kennedy>probably the g stand just g and then certainly the unicorn part is probably unicorn because
+
+01:13:57.880 --> 01:14:02.880
+<v Michael Kennedy>unicorn is you know what i mean but like it's totally reasonable to look at it and go unicorn
+
+01:14:03.320 --> 01:14:08.080
+<v Michael Kennedy>you know what i mean but if they just put a little mp3 like it's or even just where it's pronounced
+
+01:14:08.460 --> 01:14:14.260
+<v Michael Kennedy>g ee dash unicorn you know what i mean yeah yeah i think we all need to do that yeah yeah all right
+
+01:14:14.400 --> 01:14:19.000
+<v Michael Kennedy>well the chat is getting lively but we're gonna have to call it because we might be just a tiny
+
+01:14:19.040 --> 01:14:23.800
+<v David Kopec>bit over time and it's getting late and you're part of the world so well thank you so much for
+
+01:14:23.820 --> 01:14:28.040
+<v David Kopec>having me on again, Michael. It was really a pleasure. Congratulations again on Talk Python
+
+01:14:28.130 --> 01:14:31.800
+<v Michael Kennedy>in production. Thank you. And Computer Science from Scratch as well.
+
+01:14:32.240 --> 01:14:35.860
+<v David Kopec>Yeah. And if folks want to check out the book, there's a website that
+
+01:14:36.440 --> 01:14:39.480
+<v David Kopec>I'm sure you'll put in the show notes, computersciencefromscratch.com.
+
+01:14:40.160 --> 01:14:44.080
+<v David Kopec>And you can just learn more about the different projects we do and some of the
+
+01:14:45.620 --> 01:14:48.280
+<v Michael Kennedy>ideas in the book. Yeah. Awesome. People want to get in touch with you
+
+01:14:48.700 --> 01:14:52.760
+<v David Kopec>otherwise? How do they do that? Sure. You can find me on X, I guess,
+
+01:14:52.820 --> 01:14:55.400
+<v David Kopec>at Dave Kopech, D-A-V-E-K-O-P-E-C.
+
+01:14:55.630 --> 01:14:58.460
+<v David Kopec>And if you go to my website, DaveKopech.com,
+
+01:14:58.580 --> 01:14:59.360
+<v David Kopec>there's a bunch, there's email
+
+01:14:59.630 --> 01:15:00.960
+<v David Kopec>and a bunch of other ways to contact me.
+
+01:15:01.130 --> 01:15:03.200
+<v David Kopec>So D-A-V-E-K-O-P-E-C.com.
+
+01:15:03.460 --> 01:15:04.260
+<v David Kopec>Yeah, I'll put it in the show notes.
+
+01:15:04.740 --> 01:15:05.140
+<v David Kopec>Thanks, Michael.
+
+01:15:05.520 --> 01:15:06.680
+<v Michael Kennedy>Yeah, you bet, you bet.
+
+01:15:06.920 --> 01:15:08.680
+<v Michael Kennedy>So David, thanks for being back on the show.
+
+01:15:09.020 --> 01:15:09.560
+<v Michael Kennedy>It's been really fun.
+
+01:15:09.840 --> 01:15:10.440
+<v Michael Kennedy>Yeah, we'll talk to you later.
+
+01:15:10.760 --> 01:15:11.520
+<v David Kopec>Awesome, thanks, Michael.
+
+01:15:11.880 --> 01:15:12.140
+<v David Kopec>See ya.
+
+01:15:13.260 --> 01:15:15.400
+<v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:15:15.660 --> 01:15:16.480
+<v Michael Kennedy>Thank you to our sponsors.
+
+01:15:16.750 --> 01:15:18.020
+<v Michael Kennedy>Be sure to check out what they're offering.
+
+01:15:18.230 --> 01:15:19.560
+<v Michael Kennedy>It really helps support the show.
+
+01:15:20.320 --> 01:15:21.980
+<v Michael Kennedy>This episode is brought to you by Sentry.
+
+01:15:22.240 --> 01:15:23.560
+<v Michael Kennedy>Don't let those errors go unnoticed.
+
+01:15:23.710 --> 01:15:25.340
+<v Michael Kennedy>Use Sentry like we do here at Talk Python.
+
+01:15:25.880 --> 01:15:28.700
+<v Michael Kennedy>Sign up at talkpython.fm/sentry.
+
+01:15:29.600 --> 01:15:31.580
+<v Michael Kennedy>And it's brought to you by NordStellar.
+
+01:15:32.100 --> 01:15:34.620
+<v Michael Kennedy>NordStellar is a threat exposure management platform
+
+01:15:35.200 --> 01:15:36.440
+<v Michael Kennedy>from the Nord security family,
+
+01:15:36.730 --> 01:15:37.880
+<v Michael Kennedy>the folks behind NordVPN,
+
+01:15:38.460 --> 01:15:40.040
+<v Michael Kennedy>that combines dark web intelligence,
+
+01:15:40.680 --> 01:15:42.200
+<v Michael Kennedy>session hijacking prevention,
+
+01:15:42.800 --> 01:15:44.800
+<v Michael Kennedy>brand and domain abuse detection,
+
+01:15:45.180 --> 01:15:46.880
+<v Michael Kennedy>and external attack surface management.
+
+01:15:47.480 --> 01:15:49.600
+<v Michael Kennedy>Learn more and get started keeping your team safe
+
+01:15:49.620 --> 01:15:52.400
+<v Michael Kennedy>at talkpython.fm/nordstellar.
+
+01:15:53.240 --> 01:15:55.080
+<v Michael Kennedy>If you or your team needs to learn Python,
+
+01:15:55.270 --> 01:15:58.700
+<v Michael Kennedy>we have over 270 hours of beginner and advanced courses
+
+01:15:58.960 --> 01:16:01.160
+<v Michael Kennedy>on topics ranging from complete beginners
+
+01:16:01.470 --> 01:16:05.340
+<v Michael Kennedy>to async code, Flask, Django, HTML, and even LLMs.
+
+01:16:05.560 --> 01:16:08.020
+<v Michael Kennedy>Best of all, there's no subscription in sight.
+
+01:16:08.400 --> 01:16:10.180
+<v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:16:10.920 --> 01:16:12.820
+<v Michael Kennedy>And if you're not already subscribed to the show
+
+01:16:13.040 --> 01:16:14.240
+<v Michael Kennedy>on your favorite podcast player,
+
+01:16:14.870 --> 01:16:15.540
+<v Michael Kennedy>what are you waiting for?
+
+01:16:16.160 --> 01:16:17.960
+<v Michael Kennedy>Just search for Python in your podcast player.
+
+01:16:18.120 --> 01:16:18.940
+<v Michael Kennedy>We should be right at the top.
+
+01:16:19.360 --> 01:16:22.140
+<v Michael Kennedy>If you enjoyed that geeky rap song, you can download the full track.
+
+01:16:22.360 --> 01:16:24.240
+<v Michael Kennedy>The link is actually in your podcast blog or share notes.
+
+01:16:25.080 --> 01:16:26.420
+<v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:16:26.820 --> 01:16:27.880
+<v Michael Kennedy>Thank you so much for listening.
+
+01:16:28.080 --> 01:16:28.880
+<v Michael Kennedy>I really appreciate it.
+
+01:16:29.320 --> 01:16:29.980
+<v Michael Kennedy>I'll see you next time.
+
+01:16:42.840 --> 01:16:43.980
+And we ready to roll
+
+01:16:45.560 --> 01:16:46.760
+Upgrading the code
+
+01:16:47.480 --> 01:16:49.260
+No fear of getting old
+
+01:16:50.660 --> 01:16:52.760
+We tapped into that modern vibe
+
+01:16:53.200 --> 01:16:54.140
+Overcame each storm
+
+01:16:54.920 --> 01:16:56.260
+Talk Python To Me
+
+01:16:56.340 --> 01:16:57.640
+I sync is the norm
+

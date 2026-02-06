@@ -1,0 +1,2152 @@
+00:00:00 <v Michael Kennedy>For years, building interactive widgets in Python notebooks meant wrestling with toolchains, platform quirks, and a mountain of JavaScript machinery.
+
+00:00:07 <v Michael Kennedy>Most developers took one look and backed away slowly.
+
+00:00:10 <v Michael Kennedy>Trevor Mance decided that barrier did not need to exist.
+
+00:00:13 <v Michael Kennedy>His idea was simple.
+
+00:00:15 <v Michael Kennedy>Give Python users just enough JavaScript to unlock the web's interactivity without dragging along the rest of the web ecosystem.
+
+00:00:22 <v Michael Kennedy>That idea became anywidget, and it's quickly becoming the quiet, connective tissue of modern interactive computing.
+
+00:00:29 <v Michael Kennedy>Today, we dig into how it works, why it's taken off, and how it might change the way we explore data.
+
+00:00:35 <v Michael Kennedy>This is Talk Python To Me, episode 530, recorded November 25th, 2025.
+
+00:00:57 <v Michael Kennedy>Welcome to Talk Python To Me, <v Michael Kennedy>the number one Python podcast for developers and data scientists.
+
+00:01:03 <v Michael Kennedy>This is your host, Michael Kennedy.
+
+00:01:04 <v Michael Kennedy>I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:08 <v Michael Kennedy>Let's connect on social media.
+
+00:01:10 <v Michael Kennedy>You'll find me and Talk Python on Mastodon, Bluesky, and X.
+
+00:01:13 <v Michael Kennedy>The social links are all in your show notes.
+
+00:01:16 <v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:20 <v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:23 <v Michael Kennedy>That's right.
+
+00:01:24 <v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:27 <v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:32 <v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:37 <v Michael Kennedy>Look into the future and see bugs before they make it to production.
+
+00:01:40 <v Michael Kennedy>Sentry's Seer AI Code Review uses historical error and performance information at Sentry
+
+00:01:46 <v Michael Kennedy>to find and flag bugs in your PRs before you even start to review them.
+
+00:01:51 <v Michael Kennedy>Stop bugs before they enter your code base.
+
+00:01:53 <v Michael Kennedy>Get started at talkpython.fm/seer-code-review.
+
+00:01:57 <v Michael Kennedy>And this episode is sponsored by JetBrains and the PyCharm team.
+
+00:02:01 <v Michael Kennedy>This week only through December 19th, 2025, get 30% off of PyCharm Pro, including renewals,
+
+00:02:08 <v Michael Kennedy>and PyCharm will donate all the proceeds to the Python Software Foundation.
+
+00:02:12 <v Michael Kennedy>Support the PSF by getting or renewing PyCharm.
+
+00:02:15 <v Michael Kennedy>Visit talkpython.fm/pycharm dash PSF dash 2025 and use the code STRONGERPYTHON.
+
+00:02:22 <v Michael Kennedy>Both of these are in your podcast player show notes.
+
+00:02:25 <v Michael Kennedy>Trevor, welcome to Talk By Than Me. Awesome to have you here. Thanks for coming.
+
+00:02:29 <v Trevor Manz>Yeah, thanks for having me, Michael.
+
+00:02:30 <v Michael Kennedy>We're going to talk about building Lego blocks for data scientists. Is that maybe a good way to put it?
+
+00:02:36 <v Michael Kennedy>Yeah, definitely.
+
+00:02:37 <v Michael Kennedy>Yeah, so we're going to talk about your project, AnyWidget, which is a super cool project that allows people to build more adaptable, more reusable widgets,
+
+00:02:48 <v Michael Kennedy>rather than just saying I'm going to build it for Jupyter or Remo or whatever.
+
+00:02:52 <v Michael Kennedy>but I'm going to build something that can be used broadly through your platform and a lot simpler
+
+00:02:57 <v Michael Kennedy>deployment as well. So I know a lot of people out there are excited. Not everyone necessarily wants
+
+00:03:02 <v Michael Kennedy>to build widgets, but this also makes more widgets available for people, right? So super cool project.
+
+00:03:07 <v Michael Kennedy>Yeah. And before we get into that, of course, maybe just tell us a bit about yourself.
+
+00:03:12 <v Trevor Manz>Yeah. So I'm Trevor. I'm a software engineer at Marimo, but prior to being at Marimo, I was
+
+00:03:18 <v Trevor Manz>doing my PhD in data visualization at Harvard Medical School. So I got into this whole like
+
+00:03:25 <v Trevor Manz>Python web world from working on tools for biological scientists to explore like large
+
+00:03:32 <v Trevor Manz>genomics or spatial genomic data sets. That is a super interesting topic. I'm sure
+
+00:03:38 <v Michael Kennedy>there were some really niche things you had to build, right? Like, you know, we have this crazy
+
+00:03:43 <v Michael Kennedy>research machine. There's three of them in the world and here's the data that comes out of it.
+
+00:03:48 <v Michael Kennedy>how do I put that into notebooks or whatever, right?
+
+00:03:51 <v Trevor Manz>Yeah, yeah, exactly.
+
+00:03:53 <v Trevor Manz>And it's funny you mentioned that.
+
+00:03:55 <v Trevor Manz>I think starting off in more like the visualization side,
+
+00:03:57 <v Trevor Manz>we'd build these very bespoke and custom applications <v Trevor Manz>for looking at large biological data sets.
+
+00:04:03 <v Trevor Manz>And then I think a motivation for me was realizing <v Trevor Manz>a lot of the folks that I was working with
+
+00:04:07 <v Trevor Manz>to build these tools for worked in Python <v Trevor Manz>and worked in notebooks specifically.
+
+00:04:11 <v Trevor Manz>And so there was sort of this gap between the research <v Trevor Manz>that we were doing to build these specialized tools
+
+00:04:16 <v Trevor Manz>and trying to meet users where they were at <v Trevor Manz>to actually use those tools in their research
+
+00:04:20 <v Trevor Manz>and as a part of their data exploration workflows.
+
+00:04:23 <v Michael Kennedy>- And this was your PhD work?
+
+00:04:24 <v Michael Kennedy>- Yes, yeah, this was my PhD work.
+
+00:04:26 <v Michael Kennedy>- Incredible.
+
+00:04:27 <v Michael Kennedy>So I'm sure it wasn't just Python.
+
+00:04:30 <v Michael Kennedy>- No, so--
+
+00:04:31 <v Michael Kennedy>- What was involved with it?
+
+00:04:32 <v Trevor Manz>- So yeah, I'd say the research community, <v Trevor Manz>at least in bio, is sort of split between R and Python,
+
+00:04:39 <v Trevor Manz>but specifically some of our closest collaborators <v Trevor Manz>were in the Python ecosystem.
+
+00:04:43 <v Trevor Manz>And then my team was building a lot of user interfaces <v Trevor Manz>for visual exploration of data sets.
+
+00:04:49 <v Trevor Manz>And I think this notebook sort of became this space <v Trevor Manz>and specifically Python notebooks
+
+00:04:54 <v Trevor Manz>where you can really blend those programmatic <v Trevor Manz>and user interfaces together.
+
+00:04:59 <v Trevor Manz>That's sort of why I centered on trying to solve <v Trevor Manz>some of the rough edges
+
+00:05:03 <v Trevor Manz>about bringing these interactive tools inside of notebooks.
+
+00:05:07 <v Michael Kennedy>- That's cool.
+
+00:05:08 <v Michael Kennedy>Did you do any other platforms?
+
+00:05:11 <v Michael Kennedy>I'm thinking like Unity or Reel, <v Michael Kennedy>a real engine for like flying through data or what else did you all do?
+
+00:05:20 <v Trevor Manz>Yeah, there were some folks on my team that ended up or are currently working in more like spatial,
+
+00:05:25 <v Trevor Manz>like AR, VR type scenarios.
+
+00:05:27 <v Trevor Manz>And that I think is based on the Unity engine.
+
+00:05:30 <v Trevor Manz>Most of my work was like web-based and we, and specifically, and we'll probably get into it.
+
+00:05:34 <v Trevor Manz>I think the web is just a really important platform to develop for in the sense that,
+
+00:05:39 <v Trevor Manz>I mean, we're recording right now in a web browser.
+
+00:05:42 <v Trevor Manz>It's a very capable platform that everyone sort of has an entry point to on some sort of device.
+
+00:05:47 <v Trevor Manz>And so developing for the web often means that you can reuse a lot of that application amongst different devices and in different contexts.
+
+00:05:56 <v Michael Kennedy>It's unbelievable what the web can do these days.
+
+00:05:58 <v Michael Kennedy>I made the comment before we started, like, I can't believe this is a web browser that we're building, that we're doing this live streaming, video sharing, local recording.
+
+00:06:08 <v Michael Kennedy>All this stuff is just like, it's so wild.
+
+00:06:11 <v Michael Kennedy>And I built an app recently that I'm using to kind of help out with some of the interview
+
+00:06:14 <v Michael Kennedy>stuff.
+
+00:06:15 <v Michael Kennedy>And it's on the web.
+
+00:06:15 <v Michael Kennedy>It just runs on my iPad.
+
+00:06:17 <v Michael Kennedy>I mean, it goes underappreciated some of the time, I think, of just how far you can push
+
+00:06:22 <v Michael Kennedy>it.
+
+00:06:22 <v Michael Kennedy>It's not just documents and Ajax.
+
+00:06:25 <v Trevor Manz>Yeah.
+
+00:06:25 <v Trevor Manz>Yeah.
+
+00:06:26 <v Trevor Manz>The fact that a version of Photoshop runs in the browser is pretty amazing.
+
+00:06:30 <v Trevor Manz>And Figma itself is all running in the web browser.
+
+00:06:33 <v Trevor Manz>So it's definitely a capable platform.
+
+00:06:35 <v Trevor Manz>But one thing it's not very good at is, or doesn't have the ecosystem for, is a lot of
+
+00:06:40 <v Trevor Manz>data work.
+
+00:06:40 <v Trevor Manz>And I think that that's really the big divide.
+
+00:06:42 <v Trevor Manz>So I see the web is really like <v Trevor Manz>one of the most accessible platforms
+
+00:06:46 <v Trevor Manz>for building like user interfaces and like applications.
+
+00:06:50 <v Trevor Manz>But then there's this whole other world, <v Trevor Manz>which is like tools that you actually do data science stuff in.
+
+00:06:54 <v Trevor Manz>And that is not the web whatsoever, <v Trevor Manz>but has like a similar amount of maturity
+
+00:06:58 <v Trevor Manz>in terms of being very ergonomic and good <v Trevor Manz>at doing that type of work.
+
+00:07:02 <v Michael Kennedy>- Right, and those two worlds meet in, <v Michael Kennedy>they meet in the web, right?
+
+00:07:08 <v Michael Kennedy>But the people doing the Python work, they aren't necessarily web developers.
+
+00:07:13 <v Michael Kennedy>You gave a talk a year ago about anywidget that I'll definitely link to.
+
+00:07:18 <v Michael Kennedy>And you have this graphic here like, okay, we've got the front end, which often is Jupyter.
+
+00:07:25 <v Michael Kennedy>Not always, as we'll see in a minute.
+
+00:07:27 <v Michael Kennedy>But often is Jupyter with the way you build for it is with all these web front end tools
+
+00:07:32 <v Michael Kennedy>that even me doing web development is a lot of times I'm like, what is this?
+
+00:07:36 <v Michael Kennedy>And why is it so complicated?
+
+00:07:38 <v Michael Kennedy>I just don't even know.
+
+00:07:40 <v Michael Kennedy>And I do web stuff all the time.
+
+00:07:42 <v Michael Kennedy>And then you've got the backend stuff <v Michael Kennedy>where Python people live doing NumPy,
+
+00:07:46 <v Michael Kennedy>pollers, AppLotlib, et cetera.
+
+00:07:48 <v Michael Kennedy>Do you want to riff on that challenge a little bit?
+
+00:07:50 <v Michael Kennedy>Because I know your project is really here <v Michael Kennedy>to kind of solve some of this disjointedness.
+
+00:07:54 <v Trevor Manz>Yeah, I think one interesting thing, <v Trevor Manz>like taking a step back,
+
+00:07:58 <v Trevor Manz>and I mentioned this in the talk that I gave a while back,
+
+00:08:01 <v Trevor Manz>but like the web and Python ecosystems <v Trevor Manz>have been around for almost the same exact amount of time.
+
+00:08:06 <v Trevor Manz>Like I think like the first webpage <v Trevor Manz>was around the same year that the first release of Python came out.
+
+00:08:10 <v Trevor Manz>And so they sort of have been evolving in their own respective,
+
+00:08:15 <v Trevor Manz>or developing their own respective ecosystems for that period of time.
+
+00:08:18 <v Trevor Manz>And then as the web became really this platform for building user interfaces,
+
+00:08:22 <v Trevor Manz>I think that some pretty visionary folks saw that you could connect
+
+00:08:28 <v Trevor Manz>these backend resources to these very interactive applications
+
+00:08:31 <v Trevor Manz>that could be developed very quickly.
+
+00:08:34 <v Trevor Manz>So over the years, these things that started off very far apart
+
+00:08:36 <v Trevor Manz>have now come very close together.
+
+00:08:38 <v Trevor Manz>And now with WebAssembly, sometimes it's just all the, <v Trevor Manz>like turtles all the way down,
+
+00:08:43 <v Trevor Manz>it's all actually running in the browser.
+
+00:08:44 <v Trevor Manz>So it's pretty amazing.
+
+00:08:46 <v Trevor Manz>But I think that there definitely is this friction.
+
+00:08:49 <v Trevor Manz>And one thing I've also noticed from being in both these,
+
+00:08:51 <v Trevor Manz>the web and Python ecosystems for so long <v Trevor Manz>is sort of these like ebbs and flows of like maturity
+
+00:08:56 <v Trevor Manz>or like places that need to catch up to one another.
+
+00:08:59 <v Trevor Manz>And so I came from definitely like the website originally.
+
+00:09:03 <v Trevor Manz>And there's a lot that I took for granted, I guess, <v Trevor Manz>and that ecosystem of tooling that for a while, I think,
+
+00:09:09 <v Trevor Manz>gave the language a very bad rap <v Trevor Manz>because it was sort of the scripting language that was invented,
+
+00:09:13 <v Trevor Manz>I think, famously in two weeks.
+
+00:09:16 <v Trevor Manz>And now people are trying to build applications in it.
+
+00:09:18 <v Trevor Manz>But over the years, there have been standards and things have matured.
+
+00:09:23 <v Trevor Manz>And actually, the web is very backwards compatible <v Trevor Manz>and has some of these properties that are kind of amazing
+
+00:09:28 <v Trevor Manz>for something that's been around for that long.
+
+00:09:30 <v Trevor Manz>And then I'd say in the last couple of years, <v Trevor Manz>we've seen a bunch of new developer tool work going into the Python ecosystem that in some part
+
+00:09:39 <v Trevor Manz>is also inspired by some of the tooling in the web ecosystem. So I love to see how these things
+
+00:09:44 <v Trevor Manz>go back and forth. And I think if you haven't checked in on the ecosystem for a while,
+
+00:09:49 <v Trevor Manz>you might think it isn't what it was five years ago as it is today. And one of the goals of AnyWidget
+
+00:09:55 <v Trevor Manz>is to try to demystify some of maybe those prior bad experiences folks had developing and just
+
+00:10:01 <v Trevor Manz>you know, get back to like opening up some HTML and writing some JavaScript and getting your Python
+
+00:10:07 <v Michael Kennedy>data in the browser. Yeah, absolutely. You know, I wonder, as you describe it being made in two
+
+00:10:13 <v Michael Kennedy>weeks, which I also think this is true, when it was made, I think, at Mozilla, right? Yeah. Anyway,
+
+00:10:21 <v Michael Kennedy>one of the JavaScript's real issues is it doesn't have a real numerical system, right? Everything is
+
+00:10:28 <v Michael Kennedy>afloat. That has a lot of problems for data science when it really, really has to be integers
+
+00:10:33 <v Michael Kennedy>or whatever, right? Like you need more control over the numbers. I wonder how much of Python's
+
+00:10:39 <v Michael Kennedy>benefit in the data science space originates from people going, JavaScript's super popular,
+
+00:10:43 <v Michael Kennedy>but can't do numbers there. I do science, can't do JavaScript. What am I doing now? You know what
+
+00:10:48 <v Trevor Manz>I mean? What do you think about that? It just occurred to me. Yeah, it's interesting. Like that
+
+00:10:52 <v Trevor Manz>is originally like a constraint of the language. And maybe, you know, when you're picking ecosystems
+
+00:10:58 <v Trevor Manz>on. Also, there was no server way to run JavaScript until 2010. So the idea of just running this
+
+00:11:04 <v Trevor Manz>without a browser was also not very good. So yeah, I'm not quite sure, but it's funny because
+
+00:11:11 <v Trevor Manz>JavaScript has sort of reacted to that by adding some big ints as a data type. But also now there's
+
+00:11:17 <v Trevor Manz>sort of like a fourth language for the web, which is WebAssembly, and there are proper data types
+
+00:11:22 <v Trevor Manz>in WebAssembly. So I guess it is sort of reactionary, but I haven't really seen. So now you can run
+
+00:11:28 <v Trevor Manz>Python in the browser. And, but you'd have to have all this like ecosystem grift or migration that I
+
+00:11:33 <v Trevor Manz>just don't think anybody wants. So it's more, maybe these ecosystems can play a lot nicer together.
+
+00:11:39 <v Michael Kennedy>Yeah. Yeah. And certainly they are with things like Jupyter and stuff, right? Like most users
+
+00:11:44 <v Trevor Manz>of Jupyter don't write JavaScript. Yes. And I think that everyone's happy about that. So
+
+00:11:49 <v Michael Kennedy>exactly. That's true. There's a lot of people are like, you know what, that's not for me.
+
+00:11:52 <v Michael Kennedy>So, you know, you were at Harvard doing your work and now you're at Marimo?
+
+00:11:58 <v Michael Kennedy>Marimo?
+
+00:11:59 <v Michael Kennedy>I always mess up saying this.
+
+00:12:01 <v Michael Kennedy>Tell us how to do it.
+
+00:12:02 <v Trevor Manz>It's Marimo.
+
+00:12:03 <v Michael Kennedy>Marimo.
+
+00:12:04 <v Michael Kennedy>Okay, Marimo.
+
+00:12:05 <v Michael Kennedy>Yeah.
+
+00:12:05 <v Michael Kennedy>And I'd actually on, and I know we talked a lot about it and he set me straight and then
+
+00:12:10 <v Michael Kennedy>I drifted, I'm sure.
+
+00:12:11 <v Michael Kennedy>So what's your experiences here?
+
+00:12:14 <v Michael Kennedy>Like, how's it coming from academia to this world?
+
+00:12:17 <v Trevor Manz>It's been great.
+
+00:12:18 <v Trevor Manz>I think that having worked with, so part of AnyWidget was trying to address some user needs working inside of Notebooks.
+
+00:12:25 <v Trevor Manz>And there's only so much that you can do as a plugin to get that extra bit to help users.
+
+00:12:32 <v Trevor Manz>And so I think one really exciting thing about working on this team with Marimo is they got very involved,
+
+00:12:37 <v Trevor Manz>or they were aware of AnyWidget a while ago, and they kind of actually legitimized AnyWidget as,
+
+00:12:43 <v Trevor Manz>hey, this is a standard because we were able to implement around this specification.
+
+00:12:48 <v Trevor Manz>And so that got us together.
+
+00:12:50 <v Trevor Manz>And then from there, it's just been super exciting to work with a team that is so passionate about notebooks and thinking about this next generation of notebooks and what that environment needs to look like.
+
+00:13:00 <v Trevor Manz>And so there's much more that we can do inside of Marimo beyond the AnyWidget specification, but also AnyWidget is an important component of that.
+
+00:13:07 <v Trevor Manz>So I like to be able to sort of think about both of these two worlds.
+
+00:13:11 <v Michael Kennedy>That's cool.
+
+00:13:11 <v Michael Kennedy>So when I use widgets in Marimo, it's often an AnyWidget?
+
+00:13:17 <v Trevor Manz>Yep. Yeah, exactly. So if when folks usually come and they want to like extend Marimo with their own custom UI elements, like our answer is you should make an AnyWidget. So that's pretty exciting. But then if you're using things in like the sidebar or things that like sort of integrate outside of like the notebook view, those aren't more custom elements that we've created at Marimo that aren't necessarily based on AnyWidget.
+
+00:13:42 <v Michael Kennedy>This portion of Talk Python To Me is brought to you by Sentry.
+
+00:13:46 <v Michael Kennedy>Let me ask you a question.
+
+00:13:48 <v Michael Kennedy>What if you could see into the future?
+
+00:13:50 <v Michael Kennedy>We're talking about Sentry, of course, <v Michael Kennedy>so that means seeing potential errors, crashes, and bugs before they happen,
+
+00:13:56 <v Michael Kennedy>before you even accept them into your code base.
+
+00:13:59 <v Michael Kennedy>That's what Sentry's AI Sears Code Review offers.
+
+00:14:03 <v Michael Kennedy>You get error prediction based on real production history.
+
+00:14:06 <v Michael Kennedy>AI Sear Code Review flags the most impactful errors <v Michael Kennedy>your PR is likely to introduce before merge using your app's error and performance context,
+
+00:14:16 <v Michael Kennedy>not just generic LLM pattern matching.
+
+00:14:19 <v Michael Kennedy>Seer will then jump in on new PRs with feedback and warning if it finds any potential issues.
+
+00:14:25 <v Michael Kennedy>Here's a real example.
+
+00:14:26 <v Michael Kennedy>On a new PR related to a search feature in a web app,
+
+00:14:29 <v Michael Kennedy>we see a comment from Seer by Sentry bot in the PR.
+
+00:14:34 <v Michael Kennedy>And it says, <v Michael Kennedy>potential bug, the process search results function,
+
+00:14:38 <v Michael Kennedy>can enter an infinite recursion <v Michael Kennedy>when a search query finds no matches,
+
+00:14:43 <v Michael Kennedy>as the recursive call lacks a return statement <v Michael Kennedy>and a proper termination condition.
+
+00:14:48 <v Michael Kennedy>And Seer AI Code Review also provides additional details
+
+00:14:51 <v Michael Kennedy>which you can expand for further information <v Michael Kennedy>on the issue and suggested fixes.
+
+00:14:56 <v Michael Kennedy>And bam, just like that, <v Michael Kennedy>Seer AI Code Review has stopped a bug in its tracks
+
+00:15:00 <v Michael Kennedy>without any devs in the loop.
+
+00:15:02 <v Michael Kennedy>A nasty infinite loop bug never made it into production.
+
+00:15:06 <v Michael Kennedy>Here's how you set it up.
+
+00:15:07 <v Michael Kennedy>You enable the GitHub Sentry integration on your Sentry account.
+
+00:15:11 <v Michael Kennedy>Enable Seer AI on your Sentry account.
+
+00:15:13 <v Michael Kennedy>And on GitHub, you install the Seer by Sentry app <v Michael Kennedy>and connect it to your repositories that you want it to validate.
+
+00:15:19 <v Michael Kennedy>So jump over to Sentry and set up code review for yourself.
+
+00:15:23 <v Michael Kennedy>Just visit talkpython.fm/seer-code-review.
+
+00:15:27 <v Michael Kennedy>The link is in your podcast player show notes and on the episode page.
+
+00:15:30 <v Michael Kennedy>Thank you to Sentry for supporting Talk Python To Me.
+
+00:15:34 <v Michael Kennedy>Why Marimo?
+
+00:15:35 <v Michael Kennedy>I know I had Axion people talked about.
+
+00:15:37 <v Michael Kennedy>When I look at this, it feels like a super modern UI that is just,
+
+00:15:41 <v Michael Kennedy>it's got a lot of polish and a lot of, it feels 2025 and working with it, right?
+
+00:15:48 <v Michael Kennedy>And it solves some of the, I consider Jupyter Notebooks like the world's most insane,
+
+00:15:54 <v Michael Kennedy>not the world's most insane, the second most insane series of go-to statements
+
+00:15:58 <v Michael Kennedy>that have no record of how you got the go-to, <v Michael Kennedy>you know, it doesn't even say go to 10.
+
+00:16:02 <v Michael Kennedy>It's like, well, what did you go and run?
+
+00:16:04 <v Michael Kennedy>I don't know, like, look at the numbers, <v Michael Kennedy>but there's like potentially, you know,
+
+00:16:08 <v Michael Kennedy>some lost as you rerun them.
+
+00:16:10 <v Michael Kennedy>And it solves that problem as well.
+
+00:16:11 <v Michael Kennedy>But like, you know, what's the elevator pitch for Marimo?
+
+00:16:13 <v Trevor Manz>Yeah, my elevator pitch for Marimo <v Trevor Manz>is that I think notebooks are incredibly important
+
+00:16:19 <v Trevor Manz>and that it's hard to deny that like they're a tool <v Trevor Manz>that many folks use to do their daily work.
+
+00:16:25 <v Trevor Manz>But there are very few like guardrails <v Trevor Manz>to help you do that work and work on a team with other folks.
+
+00:16:30 <v Trevor Manz>And so I think one of the big selling points to me with Marimo
+
+00:16:33 <v Trevor Manz>is just that you sort of get to free yourself <v Trevor Manz>from thinking about those go-to statements,
+
+00:16:38 <v Trevor Manz>and instead you have this very deterministic execution <v Trevor Manz>that sort of just feels natural.
+
+00:16:44 <v Trevor Manz>As you write cells, they will re-execute.
+
+00:16:47 <v Trevor Manz>And then on top of that, I think that Jupyter and Marimo <v Trevor Manz>have slightly different goals.
+
+00:16:51 <v Trevor Manz>So Jupyter, when I showed that diagram, <v Trevor Manz>we had that diagram before,
+
+00:16:54 <v Trevor Manz>you have this split between these diversity of front ends.
+
+00:16:58 <v Trevor Manz>So that's like you could use it in Colab, <v Trevor Manz>you could use a Jupyter kernel inside of VS Code,
+
+00:17:02 <v Trevor Manz>you could use a Jupyter kernel sort of within the Jupyter CLI.
+
+00:17:06 <v Trevor Manz>But then there's all another requirement of that ecosystem
+
+00:17:08 <v Trevor Manz>is to support many different kernels.
+
+00:17:10 <v Trevor Manz>So it's not just Python, it could be an R kernel, <v Trevor Manz>it could be a Julia kernel.
+
+00:17:14 <v Trevor Manz>And so I think ultimately attention that ends up happening
+
+00:17:17 <v Trevor Manz>is like a priority of that ecosystem is to support all these languages
+
+00:17:20 <v Trevor Manz>and all these different front ends.
+
+00:17:21 <v Trevor Manz>And instead, by just focusing on Python, <v Trevor Manz>we can really try to develop a really integrated
+
+00:17:27 <v Trevor Manz>and rich experience specifically for Python notebooks.
+
+00:17:30 <v Trevor Manz>So the trade-off there being some folks come and they say,
+
+00:17:33 <v Trevor Manz>oh, we'd love Marimo, but for R.
+
+00:17:34 <v Trevor Manz>And we're like, well, we can't really do that.
+
+00:17:37 <v Trevor Manz>It's called JupyterLab.
+
+00:17:38 <v Trevor Manz>Yeah, but we are hyper-focused on Python <v Trevor Manz>and that lets us integrate with other trends within the ecosystem too.
+
+00:17:44 <v Trevor Manz>So we're a huge fan of all the work from the astral folks.
+
+00:17:47 <v Trevor Manz>And we have a tight integration with uv, for example, <v Trevor Manz>to allow you to sort of use that PEP 723 script metadata.
+
+00:17:54 <v Trevor Manz>And as you're working, we'll like install packages for you
+
+00:17:57 <v Trevor Manz>and write that metadata so that at the end, <v Trevor Manz>you can send that document to someone else
+
+00:18:02 <v Trevor Manz>and they can like bootstrap their notebook <v Trevor Manz>and get all their dependencies
+
+00:18:04 <v Trevor Manz>and have their environment set up.
+
+00:18:06 <v Trevor Manz>And I think that type of like last mile with these notebooks
+
+00:18:10 <v Trevor Manz>is something that's been hard to get at <v Trevor Manz>without really focusing on like an ecosystem.
+
+00:18:14 <v Michael Kennedy>That last mile though, that's a lot of polish.
+
+00:18:16 <v Michael Kennedy>And that's often what kind of gets lost <v Michael Kennedy>in projects where, I don't know, it's not exactly the focus, right?
+
+00:18:25 <v Michael Kennedy>It's something where you want to take on the most interesting features
+
+00:18:28 <v Michael Kennedy>and it's not like it's necessarily a company <v Michael Kennedy>and there's somebody who's like,
+
+00:18:32 <v Michael Kennedy>no, we're polishing every little rough edge, period.
+
+00:18:35 <v Michael Kennedy>You know what I mean?
+
+00:18:36 <v Michael Kennedy>And I think you mentioned Astral and uv.
+
+00:18:38 <v Michael Kennedy>I think that is an example of they got funding <v Michael Kennedy>and it's like, okay, we're not going to do 95% of the packaging.
+
+00:18:45 <v Michael Kennedy>We're going to do 99.9% of the packaging.
+
+00:18:47 <v Michael Kennedy>You know what I mean?
+
+00:18:47 <v Michael Kennedy>And it's made a tremendous difference.
+
+00:18:50 <v Trevor Manz>Yeah.
+
+00:18:50 <v Trevor Manz>Yeah, I mean, I have plenty to say about Astro.
+
+00:18:53 <v Trevor Manz>We love all their tooling over here too.
+
+00:18:56 <v Michael Kennedy>Yeah, so do I.
+
+00:18:56 <v Michael Kennedy>I switched all my stuff to Astro and it's to uv and rough and yeah, super, super neat.
+
+00:19:02 <v Michael Kennedy>Okay, so another thing that you all just released is a new VS Code plugin.
+
+00:19:08 <v Michael Kennedy>So I guess one of the aspects of Marimo that is not necessarily apparent from looking at
+
+00:19:13 <v Michael Kennedy>it going there is that it's backed by a Python file, not a JSON file that contains both the
+
+00:19:18 <v Michael Kennedy>inputs and outputs, which is like one of the big shortcomings of Jupyter. Like how much of Jupyter
+
+00:19:24 <v Michael Kennedy>would have benefited if it just had an input in an output file? So you don't check in the output
+
+00:19:29 <v Trevor Manz>file potentially. You know what I mean? Yeah. Yeah. We, I think that was pretty visionary or maybe it
+
+00:19:34 <v Trevor Manz>was just, it's more that we have this ability to observe what's happened in the Jupyter ecosystem
+
+00:19:40 <v Michael Kennedy>and make adjustments from there. A little bit of a second mover benefit of like, we saw that,
+
+00:19:44 <v Michael Kennedy>That was 80% good.
+
+00:19:45 <v Trevor Manz>Definitely.
+
+00:19:46 <v Trevor Manz>Yeah, it was surprising.
+
+00:19:48 <v Trevor Manz>I mean, I think to rip more on Marimo, <v Trevor Manz>just there are all these,
+
+00:19:52 <v Trevor Manz>when people ask that question of like why Marimo, <v Trevor Manz>I think there are all these like very small things,
+
+00:19:55 <v Trevor Manz>but like that in net, I think are certainly <v Trevor Manz>like a order of magnitude kind of like richer experience
+
+00:20:02 <v Trevor Manz>for our users.
+
+00:20:04 <v Trevor Manz>But it's funny how many times just the fact <v Trevor Manz>that like our notebooks are get diffable,
+
+00:20:08 <v Trevor Manz>that's like one of the first things <v Trevor Manz>that folks like really latch onto
+
+00:20:11 <v Trevor Manz>and love about Marimo notebooks.
+
+00:20:13 <v Michael Kennedy>Yeah, yeah, very cool. And so the VS Code extension, what's the, like, how's this, how's this help us?
+
+00:20:19 <v Trevor Manz>Yeah, so I see this as, I think the best experience with using Marimo will always be sort of our CLI or like our, our web interface that we've like really curated around this experience.
+
+00:20:31 <v Trevor Manz>But we have a broad range of users that want to collaborate or work on Maremo documents.
+
+00:20:36 <v Trevor Manz>And so some of them are like, you know, I live in my VS Code, my cursor, my Windsurf, my IDE, and like I never want to leave this environment.
+
+00:20:44 <v Trevor Manz>And so getting them to come and like collaborate on these documents has been a little bit of a barrier there.
+
+00:20:49 <v Trevor Manz>So they could, of course, edit a Python file on disk, but having like a native notebook view like they do for Jupyter was something that we sort of lacked in those environments.
+
+00:20:57 <v Trevor Manz>And so we made it a priority shortly after I joined the team where we really wanted to address that user base of folks that want to live in that editor environment.
+
+00:21:06 <v Trevor Manz>And sort of from the ground up wrote this new extension where we have a very integrated view with sort of reactive outputs, similarly to what we have in our user interface.
+
+00:21:16 <v Trevor Manz>But it sort of lives inside of the VS Code ecosystem and uses the VS Code APIs.
+
+00:21:22 <v Michael Kennedy>Yeah, that makes a lot of sense.
+
+00:21:24 <v Michael Kennedy>and it's available on the, what is it?
+
+00:21:25 <v Michael Kennedy>VSX open marketplace for like cursor and anti-gravity.
+
+00:21:30 <v Michael Kennedy>That's a thing as of like three days ago.
+
+00:21:32 <v Michael Kennedy>Yes, all these different skins of VS Code, <v Trevor Manz>our extension should work as well.
+
+00:21:38 <v Trevor Manz>And we publish it to both marketplaces.
+
+00:21:40 <v Trevor Manz>So folks should be able to install it and get started.
+
+00:21:42 <v Michael Kennedy>It's a weird time for editors.
+
+00:21:44 <v Michael Kennedy>Yes.
+
+00:21:45 <v Michael Kennedy>It was really kind of straight.
+
+00:21:47 <v Michael Kennedy>When I first started Talk Python 11 years ago <v Michael Kennedy>or whatever it was,
+
+00:21:50 <v Michael Kennedy>I would ask people what editor they use <v Michael Kennedy>at the end of the show
+
+00:21:53 <v Michael Kennedy>I didn't know what they were going to say. It could have been anything. And then it just narrowed
+
+00:21:58 <v Michael Kennedy>down to VS Code, PyCharm. Those are the answers. And now it's kind of back to a lot of options
+
+00:22:05 <v Michael Kennedy>again. But it generally works in the VS Code variants as well. All right. Super cool. Okay.
+
+00:22:12 <v Michael Kennedy>Let's talk about just what is a Jupyter widget? Yeah. So like I mentioned before, Jupyter really
+
+00:22:18 <v Trevor Manz>reaches, and Marimo also, reach across this chasm between your Python code that's running in some,
+
+00:22:23 <v Trevor Manz>we call it like a kernel environment that's like a stateful environment that has your variables and
+
+00:22:26 <v Trevor Manz>when you run cells like things update there and then on the front end there's like the cell outputs
+
+00:22:31 <v Trevor Manz>that um are reflection of like whatever is sort of like living in the kernel and a jupiter widget
+
+00:22:36 <v Trevor Manz>is like a very interesting part of that like uh of that uh crossing of that chasm and that
+
+00:22:42 <v Trevor Manz>you can actually author both the front end code and the back end code to talk to one another so
+
+00:22:46 <v Trevor Manz>typically it's like you're if you write a python library you're only writing something that runs
+
+00:22:50 <v Trevor Manz>on the server. And then if you're making a Jupyter extension, for example, that's something that only
+
+00:22:54 <v Trevor Manz>lives in the front end. But a widget allows a library author to connect those two worlds together.
+
+00:22:59 <v Trevor Manz>And so for your small object that lives in the Python kernel, you can define ways that it can
+
+00:23:05 <v Trevor Manz>render itself and also be updated from that front end. And so it's a very powerful mechanism that's
+
+00:23:11 <v Trevor Manz>officially a part of Jupyter that allows you to extend your output cells with, I like to think of
+
+00:23:17 <v Trevor Manz>it as these web-based superpowers to be able to update your code in the kernel.
+
+00:23:21 <v Michael Kennedy>You have a really interesting point that you made in your SciPy talk, saying basically,
+
+00:23:27 <v Michael Kennedy>we can do lots of UI stuff in notebooks, but often those are kind of like isolated snapshots,
+
+00:23:35 <v Michael Kennedy>right? Maybe you have a graph and there's like outliers or something along those lines,
+
+00:23:40 <v Michael Kennedy>but you can see them, but you can't like programmatically interact with them in the
+
+00:23:45 <v Michael Kennedy>way that you could a widget, whereas you might drag and select to get a zoom area that actually
+
+00:23:50 <v Michael Kennedy>becomes a data frame, or you could move some widgets that then redraw the picture, but also
+
+00:23:56 <v Michael Kennedy>becomes something you could program against in like a machine learning algorithm or whatever,
+
+00:24:00 <v Michael Kennedy>right? Maybe I think that's a pretty powerful distinction that people want to have in mind as
+
+00:24:05 <v Trevor Manz>we dive into anywidget. Yeah, definitely. I like to think of it as like in a traditional like
+
+00:24:10 <v Trevor Manz>REPL kind of environment, like your two modes of input are sort of like writing code and running
+
+00:24:15 <v Trevor Manz>so you can write the code and you can run the cell and then you can observe the output but in order
+
+00:24:19 <v Trevor Manz>to like act on something that you see in that output you have to write more code so um if you
+
+00:24:24 <v Trevor Manz>have a plot for example that you produce from one of those outputs if there's some outliers or
+
+00:24:29 <v Trevor Manz>something a very natural thing to think is what is that point and you want to like circle that point
+
+00:24:33 <v Trevor Manz>and that is much easier to do with a gesture than it is to express as some sort of like
+
+00:24:38 <v Trevor Manz>query in in uh typing out some program and kind of looking at the axes to say like what are those
+
+00:24:44 <v Trevor Manz>points there. And so I think widgets really allow for you to be creative in terms of how you
+
+00:24:51 <v Trevor Manz>might like another mode of input for adjusting things that might be in the kernel. And like
+
+00:24:56 <v Trevor Manz>you're saying, now you can transform a selection into just a data frame that you get out and now,
+
+00:25:00 <v Trevor Manz>and then you're off to the races with running the next part of your program. And so I think it,
+
+00:25:04 <v Trevor Manz>it adds this degree of freedom to like let the algorithms and data, like use code when that's
+
+00:25:09 <v Trevor Manz>useful. And then for those pieces where you want to step in as a human and maybe use a gesture
+
+00:25:14 <v Trevor Manz>and that's easier to express as a gesture, <v Trevor Manz>then we have that mechanism now
+
+00:25:18 <v Trevor Manz>to allow you to extend your analyses.
+
+00:25:21 <v Michael Kennedy>Right.
+
+00:25:21 <v Michael Kennedy>If you don't need pictures and interaction, <v Michael Kennedy>just do it in Python straight.
+
+00:25:26 <v Michael Kennedy>You know what I mean?
+
+00:25:27 <v Michael Kennedy>You don't need notebooks.
+
+00:25:28 <v Michael Kennedy>And part of the value of notebooks <v Michael Kennedy>is this mix of like a visual plus code plus visual
+
+00:25:35 <v Michael Kennedy>and this sort of iterative back and forth between those.
+
+00:25:38 <v Michael Kennedy>And widgets reconnect the visual <v Michael Kennedy>back to the code, I guess, right?
+
+00:25:42 <v Trevor Manz>Yeah, exactly.
+
+00:25:43 <v Trevor Manz>I like to think of it as the types of workflows in notebooks
+
+00:25:47 <v Trevor Manz>are not typically batch scripts.
+
+00:25:49 <v Trevor Manz>I mean, in Marimo, you can write your notebook <v Trevor Manz>and run it as a script because it's just Python.
+
+00:25:54 <v Trevor Manz>But often when people are working <v Trevor Manz>and really getting their hands on data,
+
+00:25:57 <v Trevor Manz>these are long-lived sessions <v Trevor Manz>where you have a lot of data in memory
+
+00:26:01 <v Trevor Manz>and you really want to get your hands on that data.
+
+00:26:03 <v Trevor Manz>And I think if you only had the ability <v Trevor Manz>to write and run cells and not add that extra dimension,
+
+00:26:10 <v Trevor Manz>it would be pretty limited to what you could actually do.
+
+00:26:12 <v Trevor Manz>And so something like widgets allows you to really extend and be creative with how you'd like to explore that data and sort of like debug your data as it's in memory and get your hands on it.
+
+00:26:22 <v Michael Kennedy>Yeah.
+
+00:26:23 <v Michael Kennedy>Yeah.
+
+00:26:23 <v Michael Kennedy>I mean, that's what blew the world open when all that came around, right?
+
+00:26:27 <v Michael Kennedy>Yeah.
+
+00:26:27 <v Michael Kennedy>So that brings us to anywidget.
+
+00:26:30 <v Michael Kennedy>Why a new widget framework?
+
+00:26:32 <v Michael Kennedy>Why not just IPy widgets or whatever?
+
+00:26:36 <v Trevor Manz>Yeah, it's a great question.
+
+00:26:37 <v Trevor Manz>And it's something that when I started my PhD, like I was not, I guess I didn't really have a hand on either.
+
+00:26:42 <v Trevor Manz>But AnyWidget was definitely born out of a need of myself to like solve a problem that I was running into during the PhD.
+
+00:26:49 <v Trevor Manz>So as I mentioned before, we had all these visualization tools that we were building sort of in.
+
+00:26:54 <v Trevor Manz>And specifically, one of the tools I was building was a like a web-based genome browser.
+
+00:26:59 <v Trevor Manz>And so this is something that people put their genomes into and you can align different tracks and you can zoom in and try to understand like different types of things.
+
+00:27:07 <v Trevor Manz>types of functional assays in genomics.
+
+00:27:10 <v Trevor Manz>And then we had users that wanted to use these inside <v Trevor Manz>of computational notebooks.
+
+00:27:14 <v Trevor Manz>And one thing that immediately happened <v Trevor Manz>when we tried to build these integrations for notebooks
+
+00:27:19 <v Trevor Manz>is that you'd spend all this engineering effort trying <v Trevor Manz>to build an integration for a specific notebook.
+
+00:27:24 <v Trevor Manz>But then someone would come in and say, oh, I'd actually <v Trevor Manz>want this to work in Google Colab,
+
+00:27:28 <v Trevor Manz>or I need this to work in VS Code, <v Trevor Manz>or I need this to work in this other environment.
+
+00:27:34 <v Trevor Manz>And all of those environments are very similar on the back end
+
+00:27:37 <v Trevor Manz>but they're very different on the front end <v Trevor Manz>in terms of the way that you can register like front end code.
+
+00:27:41 <v Trevor Manz>And so it ended up putting a lot on a library author like myself
+
+00:27:45 <v Trevor Manz>to try to build those adapters for each of those environments.
+
+00:27:48 <v Trevor Manz>And so anywidget was sort of an attempt to standardize <v Trevor Manz>maybe how we can write that front end code
+
+00:27:54 <v Trevor Manz>such that it's more, <v Trevor Manz>and then we can build those adapters in one place
+
+00:27:57 <v Trevor Manz>that then we can support all those different environments.
+
+00:27:59 <v Michael Kennedy>Right, right.
+
+00:28:00 <v Michael Kennedy>We talked about building the widgets <v Michael Kennedy>largely in JavaScript earlier already,
+
+00:28:03 <v Michael Kennedy>but I think what people maybe who haven't tried this <v Michael Kennedy>don't realize is how many variations you would have to build to say, have I also, I wanted to
+
+00:28:13 <v Michael Kennedy>work in Jupyter and I wanted to work in Colab and you've got to build and publish the PyPI and NPM
+
+00:28:19 <v Michael Kennedy>and right. There's like, so everyone who built one of those had to, and wanted to cross use,
+
+00:28:25 <v Michael Kennedy>they had to do all those adaptation, adaptation. So, and your thought was basically, well,
+
+00:28:30 <v Michael Kennedy>I could create an adapter that everyone could use and then we don't have to do this ever again.
+
+00:28:35 <v Trevor Manz>Yeah, exactly. And to what you're saying as well, I think that adapter craziness that's in the web ecosystem of like, oh my gosh, I had to transpile my code into all these different formats.
+
+00:28:49 <v Trevor Manz>It's kind of a nightmare in terms of tooling. And it's something that came as a result of the state of the JavaScript ecosystem being pretty immature before 2018.
+
+00:29:01 <v Trevor Manz>And basically because JavaScript didn't have a module system.
+
+00:29:04 <v Trevor Manz>And so everyone had to come up with a way to bundle code.
+
+00:29:07 <v Trevor Manz>And there are all these third-party adapters.
+
+00:29:08 <v Trevor Manz>They're figuring out a way that they could load JavaScript modules.
+
+00:29:12 <v Trevor Manz>And so whatever these tools chose and the way that they chose to load their front-end code
+
+00:29:17 <v Trevor Manz>would affect the way that me as the library author would need to package up the code.
+
+00:29:21 <v Michael Kennedy>By modules and loading, you're talking where people might see the word require at the top
+
+00:29:26 <v Michael Kennedy>or something like that.
+
+00:29:27 <v Michael Kennedy>Kind of like our import.
+
+00:29:29 <v Trevor Manz>Yes, exactly.
+
+00:29:29 <v Trevor Manz>It's very much like import statements in Python.
+
+00:29:32 <v Trevor Manz>And in fact, the official, if you open up your browser, <v Trevor Manz>you can just type, you can use a syntax that's called ES modules
+
+00:29:39 <v Trevor Manz>and type in import.
+
+00:29:41 <v Trevor Manz>And you can import a bit of JavaScript code via URL.
+
+00:29:45 <v Trevor Manz>And this just works natively in the browsers like today, <v Trevor Manz>but wasn't sort of standardized until late 2015, or late 2018.
+
+00:29:54 <v Trevor Manz>So you mentioned require, that's actually a different module system
+
+00:29:58 <v Trevor Manz>that's not based in browsers.
+
+00:30:00 <v Trevor Manz>And if you were to type require in your browser, <v Trevor Manz>that would not work.
+
+00:30:03 <v Trevor Manz>And that is sort of like the tension <v Trevor Manz>that was the JavaScript ecosystem.
+
+00:30:06 <v Trevor Manz>So I was aware of some of the trends <v Trevor Manz>and things that have happened
+
+00:30:09 <v Trevor Manz>post this new module system <v Trevor Manz>because I've been working in the web ecosystem.
+
+00:30:13 <v Trevor Manz>And yet when I came to work <v Trevor Manz>on like Jupyter widgets specifically,
+
+00:30:15 <v Trevor Manz>there was like, <v Trevor Manz>I felt like I was writing code
+
+00:30:18 <v Trevor Manz>like I had been like a while ago for the browser.
+
+00:30:20 <v Trevor Manz>And so the idea behind anywidget was to like, <v Trevor Manz>let's just simplify this so like that my source
+
+00:30:25 <v Trevor Manz>and the code that I publish <v Trevor Manz>is more like what the browser understands natively.
+
+00:30:29 <v Trevor Manz>And then we take care of this like transpilation stuff <v Trevor Manz>once for everybody and package that up
+
+00:30:34 <v Trevor Manz>inside of anywidget to deal with sort of like <v Trevor Manz>the legacy module systems of like JupyterLab,
+
+00:30:39 <v Trevor Manz>VS Code, and a Google collab.
+
+00:30:42 <v Michael Kennedy>This portion of Talk Python To Me <v Michael Kennedy>is brought to you by JetBrains and the PyCharm team.
+
+00:30:47 <v Michael Kennedy>The PSF, the Python Software Foundation, <v Michael Kennedy>is a nonprofit organization behind Python.
+
+00:30:53 <v Michael Kennedy>They run or oversee the conferences, <v Michael Kennedy>handle all the legal business to do with Python,
+
+00:30:58 <v Michael Kennedy>oversee the steering council and other groups, and much more.
+
+00:31:01 <v Michael Kennedy>But let's focus in on one key word here, non-profit.
+
+00:31:05 <v Michael Kennedy>Unlike some software ecosystems, <v Michael Kennedy>which grew out of and are supported by a single tech giant,
+
+00:31:11 <v Michael Kennedy>think.NET and Microsoft or Swift and Apple, <v Michael Kennedy>Python is by developers for developers.
+
+00:31:18 <v Michael Kennedy>That makes it a truly special place.
+
+00:31:21 <v Michael Kennedy>Everyone here is here because they chose to be here.
+
+00:31:24 <v Michael Kennedy>It's our garden.
+
+00:31:25 <v Michael Kennedy>and we have to tend it. That means supporting the ecosystem, and a big part of that is supporting
+
+00:31:31 <v Michael Kennedy>the PSF. That's why I was thrilled when JetBrains and the PyCharm team in particular reached out to
+
+00:31:36 <v Michael Kennedy>me to help spread the word about their PSF fundraiser. Here's the deal. You can purchase
+
+00:31:41 <v Michael Kennedy>PyCharm Pro for 30% off this week until December 19th, 2025. And when you do, not only do you get
+
+00:31:48 <v Michael Kennedy>a deal on PyCharm, but the PyCharm team will donate all the proceeds to the PSF. Let me say
+
+00:31:54 <v Michael Kennedy>that again because it's easy to miss. They will donate all the proceeds to the PSF. And a positive
+
+00:32:00 <v Michael Kennedy>addition this year is that this also applies to renewals, not just new customers. So if you're
+
+00:32:05 <v Michael Kennedy>already a PyCharm fan and customer, renew this week and you get a discount plus you support the PSF.
+
+00:32:12 <v Michael Kennedy>To take part in this, you'll need to be sure to use Talk Python's exclusive promo code,
+
+00:32:17 <v Michael Kennedy>STRONGERPYTHON, all caps, two words. That's STRONGERPYTHON for the code and the link is
+
+00:32:22 <v Michael Kennedy>talkpython.fm/PyCharm dash PSF dash 2025. Both of these are in your podcast player's show
+
+00:32:29 <v Michael Kennedy>notes. Thank you to PyCharm for supporting the show. I'm trying to decide if I feel like it's
+
+00:32:36 <v Michael Kennedy>in the interest, if the motivation of any of those platforms would have been to create something like
+
+00:32:41 <v Michael Kennedy>this, right? Like the Jupyter people are like, I don't know the problem. You just write for Jupyter
+
+00:32:44 <v Michael Kennedy>and it works. And the Colab people are like, I don't see a problem. You just write for Colab and
+
+00:32:49 <v Michael Kennedy>it works, right? Like what is the platform people's motivation to create integrations and smooth the
+
+00:32:56 <v Michael Kennedy>transition to the other ones? That's one tension. On the other though, they might have more stuff
+
+00:33:00 <v Michael Kennedy>come to them if they make it more reusable across them, right? So it's interesting that none of them
+
+00:33:05 <v Trevor Manz>actually did that. Yeah, I think, I mean, in hindsight, it makes sense why someone in my
+
+00:33:09 <v Trevor Manz>position, like, I guess, focused on this because it was like, I had two widgets and then times the
+
+00:33:14 <v Trevor Manz>number of platforms. And then if something broke, you'd have to go fix it a bunch of different
+
+00:33:17 <v Trevor Manz>places and it just becomes a maintenance nightmare.
+
+00:33:22 <v Trevor Manz>But one thing that's been really interesting is I think that there is a good pressure to
+
+00:33:26 <v Trevor Manz>support a healthy ecosystem.
+
+00:33:29 <v Trevor Manz>So I'd say before anywidget, it was pretty complicated to create custom widgets.
+
+00:33:34 <v Trevor Manz>And so one of my goals was I want the feeling of being able to author a widget to be very
+
+00:33:39 <v Trevor Manz>similar to the way that you can copy and paste code into a notebook, but move it into a file.
+
+00:33:44 <v Trevor Manz>And then you could publish that to PyPI.
+
+00:33:46 <v Trevor Manz>And that workflow always worked for Python, <v Trevor Manz>but there was no way to start prototyping a widget
+
+00:33:51 <v Trevor Manz>inside of a notebook before and then move it out.
+
+00:33:54 <v Trevor Manz>And I really wanted to bring sort of, <v Trevor Manz>to lower that barrier to entry.
+
+00:33:58 <v Trevor Manz>And then what I think came out of that <v Trevor Manz>is you get a much richer ecosystem of people
+
+00:34:01 <v Trevor Manz>that are willing to try and make things.
+
+00:34:05 <v Trevor Manz>And then when there's a cool widget that comes out, <v Trevor Manz>then that's a good positive pressure
+
+00:34:08 <v Trevor Manz>for other ecosystems, <v Trevor Manz>because then people are trying to request,
+
+00:34:11 <v Trevor Manz>they go, hey, I want this widget to work in your environment.
+
+00:34:13 <v Trevor Manz>And that puts more pressure on various environments <v Trevor Manz>to implement sort of a more standardized approach.
+
+00:34:19 <v Michael Kennedy>Or adopt a adapting layer like anywidget.
+
+00:34:22 <v Michael Kennedy>Yep. Yeah, exactly.
+
+00:34:24 <v Michael Kennedy>Yeah, to sort of back you up here, <v Michael Kennedy>Kostal says, thank you for building anywidget.
+
+00:34:28 <v Michael Kennedy>Having gone through creating an IPy widget, <v Michael Kennedy>it was a lot of work.
+
+00:34:32 <v Michael Kennedy>So yeah, exactly.
+
+00:34:35 <v Michael Kennedy>Let's just take a tour through the widget gallery.
+
+00:34:39 <v Michael Kennedy>Like what widgets are available here?
+
+00:34:42 <v Michael Kennedy>Got some favorites?
+
+00:34:43 <v Trevor Manz>Yeah, we definitely have some favorites.
+
+00:34:45 <v Trevor Manz>I would say that one of the early adopters of AnyWidget <v Trevor Manz>is a fairly popular plotting library called Altair.
+
+00:34:53 <v Trevor Manz>And it allows to do exactly what you were talking about earlier
+
+00:34:56 <v Trevor Manz>with selecting points and allowing you to get those back <v Trevor Manz>as data frames in the kernel.
+
+00:35:01 <v Trevor Manz>So for a while, the way that Altair worked, <v Trevor Manz>and I think it still by default works inside of a Jupyter environment,
+
+00:35:09 <v Trevor Manz>is that it creates sort of an interactive output <v Trevor Manz>that isn't connected back to the kernel.
+
+00:35:14 <v Michael Kennedy>So you can get your output.
+
+00:35:15 <v Michael Kennedy>It feels interactive because you can zoom in and you can select and you can do all the things, but it's just a view.
+
+00:35:21 <v Trevor Manz>Exactly.
+
+00:35:22 <v Trevor Manz>That state, I like to think of it as like is trapped in the output and you can't get it back in the notebook.
+
+00:35:27 <v Trevor Manz>And so what the AnyWidget does behind the scenes is it allows for that output to communicate back with the kernel,
+
+00:35:34 <v Trevor Manz>which then allows you to update an object or a selection and then run your cell again and view some output.
+
+00:35:40 <v Trevor Manz>And just that bi-directional communication <v Trevor Manz>between your kernel and your front end
+
+00:35:45 <v Trevor Manz>allows you to do things like create a data frame <v Trevor Manz>that is updated when you select.
+
+00:35:50 <v Michael Kennedy>Yeah.
+
+00:35:51 <v Michael Kennedy>Nice.
+
+00:35:51 <v Michael Kennedy>Yeah, it's sort of that example <v Michael Kennedy>we talked about the outliers before, right?
+
+00:35:56 <v Michael Kennedy>Yeah, exactly.
+
+00:35:58 <v Michael Kennedy>Altair's super cool.
+
+00:35:59 <v Michael Kennedy>You know, I talked to Jake Vanderplass about it <v Michael Kennedy>when it first came out and it's very beautiful.
+
+00:36:04 <v Trevor Manz>Yeah, Altair was actually, I think, <v Trevor Manz>how I got into open source contributions forever ago.
+
+00:36:09 <v Trevor Manz>Like I made like documentation examples <v Trevor Manz>and it was very like,
+
+00:36:13 <v Trevor Manz>it was very fun to come full circle <v Trevor Manz>to actually have like a dependency
+
+00:36:17 <v Trevor Manz>that somehow like got back into that library <v Michael Kennedy>many years later.
+
+00:36:20 <v Michael Kennedy>Now you build something that makes it more, <v Michael Kennedy>that supercharges Altair
+
+00:36:24 <v Michael Kennedy>because now it has like bidirectional data integration
+
+00:36:27 <v Michael Kennedy>sort of thing.
+
+00:36:27 <v Michael Kennedy>Yeah, yeah.
+
+00:36:28 <v Michael Kennedy>Yeah, that's wild.
+
+00:36:29 <v Michael Kennedy>Yeah, maybe just talk to people really quick about that.
+
+00:36:30 <v Michael Kennedy>Like you don't have to write a revolutionary feature <v Michael Kennedy>to be part of open source.
+
+00:36:35 <v Trevor Manz>Yeah, yeah, definitely.
+
+00:36:36 <v Trevor Manz>I think my entry to open source was just <v Trevor Manz>I got interested in a plotting library and they had some open tickets for making examples for their documentation.
+
+00:36:45 <v Trevor Manz>And I wanted to learn how to use the plotting library.
+
+00:36:48 <v Trevor Manz>So then I started contributing to them.
+
+00:36:50 <v Trevor Manz>And it was really like those interactions, I think, with maintainers that kind of got a tick in my head where I was like, oh, I think I like this way of working and communicate.
+
+00:36:58 <v Trevor Manz>Like there's a lot of, I don't know, oftentimes the challenges in open source aren't so technical as they are just social and figuring out how to communicate expectations to different users.
+
+00:37:07 <v Trevor Manz>And I think specifically interacting with Jake Vander Plaats
+
+00:37:10 <v Trevor Manz>and some of those issues, <v Trevor Manz>I think I learned a lot about that
+
+00:37:15 <v Trevor Manz>and I was attracted to trying to find new ways <v Trevor Manz>to work on problems in open source.
+
+00:37:20 <v Michael Kennedy>Yeah, awesome.
+
+00:37:21 <v Michael Kennedy>All right, well, that's number one <v Michael Kennedy>with 10,000 favorites out of the community.
+
+00:37:27 <v Michael Kennedy>What are some others?
+
+00:37:28 <v Trevor Manz>Some of the other, I would say like, <v Trevor Manz>so Vincent Womerdam, who is one of my colleagues
+
+00:37:32 <v Trevor Manz>and you've had it on the podcast any times before.
+
+00:37:34 <v Michael Kennedy>A couple times, yeah.
+
+00:37:35 <v Trevor Manz>Yeah, it's created this draw data widget.
+
+00:37:38 <v Trevor Manz>And I would say when this widget came out, <v Trevor Manz>this was very much,
+
+00:37:41 <v Trevor Manz>there are many different, <v Trevor Manz>it demos very well.
+
+00:37:44 <v Trevor Manz>So the idea is that you have like a canvas <v Trevor Manz>that you can draw some points
+
+00:37:48 <v Trevor Manz>and you get those points back out as a data frame.
+
+00:37:51 <v Trevor Manz>And yes, so Vincent has a nice Marimo notebook <v Trevor Manz>that's running in the browser.
+
+00:37:57 <v Michael Kennedy>Yeah, that's right.
+
+00:37:57 <v Michael Kennedy>There we go.
+
+00:37:59 <v Trevor Manz>And I believe if you draw some points.
+
+00:38:01 <v Michael Kennedy>I don't like the brush.
+
+00:38:02 <v Michael Kennedy>I'm going to change the brush.
+
+00:38:03 <v Michael Kennedy>We've got precise data.
+
+00:38:04 <v Michael Kennedy>So you could have one kind of data set here and then you could go like, okay, we're going to do,
+
+00:38:10 <v Michael Kennedy>you know, this is super interesting because maybe you say like the data kind of looks like this and
+
+00:38:14 <v Michael Kennedy>I want to run an algorithm against it, but there's a ton of work to get the data in the right format.
+
+00:38:18 <v Michael Kennedy>You could just start, you know, kind of just visually doing these things. And then you can
+
+00:38:24 <v Michael Kennedy>go on and analyze it and do all sorts of stuff by just literally by drawing.
+
+00:38:30 <v Trevor Manz>Yeah. We found this is like educators are quite excited about like this kind of widget.
+
+00:38:34 <v Trevor Manz>because it's like, hey, here's this, <v Trevor Manz>how does a random forest algorithm work?
+
+00:38:38 <v Trevor Manz>It's like, okay, we can just draw a data set <v Trevor Manz>and then we can actually view
+
+00:38:41 <v Trevor Manz>how a classification would work <v Trevor Manz>over a specific type of data set.
+
+00:38:44 <v Trevor Manz>And I think it's really that type of interplay <v Trevor Manz>between something that you can play with
+
+00:38:49 <v Trevor Manz>to create something with the data <v Trevor Manz>and then maybe you take scikit-learn or something
+
+00:38:53 <v Trevor Manz>and apply an algorithm <v Trevor Manz>and you can help build intuition
+
+00:38:56 <v Trevor Manz>for how these algorithms work <v Trevor Manz>just by plugging in with the actual workhorse
+
+00:39:00 <v Trevor Manz>of doing the operations <v Trevor Manz>and like computing, like your classifier.
+
+00:39:04 <v Trevor Manz>But instead you have this new input, <v Trevor Manz>which is like allowing for a bit more play
+
+00:39:09 <v Trevor Manz>with like learning how those algorithms work.
+
+00:39:11 <v Michael Kennedy>Yeah, you have an algorithm and you say, <v Michael Kennedy>I want to see how, if the data looked like this,
+
+00:39:17 <v Michael Kennedy>what would happen?
+
+00:39:18 <v Michael Kennedy>If the data looked like that, what would happen?
+
+00:39:20 <v Michael Kennedy>And a lot of times people will result <v Michael Kennedy>to generating that data with code,
+
+00:39:24 <v Michael Kennedy>either by writing it themselves, <v Michael Kennedy>using a library like Faker or something like that,
+
+00:39:29 <v Michael Kennedy>you know, like, how am I going to get it?
+
+00:39:30 <v Michael Kennedy>What if it looks like this?
+
+00:39:31 <v Michael Kennedy>And here you just say, whatever looks like this, and you draw it.
+
+00:39:34 <v Michael Kennedy>And then you run your algorithm based on the output of it because it's a widget, an AnyWidget widget.
+
+00:39:39 <v Michael Kennedy>And then you just keep going.
+
+00:39:40 <v Michael Kennedy>It's super neat, actually.
+
+00:39:42 <v Trevor Manz>Yeah.
+
+00:39:42 <v Trevor Manz>Yeah.
+
+00:39:43 <v Trevor Manz>So to go back to, I think, something you mentioned before as well,
+
+00:39:48 <v Trevor Manz>AnyWidget sort of serves two communities.
+
+00:39:50 <v Trevor Manz>So I think for one, there are folks that never will ever need to touch or learn any JavaScript,
+
+00:39:55 <v Trevor Manz>but can just use these libraries like they would Python packages.
+
+00:39:58 <v Trevor Manz>So the idea is, hey, I can pip install draw data, <v Trevor Manz>and now I get to use a scatter widget.
+
+00:40:02 <v Trevor Manz>And I don't care at all how it works, <v Trevor Manz>but now I get to understand how this algorithm works.
+
+00:40:07 <v Trevor Manz>But for those that are interested, <v Trevor Manz>they can go and learn maybe a little bit of JavaScript
+
+00:40:12 <v Trevor Manz>or progressively a little bit more JavaScript <v Trevor Manz>to create something and package it up
+
+00:40:16 <v Trevor Manz>for many different platforms.
+
+00:40:18 <v Trevor Manz>So you sort of have people that want to make libraries <v Trevor Manz>and then you have library consumers.
+
+00:40:22 <v Trevor Manz>And depending on how much front-end stuff you want to learn,
+
+00:40:25 <v Trevor Manz>that's how deep you can go into either of those sides.
+
+00:40:27 <v Trevor Manz>But I'd say probably many more people <v Trevor Manz>are just widget users and happily wire them together and don't worry about it and move on
+
+00:40:34 <v Trevor Manz>with their day. And then there's some folks that maybe go a little bit deeper on the JS side and
+
+00:40:39 <v Michael Kennedy>learn how to create these interactive experiences. When you say wire them together, do you mean like
+
+00:40:43 <v Michael Kennedy>put one in a notebook in one cell and then another in another cell, but then say the input of it is
+
+00:40:48 <v Michael Kennedy>the output of the other, that kind of wire together? Exactly. Yeah. So you can really think of these as
+
+00:40:53 <v Trevor Manz>like building blocks that you can like compose inside of a notebook environment. And I think
+
+00:40:57 <v Trevor Manz>specifically in marimo a really cool thing is that when you update that value that lives in the
+
+00:41:02 <v Trevor Manz>kernel that cell below will rerun so now it's not just like you do the thing and then you have to
+
+00:41:07 <v Trevor Manz>manually rerun the cell you actually start to build up based of our reactivity graph like a little bit
+
+00:41:12 <v Trevor Manz>of an application of like i select some cells and now that reruns this python code and and if i have
+
+00:41:18 <v Trevor Manz>more cells that run after that it all is sort of wired up from this new input which is your widget
+
+00:41:23 <v Michael Kennedy>Yeah, I kind of riffed on this a little bit when I said like the world's craziest go-to.
+
+00:41:27 <v Michael Kennedy>And I said the second craziest because the most crazy is Excel.
+
+00:41:31 <v Michael Kennedy>But that's because the way Marimo solves that is it actually understands the way these variables
+
+00:41:38 <v Michael Kennedy>used across cells.
+
+00:41:38 <v Michael Kennedy>So when I move a widget in one, it redraws.
+
+00:41:41 <v Michael Kennedy>It's like, oh, the thing that depended upon it also now has to change.
+
+00:41:44 <v Michael Kennedy>And then like you can, it cascades that execution across the widgets, right?
+
+00:41:48 <v Trevor Manz>Exactly.
+
+00:41:49 <v Trevor Manz>And that would normally just happen if you use our built-in UI elements or if you rerun cells.
+
+00:41:54 <v Trevor Manz>And because it's just this reactive model where we trace the dependency, we just track what the dependencies are statically between your cells.
+
+00:42:02 <v Trevor Manz>We know that when you update this property on a widget, we know it sells that you have to update that depend on that widget.
+
+00:42:08 <v Trevor Manz>And so, yeah, it just sort of all falls out of this simple idea of your notebooks are a graph.
+
+00:42:13 <v Trevor Manz>They're not just like this manual.
+
+00:42:16 <v Trevor Manz>I think of it as like a lot of like running cells is like manual callbacks.
+
+00:42:20 <v Trevor Manz>Like you, you like do something and you're like, oh, I have to click a callback and run it.
+
+00:42:24 <v Trevor Manz>And by modeling it as a graph, we can run those for you.
+
+00:42:28 <v Trevor Manz>And so that we know exactly what needs to update when this dependency of that part of the graph is invalidated.
+
+00:42:35 <v Michael Kennedy>I've talked to some data scientists who are like, that is both a feature and a problem that you can just be so freeform in Jupyter Notebooks, right?
+
+00:42:42 <v Michael Kennedy>Like I can just iterate and play.
+
+00:42:44 <v Michael Kennedy>And I think while you're iterating and playing, that freedom is great.
+
+00:42:48 <v Michael Kennedy>But as soon as you want to start making decisions, then it becomes like a real danger point, right?
+
+00:42:53 <v Michael Kennedy>Yeah, I think there's kind of a nice balance.
+
+00:42:56 <v Trevor Manz>So specifically in Marimo, there are some requirements for how you have to write your Python code that are slightly more limiting than within a Jupyter environment.
+
+00:43:05 <v Trevor Manz>And one that often trips folks up is that you can't redeclare variables across cells or else it would be ambiguous.
+
+00:43:11 <v Trevor Manz>Like, is this the cell that defines X or is this the cell that defines X?
+
+00:43:15 <v Michael Kennedy>But I like to think of it as-
+
+00:43:16 <v Michael Kennedy>Which order did you run it in?
+
+00:43:18 <v Michael Kennedy>That's the one.
+
+00:43:19 <v Trevor Manz>Yeah, exactly.
+
+00:43:20 <v Michael Kennedy>That's tricky.
+
+00:43:21 <v Trevor Manz>So we're fairly strict on that.
+
+00:43:23 <v Trevor Manz>But what we believe is if you buy into this constraint, then we can give you all these
+
+00:43:27 <v Trevor Manz>properties, which are deterministic execution order and the ability to turn these scripts
+
+00:43:34 <v Trevor Manz>into reproducible, or turn these sort of open-ended workflows into more reproducible artifacts
+
+00:43:39 <v Trevor Manz>that have a deterministic execution order.
+
+00:43:43 <v Trevor Manz>And so I like to think of it a little bit as like, <v Trevor Manz>I used to type Python code without type hints.
+
+00:43:47 <v Trevor Manz>Then I started using type hints, <v Trevor Manz>and now I can't imagine not having any autocomplete.
+
+00:43:51 <v Trevor Manz>And now I think like maybe our type, <v Trevor Manz>like when you start working with data in long-lived sessions,
+
+00:43:56 <v Trevor Manz>having some of these guardrails actually help you keep on track
+
+00:43:59 <v Trevor Manz>such that if you accidentally delete a variable, <v Trevor Manz>we'll let you know that you deleted it,
+
+00:44:03 <v Trevor Manz>and it's not something that the next time you boot up the notebook,
+
+00:44:05 <v Trevor Manz>you're just missing that variable.
+
+00:44:06 <v Trevor Manz>So it's something that you buy into, <v Trevor Manz>but then I think has all these nice consequences
+
+00:44:10 <v Trevor Manz>that come out that--
+
+00:44:12 <v Michael Kennedy>- As a newbie, you'll see like, <v Michael Kennedy>these things are not defined,
+
+00:44:15 <v Michael Kennedy>or this library doesn't exist.
+
+00:44:16 <v Michael Kennedy>And you know what it does exist, <v Michael Kennedy>you just skipped running the top import cell,
+
+00:44:20 <v Michael Kennedy>or you know, that stuff's a little frustrating.
+
+00:44:23 <v Michael Kennedy>So during this talk you talked about, <v Michael Kennedy>during your talk previously,
+
+00:44:26 <v Michael Kennedy>you talked about like how anywidget allows you to write
+
+00:44:30 <v Michael Kennedy>just enough JavaScript.
+
+00:44:32 <v Michael Kennedy>What do you mean by that?
+
+00:44:33 <v Trevor Manz>- What do I mean by just enough JavaScript?
+
+00:44:35 <v Michael Kennedy>- Yeah, like, so one person's just enough JavaScript,
+
+00:44:38 <v Michael Kennedy>another person's like, whoa, way too much JavaScript.
+
+00:44:41 <v Trevor Manz>Sure.
+
+00:44:41 <v Trevor Manz>So when I first started learning any front-end code, <v Trevor Manz>my experience was I opened up an HTML file
+
+00:44:47 <v Trevor Manz>and I just wrote some JavaScript on the page.
+
+00:44:49 <v Trevor Manz>And I completely love this workflow <v Trevor Manz>for playing and learning how to write code
+
+00:44:54 <v Trevor Manz>for the first time in the browser.
+
+00:44:57 <v Trevor Manz>But I think over the years, <v Trevor Manz>as people have started to build things
+
+00:45:01 <v Trevor Manz>like Figma and Adobe in the browser, <v Trevor Manz>there's a ton of tooling that has come up
+
+00:45:07 <v Trevor Manz>to help build those types of applications.
+
+00:45:09 <v Trevor Manz>So many people's first experience with writing JavaScript
+
+00:45:13 <v Trevor Manz>is someone telling them that they need to learn React <v Trevor Manz>or learn a specific framework.
+
+00:45:18 <v Trevor Manz>And then it's a bit like, well, this isn't technically JavaScript.
+
+00:45:21 <v Trevor Manz>This is a flavor of JavaScript that we transform.
+
+00:45:24 <v Trevor Manz>And so the experience that I wanted for anywidget <v Trevor Manz>was to write this standardized JavaScript code
+
+00:45:31 <v Trevor Manz>as sort of the entry point to your widgets.
+
+00:45:34 <v Trevor Manz>So it should feel as simple as you could just open up <v Trevor Manz>browser console and start typing in code.
+
+00:45:39 <v Trevor Manz>And the code that you write is exactly what the browser understands.
+
+00:45:43 <v Trevor Manz>And so it should be dead simple from the beginning.
+
+00:45:46 <v Trevor Manz>Just learning some APIs and probably pattern matching between, okay, this is some syntax.
+
+00:45:51 <v Trevor Manz>But it should feel pretty familiar.
+
+00:45:53 <v Trevor Manz>Should you want to learn those frameworks or use those frameworks, those all have the
+
+00:45:57 <v Trevor Manz>ability to be transformed into this standardized JavaScript.
+
+00:46:01 <v Trevor Manz>And in fact, they have to be in order to run in the browser.
+
+00:46:03 <v Trevor Manz>That's how that all works.
+
+00:46:05 <v Trevor Manz>So I wanted that initial experience to be, if you want to learn and you've never tried it out before, send a variable and you can console log that variable and it just works.
+
+00:46:15 <v Trevor Manz>But should you want to build something very ambitious and a lot of our most popular complicated widgets do use some of these frameworks, that's something that you can learn.
+
+00:46:23 <v Michael Kennedy>So I could do a view or an AlpineJS or I could do a React and all of that kind of stuff if I want.
+
+00:46:30 <v Trevor Manz>Yeah, so in our documentation, there is like a, I think it's, I call it, we call it, we have like a little CLI to bootstrap a project that's like ready to be used with React.
+
+00:46:41 <v Trevor Manz>And I think we had a contributor contribute one for Vue and Svelte as well.
+
+00:46:47 <v Trevor Manz>And the whole idea there is like, yes, in order to, like, the tradeoff is that now you are introducing like some JavaScript build tooling into your, like into this process.
+
+00:46:56 <v Trevor Manz>But hopefully if you're familiar with those frameworks, that isn't like a big overhead to trying out some of those things.
+
+00:47:02 <v Trevor Manz>Versus like for the Python beginner that wants to learn something in the front end and they're just trying to get their data into the front end.
+
+00:47:10 <v Trevor Manz>I just don't want them to have to worry about TypeScript or React or any of these things that they might hear about.
+
+00:47:15 <v Trevor Manz>And instead they can just get started with trying to paint some pixels on the screen and then progressively learn outside of that ecosystem.
+
+00:47:22 <v Trevor Manz>So the entry point will always be sort of this simple front end standard.
+
+00:47:27 <v Trevor Manz>And then how far you want to go into that ecosystem, then you can experience more of
+
+00:47:32 <v Trevor Manz>like the tooling there to help with reactivity and things in the front end.
+
+00:47:37 <v Michael Kennedy>Yeah, that's super interesting to think of injecting little miniature view applications
+
+00:47:42 <v Michael Kennedy>and stuff to allow that work.
+
+00:47:44 <v Michael Kennedy>But they are super powerful if you're willing to go through the build steps and all the
+
+00:47:48 <v Michael Kennedy>hoops that those different frameworks ask you to do to get it to run.
+
+00:47:52 <v Michael Kennedy>And once you get it set up, it's like, okay, these things all bi-directionally data bind to each other internally.
+
+00:47:57 <v Michael Kennedy>And so I can see how that plays just like perfectly naturally with the already binding of the dynamic interaction here.
+
+00:48:04 <v Trevor Manz>Yeah, exactly.
+
+00:48:05 <v Trevor Manz>So we model this as like we have the standard, which is like this ECMAScript standard, which is the JavaScript code that you write.
+
+00:48:14 <v Trevor Manz>And then all of the libraries are modeled as like adapters on top of that standard.
+
+00:48:18 <v Trevor Manz>I think we call them bridges.
+
+00:48:19 <v Trevor Manz>So in React, you get hooks that you can call, <v Trevor Manz>and then you're writing code that looks like idiomatic React,
+
+00:48:25 <v Trevor Manz>but behind the scenes, it's calling anywidget APIs.
+
+00:48:29 <v Trevor Manz>And our Vue bridge does the same thing, but with Vue APIs.
+
+00:48:32 <v Trevor Manz>So you get to write front-end code that feels like it's Vue-like or React-like,
+
+00:48:36 <v Trevor Manz>but behind the scenes, you have these custom bridges <v Trevor Manz>that are written by folks that are familiar with those frameworks
+
+00:48:41 <v Trevor Manz>for how they should interface with our standard specification.
+
+00:48:44 <v Michael Kennedy>Yeah, wild.
+
+00:48:45 <v Michael Kennedy>Let's talk about not using one of those, <v Michael Kennedy>but instead talking through building a simple widget.
+
+00:48:50 <v Michael Kennedy>Now, just to be clear, <v Michael Kennedy>I know we can't read all of the code audio version
+
+00:48:55 <v Michael Kennedy>because most people just listen to the show, <v Michael Kennedy>but maybe just give us a sense going through this.
+
+00:48:59 <v Michael Kennedy>You have a build a counter widget.
+
+00:49:02 <v Michael Kennedy>Yeah.
+
+00:49:02 <v Michael Kennedy>Or I can click a button and it counts or something.
+
+00:49:04 <v Michael Kennedy>Yeah, just walk us through, <v Michael Kennedy>just to give people a sense of what does it mean
+
+00:49:07 <v Michael Kennedy>to build one of these AnyWidget widgets.
+
+00:49:09 <v Trevor Manz>Yeah, so the idea within AnyWidget <v Trevor Manz>is that you create a class that extends from a single class
+
+00:49:15 <v Trevor Manz>that's in anywidget called anywidget.
+
+00:49:17 <v Trevor Manz>And that is what you define both your view, <v Trevor Manz>so the front end part of that code,
+
+00:49:22 <v Trevor Manz>and then also the back end code for that.
+
+00:49:25 <v Trevor Manz>So it fully encapsulates the idea of a widget <v Trevor Manz>that has both a back end and a front end component.
+
+00:49:30 <v Michael Kennedy>Yeah, and just to be clear for people, <v Michael Kennedy>let's say when you say a class,
+
+00:49:33 <v Michael Kennedy>it's not one of those weird prototype JavaScript type things.
+
+00:49:36 <v Michael Kennedy>It's the more modern class keyword, <v Michael Kennedy>but in ECMAScript, is that right?
+
+00:49:41 <v Trevor Manz>Oh, sorry.
+
+00:49:42 <v Trevor Manz>So right, what we're looking at here is just a Python class that's extending.
+
+00:49:46 <v Michael Kennedy>Oh, this is a Python class.
+
+00:49:47 <v Michael Kennedy>Okay.
+
+00:49:47 <v Michael Kennedy>Yeah.
+
+00:49:48 <v Michael Kennedy>A Python class.
+
+00:49:48 <v Michael Kennedy>Great.
+
+00:49:49 <v Michael Kennedy>And so you create a Python class, but then it has the JavaScript.
+
+00:49:52 <v Michael Kennedy>Exactly.
+
+00:49:53 <v Trevor Manz>So ESM is like a private field that defines a front end module.
+
+00:49:58 <v Trevor Manz>And the whole idea there is that you define a function that's called render that takes
+
+00:50:02 <v Trevor Manz>in two arguments, a model and an element.
+
+00:50:05 <v Trevor Manz>So the model is like this object that talks back to the kernel.
+
+00:50:09 <v Trevor Manz>And an element is whatever the front end, like Jupyter or VS Code gives you as like the output on the screen.
+
+00:50:15 <v Trevor Manz>And so those two things combined, you can call methods on that model to set a value or get a value.
+
+00:50:21 <v Trevor Manz>And then you can update some part of the UI.
+
+00:50:24 <v Michael Kennedy>I see.
+
+00:50:25 <v Michael Kennedy>So you're past like a DOM element, which might be a div or whatever.
+
+00:50:29 <v Michael Kennedy>And then you can just inject JavaScript, like a pen child and other stuff and set a class and whatever.
+
+00:50:34 <v Michael Kennedy>And that builds out the little, the part of the DOM that you control or it's given to you?
+
+00:50:38 <v Trevor Manz>Exactly. And then you can style that however way that you want.
+
+00:50:42 <v Trevor Manz>And then the key thing is that as a part of this adapter,
+
+00:50:46 <v Trevor Manz>when you call methods on this model object that you get, <v Trevor Manz>I think there's only a few methods that are on it,
+
+00:50:51 <v Trevor Manz>like get, set, and save changes.
+
+00:50:53 <v Trevor Manz>And that just synchronizes values back and forth <v Trevor Manz>between the front end and the back end.
+
+00:50:58 <v Trevor Manz>And that same sort of API is on the Python side as well.
+
+00:51:02 <v Trevor Manz>And so you can react to those values as they update <v Trevor Manz>or set them as well on the Python side.
+
+00:51:07 <v Trevor Manz>And then we'll deal for the most part, <v Trevor Manz>like with serialization of simple data types to one.
+
+00:51:12 <v Trevor Manz>So if you have a float or an int in Python, <v Trevor Manz>we'll just map that to a number data type.
+
+00:51:16 <v Trevor Manz>We have that mapping in our documentation.
+
+00:51:18 <v Trevor Manz>If you want to serialize to something like JSON, <v Trevor Manz>that's totally fine too.
+
+00:51:22 <v Trevor Manz>And then you just send that over the wire.
+
+00:51:24 <v Michael Kennedy>Yeah, that's wild.
+
+00:51:25 <v Michael Kennedy>So how does it actually, <v Michael Kennedy>so we've got a Python class,
+
+00:51:28 <v Michael Kennedy>which I guess probably lives in the kernel.
+
+00:51:31 <v Michael Kennedy>And then it's got HTML JavaScript stuff it's doing <v Michael Kennedy>that it's setting values.
+
+00:51:37 <v Michael Kennedy>What's this exchange?
+
+00:51:39 <v Michael Kennedy>Where do different pieces run?
+
+00:51:41 <v Michael Kennedy>How do they communicate?
+
+00:51:43 <v Trevor Manz>Sure.
+
+00:51:43 <v Trevor Manz>So that is up to the implementation.
+
+00:51:45 <v Trevor Manz>So whoever builds an adapter for anywidget.
+
+00:51:48 <v Trevor Manz>But the idea is that the front-end code that you write is in the standardized form.
+
+00:51:52 <v Trevor Manz>So you can just call import and import this JavaScript module that you have.
+
+00:51:57 <v Trevor Manz>And then the front-end is responsible for when these different methods get called on model
+
+00:52:03 <v Trevor Manz>for sending that data back and communicating over some sort of mechanism to the backend.
+
+00:52:09 <v Michael Kennedy>Jupyter already has defined something like that.
+
+00:52:11 <v Michael Kennedy>Yeah, so Jupyter has a notion of something called a com,
+
+00:52:14 <v Trevor Manz>and that is implemented over a web socket to communicate back and forth.
+
+00:52:18 <v Trevor Manz>And similar in Marimo, we're not based on Jupyter at all,
+
+00:52:21 <v Trevor Manz>but our any-witted adapter just talks over a web socket with some different messages.
+
+00:52:26 <v Trevor Manz>But basically, we call this a host platform that takes care of that implementation
+
+00:52:31 <v Trevor Manz>and wires up those two ends.
+
+00:52:32 <v Trevor Manz>But then as the widget author, you just care about like, <v Trevor Manz>here's my JavaScript module, here's my Python code.
+
+00:52:37 <v Trevor Manz>And they use these APIs.
+
+00:52:39 <v Trevor Manz>And then it's someone else's problem to figure out how to wire those up together.
+
+00:52:42 <v Michael Kennedy>Yeah, super neat.
+
+00:52:43 <v Michael Kennedy>Kasaasa, interesting thought here.
+
+00:52:45 <v Michael Kennedy>I'd be super interested to see this working purely in Python.
+
+00:52:48 <v Michael Kennedy>Front end running in Wasm.
+
+00:52:49 <v Michael Kennedy>No need for JavaScript streams in Python.
+
+00:52:51 <v Michael Kennedy>What do you think here?
+
+00:52:52 <v Trevor Manz>Yeah, yeah.
+
+00:52:53 <v Trevor Manz>I haven't played around with some of the PyDide or the PyScript APIs.
+
+00:53:00 <v Trevor Manz>I think that that would probably be possible.
+
+00:53:02 <v Trevor Manz>the example that you had of draw data before <v Trevor Manz>for the Marimo notebook that Vincent had
+
+00:53:09 <v Trevor Manz>that is entirely running in the browser <v Trevor Manz>so that is like the Marimo Python kernel is running in Wasm
+
+00:53:15 <v Trevor Manz>and then we're also loading the JavaScript code <v Trevor Manz>so we do have folks that just create a Marimo notebook
+
+00:53:21 <v Trevor Manz>and then compile it to WebAssembly <v Trevor Manz>and then they have a static website that has both of these bits together
+
+00:53:27 <v Michael Kennedy>Okay, that's actually pretty wild, isn't it?
+
+00:53:31 <v Michael Kennedy>So I've seen that there's some other places that I can, anywidget, like Myst.
+
+00:53:36 <v Michael Kennedy>Yeah.
+
+00:53:37 <v Michael Kennedy>And also Mosaic.
+
+00:53:38 <v Michael Kennedy>Tell us about these.
+
+00:53:39 <v Trevor Manz>Yeah, yeah, definitely.
+
+00:53:40 <v Trevor Manz>So Myst, I think on our community page, we have a notion of widgets, and then we have a notion of host platforms.
+
+00:53:50 <v Trevor Manz>And so the two primary host platforms right now are things that are Jupyter-based, so like VS Code, Notebooks, Google Colab.
+
+00:54:01 <v Trevor Manz>binder, like all these things that are based off of a Jupyter kernel and run Python behind the scenes.
+
+00:54:07 <v Trevor Manz>Then Marimo is another host platform and Mist is currently working on an integration
+
+00:54:12 <v Trevor Manz>around that specification for the front-end code. And so the idea is like as long as they have a way
+
+00:54:17 <v Trevor Manz>to, and I'm not sure how far along that is at the moment, but as long as there is a way to run Python
+
+00:54:23 <v Trevor Manz>code and sort of maintain that relationship between that front-end code and back-end code, then
+
+00:54:27 <v Trevor Manz>And you could drop anywidgets within your MIST markdown, for example, as well.
+
+00:54:31 <v Michael Kennedy>Yeah.
+
+00:54:32 <v Michael Kennedy>MIST is wild.
+
+00:54:33 <v Michael Kennedy>I had that team on the podcast a while ago.
+
+00:54:35 <v Michael Kennedy>It's like, you want to create an e-book based on notebooks or whatever, LaTeX paper, or
+
+00:54:42 <v Michael Kennedy>you name it, right?
+
+00:54:42 <v Trevor Manz>Yeah.
+
+00:54:43 <v Michael Kennedy>And yeah.
+
+00:54:45 <v Michael Kennedy>I haven't done anything with Mosaic.
+
+00:54:46 <v Trevor Manz>Yeah, Mosaic.
+
+00:54:47 <v Trevor Manz>I think this is a really cool project.
+
+00:54:50 <v Trevor Manz>So at its core, Mosaic is a bit more of like an architecture.
+
+00:54:54 <v Trevor Manz>And this is probably one of the things that I'm most excited about,
+
+00:54:56 <v Trevor Manz>like the ability that anywidget is bringing to folks <v Trevor Manz>to experiment with new types of architectures
+
+00:55:02 <v Trevor Manz>for building high-performance visualizations.
+
+00:55:05 <v Trevor Manz>So inside a Mosaic, you have a notion of some database source
+
+00:55:10 <v Trevor Manz>that I believe is typically DuckDB.
+
+00:55:13 <v Trevor Manz>And then you write a bunch of front-end code <v Trevor Manz>that basically expresses all of the data that it needs
+
+00:55:17 <v Trevor Manz>as queries to that database.
+
+00:55:18 <v Trevor Manz>And then there's a lot of optimizations that can happen <v Trevor Manz>between those individual views and the database
+
+00:55:24 <v Trevor Manz>that can all be coordinated and allow for very scalable data visualizations.
+
+00:55:29 <v Trevor Manz>One cool thing about Mosaic is that this architecture lends itself very well to notebooks
+
+00:55:34 <v Trevor Manz>because you can keep that database, that DuckDB running completely in the kernel,
+
+00:55:39 <v Trevor Manz>and then you just have your front-end client. But then there's also an option where you just
+
+00:55:42 <v Trevor Manz>completely compile everything into WebAssembly, and then that DuckDB is running in the browser as
+
+00:55:48 <v Trevor Manz>well. And so you get to reuse a lot of this architecture and allows just a lot of code
+
+00:55:53 <v Trevor Manz>reuse and you're just kind of moving that lever of like okay do i need like high performance compute
+
+00:55:58 <v Trevor Manz>okay let me put my database in my hpc and then i'll just have a thin client on top of it versus
+
+00:56:03 <v Trevor Manz>okay actually i want to look at everything in the browser like maybe we can just compile to web
+
+00:56:07 <v Trevor Manz>assembly and let someone drop in a csv and then we can use reuse the same visualization so yeah
+
+00:56:12 <v Michael Kennedy>this is super yeah that's super flexible duckdb has a very interesting WebAssembly story as well so
+
+00:56:18 <v Michael Kennedy>yeah definitely it's definitely catching a lot of attention and people you know it's
+
+00:56:23 <v Michael Kennedy>It's the data science SQLite, right?
+
+00:56:26 <v Trevor Manz>Yeah.
+
+00:56:27 <v Trevor Manz>And I'd say like a growing trend that I've seen by being able to,
+
+00:56:31 <v Trevor Manz>like one thing I didn't, that didn't fully, <v Trevor Manz>I wasn't fully aware of when I started on anywidget,
+
+00:56:35 <v Trevor Manz>but it has been fun to see is because it became easier to sort of start playing
+
+00:56:39 <v Trevor Manz>with like both front end code and Python code in the same environment.
+
+00:56:42 <v Trevor Manz>Like there've been a lot more, I think, like experimentations around,
+
+00:56:46 <v Trevor Manz>like trying out new types of architectures for building like visualizations.
+
+00:56:50 <v Trevor Manz>And so one trend that I've noticed in our community gallery
+
+00:56:53 <v Trevor Manz>is that a lot of our most popular widgets <v Trevor Manz>are taking advantage of new data formats like Apache Arrow
+
+00:57:00 <v Trevor Manz>to be able to send lots of data to the browser <v Trevor Manz>to put on the GPU and render very quickly.
+
+00:57:05 <v Trevor Manz>And so basically, there's a really cool example <v Trevor Manz>of a widget called Lawnboard,
+
+00:57:10 <v Trevor Manz>which is a geospatial visualization widget, <v Trevor Manz>which is a wrapper around a front-end library called DeckGL
+
+00:57:16 <v Trevor Manz>that was made by Uber to do geospatial visualization.
+
+00:57:20 <v Trevor Manz>And the previous Jupyter integration, <v Trevor Manz>like serialized data to JSON to be able to like render inside of DeckGL.
+
+00:57:27 <v Trevor Manz>So the moment that you had to render maybe a few million points,
+
+00:57:29 <v Trevor Manz>it's like you're spending a ton of time serializing that data
+
+00:57:31 <v Trevor Manz>to be able to put it in the browser.
+
+00:57:33 <v Michael Kennedy>Right.
+
+00:57:34 <v Michael Kennedy>It's like using an ORM.
+
+00:57:35 <v Michael Kennedy>They're great until you try to do a query with 100,000 records.
+
+00:57:38 <v Michael Kennedy>You're like, why is this so slow?
+
+00:57:39 <v Trevor Manz>Exactly.
+
+00:57:40 <v Trevor Manz>And so I think there's an example with Lawnboard where <v Trevor Manz>some data set with like 3.5 million rows just like crashed in the previous,
+
+00:57:48 <v Trevor Manz>or never rendered, maybe it took a few seconds to render,
+
+00:57:51 <v Trevor Manz>or a minute to render.
+
+00:57:53 <v Trevor Manz>But Lawnboard uses Apache Arrow <v Trevor Manz>and grabs that data from either Arrow, Parquet,
+
+00:57:59 <v Trevor Manz>or all these different file formats.
+
+00:58:00 <v Trevor Manz>And that's very fast to do, <v Trevor Manz>because you just copy that buffer and ship it to the front end
+
+00:58:04 <v Trevor Manz>and put it on the GPU.
+
+00:58:06 <v Trevor Manz>And so it can do that same example in, I think, <v Trevor Manz>one or two seconds on modern machines.
+
+00:58:11 <v Trevor Manz>And so it really is this, get your data into a data frame
+
+00:58:13 <v Trevor Manz>and dump it on the GPU and visualize it.
+
+00:58:16 <v Trevor Manz>And that whole idea of, <v Trevor Manz>oh, what format do I need to convert to to be able to use this tool, this visualization tool
+
+00:58:23 <v Trevor Manz>that I've heard? It's like, no, no, no, just load it as a data frame. And then as long as you get
+
+00:58:27 <v Trevor Manz>your data as a data frame, we can throw it into the web browser. Yeah, super neat. That's the kind
+
+00:58:33 <v Michael Kennedy>of stuff that normal web people don't think about, right? You're like, well, how much is it to
+
+00:58:37 <v Michael Kennedy>serialize a little JSON response? Or, you know, we're talking about a million of them. Oh.
+
+00:58:42 <v Trevor Manz>Yeah, yeah, exactly. And I guess one thing I've been impressed with is just at times where my
+
+00:58:48 <v Trevor Manz>understanding of how good computers have gotten is like, it's just shocking. It's more like, oh,
+
+00:58:54 <v Trevor Manz>I think we're holding ourselves back at times by maybe some of the standard practices versus like,
+
+00:59:00 <v Trevor Manz>yeah, hardware has gotten very good. And if you can make use of that hardware efficiently,
+
+00:59:04 <v Trevor Manz>there's quite a bit that you can do on very low powered devices and visualize a ton of data.
+
+00:59:10 <v Michael Kennedy>Yeah. Quite a while ago, like really long time ago, I did some OpenGL programming and you see,
+
+00:59:15 <v Michael Kennedy>you know, like here, we gave this, the scene a hundred thousand triangles and it's rendering
+
+00:59:19 <v Michael Kennedy>at 200 frames a second. You're like, how, how many operations is that? Like, that is insane. You know,
+
+00:59:25 <v Michael Kennedy>this is like 30 years ago. You were just like, that just blows my mind. Yeah. I think people
+
+00:59:29 <v Michael Kennedy>underestimate what computers can do sometimes, especially if you work with them, right? You're
+
+00:59:32 <v Michael Kennedy>not doing three levels of serialization and deserialization and, and so on. Yeah. Yeah,
+
+00:59:37 <v Michael Kennedy>exactly. That's wild. So what about publishing one of these things? If we go and write,
+
+00:59:42 <v Michael Kennedy>I've created an AnyWidget and it's amazing for me to use, but I want to put it on PyPI so people can UVPIP install it or whatever in their notebook.
+
+00:59:51 <v Trevor Manz>Yeah.
+
+00:59:52 <v Trevor Manz>So I have a couple.
+
+00:59:53 <v Trevor Manz>One, I would recommend if folks are really interested in it, there's a couple of videos I have on my YouTube of just like publishing some widgets and they're linked in the AnyWidget documentation.
+
+01:00:03 <v Trevor Manz>But that file that you see there, that's open in the current view that we have.
+
+01:00:09 <v Trevor Manz>If you know how to publish a Python file, you can just publish that to PyPI.
+
+01:00:12 <v Trevor Manz>and it should just work.
+
+01:00:13 <v Trevor Manz>So yeah, the one caveat I'd have is like, <v Trevor Manz>you're looking at an inline string here,
+
+01:00:18 <v Trevor Manz>and that's not always the nicest way <v Trevor Manz>to write your front end code.
+
+01:00:22 <v Trevor Manz>So you can also just import, <v Trevor Manz>like you can require that as a file instead.
+
+01:00:26 <v Trevor Manz>And so you can put that code into a separate file, <v Trevor Manz>type check that or like lint it or like format it
+
+01:00:31 <v Trevor Manz>as JavaScript.
+
+01:00:32 <v Michael Kennedy>- So write a JavaScript file, <v Michael Kennedy>and then somehow set just,
+
+01:00:36 <v Michael Kennedy>would I just read that in Python?
+
+01:00:39 <v Michael Kennedy>And then just set the text result, <v Michael Kennedy>like use path and say read text and then jam it in there?
+
+01:00:43 <v Trevor Manz>Yeah, we support if you just pass a path, <v Trevor Manz>lib path to ESM, we'll read it for you.
+
+01:00:49 <v Michael Kennedy>Oh, okay, perfect, yeah.
+
+01:00:51 <v Michael Kennedy>So as long as I have a package <v Michael Kennedy>and the package points out that these JavaScript files
+
+01:00:56 <v Michael Kennedy>are to be included at build, then you're good to go?
+
+01:00:59 <v Trevor Manz>Yep, and our starter kit template <v Trevor Manz>is all configured with Hatchling to do that for you.
+
+01:01:04 <v Michael Kennedy>Yeah, very nice.
+
+01:01:05 <v Michael Kennedy>Okay, and I've been using uv build, uv publish these days,
+
+01:01:10 <v Michael Kennedy>and it's pretty seamless.
+
+01:01:12 <v Trevor Manz>Yeah, yeah.
+
+01:01:12 <v Trevor Manz>I think maybe we might need to update the build script <v Trevor Manz>to have uv build as the backend.
+
+01:01:17 <v Trevor Manz>So, yeah.
+
+01:01:17 <v Michael Kennedy>Yeah, even if you do uv build against something <v Michael Kennedy>with a different backend,
+
+01:01:20 <v Michael Kennedy>I think uv just runs that backend instead.
+
+01:01:22 <v Michael Kennedy>So not a big deal.
+
+01:01:24 <v Michael Kennedy>Not a big deal.
+
+01:01:25 <v Michael Kennedy>So what are maybe some of the rough edges <v Michael Kennedy>that people need to look out for these days?
+
+01:01:30 <v Michael Kennedy>It's got a lot of stuff that makes things easy, <v Michael Kennedy>but what should they be maybe on the lookout for?
+
+01:01:35 <v Trevor Manz>I think the thing that if folks are getting, <v Trevor Manz>Hopefully if you want to try out a widget, it should be as simple as installing any other Python package.
+
+01:01:44 <v Trevor Manz>And that is really a goal that we've had for the project, is that if you want to use this like you would some algorithm library that just does computation,
+
+01:01:52 <v Trevor Manz>we want that to be as simple as pip installing and getting started.
+
+01:01:57 <v Trevor Manz>I would say probably the highest barrier to entry is that it is just this idea of just enough JavaScript.
+
+01:02:04 <v Trevor Manz>And so one thing that I try to emphasize in the docs is that I'd really start with a very
+
+01:02:10 <v Trevor Manz>simple example if you've never played around in the browser and get used to opening up
+
+01:02:15 <v Trevor Manz>your developer tools and logging things and just understanding how to develop maybe a
+
+01:02:20 <v Trevor Manz>little bit in the front end.
+
+01:02:22 <v Trevor Manz>If you're coming from the front end side, then it would be learning a little bit more
+
+01:02:25 <v Trevor Manz>of how does Python work and how do I debug things on the Python side.
+
+01:02:29 <v Michael Kennedy>And what is PyPI and how do I even work with that thing?
+
+01:02:32 <v Trevor Manz>Exactly. So it's really, I'd say, most of the rough edges are just these problems of working
+
+01:02:37 <v Trevor Manz>with two language ecosystems. But that's also been a very important part of AnyWidget because we don't
+
+01:02:41 <v Trevor Manz>want people that are ambitious to build things that sort of bridge this gap to feel restricted
+
+01:02:46 <v Trevor Manz>from either using things in the Python ecosystem or the web ecosystem. Because we could always write
+
+01:02:51 <v Trevor Manz>wrappers to make things easier for authors, but then we'll probably get a bunch of issues that
+
+01:02:56 <v Michael Kennedy>then say, hey, I want to use this API and you haven't exposed it. And they're like, hey, we'd like to use
+
+01:03:00 <v Michael Kennedy>view, you're like, well, you use our Python thing that defines the DOM.
+
+01:03:03 <v Michael Kennedy>Like, oh, okay.
+
+01:03:04 <v Michael Kennedy>Yeah, exactly.
+
+01:03:05 <v Trevor Manz>So with great power comes great responsibility, but we want to give that to people that want
+
+01:03:11 <v Trevor Manz>to build these types of integrations.
+
+01:03:12 <v Trevor Manz>Yeah.
+
+01:03:13 <v Michael Kennedy>So what about agentic AI for this kind of stuff?
+
+01:03:16 <v Michael Kennedy>I know five years ago, you have to learn every step of the JavaScript.
+
+01:03:20 <v Michael Kennedy>How much can I say, take my inline JavaScript, put it into a JS file, and then point it at,
+
+01:03:26 <v Michael Kennedy>you know, ask Claude Sonnet, hey, this is an AnyWidget widget, and this is the JavaScript.
+
+01:03:30 <v Michael Kennedy>and here's what I'm trying to accomplish.
+
+01:03:31 <v Michael Kennedy>I bet you could go pretty far <v Michael Kennedy>with a marginal understanding of JavaScript
+
+01:03:36 <v Michael Kennedy>as a Python person, plus some kind of AI.
+
+01:03:39 <v Michael Kennedy>What do you think?
+
+01:03:39 <v Trevor Manz>Oh, yeah, absolutely.
+
+01:03:41 <v Trevor Manz>I think, like I mentioned earlier, <v Trevor Manz>Vincent works and I work very closely together.
+
+01:03:46 <v Trevor Manz>And his joke that he likes to tell <v Trevor Manz>is that I created anywidgets
+
+01:03:49 <v Trevor Manz>so that he could make anywidgets.
+
+01:03:53 <v Trevor Manz>And the ability to vibe code <v Trevor Manz>sort of the front end for an object
+
+01:03:58 <v Trevor Manz>really is eye-opening if you've never tried it.
+
+01:04:00 <v Trevor Manz>before if you're working with your data.
+
+01:04:02 <v Trevor Manz>And I think one of the barriers maybe of trying out <v Trevor Manz>or of thinking about how to use anywidget
+
+01:04:09 <v Trevor Manz>is knowing when it might be useful.
+
+01:04:11 <v Trevor Manz>And really, it's like anytime you have an object <v Trevor Manz>that you might want to visualize in a particular way
+
+01:04:16 <v Trevor Manz>or maybe extend with some extra capabilities <v Trevor Manz>in your notebook environment,
+
+01:04:21 <v Trevor Manz>that's a perfect time to open up some agentic tool <v Trevor Manz>and start trying to explain what you're thinking about.
+
+01:04:29 <v Trevor Manz>because it's just JavaScript and not like a custom framework that we wrote or, and it's not like,
+
+01:04:35 <v Trevor Manz>they're very good at like writing this type of code. And so sometimes you might need to,
+
+01:04:39 <v Trevor Manz>we have a set of rules to try to like help it, make sure it doesn't like try to do React or
+
+01:04:43 <v Trevor Manz>something, but it can go very far. And because it's just like a view on top of like your data,
+
+01:04:48 <v Trevor Manz>it's like, it's kind of the perfect thing to play around with vibe coding, I think is.
+
+01:04:52 <v Michael Kennedy>It's incredible how far you can go with this stuff. You can, you can give it your data source
+
+01:04:56 <v Michael Kennedy>and say, here's the data source, <v Michael Kennedy>here's what I'm trying to do.
+
+01:04:58 <v Michael Kennedy>And because the data sources often can be <v Michael Kennedy>really foundational like CSV or whatever.
+
+01:05:02 <v Michael Kennedy>And then importantly, because it's just pure JavaScript,
+
+01:05:06 <v Michael Kennedy>AI goes crazy on pure JavaScript and pure Python, right?
+
+01:05:10 <v Michael Kennedy>It's unleashed.
+
+01:05:11 <v Michael Kennedy>Yeah, it's crazy.
+
+01:05:12 <v Trevor Manz>So to plug it back to Marimo for a second, <v Trevor Manz>I think because it's just Python and just JavaScript,
+
+01:05:19 <v Trevor Manz>it's a really fun environment <v Trevor Manz>to actually create anywidgets in.
+
+01:05:22 <v Trevor Manz>And we have some integrations with like AI chat <v Trevor Manz>within our editor where we actually will inspect some of your Python variables and include that
+
+01:05:32 <v Trevor Manz>in the prompts as you're trying to work on things.
+
+01:05:34 <v Trevor Manz>So if you're saying, "Hey, I want to make a widget and I want to visualize this data
+
+01:05:38 <v Trevor Manz>frame," you can actually tag the object that you want to start programming around.
+
+01:05:43 <v Trevor Manz>And that will include things like the schema and stuff as it gives it to the model, such
+
+01:05:46 <v Trevor Manz>that then you get that sort of grounds it at least when it's writing that JavaScript code
+
+01:05:50 <v Trevor Manz>to grab the right columns and things off the data set and get to the ground running without
+
+01:05:54 <v Trevor Manz>you having to procure those things as well.
+
+01:05:56 <v Trevor Manz>So it's a pretty fun environment to create these things.
+
+01:05:59 <v Michael Kennedy>It's a weird time, isn't it, that we live in?
+
+01:06:01 <v Michael Kennedy>Kind of magical and also scary, but just weird.
+
+01:06:04 <v Michael Kennedy>Yeah, definitely.
+
+01:06:05 <v Michael Kennedy>But very much fun as well.
+
+01:06:08 <v Michael Kennedy>I would throw out there, if people are interested, <v Michael Kennedy>check out the Matt Makai episode I did on HHC programming
+
+01:06:14 <v Michael Kennedy>three or four episodes ago.
+
+01:06:15 <v Michael Kennedy>And choose a good model.
+
+01:06:16 <v Michael Kennedy>I find people are like, I tried this.
+
+01:06:18 <v Michael Kennedy>It did a bunch of junk.
+
+01:06:19 <v Michael Kennedy>It's like, yeah, but use the free tier, right?
+
+01:06:20 <v Michael Kennedy>I see.
+
+01:06:22 <v Michael Kennedy>There's a big difference between the top tier models <v Michael Kennedy>and the cheaper ones.
+
+01:06:26 <v Michael Kennedy>So, all right. Where are we going? What's the roadmap look like for anywidget?
+
+01:06:31 <v Trevor Manz>Yeah. So the roadmap for anywidget, I think looks a lot like trying to iron, like trying to get users to, or authors to understand some of these patterns that are like emerging in the ecosystem for like building some of these, maybe more like high performance, like visualization tools.
+
+01:06:46 <v Trevor Manz>In terms of the library itself, there may be a few features that we want to add for users.
+
+01:06:51 <v Trevor Manz>But I think one of the most important things is that we just ensure that we stay backwards compatible now that we have something that people are building around.
+
+01:07:01 <v Trevor Manz>And so my call to action is just to try to get more folks, if they are curious, to try out building new widgets and let's keep this ecosystem pretty healthy.
+
+01:07:12 <v Trevor Manz>And then on top of that, if there are places where folks are like running into limitations of like the specification as is, then getting like invested parties either from, you know, the implementers to try to understand like what APIs we need to add to support things in the future.
+
+01:07:26 <v Trevor Manz>So, yeah.
+
+01:07:27 <v Michael Kennedy>Amazing.
+
+01:07:28 <v Michael Kennedy>It was up my mind, but I forgot to ask it when we were talking about this, where things run.
+
+01:07:33 <v Michael Kennedy>If this is running in the kernel and you're doing HPC type stuff, I could potentially use Rust or C++ as part of building my widget.
+
+01:07:40 <v Michael Kennedy>Is that right?
+
+01:07:41 <v Trevor Manz>Yeah, definitely. So one pattern we've seen is like, you know, you just try to do as little as you like just the interactive bits that you want in the front end. And then you have the full resources of anything that you can do in Python on the on the back end side, right. And because Python is such a language that has sort of grown to be able to be extended with all these like systems level programming languages, there's like a lot that you can tap into there in terms of like, yeah, high performance compute or like.
+
+01:08:07 <v Trevor Manz>So my hope is that really we push user or push anywidget authors of creating like interesting interactive elements that then allow us to really like have that extra input into these like really scalable like ecosystem, data ecosystem that we have on the Python side.
+
+01:08:23 <v Michael Kennedy>Awesome.
+
+01:08:24 <v Michael Kennedy>PR is accepted?
+
+01:08:25 <v Trevor Manz>Absolutely.
+
+01:08:26 <v Trevor Manz>Yeah.
+
+01:08:26 <v Michael Kennedy>Yeah.
+
+01:08:27 <v Michael Kennedy>Yeah.
+
+01:08:27 <v Michael Kennedy>Okay.
+
+01:08:28 <v Michael Kennedy>So yeah, people can check it out here on GitHub.
+
+01:08:30 <v Michael Kennedy>Of course, we'll link to that.
+
+01:08:31 <v Michael Kennedy>And yeah, you got ideas.
+
+01:08:33 <v Michael Kennedy>All right.
+
+01:08:33 <v Michael Kennedy>Get in there and add it.
+
+01:08:35 <v Trevor Manz>Yeah.
+
+01:08:35 <v Michael Kennedy>And we also have a Discord.
+
+01:08:36 <v Trevor Manz>So folks, like you open up a notebook <v Trevor Manz>and you run into something or you just, you have an idea,
+
+01:08:42 <v Trevor Manz>like there's plenty of folks or I'm in there.
+
+01:08:45 <v Trevor Manz>And I love to try to get people <v Trevor Manz>for their first bit of JavaScript ever.
+
+01:08:50 <v Trevor Manz>I think it's pretty fun when someone has an idea <v Trevor Manz>and you just, we help them get there.
+
+01:08:54 <v Michael Kennedy>So like, but it's JavaScript.
+
+01:08:56 <v Michael Kennedy>Like, no, no, you're going to be okay.
+
+01:08:57 <v Michael Kennedy>It's not that much.
+
+01:08:57 <v Michael Kennedy>It's just enough JavaScript, right?
+
+01:08:59 <v Michael Kennedy>Exactly.
+
+01:09:00 <v Trevor Manz>Whatever that means to you.
+
+01:09:02 <v Michael Kennedy>Exactly.
+
+01:09:03 <v Michael Kennedy>Just enough is so that my thing works.
+
+01:09:05 <v Michael Kennedy>All right.
+
+01:09:05 <v Michael Kennedy>Trevor, thank you so much for being on the show.
+
+01:09:07 <v Michael Kennedy>I really appreciate it.
+
+01:09:08 <v Michael Kennedy>And congrats on anywidget.
+
+01:09:10 <v Michael Kennedy>Looks super cool.
+
+01:09:12 <v Michael Kennedy>It definitely looks like it's all of any need <v Michael Kennedy>and easy to work with.
+
+01:09:14 <v Trevor Manz>Yeah, thanks so much for having me.
+
+01:09:16 <v Michael Kennedy>Yeah, you bet.
+
+01:09:17 <v Michael Kennedy>See you later.
+
+01:09:17 <v Trevor Manz>See ya.
+
+01:09:19 <v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:09:22 <v Michael Kennedy>Thank you to our sponsors.
+
+01:09:23 <v Michael Kennedy>Be sure to check out what they're offering.
+
+01:09:24 <v Michael Kennedy>It really helps support the show.
+
+01:09:26 <v Michael Kennedy>Look into the future and see bugs <v Michael Kennedy>before they make it to production.
+
+01:09:30 <v Michael Kennedy>Sentry's Seer AI code review <v Michael Kennedy>uses historical error and performance information
+
+01:09:34 <v Michael Kennedy>at Sentry to find and flag bugs in your PRs before you even start to review them. Stop bugs before
+
+01:09:41 <v Michael Kennedy>they enter your code base. Get started at talkpython.fm/seer-code-review. And this
+
+01:09:47 <v Michael Kennedy>episode is sponsored by JetBrains and the PyCharm team. This week only through December 19th, 2025,
+
+01:09:54 <v Michael Kennedy>get 30% off of PyCharm Pro, including renewals, and PyCharm will donate all the proceeds to the
+
+01:10:00 <v Michael Kennedy>Python Software Foundation. Support the PSF by getting or renewing PyCharm. Visit talkpython.fm
+
+01:10:06 <v Michael Kennedy>slash pycharm dash PSF dash 2025 and use the code strongerpython. Both of these are in your podcast
+
+01:10:13 <v Michael Kennedy>player show notes. If you or your team needs to learn Python, we have over 270 hours of beginner
+
+01:10:18 <v Michael Kennedy>and advanced courses on topics ranging from complete beginners to async code, Flask, Django,
+
+01:10:24 <v Michael Kennedy>HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML, HTML.
+
+01:10:31 <v Michael Kennedy>And if you're not already subscribed to the show on your favorite podcast player,
+
+01:10:35 <v Michael Kennedy>what are you waiting for?
+
+01:11:02 <v Michael Kennedy>I'm out.
+

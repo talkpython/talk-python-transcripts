@@ -1,0 +1,4865 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:05.540
+<v Michael Kennedy>In this episode, I'm talking with Vincent Wormerdam about treating LLMs as just another API in your
+
+00:00:05.650 --> 00:00:11.260
+<v Michael Kennedy>Python app with clear boundaries, small focused endpoints, and good monitoring. We'll dig into
+
+00:00:11.410 --> 00:00:16.940
+<v Michael Kennedy>patterns for wrapping these calls, caching and inspecting responses, and deciding where an LLM
+
+00:00:17.080 --> 00:00:22.900
+<v Michael Kennedy>API actually earns its keep in your architecture. This is Talk Python To Me, episode 528,
+
+00:00:23.530 --> 00:00:25.660
+<v Michael Kennedy>recorded October 23rd, 2025.
+
+00:00:44.100 --> 00:00:48.240
+<v Michael Kennedy>Welcome to Talk Python To Me, the number one podcast for Python developers and data scientists.
+
+00:00:48.800 --> 00:00:53.860
+<v Michael Kennedy>This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
+
+00:00:54.540 --> 00:00:55.620
+<v Michael Kennedy>Let's connect on social media.
+
+00:00:55.960 --> 00:00:59.340
+<v Michael Kennedy>You'll find me and Talk Python on Mastodon, Bluesky, and X.
+
+00:00:59.660 --> 00:01:01.440
+<v Michael Kennedy>The social links are all in the show notes.
+
+00:01:02.020 --> 00:01:06.160
+<v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:06.580 --> 00:01:09.880
+<v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:10.420 --> 00:01:10.780
+<v Michael Kennedy>That's right.
+
+00:01:10.820 --> 00:01:14.520
+<v Michael Kennedy>We live stream the raw, uncut version of each episode on YouTube.
+
+00:01:15.160 --> 00:01:19.620
+<v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:20.120 --> 00:01:24.460
+<v Michael Kennedy>And be sure to subscribe and press the bell so you'll get notified anytime we're recording.
+
+00:01:24.960 --> 00:01:26.880
+<v Michael Kennedy>This episode is brought to you by Sentry.
+
+00:01:27.400 --> 00:01:28.640
+<v Michael Kennedy>Don't let those errors go unnoticed.
+
+00:01:28.820 --> 00:01:30.460
+<v Michael Kennedy>Use Sentry like we do here at Talk Python.
+
+00:01:30.980 --> 00:01:33.880
+<v Michael Kennedy>Sign up at talkpython.fm/sentry.
+
+00:01:34.400 --> 00:01:36.340
+<v Michael Kennedy>And it's brought to you by NordStellar.
+
+00:01:36.920 --> 00:01:39.400
+<v Michael Kennedy>NordStellar is a threat exposure management platform
+
+00:01:40.000 --> 00:01:41.220
+<v Michael Kennedy>from the Nord security family,
+
+00:01:41.520 --> 00:01:42.660
+<v Michael Kennedy>the folks behind NordVPN
+
+00:01:43.240 --> 00:01:44.820
+<v Michael Kennedy>that combines dark web intelligence,
+
+00:01:45.440 --> 00:01:47.000
+<v Michael Kennedy>session hijacking prevention,
+
+00:01:47.600 --> 00:01:49.680
+<v Michael Kennedy>brand and domain abuse detection,
+
+00:01:50.020 --> 00:01:51.660
+<v Michael Kennedy>and external attack surface management.
+
+00:01:52.240 --> 00:01:54.379
+<v Michael Kennedy>Learn more and get started keeping your team safe
+
+00:01:54.400 --> 00:02:01.340
+<v Michael Kennedy>at talkpython.fm/nordstellar. Hey, welcome to Talk Python To Me. Hi. Welcome back. Pleasure
+
+00:02:01.350 --> 00:02:06.200
+<v Vincent Warmerdam>to be here. Yeah, it's been like, this is our second Talk Python interview, I think. We've
+
+00:02:06.300 --> 00:02:10.160
+<v Vincent Warmerdam>interacted before also on socials and all that, but like, yeah, second time. Yay. Happy to be here.
+
+00:02:10.460 --> 00:02:15.759
+<v Michael Kennedy>Yeah. Yeah. It's very exciting to have you back. I, you know, I'm trying to remember, I did an
+
+00:02:15.780 --> 00:02:18.060
+<v Michael Kennedy>blog post on
+
+00:02:18.480 --> 00:02:20.100
+<v Michael Kennedy>the most popular episodes
+
+00:02:20.780 --> 00:02:21.600
+<v Michael Kennedy>of last year.
+
+00:02:22.140 --> 00:02:24.139
+<v Michael Kennedy>I think, if I do recall correctly...
+
+00:02:25.240 --> 00:02:26.200
+<v Vincent Warmerdam>Yeah, the
+
+00:02:26.260 --> 00:02:28.040
+<v Vincent Warmerdam>number one last year was our
+
+00:02:28.220 --> 00:02:29.480
+<v Vincent Warmerdam>interaction, I think, on Spade.
+
+00:02:29.800 --> 00:02:31.260
+<v Michael Kennedy>That's not terrible, is it?
+
+00:02:31.840 --> 00:02:33.420
+<v Michael Kennedy>Yeah, it was a bragging right for a day.
+
+00:02:34.140 --> 00:02:36.120
+<v Michael Kennedy>Yeah, it's pretty cool. So your episode
+
+00:02:36.800 --> 00:02:38.100
+<v Michael Kennedy>and double bragging
+
+00:02:38.300 --> 00:02:39.900
+<v Michael Kennedy>rights as your episode was released
+
+00:02:40.220 --> 00:02:41.680
+<v Michael Kennedy>in, I don't know when that was,
+
+00:02:42.060 --> 00:02:44.239
+<v Michael Kennedy>something like October or something, almost exactly
+
+00:02:44.260 --> 00:02:49.700
+<v Michael Kennedy>a year ago to the day. And still it was the number one most downloaded for the whole year. So
+
+00:02:50.000 --> 00:02:56.680
+<v Michael Kennedy>fantastic. And I think that might be an indication of where we're going to another very exciting
+
+00:02:56.980 --> 00:03:01.340
+<v Vincent Warmerdam>topic, you know? Yeah. Like ML and AI only went up, right? So, so.
+
+00:03:03.100 --> 00:03:08.120
+<v Michael Kennedy>You know what? I would love to get your thoughts on this. I, I'm seeing out on the internet and I
+
+00:03:08.200 --> 00:03:13.580
+<v Michael Kennedy>want to put this up as kind of a, to counter this, this thought or whatever. But, but I'm seeing a
+
+00:03:13.580 --> 00:03:20.640
+<v Michael Kennedy>lot of people get really frustrated that AI is a thing. You know, OpenAI just released their Atlas
+
+00:03:21.180 --> 00:03:26.520
+<v Michael Kennedy>browser, which I'm not super excited about, but it's like their version of what an AI browser
+
+00:03:26.820 --> 00:03:32.640
+<v Michael Kennedy>wrapping Chromium looks like, you know what I mean? And it's fine. But the comments in Ars Technica,
+
+00:03:32.840 --> 00:03:37.060
+<v Michael Kennedy>which are usually pretty balanced, are just like people losing it over the fact that it has AI.
+
+00:03:37.640 --> 00:03:42.060
+<v Michael Kennedy>Are people tired of this stuff? Or why do you think that's the reaction, I guess, is really what I
+
+00:03:42.020 --> 00:03:47.780
+<v Vincent Warmerdam>want to ask you i mean i guess i have like a couple of perspectives but like i do like i think i could
+
+00:03:47.900 --> 00:03:52.660
+<v Vincent Warmerdam>say like we are all tired that like every tech product out there is trying its best to find a
+
+00:03:52.760 --> 00:03:58.400
+<v Vincent Warmerdam>way to put ai in the product like oh any any gmail any calendar app let's put ai in there and it
+
+00:03:58.500 --> 00:04:02.580
+<v Vincent Warmerdam>gets a bit tiring like i wouldn't be too surprised if like fire hoses and refrigerators also come with
+
+00:04:02.700 --> 00:04:09.439
+<v Michael Kennedy>ai features these days like it feels a bit nuts i know it's like what what is my refrigerating ai for
+
+00:04:09.460 --> 00:04:39.260
+<v Vincent Warmerdam>Yeah, or like soccer ball of whatever object, like it feels like people are overdoing the AI thing. So okay, that can be like legitimate source of frustration. But then it also becomes a little bit personal, because I can also imagine if you put like, your heart and soul into like being a good engineer, and like you want to take the internet serious, like you consider it something is somewhat sacred, because it helped you so much in your career, then I definitely can also imagine like, Oh, my God, please don't turn that into a slop. Like I built a career on that. So that might be the source of all these things. I guess like my main way of dealing with it,
+
+00:04:39.460 --> 00:04:43.500
+<v Vincent Warmerdam>is more along the lines of like, okay, like, this genie is not going to go back into the
+
+00:04:43.670 --> 00:04:47.280
+<v Vincent Warmerdam>ball in a way. But if we're able to do more things with these LLMs, if they're able to
+
+00:04:47.540 --> 00:04:52.420
+<v Vincent Warmerdam>automate more boilerplate and that sort of thing, then it seems that then I can try and
+
+00:04:52.500 --> 00:04:56.180
+<v Vincent Warmerdam>get better at natural intelligence as well, instead of this artificial intelligence. So
+
+00:04:56.280 --> 00:05:01.000
+<v Vincent Warmerdam>like, okay, I can vibe code all these things now. So the bottleneck is just do I have good
+
+00:05:01.220 --> 00:05:06.020
+<v Vincent Warmerdam>ideas? And maybe I should invest in good ideas. And oh, maybe I can actually learn about
+
+00:05:06.260 --> 00:05:09.420
+<v Vincent Warmerdam>JavaScript, but then I should not focus on the syntax, but it shouldn't focus maybe on
+
+00:05:09.440 --> 00:05:14.860
+<v Vincent Warmerdam>the browser and like how does CSS work and oh I should actually maybe do a little bit of stuff
+
+00:05:15.000 --> 00:05:19.680
+<v Vincent Warmerdam>with flashcards just so I know the syntax just enough so I can review okay like I try to be very
+
+00:05:19.980 --> 00:05:23.940
+<v Michael Kennedy>conscious about it that way that's kind of my approach more and I it's easy to get really lazy
+
+00:05:24.140 --> 00:05:28.480
+<v Michael Kennedy>right and just push the button and say do the next thing and not use it as an opportunity like oh it
+
+00:05:28.510 --> 00:05:33.640
+<v Michael Kennedy>did something I didn't know let me have a conversation and try to understand the uh I
+
+00:05:33.640 --> 00:05:37.320
+<v Vincent Warmerdam>didn't know I think the key word here is you want to be deliberate about it like I think if you can
+
+00:05:37.280 --> 00:05:41.780
+<v Vincent Warmerdam>sort of say like okay i'm deliberate about the way i use this stuff and i'm also learning as i'm doing
+
+00:05:41.980 --> 00:05:46.800
+<v Vincent Warmerdam>this like one thing i really like to do is i just give give like some sort of bonkers front-end task
+
+00:05:46.940 --> 00:05:50.840
+<v Vincent Warmerdam>to the llm that i have no idea how i would solve it and then study the output like that's the thing
+
+00:05:50.900 --> 00:05:56.480
+<v Vincent Warmerdam>i actually do once in a while um but yeah i mean i do get it that like people have mixed emotions
+
+00:05:56.680 --> 00:06:01.140
+<v Vincent Warmerdam>about it and that's totally cool and fine it's just that for me in my situation this is how i
+
+00:06:01.480 --> 00:06:07.240
+<v Michael Kennedy>deal with it yeah i think that's fair i think also i i definitely have long since been tired of like
+
+00:06:07.260 --> 00:06:09.960
+<v Michael Kennedy>every email app having to rewrite this with AI
+
+00:06:10.620 --> 00:06:12.160
+<v Michael Kennedy>and it usually destroys the email.
+
+00:06:12.840 --> 00:06:14.180
+<v Michael Kennedy>You know, like removes all the formatting.
+
+00:06:14.710 --> 00:06:15.420
+<v Michael Kennedy>And then you just, you know,
+
+00:06:15.520 --> 00:06:16.980
+<v Michael Kennedy>there's always the cartoon of like,
+
+00:06:17.300 --> 00:06:19.060
+<v Michael Kennedy>I wrote an email as bullet points.
+
+00:06:19.150 --> 00:06:20.660
+<v Michael Kennedy>I asked AI to expand it.
+
+00:06:20.690 --> 00:06:21.460
+<v Michael Kennedy>I sent it to you.
+
+00:06:21.750 --> 00:06:22.700
+<v Michael Kennedy>You're like, what a long email.
+
+00:06:23.100 --> 00:06:24.900
+<v Michael Kennedy>I'm gonna ask AI to summarize this.
+
+00:06:25.260 --> 00:06:26.480
+<v Michael Kennedy>We should have just sent the bullet points.
+
+00:06:27.620 --> 00:06:30.700
+<v Vincent Warmerdam>- Yeah, I mean, I do fear the amount of slop though.
+
+00:06:30.860 --> 00:06:33.460
+<v Vincent Warmerdam>Like I do, it almost feels like every good tech YouTuber,
+
+00:06:33.860 --> 00:06:35.560
+<v Vincent Warmerdam>there aren't a lot of good tech YouTubers anymore
+
+00:06:35.580 --> 00:06:39.960
+<v Vincent Warmerdam>they're all doing AI stuff instead of doing like actual really great programming. There's still a
+
+00:06:40.020 --> 00:06:45.300
+<v Vincent Warmerdam>few. Anthony writes code is like a really good one still. Like he's awesome. Definitely follow
+
+00:06:45.620 --> 00:06:51.180
+<v Vincent Warmerdam>him if you want to learn Python. He does cool stuff. But yeah, the main thing, I guess from my
+
+00:06:51.300 --> 00:06:55.520
+<v Vincent Warmerdam>like selfish perspective, YouTube used to be better because nowadays it's all about the AI and you've
+
+00:06:55.580 --> 00:06:59.360
+<v Vincent Warmerdam>always got this thumbnail of a guy pulling his hair out like, oh my God, this changes everything.
+
+00:06:59.840 --> 00:07:02.120
+<v Vincent Warmerdam>Yeah. I would love to see a video that's maybe not that.
+
+00:07:03.060 --> 00:07:05.060
+<v Michael Kennedy>Have you heard that there's an AI bubble that's going to burst?
+
+00:07:05.240 --> 00:07:12.820
+<v Vincent Warmerdam>um yeah well we'll see exactly how far i think so actually i mean we can speculate like i i can
+
+00:07:12.950 --> 00:07:16.600
+<v Vincent Warmerdam>argue that it's been over invested i can also argue there's still so much potential the one
+
+00:07:16.600 --> 00:07:21.280
+<v Vincent Warmerdam>thing i will say though um we have clod kinds of tools and like we're all looking forward to like
+
+00:07:21.280 --> 00:07:24.920
+<v Vincent Warmerdam>the vibe coding oh it's never been easier and that sort of thing but i would have expected an explosion
+
+00:07:24.930 --> 00:07:29.540
+<v Vincent Warmerdam>of awesome apps to be going along with it and it doesn't necessarily feel like we have much better
+
+00:07:29.700 --> 00:07:34.680
+<v Vincent Warmerdam>software even though we supposedly have way better tools so something about that is making me a little
+
+00:07:34.700 --> 00:07:38.020
+<v Vincent Warmerdam>a bit suspicious, but it might also just be that the apps that are being built that I'm not the
+
+00:07:38.170 --> 00:07:42.320
+<v Vincent Warmerdam>target audience for, because I can imagine that. Because let's say you have something awesome for
+
+00:07:42.500 --> 00:07:46.620
+<v Vincent Warmerdam>dentists, they can still be an awesome crud app that you could build with Claude, but I'm not a
+
+00:07:46.720 --> 00:07:52.820
+<v Michael Kennedy>dentist. So, you know, wow, there's a lot of new cool dentistry management apps. You're right.
+
+00:07:53.280 --> 00:07:58.600
+<v Vincent Warmerdam>If a dentist can outprogram, right? Like I do believe in the story that, oh, as a dentist,
+
+00:07:58.810 --> 00:08:02.840
+<v Vincent Warmerdam>you might be best equipped to write an app for dentists, right? And if they're now more empowered
+
+00:08:02.860 --> 00:08:04.580
+<v Vincent Warmerdam>to maybe do some stuff with code.
+
+00:08:04.670 --> 00:08:06.080
+<v Vincent Warmerdam>I mean, there's a story there
+
+00:08:06.200 --> 00:08:07.480
+<v Vincent Warmerdam>that every single niche profession
+
+00:08:07.840 --> 00:08:10.160
+<v Vincent Warmerdam>will have someone who can do enough clod
+
+00:08:10.190 --> 00:08:11.480
+<v Vincent Warmerdam>to make the app for that profession.
+
+00:08:12.420 --> 00:08:12.520
+<v Michael Kennedy>Yeah.
+
+00:08:13.240 --> 00:08:13.940
+<v Vincent Warmerdam>Well, time will tell.
+
+00:08:13.940 --> 00:08:16.460
+<v Michael Kennedy>It used to be that you have to have a programming skill
+
+00:08:16.660 --> 00:08:18.900
+<v Michael Kennedy>and a little bit of, let's say, dentistry experience
+
+00:08:19.440 --> 00:08:21.660
+<v Michael Kennedy>to build the right sort of specialized vertical.
+
+00:08:21.960 --> 00:08:23.160
+<v Michael Kennedy>And now I think it maybe is reversed.
+
+00:08:23.560 --> 00:08:24.800
+<v Michael Kennedy>You need a lot of dentistry
+
+00:08:25.110 --> 00:08:27.800
+<v Michael Kennedy>and a little bit of coding skill to go along with an AI.
+
+00:08:28.260 --> 00:08:28.380
+<v Vincent Warmerdam>Yeah.
+
+00:08:29.440 --> 00:08:32.039
+<v Vincent Warmerdam>The character sheet used to be 80 points here, 20 points there.
+
+00:08:32.140 --> 00:08:34.260
+<v Vincent Warmerdam>and now it's 80 points there and 20 points here.
+
+00:08:34.520 --> 00:08:34.800
+<v Michael Kennedy>Yes, exactly.
+
+00:08:35.219 --> 00:08:36.260
+<v Michael Kennedy>That's exactly what I was thinking.
+
+00:08:36.300 --> 00:08:37.820
+<v Michael Kennedy>Like, I think maybe that's actually shifted
+
+00:08:38.200 --> 00:08:39.039
+<v Michael Kennedy>until you said that.
+
+00:08:39.039 --> 00:08:39.960
+<v Michael Kennedy>I've never really thought about it,
+
+00:08:40.039 --> 00:08:41.000
+<v Michael Kennedy>but it just may be.
+
+00:08:41.539 --> 00:08:44.260
+<v Michael Kennedy>I do want to point out for people listening,
+
+00:08:44.420 --> 00:08:47.020
+<v Michael Kennedy>we're not going to really talk too much
+
+00:08:47.180 --> 00:08:51.280
+<v Michael Kennedy>about like using agentic tools to write code for us.
+
+00:08:51.400 --> 00:08:52.580
+<v Michael Kennedy>Like we have been speculating
+
+00:08:52.720 --> 00:08:53.820
+<v Michael Kennedy>about this theoretical dentist.
+
+00:08:55.100 --> 00:08:56.460
+<v Michael Kennedy>But what instead we're going to do
+
+00:08:56.680 --> 00:08:58.660
+<v Michael Kennedy>is we're going to talk to you, Vincent,
+
+00:08:59.020 --> 00:09:01.560
+<v Michael Kennedy>about how can I use an LLM
+
+00:09:01.700 --> 00:09:08.020
+<v Michael Kennedy>like a library or an API to add functionality, features, behaviors to an existing data science
+
+00:09:08.300 --> 00:09:12.340
+<v Michael Kennedy>tool or to an existing web app or whatever it is we're building, right?
+
+00:09:12.640 --> 00:09:12.880
+<v Vincent Warmerdam>Yes.
+
+00:09:13.360 --> 00:09:18.480
+<v Vincent Warmerdam>So also people might probably know it, but I made a course for Talk Python, of course,
+
+00:09:18.480 --> 00:09:20.480
+<v Vincent Warmerdam>and we're going to talk about some of those details.
+
+00:09:21.000 --> 00:09:25.820
+<v Vincent Warmerdam>But the idea for that course was not necessarily like, how can I use LLMs to build me software?
+
+00:09:26.100 --> 00:09:29.260
+<v Vincent Warmerdam>It's more, oh, how can I build software that also uses LLMs under the hood?
+
+00:09:29.340 --> 00:09:33.240
+<v Vincent Warmerdam>Like if I have an app that makes a summary, how can I make sure the summary is reliable?
+
+00:09:33.540 --> 00:09:36.680
+<v Vincent Warmerdam>And basically get the ball rolling on those building blocks.
+
+00:09:36.860 --> 00:09:37.720
+<v Vincent Warmerdam>That's what that course is about.
+
+00:09:37.860 --> 00:09:41.200
+<v Vincent Warmerdam>That's also probably going to be the main bones of this topic as opposed to a dentist
+
+00:09:41.460 --> 00:09:43.480
+<v Vincent Warmerdam>Bob and his ambitions to make a new tech startup.
+
+00:09:44.340 --> 00:09:44.700
+<v Michael Kennedy>Exactly.
+
+00:09:45.040 --> 00:09:47.280
+<v Michael Kennedy>We're going to grow new teeth if we just could get the software right.
+
+00:09:47.780 --> 00:09:48.920
+<v Michael Kennedy>Now, yeah.
+
+00:09:48.990 --> 00:09:49.860
+<v Michael Kennedy>So how do you do that?
+
+00:09:49.890 --> 00:09:51.040
+<v Michael Kennedy>And we're going to talk about that before.
+
+00:09:51.390 --> 00:09:56.240
+<v Michael Kennedy>I just want to give you a chance before we really dive too far into the details of how
+
+00:09:56.260 --> 00:10:00.400
+<v Michael Kennedy>we make that work is just, you know, give people a sense of what you've been up to lately.
+
+00:10:00.540 --> 00:10:02.940
+<v Michael Kennedy>You've done a lot of cool stuff with CalmCode.io.
+
+00:10:04.120 --> 00:10:07.540
+<v Michael Kennedy>I can see your YouTube game is growing strong here.
+
+00:10:08.559 --> 00:10:10.860
+<v Michael Kennedy>And you've been doing a lot of data science at Marimo.
+
+00:10:11.340 --> 00:10:12.180
+<v Michael Kennedy>Yeah, what's...
+
+00:10:12.420 --> 00:10:12.580
+<v Vincent Warmerdam>Right.
+
+00:10:12.720 --> 00:10:15.900
+<v Vincent Warmerdam>Yeah, so we haven't spoken in a year, so maybe we should catch up.
+
+00:10:16.500 --> 00:10:19.480
+<v Vincent Warmerdam>So long story short, CalmCode is still a project that I maintain.
+
+00:10:19.800 --> 00:10:24.500
+<v Vincent Warmerdam>It's basically 99% free educational content on Python.
+
+00:10:24.780 --> 00:10:26.520
+<v Vincent Warmerdam>that thing is just going to maintain itself.
+
+00:10:27.540 --> 00:10:28.760
+<v Vincent Warmerdam>Super happy to keep maintaining it.
+
+00:10:29.190 --> 00:10:30.500
+<v Vincent Warmerdam>The main thing I'm doing with that nowadays
+
+00:10:30.670 --> 00:10:32.500
+<v Vincent Warmerdam>is just every two months I switch cloud providers
+
+00:10:32.710 --> 00:10:33.560
+<v Vincent Warmerdam>just because I can,
+
+00:10:33.610 --> 00:10:35.740
+<v Vincent Warmerdam>and then I can sort of see what it's like on the other side.
+
+00:10:36.380 --> 00:10:37.100
+<v Vincent Warmerdam>So that's the thing that I do.
+
+00:10:37.680 --> 00:10:38.480
+<v Vincent Warmerdam>From Calm Cult, though,
+
+00:10:38.650 --> 00:10:40.080
+<v Vincent Warmerdam>I figured I might also start a YouTube channel,
+
+00:10:40.210 --> 00:10:41.600
+<v Vincent Warmerdam>and that ended up being a YouTube channel
+
+00:10:41.630 --> 00:10:42.980
+<v Vincent Warmerdam>where I still talk about Python stuff,
+
+00:10:43.090 --> 00:10:45.760
+<v Vincent Warmerdam>but I mainly talk about these fancy ergonomic keyboards
+
+00:10:46.010 --> 00:10:47.240
+<v Vincent Warmerdam>because I had a couple of RSI issues.
+
+00:10:47.960 --> 00:10:48.740
+<v Vincent Warmerdam>In a year's time,
+
+00:10:48.890 --> 00:10:51.080
+<v Vincent Warmerdam>I went from 100 subscribers to 5,000 something,
+
+00:10:51.310 --> 00:10:52.760
+<v Vincent Warmerdam>so this thing kind of took off.
+
+00:10:53.160 --> 00:10:53.460
+<v Vincent Warmerdam>That's awesome.
+
+00:10:53.560 --> 00:10:55.680
+<v Vincent Warmerdam>I actually have sponsors now.
+
+00:10:55.750 --> 00:10:59.980
+<v Vincent Warmerdam>So I actually have a couple of companies in Asia sending me their custom boards for me to review.
+
+00:11:00.110 --> 00:11:01.640
+<v Vincent Warmerdam>So that's been a really fun journey.
+
+00:11:02.090 --> 00:11:04.140
+<v Vincent Warmerdam>But since last time we spoke, I also switched employers.
+
+00:11:04.400 --> 00:11:07.420
+<v Vincent Warmerdam>So people might have heard of Jupyter before.
+
+00:11:07.720 --> 00:11:10.400
+<v Vincent Warmerdam>That's an environment in Python where you can do interactive things.
+
+00:11:10.900 --> 00:11:15.320
+<v Vincent Warmerdam>And I work now for a company that makes Maremo, which is an alternative, a very likable one.
+
+00:11:15.390 --> 00:11:16.820
+<v Vincent Warmerdam>It does work completely differently.
+
+00:11:17.520 --> 00:11:23.260
+<v Vincent Warmerdam>One of the main things that attracts people to it is the fact that these kinds of notebooks are Python files under the hood.
+
+00:11:23.520 --> 00:11:25.000
+<v Vincent Warmerdam>They're also a little bit more interactive.
+
+00:11:25.180 --> 00:11:27.420
+<v Vincent Warmerdam>You can do more rapid prototyping with UI.
+
+00:11:27.680 --> 00:11:29.240
+<v Vincent Warmerdam>You can blend Python with it very nicely.
+
+00:11:30.260 --> 00:11:34.120
+<v Vincent Warmerdam>So I will say like all of my rapid prototyping, especially with LLMs, I do that in Marimo
+
+00:11:34.360 --> 00:11:37.760
+<v Vincent Warmerdam>nowadays just so you can blend Python with UIs very easily.
+
+00:11:38.340 --> 00:11:40.460
+<v Vincent Warmerdam>And there's demos on the site that people can go ahead and check out.
+
+00:11:41.299 --> 00:11:44.800
+<v Vincent Warmerdam>But that's also the second YouTube channel I made this year.
+
+00:11:45.000 --> 00:11:46.580
+<v Vincent Warmerdam>I do a lot of stuff for Marimo.
+
+00:11:47.060 --> 00:11:51.720
+<v Vincent Warmerdam>I'm a little bit more on the growth side of things than the hardcore engineering side of things.
+
+00:11:51.740 --> 00:11:55.700
+<v Vincent Warmerdam>I still make a lot of plugins for Marimo, of course, but that's a little bit more of what I do nowadays.
+
+00:11:56.700 --> 00:11:58.800
+<v Vincent Warmerdam>Making sure that people learn about Marimo.
+
+00:12:00.120 --> 00:12:02.360
+<v Vincent Warmerdam>You can do things in a notebook now that you couldn't think of before.
+
+00:12:03.180 --> 00:12:08.800
+<v Vincent Warmerdam>I write my command line apps in a notebook nowadays because it's actually not just because I can, but because it's convenient too.
+
+00:12:09.040 --> 00:12:14.440
+<v Vincent Warmerdam>So we'll talk a little bit about that later when we talk about LLMs, but that's effectively the short story of what I've been doing last year.
+
+00:12:14.660 --> 00:12:17.720
+<v Michael Kennedy>Nice. All right. I am a fan of Marimo.
+
+00:12:18.860 --> 00:12:19.480
+<v Michael Kennedy>Happy to hear it.
+
+00:12:19.620 --> 00:12:47.340
+<v Michael Kennedy>Yeah, yeah, yeah. I did a data science course this year, just enough Python and software engineering for data scientists. Like, you know, what could you bring from the software engineering side to like sort of make your, your data engineering, data science stuff a little more reliable. But I was right on the fence of should I, should I use this? Because it's, I think it's clearly better. But at the same time, I also want to use what people are using. So I didn't quite go for it. But I just, the UI is fantastic.
+
+00:12:47.620 --> 00:12:50.100
+<v Michael Kennedy>the reproducibility, reliability of it,
+
+00:12:50.380 --> 00:12:52.320
+<v Michael Kennedy>where it uses the abstract syntax tree
+
+00:12:52.500 --> 00:12:53.480
+<v Michael Kennedy>or concrete, whatever,
+
+00:12:54.000 --> 00:12:55.940
+<v Michael Kennedy>to understand relationships across cells
+
+00:12:56.120 --> 00:12:57.440
+<v Michael Kennedy>so they don't get out of sync, potentially.
+
+00:12:57.860 --> 00:12:59.380
+<v Michael Kennedy>Yeah, I think it's really nice.
+
+00:12:59.500 --> 00:13:00.560
+<v Michael Kennedy>I had Akshay on the show,
+
+00:13:01.360 --> 00:13:02.220
+<v Michael Kennedy>who you work with also,
+
+00:13:02.560 --> 00:13:03.220
+<v Michael Kennedy>to talk about it.
+
+00:13:03.780 --> 00:13:06.660
+<v Vincent Warmerdam>The one thing in Jupyter that's,
+
+00:13:07.300 --> 00:13:08.720
+<v Vincent Warmerdam>I mean, let me start by saying,
+
+00:13:08.980 --> 00:13:10.360
+<v Vincent Warmerdam>Jupyter is still a really cool project.
+
+00:13:10.520 --> 00:13:12.000
+<v Vincent Warmerdam>Like if I think back of the last decade,
+
+00:13:12.380 --> 00:13:13.820
+<v Vincent Warmerdam>like all the good that that project
+
+00:13:13.880 --> 00:13:14.820
+<v Vincent Warmerdam>has brought to my career,
+
+00:13:14.960 --> 00:13:16.160
+<v Vincent Warmerdam>not just directly as a user,
+
+00:13:16.280 --> 00:13:17.020
+<v Vincent Warmerdam>but also indirectly,
+
+00:13:17.700 --> 00:13:19.160
+<v Vincent Warmerdam>all the algorithms that got invented
+
+00:13:19.350 --> 00:13:20.940
+<v Vincent Warmerdam>simply because we had a good enough
+
+00:13:21.640 --> 00:13:23.240
+<v Vincent Warmerdam>interactive environment suddenly, which we never
+
+00:13:23.400 --> 00:13:24.940
+<v Vincent Warmerdam>had before, it's done wonders.
+
+00:13:25.120 --> 00:13:26.840
+<v Vincent Warmerdam>So we should definitely be thankful.
+
+00:13:27.230 --> 00:13:28.600
+<v Michael Kennedy>Yeah, I'm not bashing on it either.
+
+00:13:29.010 --> 00:13:31.200
+<v Vincent Warmerdam>Yeah, but I do always want to
+
+00:13:31.280 --> 00:13:33.120
+<v Vincent Warmerdam>make sure that I give credit where credit is due, because
+
+00:13:33.620 --> 00:13:34.940
+<v Vincent Warmerdam>the project had a lot of impact.
+
+00:13:35.240 --> 00:13:37.000
+<v Vincent Warmerdam>But there is this really annoying thing with Jupyter, though.
+
+00:13:37.220 --> 00:13:39.200
+<v Vincent Warmerdam>Besides, you can be a bit grumpy
+
+00:13:39.270 --> 00:13:41.220
+<v Vincent Warmerdam>about the file format, sure, but the one thing that's
+
+00:13:41.270 --> 00:13:42.960
+<v Vincent Warmerdam>very annoying is you can write down
+
+00:13:43.170 --> 00:13:45.160
+<v Vincent Warmerdam>X is equal to 10, and then
+
+00:13:45.160 --> 00:13:47.040
+<v Vincent Warmerdam>have all sorts of cells below it that depend on X,
+
+00:13:47.420 --> 00:13:50.560
+<v Vincent Warmerdam>You could then delete the cell and the notebook will not complain to you about it.
+
+00:13:51.700 --> 00:13:58.320
+<v Vincent Warmerdam>Even though if anyone else tries to rerun the notebook, X is gone, it won't run, and your notebook is broken and you can't share the thing anymore.
+
+00:13:58.710 --> 00:14:02.680
+<v Vincent Warmerdam>And nowadays, fast forward like many years later, and we've got stuff like uv now.
+
+00:14:02.830 --> 00:14:05.720
+<v Vincent Warmerdam>So we can add metadata to a Python file to add dependencies.
+
+00:14:06.160 --> 00:14:11.100
+<v Vincent Warmerdam>And oh, wait, because Marimo is a Python file, we can add dependencies to the notebook that makes it super reproducible.
+
+00:14:11.480 --> 00:14:17.820
+<v Vincent Warmerdam>There's just all this stuff that you can rethink now simply because we have a good notebook format that is still a Python file.
+
+00:14:18.100 --> 00:14:19.680
+<v Vincent Warmerdam>That's really the killer feature here.
+
+00:14:20.759 --> 00:14:24.720
+<v Vincent Warmerdam>We can talk more about it if you like, but I can talk for ages about this topic, just warning you.
+
+00:14:25.600 --> 00:14:29.140
+<v Vincent Warmerdam>One final thing, maybe also for the software engineering side of things, because you didn't mention it.
+
+00:14:29.560 --> 00:14:31.340
+<v Vincent Warmerdam>Just to give an example of something we added recently.
+
+00:14:31.920 --> 00:14:38.860
+<v Vincent Warmerdam>If you have a cell in Marimo and there's a function in there that starts with test underscore, we will automatically assume it's a pytest.
+
+00:14:39.240 --> 00:14:41.820
+<v Vincent Warmerdam>So you can actually add unit tests to your notebook as well.
+
+00:14:41.940 --> 00:14:44.360
+<v Vincent Warmerdam>And then if you say python notebook.py,
+
+00:14:44.800 --> 00:14:46.940
+<v Vincent Warmerdam>then pytest will just run all the tests for you,
+
+00:14:47.160 --> 00:14:49.840
+<v Vincent Warmerdam>even though you can also run the tests in line in your CI CD as well.
+
+00:14:49.920 --> 00:14:52.720
+<v Vincent Warmerdam>So there's all sorts of these Python specific things that we can add,
+
+00:14:53.100 --> 00:14:54.340
+<v Vincent Warmerdam>again, because it's just a Python file.
+
+00:14:54.620 --> 00:14:57.940
+<v Michael Kennedy>Yeah, it's sort of the second mover advantage or nth mover advantage
+
+00:14:58.260 --> 00:15:00.680
+<v Michael Kennedy>where n is greater than one, where you see, okay, that was awesome.
+
+00:15:01.000 --> 00:15:02.880
+<v Michael Kennedy>Maybe this was a little bit of a rough edge.
+
+00:15:02.960 --> 00:15:05.840
+<v Michael Kennedy>And what would we do to work around that or smooth it out, right?
+
+00:15:06.140 --> 00:15:09.600
+<v Vincent Warmerdam>Well, and also we're also lucky that we're born in the age of uv.
+
+00:15:09.880 --> 00:15:14.140
+<v Vincent Warmerdam>I got to say like a lot of like quality of life improvements to a notebook.
+
+00:15:15.180 --> 00:15:17.100
+<v Vincent Warmerdam>A lot of that is also due to the fact that uv is around.
+
+00:15:17.220 --> 00:15:18.600
+<v Vincent Warmerdam>That's definitely a huge help as well.
+
+00:15:20.640 --> 00:15:23.900
+<v Michael Kennedy>This portion of Talk Python To Me is brought to you by Sentry's Seer.
+
+00:15:24.600 --> 00:15:27.380
+<v Michael Kennedy>I'm excited to share a new tool from Sentry, Seer.
+
+00:15:27.960 --> 00:15:30.740
+<v Michael Kennedy>Seer is your AI driven pair programmer that finds,
+
+00:15:31.020 --> 00:15:35.240
+<v Michael Kennedy>diagnoses and fixes code issues in your Python app faster than ever.
+
+00:15:35.480 --> 00:15:39.420
+<v Michael Kennedy>If you're already using Sentry, you are already using Sentry, right?
+
+00:15:39.940 --> 00:15:44.220
+<v Michael Kennedy>Then using Seer is as simple as enabling a feature on your already existing project.
+
+00:15:45.020 --> 00:15:48.360
+<v Michael Kennedy>Seer taps into all the rich context Sentry has about an error.
+
+00:15:48.860 --> 00:15:52.920
+<v Michael Kennedy>Stack traces, logs, commit history, performance data, essentially everything.
+
+00:15:53.560 --> 00:15:57.640
+<v Michael Kennedy>Then it employs its agentic AI code capabilities to figure out what is wrong.
+
+00:15:58.240 --> 00:16:02.040
+<v Michael Kennedy>It's like having a senior developer pair programming with you on bug fixes.
+
+00:16:02.920 --> 00:16:08.180
+<v Michael Kennedy>SEER then proposes a solution, generating a patch for your code and even opening a GitHub pull request.
+
+00:16:08.630 --> 00:16:13.320
+<v Michael Kennedy>This leaves the developers in charge because it's up to them to actually approve the PR.
+
+00:16:13.740 --> 00:16:17.540
+<v Michael Kennedy>But it can reduce the time from error detection to fix dramatically.
+
+00:16:18.260 --> 00:16:23.800
+<v Michael Kennedy>Developers who've tried it found it can fix errors in one shot that would have taken them hours to debug.
+
+00:16:24.500 --> 00:16:28.900
+<v Michael Kennedy>SEER boasts a 94.5% accuracy in identifying root causes.
+
+00:16:29.580 --> 00:16:36.260
+<v Michael Kennedy>SEER also prioritizes actionable issues with an actionability score, so you know what to fix first.
+
+00:16:36.760 --> 00:16:43.780
+<v Michael Kennedy>This transforms Sentry errors into actionable fixes, turning a pile of error reports into an ordered to-do list.
+
+00:16:44.420 --> 00:16:53.500
+<v Michael Kennedy>If you could use an always-on-call AI agent to help track down errors and propose fixes before you even have time to read the notification, check out Sentry's SEER.
+
+00:16:54.140 --> 00:16:58.120
+<v Michael Kennedy>Just visit talkpython.fm/SEER, S-E-E-R.
+
+00:16:58.740 --> 00:17:00.620
+<v Michael Kennedy>The link is in your podcast player show notes.
+
+00:17:01.220 --> 00:17:03.320
+<v Michael Kennedy>Be sure to use our code, Talk Python.
+
+00:17:03.820 --> 00:17:04.699
+<v Michael Kennedy>One word, all caps.
+
+00:17:05.380 --> 00:17:07.420
+<v Michael Kennedy>Thank you, Dysentry, for supporting Talk Pythonemy.
+
+00:17:08.720 --> 00:17:10.500
+<v Michael Kennedy>I saw on, gosh, where was it?
+
+00:17:10.699 --> 00:17:13.760
+<v Michael Kennedy>Speaking of Reddit, I saw on slash R,
+
+00:17:14.270 --> 00:17:15.760
+<v Michael Kennedy>learn Python or slash R Python.
+
+00:17:16.060 --> 00:17:19.020
+<v Michael Kennedy>One of the slash R's with a Python substring.
+
+00:17:19.280 --> 00:17:23.060
+<v Michael Kennedy>Someone asks, what Python package manager would you use now?
+
+00:17:23.140 --> 00:17:26.459
+<v Michael Kennedy>And it's just like, how many times can you say UV?
+
+00:17:27.819 --> 00:17:29.200
+<v Michael Kennedy>The feedback comments.
+
+00:17:29.400 --> 00:17:31.460
+<v Michael Kennedy>I mean, it was someone new who wasn't unsure, right?
+
+00:17:31.860 --> 00:17:32.900
+<v Michael Kennedy>They've seen all the different ones.
+
+00:17:33.460 --> 00:17:34.100
+<v Michael Kennedy>And yeah.
+
+00:17:34.660 --> 00:17:38.160
+<v Vincent Warmerdam>I mean, the coolest comparison I've seen, I think it was a tweet someone posted.
+
+00:17:38.300 --> 00:17:41.360
+<v Vincent Warmerdam>But like, definitely, like, suppose you're in the data field right now.
+
+00:17:41.500 --> 00:17:42.780
+<v Vincent Warmerdam>Like, what are the tools 10 years ago?
+
+00:17:42.980 --> 00:17:43.680
+<v Vincent Warmerdam>What are the tools now?
+
+00:17:43.960 --> 00:17:46.800
+<v Vincent Warmerdam>It definitely does feel like, okay, before we had pip, now we have uv.
+
+00:17:47.300 --> 00:17:49.400
+<v Vincent Warmerdam>Before we had Pandas, now we have Polars.
+
+00:17:50.360 --> 00:17:52.180
+<v Vincent Warmerdam>Before we had Matplotlib, now we have Altair.
+
+00:17:52.240 --> 00:17:53.700
+<v Vincent Warmerdam>And before we had Jupyter, now we've got Marino.
+
+00:17:53.780 --> 00:17:57.000
+<v Vincent Warmerdam>You can kind of see a generational shift, not just on the notebook side of things,
+
+00:17:57.100 --> 00:17:59.500
+<v Vincent Warmerdam>but like on the package manager, on the data frame library,
+
+00:18:00.280 --> 00:18:01.980
+<v Vincent Warmerdam>we're all learning from the previous generation
+
+00:18:02.200 --> 00:18:03.180
+<v Vincent Warmerdam>and it kind of feels like.
+
+00:18:03.300 --> 00:18:04.000
+<v Michael Kennedy>Yeah, absolutely.
+
+00:18:04.380 --> 00:18:05.820
+<v Michael Kennedy>It's an amazing time.
+
+00:18:06.400 --> 00:18:08.620
+<v Michael Kennedy>Every single day in Python is just more exciting
+
+00:18:08.700 --> 00:18:09.280
+<v Michael Kennedy>than the day before.
+
+00:18:09.620 --> 00:18:09.780
+<v Vincent Warmerdam>Yeah.
+
+00:18:10.320 --> 00:18:12.460
+<v Vincent Warmerdam>Although I should also mention, especially with the Polars
+
+00:18:12.500 --> 00:18:13.740
+<v Vincent Warmerdam>thing, there's a fair bit of rust too.
+
+00:18:14.420 --> 00:18:16.020
+<v Vincent Warmerdam>That also makes a difference.
+
+00:18:16.440 --> 00:18:17.560
+<v Michael Kennedy>Yeah, yeah, of course.
+
+00:18:17.760 --> 00:18:22.280
+<v Michael Kennedy>So before Flyby, I mean, you talked a bit about your YouTube
+
+00:18:22.880 --> 00:18:25.100
+<v Michael Kennedy>channel, you review the economic keyboards.
+
+00:18:25.420 --> 00:18:29.680
+<v Michael Kennedy>you have for those people who are just listening, not watching your background is super nice.
+
+00:18:30.320 --> 00:18:35.280
+<v Michael Kennedy>Your bona fides are solid here, but you've got a bunch of different ones. And I personally also,
+
+00:18:35.700 --> 00:18:38.400
+<v Michael Kennedy>I don't know, you might even just kick me out of the club if I should do that.
+
+00:18:38.480 --> 00:18:39.880
+<v Michael Kennedy>That's the Microsoft Sculpt, right?
+
+00:18:40.600 --> 00:18:44.800
+<v Michael Kennedy>Microsoft Sculpt ergonomic. And I like it so much because I can take this little bottom thing off
+
+00:18:44.800 --> 00:18:49.140
+<v Michael Kennedy>and it's like razor thin if I could rotate and reverse and jam it in my backpack and take it
+
+00:18:49.240 --> 00:18:55.380
+<v Michael Kennedy>with me. But I've also had RSI issues for 25 years or something. And it was really bad. And I switched
+
+00:18:55.400 --> 00:18:56.760
+<v Michael Kennedy>I used to type them on like laptops and stuff.
+
+00:18:56.840 --> 00:19:01.080
+<v Michael Kennedy>And I switched to just something like this and I could type 10 hours a day and
+
+00:19:01.120 --> 00:19:02.360
+<v Michael Kennedy>there's no problem. Whereas before, if I,
+
+00:19:02.400 --> 00:19:05.220
+<v Michael Kennedy>if I were to force to type full on, on a laptop,
+
+00:19:05.460 --> 00:19:08.980
+<v Michael Kennedy>I would probably be like unable to work in a week. If not a week.
+
+00:19:09.420 --> 00:19:12.980
+<v Vincent Warmerdam>So we had an offsite in San Francisco. So I was there like two weeks ago,
+
+00:19:13.460 --> 00:19:16.080
+<v Vincent Warmerdam>a lot of fun, but like, I'm not going to bring like,
+
+00:19:16.860 --> 00:19:18.680
+<v Vincent Warmerdam>airport security is going to look at this and wonder what,
+
+00:19:19.560 --> 00:19:22.640
+<v Vincent Warmerdam>like what kind of weird alien device this is. Right. So I figured, okay,
+
+00:19:22.780 --> 00:19:25.180
+<v Vincent Warmerdam>I'll leave those at home and just bring my normal laptop. And after a week,
+
+00:19:25.220 --> 00:19:26.660
+<v Vincent Warmerdam>I'm feeling it in my wrist again.
+
+00:19:27.020 --> 00:19:27.520
+<v Vincent Warmerdam>It's not good.
+
+00:19:27.940 --> 00:19:29.240
+<v Vincent Warmerdam>Yeah, it's something that takes serious.
+
+00:19:29.360 --> 00:19:31.400
+<v Vincent Warmerdam>Although I will also say like
+
+00:19:32.600 --> 00:19:34.400
+<v Vincent Warmerdam>because the kid was sick and the wife was sick
+
+00:19:34.460 --> 00:19:36.200
+<v Vincent Warmerdam>so I wasn't able to do a whole lot of exercise at home.
+
+00:19:37.040 --> 00:19:37.620
+<v Vincent Warmerdam>Also do exercise.
+
+00:19:37.880 --> 00:19:39.220
+<v Vincent Warmerdam>That also totally helps.
+
+00:19:39.300 --> 00:19:39.900
+<v Vincent Warmerdam>If I had to like,
+
+00:19:40.920 --> 00:19:42.660
+<v Vincent Warmerdam>sure, buy an ergonomic keyboard if you like.
+
+00:19:42.740 --> 00:19:43.760
+<v Vincent Warmerdam>Programmatic keyboards, they're great.
+
+00:19:44.120 --> 00:19:45.240
+<v Vincent Warmerdam>But if you're going to do that as an excuse
+
+00:19:45.380 --> 00:19:46.800
+<v Vincent Warmerdam>not to do exercise, you're doing it wrong.
+
+00:19:47.120 --> 00:19:48.860
+<v Vincent Warmerdam>That's the one thing I do want to add to that.
+
+00:19:48.960 --> 00:19:50.220
+<v Michael Kennedy>There's lots of stretches you can do.
+
+00:19:50.460 --> 00:19:51.160
+<v Michael Kennedy>Taking breaks matters.
+
+00:19:51.660 --> 00:19:52.300
+<v Michael Kennedy>Exercise matters.
+
+00:19:53.020 --> 00:19:56.040
+<v Michael Kennedy>But I think those keyboards are an essential feature.
+
+00:19:56.520 --> 00:19:58.560
+<v Michael Kennedy>They do totally help.
+
+00:19:58.600 --> 00:20:01.140
+<v Vincent Warmerdam>And also, sometimes it's not so much a healing measure.
+
+00:20:01.340 --> 00:20:02.400
+<v Vincent Warmerdam>It's more of a preventative measure.
+
+00:20:02.760 --> 00:20:03.740
+<v Michael Kennedy>Yes, 100%.
+
+00:20:04.040 --> 00:20:09.520
+<v Michael Kennedy>And I would like to put this message out just to everyone listening who is young, absolutely indestructible.
+
+00:20:11.360 --> 00:20:11.840
+<v Michael Kennedy>Please.
+
+00:20:12.420 --> 00:20:15.520
+<v Michael Kennedy>I know they're a bit of a pain in the butt with the weird curviness.
+
+00:20:15.900 --> 00:20:20.540
+<v Michael Kennedy>It is so worth it to just say, I've never had any RSI issues.
+
+00:20:21.060 --> 00:20:22.980
+<v Michael Kennedy>I just use this weird keyboard and people make fun of me,
+
+00:20:23.010 --> 00:20:23.560
+<v Michael Kennedy>but I don't care.
+
+00:20:23.740 --> 00:20:26.840
+<v Michael Kennedy>You know, that is a better thing than like, I'm working on it.
+
+00:20:27.220 --> 00:20:27.420
+<v Michael Kennedy>Yeah.
+
+00:20:27.660 --> 00:20:28.140
+<v Michael Kennedy>Oh, my.
+
+00:20:28.140 --> 00:20:28.420
+<v Michael Kennedy>It hurts.
+
+00:20:28.610 --> 00:20:28.880
+<v Michael Kennedy>You know?
+
+00:20:29.400 --> 00:20:31.600
+<v Vincent Warmerdam>Well, another thing is also, especially now
+
+00:20:31.640 --> 00:20:32.840
+<v Vincent Warmerdam>we've got stuff like Claude, right?
+
+00:20:32.840 --> 00:20:35.240
+<v Vincent Warmerdam>I just want-- if I can point out like one thing on that front.
+
+00:20:36.180 --> 00:20:37.880
+<v Vincent Warmerdam>So these ergonomic keyboards, you can often
+
+00:20:38.190 --> 00:20:39.460
+<v Vincent Warmerdam>program them as you see fit.
+
+00:20:39.620 --> 00:20:41.880
+<v Vincent Warmerdam>So you can say, like, if I hit this key, it's K.
+
+00:20:42.010 --> 00:20:43.740
+<v Vincent Warmerdam>But if I hold it down, it becomes command,
+
+00:20:43.960 --> 00:20:44.920
+<v Vincent Warmerdam>or whatever you like.
+
+00:20:45.180 --> 00:20:47.000
+<v Vincent Warmerdam>But it also means that you can map macros or shortcuts.
+
+00:20:47.280 --> 00:20:51.020
+<v Vincent Warmerdam>So whenever I hit this button, an app called MacWhisperer boots
+
+00:20:51.040 --> 00:20:51.720
+<v Vincent Warmerdam>That's going to record my voice.
+
+00:20:51.720 --> 00:20:52.680
+<v Michael Kennedy>I love Mac Whisper.
+
+00:20:53.140 --> 00:20:53.240
+<v Vincent Warmerdam>Yeah.
+
+00:20:53.620 --> 00:20:55.360
+<v Vincent Warmerdam>And then there's alternative variants for it.
+
+00:20:55.380 --> 00:20:56.800
+<v Vincent Warmerdam>I'm sure you've got stuff for Linux as well.
+
+00:20:56.880 --> 00:20:59.280
+<v Vincent Warmerdam>But the main thing it does is just really good speech to text.
+
+00:20:59.740 --> 00:21:01.680
+<v Vincent Warmerdam>And then whenever I'm done talking,
+
+00:21:01.840 --> 00:21:03.800
+<v Vincent Warmerdam>it's just immediately going to paste whatever I'm in.
+
+00:21:04.260 --> 00:21:06.240
+<v Vincent Warmerdam>So, oh, that's actually very nice,
+
+00:21:06.420 --> 00:21:08.700
+<v Vincent Warmerdam>because now the keyboard shortcut is just me holding my thumb down
+
+00:21:08.840 --> 00:21:14.420
+<v Vincent Warmerdam>instead of some sort of weird claw I got to eject to my keyboard.
+
+00:21:15.000 --> 00:21:17.780
+<v Vincent Warmerdam>And suddenly, it doesn't necessarily become a convenience thing.
+
+00:21:17.880 --> 00:21:20.100
+<v Vincent Warmerdam>It also becomes kind of a power user thing.
+
+00:21:20.240 --> 00:21:21.960
+<v Vincent Warmerdam>Like you can really customize your computer experience
+
+00:21:22.350 --> 00:21:23.980
+<v Vincent Warmerdam>if you can really map everything to your keyboard
+
+00:21:24.500 --> 00:21:25.740
+<v Vincent Warmerdam>just the way that you like.
+
+00:21:25.810 --> 00:21:28.280
+<v Vincent Warmerdam>It's like having Vim, but for all the apps out there.
+
+00:21:28.540 --> 00:21:29.560
+<v Michael Kennedy>Okay, that's very neat.
+
+00:21:29.830 --> 00:21:33.680
+<v Michael Kennedy>Yeah, I've remapped Caps Lock to my Activate Mac Whisper.
+
+00:21:34.000 --> 00:21:35.520
+<v Michael Kennedy>So if I hit Caps Lock and hold this down,
+
+00:21:35.610 --> 00:21:36.300
+<v Michael Kennedy>then I can dictate.
+
+00:21:36.670 --> 00:21:38.520
+<v Michael Kennedy>And I know computers have had dictation for a long time,
+
+00:21:38.630 --> 00:21:40.180
+<v Michael Kennedy>but it's been really bad, right?
+
+00:21:40.380 --> 00:21:43.960
+<v Michael Kennedy>The built-in dictation to macOS or Windows isn't great,
+
+00:21:44.040 --> 00:21:46.220
+<v Michael Kennedy>especially when you try to talk acronyms like,
+
+00:21:46.340 --> 00:21:47.840
+<v Michael Kennedy>hey, do PyPI, and it's like...
+
+00:21:47.840 --> 00:21:48.580
+<v Michael Kennedy>Yeah, Mac Whisper.
+
+00:21:48.700 --> 00:21:51.280
+<v Vincent Warmerdam>No, but Mac Whisper, it's not like all the way there,
+
+00:21:51.420 --> 00:21:55.440
+<v Vincent Warmerdam>but I will say it surprised me in quality a few times, definitely.
+
+00:21:55.920 --> 00:21:56.480
+<v Michael Kennedy>Yeah, yeah.
+
+00:21:56.660 --> 00:21:58.520
+<v Michael Kennedy>And that app, you can go in and actually set replacements.
+
+00:21:58.800 --> 00:22:02.160
+<v Michael Kennedy>Like if you ever think you're going to write this, write that instead.
+
+00:22:02.700 --> 00:22:03.920
+<v Michael Kennedy>So I've done that with like Talk Python
+
+00:22:04.120 --> 00:22:07.840
+<v Michael Kennedy>because it always just turns it into a camel case combined.
+
+00:22:08.200 --> 00:22:09.900
+<v Michael Kennedy>I'm like, no, those are two separate words.
+
+00:22:10.060 --> 00:22:10.540
+<v Michael Kennedy>You know, whatever.
+
+00:22:10.740 --> 00:22:11.980
+<v Michael Kennedy>You can sort of customize it a bit.
+
+00:22:12.240 --> 00:22:14.460
+<v Vincent Warmerdam>Yeah, and I think my favorite one,
+
+00:22:14.540 --> 00:22:16.760
+<v Vincent Warmerdam>I think Mac Whisper actually gets this one wrong still,
+
+00:22:17.000 --> 00:22:22.480
+<v Vincent Warmerdam>But whenever I write scikit-learn, which is a very popular data science package, it always
+
+00:22:22.740 --> 00:22:25.260
+<v Vincent Warmerdam>translates it to psychologists learn.
+
+00:22:26.570 --> 00:22:27.140
+<v Vincent Warmerdam>Which, you know.
+
+00:22:30.280 --> 00:22:33.700
+<v Michael Kennedy>I never want you to ever write this series of words.
+
+00:22:33.840 --> 00:22:36.640
+<v Michael Kennedy>Because if I have to, I'll just type it all in time.
+
+00:22:36.780 --> 00:22:38.080
+<v Michael Kennedy>It's not my common thing.
+
+00:22:39.480 --> 00:22:43.240
+<v Vincent Warmerdam>It's one of these moments where actually I type scikit-learn often enough where it's
+
+00:22:43.270 --> 00:22:44.420
+<v Vincent Warmerdam>like almost becoming the issue.
+
+00:22:44.660 --> 00:22:46.800
+<v Vincent Warmerdam>So I'm like at the verge of adding these rules manually
+
+00:22:47.040 --> 00:22:48.300
+<v Vincent Warmerdam>for all these weird open source packages
+
+00:22:48.410 --> 00:22:49.720
+<v Vincent Warmerdam>that I interact with.
+
+00:22:49.880 --> 00:22:52.620
+<v Vincent Warmerdam>But yeah, it's take ergonomics serious people.
+
+00:22:52.800 --> 00:22:53.660
+<v Vincent Warmerdam>That's the one thing I wanna say.
+
+00:22:53.690 --> 00:22:55.560
+<v Vincent Warmerdam>You don't always have to buy a super expensive keyboard.
+
+00:22:56.780 --> 00:22:58.900
+<v Vincent Warmerdam>The, if you wanna explore like programmatic keyboards
+
+00:22:59.180 --> 00:23:01.040
+<v Vincent Warmerdam>because you can customize things, that's an excellent reason.
+
+00:23:01.600 --> 00:23:03.860
+<v Vincent Warmerdam>But like take a break and do exercises and just,
+
+00:23:03.960 --> 00:23:05.040
+<v Vincent Warmerdam>you know, be healthy.
+
+00:23:05.280 --> 00:23:07.200
+<v Vincent Warmerdam>That's the, that's the, that's how you win a marathon.
+
+00:23:07.580 --> 00:23:08.360
+<v Michael Kennedy>- Yes, that's for sure.
+
+00:23:08.780 --> 00:23:12.200
+<v Michael Kennedy>Now this is not the Vincent's keyboard review marathon,
+
+00:23:12.680 --> 00:23:16.080
+<v Michael Kennedy>But let's wrap it up with, if you could take any keyboard
+
+00:23:17.340 --> 00:23:19.480
+<v Michael Kennedy>hanging around on your wall there, which one would you use?
+
+00:23:19.660 --> 00:23:22.800
+<v Vincent Warmerdam>- Well, so there's four pairs of these,
+
+00:23:22.920 --> 00:23:23.680
+<v Vincent Warmerdam>so it's probably this one.
+
+00:23:25.179 --> 00:23:27.140
+<v Vincent Warmerdam>So there's a couple of other boards that are great too.
+
+00:23:27.480 --> 00:23:29.300
+<v Vincent Warmerdam>This board is not the board I would recommend to everyone,
+
+00:23:29.720 --> 00:23:31.200
+<v Vincent Warmerdam>but if you have serious RSI issues,
+
+00:23:31.320 --> 00:23:33.420
+<v Vincent Warmerdam>I do think the GloVe 80 is your best bet.
+
+00:23:34.140 --> 00:23:35.680
+<v Vincent Warmerdam>It's simple, in terms of the shape,
+
+00:23:36.040 --> 00:23:38.600
+<v Vincent Warmerdam>it is probably the most ergonomic shape for most hand sizes.
+
+00:23:39.000 --> 00:23:40.200
+<v Michael Kennedy>- Yeah, okay, awesome.
+
+00:23:40.960 --> 00:23:44.600
+<v Michael Kennedy>All right, well, let's switch over to talking about programming.
+
+00:23:45.140 --> 00:23:45.360
+<v Michael Kennedy>Yes.
+
+00:23:45.600 --> 00:23:48.460
+<v Michael Kennedy>LLMs with LLMs, not programming LLMs.
+
+00:23:48.860 --> 00:23:52.100
+<v Michael Kennedy>And I guess, like you already called out, you wrote this course called
+
+00:23:52.540 --> 00:23:54.080
+<v Michael Kennedy>LLM building blocks for Python.
+
+00:23:54.730 --> 00:23:57.540
+<v Michael Kennedy>Super fun course, really neat, it's pretty short and concise.
+
+00:23:57.930 --> 00:24:03.140
+<v Michael Kennedy>And it really talks about how can you reliably add some kind of LLM into your code.
+
+00:24:04.200 --> 00:24:08.219
+<v Michael Kennedy>I guess what you're talking about in this course really applies regardless of
+
+00:24:08.240 --> 00:24:12.200
+<v Michael Kennedy>whether it's a self-hosted one or it's open AI or Anthropic, right?
+
+00:24:12.230 --> 00:24:13.180
+<v Michael Kennedy>You can have, there's some,
+
+00:24:13.450 --> 00:24:17.320
+<v Michael Kennedy>some choices you can make on which LLM to use, right?
+
+00:24:17.660 --> 00:24:21.400
+<v Vincent Warmerdam>So the, like the main idea I had with the course was like,
+
+00:24:22.260 --> 00:24:24.540
+<v Vincent Warmerdam>an LLM is a building block at some point,
+
+00:24:24.570 --> 00:24:27.720
+<v Vincent Warmerdam>but it's very unlike a normal building block when you're dealing with code,
+
+00:24:27.920 --> 00:24:29.180
+<v Vincent Warmerdam>because normally with code,
+
+00:24:29.210 --> 00:24:31.960
+<v Vincent Warmerdam>you put something into a function and like one thing comes out.
+
+00:24:32.170 --> 00:24:34.240
+<v Vincent Warmerdam>But in this particular case, you put a thing into a function,
+
+00:24:34.290 --> 00:24:36.240
+<v Vincent Warmerdam>you have no idea upfront what's going to come out.
+
+00:24:36.760 --> 00:24:38.760
+<v Vincent Warmerdam>And not only that, but you put the same thing in twice
+
+00:24:38.860 --> 00:24:40.120
+<v Vincent Warmerdam>and something else might come out as well.
+
+00:24:40.500 --> 00:24:43.980
+<v Vincent Warmerdam>So that means that you're going to want to think about this tool
+
+00:24:44.060 --> 00:24:45.220
+<v Vincent Warmerdam>a bit more defensively.
+
+00:24:45.320 --> 00:24:46.220
+<v Vincent Warmerdam>It's a weird building block.
+
+00:24:46.400 --> 00:24:48.120
+<v Vincent Warmerdam>It's like you have to put a moat around it
+
+00:24:48.180 --> 00:24:49.800
+<v Vincent Warmerdam>because otherwise the building block is going to do stuff
+
+00:24:49.800 --> 00:24:51.380
+<v Vincent Warmerdam>you don't want it to do, almost.
+
+00:24:52.700 --> 00:24:53.780
+<v Vincent Warmerdam>And some of that is syntax.
+
+00:24:53.900 --> 00:24:55.780
+<v Vincent Warmerdam>Some of that is how do you think about these Lego bricks.
+
+00:24:56.260 --> 00:24:58.880
+<v Vincent Warmerdam>And some of it is also just what is good methodology in general
+
+00:24:59.360 --> 00:25:03.140
+<v Vincent Warmerdam>to statistically test if the thing is doing roughly what you want it to do.
+
+00:25:03.340 --> 00:25:03.540
+<v Vincent Warmerdam>Nice.
+
+00:25:04.400 --> 00:25:05.260
+<v Vincent Warmerdam>That's the gist of it.
+
+00:25:06.040 --> 00:25:06.500
+<v Michael Kennedy>Yeah, cool.
+
+00:25:07.100 --> 00:25:10.280
+<v Michael Kennedy>Yeah, I pulled out a couple of ideas, concepts, and tools
+
+00:25:10.480 --> 00:25:11.700
+<v Michael Kennedy>that you talked about throughout the course.
+
+00:25:12.200 --> 00:25:13.580
+<v Michael Kennedy>And you don't have to have taken the course
+
+00:25:13.800 --> 00:25:15.020
+<v Michael Kennedy>to have these things be useful.
+
+00:25:15.240 --> 00:25:18.540
+<v Michael Kennedy>I just thought it might be fun to riff on some of the things
+
+00:25:18.660 --> 00:25:19.380
+<v Michael Kennedy>you touched on here.
+
+00:25:20.140 --> 00:25:21.980
+<v Michael Kennedy>The main thing I think will be fun is--
+
+00:25:22.010 --> 00:25:23.420
+<v Vincent Warmerdam>it's been half a year, I think.
+
+00:25:23.720 --> 00:25:25.480
+<v Vincent Warmerdam>It will be fun how much of it is still intact.
+
+00:25:25.590 --> 00:25:27.220
+<v Vincent Warmerdam>I think most of it still definitely is.
+
+00:25:27.740 --> 00:25:29.600
+<v Vincent Warmerdam>But it might be fun to see if we can find anything
+
+00:25:29.760 --> 00:25:32.900
+<v Vincent Warmerdam>that might be dated, just to see if the world has moved on
+
+00:25:33.140 --> 00:25:33.300
+<v Vincent Warmerdam>quickly.
+
+00:25:33.760 --> 00:25:36.540
+<v Vincent Warmerdam>I think there's only one thing, but I'm just kind of curious.
+
+00:25:36.740 --> 00:25:37.300
+<v Vincent Warmerdam>Let's see.
+
+00:25:37.380 --> 00:25:37.840
+<v Michael Kennedy>Yeah, all right.
+
+00:25:37.840 --> 00:25:40.600
+<v Michael Kennedy>Well, let's keep our radar up for that.
+
+00:25:40.680 --> 00:25:43.140
+<v Michael Kennedy>It's definitely something that's more changing quicker
+
+00:25:43.710 --> 00:25:45.700
+<v Michael Kennedy>and has a higher likelihood of being dated.
+
+00:25:46.100 --> 00:25:47.360
+<v Michael Kennedy>But I think it holds up pretty well.
+
+00:25:47.640 --> 00:25:48.180
+<v Vincent Warmerdam>Yeah, okay.
+
+00:25:49.440 --> 00:25:53.140
+<v Vincent Warmerdam>One of the things I remember emphasizing is you want to do some stuff like caching.
+
+00:25:53.420 --> 00:25:56.220
+<v Vincent Warmerdam>So let's say you've got a function and you use an LLM for it.
+
+00:25:56.260 --> 00:25:58.220
+<v Vincent Warmerdam>And let's keep it simple.
+
+00:25:58.340 --> 00:25:59.420
+<v Vincent Warmerdam>Let's say we're just making summaries.
+
+00:25:59.620 --> 00:26:03.520
+<v Vincent Warmerdam>So talk Python episode paragraph goes in, single sentence is supposed to come out.
+
+00:26:04.420 --> 00:26:04.980
+<v Vincent Warmerdam>Something like that.
+
+00:26:05.860 --> 00:26:13.020
+<v Vincent Warmerdam>Okay, well, you might have a loop and you're going to do maybe one pass, try one LLM with
+
+00:26:13.200 --> 00:26:16.400
+<v Vincent Warmerdam>one type of setting, try another LLM with different type of settings to generate all
+
+00:26:16.500 --> 00:26:16.780
+<v Vincent Warmerdam>this data.
+
+00:26:17.120 --> 00:26:21.820
+<v Vincent Warmerdam>It would be a shame that you're going to use an LLM, which is kind of an expensive compute
+
+00:26:22.080 --> 00:26:25.580
+<v Vincent Warmerdam>thing, if you put the same input in by accident and then you incur the cost twice.
+
+00:26:26.020 --> 00:26:27.020
+<v Vincent Warmerdam>That would really stink.
+
+00:26:27.520 --> 00:26:30.360
+<v Vincent Warmerdam>So one of the things you always want to do is think a little bit about caching.
+
+00:26:31.040 --> 00:26:34.020
+<v Vincent Warmerdam>And there's a Python library called disk cache that I've always loved to use.
+
+00:26:34.040 --> 00:26:35.680
+<v Vincent Warmerdam>And I highly recommend people have a look at it.
+
+00:26:36.060 --> 00:26:38.380
+<v Vincent Warmerdam>I think Michael, you've also used it in one of your courses before.
+
+00:26:39.200 --> 00:26:40.640
+<v Vincent Warmerdam>The trick is we have to talk about this.
+
+00:26:40.740 --> 00:26:41.420
+<v Vincent Warmerdam>It's so good.
+
+00:26:41.620 --> 00:26:42.380
+<v Vincent Warmerdam>It is so good.
+
+00:26:42.900 --> 00:26:44.980
+<v Michael Kennedy>It is SQLite and is so good.
+
+00:26:45.160 --> 00:26:46.980
+<v Michael Kennedy>It is even better than SQLite.
+
+00:26:47.100 --> 00:26:48.520
+<v Michael Kennedy>It is unbelievably good.
+
+00:26:48.680 --> 00:26:51.660
+<v Michael Kennedy>And I have you to think I knew about it, but yeah, whatever.
+
+00:26:52.040 --> 00:26:53.920
+<v Michael Kennedy>And then after I saw you use it, I'm like, genius.
+
+00:26:54.520 --> 00:26:55.320
+<v Vincent Warmerdam>It is genius.
+
+00:26:56.040 --> 00:26:56.100
+<v Vincent Warmerdam>Yes.
+
+00:26:56.440 --> 00:27:00.440
+<v Vincent Warmerdam>No, so it's like having the Eliru disk cache.
+
+00:27:00.820 --> 00:27:01.700
+<v Vincent Warmerdam>But it's also on disk.
+
+00:27:01.830 --> 00:27:05.360
+<v Vincent Warmerdam>So if you were to restart Python, you still have everything in cache basically.
+
+00:27:05.800 --> 00:27:10.080
+<v Vincent Warmerdam>And it's a SQLite database, so you can always inspect all the stuff that's in there.
+
+00:27:10.440 --> 00:27:16.440
+<v Vincent Warmerdam>If you wanted to, you can also do fancy things like add time to live to every single object.
+
+00:27:16.700 --> 00:27:18.860
+<v Vincent Warmerdam>And this is something you could do in a Docker container for a web app.
+
+00:27:19.570 --> 00:27:23.500
+<v Vincent Warmerdam>But the main thing that's always nice when you're dealing with LLMs is you always want
+
+00:27:23.500 --> 00:27:27.160
+<v Vincent Warmerdam>to be able to say in hindsight, like, okay, how did this LLM compare to that one?
+
+00:27:27.300 --> 00:27:28.140
+<v Vincent Warmerdam>You want to compare outputs.
+
+00:27:28.580 --> 00:27:31.920
+<v Vincent Warmerdam>then just writing a little bit of a decorator on top of a function
+
+00:27:32.180 --> 00:27:34.960
+<v Vincent Warmerdam>is the way to put it in SQLite, and you're just done with that concern.
+
+00:27:35.600 --> 00:27:37.340
+<v Vincent Warmerdam>That is just amazing.
+
+00:27:37.660 --> 00:27:39.760
+<v Vincent Warmerdam>And we're using this cache directly.
+
+00:27:40.140 --> 00:27:43.080
+<v Vincent Warmerdam>If you're using LLM by Simon Willison from the command line,
+
+00:27:43.300 --> 00:27:46.200
+<v Vincent Warmerdam>there's also a mechanism there so that you can get it into SQLite
+
+00:27:46.230 --> 00:27:46.780
+<v Vincent Warmerdam>if you wanted to.
+
+00:27:46.940 --> 00:27:48.420
+<v Vincent Warmerdam>So that's also a feature you could consider.
+
+00:27:49.270 --> 00:27:49.360
+<v Michael Kennedy>But--
+
+00:27:49.360 --> 00:27:50.940
+<v Michael Kennedy>MARK MANDEL: Of course, he's going to put something in SQLite.
+
+00:27:51.100 --> 00:27:53.140
+<v Michael Kennedy>Like, he can write a library that doesn't put something in SQLite,
+
+00:27:53.290 --> 00:27:54.840
+<v Michael Kennedy>given his data set project.
+
+00:27:55.070 --> 00:27:55.900
+<v Michael Kennedy>MARK MANDEL: It's Simon Willison.
+
+00:27:56.080 --> 00:27:58.000
+<v Vincent Warmerdam>He'll put SQLite in SQLite if it's a Sunday.
+
+00:27:58.360 --> 00:27:58.600
+<v Vincent Warmerdam>Yeah.
+
+00:28:01.440 --> 00:28:03.600
+<v Vincent Warmerdam>But if you haven't used Discash before,
+
+00:28:03.720 --> 00:28:06.240
+<v Vincent Warmerdam>it definitely feels like one of these libraries
+
+00:28:06.500 --> 00:28:07.860
+<v Vincent Warmerdam>that because I have it in my back pocket,
+
+00:28:07.960 --> 00:28:09.840
+<v Vincent Warmerdam>it just feels like I can tackle more problems.
+
+00:28:10.160 --> 00:28:11.560
+<v Vincent Warmerdam>That's the short story of it.
+
+00:28:11.700 --> 00:28:15.360
+<v Vincent Warmerdam>And again, the course uses it in a very sort of basic fashion,
+
+00:28:15.620 --> 00:28:18.360
+<v Vincent Warmerdam>but knowing that everything you do in an LLM
+
+00:28:19.820 --> 00:28:20.720
+<v Vincent Warmerdam>only needs to happen once,
+
+00:28:20.880 --> 00:28:22.060
+<v Vincent Warmerdam>if you're interested in using it once,
+
+00:28:22.640 --> 00:28:23.980
+<v Vincent Warmerdam>that just saves you so much money.
+
+00:28:24.260 --> 00:28:25.380
+<v Michael Kennedy>Yeah, and it's so useful.
+
+00:28:25.720 --> 00:28:27.840
+<v Michael Kennedy>So one of the things you did in the course is you said,
+
+00:28:27.920 --> 00:28:35.640
+<v Michael Kennedy>All right, the key for the value that we're going to store is going to be the model, the model settings and the prompt as a tuple, right?
+
+00:28:35.780 --> 00:28:36.640
+<v Michael Kennedy>Something along those lines.
+
+00:28:36.820 --> 00:28:38.360
+<v Michael Kennedy>And then you use that as the key.
+
+00:28:38.390 --> 00:28:41.220
+<v Michael Kennedy>So if any of those variations change, does the model change?
+
+00:28:41.640 --> 00:28:42.360
+<v Michael Kennedy>Do the settings change?
+
+00:28:42.490 --> 00:28:44.940
+<v Michael Kennedy>Or like anything, that's a totally different request.
+
+00:28:45.070 --> 00:28:46.280
+<v Michael Kennedy>And then you just store the response.
+
+00:28:46.590 --> 00:28:56.280
+<v Michael Kennedy>And then boom, if you ask the exact same question of the same model with the same prompt with the same settings, why do you need to go and wait 10 seconds and burn money and environmental badness?
+
+00:28:56.660 --> 00:28:58.740
+<v Michael Kennedy>when you could literally within a microsecond
+
+00:28:59.040 --> 00:28:59.560
+<v Michael Kennedy>get the answer back.
+
+00:29:00.120 --> 00:29:01.340
+<v Vincent Warmerdam>Yeah, and there's also a fancy thing.
+
+00:29:01.420 --> 00:29:02.760
+<v Vincent Warmerdam>It's a trick you can do on top.
+
+00:29:02.820 --> 00:29:04.240
+<v Vincent Warmerdam>So sometimes you want to say,
+
+00:29:04.400 --> 00:29:06.700
+<v Vincent Warmerdam>well, there's a statistical thing also happening.
+
+00:29:06.820 --> 00:29:08.160
+<v Vincent Warmerdam>So sometimes I want to have one input
+
+00:29:08.380 --> 00:29:09.720
+<v Vincent Warmerdam>and actually store maybe 10 outputs
+
+00:29:10.320 --> 00:29:11.300
+<v Vincent Warmerdam>so I can look at all these outputs,
+
+00:29:11.500 --> 00:29:12.700
+<v Vincent Warmerdam>maybe annotate that later.
+
+00:29:13.120 --> 00:29:14.040
+<v Vincent Warmerdam>And the way you solve that
+
+00:29:14.080 --> 00:29:16.940
+<v Vincent Warmerdam>is you just add an integer to the tuple, basically.
+
+00:29:17.400 --> 00:29:18.940
+<v Vincent Warmerdam>And then you're also able to store many outputs
+
+00:29:19.140 --> 00:29:19.900
+<v Vincent Warmerdam>if you really like.
+
+00:29:20.700 --> 00:29:21.640
+<v Michael Kennedy>The sky's the limit.
+
+00:29:21.640 --> 00:29:22.660
+<v Michael Kennedy>The fourth one, the eighth one, whatever.
+
+00:29:23.400 --> 00:29:24.940
+<v Michael Kennedy>Yeah, that's flexible.
+
+00:29:25.800 --> 00:29:25.880
+<v Michael Kennedy>Yeah.
+
+00:29:26.200 --> 00:29:29.500
+<v Michael Kennedy>And it does a whole bunch of neat, neat things that are really, really wild.
+
+00:29:29.720 --> 00:29:32.520
+<v Michael Kennedy>Like, so it looks like just, Hey, I put this value into it.
+
+00:29:32.620 --> 00:29:32.720
+<v Michael Kennedy>Right.
+
+00:29:32.720 --> 00:29:33.320
+<v Michael Kennedy>And it stores it.
+
+00:29:33.520 --> 00:29:37.420
+<v Michael Kennedy>It's really powerful because across application executions.
+
+00:29:37.900 --> 00:29:40.700
+<v Michael Kennedy>So like maybe if you're caching that response in your notebook and what are
+
+00:29:40.700 --> 00:29:44.120
+<v Michael Kennedy>you doing some testing, if you come back later, you've start the notebook back up
+
+00:29:44.200 --> 00:29:46.960
+<v Michael Kennedy>or restart the kernel or whatever, like it's not like an LRU cache.
+
+00:29:47.120 --> 00:29:51.540
+<v Michael Kennedy>It remembers cause it's stored somewhere in like temporary storage in a local
+
+00:29:51.880 --> 00:29:53.300
+<v Michael Kennedy>SQLite file, which is amazing.
+
+00:29:53.720 --> 00:29:55.900
+<v Michael Kennedy>It also has interesting ideas.
+
+00:29:56.260 --> 00:29:57.540
+<v Michael Kennedy>I'm not sure really where they are,
+
+00:29:58.060 --> 00:30:00.840
+<v Michael Kennedy>but it has different kinds of caches as well.
+
+00:30:00.940 --> 00:30:03.040
+<v Michael Kennedy>So maybe you're storing a ton of stuff in there.
+
+00:30:03.260 --> 00:30:05.680
+<v Michael Kennedy>And so it'll do basically built-in sharding.
+
+00:30:06.020 --> 00:30:06.600
+<v Michael Kennedy>Oh, yeah.
+
+00:30:06.880 --> 00:30:07.980
+<v Michael Kennedy>Multiple SQLite files.
+
+00:30:08.500 --> 00:30:09.980
+<v Michael Kennedy>And it's really, really good.
+
+00:30:10.540 --> 00:30:11.520
+<v Michael Kennedy>This is a deep library.
+
+00:30:11.700 --> 00:30:13.340
+<v Michael Kennedy>This is not just, oh, yeah.
+
+00:30:13.620 --> 00:30:14.980
+<v Michael Kennedy>It's like LRU, but to desk.
+
+00:30:15.240 --> 00:30:18.100
+<v Vincent Warmerdam>So the cool thing about that library is it really does go deep.
+
+00:30:18.600 --> 00:30:21.580
+<v Vincent Warmerdam>But if you really just want to use it as a dictionary, you can.
+
+00:30:22.080 --> 00:30:23.540
+<v Vincent Warmerdam>That's the thing that I really love about it.
+
+00:30:23.640 --> 00:30:26.760
+<v Vincent Warmerdam>But for all intents and purposes, you just treat it as a dictionary, and you're good.
+
+00:30:26.980 --> 00:30:29.420
+<v Vincent Warmerdam>Or use it as a decorator on a function, and again, you're good.
+
+00:30:31.940 --> 00:30:36.080
+<v Vincent Warmerdam>So again, it's one of those little hacks where, oh, if you just know about the library,
+
+00:30:36.220 --> 00:30:39.100
+<v Vincent Warmerdam>you just become more productive at typical Python stuff.
+
+00:30:39.320 --> 00:30:39.600
+<v Vincent Warmerdam>Yeah.
+
+00:30:39.880 --> 00:30:41.460
+<v Michael Kennedy>I'll give you a place where I'm using it, actually.
+
+00:30:41.620 --> 00:30:46.060
+<v Michael Kennedy>I use it on some LLM stuff, like where I'm programming against an LLM, for exactly the
+
+00:30:46.120 --> 00:30:46.580
+<v Michael Kennedy>reason you did.
+
+00:30:46.720 --> 00:30:49.200
+<v Michael Kennedy>Because if you have the same inputs, don't ask the question again.
+
+00:30:49.540 --> 00:30:50.380
+<v Michael Kennedy>You just hear the answer.
+
+00:30:50.540 --> 00:30:51.200
+<v Michael Kennedy>It's real, real fast.
+
+00:30:51.460 --> 00:30:54.680
+<v Michael Kennedy>But if you go over to like Talk Python, let's see here.
+
+00:30:55.160 --> 00:30:56.780
+<v Michael Kennedy>Go over to the guests, for example, right?
+
+00:30:56.900 --> 00:30:57.740
+<v Michael Kennedy>So there's a bunch of guests.
+
+00:30:58.030 --> 00:30:58.800
+<v Michael Kennedy>And here we have Vincent.
+
+00:30:59.210 --> 00:30:59.740
+<v Michael Kennedy>Not that Vincent.
+
+00:31:00.160 --> 00:31:00.600
+<v Michael Kennedy>Not that Vincent.
+
+00:31:01.000 --> 00:31:01.740
+<v Michael Kennedy>There you are, that Vincent.
+
+00:31:01.740 --> 00:31:02.380
+<v Michael Kennedy>All these Vincents.
+
+00:31:04.100 --> 00:31:05.000
+<v Michael Kennedy>They're all over the...
+
+00:31:05.500 --> 00:31:07.420
+<v Michael Kennedy>I have like 560 guests or something.
+
+00:31:07.520 --> 00:31:07.840
+<v Michael Kennedy>There's a lot.
+
+00:31:08.340 --> 00:31:12.840
+<v Michael Kennedy>But in here, you'll notice that if you go into the view of the source on this thing,
+
+00:31:13.090 --> 00:31:16.120
+<v Michael Kennedy>like all over the place, anytime there's a picture,
+
+00:31:16.380 --> 00:31:19.560
+<v Michael Kennedy>it'll have this little cache-busting ID on the end.
+
+00:31:20.480 --> 00:31:22.140
+<v Michael Kennedy>And that's fine when it's served locally
+
+00:31:22.230 --> 00:31:23.200
+<v Michael Kennedy>because you can just look at the file
+
+00:31:23.200 --> 00:31:25.280
+<v Michael Kennedy>and go just the file still with the same cache at startup.
+
+00:31:25.570 --> 00:31:28.600
+<v Michael Kennedy>But if it comes from like an S3 blob storage,
+
+00:31:29.190 --> 00:31:30.300
+<v Michael Kennedy>you know, and the app restarts,
+
+00:31:30.630 --> 00:31:31.760
+<v Michael Kennedy>how do I know what that is?
+
+00:31:31.880 --> 00:31:32.980
+<v Michael Kennedy>Like it has to go,
+
+00:31:33.800 --> 00:31:37.000
+<v Michael Kennedy>it would have to re-download the entire content of the blob.
+
+00:31:37.980 --> 00:31:38.860
+<v Michael Kennedy>So check this out.
+
+00:31:39.220 --> 00:31:39.440
+<v Michael Kennedy>Yeah.
+
+00:31:39.540 --> 00:31:40.260
+<v Michael Kennedy>So I just added.
+
+00:31:40.800 --> 00:31:41.640
+<v Michael Kennedy>Yeah, yeah, yeah.
+
+00:31:41.820 --> 00:31:44.540
+<v Vincent Warmerdam>So this feels like there's something between the proper CDN
+
+00:31:44.680 --> 00:31:45.860
+<v Vincent Warmerdam>and then getting it from S3.
+
+00:31:45.990 --> 00:31:46.900
+<v Vincent Warmerdam>Like there are these moments
+
+00:31:46.950 --> 00:31:48.340
+<v Vincent Warmerdam>when you want to have something that's kind of in between.
+
+00:31:48.900 --> 00:31:51.240
+<v Michael Kennedy>And then disk cache could actually be a good solution for it.
+
+00:31:51.480 --> 00:31:51.780
+<v Michael Kennedy>Exactly.
+
+00:31:52.140 --> 00:31:54.460
+<v Michael Kennedy>So what the site does is it has a disk cache.
+
+00:31:54.560 --> 00:31:58.460
+<v Michael Kennedy>And anytime it says, hey, I want to refer to a resource that's external,
+
+00:31:59.100 --> 00:32:01.340
+<v Michael Kennedy>it'll download it once, compute the hash,
+
+00:32:01.420 --> 00:32:05.800
+<v Michael Kennedy>and then store it in the disk cache unless you change something behind it.
+
+00:32:05.800 --> 00:32:09.080
+<v Michael Kennedy>And so it's automatically using this, and it makes everything like,
+
+00:32:09.340 --> 00:32:12.140
+<v Michael Kennedy>there's never stale resources, and it's instantly fast,
+
+00:32:12.240 --> 00:32:15.300
+<v Michael Kennedy>even if they're served out of something remote like S3 equivalent.
+
+00:32:15.600 --> 00:32:18.520
+<v Vincent Warmerdam>And do you also do a time to live?
+
+00:32:19.260 --> 00:32:23.780
+<v Vincent Warmerdam>Is it also the time to live is also like every day it's allowed to refresh once or something like that, I suppose?
+
+00:32:24.820 --> 00:32:32.320
+<v Michael Kennedy>Yeah, for the S3 stuff, I don't because I've set up all the admin functions that if I ever change one through the admin, it deletes it out of the cache.
+
+00:32:32.640 --> 00:32:32.840
+<v Michael Kennedy>Gotcha.
+
+00:32:33.240 --> 00:32:34.940
+<v Michael Kennedy>So it's like it's internally consistent.
+
+00:32:35.560 --> 00:32:46.020
+<v Michael Kennedy>But for like other things, like if it parses something out of the, say, the description, which is set in the dictionary, that stuff, it's just got a time to live of like a day or something.
+
+00:32:46.090 --> 00:32:47.560
+<v Michael Kennedy>And it's got like, there's a bunch of those.
+
+00:32:47.760 --> 00:32:48.960
+<v Michael Kennedy>I'm using all these different places.
+
+00:32:49.660 --> 00:32:50.460
+<v Michael Kennedy>And wow, it's so good.
+
+00:32:50.580 --> 00:32:51.840
+<v Michael Kennedy>I just wanted to say thank you, because I
+
+00:32:51.840 --> 00:32:52.820
+<v Michael Kennedy>knew we were going to talk about it today,
+
+00:32:53.240 --> 00:32:53.980
+<v Michael Kennedy>because this is so good.
+
+00:32:54.100 --> 00:32:54.460
+<v Vincent Warmerdam>Yeah, I know.
+
+00:32:57.380 --> 00:32:59.080
+<v Vincent Warmerdam>If it was part of the standard library,
+
+00:32:59.320 --> 00:33:00.760
+<v Vincent Warmerdam>I would honestly not be surprised.
+
+00:33:01.320 --> 00:33:03.020
+<v Vincent Warmerdam>That's also the story with that.
+
+00:33:03.140 --> 00:33:04.340
+<v Vincent Warmerdam>But yeah, SQLite is great.
+
+00:33:04.600 --> 00:33:05.140
+<v Vincent Warmerdam>DiskCache is great.
+
+00:33:06.460 --> 00:33:08.540
+<v Vincent Warmerdam>It feels like a dictionary, but it gives you so much more.
+
+00:33:08.840 --> 00:33:09.100
+<v Vincent Warmerdam>It's great.
+
+00:33:09.380 --> 00:33:10.800
+<v Vincent Warmerdam>That's the only thing I can say about it.
+
+00:33:10.960 --> 00:33:12.360
+<v Michael Kennedy>So people are probably like, wait,
+
+00:33:12.410 --> 00:33:13.620
+<v Michael Kennedy>I thought we were talking about LLMs.
+
+00:33:14.330 --> 00:33:14.720
+<v Michael Kennedy>Yeah, we are.
+
+00:33:14.720 --> 00:33:15.860
+<v Michael Kennedy>I think this is one of the interesting things,
+
+00:33:16.000 --> 00:33:20.560
+<v Michael Kennedy>It's because there's all these interesting tools and it's not even about using agentic AI.
+
+00:33:20.810 --> 00:33:27.980
+<v Michael Kennedy>And it's not like there's really cool libraries and tools that you can just apply to this LLM problem, but also apply everywhere else.
+
+00:33:28.130 --> 00:33:28.220
+<v Michael Kennedy>Right.
+
+00:33:29.060 --> 00:33:29.800
+<v Michael Kennedy>It's one of those.
+
+00:33:30.380 --> 00:33:33.740
+<v Vincent Warmerdam>So it's one thing I have found with like LLMs in general if you're building software with it.
+
+00:33:34.000 --> 00:33:40.480
+<v Vincent Warmerdam>On the one end, I think it can be very helpful if you're like a proper like senior engineer kind of a person because then you know about things like, oh, I want a cache.
+
+00:33:40.880 --> 00:33:41.780
+<v Vincent Warmerdam>And what's the pragmatic cache?
+
+00:33:41.890 --> 00:33:43.400
+<v Vincent Warmerdam>And you can also pick Redis, by the way.
+
+00:33:43.520 --> 00:33:44.480
+<v Vincent Warmerdam>If you would have used Redis for this,
+
+00:33:44.560 --> 00:33:45.260
+<v Vincent Warmerdam>that could have also worked.
+
+00:33:45.400 --> 00:33:45.860
+<v Vincent Warmerdam>Just that I think--
+
+00:33:45.880 --> 00:33:46.580
+<v Michael Kennedy>- Sure, it would have been fine.
+
+00:33:46.960 --> 00:33:47.600
+<v Vincent Warmerdam>- Yeah, it would have been fine.
+
+00:33:47.680 --> 00:33:49.380
+<v Michael Kennedy>- But you know what I like is there's no servers.
+
+00:33:49.840 --> 00:33:50.940
+<v Michael Kennedy>I don't have to deal with the servers.
+
+00:33:51.260 --> 00:33:53.200
+<v Michael Kennedy>Like, it's just, it's a file.
+
+00:33:53.780 --> 00:33:54.420
+<v Vincent Warmerdam>- It's very true.
+
+00:33:54.520 --> 00:33:55.480
+<v Michael Kennedy>- And it just keeps it simpler.
+
+00:33:55.900 --> 00:33:56.560
+<v Vincent Warmerdam>- It's totally true.
+
+00:33:56.840 --> 00:33:58.260
+<v Vincent Warmerdam>But the point I wanted to get out here,
+
+00:33:58.320 --> 00:34:00.940
+<v Vincent Warmerdam>like your previous experience as a proper engineer
+
+00:34:01.300 --> 00:34:03.560
+<v Vincent Warmerdam>will still help you write good LLM software.
+
+00:34:03.980 --> 00:34:05.980
+<v Vincent Warmerdam>However, from a similar perspective,
+
+00:34:06.060 --> 00:34:07.380
+<v Vincent Warmerdam>I also think that we do have this generation
+
+00:34:07.840 --> 00:34:08.659
+<v Vincent Warmerdam>of like data scientists,
+
+00:34:08.899 --> 00:34:11.220
+<v Vincent Warmerdam>and maybe data engineer, data analyst kind of person,
+
+00:34:11.580 --> 00:34:14.860
+<v Vincent Warmerdam>like thinking analytically being quite critical of the output of an algorithm.
+
+00:34:15.399 --> 00:34:19.340
+<v Vincent Warmerdam>That's also like a good bone to have in this day and age, I would say.
+
+00:34:20.100 --> 00:34:24.720
+<v Vincent Warmerdam>Because if I've built a couple of recommenders back in my day, like it's been a decade now,
+
+00:34:24.879 --> 00:34:28.560
+<v Vincent Warmerdam>but like one of the things you do learn when you're building a recommender is that you're stuck with this problem of,
+
+00:34:29.000 --> 00:34:32.320
+<v Vincent Warmerdam>hey, I gave this user this recommendation and they clicked it.
+
+00:34:32.679 --> 00:34:35.820
+<v Vincent Warmerdam>Would they have clicked this other thing if I would have recommended it to them?
+
+00:34:36.260 --> 00:34:40.200
+<v Vincent Warmerdam>And suddenly you're dealing with a system that's like really stochastic and hard to predict.
+
+00:34:40.500 --> 00:34:44.360
+<v Vincent Warmerdam>and you have to be kind of strict about the way you test and compare these different algorithms.
+
+00:34:44.629 --> 00:34:47.280
+<v Vincent Warmerdam>And you want to think twice about the way you A-B test these things.
+
+00:34:47.389 --> 00:34:50.200
+<v Vincent Warmerdam>And, oh, actually, just like disk cache is useful as a tool,
+
+00:34:50.580 --> 00:34:55.540
+<v Vincent Warmerdam>having a little bit of methodology statistically in your mind will also help you
+
+00:34:55.690 --> 00:35:01.620
+<v Vincent Warmerdam>because comparing LLMs, a lot of it is doing evaluations, being kind of strict about that.
+
+00:35:01.630 --> 00:35:03.020
+<v Vincent Warmerdam>And that's also what I try to do in the course.
+
+00:35:03.110 --> 00:35:05.540
+<v Vincent Warmerdam>I try to just show you that if you're really strict about evaluations,
+
+00:35:06.400 --> 00:35:09.719
+<v Vincent Warmerdam>then you can also learn that for some problems, you're still better off using scikit-learn
+
+00:35:09.740 --> 00:35:13.300
+<v Vincent Warmerdam>because you just evaluate it and then you learn that like the number is better on the side could
+
+00:35:13.420 --> 00:35:17.760
+<v Michael Kennedy>learn side of things yeah that's when you feel like oh maybe i did it wrong where you paid
+
+00:35:17.760 --> 00:35:22.320
+<v Michael Kennedy>a bunch of money to run expensive slow lms and you're like i would just use well so it's funny
+
+00:35:22.400 --> 00:35:26.940
+<v Vincent Warmerdam>you say that so i'm i've actually been talking to a bunch of people that do lms at companies here in
+
+00:35:26.940 --> 00:35:31.480
+<v Vincent Warmerdam>the netherlands and you know you you go to a pi data you go to a conference and you give them just
+
+00:35:31.600 --> 00:35:37.799
+<v Vincent Warmerdam>enough beer so they're honest in that kind of a situation the nda curtain opens just a little or
+
+00:35:37.820 --> 00:35:38.040
+<v Vincent Warmerdam>or whatever.
+
+00:35:38.640 --> 00:35:40.960
+<v Vincent Warmerdam>Plus, more deniability is the name of the game in this one, yes.
+
+00:35:42.039 --> 00:35:45.720
+<v Vincent Warmerdam>But then the stories you hear, which I did find somewhat encouraging,
+
+00:35:45.890 --> 00:35:48.920
+<v Vincent Warmerdam>is they do all kind of go, well, there's budget now to do AI stuff,
+
+00:35:49.250 --> 00:35:51.460
+<v Vincent Warmerdam>which means that we try out all the different LLMs,
+
+00:35:51.490 --> 00:35:53.620
+<v Vincent Warmerdam>and we really can invest in evals and that sort of thing.
+
+00:35:54.250 --> 00:35:56.900
+<v Vincent Warmerdam>And funnily enough, we also put some base models in there,
+
+00:35:57.070 --> 00:35:59.220
+<v Vincent Warmerdam>like as a standard benchmark that we should beat.
+
+00:35:59.600 --> 00:36:02.020
+<v Vincent Warmerdam>And I've heard a story a bunch of times now
+
+00:36:02.180 --> 00:36:04.400
+<v Vincent Warmerdam>that because of the hype around LLMs and AI,
+
+00:36:05.190 --> 00:36:06.800
+<v Vincent Warmerdam>after it was implemented, after they did all the benchmarks,
+
+00:36:07.300 --> 00:36:10.660
+<v Vincent Warmerdam>It turns out that AI is the reason that scikit-learn is now in production in a bunch of places.
+
+00:36:10.790 --> 00:36:13.480
+<v Michael Kennedy>And it's also the same thing with like spaCy.
+
+00:36:13.550 --> 00:36:19.300
+<v Vincent Warmerdam>Because what a lot of people do learn is that, hey, if the spaCy model or like the lightweight model, so to say,
+
+00:36:19.440 --> 00:36:23.940
+<v Vincent Warmerdam>is like somewhat equivalent to the LLM model after you give it like enough training data,
+
+00:36:24.030 --> 00:36:26.980
+<v Vincent Warmerdam>which you do want to have either anyway, because you need to need that for evaluations.
+
+00:36:27.620 --> 00:36:32.020
+<v Vincent Warmerdam>Well, typically those models are more lightweight and they will always produce the same output.
+
+00:36:32.240 --> 00:36:34.160
+<v Vincent Warmerdam>Same thing goes in, same prediction will always come out.
+
+00:36:34.480 --> 00:36:37.420
+<v Vincent Warmerdam>And you can really fence it off, have it on like a normal VM.
+
+00:36:37.700 --> 00:36:38.600
+<v Vincent Warmerdam>That's also totally fine.
+
+00:36:39.000 --> 00:36:42.040
+<v Vincent Warmerdam>Oh, and you know, another benefit, it's super lightweight to run.
+
+00:36:42.180 --> 00:36:44.360
+<v Vincent Warmerdam>You just need a Lambda function and you're good,
+
+00:36:44.820 --> 00:36:48.000
+<v Vincent Warmerdam>as opposed to like a GPU or like a huge cloud bill or something like that.
+
+00:36:48.260 --> 00:36:51.860
+<v Vincent Warmerdam>So some of the stories that I'm hearing do suggest that,
+
+00:36:52.020 --> 00:36:56.180
+<v Vincent Warmerdam>okay, these LLMs are also helping out like standard data science work, if it were,
+
+00:36:57.000 --> 00:37:00.000
+<v Vincent Warmerdam>if only because management now really does want to be serious about the investment
+
+00:37:00.100 --> 00:37:01.400
+<v Vincent Warmerdam>and really wants to do the experiments.
+
+00:37:03.040 --> 00:37:07.460
+<v Michael Kennedy>portion of Talk Python To Me is brought to you by NordStellar. NordStellar is a threat exposure
+
+00:37:07.720 --> 00:37:13.200
+<v Michael Kennedy>management platform from the Nord security family, the folks behind NordVPN that combines dark web
+
+00:37:13.380 --> 00:37:18.780
+<v Michael Kennedy>intelligence, session hijacking prevention, brand abuse detection, and external attack service
+
+00:37:19.100 --> 00:37:24.220
+<v Michael Kennedy>management. Keeping your team and your company secure is a daunting challenge. That's why you
+
+00:37:24.360 --> 00:37:29.979
+<v Michael Kennedy>need NordStellar on your side. It's a comprehensive set of services, monitoring, and alerts to limit
+
+00:37:30.000 --> 00:37:35.800
+<v Michael Kennedy>your exposure to breaches and attacks and act instantly if something does happen. Here's how
+
+00:37:35.800 --> 00:37:41.660
+<v Michael Kennedy>it works. Nordstellar detects compromised employee and consumer credentials. It detects stolen
+
+00:37:42.260 --> 00:37:48.180
+<v Michael Kennedy>authentication cookies found in InfoStealer logs and dark web sources and flags compromised devices,
+
+00:37:48.640 --> 00:37:54.839
+<v Michael Kennedy>reducing MFA bypass ATOs without extra code in your app. Nordstellar scans the dark web for
+
+00:37:54.740 --> 00:38:01.340
+<v Michael Kennedy>cyber threats targeting your company. It monitors forums, markets, ransomware blogs, and over 25,000
+
+00:38:01.580 --> 00:38:07.020
+<v Michael Kennedy>cybercrime telegram channels with alerting and searchable contexts you can route to Slack or your
+
+00:38:07.260 --> 00:38:13.300
+<v Michael Kennedy>IRR tool. Nordstellar adds brand and domain protection. It detects cyber squats and lookalikes
+
+00:38:13.760 --> 00:38:19.040
+<v Michael Kennedy>via visual, content similarity, and search transparency logs, plus broader brand abuse
+
+00:38:19.280 --> 00:38:24.300
+<v Michael Kennedy>takedowns across the web, social, and app stores to cut the phishing risk for your users.
+
+00:38:24.640 --> 00:38:28.560
+<v Michael Kennedy>They don't just alert you about impersonation, they file and manage the removals.
+
+00:38:29.120 --> 00:38:31.240
+<v Michael Kennedy>Finally, Nordstellar is developer-friendly.
+
+00:38:31.840 --> 00:38:34.440
+<v Michael Kennedy>It's available as a platform and an API.
+
+00:38:35.120 --> 00:38:36.000
+<v Michael Kennedy>No agents to install.
+
+00:38:36.540 --> 00:38:39.660
+<v Michael Kennedy>If security is important to you and your organization, check out Nordstellar.
+
+00:38:40.140 --> 00:38:42.380
+<v Michael Kennedy>Visit talkpython.fm/nordstellar.
+
+00:38:42.490 --> 00:38:45.420
+<v Michael Kennedy>The link is in your podcast player's show notes and on the episode page.
+
+00:38:45.880 --> 00:38:48.560
+<v Michael Kennedy>Please use our link, talkpython.fm/nordstellar,
+
+00:38:49.000 --> 00:38:52.080
+<v Michael Kennedy>so that they know that you heard about their service from us.
+
+00:38:52.420 --> 00:38:53.540
+<v Michael Kennedy>And you know what time of year it is.
+
+00:38:53.840 --> 00:38:54.860
+<v Michael Kennedy>It's late fall.
+
+00:38:55.290 --> 00:38:57.540
+<v Michael Kennedy>That means Black Friday is in play as well.
+
+00:38:57.610 --> 00:39:01.600
+<v Michael Kennedy>So the folks at Nord Stellar gave us a coupon, BlackFriday20.
+
+00:39:02.120 --> 00:39:05.200
+<v Michael Kennedy>That's BlackFriday, all one word, all caps, 20, two, zero.
+
+00:39:05.700 --> 00:39:07.080
+<v Michael Kennedy>That grants you 20% off.
+
+00:39:07.090 --> 00:39:11.640
+<v Michael Kennedy>So if you're going to sign up for them soon, go ahead and use BlackFriday20 as a code,
+
+00:39:11.840 --> 00:39:13.220
+<v Michael Kennedy>and you might as well save 20%.
+
+00:39:13.280 --> 00:39:15.800
+<v Michael Kennedy>It's good until December 10th, 2025.
+
+00:39:16.740 --> 00:39:20.080
+<v Michael Kennedy>Thank you to the whole Nord security team for supporting Talk Python To Me.
+
+00:39:21.120 --> 00:39:24.320
+<v Michael Kennedy>You could say, we're going to use your mandate is to add AI.
+
+00:39:24.700 --> 00:39:26.640
+<v Michael Kennedy>And then you go user, well, we got to see how well it's working.
+
+00:39:26.720 --> 00:39:27.500
+<v Michael Kennedy>So we tested it.
+
+00:39:27.560 --> 00:39:29.820
+<v Michael Kennedy>And then we have to compare it to something of a benchmark.
+
+00:39:30.600 --> 00:39:31.000
+<v Michael Kennedy>Exactly.
+
+00:39:32.900 --> 00:39:36.800
+<v Michael Kennedy>The benchmark is fast and effectively free and about as good.
+
+00:39:36.980 --> 00:39:38.260
+<v Michael Kennedy>So we're good.
+
+00:39:38.380 --> 00:39:39.000
+<v Michael Kennedy>We're just going to do that.
+
+00:39:39.120 --> 00:39:40.840
+<v Michael Kennedy>You know, I think it's fine.
+
+00:39:41.220 --> 00:39:44.900
+<v Vincent Warmerdam>Some organizations need like mandate from above in order to get something done.
+
+00:39:45.220 --> 00:39:50.220
+<v Vincent Warmerdam>And this LLM craze, if nothing else, does seem to have caused the mandate from above.
+
+00:39:50.900 --> 00:39:51.880
+<v Vincent Warmerdam>I'm sure it is.
+
+00:39:52.260 --> 00:39:56.760
+<v Vincent Warmerdam>So that's something I would keep in the back of your mind as well, dear listener.
+
+00:39:56.980 --> 00:40:00.200
+<v Vincent Warmerdam>Like sometimes that mandate can also give you permission to do other things.
+
+00:40:00.540 --> 00:40:00.760
+<v Michael Kennedy>Yeah.
+
+00:40:01.020 --> 00:40:05.440
+<v Michael Kennedy>Not working for a large enterprise type company for quite a while.
+
+00:40:05.760 --> 00:40:11.420
+<v Michael Kennedy>I imagine I'm pretty blind to how that is transforming directives from the top.
+
+00:40:11.460 --> 00:40:15.540
+<v Michael Kennedy>But I'm sure bosses are like, I'm using ChatGPT and it's so much better than our software.
+
+00:40:15.760 --> 00:40:16.620
+<v Michael Kennedy>What are we going to do about that?
+
+00:40:16.760 --> 00:40:21.400
+<v Vincent Warmerdam>you know yeah it's uh well i mean i'm in the developer tooling space so i still talk to big
+
+00:40:21.520 --> 00:40:25.000
+<v Vincent Warmerdam>companies and small companies as well you do notice that big companies they work differently
+
+00:40:25.070 --> 00:40:28.920
+<v Vincent Warmerdam>than small companies that is certainly true um for better or worse like there's also good there's
+
+00:40:28.960 --> 00:40:32.960
+<v Vincent Warmerdam>also good reasons why bigger companies like if i'm a bank like uh i'm pretty sure it's a good idea to
+
+00:40:33.020 --> 00:40:38.660
+<v Vincent Warmerdam>also have some rules that i have to abide by which yeah i'm just thinking more of like how disconnected
+
+00:40:38.920 --> 00:40:43.619
+<v Michael Kennedy>is the higher level management from the product and like how much do they just like dictate a thing
+
+00:40:43.760 --> 00:40:49.560
+<v Michael Kennedy>Okay, so let's talk about some of the tools. One of the things you primarily focused on was using
+
+00:40:50.080 --> 00:40:56.240
+<v Vincent Warmerdam>Simon Willison's LLM library. Tell us about this thing. So the funny thing about that library is
+
+00:40:56.260 --> 00:41:00.700
+<v Vincent Warmerdam>that it's actually kind of more meant as a command line utility. I think that's kind of the entry
+
+00:41:00.920 --> 00:41:05.820
+<v Vincent Warmerdam>point that he made. But then he also just made sure there was some sort of a Python API around it.
+
+00:41:06.480 --> 00:41:10.440
+<v Vincent Warmerdam>And after looking at that library, and also after playing around with all these other libraries,
+
+00:41:11.460 --> 00:41:13.200
+<v Vincent Warmerdam>and I'm about to say this, but this is a compliment.
+
+00:41:13.750 --> 00:41:16.220
+<v Vincent Warmerdam>I just found the LLM library by Simon Willison
+
+00:41:16.740 --> 00:41:18.060
+<v Vincent Warmerdam>by far to be the most boring.
+
+00:41:18.660 --> 00:41:21.400
+<v Vincent Warmerdam>And I mean that really in a good way, just unsurprising,
+
+00:41:22.130 --> 00:41:23.060
+<v Vincent Warmerdam>only does a few things.
+
+00:41:23.220 --> 00:41:25.580
+<v Vincent Warmerdam>The few things that it does is just in a very predictable way.
+
+00:41:26.040 --> 00:41:28.080
+<v Vincent Warmerdam>And especially if you're doing rapid prototyping,
+
+00:41:28.280 --> 00:41:29.760
+<v Vincent Warmerdam>what I felt was just kind of nice is that
+
+00:41:30.010 --> 00:41:31.360
+<v Vincent Warmerdam>it does feel like you have building blocks
+
+00:41:31.390 --> 00:41:32.540
+<v Vincent Warmerdam>that allow you to build very quickly,
+
+00:41:33.150 --> 00:41:35.860
+<v Vincent Warmerdam>but it doesn't necessarily feel like you're dealing with abstractions
+
+00:41:35.920 --> 00:41:37.640
+<v Vincent Warmerdam>that can sort of wall you in at some point.
+
+00:41:38.120 --> 00:41:40.400
+<v Vincent Warmerdam>So for a hello world getting started,
+
+00:41:40.840 --> 00:41:42.920
+<v Vincent Warmerdam>just do some things in a very Pythonic way,
+
+00:41:43.900 --> 00:41:46.060
+<v Vincent Warmerdam>this boring library really did the trick.
+
+00:41:46.200 --> 00:41:48.920
+<v Vincent Warmerdam>And I'm also happy to report it's still a library that I use.
+
+00:41:49.300 --> 00:41:51.060
+<v Vincent Warmerdam>It's still definitely a library in my tool, though.
+
+00:41:51.140 --> 00:41:52.360
+<v Vincent Warmerdam>Whenever I want to do something real quick,
+
+00:41:53.340 --> 00:41:55.840
+<v Vincent Warmerdam>that is definitely a tool that I refer to.
+
+00:41:56.360 --> 00:41:57.580
+<v Vincent Warmerdam>And one of the things--
+
+00:41:57.580 --> 00:42:01.620
+<v Michael Kennedy>Is it kind of an abstraction across the different LLMs
+
+00:42:01.840 --> 00:42:02.540
+<v Michael Kennedy>and that kind of stuff?
+
+00:42:02.680 --> 00:42:05.900
+<v Michael Kennedy>If I want to talk to Anthropic versus OpenAI, that doesn't matter?
+
+00:42:06.240 --> 00:42:09.540
+<v Vincent Warmerdam>So the way that this is built is also, I think, with good taste.
+
+00:42:09.700 --> 00:42:15.260
+<v Vincent Warmerdam>So what you don't want to do as a library is say, like, I'm going to basically support every library under the sun.
+
+00:42:15.440 --> 00:42:20.000
+<v Vincent Warmerdam>Because as a single maintainer in the case of Simon Willis, you're just going to drown in all these different providers.
+
+00:42:20.240 --> 00:42:22.860
+<v Vincent Warmerdam>So what he went for instead was a plugin ecosystem.
+
+00:42:23.200 --> 00:42:30.440
+<v Vincent Warmerdam>Now, the downside of a plugin ecosystem is that then you defer the responsibility of maintaining a plugin for a specific source to another maintainer.
+
+00:42:30.800 --> 00:42:34.000
+<v Vincent Warmerdam>But you might get someone who works at Mistral to make the Mistral plugin.
+
+00:42:34.200 --> 00:42:37.740
+<v Vincent Warmerdam>And you might get someone who works at Open Router to make the Open Router plugin, etc.
+
+00:42:38.400 --> 00:42:42.220
+<v Vincent Warmerdam>So you do distribute the workload in kind of a nice way.
+
+00:42:42.580 --> 00:42:45.660
+<v Vincent Warmerdam>And all the bigger models are definitely supported.
+
+00:42:45.820 --> 00:42:48.060
+<v Vincent Warmerdam>So the Anthropic and the OpenAI ones,
+
+00:42:48.200 --> 00:42:49.240
+<v Vincent Warmerdam>those are just always in there.
+
+00:42:50.100 --> 00:42:54.140
+<v Vincent Warmerdam>But you will also definitely find some of the more exotic ones
+
+00:42:54.230 --> 00:42:56.000
+<v Vincent Warmerdam>that they will also just have a plug in themselves.
+
+00:42:56.420 --> 00:42:57.960
+<v Vincent Warmerdam>And one thing that also helps under the hood
+
+00:42:58.100 --> 00:43:01.240
+<v Vincent Warmerdam>is that OpenAI has a standard under the hood.
+
+00:43:01.360 --> 00:43:03.700
+<v Vincent Warmerdam>Their SDK has become a bit of a standard across industry.
+
+00:43:04.130 --> 00:43:07.160
+<v Vincent Warmerdam>So you can also reuse the OpenAI stuff.
+
+00:43:07.420 --> 00:43:09.200
+<v Vincent Warmerdam>It would not surprise me at all that if you were just
+
+00:43:09.260 --> 00:43:11.640
+<v Vincent Warmerdam>to change a URL in the setting, that you can also
+
+00:43:11.990 --> 00:43:14.860
+<v Vincent Warmerdam>connect to Mistral via the OpenAI objects.
+
+00:43:15.020 --> 00:43:16.980
+<v Vincent Warmerdam>I would have to double check, but that wouldn't surprise me.
+
+00:43:17.200 --> 00:43:20.140
+<v Michael Kennedy>Yeah, that is a very common way of just like,
+
+00:43:20.230 --> 00:43:22.700
+<v Michael Kennedy>you know what, we're all going to just adopt Open.
+
+00:43:23.260 --> 00:43:24.140
+<v Michael Kennedy>It's a little like S3.
+
+00:43:24.660 --> 00:43:26.160
+<v Michael Kennedy>Like when I was saying S3 earlier,
+
+00:43:26.330 --> 00:43:27.820
+<v Michael Kennedy>I was actually talking to DigitalOcean.
+
+00:43:28.540 --> 00:43:29.160
+<v Michael Kennedy>But it doesn't matter.
+
+00:43:29.420 --> 00:43:31.220
+<v Michael Kennedy>I'm just still using Boto3 to talk to it.
+
+00:43:31.440 --> 00:43:33.880
+<v Vincent Warmerdam>Yeah, it does feel weird like, oh, you want to use DigitalOcean?
+
+00:43:34.100 --> 00:43:39.260
+<v Vincent Warmerdam>you have to download a SDK from a competing cloud provider and then you can.
+
+00:43:39.940 --> 00:43:41.180
+<v Vincent Warmerdam>Exactly. It's so weird.
+
+00:43:41.390 --> 00:43:45.440
+<v Vincent Warmerdam>But I mean, the thing I do find that it's just a little bit funny here is like technically,
+
+00:43:45.740 --> 00:43:49.800
+<v Vincent Warmerdam>this thing is meant to be used from the command line. It just happens that it's written in Python
+
+00:43:49.930 --> 00:43:54.040
+<v Vincent Warmerdam>and it just happens that also it has a decent Python API. And that's the thing I actually end up
+
+00:43:54.120 --> 00:43:58.560
+<v Vincent Warmerdam>using more than stuff from the command line. That's because I do a lot of things in notebooks. So the
+
+00:43:58.700 --> 00:44:01.180
+<v Vincent Warmerdam>stuff that I tend to use is a little bit more in the Python side.
+
+00:44:01.460 --> 00:44:02.600
+<v Michael Kennedy>Sure, of course. Same here.
+
+00:44:02.620 --> 00:44:04.820
+<v Michael Kennedy>Yeah, I don't think I would use it very much on the command line.
+
+00:44:05.080 --> 00:44:11.180
+<v Michael Kennedy>But, you know, I can see using it as a step in a series of things happening on the command line,
+
+00:44:11.560 --> 00:44:15.980
+<v Michael Kennedy>like some sort of orchestration, like X, Y, ask the LLM, Z, you know?
+
+00:44:16.280 --> 00:44:20.940
+<v Vincent Warmerdam>Well, the main thing I actually use it for from the command line is you can do a git diff
+
+00:44:21.220 --> 00:44:25.860
+<v Vincent Warmerdam>on whatever you're working on and then sort of pipe that through to the LLM to make the commit message.
+
+00:44:26.120 --> 00:44:29.900
+<v Vincent Warmerdam>Like there are like these little moments like that where you do want to have a little automation,
+
+00:44:29.980 --> 00:44:34.640
+<v Vincent Warmerdam>maybe in CI and like being able to do this from a command line is definitely useful it's just not
+
+00:44:34.640 --> 00:44:38.600
+<v Vincent Warmerdam>the thing i use it for most or like if i use it that way it's a thing i automate once and then
+
+00:44:38.680 --> 00:44:44.100
+<v Vincent Warmerdam>never really look at it but the interaction really for me is more in the notebook oh yeah that's a
+
+00:44:44.260 --> 00:44:48.940
+<v Michael Kennedy>very cool librarian i definitely need for um like one thing that might be fun to point out because
+
+00:44:49.040 --> 00:44:54.040
+<v Vincent Warmerdam>that's something i built i think uh around the same time like if you were to type into google
+
+00:44:54.080 --> 00:45:01.300
+<v Vincent Warmerdam>uh smart funk and then my github alias koning a k-o-a-n-i-n-g um because it's a little
+
+00:45:02.100 --> 00:45:07.020
+<v Michael Kennedy>okay you already had it open good man i'm really good with google actually i use a start page these
+
+00:45:07.180 --> 00:45:10.920
+<v Vincent Warmerdam>days but i'm sure i could find it there oh okay here you're well you have an ergonomic keyboard
+
+00:45:11.100 --> 00:45:16.720
+<v Vincent Warmerdam>so there you go quick typing um already yeah no so like a thing i was able to build on top of uh
+
+00:45:16.860 --> 00:45:24.020
+<v Vincent Warmerdam>the thing that simon willison made and it's something that appears in the course as well
+
+00:45:24.040 --> 00:45:28.720
+<v Vincent Warmerdam>that. Yeah, there you go. So basically what this function does is you can add a decorator.
+
+00:45:30.150 --> 00:45:35.220
+<v Vincent Warmerdam>You just have a normal Python function. The inputs, you just put types on it. So you can say like,
+
+00:45:35.230 --> 00:45:40.380
+<v Vincent Warmerdam>this input is a string, this input is an integer, or what have you. You then add a decorator that
+
+00:45:40.540 --> 00:45:45.520
+<v Vincent Warmerdam>says what backend you want to use. So GPD4 or anything that Simon Willis and supports. And then
+
+00:45:45.530 --> 00:45:51.260
+<v Vincent Warmerdam>the doc string is the prompt you give to the LLM. So you can do something like, hey, I have a function
+
+00:45:51.280 --> 00:45:52.820
+<v Vincent Warmerdam>that accepts a term called paragraph.
+
+00:45:53.420 --> 00:45:53.880
+<v Vincent Warmerdam>That's a string.
+
+00:45:54.270 --> 00:45:55.960
+<v Vincent Warmerdam>And then the doc string of the function says,
+
+00:45:56.150 --> 00:45:56.660
+<v Vincent Warmerdam>summarize this.
+
+00:45:56.970 --> 00:45:59.120
+<v Vincent Warmerdam>And then lo and behold, you now have a Python function
+
+00:45:59.260 --> 00:46:00.040
+<v Vincent Warmerdam>that can do summaries.
+
+00:46:00.860 --> 00:46:01.220
+<v Michael Kennedy>I see.
+
+00:46:01.620 --> 00:46:04.880
+<v Michael Kennedy>And the doc string can be effectively a Jinja template.
+
+00:46:05.460 --> 00:46:05.520
+<v Michael Kennedy>Yes.
+
+00:46:05.820 --> 00:46:07.560
+<v Vincent Warmerdam>If you wanted to, it could be a Jinja template.
+
+00:46:08.200 --> 00:46:09.780
+<v Vincent Warmerdam>Alternatively, what you can also do
+
+00:46:10.600 --> 00:46:12.420
+<v Vincent Warmerdam>is you can also say, well, what the function returns
+
+00:46:12.660 --> 00:46:13.140
+<v Vincent Warmerdam>is the prompt.
+
+00:46:13.340 --> 00:46:14.500
+<v Vincent Warmerdam>That's also something you can do.
+
+00:46:15.060 --> 00:46:15.400
+<v Michael Kennedy>Got it.
+
+00:46:16.080 --> 00:46:18.960
+<v Vincent Warmerdam>But this is just a very quick hack for some of the stuff
+
+00:46:19.040 --> 00:46:19.940
+<v Vincent Warmerdam>that I want to do real quick.
+
+00:46:20.860 --> 00:46:22.960
+<v Vincent Warmerdam>I don't necessarily recommend other people to use this,
+
+00:46:23.090 --> 00:46:25.440
+<v Vincent Warmerdam>but this is something you can build on top of the LLM library
+
+00:46:25.620 --> 00:46:26.280
+<v Vincent Warmerdam>from Simon Willison.
+
+00:46:26.470 --> 00:46:28.100
+<v Vincent Warmerdam>So if you want to make your own syntactic sugar,
+
+00:46:28.210 --> 00:46:29.640
+<v Vincent Warmerdam>your own abstractions, it's definitely something
+
+00:46:29.760 --> 00:46:30.660
+<v Vincent Warmerdam>that you can also do.
+
+00:46:31.700 --> 00:46:33.040
+<v Vincent Warmerdam>And also, again, the name of the game here
+
+00:46:33.160 --> 00:46:33.760
+<v Vincent Warmerdam>is quick iteration.
+
+00:46:34.660 --> 00:46:37.240
+<v Vincent Warmerdam>So also feel free to think of your own tools now and again.
+
+00:46:37.290 --> 00:46:39.500
+<v Vincent Warmerdam>But you want the base layer to be as boring as possible.
+
+00:46:39.720 --> 00:46:42.460
+<v Vincent Warmerdam>And Simon Willison's library, again, does that in a good way.
+
+00:46:42.740 --> 00:46:43.340
+<v Michael Kennedy>Right, right.
+
+00:46:43.460 --> 00:46:45.360
+<v Michael Kennedy>Just don't make me think about the details.
+
+00:46:45.960 --> 00:46:46.120
+<v Michael Kennedy>Yes.
+
+00:46:46.120 --> 00:46:48.780
+<v Michael Kennedy>Let me swap out the model providers, which is actually
+
+00:46:48.800 --> 00:46:51.660
+<v Michael Kennedy>doing quite a bit, but not conceptually.
+
+00:46:51.900 --> 00:46:52.040
+<v Vincent Warmerdam>Yeah.
+
+00:46:52.530 --> 00:46:56.260
+<v Vincent Warmerdam>So again, one thing I do think at this point in time,
+
+00:46:56.330 --> 00:46:59.200
+<v Vincent Warmerdam>if you've not played around with this software stuff already,
+
+00:46:59.460 --> 00:47:01.900
+<v Vincent Warmerdam>I do recommend maybe doing that sooner rather than later.
+
+00:47:02.380 --> 00:47:03.880
+<v Vincent Warmerdam>And I think Simon Willison's approach,
+
+00:47:03.890 --> 00:47:04.880
+<v Vincent Warmerdam>if you're already a Python person,
+
+00:47:04.930 --> 00:47:06.500
+<v Vincent Warmerdam>it's probably the simplest way to get started.
+
+00:47:06.700 --> 00:47:10.400
+<v Vincent Warmerdam>But I do want to warn people in the sense of these are just tools.
+
+00:47:10.920 --> 00:47:11.440
+<v Vincent Warmerdam>Tools are useful.
+
+00:47:11.710 --> 00:47:12.120
+<v Vincent Warmerdam>Tools are great.
+
+00:47:13.220 --> 00:47:15.360
+<v Vincent Warmerdam>But at some point, it's not so much about the tools that you use,
+
+00:47:15.520 --> 00:47:16.980
+<v Vincent Warmerdam>but more about how you think about the tools,
+
+00:47:17.240 --> 00:47:19.020
+<v Vincent Warmerdam>Like the way you interact with these tools,
+
+00:47:19.060 --> 00:47:21.440
+<v Vincent Warmerdam>is it not some, like you can use a hammer
+
+00:47:21.500 --> 00:47:22.240
+<v Vincent Warmerdam>in many different ways,
+
+00:47:22.740 --> 00:47:23.640
+<v Vincent Warmerdam>but the way you think about a hammer
+
+00:47:23.780 --> 00:47:24.860
+<v Vincent Warmerdam>is like also equally important.
+
+00:47:25.020 --> 00:47:26.160
+<v Michael Kennedy>- Yeah, 100%.
+
+00:47:26.360 --> 00:47:28.760
+<v Michael Kennedy>So speaking of thinking about how this goes,
+
+00:47:29.500 --> 00:47:30.540
+<v Michael Kennedy>one of the challenges is,
+
+00:47:30.780 --> 00:47:33.340
+<v Michael Kennedy>so let's just take this example here.
+
+00:47:33.760 --> 00:47:36.180
+<v Michael Kennedy>It says, the example on your smartphone,
+
+00:47:36.600 --> 00:47:38.460
+<v Michael Kennedy>GitHub readme, it says generate summary,
+
+00:47:38.700 --> 00:47:40.500
+<v Michael Kennedy>take some text, it says generate a summary,
+
+00:47:40.600 --> 00:47:42.320
+<v Michael Kennedy>the following text, colon text.
+
+00:47:42.860 --> 00:47:43.260
+<v Michael Kennedy>- Yes, text.
+
+00:47:43.440 --> 00:47:43.920
+<v Michael Kennedy>- Super straightforward.
+
+00:47:44.480 --> 00:47:48.700
+<v Michael Kennedy>But what if you, what if you said, change the prompt a little bit said, give me all of the
+
+00:47:48.940 --> 00:47:51.940
+<v Michael Kennedy>Python libraries discussed in the following markdown content.
+
+00:47:52.500 --> 00:47:52.680
+<v Michael Kennedy>Right.
+
+00:47:53.200 --> 00:47:59.880
+<v Michael Kennedy>And do you want a novella back, like a novel back when, when really what you want is like,
+
+00:47:59.880 --> 00:48:03.100
+<v Michael Kennedy>I want a list of strings and URLs or whatever.
+
+00:48:03.100 --> 00:48:07.360
+<v Michael Kennedy>Like how do I get programmability instead of just chatability, I guess.
+
+00:48:07.680 --> 00:48:07.860
+<v Vincent Warmerdam>Yeah.
+
+00:48:08.060 --> 00:48:13.140
+<v Vincent Warmerdam>So the thing that Simon Willis's library does allow you to do,  is you are able to
+
+00:48:13.160 --> 00:48:17.920
+<v Vincent Warmerdam>say, well, I have a prompt over here, but the output that I'm supposed to get out, well, that has to be
+
+00:48:18.060 --> 00:48:22.360
+<v Vincent Warmerdam>a JSON object of the following type. And then you can use Pydantic. So you can do something like, well,
+
+00:48:22.460 --> 00:48:25.760
+<v Vincent Warmerdam>I expect a list of strings to come out over here in the case that you're trying to detect Python
+
+00:48:25.960 --> 00:48:30.840
+<v Vincent Warmerdam>libraries or Pokemon names or what have you. Or you can say, well, there's more like a classification.
+
+00:48:31.060 --> 00:48:35.720
+<v Vincent Warmerdam>I believe you can pass a literal with like only these values and that's an also constraint. And
+
+00:48:35.720 --> 00:48:41.160
+<v Vincent Warmerdam>the reason that you can do that is some of these LLMs are actually trained on specific tasks. One of
+
+00:48:41.160 --> 00:48:45.340
+<v Vincent Warmerdam>these tasks could be tool calling. Another one of these tasks that are trained for these days is
+
+00:48:45.430 --> 00:48:49.840
+<v Vincent Warmerdam>that you have to say the right word here, something, something output, structured output,
+
+00:48:51.070 --> 00:48:56.700
+<v Vincent Warmerdam>so that the LLM can sort of give a guarantee that if you declare that you get a list of strings out,
+
+00:48:56.710 --> 00:48:59.380
+<v Vincent Warmerdam>that you actually do get a list of strings out. And that's something that these things are
+
+00:48:59.760 --> 00:49:04.340
+<v Vincent Warmerdam>typically trained for. So that's something you can do. If you're using open source models,
+
+00:49:05.200 --> 00:49:09.960
+<v Vincent Warmerdam>definitely check them out. They're cool. But quality does vary, is what I will say.
+
+00:49:10.960 --> 00:49:12.460
+<v Vincent Warmerdam>So that's something they always keep in the back of your mind.
+
+00:49:12.500 --> 00:49:15.260
+<v Vincent Warmerdam>And also the more complex you make your PyDonic objects,
+
+00:49:15.440 --> 00:49:18.220
+<v Vincent Warmerdam>like if you make like a nested thing of a nested thing of a nested thing,
+
+00:49:18.420 --> 00:49:20.840
+<v Vincent Warmerdam>at some point the LLM is going to have a bit of trouble with that.
+
+00:49:21.760 --> 00:49:22.820
+<v Vincent Warmerdam>Even though PyDonic is of course great,
+
+00:49:23.040 --> 00:49:26.840
+<v Vincent Warmerdam>but like you make it harder for the LLM to do the right thing at some point.
+
+00:49:27.740 --> 00:49:30.900
+<v Vincent Warmerdam>But that's also a thing that definitely you want to use
+
+00:49:30.940 --> 00:49:32.040
+<v Vincent Warmerdam>if you're doing stuff with software.
+
+00:49:32.220 --> 00:49:34.100
+<v Vincent Warmerdam>Like the really cool thing about PyDonic is you can say,
+
+00:49:34.160 --> 00:49:36.000
+<v Vincent Warmerdam>I expect something that looks like this to come out
+
+00:49:36.500 --> 00:49:39.480
+<v Vincent Warmerdam>and you can force an LLM to also actually do that.
+
+00:49:39.640 --> 00:49:41.200
+<v Vincent Warmerdam>Like, you will get the right types that come out.
+
+00:49:41.320 --> 00:49:43.680
+<v Vincent Warmerdam>The contents might still be maybe a bit spooky.
+
+00:49:43.790 --> 00:49:45.360
+<v Vincent Warmerdam>But at least you get the right types out,
+
+00:49:45.450 --> 00:49:46.980
+<v Vincent Warmerdam>which makes it a lot more convenient to write software.
+
+00:49:47.440 --> 00:49:49.680
+<v Michael Kennedy>You can say, I can loop over the things that sent back,
+
+00:49:49.770 --> 00:49:52.540
+<v Michael Kennedy>and you're not into vague text parsing land.
+
+00:49:53.119 --> 00:49:54.800
+<v Vincent Warmerdam>Well, the main thing you get is--
+
+00:49:55.070 --> 00:49:58.100
+<v Vincent Warmerdam>I remember when the first OpenAI models sort of started coming
+
+00:49:58.170 --> 00:50:00.540
+<v Vincent Warmerdam>out, I worked back at Explosion.
+
+00:50:00.590 --> 00:50:01.820
+<v Vincent Warmerdam>We made this tool called spaCy there.
+
+00:50:02.120 --> 00:50:04.160
+<v Vincent Warmerdam>And one of the things that we were really bummed out about
+
+00:50:04.360 --> 00:50:06.220
+<v Vincent Warmerdam>was LLMs can only really produce text.
+
+00:50:06.580 --> 00:50:11.760
+<v Vincent Warmerdam>So this structural, like if you want to detect a substring in a text, for example,
+
+00:50:11.940 --> 00:50:13.380
+<v Vincent Warmerdam>which is the thing that spaCy is really good at,
+
+00:50:13.820 --> 00:50:17.860
+<v Vincent Warmerdam>then you really want to guarantee, well, I'm going to select a substring that actually did appear in the text.
+
+00:50:18.000 --> 00:50:22.180
+<v Vincent Warmerdam>I want to know exactly where it starts and exactly where it ends, and that's the span that I want to select.
+
+00:50:22.780 --> 00:50:27.460
+<v Vincent Warmerdam>So normally in NLP, text comes in and structured information comes out.
+
+00:50:27.780 --> 00:50:30.580
+<v Vincent Warmerdam>But here come these LLMs and text comes in and text comes out.
+
+00:50:30.900 --> 00:50:34.360
+<v Vincent Warmerdam>And then you've got to figure out a way to guarantee that structured output actually comes out.
+
+00:50:34.480 --> 00:50:36.800
+<v Vincent Warmerdam>So that's the thing that the LN providers also acknowledge.
+
+00:50:36.940 --> 00:50:39.200
+<v Vincent Warmerdam>So that's something that they're actually training these models for.
+
+00:50:39.300 --> 00:50:42.280
+<v Vincent Warmerdam>But I think it's a lot better these days,
+
+00:50:42.360 --> 00:50:44.360
+<v Vincent Warmerdam>but it was definitely a huge part of the problem
+
+00:50:45.060 --> 00:50:47.260
+<v Vincent Warmerdam>like three to four years ago when these things just happened.
+
+00:50:47.400 --> 00:50:48.120
+<v Vincent Warmerdam>It was super annoying.
+
+00:50:48.380 --> 00:50:52.700
+<v Michael Kennedy>So if you use Pydantic, you define a Pydantic model
+
+00:50:52.840 --> 00:50:54.320
+<v Michael Kennedy>that drives from Pydantic.basedModel.
+
+00:50:54.600 --> 00:50:57.700
+<v Michael Kennedy>You put the types, type information, fields, et cetera.
+
+00:50:58.100 --> 00:50:59.260
+<v Michael Kennedy>And then what does it do?
+
+00:50:59.360 --> 00:51:02.480
+<v Michael Kennedy>Does it say, kind of use the schema generation
+
+00:51:02.800 --> 00:51:04.200
+<v Michael Kennedy>that Pydantic already has?
+
+00:51:04.360 --> 00:51:06.240
+<v Michael Kennedy>Like people are familiar with FastAPI.
+
+00:51:06.780 --> 00:51:10.220
+<v Michael Kennedy>You set the response model, it'll do open API spec,
+
+00:51:10.380 --> 00:51:12.480
+<v Michael Kennedy>which I believe just comes more or less from Pydantic, right?
+
+00:51:12.700 --> 00:51:13.460
+<v Vincent Warmerdam>I could be.
+
+00:51:13.530 --> 00:51:16.420
+<v Vincent Warmerdam>I think it's a JSON standard in the end.
+
+00:51:16.620 --> 00:51:18.580
+<v Vincent Warmerdam>Like, you know how you can generate JSON schemas as well?
+
+00:51:18.880 --> 00:51:21.020
+<v Vincent Warmerdam>I think it's that spec that is using under the hood
+
+00:51:21.100 --> 00:51:24.220
+<v Vincent Warmerdam>that is then also giving off to OpenAI or what have you.
+
+00:51:24.310 --> 00:51:25.960
+<v Vincent Warmerdam>So I think in the end, it's a JSON spec,
+
+00:51:26.050 --> 00:51:26.960
+<v Vincent Warmerdam>but I could be wrong.
+
+00:51:27.000 --> 00:51:29.440
+<v Michael Kennedy>But it's driven by the Pydantic model.
+
+00:51:29.570 --> 00:51:31.320
+<v Michael Kennedy>And then that's given as part of the prompt.
+
+00:51:31.480 --> 00:51:32.400
+<v Michael Kennedy>Like, here's my question.
+
+00:51:32.620 --> 00:51:34.140
+<v Michael Kennedy>your answer will look like this.
+
+00:51:34.600 --> 00:51:36.560
+<v Michael Kennedy>And it uses the Pydanic, something to that effect.
+
+00:51:36.860 --> 00:51:39.020
+<v Vincent Warmerdam>Yeah, there's one small caveat there
+
+00:51:39.150 --> 00:51:41.560
+<v Vincent Warmerdam>in the sense that you can also add custom types
+
+00:51:42.160 --> 00:51:42.820
+<v Vincent Warmerdam>with Pydanic.
+
+00:51:42.830 --> 00:51:43.660
+<v Vincent Warmerdam>So you can do something like,
+
+00:51:43.690 --> 00:51:45.980
+<v Vincent Warmerdam>well, this is a non-negative integer, for example.
+
+00:51:46.440 --> 00:51:48.000
+<v Vincent Warmerdam>And you can definitely imagine that,
+
+00:51:48.260 --> 00:51:49.140
+<v Vincent Warmerdam>especially with these validations
+
+00:51:49.300 --> 00:51:50.100
+<v Vincent Warmerdam>that you can write in Python,
+
+00:51:50.520 --> 00:51:52.080
+<v Vincent Warmerdam>not everything that you can come up with there
+
+00:51:52.130 --> 00:51:53.660
+<v Vincent Warmerdam>is going to be supported by this JSON spec.
+
+00:51:54.220 --> 00:51:56.380
+<v Vincent Warmerdam>So you are going to get some of these weird edge cases
+
+00:51:56.560 --> 00:51:57.960
+<v Vincent Warmerdam>maybe where Pydanic can do more
+
+00:51:57.990 --> 00:51:59.940
+<v Vincent Warmerdam>than what the JSON spec can do on your behalf.
+
+00:52:00.420 --> 00:52:01.640
+<v Vincent Warmerdam>There is a really cool library, though,
+
+00:52:01.820 --> 00:52:04.060
+<v Vincent Warmerdam>called Instructor that actually--
+
+00:52:04.060 --> 00:52:05.380
+<v Vincent Warmerdam>Yes, I was just thinking about that.
+
+00:52:06.380 --> 00:52:08.340
+<v Vincent Warmerdam>So what they do is actually kind of cute.
+
+00:52:09.760 --> 00:52:11.280
+<v Vincent Warmerdam>The impression I have is that they acknowledge
+
+00:52:11.520 --> 00:52:13.620
+<v Vincent Warmerdam>that PyDanic can actually do a bit more than what the JSON
+
+00:52:13.760 --> 00:52:16.520
+<v Vincent Warmerdam>spec can do, especially because the validator that you write
+
+00:52:16.620 --> 00:52:18.760
+<v Vincent Warmerdam>can really be a custom whatever thing you care about.
+
+00:52:19.680 --> 00:52:21.600
+<v Vincent Warmerdam>So what they do as a trick is they say, well,
+
+00:52:21.800 --> 00:52:25.220
+<v Vincent Warmerdam>if the LLM gives me something back that doesn't get validated
+
+00:52:25.460 --> 00:52:27.500
+<v Vincent Warmerdam>by PyDanic, we take the error message,
+
+00:52:28.700 --> 00:52:29.880
+<v Vincent Warmerdam>together with the thing that we got back,
+
+00:52:30.060 --> 00:52:32.360
+<v Vincent Warmerdam>make a new prompt to the LLM and just ask it again.
+
+00:52:33.460 --> 00:52:34.740
+<v Vincent Warmerdam>And see, maybe now with the hint,
+
+00:52:34.800 --> 00:52:37.080
+<v Vincent Warmerdam>it is able to give us the proper structure back.
+
+00:52:37.300 --> 00:52:38.220
+<v Vincent Warmerdam>That's sort of the term.
+
+00:52:38.220 --> 00:52:38.440
+<v Vincent Warmerdam>It sounds silly,
+
+00:52:38.800 --> 00:52:40.800
+<v Michael Kennedy>but anyone who's done agentic AI and stuff,
+
+00:52:41.060 --> 00:52:42.600
+<v Michael Kennedy>like, you know, Claude or whatever,
+
+00:52:43.140 --> 00:52:44.800
+<v Michael Kennedy>that's a lot of the magic where you say,
+
+00:52:44.920 --> 00:52:45.500
+<v Michael Kennedy>it tried this.
+
+00:52:45.580 --> 00:52:46.300
+<v Michael Kennedy>Oh, I see.
+
+00:52:46.800 --> 00:52:47.780
+<v Michael Kennedy>I actually forgot an import.
+
+00:52:47.940 --> 00:52:48.520
+<v Michael Kennedy>Oh, I see.
+
+00:52:48.760 --> 00:52:49.760
+<v Michael Kennedy>I passed the wrong command.
+
+00:52:49.800 --> 00:52:51.020
+<v Michael Kennedy>Let me try again a different way.
+
+00:52:51.160 --> 00:52:51.800
+<v Michael Kennedy>Oh, now it's working.
+
+00:52:52.000 --> 00:52:52.440
+<v Michael Kennedy>And, you know,
+
+00:52:52.960 --> 00:52:54.700
+<v Michael Kennedy>I think there's a lot of potential with that.
+
+00:52:54.900 --> 00:52:56.200
+<v Vincent Warmerdam>So, well, definitely true.
+
+00:52:56.400 --> 00:52:59.280
+<v Vincent Warmerdam>The one thing I think is safe to say at this point,
+
+00:52:59.380 --> 00:53:00.900
+<v Vincent Warmerdam>although another researcher, right?
+
+00:53:01.010 --> 00:53:02.140
+<v Vincent Warmerdam>So don't pin me down on this.
+
+00:53:02.820 --> 00:53:05.880
+<v Vincent Warmerdam>That library did originate from an early era of LLMs
+
+00:53:05.980 --> 00:53:07.440
+<v Vincent Warmerdam>when the structured stuff wasn't really
+
+00:53:07.530 --> 00:53:08.620
+<v Vincent Warmerdam>being trained for yet.
+
+00:53:09.500 --> 00:53:12.640
+<v Vincent Warmerdam>And it is my impression that LLMs have gotten a fair bit better
+
+00:53:13.060 --> 00:53:15.620
+<v Vincent Warmerdam>at this structured task at this point.
+
+00:53:15.800 --> 00:53:18.680
+<v Vincent Warmerdam>So you could argue that maybe that library is solving
+
+00:53:18.780 --> 00:53:20.900
+<v Vincent Warmerdam>a solved problem with the technique that they've got.
+
+00:53:21.320 --> 00:53:22.600
+<v Vincent Warmerdam>But I still don't want to discount it,
+
+00:53:22.630 --> 00:53:25.100
+<v Vincent Warmerdam>because you inevitably, at some point,
+
+00:53:25.100 --> 00:53:27.060
+<v Vincent Warmerdam>you might want to go for a very lightweight model
+
+00:53:27.160 --> 00:53:29.340
+<v Vincent Warmerdam>that you can run locally that isn't fine-tuned
+
+00:53:29.340 --> 00:53:33.740
+<v Vincent Warmerdam>structured output task. And in that situation, this technique can actually do a lot of good.
+
+00:53:33.910 --> 00:53:37.760
+<v Vincent Warmerdam>Like you might be prompting the LLM for like three times, but you might be able to get away
+
+00:53:37.850 --> 00:53:41.320
+<v Vincent Warmerdam>with that because the model is just so much lighter because it doesn't have to do all those tasks that
+
+00:53:41.320 --> 00:53:45.960
+<v Michael Kennedy>those big LLMs are trained for. Right. Especially if you're running on your machine or you're
+
+00:53:46.030 --> 00:53:49.540
+<v Michael Kennedy>self-hosting the model, you're not like, oh, it's going to cost us so much money. It's just,
+
+00:53:49.860 --> 00:53:53.720
+<v Michael Kennedy>it'll take a little longer, but it's fine. Yeah. So like there's a lot of support for
+
+00:53:53.740 --> 00:53:55.720
+<v Vincent Warmerdam>instructor. There's also Olama support for
+
+00:53:55.920 --> 00:53:57.760
+<v Vincent Warmerdam>the LM library from Simon Willison,
+
+00:53:57.920 --> 00:53:59.580
+<v Vincent Warmerdam>by the way. But yeah,
+
+00:54:00.200 --> 00:54:01.740
+<v Vincent Warmerdam>you can definitely imagine this is still going
+
+00:54:01.740 --> 00:54:03.680
+<v Vincent Warmerdam>to be relevant with the Olama stuff going forward.
+
+00:54:04.220 --> 00:54:05.960
+<v Vincent Warmerdam>And also, it's a reasonable
+
+00:54:06.260 --> 00:54:07.220
+<v Vincent Warmerdam>trick if you think about it.
+
+00:54:08.280 --> 00:54:09.960
+<v Vincent Warmerdam>The main thing that we do is we just add a retry
+
+00:54:10.080 --> 00:54:11.760
+<v Vincent Warmerdam>mechanic to the structured outputs by using
+
+00:54:11.980 --> 00:54:13.400
+<v Vincent Warmerdam>the PyDonic validator, effectively.
+
+00:54:13.859 --> 00:54:15.800
+<v Michael Kennedy>I mean, think about what you probably do, certainly what
+
+00:54:15.840 --> 00:54:17.700
+<v Michael Kennedy>I do when I'm working with ChatGPT or something.
+
+00:54:18.040 --> 00:54:19.740
+<v Michael Kennedy>It gives me a wrong answer like, no, this is not what I
+
+00:54:19.860 --> 00:54:21.680
+<v Michael Kennedy>wanted. This is what I wanted. It's like, oh, okay.
+
+00:54:21.940 --> 00:54:22.160
+<v Michael Kennedy>I see.
+
+00:54:22.300 --> 00:54:24.820
+<v Michael Kennedy>And it's kind of automating that, more or less.
+
+00:54:25.080 --> 00:54:26.660
+<v Vincent Warmerdam>It's certainly an attempt, yeah.
+
+00:54:27.860 --> 00:54:30.160
+<v Vincent Warmerdam>In my experience, I have also seen moments
+
+00:54:30.260 --> 00:54:33.640
+<v Vincent Warmerdam>when it sends the same error back five times,
+
+00:54:33.680 --> 00:54:34.600
+<v Vincent Warmerdam>and then it just kind of fails.
+
+00:54:34.780 --> 00:54:36.620
+<v Vincent Warmerdam>So there is also a limit to the retry mechanic.
+
+00:54:37.100 --> 00:54:37.580
+<v Michael Kennedy>Sure, sure.
+
+00:54:38.060 --> 00:54:40.700
+<v Michael Kennedy>It's a little bit like tenacity or stamina.
+
+00:54:41.180 --> 00:54:41.360
+<v Michael Kennedy>Exactly.
+
+00:54:41.780 --> 00:54:43.160
+<v Michael Kennedy>APIs or whatever.
+
+00:54:43.500 --> 00:54:45.380
+<v Michael Kennedy>It uses tenacity under the hood, if I'm not mistaken.
+
+00:54:45.640 --> 00:54:47.680
+<v Michael Kennedy>So there's definitely that mechanism in there.
+
+00:54:47.920 --> 00:54:48.240
+<v Michael Kennedy>Nice.
+
+00:54:48.540 --> 00:54:49.400
+<v Michael Kennedy>I just-- didn't work.
+
+00:54:49.520 --> 00:54:49.860
+<v Michael Kennedy>Try it again.
+
+00:54:50.080 --> 00:54:51.500
+<v Michael Kennedy>It's like turn it off and turn it on again.
+
+00:54:51.680 --> 00:54:52.260
+<v Michael Kennedy>See if it works now?
+
+00:54:52.600 --> 00:54:53.260
+<v Michael Kennedy>Yep, pretty much.
+
+00:54:53.460 --> 00:54:53.540
+<v Michael Kennedy>Television.
+
+00:54:54.020 --> 00:54:55.600
+<v Michael Kennedy>Yeah, a little more smart than that, though,
+
+00:54:55.660 --> 00:54:57.740
+<v Michael Kennedy>because it does validate and return the error.
+
+00:54:58.080 --> 00:54:58.920
+<v Michael Kennedy>So super cool.
+
+00:54:59.180 --> 00:54:59.300
+<v Michael Kennedy>Yep.
+
+00:54:59.660 --> 00:54:59.840
+<v Michael Kennedy>Okay.
+
+00:55:00.580 --> 00:55:02.660
+<v Michael Kennedy>Have you worked with, I guess, I don't know,
+
+00:55:02.940 --> 00:55:04.960
+<v Michael Kennedy>higher order programming models?
+
+00:55:05.160 --> 00:55:07.920
+<v Michael Kennedy>So, you know, I saw Samuel Colvin yesterday
+
+00:55:08.260 --> 00:55:10.000
+<v Michael Kennedy>talking about Pydantic AI.
+
+00:55:10.400 --> 00:55:14.880
+<v Michael Kennedy>I saw on X, I saw Sidney Ruckel talking about
+
+00:55:15.080 --> 00:55:17.040
+<v Michael Kennedy>some big release, like a 1.0 release
+
+00:55:17.040 --> 00:55:18.020
+<v Michael Kennedy>or something at LangChain.
+
+00:55:18.520 --> 00:55:19.700
+<v Michael Kennedy>What are your thoughts on some of these
+
+00:55:19.680 --> 00:55:21.780
+<v Michael Kennedy>higher order orchestration libraries?
+
+00:55:22.880 --> 00:55:25.700
+<v Vincent Warmerdam>I mean, the main thing for me, at least,
+
+00:55:26.200 --> 00:55:28.340
+<v Vincent Warmerdam>this was a demo I did do with the Pydanic AI one.
+
+00:55:29.360 --> 00:55:33.740
+<v Vincent Warmerdam>I do think types are quite powerful when you think of LLMs.
+
+00:55:34.600 --> 00:55:37.880
+<v Vincent Warmerdam>There's a live stream you can check on the Marimo YouTube
+
+00:55:38.060 --> 00:55:39.360
+<v Vincent Warmerdam>if you're keen to see a full demo.
+
+00:55:39.900 --> 00:55:41.400
+<v Vincent Warmerdam>But let me just sketch you a problem that
+
+00:55:41.400 --> 00:55:42.380
+<v Vincent Warmerdam>used to be really hard.
+
+00:55:42.600 --> 00:55:44.820
+<v Vincent Warmerdam>Six years ago, we used to work at this company called Raza.
+
+00:55:45.060 --> 00:55:46.800
+<v Vincent Warmerdam>We work on chatbot software.
+
+00:55:47.240 --> 00:55:49.640
+<v Vincent Warmerdam>And a thing that was really hard is you--
+
+00:55:49.660 --> 00:55:51.160
+<v Vincent Warmerdam>Let's say you're a chat bot, you can order a pizza.
+
+00:55:51.900 --> 00:55:53.920
+<v Vincent Warmerdam>So you can do things like, yep, that's the one.
+
+00:55:54.380 --> 00:55:56.320
+<v Vincent Warmerdam>It's like also one of the PyDonic AI engineers,
+
+00:55:56.800 --> 00:55:58.600
+<v Vincent Warmerdam>and he's also the creator of Starlet, by the way.
+
+00:55:58.820 --> 00:56:00.580
+<v Vincent Warmerdam>Cool project, Mariemost built on top of Starlet.
+
+00:56:01.519 --> 00:56:02.580
+<v Vincent Warmerdam>Main maintainer of that project.
+
+00:56:02.860 --> 00:56:04.700
+<v Vincent Warmerdam>He deserves to get more high fives from the community,
+
+00:56:04.940 --> 00:56:05.980
+<v Vincent Warmerdam>so do you want to point it out?
+
+00:56:07.420 --> 00:56:08.840
+<v Vincent Warmerdam>Well, let's say you're working on a pizza bot,
+
+00:56:09.600 --> 00:56:11.200
+<v Vincent Warmerdam>and okay, someone is ordering a pizza.
+
+00:56:11.940 --> 00:56:13.180
+<v Vincent Warmerdam>Suppose you go to the bot and you say,
+
+00:56:13.320 --> 00:56:15.480
+<v Vincent Warmerdam>"Hey, I want to order a pepperoni pizza."
+
+00:56:15.860 --> 00:56:17.160
+<v Vincent Warmerdam>But you can imagine there's a pizza type,
+
+00:56:17.540 --> 00:56:19.200
+<v Vincent Warmerdam>and a pizza type says, "What's the kind of pizza?
+
+00:56:19.480 --> 00:56:20.360
+<v Vincent Warmerdam>What's the size of the pizza?
+
+00:56:20.840 --> 00:56:21.820
+<v Vincent Warmerdam>And do you want to have extra toppings?
+
+00:56:22.200 --> 00:56:23.900
+<v Vincent Warmerdam>And that has to be a list of ingredients, let's say.
+
+00:56:24.240 --> 00:56:28.880
+<v Vincent Warmerdam>But if I tell you, hey, you want to have a pepperoni pizza,
+
+00:56:29.060 --> 00:56:30.880
+<v Vincent Warmerdam>but I don't know the size yet, well, then I
+
+00:56:30.940 --> 00:56:33.120
+<v Vincent Warmerdam>need the LLM to ask a good follow-up question.
+
+00:56:33.500 --> 00:56:35.380
+<v Vincent Warmerdam>OK, how are you going to build that logic?
+
+00:56:35.880 --> 00:56:37.420
+<v Vincent Warmerdam>Because that can get quite gnarly quite quickly,
+
+00:56:37.660 --> 00:56:39.140
+<v Vincent Warmerdam>especially if, in this case, the pizza is simple.
+
+00:56:39.280 --> 00:56:40.740
+<v Vincent Warmerdam>But you can come up with a complicated object,
+
+00:56:41.020 --> 00:56:42.300
+<v Vincent Warmerdam>like a complicated form almost.
+
+00:56:42.840 --> 00:56:43.120
+<v Vincent Warmerdam>And then--
+
+00:56:43.120 --> 00:56:43.520
+<v Michael Kennedy>Right, right.
+
+00:56:43.840 --> 00:56:46.560
+<v Michael Kennedy>I only need to ask this question if they've answered that one
+
+00:56:46.620 --> 00:56:47.240
+<v Michael Kennedy>in that way.
+
+00:56:47.720 --> 00:56:49.380
+<v Michael Kennedy>Right, it could get really tricky, yeah.
+
+00:56:49.740 --> 00:56:50.720
+<v Vincent Warmerdam>Well, and then the question is,
+
+00:56:50.920 --> 00:56:53.340
+<v Vincent Warmerdam>how can you actually get the LLM to do this for you?
+
+00:56:53.740 --> 00:56:55.220
+<v Vincent Warmerdam>And there's a trick that you can do with a type,
+
+00:56:55.420 --> 00:56:56.200
+<v Vincent Warmerdam>because what you can say is,
+
+00:56:56.580 --> 00:56:58.840
+<v Vincent Warmerdam>well, the response from the LLM has to be of type pizza,
+
+00:56:59.579 --> 00:57:00.720
+<v Vincent Warmerdam>or bar string.
+
+00:57:01.300 --> 00:57:03.020
+<v Vincent Warmerdam>And then if the prompt says something along the lines of,
+
+00:57:03.100 --> 00:57:05.600
+<v Vincent Warmerdam>well, parse the output of the user such that it is a pizza,
+
+00:57:06.020 --> 00:57:08.200
+<v Vincent Warmerdam>but then if this validation error occurs,
+
+00:57:08.320 --> 00:57:09.980
+<v Vincent Warmerdam>oh, how do you express that logic?
+
+00:57:10.220 --> 00:57:11.320
+<v Vincent Warmerdam>Well, you can express it with a type.
+
+00:57:11.580 --> 00:57:12.480
+<v Vincent Warmerdam>You just say, this is a string,
+
+00:57:12.960 --> 00:57:14.980
+<v Vincent Warmerdam>or it's the type that I'm actually interested in the pizza.
+
+00:57:15.420 --> 00:57:16.680
+<v Vincent Warmerdam>And then the LLM has to figure out,
+
+00:57:16.860 --> 00:57:20.500
+<v Vincent Warmerdam>is the response either going to be the string where I'm asking the user for missing information
+
+00:57:21.040 --> 00:57:24.600
+<v Vincent Warmerdam>or is it going to be the pizza object and if it's a pizza object then the code will actually talk
+
+00:57:24.740 --> 00:57:30.480
+<v Vincent Warmerdam>to the back end so you do get to rethink how typing works because we have llms at our disposal now you
+
+00:57:30.480 --> 00:57:34.700
+<v Vincent Warmerdam>can actually have the llm handle some of that logic as long as your type is like strict about
+
+00:57:34.710 --> 00:57:40.360
+<v Vincent Warmerdam>it or like well defined i should say um it's it's a bit of a weird advanced feature of types and llms
+
+00:57:40.540 --> 00:57:46.240
+<v Vincent Warmerdam>but i can definitely imagine uh some of the pydantic ai stuff does have does use this trick in order
+
+00:57:46.140 --> 00:57:51.020
+<v Vincent Warmerdam>to perform some of the higher order stuff and maybe you don't need a full framework as long as you are
+
+00:57:51.180 --> 00:57:56.520
+<v Vincent Warmerdam>really um like deliberate about your types is what i that that's kind of the mentality i try to
+
+00:57:56.520 --> 00:58:00.320
+<v Vincent Warmerdam>have right now like let's interesting let's not worry about like the big framework just yet if we
+
+00:58:00.320 --> 00:58:04.000
+<v Vincent Warmerdam>can just focus on the right types and make sure that all that stuff is kind of sane then you also
+
+00:58:04.080 --> 00:58:08.940
+<v Michael Kennedy>keep the extractions at bay which is i think also convenient especially early on it sounds a little
+
+00:58:09.100 --> 00:58:15.400
+<v Michael Kennedy>bit like an analogy you might be able to draw with databases like you could have like a really strong
+
+00:58:15.420 --> 00:58:21.880
+<v Michael Kennedy>structured Postgres or relational database where the database thing, aka the AI, is in charge of it.
+
+00:58:22.140 --> 00:58:29.980
+<v Michael Kennedy>Or you could be using an ODM or ORM where the code will only accept responses, right? So like,
+
+00:58:29.990 --> 00:58:34.100
+<v Michael Kennedy>for example, you can get away talking to a document database if you have strongly typed
+
+00:58:34.260 --> 00:58:37.740
+<v Michael Kennedy>models. If you're just passing dictionaries, you're going to end up in a bad place real quick
+
+00:58:38.100 --> 00:58:42.480
+<v Michael Kennedy>because something's not going to match, right? So it's kind of like the Pydanic thing is being a
+
+00:58:42.520 --> 00:58:46.220
+<v Michael Kennedy>check for if it's not quite perfect. I don't know. I feel like there's an analogy there.
+
+00:58:46.360 --> 00:58:52.520
+<v Vincent Warmerdam>There's a bit of an analogy there. The main thing with the LLM is like, oh, how much of the logic do
+
+00:58:52.580 --> 00:58:57.140
+<v Vincent Warmerdam>you want to control yourself as a guarantee? And how much would you like the LLM to do it? And
+
+00:58:57.540 --> 00:59:02.080
+<v Vincent Warmerdam>oh, that's always kind of a struggle. Like what is the right glue for that? And it turns out that
+
+00:59:02.240 --> 00:59:07.740
+<v Vincent Warmerdam>Pydantic is in a very funny, unique position to say, how about we just use types? And that actually
+
+00:59:07.760 --> 00:59:08.420
+<v Michael Kennedy>It just kind of works.
+
+00:59:08.859 --> 00:59:14.100
+<v Michael Kennedy>How ironic is that that that's such a popular thing coming out of a effectively untyped language?
+
+00:59:15.300 --> 00:59:15.600
+<v Vincent Warmerdam>Yeah.
+
+00:59:16.140 --> 00:59:17.460
+<v Michael Kennedy>Maybe that's why it's so popular.
+
+00:59:18.040 --> 00:59:19.100
+<v Michael Kennedy>I think it partly is.
+
+00:59:19.320 --> 00:59:23.100
+<v Vincent Warmerdam>I mean, it's my impression that there's a lot of this stuff also happening on the JavaScript
+
+00:59:23.300 --> 00:59:24.120
+<v Vincent Warmerdam>side of things, if I'm honest.
+
+00:59:24.400 --> 00:59:27.100
+<v Vincent Warmerdam>Now, for the JavaScript side of things, the argument is, of course, oh, you can also build
+
+00:59:27.100 --> 00:59:30.380
+<v Vincent Warmerdam>the web UIs a bit easier and the user experience and that whole story.
+
+00:59:30.920 --> 00:59:32.340
+<v Vincent Warmerdam>But they also do a lot of this validation stuff.
+
+00:59:32.420 --> 00:59:34.420
+<v Vincent Warmerdam>I forget the library, but there's also--
+
+00:59:35.400 --> 00:59:36.700
+<v Vincent Warmerdam>I'm learning a little bit of JavaScript now.
+
+00:59:37.100 --> 00:59:40.100
+<v Vincent Warmerdam>there's actually pydantic things happening in JavaScript land as well.
+
+00:59:40.460 --> 00:59:42.100
+<v Michael Kennedy>Yeah, it's probably jidantic.
+
+00:59:44.680 --> 00:59:45.340
+<v Vincent Warmerdam>Just-dantic.
+
+00:59:46.600 --> 00:59:48.560
+<v Vincent Warmerdam>Just-dantic, yeah, j-s-dantic.
+
+00:59:49.340 --> 00:59:50.820
+<v Vincent Warmerdam>Or TypeScript or whatever.
+
+00:59:50.900 --> 00:59:54.240
+<v Vincent Warmerdam>But there's also like ORM libraries for JavaScript that are like type E,
+
+00:59:54.300 --> 00:59:56.200
+<v Vincent Warmerdam>but not like super TypeScript just yet.
+
+00:59:56.420 --> 00:59:59.420
+<v Michael Kennedy>Yeah, there's a lot of interesting analogies from the JavaScript space for us.
+
+00:59:59.740 --> 01:00:03.680
+<v Michael Kennedy>You know, like the whole TypeScript team just rewrote everything in Go,
+
+01:00:04.280 --> 01:00:06.700
+<v Michael Kennedy>whereas we're seeing a lot of stuff in Python being modified.
+
+01:00:06.820 --> 01:00:12.600
+<v Michael Kennedy>Rust. Rust. Yeah, exactly. So pretty interesting. But let's, let's close this out a little bit with
+
+01:00:12.740 --> 01:00:18.240
+<v Michael Kennedy>like running some of our own models. Okay. So clearly there's Anthropic, there's OpenAI,
+
+01:00:18.620 --> 01:00:22.380
+<v Michael Kennedy>there's, you know, all the big, huge foundational models, but some of these things we're talking
+
+01:00:22.560 --> 01:00:27.080
+<v Michael Kennedy>about, it's like this identity schema validation type of thing. And so on, you know, maybe we could,
+
+01:00:27.340 --> 01:00:30.680
+<v Michael Kennedy>as you said, get away with running a smaller model, maybe small enough that we could run it
+
+01:00:30.700 --> 01:00:39.080
+<v Michael Kennedy>ourselves on our servers or on my Mac mini here m2 pro 32 gigs ram i have the um the open ai
+
+01:00:39.900 --> 01:00:45.060
+<v Michael Kennedy>20 billion parameter model running as like my my default llm for any my code that i write that
+
+01:00:45.060 --> 01:00:50.480
+<v Vincent Warmerdam>needs to talk to an llm so um yeah so we actually have a video on the maroon channel that one but
+
+01:00:51.020 --> 01:00:56.200
+<v Vincent Warmerdam>go check that out later but basically i've recorded that link we'll put in the show notes yeah no so
+
+01:00:56.220 --> 01:01:01.060
+<v Vincent Warmerdam>I kind of find myself exploring all these different open source LLMs like once every two months or so.
+
+01:01:01.190 --> 01:01:06.300
+<v Vincent Warmerdam>And then Marimo has a couple of interesting integrations that makes it really easy to either hook into Olama or,
+
+01:01:06.490 --> 01:01:09.580
+<v Vincent Warmerdam>and that's like the only thing I might change on the course that we made,
+
+01:01:09.860 --> 01:01:11.500
+<v Vincent Warmerdam>there's now also the service called Open Router.
+
+01:01:11.790 --> 01:01:13.160
+<v Vincent Warmerdam>Like I don't know if you've ever seen that one.
+
+01:01:13.170 --> 01:01:13.880
+<v Michael Kennedy>Yes, I've heard of it.
+
+01:01:14.779 --> 01:01:17.180
+<v Michael Kennedy>Because I was looking at Klein.bot.
+
+01:01:17.290 --> 01:01:18.380
+<v Michael Kennedy>Are you familiar with Klein.bot?
+
+01:01:18.380 --> 01:01:18.600
+<v Vincent Warmerdam>Oh, yeah.
+
+01:01:19.080 --> 01:01:19.460
+<v Michael Kennedy>Klein is cool.
+
+01:01:19.720 --> 01:01:20.320
+<v Michael Kennedy>Klein is really cool.
+
+01:01:20.680 --> 01:01:22.000
+<v Vincent Warmerdam>I've been using that for a bit.
+
+01:01:22.980 --> 01:01:24.040
+<v Vincent Warmerdam>Tell me what Klein is real quick.
+
+01:01:24.460 --> 01:01:28.080
+<v Vincent Warmerdam>So Klein is basically Copilot for VS Code,
+
+01:01:28.130 --> 01:01:29.100
+<v Vincent Warmerdam>but the one thing that they do
+
+01:01:29.110 --> 01:01:30.840
+<v Vincent Warmerdam>is they really let you do any model,
+
+01:01:31.160 --> 01:01:31.900
+<v Vincent Warmerdam>like just plug it in.
+
+01:01:32.280 --> 01:01:33.780
+<v Vincent Warmerdam>And they are really strict about plan mode
+
+01:01:33.950 --> 01:01:36.060
+<v Vincent Warmerdam>versus like run mode, if it makes sense.
+
+01:01:36.260 --> 01:01:37.100
+<v Vincent Warmerdam>So you really got to,
+
+01:01:37.560 --> 01:01:39.340
+<v Vincent Warmerdam>and one, the UI is kind of cool.
+
+01:01:39.410 --> 01:01:41.440
+<v Vincent Warmerdam>So like every time that you're like planning
+
+01:01:41.490 --> 01:01:42.040
+<v Vincent Warmerdam>or doing whatever,
+
+01:01:42.190 --> 01:01:45.060
+<v Vincent Warmerdam>you kind of see the progress bar of your context.
+
+01:01:45.510 --> 01:01:47.060
+<v Vincent Warmerdam>And then you also see how much money it costs.
+
+01:01:47.200 --> 01:01:48.880
+<v Vincent Warmerdam>So you're like always aware of the fact that like,
+
+01:01:49.000 --> 01:01:50.720
+<v Vincent Warmerdam>okay, this thing is costing me bucks now.
+
+01:01:51.759 --> 01:01:54.220
+<v Vincent Warmerdam>And it's just a refreshing take on GitHub Copilot.
+
+01:01:54.440 --> 01:01:57.320
+<v Vincent Warmerdam>And I will say, you can't do sessions in parallel,
+
+01:01:57.430 --> 01:01:59.980
+<v Vincent Warmerdam>because it is, I think, at the moment, still stuck to the VS Code
+
+01:02:00.320 --> 01:02:01.080
+<v Vincent Warmerdam>extension ecosystem.
+
+01:02:01.520 --> 01:02:02.040
+<v Vincent Warmerdam>Could be wrong with that.
+
+01:02:02.140 --> 01:02:04.100
+<v Michael Kennedy>They just introduced a CLI.
+
+01:02:04.540 --> 01:02:05.220
+<v Vincent Warmerdam>Ah, there you go.
+
+01:02:05.500 --> 01:02:06.000
+<v Michael Kennedy>There you go.
+
+01:02:06.090 --> 01:02:07.160
+<v Michael Kennedy>I bet you can do it with that.
+
+01:02:07.400 --> 01:02:08.740
+<v Vincent Warmerdam>Yeah, so that's also--
+
+01:02:09.140 --> 01:02:11.320
+<v Vincent Warmerdam>the main thing that drew me in was the whole, oh,
+
+01:02:11.720 --> 01:02:14.480
+<v Vincent Warmerdam>they're very strict about plan mode versus Go mode,
+
+01:02:14.870 --> 01:02:16.300
+<v Vincent Warmerdam>which I think is definitely super useful.
+
+01:02:17.250 --> 01:02:18.720
+<v Michael Kennedy>And on top of that, you have some nice UI.
+
+01:02:19.020 --> 01:02:20.920
+<v Michael Kennedy>Yeah, it's also real similar to Cursor and others.
+
+01:02:21.440 --> 01:02:23.080
+<v Michael Kennedy>And I think it's a big selling point.
+
+01:02:23.180 --> 01:02:27.980
+<v Michael Kennedy>open source and they don't charge for inference so you just put in your api key and it just just
+
+01:02:28.100 --> 01:02:31.840
+<v Michael Kennedy>passes through but you're right they do have like the as it's thinking it's got a little tick tick
+
+01:02:31.880 --> 01:02:37.640
+<v Michael Kennedy>tick price of this opera and it's like oh it's up to three cents five you know it's just interesting
+
+01:02:37.840 --> 01:02:41.480
+<v Vincent Warmerdam>to watch it go you also it's kind of like the fibonacci sequence you kind of realize that it's
+
+01:02:41.680 --> 01:02:45.700
+<v Vincent Warmerdam>additive so it's like oh i've spent like half a dollar now oh and the next problem is going to be
+
+01:02:45.760 --> 01:02:51.420
+<v Vincent Warmerdam>half a dollar plus extra the next one's going to be like that extra exactly it makes you manage your
+
+01:02:51.420 --> 01:02:52.440
+<v Michael Kennedy>your context size real well.
+
+01:02:53.040 --> 01:02:54.720
+<v Michael Kennedy>So anyway, OK, that's a bit of a diversion.
+
+01:02:54.790 --> 01:02:56.580
+<v Michael Kennedy>But I think this is a fun tool to shout out.
+
+01:02:57.140 --> 01:02:57.600
+<v Vincent Warmerdam>No, I agree.
+
+01:02:57.780 --> 01:03:00.100
+<v Michael Kennedy>So the reason I brought this up is I
+
+01:03:00.340 --> 01:03:02.200
+<v Michael Kennedy>saw they were number one on Open Router.
+
+01:03:02.280 --> 01:03:03.340
+<v Michael Kennedy>I'm like, wait, what's Open Router?
+
+01:03:03.880 --> 01:03:06.400
+<v Vincent Warmerdam>Yeah, so Open Router is basically you have one API key,
+
+01:03:06.620 --> 01:03:09.240
+<v Vincent Warmerdam>and then they will route to any LLM that you like.
+
+01:03:09.760 --> 01:03:11.140
+<v Vincent Warmerdam>And one thing that's really cool about it
+
+01:03:11.230 --> 01:03:12.920
+<v Vincent Warmerdam>is that if there's a new open source model
+
+01:03:13.060 --> 01:03:15.340
+<v Vincent Warmerdam>that you see all at Twitter and YouTube rave about,
+
+01:03:15.820 --> 01:03:16.780
+<v Vincent Warmerdam>it'll be on Open Router.
+
+01:03:17.060 --> 01:03:18.160
+<v Vincent Warmerdam>And then you can just give it a spin.
+
+01:03:18.780 --> 01:03:21.540
+<v Vincent Warmerdam>If you have, let's say, stuff in your cache,
+
+01:03:21.550 --> 01:03:23.720
+<v Vincent Warmerdam>and you've got a couple of functions that you use for evaluation,
+
+01:03:24.070 --> 01:03:25.100
+<v Vincent Warmerdam>and you've got a setup for that,
+
+01:03:25.420 --> 01:03:29.200
+<v Vincent Warmerdam>then it's just changing a single string to give a new LLM model a try.
+
+01:03:29.310 --> 01:03:31.440
+<v Vincent Warmerdam>And they will make sure everything is nicely routed.
+
+01:03:32.260 --> 01:03:34.420
+<v Vincent Warmerdam>And that's like the whole service also, basically.
+
+01:03:34.870 --> 01:03:38.980
+<v Vincent Warmerdam>I think they add like a 5% fee hike or something like that,
+
+01:03:39.010 --> 01:03:42.160
+<v Vincent Warmerdam>but they've got all sorts of GPU providers competing for the lowest price.
+
+01:03:42.770 --> 01:03:46.020
+<v Vincent Warmerdam>So they do all the routing to all the LLM models,
+
+01:03:46.110 --> 01:03:47.400
+<v Vincent Warmerdam>but also the open source ones.
+
+01:03:47.450 --> 01:03:48.540
+<v Vincent Warmerdam>And that's the main convenient bit.
+
+01:03:48.840 --> 01:03:54.460
+<v Vincent Warmerdam>Because I might not have-- so it's partially that I don't have the biggest GPU for the biggest models,
+
+01:03:55.020 --> 01:03:57.000
+<v Vincent Warmerdam>but it's really convenient to just do kind of a for loop.
+
+01:03:57.310 --> 01:04:02.600
+<v Vincent Warmerdam>Like, okay, take the 7B model from Qwenn, the 14B model, and just loop over all of them,
+
+01:04:02.690 --> 01:04:06.860
+<v Vincent Warmerdam>and see if there's like a sweet spot as far as like quality is concerned and also model size.
+
+01:04:07.040 --> 01:04:11.600
+<v Vincent Warmerdam>Like those kinds of experiments become a whole lot simpler if you just have one API that has all the models.
+
+01:04:11.690 --> 01:04:13.140
+<v Vincent Warmerdam>And OpenRouter kind of gets you there.
+
+01:04:13.380 --> 01:04:14.720
+<v Michael Kennedy>Yeah, okay, very neat.
+
+01:04:14.960 --> 01:04:16.420
+<v Vincent Warmerdam>And it's also why Klein likes using it.
+
+01:04:16.680 --> 01:04:17.980
+<v Vincent Warmerdam>So they have a direct connection with Klein.
+
+01:04:18.540 --> 01:04:20.020
+<v Vincent Warmerdam>Just in the user interface, you can say,
+
+01:04:20.100 --> 01:04:21.440
+<v Vincent Warmerdam>well, I want to have this model from Open Router.
+
+01:04:21.740 --> 01:04:23.560
+<v Vincent Warmerdam>Just click, click, click, and it's all sort of ready to go.
+
+01:04:24.030 --> 01:04:24.800
+<v Vincent Warmerdam>But that's their service.
+
+01:04:25.140 --> 01:04:25.880
+<v Michael Kennedy>OK, very neat.
+
+01:04:26.160 --> 01:04:29.820
+<v Michael Kennedy>So maybe for people who haven't run their own models,
+
+01:04:30.060 --> 01:04:31.660
+<v Michael Kennedy>there's a couple of options.
+
+01:04:32.240 --> 01:04:33.600
+<v Michael Kennedy>Sounds like you recommend Olama.
+
+01:04:34.020 --> 01:04:35.280
+<v Vincent Warmerdam>I mean, that's the one that I have used.
+
+01:04:35.720 --> 01:04:37.340
+<v Vincent Warmerdam>You've used LM Studio, I think?
+
+01:04:37.560 --> 01:04:40.040
+<v Michael Kennedy>I use LM Studio because LM Studio
+
+01:04:40.240 --> 01:04:42.580
+<v Michael Kennedy>has this UI for discovering and setting them up
+
+01:04:42.580 --> 01:04:43.940
+<v Michael Kennedy>and playing and configuring them.
+
+01:04:43.990 --> 01:04:45.660
+<v Michael Kennedy>But then you can just say, run in dev mode,
+
+01:04:45.820 --> 01:04:47.540
+<v Michael Kennedy>and it just runs, and here we go,
+
+01:04:47.850 --> 01:04:49.620
+<v Michael Kennedy>an open AI compatible--
+
+01:04:49.820 --> 01:04:50.680
+<v Michael Kennedy>- There you go. - API endpoint
+
+01:04:50.970 --> 01:04:51.700
+<v Michael Kennedy>on my local network.
+
+01:04:51.950 --> 01:04:54.660
+<v Michael Kennedy>And so I can just point anything that can do ChatGPT,
+
+01:04:54.800 --> 01:04:56.640
+<v Michael Kennedy>I can point it at this, whatever's running there.
+
+01:04:56.650 --> 01:04:59.360
+<v Michael Kennedy>And I was running the GPT OSS 20 billion one
+
+01:04:59.500 --> 01:05:00.020
+<v Michael Kennedy>last time I tried.
+
+01:05:00.480 --> 01:05:00.960
+<v Michael Kennedy>- There you go.
+
+01:05:01.230 --> 01:05:01.320
+<v Vincent Warmerdam>Okay.
+
+01:05:01.680 --> 01:05:03.880
+<v Vincent Warmerdam>So Ollama also has like a very similar thing.
+
+01:05:04.520 --> 01:05:06.140
+<v Vincent Warmerdam>My impression is that LM Studio in the end
+
+01:05:06.200 --> 01:05:06.880
+<v Vincent Warmerdam>is like pretty similar,
+
+01:05:07.040 --> 01:05:08.420
+<v Vincent Warmerdam>just has a slightly different UI.
+
+01:05:09.040 --> 01:05:10.200
+<v Vincent Warmerdam>It's a bit more of an app, I suppose.
+
+01:05:10.350 --> 01:05:12.840
+<v Vincent Warmerdam>Like Ollama is definitely more of a command line utility.
+
+01:05:13.960 --> 01:05:15.220
+<v Vincent Warmerdam>Does the job though, I would say,
+
+01:05:15.340 --> 01:05:18.380
+<v Vincent Warmerdam>but it doesn't have that much to offer in the UI department.
+
+01:05:18.670 --> 01:05:20.740
+<v Michael Kennedy>Yeah, I think if I were ever to try to set it up on my server,
+
+01:05:21.220 --> 01:05:24.780
+<v Michael Kennedy>I'd probably just do Olama, maybe inside a Docker or something.
+
+01:05:24.830 --> 01:05:25.780
+<v Michael Kennedy>I don't know, something like that.
+
+01:05:25.980 --> 01:05:27.440
+<v Vincent Warmerdam>Yeah, not true.
+
+01:05:27.520 --> 01:05:29.580
+<v Vincent Warmerdam>The one sort of mysterious thing with a lot of these services,
+
+01:05:29.740 --> 01:05:30.660
+<v Vincent Warmerdam>like how do they make money?
+
+01:05:31.300 --> 01:05:35.560
+<v Vincent Warmerdam>And I think I read somewhere that Olama is going to start doing
+
+01:05:35.770 --> 01:05:37.320
+<v Vincent Warmerdam>open router kind of stuff as well,
+
+01:05:37.410 --> 01:05:39.620
+<v Vincent Warmerdam>so it wouldn't surprise me if they ended up going in that direction.
+
+01:05:40.750 --> 01:05:42.140
+<v Vincent Warmerdam>But I mean, there's all sorts of vendors,
+
+01:05:42.310 --> 01:05:45.300
+<v Vincent Warmerdam>and there's another thing I'm also seeing a lot of nowadays
+
+01:05:45.320 --> 01:05:49.080
+<v Vincent Warmerdam>use like big models that generate a data set such that they can take a super tiny model and fine
+
+01:05:49.300 --> 01:05:53.200
+<v Vincent Warmerdam>tune on the data that was generated by the big model and that way like a future maybe that we
+
+01:05:53.340 --> 01:05:58.200
+<v Vincent Warmerdam>might have is that you have a dutch model that's really good for legal maybe we'll have like a
+
+01:05:58.280 --> 01:06:04.840
+<v Vincent Warmerdam>super bespoke lm for that at some point or like a um like an lm that's like really good at css but
+
+01:06:04.920 --> 01:06:09.300
+<v Vincent Warmerdam>only css like that's also a thing that we might have and then those models can be really tiny and
+
+01:06:09.340 --> 01:06:14.700
+<v Vincent Warmerdam>run on your laptop and who knows this is the age we live in um but i certainly can foresee a world
+
+01:06:14.680 --> 01:06:19.000
+<v Michael Kennedy>like that where it's like okay i'm gonna work on a project instead of spinning up a general world
+
+01:06:19.200 --> 01:06:24.500
+<v Michael Kennedy>knowledge model i'm gonna just let it on demand go okay i have a css question well what framework
+
+01:06:24.640 --> 01:06:29.420
+<v Michael Kennedy>are you using i'm using tailwind okay we're gonna spend up the tailwind llm model and we need to ask
+
+01:06:29.520 --> 01:06:33.200
+<v Michael Kennedy>it a question yeah we're gonna shut that you know what i mean like really focus but then have some
+
+01:06:33.300 --> 01:06:37.500
+<v Michael Kennedy>kind of orchestrating thing that says now i gotta talk to this now let me let me work with that one
+
+01:06:37.570 --> 01:06:41.920
+<v Vincent Warmerdam>but that could be great yeah and it might also be a solution to the whole oh the time cut off is
+
+01:06:41.880 --> 01:06:43.400
+<v Vincent Warmerdam>January to 2025.
+
+01:06:43.920 --> 01:06:46.100
+<v Vincent Warmerdam>And like everything happened after we have no knowledge about.
+
+01:06:46.280 --> 01:06:50.140
+<v Vincent Warmerdam>Like it could also be a way for us to have a system where we just retrain a thing weekly
+
+01:06:50.240 --> 01:06:52.280
+<v Vincent Warmerdam>and it's just a diff on top or something like that.
+
+01:06:52.420 --> 01:06:52.480
+<v Vincent Warmerdam>Right.
+
+01:06:53.180 --> 01:06:53.480
+<v Vincent Warmerdam>Yeah.
+
+01:06:53.620 --> 01:06:54.240
+<v Vincent Warmerdam>It could also happen.
+
+01:06:54.540 --> 01:06:54.660
+<v Michael Kennedy>Yeah.
+
+01:06:54.680 --> 01:06:56.320
+<v Michael Kennedy>And if it were small enough, then it would be okay.
+
+01:06:56.720 --> 01:06:56.880
+<v Vincent Warmerdam>Yeah.
+
+01:06:57.040 --> 01:06:58.380
+<v Michael Kennedy>It would be kind of like SETI at home.
+
+01:06:58.540 --> 01:07:01.000
+<v Michael Kennedy>All of our stuff would just be like kind of have the fan going.
+
+01:07:02.119 --> 01:07:06.420
+<v Vincent Warmerdam>The, I mean, it's a bit of a science fiction thing, but you can imagine at some point every
+
+01:07:06.600 --> 01:07:10.560
+<v Vincent Warmerdam>home will have solar panels and then maybe every home will also just have a GPU and maybe
+
+01:07:10.580 --> 01:07:12.600
+<v Vincent Warmerdam>we won't have huge-ass server farms.
+
+01:07:12.740 --> 01:07:14.520
+<v Vincent Warmerdam>It's just that we have a network, and everyone
+
+01:07:14.700 --> 01:07:16.480
+<v Vincent Warmerdam>has a GPU, and if my neighbor suddenly
+
+01:07:16.780 --> 01:07:18.540
+<v Vincent Warmerdam>wants to do math, then he can borrow my GPU.
+
+01:07:18.810 --> 01:07:19.900
+<v Vincent Warmerdam>I don't know. We'll see.
+
+01:07:21.360 --> 01:07:22.620
+<v Vincent Warmerdam>It kind of sounds cool, doesn't it?
+
+01:07:22.870 --> 01:07:24.660
+<v Vincent Warmerdam>Yeah. If people like
+
+01:07:24.820 --> 01:07:25.400
+<v Vincent Warmerdam>distributed systems,
+
+01:07:26.800 --> 01:07:27.860
+<v Michael Kennedy>might as well go for it.
+
+01:07:29.200 --> 01:07:30.420
+<v Michael Kennedy>If you want to add to the
+
+01:07:32.119 --> 01:07:32.700
+<v Michael Kennedy>unpredictability of
+
+01:07:32.750 --> 01:07:34.600
+<v Michael Kennedy>the LLM, mix in a distributed
+
+01:07:34.860 --> 01:07:36.540
+<v Michael Kennedy>grid computing that you don't know about too much either,
+
+01:07:36.700 --> 01:07:37.540
+<v Michael Kennedy>and then you'll get some real...
+
+01:07:38.680 --> 01:07:40.540
+<v Vincent Warmerdam>I do want to give one quick shot
+
+01:07:40.560 --> 01:07:41.840
+<v Vincent Warmerdam>on this one front, though, because I do think
+
+01:07:41.940 --> 01:07:43.120
+<v Vincent Warmerdam>it's an idea that's worth pursuing.
+
+01:07:43.240 --> 01:07:45.880
+<v Vincent Warmerdam>So in Holland, we've got this one cloud provider called
+
+01:07:46.080 --> 01:07:47.820
+<v Vincent Warmerdam>LeafCloud, and I think they're still around.
+
+01:07:48.440 --> 01:07:51.460
+<v Vincent Warmerdam>But what they do is they install these server farms,
+
+01:07:51.520 --> 01:07:52.460
+<v Vincent Warmerdam>like what we're discussing.
+
+01:07:52.580 --> 01:07:56.720
+<v Michael Kennedy>They have a GPU rack at the bottom of an apartment building.
+
+01:07:57.500 --> 01:08:00.640
+<v Vincent Warmerdam>And any excess heat, which is one of the main cost drivers,
+
+01:08:01.080 --> 01:08:03.900
+<v Vincent Warmerdam>that's actually used to preheat the water for the rest
+
+01:08:03.900 --> 01:08:04.380
+<v Vincent Warmerdam>of the apartment.
+
+01:08:04.580 --> 01:08:04.720
+<v Vincent Warmerdam>Yeah.
+
+01:08:05.440 --> 01:08:09.060
+<v Vincent Warmerdam>So on paper, at least, you do have something that's not only
+
+01:08:09.080 --> 01:08:13.800
+<v Vincent Warmerdam>carbon negative, but also more cost effective because the person, like the waste product of the
+
+01:08:13.890 --> 01:08:18.319
+<v Vincent Warmerdam>of the compute is now a thing that the heat that someone is willing to pay for as well. So
+
+01:08:18.560 --> 01:08:21.200
+<v Vincent Warmerdam>on paper, you can also be cheaper if you play your cards right.
+
+01:08:21.250 --> 01:08:26.720
+<v Michael Kennedy>I ran across this and I was really inspired by it. I ended up not using LeafCloud for anything,
+
+01:08:27.020 --> 01:08:28.000
+<v Michael Kennedy>but it's a cool idea.
+
+01:08:28.900 --> 01:08:33.100
+<v Vincent Warmerdam>So the one downside of that approach is you do have to be close to a data center because
+
+01:08:33.589 --> 01:08:37.540
+<v Vincent Warmerdam>do you really want to store your private data on disk in an apartment building or in a secure
+
+01:08:37.560 --> 01:08:41.980
+<v Vincent Warmerdam>facility. So what they do is they just have glass fiber cables. Like the disc is in the facility,
+
+01:08:42.279 --> 01:08:45.819
+<v Vincent Warmerdam>but the memory and the GPU and the computer is in the apartment building. That's sort of the way
+
+01:08:45.839 --> 01:08:51.859
+<v Michael Kennedy>it's like a mounted volume over fiber, sort of like a network volume over fiber. Sure. I think
+
+01:08:51.960 --> 01:08:56.140
+<v Michael Kennedy>that's pretty common. A lot of data center setups, it just happens to be spanning an apartment
+
+01:08:56.299 --> 01:09:00.839
+<v Vincent Warmerdam>complex, which is unusual. Oh, it's also only for certain types of compute loads, right? You're
+
+01:09:00.940 --> 01:09:04.820
+<v Vincent Warmerdam>probably not going to do your web app fire that apartment building. It's probably not going to be
+
+01:09:04.680 --> 01:09:09.400
+<v Vincent Warmerdam>productive but if you're doing like big simulation big like deep learning things like that actually
+
+01:09:09.560 --> 01:09:15.540
+<v Michael Kennedy>everyone everyone knows you can do machine training machine learning training and it's all good for
+
+01:09:15.580 --> 01:09:20.080
+<v Michael Kennedy>serverless you just send the stuff out it just goes finds an apartment complex runs it serverless and
+
+01:09:20.140 --> 01:09:25.140
+<v Michael Kennedy>it comes back right now just kidding so yeah it's a pretty neat idea yeah there's um we'll see what
+
+01:09:25.140 --> 01:09:29.780
+<v Vincent Warmerdam>the future brings like when i did data science the joke i always made is like as a data scientist i
+
+01:09:29.799 --> 01:09:32.339
+<v Vincent Warmerdam>I know for sure that the future is really hard to predict.
+
+01:09:35.580 --> 01:09:37.520
+<v Vincent Warmerdam>Maybe the past is easier to predict,
+
+01:09:37.620 --> 01:09:38.600
+<v Vincent Warmerdam>and that's what we do in machine learning.
+
+01:09:38.660 --> 01:09:40.299
+<v Vincent Warmerdam>We try to predict the past, and yeah,
+
+01:09:40.420 --> 01:09:41.799
+<v Vincent Warmerdam>we'll see what these LLMs do.
+
+01:09:41.980 --> 01:09:45.560
+<v Vincent Warmerdam>But until then, again, also the repeating lesson from the course,
+
+01:09:46.120 --> 01:09:47.819
+<v Vincent Warmerdam>there's some good habits, but in the end,
+
+01:09:47.900 --> 01:09:49.920
+<v Vincent Warmerdam>it's not so much the LLM, it's more the stuff around
+
+01:09:50.060 --> 01:09:50.940
+<v Vincent Warmerdam>and how you think about it.
+
+01:09:51.180 --> 01:09:53.240
+<v Vincent Warmerdam>And also, small shout-out to Marimo.
+
+01:09:53.400 --> 01:09:55.940
+<v Vincent Warmerdam>I do think having some UI in the blend as well,
+
+01:09:56.060 --> 01:09:57.820
+<v Vincent Warmerdam>such as you can say, oh, there's a text box here,
+
+01:09:58.260 --> 01:09:59.020
+<v Vincent Warmerdam>another text box there.
+
+01:09:59.220 --> 01:10:03.860
+<v Vincent Warmerdam>you can kind of play around making your own little LLM app. Like the thing that I typically do is I
+
+01:10:04.010 --> 01:10:08.720
+<v Vincent Warmerdam>hook up Gemini to my YouTube videos to make like summaries for my blog. I'd like try to find little
+
+01:10:08.860 --> 01:10:13.100
+<v Vincent Warmerdam>excuses to like improve your life by automating something with these LLM tools. And that's a nice
+
+01:10:13.100 --> 01:10:17.840
+<v Michael Kennedy>way to get started. Yeah, there's really, I think we all probably have little opportunities to automate
+
+01:10:18.280 --> 01:10:22.980
+<v Michael Kennedy>some low stakes thing, but that we spend a lot of time with or hassle or whatever and let an LLM
+
+01:10:23.400 --> 01:10:25.380
+<v Michael Kennedy>have at it and write a little Python to make that happen, right?
+
+01:10:25.980 --> 01:10:28.940
+<v Vincent Warmerdam>Yeah, and also expose yourself to your own slop as well.
+
+01:10:30.590 --> 01:10:35.420
+<v Vincent Warmerdam>The nice thing about building your own apps is also because you then suddenly start to realize when it's also still good to be a human.
+
+01:10:35.840 --> 01:10:39.560
+<v Vincent Warmerdam>Like, I'm not going to have an LLM automate messages to my wife and my kid.
+
+01:10:40.000 --> 01:10:42.980
+<v Vincent Warmerdam>That's just not going to happen because I've seen what these LLMs can output.
+
+01:10:43.280 --> 01:10:45.960
+<v Vincent Warmerdam>Like, that's going to remain on the human side of the spectrum.
+
+01:10:46.860 --> 01:10:47.220
+<v Vincent Warmerdam>Exactly.
+
+01:10:47.750 --> 01:10:51.320
+<v Vincent Warmerdam>But making a summary for my blog on a video, I mean, that feels in the ballpark.
+
+01:10:51.820 --> 01:10:52.180
+<v Michael Kennedy>100%.
+
+01:10:52.440 --> 01:10:52.640
+<v Michael Kennedy>All right.
+
+01:10:52.960 --> 01:10:55.740
+<v Michael Kennedy>Final word for people interested in this topic they want to build.
+
+01:10:56.480 --> 01:10:58.940
+<v Michael Kennedy>I want to plug in LLMs as part of that building block.
+
+01:10:59.360 --> 01:10:59.760
+<v Michael Kennedy>What do you say?
+
+01:11:00.940 --> 01:11:02.280
+<v Vincent Warmerdam>Open Router is nice and flexible.
+
+01:11:02.640 --> 01:11:03.960
+<v Vincent Warmerdam>LLM by Simon Willison is great.
+
+01:11:04.360 --> 01:11:08.020
+<v Vincent Warmerdam>Disk cache is a thing that you do want to disk cache.
+
+01:11:09.840 --> 01:11:12.040
+<v Vincent Warmerdam>Maybe a final thing that I do maybe want to...
+
+01:11:12.200 --> 01:11:14.760
+<v Vincent Warmerdam>It's also fine if you just want to learn Python as well.
+
+01:11:15.000 --> 01:11:17.260
+<v Vincent Warmerdam>There's some of this talk of people saying,
+
+01:11:17.400 --> 01:11:18.480
+<v Vincent Warmerdam>oh, we never have to...
+
+01:11:19.100 --> 01:11:21.240
+<v Vincent Warmerdam>Oh, actually, people from Peru are tuning in.
+
+01:11:21.600 --> 01:11:22.060
+<v Vincent Warmerdam>Peru is amazing.
+
+01:11:22.440 --> 01:11:24.360
+<v Vincent Warmerdam>from seeing people sort of replying the conversation.
+
+01:11:24.380 --> 01:11:24.900
+<v Vincent Warmerdam>Yeah, absolutely.
+
+01:11:25.360 --> 01:11:25.760
+<v Vincent Warmerdam>Oh, sweet.
+
+01:11:26.840 --> 01:11:27.960
+<v Vincent Warmerdam>Best food of my life, Peru.
+
+01:11:28.350 --> 01:11:30.960
+<v Vincent Warmerdam>Also, if you're looking for great excuses to learn Python,
+
+01:11:31.100 --> 01:11:31.380
+<v Vincent Warmerdam>there's plenty.
+
+01:11:31.430 --> 01:11:33.460
+<v Vincent Warmerdam>If you're looking for great excuses to go to Peru, food.
+
+01:11:35.300 --> 01:11:37.660
+<v Vincent Warmerdam>But also, I think in the end,
+
+01:11:38.300 --> 01:11:40.720
+<v Vincent Warmerdam>you are going to be better at using LLMs
+
+01:11:41.070 --> 01:11:42.200
+<v Vincent Warmerdam>if you can still do things yourself.
+
+01:11:42.520 --> 01:11:44.360
+<v Vincent Warmerdam>One thing I've started noticing is that
+
+01:11:44.660 --> 01:11:45.620
+<v Vincent Warmerdam>it's a bit embarrassing, but like,
+
+01:11:45.690 --> 01:11:47.260
+<v Vincent Warmerdam>oh, what's the CSS property of that thing?
+
+01:11:47.260 --> 01:11:48.000
+<v Vincent Warmerdam>I used to know that.
+
+01:11:48.030 --> 01:11:49.100
+<v Vincent Warmerdam>But nowadays, I just, oh,
+
+01:11:49.370 --> 01:11:51.440
+<v Vincent Warmerdam>am I seriously going to ask this, the ChatGPT?
+
+01:11:51.500 --> 01:11:53.400
+<v Vincent Warmerdam>This should be in my memory for Pete's sakes.
+
+01:11:53.520 --> 01:11:53.640
+<v Vincent Warmerdam>Yes.
+
+01:11:54.140 --> 01:11:55.580
+<v Vincent Warmerdam>And sometimes it's like, I'm going
+
+01:11:55.600 --> 01:11:57.380
+<v Vincent Warmerdam>to have a whole conversation with ChatGPT
+
+01:11:57.440 --> 01:11:59.520
+<v Vincent Warmerdam>so I can change four characters in a style sheet.
+
+01:11:59.620 --> 01:12:00.280
+<v Vincent Warmerdam>What is this nonsense?
+
+01:12:00.840 --> 01:12:03.040
+<v Vincent Warmerdam>So part of me is also thinking like, definitely
+
+01:12:03.300 --> 01:12:04.500
+<v Vincent Warmerdam>expose yourself to LLMs.
+
+01:12:04.500 --> 01:12:06.000
+<v Vincent Warmerdam>And if that inspires you, that's great.
+
+01:12:06.440 --> 01:12:10.100
+<v Vincent Warmerdam>But also try to not overly rely on it either.
+
+01:12:10.620 --> 01:12:12.680
+<v Vincent Warmerdam>It's like I'm building flashcard apps for myself.
+
+01:12:12.840 --> 01:12:15.420
+<v Vincent Warmerdam>So I'm still kind of in the loop, if that makes sense.
+
+01:12:15.920 --> 01:12:19.020
+<v Michael Kennedy>So you've got to be a guardian of your own mind.
+
+01:12:19.600 --> 01:12:21.380
+<v Michael Kennedy>And yes, so I can see it so easily.
+
+01:12:21.500 --> 01:12:28.100
+<v Michael Kennedy>that you just become a machine that just says next okay yes continue and then in six months you're
+
+01:12:28.100 --> 01:12:33.220
+<v Michael Kennedy>like gosh i can't program anything i just got to ask the chat and it's it's a problem yeah it's
+
+01:12:33.320 --> 01:12:38.340
+<v Vincent Warmerdam>it's something well and also um and that kind of gets back to the point i made earlier um you want
+
+01:12:38.340 --> 01:12:42.960
+<v Vincent Warmerdam>to be very mindful that if you if you have better tools you should also have better ideas and if
+
+01:12:43.040 --> 01:12:48.520
+<v Vincent Warmerdam>that's not the case then something is wrong because that's then you get into the self-learned
+
+01:12:48.540 --> 01:12:51.800
+<v Vincent Warmerdam>helplessness territory. And that's the one thing I do want to kind of guard against.
+
+01:12:52.610 --> 01:12:56.260
+<v Vincent Warmerdam>Andre Carpathy gave a great interview a little while ago where he mentioned the
+
+01:12:56.660 --> 01:12:59.900
+<v Vincent Warmerdam>worst outcome of humanity. Did you see the movie WALL-E? Remember seeing that?
+
+01:13:00.000 --> 01:13:03.060
+<v Vincent Warmerdam>Oh my gosh. That movie really made me sad.
+
+01:13:04.060 --> 01:13:08.060
+<v Michael Kennedy>It's a good movie though. It's a fantastic movie, but as an adult,
+
+01:13:08.150 --> 01:13:10.660
+<v Michael Kennedy>it's got a hard undertone to it. Oh my gosh.
+
+01:13:11.670 --> 01:13:16.300
+<v Vincent Warmerdam>And especially now, because for people who never watched the movie, there's a scene in the movie where you see what humanity
+
+01:13:16.320 --> 01:13:20.020
+<v Vincent Warmerdam>comes to and it's basically every everything has to be convenient so people are overweight
+
+01:13:20.540 --> 01:13:24.740
+<v Vincent Warmerdam>they're in these like bikes that move them around they're always able to watch television drink a
+
+01:13:24.800 --> 01:13:29.800
+<v Vincent Warmerdam>milkshake and eat a pizza like every convenience is sort of taken care of but you also just see
+
+01:13:29.900 --> 01:13:34.820
+<v Michael Kennedy>that they're not happy and they can't even walk out like they can't they're like just they're so uh
+
+01:13:35.320 --> 01:13:39.320
+<v Michael Kennedy>just dependent on the thing it's bad exactly so that's a sweet show it's a very sweet show i
+
+01:13:39.440 --> 01:13:43.900
+<v Vincent Warmerdam>recommend it yeah it's it's a sweet movie but it's like if at some point you notice like hey
+
+01:13:44.340 --> 01:13:49.080
+<v Vincent Warmerdam>learning feels hard, then maybe that's fine because maybe it's just like exercising.
+
+01:13:49.300 --> 01:13:50.960
+<v Vincent Warmerdam>It's okay if that's a bit painful.
+
+01:13:51.120 --> 01:13:54.800
+<v Vincent Warmerdam>In fact, if it's not painful, then maybe just participating in entertainment instead as well.
+
+01:13:54.840 --> 01:13:55.800
+<v Vincent Warmerdam>So that's the thing.
+
+01:13:56.240 --> 01:13:57.680
+<v Vincent Warmerdam>These are thoughts that I'm sort of battling with.
+
+01:13:57.760 --> 01:14:01.320
+<v Vincent Warmerdam>I'm also sort of trying to be really critical of like, okay, I work at Marimo now.
+
+01:14:01.500 --> 01:14:03.280
+<v Vincent Warmerdam>I've accessed all these LLMs and stuff.
+
+01:14:03.420 --> 01:14:06.340
+<v Vincent Warmerdam>And can I build more awesome software that I wouldn't have before?
+
+01:14:06.660 --> 01:14:10.640
+<v Vincent Warmerdam>One thing I made a while ago is I added gamepad support to Marimo Notebooks.
+
+01:14:10.780 --> 01:14:12.520
+<v Vincent Warmerdam>So you can interact with Python with the gamepad and stuff.
+
+01:14:12.680 --> 01:14:13.640
+<v Vincent Warmerdam>So this is just a experiment.
+
+01:14:14.330 --> 01:14:22.120
+<v Vincent Warmerdam>But I would be really disappointed if I'm the only person making packages that I've never made before that are definitely trying to reach new heights.
+
+01:14:23.780 --> 01:14:26.360
+<v Vincent Warmerdam>It does feel a bit lonely because it does feel like more people should do it.
+
+01:14:26.580 --> 01:14:28.860
+<v Vincent Warmerdam>That's like the one sort of hint I want to give to people.
+
+01:14:29.260 --> 01:14:34.280
+<v Vincent Warmerdam>Try to inspire yourself a bit more and do more inspirational stuff so more cool things happen on my timeline.
+
+01:14:34.700 --> 01:14:35.600
+<v Vincent Warmerdam>There's less AI sloth.
+
+01:14:35.650 --> 01:14:38.000
+<v Vincent Warmerdam>There's really cool software being built, people learning and all.
+
+01:14:38.460 --> 01:14:38.700
+<v Michael Kennedy>Hear, hear.
+
+01:14:38.990 --> 01:14:39.560
+<v Michael Kennedy>I appreciate that.
+
+01:14:39.720 --> 01:14:39.960
+<v Michael Kennedy>All right.
+
+01:14:40.220 --> 01:14:42.660
+<v Michael Kennedy>Well, Vincent, thanks for being back,
+
+01:14:43.180 --> 01:14:44.360
+<v Michael Kennedy>sharing all these techniques.
+
+01:14:44.760 --> 01:14:45.800
+<v Michael Kennedy>And yeah, I hope people go out there
+
+01:14:45.900 --> 01:14:48.580
+<v Michael Kennedy>and build using AIs, not just with AIs.
+
+01:14:48.860 --> 01:14:49.060
+<v Michael Kennedy>Definitely.
+
+01:14:49.440 --> 01:14:49.920
+<v Michael Kennedy>Y'all have a good one.
+
+01:14:50.260 --> 01:14:50.760
+<v Michael Kennedy>Yeah, see you later.
+
+01:14:50.920 --> 01:14:51.040
+<v Michael Kennedy>Bye.
+
+01:14:51.720 --> 01:14:54.100
+<v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:14:54.600 --> 01:14:55.380
+<v Michael Kennedy>Thank you to our sponsors.
+
+01:14:55.780 --> 01:14:57.160
+<v Michael Kennedy>Be sure to check out what they're offering.
+
+01:14:57.440 --> 01:14:58.760
+<v Michael Kennedy>It really helps support the show.
+
+01:14:59.180 --> 01:15:00.540
+<v Michael Kennedy>Take some stress out of your life.
+
+01:15:00.920 --> 01:15:02.720
+<v Michael Kennedy>Get notified immediately about errors
+
+01:15:03.060 --> 01:15:04.740
+<v Michael Kennedy>and performance issues in your web
+
+01:15:04.900 --> 01:15:06.360
+<v Michael Kennedy>or mobile applications with Sentry.
+
+01:15:06.860 --> 01:15:10.180
+<v Michael Kennedy>Just visit talkpython.fm/sentry
+
+01:15:10.200 --> 01:15:11.240
+<v Michael Kennedy>and get started for free.
+
+01:15:11.690 --> 01:15:14.900
+<v Michael Kennedy>And be sure to use the promo code Talk Python, all one word.
+
+01:15:15.460 --> 01:15:17.480
+<v Michael Kennedy>And it's brought to you by Nordstellar.
+
+01:15:18.000 --> 01:15:20.520
+<v Michael Kennedy>Nordstellar is a threat exposure management platform
+
+01:15:21.100 --> 01:15:22.340
+<v Michael Kennedy>from the Nord security family,
+
+01:15:22.610 --> 01:15:23.760
+<v Michael Kennedy>the folks behind NordVPN
+
+01:15:24.340 --> 01:15:25.940
+<v Michael Kennedy>that combines dark web intelligence,
+
+01:15:26.540 --> 01:15:28.100
+<v Michael Kennedy>session hijacking prevention,
+
+01:15:28.700 --> 01:15:30.800
+<v Michael Kennedy>brand and domain abuse detection,
+
+01:15:31.080 --> 01:15:32.780
+<v Michael Kennedy>and external attack surface management.
+
+01:15:33.340 --> 01:15:35.360
+<v Michael Kennedy>Learn more and get started keeping your team safe
+
+01:15:35.620 --> 01:15:38.320
+<v Michael Kennedy>at talkpython.fm/Nordstellar.
+
+01:15:38.940 --> 01:15:51.840
+<v Michael Kennedy>If you or your team needs to learn Python, we have over 270 hours of beginner and advanced courses on topics ranging from complete beginners to async code, Flask, Django, HTML, and even LLMs.
+
+01:15:52.220 --> 01:15:56.700
+<v Michael Kennedy>Best of all, there's not a subscription in sight. Browse the catalog at talkpython.fm.
+
+01:15:57.100 --> 01:16:02.980
+<v Michael Kennedy>Be sure to subscribe to the show. Open your favorite podcast player app. Search for Python. We should be right at the top.
+
+01:16:03.380 --> 01:16:06.760
+<v Michael Kennedy>If you enjoy the geeky rap theme song, you can download the full track.
+
+01:16:07.110 --> 01:16:08.740
+<v Michael Kennedy>The link is your podcast player show notes.
+
+01:16:09.480 --> 01:16:10.660
+<v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:16:11.030 --> 01:16:12.260
+<v Michael Kennedy>Thank you so much for listening.
+
+01:16:12.410 --> 01:16:13.280
+<v Michael Kennedy>I really appreciate it.
+
+01:16:13.700 --> 01:16:15.360
+<v Michael Kennedy>Now get out there and write some Python code.
+
+01:16:25.760 --> 01:16:29.680
+<v Michael Kennedy>Talk Python To Me, and we ready to roll
+
+01:16:31.260 --> 01:16:35.000
+<v Vincent Warmerdam>Upgrading the code, no fear of getting old
+
+01:16:36.400 --> 01:16:39.900
+<v Vincent Warmerdam>We tapped into that modern vibe, overcame each storm
+
+01:16:40.640 --> 01:16:43.480
+<v Vincent Warmerdam>Talk Python To Me, I-Sync is the norm
+
+01:16:43.480 --> 01:16:44.180
+<v Vincent Warmerdam>you
+

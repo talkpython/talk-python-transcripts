@@ -1,0 +1,5438 @@
+WEBVTT
+
+00:00:00.860 --> 00:00:02.020
+<v Michael Kennedy>Vincent, hello.
+
+00:00:02.660 --> 00:00:04.040
+<v Michael Kennedy>Michael, Michael, we're back.
+
+00:00:04.680 --> 00:00:05.120
+<v Michael Kennedy>Awesome.
+
+00:00:05.490 --> 00:00:06.480
+<v Michael Kennedy>Awesome to be back with you.
+
+00:00:07.120 --> 00:00:07.560
+<v Michael Kennedy>Yeah.
+
+00:00:08.400 --> 00:00:12.600
+<v Michael Kennedy>This is almost the sequel to the last time you were on the show.
+
+00:00:12.900 --> 00:00:15.740
+<v Vincent Warmerdam>So, yeah, it's going to be fun.
+
+00:00:16.000 --> 00:00:19.860
+<v Vincent Warmerdam>Yeah, so sequel in this case, not the query language, like an actual sequel of events.
+
+00:00:20.640 --> 00:00:20.740
+<v Vincent Warmerdam>Yes.
+
+00:00:21.080 --> 00:00:21.200
+<v Vincent Warmerdam>Yeah.
+
+00:00:22.230 --> 00:00:29.980
+<v Vincent Warmerdam>You can correct me if I'm wrong, but I think what happened is you had me on a podcast a
+
+00:00:29.980 --> 00:00:33.160
+<v Vincent Warmerdam>that we were very enthusiastic about was about this tool called DiscCache.
+
+00:00:33.740 --> 00:00:36.480
+<v Vincent Warmerdam>And then we kind of came to the conclusion, well, we had to cap it off.
+
+00:00:37.020 --> 00:00:39.280
+<v Vincent Warmerdam>Maybe it's fun to do an episode on just DiscCache
+
+00:00:39.760 --> 00:00:41.440
+<v Vincent Warmerdam>since we're both pretty huge fans of it.
+
+00:00:42.020 --> 00:00:43.260
+<v Vincent Warmerdam>I think that's how we got here.
+
+00:00:43.620 --> 00:00:45.420
+<v Michael Kennedy>I think that is how we got here as well.
+
+00:00:45.620 --> 00:00:48.140
+<v Michael Kennedy>And we're going to dive into this.
+
+00:00:49.820 --> 00:00:52.820
+<v Michael Kennedy>Honestly, it's a pretty simple library called DiscCache,
+
+00:00:53.460 --> 00:00:55.900
+<v Michael Kennedy>but what it unlocks is really, really sweet.
+
+00:00:56.280 --> 00:00:59.300
+<v Michael Kennedy>And I'm going to talk about a lot of different angles.
+
+00:00:59.760 --> 00:01:05.420
+<v Michael Kennedy>Now, even though it's just been not that long since you were on the show, maybe just give us a quick intro of who you are.
+
+00:01:06.360 --> 00:01:11.300
+<v Vincent Warmerdam>Sure. Hi, my name is Vincent. I've done a bunch of data machine learning stuff, mainly in the past.
+
+00:01:11.740 --> 00:01:15.280
+<v Vincent Warmerdam>That's sort of what a lot of people know me from. These days, though, I work for a company called Marimo.
+
+00:01:15.670 --> 00:01:18.140
+<v Vincent Warmerdam>You might have heard from us. We make very modern Python notebooks.
+
+00:01:18.510 --> 00:01:21.740
+<v Vincent Warmerdam>We took some lessons from Jupyter and we take a new spin of it.
+
+00:01:22.390 --> 00:01:27.460
+<v Vincent Warmerdam>So that's my day to day. But I still like to write notebooks and do kind of fun little benchmarks.
+
+00:01:27.600 --> 00:01:29.400
+<v Vincent Warmerdam>and also stuff with LLMs.
+
+00:01:29.850 --> 00:01:32.080
+<v Vincent Warmerdam>And I've just noticed that for a lot of that work,
+
+00:01:32.600 --> 00:01:33.880
+<v Vincent Warmerdam>boy, disk cache is amazing.
+
+00:01:34.460 --> 00:01:35.740
+<v Vincent Warmerdam>And I also use it for web stuff.
+
+00:01:35.930 --> 00:01:38.160
+<v Vincent Warmerdam>And I think that's also what your use case is a little bit more of.
+
+00:01:39.110 --> 00:01:40.420
+<v Vincent Warmerdam>But yeah, like in Notebook land,
+
+00:01:40.890 --> 00:01:43.780
+<v Vincent Warmerdam>you also like to have a very good caching mechanism.
+
+00:01:44.120 --> 00:01:45.840
+<v Vincent Warmerdam>And on the Maremo side of things,
+
+00:01:45.870 --> 00:01:47.520
+<v Vincent Warmerdam>we are also working on different caching mechanisms,
+
+00:01:47.710 --> 00:01:48.760
+<v Vincent Warmerdam>which I might talk about in a bit.
+
+00:01:49.240 --> 00:01:50.280
+<v Vincent Warmerdam>But just for me, the bread and butter,
+
+00:01:50.410 --> 00:01:53.040
+<v Vincent Warmerdam>the thing I've used for years at this point is disk cache
+
+00:01:53.220 --> 00:01:54.500
+<v Vincent Warmerdam>whenever it comes to that territory.
+
+00:01:55.960 --> 00:01:56.520
+<v Michael Kennedy>Yeah, it's funny.
+
+00:01:56.720 --> 00:02:03.940
+<v Michael Kennedy>This was recommended to me for Python Bytes as a news item over there quite a while ago, like years ago.
+
+00:02:04.220 --> 00:02:05.420
+<v Michael Kennedy>And I'm like, oh, that's pretty interesting.
+
+00:02:06.280 --> 00:02:12.020
+<v Michael Kennedy>And then I saw you using it in the LLM Building Blocks course, and it just unlocked for me.
+
+00:02:12.020 --> 00:02:13.100
+<v Michael Kennedy>Like, oh, my.
+
+00:02:13.400 --> 00:02:14.920
+<v Michael Kennedy>Oh, this is something else.
+
+00:02:15.580 --> 00:02:19.040
+<v Michael Kennedy>And so since then, I've been doing a bunch with it, and I'm a big fan.
+
+00:02:20.260 --> 00:02:26.680
+<v Michael Kennedy>I've been on this, like trying to avoid complexity, but still getting really cool
+
+00:02:28.700 --> 00:02:31.580
+<v Michael Kennedy>responses, performance, et cetera, out of your apps.
+
+00:02:31.650 --> 00:02:37.680
+<v Michael Kennedy>And I think this, you know, this is a really nice way to add multi-process, super fast caching
+
+00:02:37.750 --> 00:02:42.900
+<v Michael Kennedy>to your app without involving more servers and more stuff that's got to get connected
+
+00:02:43.180 --> 00:02:44.740
+<v Michael Kennedy>and keep running and so on.
+
+00:02:45.200 --> 00:02:47.700
+<v Michael Kennedy>But before we get into the details of that,
+
+00:02:48.950 --> 00:02:51.660
+<v Michael Kennedy>maybe let's just talk about caching in general.
+
+00:02:51.850 --> 00:02:53.300
+<v Michael Kennedy>Like what types of caching is there?
+
+00:02:54.720 --> 00:02:56.900
+<v Michael Kennedy>You know, I sort of gave a little precursor there,
+
+00:02:57.120 --> 00:02:57.900
+<v Michael Kennedy>but yeah, dive into it.
+
+00:02:58.280 --> 00:02:59.900
+<v Vincent Warmerdam>So like in the course,
+
+00:03:00.110 --> 00:03:02.220
+<v Vincent Warmerdam>the main example that I remember talking about
+
+00:03:02.350 --> 00:03:04.180
+<v Vincent Warmerdam>was the one you've got this LLM
+
+00:03:04.580 --> 00:03:05.540
+<v Vincent Warmerdam>and you want to do some benchmarks.
+
+00:03:05.810 --> 00:03:07.540
+<v Vincent Warmerdam>And it might be the case that, I don't know,
+
+00:03:07.640 --> 00:03:09.300
+<v Vincent Warmerdam>using an LLM for let's say classification,
+
+00:03:09.770 --> 00:03:10.720
+<v Vincent Warmerdam>like some text goes in,
+
+00:03:10.750 --> 00:03:13.080
+<v Vincent Warmerdam>we got to know whether or not it's about a certain topic,
+
+00:03:13.210 --> 00:03:14.260
+<v Vincent Warmerdam>yes, no, or something like that.
+
+00:03:14.660 --> 00:03:18.940
+<v Vincent Warmerdam>then it would be really great if, suppose the same text came by for whatever reason,
+
+00:03:19.700 --> 00:03:22.380
+<v Vincent Warmerdam>that we don't run the query on the LLM again.
+
+00:03:22.530 --> 00:03:24.280
+<v Vincent Warmerdam>It's like wasted compute, wasted money.
+
+00:03:24.370 --> 00:03:27.600
+<v Vincent Warmerdam>So it'd be kind of nice if the same text goes in that we then say,
+
+00:03:27.760 --> 00:03:29.600
+<v Vincent Warmerdam>oh, we know what the answer to that thing is already.
+
+00:03:29.670 --> 00:03:31.700
+<v Vincent Warmerdam>We cached it, so here you can go back.
+
+00:03:32.200 --> 00:03:35.380
+<v Vincent Warmerdam>And that's the case when you're dealing with heavy compute ML systems.
+
+00:03:35.880 --> 00:03:37.680
+<v Vincent Warmerdam>But there's a similar situation that you might have, I guess,
+
+00:03:37.860 --> 00:03:42.060
+<v Vincent Warmerdam>with expensive SQL queries, or you want to reduce the load on a database somewhere.
+
+00:03:42.170 --> 00:03:44.140
+<v Vincent Warmerdam>Then having some sort of a caching layer that's able to say,
+
+00:03:44.620 --> 00:03:46.940
+<v Vincent Warmerdam>oh, you're querying for something, but I already know what it is.
+
+00:03:48.000 --> 00:03:49.540
+<v Vincent Warmerdam>Boom, we can send it back.
+
+00:03:50.490 --> 00:03:52.560
+<v Vincent Warmerdam>I think the classical thing you would do in Python
+
+00:03:52.690 --> 00:03:55.080
+<v Vincent Warmerdam>is you have this decorator in functools, I think, right?
+
+00:03:57.200 --> 00:03:58.860
+<v Vincent Warmerdam>The LRU underscore cache.
+
+00:03:59.280 --> 00:03:59.860
+<v Michael Kennedy>Yeah, exactly.
+
+00:04:00.800 --> 00:04:01.900
+<v Vincent Warmerdam>That's the hello world to that.
+
+00:04:02.000 --> 00:04:04.240
+<v Vincent Warmerdam>But the downside of that thing is that it's all in memory.
+
+00:04:04.370 --> 00:04:07.440
+<v Vincent Warmerdam>So if you were to reboot your Python process, you lose all that caching.
+
+00:04:07.980 --> 00:04:10.280
+<v Vincent Warmerdam>So that's why people historically, I think, resorted to,
+
+00:04:10.710 --> 00:04:13.100
+<v Vincent Warmerdam>I think Redis, I think, is the most well-known caching.
+
+00:04:14.680 --> 00:04:17.799
+<v Vincent Warmerdam>tool. It's the one I've always used. There's Memcache, I think. There's other tools. You
+
+00:04:17.799 --> 00:04:23.200
+<v Vincent Warmerdam>can use Postgres for some of this stuff as well. But recently, especially because disks
+
+00:04:23.300 --> 00:04:27.040
+<v Vincent Warmerdam>are just getting quicker and quicker, people have been looking at SQLite for this sort of
+
+00:04:27.040 --> 00:04:32.380
+<v Vincent Warmerdam>a thing as well. So that's, I think, the quickest summary and also sort of the entryway to how
+
+00:04:32.460 --> 00:04:33.660
+<v Vincent Warmerdam>I got started with disk cache.
+
+00:04:34.620 --> 00:04:38.640
+<v Michael Kennedy>Yeah. And so for this example that you highlight in the LM Building Blocks course,
+
+00:04:40.360 --> 00:04:46.940
+<v Michael Kennedy>it's not a conversation. It's like a one-shot situation, right? You come up, you say, I have
+
+00:04:46.960 --> 00:04:52.680
+<v Michael Kennedy>some code or some documents and I have a, almost like an API. I'm going to send that off to the
+
+00:04:52.980 --> 00:04:59.740
+<v Michael Kennedy>LLM and ask it, tell me X, Y, and Z about it. And sure, it's got some kind of temperature and it
+
+00:04:59.860 --> 00:05:05.340
+<v Michael Kennedy>won't always give an exactly the same answer, but you're willing to, you know, you're willing to
+
+00:05:05.360 --> 00:05:12.020
+<v Michael Kennedy>accept and answer. And at that point, like why ask it again and again and again, which it might take
+
+00:05:12.280 --> 00:05:19.140
+<v Michael Kennedy>seconds, it might cost money. Whereas if you just remember through caching somehow, you remember it,
+
+00:05:19.140 --> 00:05:24.020
+<v Michael Kennedy>it's like, boom, instant. Yeah. And it tends to come up a lot in when you're doing benchmarks,
+
+00:05:24.200 --> 00:05:28.020
+<v Vincent Warmerdam>for example. So you have this for loop, you want to go over your entire data set, try all these
+
+00:05:28.140 --> 00:05:31.520
+<v Vincent Warmerdam>different approaches. And if you've got a new approach, then you want that to run, of course.
+
+00:05:31.860 --> 00:05:35.300
+<v Vincent Warmerdam>But if you accidentally trigger an old approach, then you don't want to incur the cost of like,
+
+00:05:35.340 --> 00:05:36.880
+<v Vincent Warmerdam>going through all those different LLMs.
+
+00:05:37.320 --> 00:05:40.380
+<v Vincent Warmerdam>I should say, even if you just forget about LLMs,
+
+00:05:40.380 --> 00:05:41.680
+<v Vincent Warmerdam>let's just say machine learning in general,
+
+00:05:42.240 --> 00:05:43.980
+<v Vincent Warmerdam>let's say there's some sort of image classification thing
+
+00:05:44.020 --> 00:05:44.700
+<v Vincent Warmerdam>you're using in the cloud.
+
+00:05:45.480 --> 00:05:48.500
+<v Vincent Warmerdam>There also, you would say, file name goes in, that's an image.
+
+00:05:48.560 --> 00:05:49.900
+<v Vincent Warmerdam>And if the same file name goes in,
+
+00:05:50.000 --> 00:05:52.060
+<v Vincent Warmerdam>we don't want the expensive compute cost to happen either.
+
+00:05:52.140 --> 00:05:54.200
+<v Vincent Warmerdam>So it's definitely more general than LLMs,
+
+00:05:54.320 --> 00:05:57.280
+<v Vincent Warmerdam>but LLMs do feel like it's the zeitgeisty thing
+
+00:05:57.600 --> 00:05:58.360
+<v Vincent Warmerdam>to worry about at least.
+
+00:05:58.480 --> 00:05:59.740
+<v Michael Kennedy>I think for two reasons.
+
+00:05:59.860 --> 00:06:02.160
+<v Michael Kennedy>One, because they're just the topic du jour.
+
+00:06:02.880 --> 00:06:09.460
+<v Michael Kennedy>And two, because they're, I think, a part of computing that most people experience that is way slower than they're used to.
+
+00:06:11.080 --> 00:06:11.340
+<v Vincent Warmerdam>Yeah.
+
+00:06:11.640 --> 00:06:21.240
+<v Vincent Warmerdam>And especially if you have an attic somewhere and you're a dad and you want to do home lab stuff and you're playing with all these open source LLM models.
+
+00:06:21.330 --> 00:06:26.240
+<v Vincent Warmerdam>And you also learn that, yeah, they're fun to play with, but they also take a lot of time to compute things.
+
+00:06:26.380 --> 00:06:29.380
+<v Vincent Warmerdam>So then immediately you get the motivation to do it the right way.
+
+00:06:31.280 --> 00:06:36.960
+<v Michael Kennedy>Yeah, I built a couple of little utilities that talk to a local LLM.
+
+00:06:37.060 --> 00:06:41.680
+<v Michael Kennedy>I think it's the OpenAI OpenWeights one,
+
+00:06:41.920 --> 00:06:44.400
+<v Michael Kennedy>that 20 billion parameter one I have running on my Mac Mini,
+
+00:06:44.880 --> 00:06:46.840
+<v Michael Kennedy>and it's pretty good, a little bit slow,
+
+00:06:47.080 --> 00:06:49.560
+<v Michael Kennedy>but it's fine for what it's being used for.
+
+00:06:49.740 --> 00:06:53.180
+<v Michael Kennedy>And I use your disk cache technique on it,
+
+00:06:53.340 --> 00:06:57.000
+<v Michael Kennedy>and if I ask it the same question again, it's like, boom.
+
+00:06:57.360 --> 00:06:59.140
+<v Michael Kennedy>You don't need to wait 10 seconds.
+
+00:06:59.500 --> 00:06:59.820
+<v Michael Kennedy>Here's the answer.
+
+00:06:59.840 --> 00:06:59.880
+<v Michael Kennedy>Yeah.
+
+00:07:01.900 --> 00:07:03.040
+<v Vincent Warmerdam>But I guess from your perspective,
+
+00:07:03.110 --> 00:07:05.180
+<v Vincent Warmerdam>I think your main entry point to this domain
+
+00:07:05.330 --> 00:07:07.720
+<v Vincent Warmerdam>was a little bit more from the web dev perspective, right?
+
+00:07:08.480 --> 00:07:09.980
+<v Vincent Warmerdam>I suppose you're using it a lot
+
+00:07:10.160 --> 00:07:13.100
+<v Vincent Warmerdam>for preventing expensive queries to go to Postgres,
+
+00:07:13.520 --> 00:07:15.380
+<v Vincent Warmerdam>or I don't exactly know your backend.
+
+00:07:15.720 --> 00:07:18.680
+<v Michael Kennedy>You won't believe how optimized my website is.
+
+00:07:18.860 --> 00:07:21.540
+<v Michael Kennedy>There's not a single query that goes to Postgres
+
+00:07:21.720 --> 00:07:22.660
+<v Michael Kennedy>because they go to MongoDB.
+
+00:07:22.750 --> 00:07:23.120
+<v Michael Kennedy>I'm just kidding.
+
+00:07:23.220 --> 00:07:23.500
+<v Michael Kennedy>There you go.
+
+00:07:24.460 --> 00:07:26.460
+<v Michael Kennedy>No, but your point is totally valid.
+
+00:07:26.600 --> 00:07:27.820
+<v Michael Kennedy>Go into the database, right?
+
+00:07:28.280 --> 00:07:32.340
+<v Michael Kennedy>Now, I don't actually cache that many requests.
+
+00:07:32.620 --> 00:07:34.520
+<v Michael Kennedy>I don't avoid that many requests going to the database.
+
+00:07:34.680 --> 00:07:36.760
+<v Michael Kennedy>They're really quite quick, and so I'm OK with that.
+
+00:07:37.480 --> 00:07:40.620
+<v Michael Kennedy>But when you think about a feature-rich database,
+
+00:07:41.440 --> 00:07:44.380
+<v Michael Kennedy>feature-rich web app, there's just tons of these little edge
+
+00:07:44.540 --> 00:07:47.040
+<v Michael Kennedy>cases you're like, oh, we've got to do that thing.
+
+00:07:47.180 --> 00:07:48.380
+<v Michael Kennedy>And it's not a big deal, but we've
+
+00:07:48.380 --> 00:07:49.960
+<v Michael Kennedy>got to do it 500 times in a request.
+
+00:07:50.300 --> 00:07:51.800
+<v Michael Kennedy>Then it is kind of a thing.
+
+00:07:53.240 --> 00:07:54.320
+<v Michael Kennedy>So let me give you an example.
+
+00:07:55.260 --> 00:07:55.820
+<v Michael Kennedy>I'll give you some examples.
+
+00:07:56.200 --> 00:08:05.680
+<v Michael Kennedy>So for example, the good portions of the show notes on talkpython.fm are in Markdown.
+
+00:08:06.130 --> 00:08:07.320
+<v Michael Kennedy>I don't want to show people Markdown.
+
+00:08:07.410 --> 00:08:09.640
+<v Michael Kennedy>I want to show them HTML, right?
+
+00:08:10.520 --> 00:08:11.020
+<v Vincent Warmerdam>Oh, yeah.
+
+00:08:11.320 --> 00:08:19.340
+<v Michael Kennedy>So when a request comes in, it'll say any fragment of HTML that needs to be turned into Markdown
+
+00:08:20.170 --> 00:08:23.080
+<v Michael Kennedy>instead of just going, oh, let me process that.
+
+00:08:23.290 --> 00:08:25.700
+<v Michael Kennedy>It just goes, all right, what is the hash of this?
+
+00:08:26.820 --> 00:08:28.800
+<v Michael Kennedy>or some other indicator of the content.
+
+00:08:29.480 --> 00:08:33.159
+<v Michael Kennedy>And then I've already computed that and stored it in disk cache.
+
+00:08:33.860 --> 00:08:35.580
+<v Michael Kennedy>So here's the HTML result.
+
+00:08:36.080 --> 00:08:41.180
+<v Michael Kennedy>Another example is there's a little YouTube icon on each page.
+
+00:08:42.039 --> 00:08:43.680
+<v Michael Kennedy>And that's actually in the show notes,
+
+00:08:43.710 --> 00:08:46.180
+<v Michael Kennedy>but then the website parses the YouTube ID out
+
+00:08:46.190 --> 00:08:48.540
+<v Michael Kennedy>and then embeds it with an X.
+
+00:08:49.440 --> 00:08:50.580
+<v Michael Kennedy>There's a bunch of stuff going on there
+
+00:08:50.680 --> 00:08:53.980
+<v Michael Kennedy>to keep YouTube out of spying on my visitors.
+
+00:08:54.680 --> 00:08:57.180
+<v Michael Kennedy>But stuff happens, YouTube ID is used.
+
+00:08:57.660 --> 00:08:58.880
+<v Michael Kennedy>That could be parsed every time.
+
+00:08:59.260 --> 00:09:02.940
+<v Michael Kennedy>Or I can just say, this episode has this YouTube ID.
+
+00:09:03.450 --> 00:09:06.300
+<v Michael Kennedy>That information goes into a cache.
+
+00:09:07.200 --> 00:09:10.580
+<v Michael Kennedy>And because it's a disk cache sort of scenario,
+
+00:09:10.730 --> 00:09:13.100
+<v Michael Kennedy>like a file-based one, not an LRU cache,
+
+00:09:14.140 --> 00:09:16.100
+<v Michael Kennedy>it doesn't change the memory footprint.
+
+00:09:16.920 --> 00:09:18.180
+<v Michael Kennedy>And it's shared across processes.
+
+00:09:18.310 --> 00:09:20.980
+<v Michael Kennedy>So in the web world, it's really common to have a web garden
+
+00:09:21.010 --> 00:09:23.279
+<v Michael Kennedy>where you've got two or four processes
+
+00:09:23.280 --> 00:09:25.340
+<v Michael Kennedy>all being round-robin'd
+
+00:09:26.519 --> 00:09:29.720
+<v Michael Kennedy>from some web server manager thing.
+
+00:09:31.120 --> 00:09:33.740
+<v Michael Kennedy>If you don't somehow out-of-process that,
+
+00:09:33.800 --> 00:09:37.960
+<v Michael Kennedy>either Redis or SQLite or Database or something,
+
+00:09:39.160 --> 00:09:41.540
+<v Michael Kennedy>then all of those things are recreating that.
+
+00:09:41.850 --> 00:09:42.700
+<v Michael Kennedy>They can't reuse that.
+
+00:09:43.350 --> 00:09:44.940
+<v Michael Kennedy>So there's a lot of interesting components there.
+
+00:09:45.699 --> 00:09:47.000
+<v Vincent Warmerdam>I suppose your web deployment,
+
+00:09:47.000 --> 00:09:48.200
+<v Vincent Warmerdam>you have a big VM, I suppose,
+
+00:09:48.430 --> 00:09:50.500
+<v Vincent Warmerdam>and then there's multiple Docker containers running,
+
+00:09:50.800 --> 00:09:53.340
+<v Vincent Warmerdam>but they do all have access to the same volume
+
+00:09:53.420 --> 00:09:54.640
+<v Vincent Warmerdam>and that's how they access SQLite.
+
+00:09:55.100 --> 00:09:56.820
+<v Michael Kennedy>Bingo, yeah, exactly, exactly.
+
+00:09:58.199 --> 00:09:59.280
+<v Michael Kennedy>And how am I doing?
+
+00:09:59.840 --> 00:10:03.360
+<v Michael Kennedy>Yeah, so what I have done is in the Docker Compose file,
+
+00:10:03.960 --> 00:10:07.520
+<v Michael Kennedy>I have an external, this is also important for Docker.
+
+00:10:07.600 --> 00:10:10.500
+<v Michael Kennedy>So I have an external folder on a big hard drive
+
+00:10:11.300 --> 00:10:14.860
+<v Michael Kennedy>in the big VM that says, here's where all the caches go.
+
+00:10:15.740 --> 00:10:17.660
+<v Michael Kennedy>And then depending on which app,
+
+00:10:17.880 --> 00:10:19.760
+<v Michael Kennedy>it'll pick like a subdirectory it can go look at
+
+00:10:19.760 --> 00:10:20.120
+<v Michael Kennedy>or whatever.
+
+00:10:20.180 --> 00:10:21.020
+<v Michael Kennedy>that it's using.
+
+00:10:21.470 --> 00:10:25.120
+<v Michael Kennedy>And so that way, even if I do a complete rebuild of the Docker image,
+
+00:10:26.240 --> 00:10:32.260
+<v Michael Kennedy>it still retains its cache from version to version
+
+00:10:32.560 --> 00:10:33.460
+<v Michael Kennedy>and all that kind of business.
+
+00:10:33.510 --> 00:10:36.940
+<v Michael Kennedy>You could do that with a persistent volume as well,
+
+00:10:37.120 --> 00:10:41.340
+<v Michael Kennedy>but I've just decided you can go and inspect it a little easier
+
+00:10:41.500 --> 00:10:43.220
+<v Michael Kennedy>and see how big the cache is and stuff like that.
+
+00:10:43.860 --> 00:10:47.540
+<v Vincent Warmerdam>Okay, so we're going to get into the weeds of how disk cache works exactly,
+
+00:10:47.720 --> 00:10:50.360
+<v Vincent Warmerdam>but I'm triggered here because it sounds like you've done something clever there.
+
+00:10:51.000 --> 00:10:53.000
+<v Vincent Warmerdam>Because what you can do in DishCache is you can say,
+
+00:10:53.140 --> 00:10:54.840
+<v Vincent Warmerdam>look, here's a file that's SQLite,
+
+00:10:54.860 --> 00:10:57.420
+<v Vincent Warmerdam>and then it behaves like a dictionary, but it's persisted on disk.
+
+00:10:57.900 --> 00:10:59.740
+<v Vincent Warmerdam>But what I just heard you say is that you've got multiple caches.
+
+00:10:59.920 --> 00:11:01.300
+<v Vincent Warmerdam>So am I right to hear that, like,
+
+00:11:01.720 --> 00:11:03.640
+<v Vincent Warmerdam>oh, for some things that need to be cached,
+
+00:11:03.720 --> 00:11:05.560
+<v Vincent Warmerdam>let's say the YouTube things, that's a separate file,
+
+00:11:06.120 --> 00:11:08.460
+<v Vincent Warmerdam>and then all the markdown stuff, that's also a separate file,
+
+00:11:08.960 --> 00:11:10.960
+<v Vincent Warmerdam>and therefore if connections need to be made to either,
+
+00:11:11.120 --> 00:11:12.300
+<v Vincent Warmerdam>that's also kind of nicely split.
+
+00:11:12.440 --> 00:11:13.360
+<v Vincent Warmerdam>Is that also the design there?
+
+00:11:13.660 --> 00:11:14.380
+<v Michael Kennedy>Yeah, that is.
+
+00:11:14.500 --> 00:11:17.400
+<v Michael Kennedy>And actually, we're going to dive into all the details of how it works,
+
+00:11:17.520 --> 00:11:19.920
+<v Michael Kennedy>I'll just go-- to give people a little glimpse,
+
+00:11:20.010 --> 00:11:20.880
+<v Michael Kennedy>I'll go ahead and show--
+
+00:11:21.240 --> 00:11:22.540
+<v Michael Kennedy>I've got this whole admin back in here.
+
+00:11:23.580 --> 00:11:26.220
+<v Michael Kennedy>And I've got different caches for different purposes.
+
+00:11:26.520 --> 00:11:27.760
+<v Michael Kennedy>Because they're just SQLite files,
+
+00:11:28.760 --> 00:11:30.440
+<v Michael Kennedy>you can either say, give me the same one,
+
+00:11:30.470 --> 00:11:32.560
+<v Michael Kennedy>or you can say, this one is named something else,
+
+00:11:32.740 --> 00:11:34.540
+<v Michael Kennedy>and it has a different file name or different folder
+
+00:11:34.740 --> 00:11:35.060
+<v Michael Kennedy>or whatever.
+
+00:11:36.080 --> 00:11:38.860
+<v Michael Kennedy>So I've got one that stores things like that YouTube ID
+
+00:11:39.010 --> 00:11:42.080
+<v Michael Kennedy>I talked about in any markdown, any fragment of markdown
+
+00:11:42.320 --> 00:11:43.900
+<v Michael Kennedy>anywhere in the web app that it needs to say,
+
+00:11:44.140 --> 00:11:44.940
+<v Michael Kennedy>that needs to go to HTML.
+
+00:11:46.480 --> 00:11:49.580
+<v Vincent Warmerdam>Yeah, and it's like 8,000 items in that thing.
+
+00:11:49.700 --> 00:11:49.860
+<v Michael Kennedy>Yeah.
+
+00:11:50.020 --> 00:11:53.540
+<v Michael Kennedy>In this one, there's 8,970 items, which is 9 megs.
+
+00:11:54.040 --> 00:11:54.140
+<v Michael Kennedy>Right.
+
+00:11:54.140 --> 00:11:55.780
+<v Michael Kennedy>I mean, it's not huge, but it's not too bad.
+
+00:11:56.460 --> 00:11:59.180
+<v Michael Kennedy>And you can actually even see where it thinks it lives,
+
+00:11:59.360 --> 00:12:03.780
+<v Michael Kennedy>but that's not really where it lives because there's the volume redirects and stuff.
+
+00:12:04.380 --> 00:12:10.360
+<v Michael Kennedy>But I've also got stuff for directly about the episodes that it needs to pull back.
+
+00:12:10.420 --> 00:12:12.960
+<v Michael Kennedy>And then I do a lot of HTTP caching.
+
+00:12:14.260 --> 00:12:19.000
+<v Michael Kennedy>And one of the things that I think is really wrong with web development is people say,
+
+00:12:19.120 --> 00:12:22.680
+<v Michael Kennedy>well, that's like a stale image or that's a stale CSS file or JavaScript, you know,
+
+00:12:22.690 --> 00:12:23.520
+<v Michael Kennedy>all that kind of stuff.
+
+00:12:23.950 --> 00:12:32.580
+<v Michael Kennedy>So if you just do like super minor tricks and just put some kind of hash ID on the end
+
+00:12:32.590 --> 00:12:39.899
+<v Michael Kennedy>of your content, it will, and you teach your CDN or whatever that that's a different file
+
+00:12:39.920 --> 00:12:46.760
+<v Michael Kennedy>if it varies by query string, then you never, ever have to worry about stale content ever.
+
+00:12:47.560 --> 00:12:50.560
+<v Michael Kennedy>But computing that can be expensive, especially for remote stuff.
+
+00:12:50.780 --> 00:12:54.340
+<v Michael Kennedy>If it's like an S3 thing, but you still want to have it do that.
+
+00:12:54.880 --> 00:12:56.480
+<v Michael Kennedy>So I have a special cache for that.
+
+00:12:56.520 --> 00:13:02.260
+<v Michael Kennedy>And that's pretty complicated to build up because it's got to do almost 700 web requests
+
+00:13:02.460 --> 00:13:03.560
+<v Michael Kennedy>to figure out what those are.
+
+00:13:03.560 --> 00:13:06.320
+<v Michael Kennedy>But once they're done, it's blazing fast.
+
+00:13:06.380 --> 00:13:07.860
+<v Michael Kennedy>You don't have to do it again unless it changes.
+
+00:13:08.060 --> 00:13:09.400
+<v Michael Kennedy>Then it doesn't change much and so on.
+
+00:13:09.460 --> 00:13:13.560
+<v Michael Kennedy>So that's the way that I'm sort of using and appreciating disk cache.
+
+00:13:14.020 --> 00:13:17.100
+<v Vincent Warmerdam>Yeah, it works well in your setup because you've gone for the VM route.
+
+00:13:17.110 --> 00:13:21.740
+<v Vincent Warmerdam>I mean, if you go for something like Fly.io or maybe even DigitalOcean has a really,
+
+00:13:21.980 --> 00:13:25.860
+<v Vincent Warmerdam>I think it's a nice app service, but that all revolves around Docker containers
+
+00:13:26.080 --> 00:13:27.120
+<v Vincent Warmerdam>that spin up horizontally.
+
+00:13:27.390 --> 00:13:31.280
+<v Vincent Warmerdam>And I don't think those containers can be configured in such a way
+
+00:13:31.340 --> 00:13:32.180
+<v Vincent Warmerdam>that they share the volume.
+
+00:13:33.420 --> 00:13:36.120
+<v Vincent Warmerdam>So in that sense, you could still use disk cache,
+
+00:13:36.260 --> 00:13:39.320
+<v Vincent Warmerdam>but then each individual instance of the Docker container
+
+00:13:39.440 --> 00:13:41.680
+<v Vincent Warmerdam>would have its own cache, which still could work out.
+
+00:13:43.080 --> 00:13:45.460
+<v Vincent Warmerdam>Not going to be as well functional.
+
+00:13:46.780 --> 00:13:47.940
+<v Vincent Warmerdam>It's going to be better with your setup, though.
+
+00:13:48.400 --> 00:13:49.220
+<v Michael Kennedy>Yeah, absolutely.
+
+00:13:49.800 --> 00:13:50.500
+<v Michael Kennedy>I agree, though.
+
+00:13:50.510 --> 00:13:51.280
+<v Michael Kennedy>You could still do it.
+
+00:13:51.360 --> 00:13:54.660
+<v Michael Kennedy>Or you could go, I'll take the zen of what Vincent and Michael
+
+00:13:54.730 --> 00:13:56.620
+<v Michael Kennedy>are saying today, and I'll apply that to Postgres,
+
+00:13:56.930 --> 00:13:59.000
+<v Michael Kennedy>or I'll apply that to whatever data.
+
+00:13:59.040 --> 00:14:00.760
+<v Michael Kennedy>You could pull this off in a database.
+
+00:14:01.360 --> 00:14:02.640
+<v Michael Kennedy>You would just have to do more work.
+
+00:14:03.240 --> 00:14:03.340
+<v Vincent Warmerdam>Yeah.
+
+00:14:03.700 --> 00:14:08.460
+<v Vincent Warmerdam>I mean, I've had a couple of, I think it was like a Django conference talk I saw a while ago.
+
+00:14:08.500 --> 00:14:10.180
+<v Vincent Warmerdam>They also like raping about disk cache.
+
+00:14:10.860 --> 00:14:14.520
+<v Vincent Warmerdam>But like the merits of disk cache do depend a little bit on your deployment, though.
+
+00:14:14.600 --> 00:14:16.120
+<v Vincent Warmerdam>That is, I think, one observation.
+
+00:14:16.200 --> 00:14:17.360
+<v Vincent Warmerdam>Like in your setup, I can definitely imagine.
+
+00:14:17.360 --> 00:14:17.380
+<v Vincent Warmerdam>Interesting.
+
+00:14:18.040 --> 00:14:18.360
+<v Vincent Warmerdam>Yeah.
+
+00:14:18.740 --> 00:14:18.800
+<v Michael Kennedy>Yeah.
+
+00:14:19.260 --> 00:14:19.360
+<v Michael Kennedy>All right.
+
+00:14:19.380 --> 00:14:21.640
+<v Michael Kennedy>Well, I don't even think we properly introduced this thing yet.
+
+00:14:21.800 --> 00:14:23.080
+<v Michael Kennedy>So let's maybe go there.
+
+00:14:23.240 --> 00:14:23.300
+<v Michael Kennedy>Yeah.
+
+00:14:23.640 --> 00:14:24.240
+<v Michael Kennedy>Let's start there.
+
+00:14:24.360 --> 00:14:24.700
+<v Michael Kennedy>Let's start there.
+
+00:14:24.880 --> 00:14:25.420
+<v Vincent Warmerdam>It's time.
+
+00:14:25.640 --> 00:14:25.740
+<v Vincent Warmerdam>Okay.
+
+00:14:25.880 --> 00:14:26.260
+<v Michael Kennedy>It's time.
+
+00:14:26.720 --> 00:14:26.800
+<v Vincent Warmerdam>Yeah.
+
+00:14:28.900 --> 00:14:32.480
+<v Vincent Warmerdam>I guess like the simplest way I usually describe it, it really behaves like a dictionary,
+
+00:14:32.840 --> 00:14:35.740
+<v Vincent Warmerdam>except you persist the disk and under the hood is using SQLite.
+
+00:14:35.850 --> 00:14:38.280
+<v Vincent Warmerdam>I think that's the, it doesn't cover everything,
+
+00:14:38.390 --> 00:14:40.620
+<v Vincent Warmerdam>but you get quite close if that's the way it is.
+
+00:14:40.800 --> 00:14:42.660
+<v Michael Kennedy>I think there might be, you know,
+
+00:14:43.130 --> 00:14:44.240
+<v Michael Kennedy>I keep harping on this on the show,
+
+00:14:44.320 --> 00:14:46.060
+<v Michael Kennedy>but there are so many people that are new to Python
+
+00:14:46.150 --> 00:14:47.060
+<v Michael Kennedy>and programming these days.
+
+00:14:48.820 --> 00:14:50.180
+<v Michael Kennedy>Many, many of them, almost half of them.
+
+00:14:50.700 --> 00:14:52.620
+<v Michael Kennedy>I think it's worth pointing out just like, what is SQLite?
+
+00:14:52.760 --> 00:14:54.940
+<v Michael Kennedy>Like, why is it different than any other database?
+
+00:14:55.420 --> 00:14:57.700
+<v Michael Kennedy>Like, why have I been using the word database or SQLite
+
+00:14:57.780 --> 00:14:58.980
+<v Michael Kennedy>when SQLite is a database, right?
+
+00:14:59.080 --> 00:14:59.340
+<v Michael Kennedy>That's weird.
+
+00:15:00.180 --> 00:15:03.340
+<v Vincent Warmerdam>So I never really took a good databases course,
+
+00:15:03.460 --> 00:15:05.500
+<v Vincent Warmerdam>so I might be ruining the formalism of it.
+
+00:15:05.830 --> 00:15:07.840
+<v Vincent Warmerdam>But the main, like, for me at least,
+
+00:15:07.890 --> 00:15:09.520
+<v Vincent Warmerdam>the way I like to think about it is Postgres,
+
+00:15:09.720 --> 00:15:11.100
+<v Vincent Warmerdam>that's a thing I can run on a VM,
+
+00:15:11.700 --> 00:15:14.520
+<v Vincent Warmerdam>and then other Docker containers can connect to it
+
+00:15:14.840 --> 00:15:16.360
+<v Vincent Warmerdam>because it's running out of process.
+
+00:15:16.640 --> 00:15:18.860
+<v Vincent Warmerdam>There's some other process that has the database somewhere,
+
+00:15:19.330 --> 00:15:20.240
+<v Vincent Warmerdam>and I can connect to it.
+
+00:15:20.800 --> 00:15:22.560
+<v Vincent Warmerdam>And I think the main thing that makes SQLite different
+
+00:15:22.860 --> 00:15:24.620
+<v Vincent Warmerdam>is that, no, you got to run it on the same machine,
+
+00:15:25.200 --> 00:15:27.980
+<v Vincent Warmerdam>on the same process where your program is running.
+
+00:15:28.140 --> 00:15:29.419
+<v Vincent Warmerdam>And that's, I think, the main...
+
+00:15:29.440 --> 00:15:30.520
+<v Vincent Warmerdam>And there's all sorts of little details,
+
+00:15:30.680 --> 00:15:32.800
+<v Vincent Warmerdam>like how the data structures are used internally,
+
+00:15:33.200 --> 00:15:34.600
+<v Vincent Warmerdam>and SQLite doesn't have a lot of types.
+
+00:15:34.840 --> 00:15:35.960
+<v Vincent Warmerdam>There's lots of other differences.
+
+00:15:36.420 --> 00:15:37.700
+<v Vincent Warmerdam>I think that's the main one.
+
+00:15:38.640 --> 00:15:39.640
+<v Vincent Warmerdam>Unless, Michael, I forgot something.
+
+00:15:39.710 --> 00:15:41.000
+<v Michael Kennedy>MICHAEL LITER: Yeah, no, I think it's--
+
+00:15:43.680 --> 00:15:46.280
+<v Michael Kennedy>operationally, it's a separate thing that you have to run.
+
+00:15:46.920 --> 00:15:48.260
+<v Michael Kennedy>It has to have both--
+
+00:15:48.310 --> 00:15:51.520
+<v Michael Kennedy>it has to be secure, because if your data gets exposed--
+
+00:15:51.520 --> 00:15:52.140
+<v Vincent Warmerdam>MARK MANDEL: Oh, we're talking about--
+
+00:15:52.600 --> 00:15:53.600
+<v Vincent Warmerdam>for Postgres, is it?
+
+00:15:53.760 --> 00:15:54.460
+<v Vincent Warmerdam>Not for SQLite.
+
+00:15:54.660 --> 00:15:55.480
+<v Vincent Warmerdam>MICHAEL LITER: Yes, for Postgres.
+
+00:15:55.860 --> 00:15:55.980
+<v Vincent Warmerdam>Yes.
+
+00:15:56.110 --> 00:15:56.740
+<v Vincent Warmerdam>MARK MANDEL: It's running somewhere.
+
+00:15:56.960 --> 00:15:58.420
+<v Vincent Warmerdam>People can SSH in if you're not careful.
+
+00:15:58.700 --> 00:16:00.960
+<v Vincent Warmerdam>You've got to be mindful of passwords and all that stuff.
+
+00:16:01.380 --> 00:16:02.140
+<v Vincent Warmerdam>That's totally true.
+
+00:16:02.560 --> 00:16:02.800
+<v Michael Kennedy>Right.
+
+00:16:03.020 --> 00:16:03.680
+<v Michael Kennedy>And it can go down.
+
+00:16:03.910 --> 00:16:07.920
+<v Michael Kennedy>Like, it could just become unavailable because you've screwed up something or whatever, right?
+
+00:16:08.000 --> 00:16:15.100
+<v Michael Kennedy>It's a thing you have to manage in the complexity of running your app when it's like, well, it used to just be one thing I could run in a Docker container.
+
+00:16:15.150 --> 00:16:16.320
+<v Michael Kennedy>Well, now I've got different servers.
+
+00:16:16.430 --> 00:16:17.080
+<v Michael Kennedy>I've got to coordinate.
+
+00:16:17.150 --> 00:16:18.020
+<v Michael Kennedy>And there's firewalls.
+
+00:16:18.020 --> 00:16:24.860
+<v Michael Kennedy>And there's, like, it just takes it so much higher in terms of complexity that, like, SQLite is a file.
+
+00:16:25.880 --> 00:16:26.080
+<v Michael Kennedy>Yes.
+
+00:16:26.080 --> 00:16:26.300
+<v Michael Kennedy>You know what I mean?
+
+00:16:26.680 --> 00:16:28.880
+<v Vincent Warmerdam>I do want to maybe defend Postgres a little bit there
+
+00:16:28.930 --> 00:16:31.320
+<v Vincent Warmerdam>because one thing that's really nice and convenient
+
+00:16:31.710 --> 00:16:33.600
+<v Vincent Warmerdam>in terms of CI, CD, and deployments and all that,
+
+00:16:34.900 --> 00:16:36.640
+<v Vincent Warmerdam>oh, suppose you want to scale horizontally
+
+00:16:36.730 --> 00:16:38.700
+<v Vincent Warmerdam>and there's Docker containers running on the left
+
+00:16:39.180 --> 00:16:41.440
+<v Vincent Warmerdam>and there's this one Postgres thing running on the right.
+
+00:16:41.760 --> 00:16:43.160
+<v Vincent Warmerdam>I mean, you can't just turn on and off
+
+00:16:43.270 --> 00:16:45.020
+<v Vincent Warmerdam>all those Docker containers as you see fit.
+
+00:16:45.300 --> 00:16:46.900
+<v Vincent Warmerdam>They're just going to connect to the Postgres instance.
+
+00:16:47.170 --> 00:16:50.620
+<v Vincent Warmerdam>And I've done this trick for Calm Code a bunch of times
+
+00:16:50.740 --> 00:16:51.760
+<v Vincent Warmerdam>where I just switch cloud providers
+
+00:16:52.380 --> 00:16:53.380
+<v Vincent Warmerdam>because Postgres is running there
+
+00:16:53.900 --> 00:16:55.420
+<v Vincent Warmerdam>and I can just move the Docker containers
+
+00:16:55.490 --> 00:16:56.580
+<v Vincent Warmerdam>to another cloud provider
+
+00:16:56.600 --> 00:16:57.800
+<v Vincent Warmerdam>And it all works fine.
+
+00:16:57.840 --> 00:16:58.760
+<v Vincent Warmerdam>No migration necessary.
+
+00:16:59.800 --> 00:17:02.060
+<v Vincent Warmerdam>With SQLite, that aspect is a little bit more tricky.
+
+00:17:02.080 --> 00:17:03.220
+<v Vincent Warmerdam>You have to be a bit more mindful.
+
+00:17:03.820 --> 00:17:06.260
+<v Vincent Warmerdam>Although, I should mention, it might be worth a Google.
+
+00:17:07.020 --> 00:17:09.000
+<v Vincent Warmerdam>There's actually this one new cloud provider that's
+
+00:17:09.120 --> 00:17:10.380
+<v Vincent Warmerdam>very much Python focused.
+
+00:17:10.620 --> 00:17:13.760
+<v Vincent Warmerdam>It's called Plash, P-L-A dot S-H, I think.
+
+00:17:14.520 --> 00:17:16.040
+<v Michael Kennedy>Oh, this is new to me.
+
+00:17:17.019 --> 00:17:17.819
+<v Michael Kennedy>Yeah, so--
+
+00:17:17.819 --> 00:17:18.160
+<v Michael Kennedy>Wow, OK.
+
+00:17:18.439 --> 00:17:18.800
+<v Michael Kennedy>Look at this.
+
+00:17:19.160 --> 00:17:21.160
+<v Michael Kennedy>From dot P-Y to dot com in seconds.
+
+00:17:21.660 --> 00:17:24.819
+<v Vincent Warmerdam>Yeah, it's the Answer AI, Jeremy Howard and friends.
+
+00:17:25.040 --> 00:17:27.780
+<v Vincent Warmerdam>I don't know to what extent this is super production ready.
+
+00:17:28.100 --> 00:17:30.720
+<v Vincent Warmerdam>And SQLite, you've got to be mindful of the production aspect
+
+00:17:31.570 --> 00:17:32.600
+<v Vincent Warmerdam>for some reasons as well.
+
+00:17:33.070 --> 00:17:35.000
+<v Vincent Warmerdam>But one thing that is kind of cool about them
+
+00:17:35.500 --> 00:17:38.540
+<v Vincent Warmerdam>is they give you a persistent SQLite as a database
+
+00:17:39.660 --> 00:17:41.980
+<v Vincent Warmerdam>and a Python process that can just kind of attach to it.
+
+00:17:42.030 --> 00:17:43.420
+<v Vincent Warmerdam>And they just, in their mind,
+
+00:17:43.580 --> 00:17:45.580
+<v Vincent Warmerdam>that's the simplest way that a cloud provider should be.
+
+00:17:45.610 --> 00:17:46.960
+<v Vincent Warmerdam>They take a very opinionated approach.
+
+00:17:48.680 --> 00:17:51.280
+<v Vincent Warmerdam>So yeah, if you're interested in maybe running this as a web service,
+
+00:17:52.060 --> 00:17:54.880
+<v Vincent Warmerdam>Like migrations are a little bit tricky in that realm
+
+00:17:55.090 --> 00:17:57.300
+<v Vincent Warmerdam>because you do have to like download the entire data set,
+
+00:17:57.400 --> 00:17:59.500
+<v Vincent Warmerdam>do the migration, upload it again, I think,
+
+00:17:59.700 --> 00:18:00.780
+<v Vincent Warmerdam>if I recall correctly.
+
+00:18:00.900 --> 00:18:02.460
+<v Michael Kennedy>And for some apps, that's no big deal.
+
+00:18:02.650 --> 00:18:03.960
+<v Michael Kennedy>Others, that's a mega deal.
+
+00:18:04.080 --> 00:18:04.880
+<v Michael Kennedy>They're been so big about data.
+
+00:18:05.120 --> 00:18:08.020
+<v Vincent Warmerdam>So I'm not suggesting this is going to be for everything
+
+00:18:08.240 --> 00:18:09.700
+<v Vincent Warmerdam>and everyone, but I do think it's cool,
+
+00:18:09.830 --> 00:18:11.060
+<v Vincent Warmerdam>which is why I figured I'd mention it.
+
+00:18:11.090 --> 00:18:11.780
+<v Michael Kennedy>So that's like...
+
+00:18:11.780 --> 00:18:12.220
+<v Michael Kennedy>It's new to me.
+
+00:18:13.660 --> 00:18:16.480
+<v Michael Kennedy>I'm going to follow up with lightstream.io.
+
+00:18:16.920 --> 00:18:17.500
+<v Michael Kennedy>Have you seen this?
+
+00:18:17.820 --> 00:18:20.580
+<v Vincent Warmerdam>Yeah, that is also really neat.
+
+00:18:22.200 --> 00:18:23.440
+<v Vincent Warmerdam>so yeah so basically
+
+00:18:23.640 --> 00:18:25.100
+<v Vincent Warmerdam>what if you want to back up your SQLite
+
+00:18:25.260 --> 00:18:26.140
+<v Vincent Warmerdam>like how could you do that
+
+00:18:26.920 --> 00:18:28.540
+<v Vincent Warmerdam>oh it might be nice to do that with S3
+
+00:18:28.760 --> 00:18:30.020
+<v Vincent Warmerdam>and it's a you know
+
+00:18:30.750 --> 00:18:32.680
+<v Vincent Warmerdam>I think it's like the guy who made that thing
+
+00:18:32.710 --> 00:18:34.820
+<v Vincent Warmerdam>works at Fly.io he's doing a bunch of low level stuff
+
+00:18:35.340 --> 00:18:37.080
+<v Vincent Warmerdam>one thing about that open source package
+
+00:18:37.200 --> 00:18:38.420
+<v Vincent Warmerdam>is also really interesting by the way
+
+00:18:38.640 --> 00:18:40.060
+<v Vincent Warmerdam>is I think he refuses
+
+00:18:41.020 --> 00:18:41.660
+<v Vincent Warmerdam>PRs from the outside
+
+00:18:42.380 --> 00:18:44.680
+<v Vincent Warmerdam>like he just wants to have no distractions whatsoever
+
+00:18:45.280 --> 00:18:47.140
+<v Vincent Warmerdam>like he has a very interesting way of developing software
+
+00:18:47.340 --> 00:18:48.519
+<v Vincent Warmerdam>you can submit issues of course
+
+00:18:51.020 --> 00:18:52.360
+<v Vincent Warmerdam>I think if you scroll down
+
+00:18:52.880 --> 00:18:54.480
+<v Vincent Warmerdam>there used to be a notice that basically said
+
+00:18:54.600 --> 00:18:55.220
+<v Vincent Warmerdam>hey this is a
+
+00:19:01.120 --> 00:19:02.080
+<v Vincent Warmerdam>contribution guide
+
+00:19:02.140 --> 00:19:03.080
+<v Vincent Warmerdam>we welcome bug reports
+
+00:19:05.320 --> 00:19:08.420
+<v Vincent Warmerdam>this is a way where you can basically stream updates to S3
+
+00:19:08.620 --> 00:19:10.420
+<v Vincent Warmerdam>and the main observation there is
+
+00:19:11.080 --> 00:19:13.980
+<v Vincent Warmerdam>S3 is actually really cheap if all you do is push stuff into it
+
+00:19:14.040 --> 00:19:15.100
+<v Vincent Warmerdam>if you never pull it out
+
+00:19:15.540 --> 00:19:17.899
+<v Vincent Warmerdam>usually getting it out is the expensive bit of S3
+
+00:19:18.440 --> 00:19:22.800
+<v Vincent Warmerdam>so this is like pennies on the like pennies on the dollar for really decent backup and you can
+
+00:19:22.800 --> 00:19:26.880
+<v Vincent Warmerdam>also send it to like multiple you can send it to amazon and also to digital ocean if you like
+
+00:19:27.320 --> 00:19:34.380
+<v Michael Kennedy>yeah yeah because these days s3 is really a synonym for blob storage on almost any hosting
+
+00:19:34.640 --> 00:19:40.220
+<v Michael Kennedy>platform right like it used to be s3 might go to literally s3 at aws but now it's like or digital
+
+00:19:40.420 --> 00:19:46.480
+<v Michael Kennedy>ocean object store spaces or to you know you name it right they've all adopted the api kind of like
+
+00:19:46.420 --> 00:19:47.560
+<v Michael Kennedy>open AI's API.
+
+00:19:48.220 --> 00:19:50.780
+<v Vincent Warmerdam>Yeah, I will say it's a little bit awkward that you have to
+
+00:19:51.060 --> 00:19:53.540
+<v Vincent Warmerdam>that like, sometimes you go to a cloud provider and they say you
+
+00:19:53.600 --> 00:19:57.100
+<v Vincent Warmerdam>have to download a SDK from a competing cloud provider and then
+
+00:19:57.100 --> 00:19:58.800
+<v Vincent Warmerdam>you can connect to our cloud bucket.
+
+00:19:59.460 --> 00:20:04.260
+<v Michael Kennedy>I know. And it's usually Boto3 and Boto3 is it's, if you want
+
+00:20:04.260 --> 00:20:07.220
+<v Michael Kennedy>to cry because you're using a library, like Boto3 has a good
+
+00:20:07.360 --> 00:20:09.920
+<v Michael Kennedy>chance of being the first one to make you do it. It is so bad.
+
+00:20:11.220 --> 00:20:15.139
+<v Michael Kennedy>It's so not custom. It's not, it's not built with craft and
+
+00:20:15.160 --> 00:20:17.220
+<v Michael Kennedy>love. It's like auto-generated where you pass
+
+00:20:17.260 --> 00:20:19.020
+<v Michael Kennedy>these, like you pass this kind of
+
+00:20:19.120 --> 00:20:20.980
+<v Michael Kennedy>dictionary and then the other argument takes a separate
+
+00:20:21.180 --> 00:20:22.920
+<v Michael Kennedy>dictionary that relates back. It's just like,
+
+00:20:23.480 --> 00:20:24.920
+<v Michael Kennedy>could you give me a real API here?
+
+00:20:25.180 --> 00:20:26.960
+<v Vincent Warmerdam>I mean, the one thing I can appreciate
+
+00:20:27.100 --> 00:20:29.020
+<v Vincent Warmerdam>about Bodo that I do think is honest to mention is like
+
+00:20:29.520 --> 00:20:31.140
+<v Vincent Warmerdam>they do try to just maintain
+
+00:20:31.380 --> 00:20:33.240
+<v Vincent Warmerdam>it, like the backward compatibility of that thing
+
+00:20:34.000 --> 00:20:35.300
+<v Vincent Warmerdam>also means it can't move
+
+00:20:35.320 --> 00:20:37.000
+<v Vincent Warmerdam>in any direction as well. And I can't
+
+00:20:37.120 --> 00:20:39.040
+<v Vincent Warmerdam>like, there is this meme where Google
+
+00:20:39.260 --> 00:20:41.160
+<v Vincent Warmerdam>kills all of its products way too early and
+
+00:20:41.380 --> 00:20:43.040
+<v Vincent Warmerdam>Amazon's meme is that they kill them way too late
+
+00:20:43.740 --> 00:20:44.540
+<v Vincent Warmerdam>sometimes never.
+
+00:20:45.020 --> 00:20:48.060
+<v Vincent Warmerdam>so in that sense I can appreciate that they just try to keep Bodo
+
+00:20:48.660 --> 00:20:51.800
+<v Vincent Warmerdam>not necessarily as user friendly but they do keep it super stable
+
+00:20:52.340 --> 00:20:53.600
+<v Vincent Warmerdam>I get there's a balance there
+
+00:20:55.360 --> 00:20:57.500
+<v Michael Kennedy>I feel like we still haven't really introduced this cache
+
+00:20:57.600 --> 00:20:58.540
+<v Michael Kennedy>we kind of set the stage
+
+00:21:00.480 --> 00:21:03.320
+<v Vincent Warmerdam>so SQLite, super cool, how does it work under the hood?
+
+00:21:03.320 --> 00:21:06.020
+<v Vincent Warmerdam>well it's really just like a Python dictionary so you can say something like
+
+00:21:06.140 --> 00:21:09.280
+<v Vincent Warmerdam>hey, make a new cache and then you can do things like cache
+
+00:21:09.500 --> 00:21:13.299
+<v Vincent Warmerdam>square brackets, string name, equals and then whatever Python object you like
+
+00:21:13.320 --> 00:21:15.300
+<v Vincent Warmerdam>can go in. And Python
+
+00:21:15.520 --> 00:21:16.600
+<v Vincent Warmerdam>has this serialization
+
+00:21:17.560 --> 00:21:18.560
+<v Vincent Warmerdam>method called a pickle.
+
+00:21:19.300 --> 00:21:21.180
+<v Vincent Warmerdam>Serialization just means, well, you can persist it to
+
+00:21:21.390 --> 00:21:23.260
+<v Vincent Warmerdam>disk in some way, and then you
+
+00:21:23.340 --> 00:21:25.220
+<v Vincent Warmerdam>can sort of get it back into memory again.
+
+00:21:25.820 --> 00:21:27.200
+<v Vincent Warmerdam>And that's what disk cache
+
+00:21:27.260 --> 00:21:29.180
+<v Vincent Warmerdam>just uses under the hood. So in theory,
+
+00:21:29.440 --> 00:21:31.300
+<v Vincent Warmerdam>any Python object that you can think of
+
+00:21:31.460 --> 00:21:32.780
+<v Vincent Warmerdam>can go into disk cache.
+
+00:21:33.820 --> 00:21:35.300
+<v Vincent Warmerdam>The only sort of thing
+
+00:21:35.300 --> 00:21:37.320
+<v Vincent Warmerdam>to be mindful of is if you have like Python
+
+00:21:37.490 --> 00:21:39.140
+<v Vincent Warmerdam>version, if NumPy version
+
+00:21:39.360 --> 00:21:41.260
+<v Vincent Warmerdam>one in Python 3.6, and you're going
+
+00:21:41.280 --> 00:21:43.140
+<v Vincent Warmerdam>to inject a whole lot of that into disk cache,
+
+00:21:43.620 --> 00:21:45.980
+<v Vincent Warmerdam>don't expect those objects to serialize nicely back
+
+00:21:46.100 --> 00:21:49.320
+<v Vincent Warmerdam>if you're using Python 3.12 and NumPy version 2 or something like that.
+
+00:21:49.380 --> 00:21:52.340
+<v Michael Kennedy>Right, because pickle is almost an in-memory representation
+
+00:21:53.160 --> 00:21:56.500
+<v Michael Kennedy>of the thing and that may have evolved over time.
+
+00:21:56.560 --> 00:21:59.040
+<v Michael Kennedy>That's also a true statement about your own classes potentially.
+
+00:21:59.700 --> 00:22:02.180
+<v Vincent Warmerdam>Yeah, so if you're dealing with multiple Python versions
+
+00:22:02.320 --> 00:22:03.960
+<v Vincent Warmerdam>and multiple versions of different packages
+
+00:22:04.240 --> 00:22:06.900
+<v Vincent Warmerdam>there's like a little bit of a danger zone to be aware of there.
+
+00:22:08.240 --> 00:22:09.760
+<v Vincent Warmerdam>That said, for most of the stuff that I do
+
+00:22:09.920 --> 00:22:11.480
+<v Vincent Warmerdam>that's basically a non-issue.
+
+00:22:11.640 --> 00:22:14.120
+<v Vincent Warmerdam>But I do get this nice little object
+
+00:22:14.420 --> 00:22:16.820
+<v Vincent Warmerdam>that can just store stuff into SQLite
+
+00:22:16.980 --> 00:22:17.840
+<v Vincent Warmerdam>and can get it out.
+
+00:22:17.910 --> 00:22:18.820
+<v Vincent Warmerdam>And it's very general.
+
+00:22:19.680 --> 00:22:20.940
+<v Vincent Warmerdam>It's going to try to be clever about it.
+
+00:22:20.950 --> 00:22:21.820
+<v Vincent Warmerdam>Like if you give it an int,
+
+00:22:22.040 --> 00:22:23.580
+<v Vincent Warmerdam>it's going to actually store it as an int
+
+00:22:23.590 --> 00:22:24.700
+<v Vincent Warmerdam>and not use the pickle format.
+
+00:22:24.910 --> 00:22:26.600
+<v Vincent Warmerdam>So there's a couple of clever things that it can do.
+
+00:22:27.880 --> 00:22:29.240
+<v Vincent Warmerdam>And it's also really like a Python dictionary.
+
+00:22:29.410 --> 00:22:31.480
+<v Vincent Warmerdam>So you can do the square bracket thing.
+
+00:22:31.610 --> 00:22:33.020
+<v Vincent Warmerdam>You can also do the delete
+
+00:22:33.240 --> 00:22:35.300
+<v Vincent Warmerdam>and then cache square bracket thing
+
+00:22:35.370 --> 00:22:36.860
+<v Vincent Warmerdam>to delete a key from the cache.
+
+00:22:37.760 --> 00:22:38.620
+<v Vincent Warmerdam>Just like a Python dictionary,
+
+00:22:38.770 --> 00:22:39.700
+<v Vincent Warmerdam>you have the get method.
+
+00:22:39.890 --> 00:22:41.600
+<v Vincent Warmerdam>So you can say dot get key
+
+00:22:41.620 --> 00:22:43.440
+<v Vincent Warmerdam>And if it's missing, you can pass a default value.
+
+00:22:44.500 --> 00:22:46.720
+<v Vincent Warmerdam>So it's very much like a dictionary.
+
+00:22:48.300 --> 00:22:49.980
+<v Vincent Warmerdam>I think Bob's your uncle on that one.
+
+00:22:49.990 --> 00:22:52.120
+<v Vincent Warmerdam>Unless, Michael, I've forgotten something.
+
+00:22:52.150 --> 00:22:53.360
+<v Vincent Warmerdam>But I think that's the simplest way.
+
+00:22:53.490 --> 00:22:53.740
+<v Michael Kennedy>Yeah, pretty much.
+
+00:22:53.920 --> 00:22:55.060
+<v Michael Kennedy>Yeah, I think so.
+
+00:22:56.140 --> 00:22:57.620
+<v Michael Kennedy>The difference being it's not in memory.
+
+00:22:58.020 --> 00:23:00.260
+<v Michael Kennedy>It's stored to a file.
+
+00:23:00.530 --> 00:23:02.360
+<v Michael Kennedy>It happens-- it's not always a SQLite file.
+
+00:23:02.580 --> 00:23:06.300
+<v Michael Kennedy>But often, it is a SQLite file as its core foundation
+
+00:23:07.060 --> 00:23:07.720
+<v Michael Kennedy>that it's stored to.
+
+00:23:07.880 --> 00:23:13.040
+<v Michael Kennedy>So it gives you process restart ability
+
+00:23:13.260 --> 00:23:14.960
+<v Michael Kennedy>where it still remembers the stuff you cache.
+
+00:23:15.020 --> 00:23:16.360
+<v Michael Kennedy>It's not like LRU cache.
+
+00:23:16.600 --> 00:23:18.480
+<v Michael Kennedy>We've got to redo it every single time.
+
+00:23:19.400 --> 00:23:22.160
+<v Michael Kennedy>And I think-- I don't know where it is in the docs here,
+
+00:23:23.980 --> 00:23:27.800
+<v Michael Kennedy>but the thread safety bit of it and the cross-process safety
+
+00:23:27.980 --> 00:23:29.340
+<v Michael Kennedy>is really nice about--
+
+00:23:29.880 --> 00:23:30.560
+<v Michael Kennedy>is it persistent?
+
+00:23:30.820 --> 00:23:33.460
+<v Michael Kennedy>I've got this whole table here, things like, is it persistent?
+
+00:23:33.620 --> 00:23:33.760
+<v Michael Kennedy>Yes.
+
+00:23:33.960 --> 00:23:34.560
+<v Michael Kennedy>Is it thread safe?
+
+00:23:34.820 --> 00:23:34.920
+<v Michael Kennedy>Yes.
+
+00:23:35.100 --> 00:23:36.260
+<v Michael Kennedy>Is it process safe?
+
+00:23:36.420 --> 00:23:36.660
+<v Michael Kennedy>Yes.
+
+00:23:37.280 --> 00:23:40.160
+<v Michael Kennedy>Like compared against other things like people might choose.
+
+00:23:41.060 --> 00:23:44.900
+<v Michael Kennedy>And that honestly, I think that is the other half of the magic.
+
+00:23:45.740 --> 00:23:45.860
+<v Vincent Warmerdam>Yeah.
+
+00:23:45.990 --> 00:23:49.300
+<v Vincent Warmerdam>So especially for your web stuff, I would say that that's the thing you really want.
+
+00:23:49.380 --> 00:23:51.460
+<v Vincent Warmerdam>And some of that, of course, is just SQLite itself.
+
+00:23:52.760 --> 00:23:59.040
+<v Vincent Warmerdam>Historically, SQL, like one reason why people always used to say like use Postgres, not SQLite has to do with precisely this concurrency stuff.
+
+00:24:01.130 --> 00:24:06.200
+<v Vincent Warmerdam>My impression is that SQLite is really good at reading, but writing can be slow if multiple processes do it.
+
+00:24:06.680 --> 00:24:08.900
+<v Vincent Warmerdam>Some of that, I think, is related to the disk as well.
+
+00:24:09.090 --> 00:24:10.660
+<v Vincent Warmerdam>I don't know to what extent that has changed.
+
+00:24:10.660 --> 00:24:13.140
+<v Vincent Warmerdam>But historically, at least, whenever I was doing Django,
+
+00:24:13.280 --> 00:24:15.020
+<v Vincent Warmerdam>hanging out at Django events, people always said,
+
+00:24:15.040 --> 00:24:17.120
+<v Vincent Warmerdam>I just use Postgres because it's better for the web thing.
+
+00:24:18.180 --> 00:24:19.500
+<v Vincent Warmerdam>But it is safe.
+
+00:24:20.340 --> 00:24:22.560
+<v Vincent Warmerdam>The SQLite might become slower, but it is thread safe.
+
+00:24:23.380 --> 00:24:23.460
+<v Michael Kennedy>Right.
+
+00:24:26.820 --> 00:24:31.880
+<v Michael Kennedy>They've thought a lot about in this thing about transactions,
+
+00:24:32.900 --> 00:24:34.860
+<v Michael Kennedy>concurrency, and basically dealing with that.
+
+00:24:35.020 --> 00:24:37.980
+<v Michael Kennedy>but it is ultimately for the most part still
+
+00:24:38.920 --> 00:24:39.800
+<v Michael Kennedy>steeple light underneath.
+
+00:24:41.160 --> 00:24:42.800
+<v Michael Kennedy>But the thing with a cache is
+
+00:24:43.540 --> 00:24:45.620
+<v Michael Kennedy>if you're writing it more than you're reading it,
+
+00:24:46.340 --> 00:24:47.600
+<v Michael Kennedy>you probably shouldn't have a cache.
+
+00:24:47.820 --> 00:24:47.920
+<v Michael Kennedy>Yeah.
+
+00:24:48.280 --> 00:24:51.880
+<v Vincent Warmerdam>That beats the purpose.
+
+00:24:53.100 --> 00:24:53.440
+<v Michael Kennedy>Exactly.
+
+00:24:53.580 --> 00:24:55.460
+<v Michael Kennedy>You can get no value if you're recreating it.
+
+00:24:55.860 --> 00:24:57.120
+<v Michael Kennedy>You're only probably just doing it overhead
+
+00:24:57.420 --> 00:24:58.840
+<v Michael Kennedy>and wasting memory or disk space.
+
+00:24:59.580 --> 00:25:02.400
+<v Michael Kennedy>So it's inherently a situation
+
+00:25:02.840 --> 00:25:04.760
+<v Michael Kennedy>where it's going to be pretty read heavy.
+
+00:25:05.020 --> 00:25:07.460
+<v Michael Kennedy>and SQLite is good at read-heavy scenarios.
+
+00:25:08.140 --> 00:25:09.540
+<v Vincent Warmerdam>And maybe it's also fair to say
+
+00:25:09.680 --> 00:25:11.640
+<v Vincent Warmerdam>the LRU cache that you get with basic Python,
+
+00:25:12.620 --> 00:25:13.940
+<v Vincent Warmerdam>also to maybe explain that one,
+
+00:25:14.060 --> 00:25:15.380
+<v Vincent Warmerdam>so the LRU cache is a little bit different
+
+00:25:15.530 --> 00:25:17.060
+<v Vincent Warmerdam>because you decorate a function with it
+
+00:25:17.500 --> 00:25:18.780
+<v Vincent Warmerdam>and then given the same inputs,
+
+00:25:19.440 --> 00:25:20.220
+<v Vincent Warmerdam>one output goes out,
+
+00:25:20.270 --> 00:25:21.600
+<v Vincent Warmerdam>you can kind of keep track of a dictionary
+
+00:25:21.880 --> 00:25:22.380
+<v Vincent Warmerdam>that's in memory.
+
+00:25:22.960 --> 00:25:23.880
+<v Vincent Warmerdam>If you don't have a lot of stuff
+
+00:25:24.020 --> 00:25:25.160
+<v Vincent Warmerdam>to keep in the back of your mind,
+
+00:25:25.360 --> 00:25:26.620
+<v Vincent Warmerdam>then maybe you don't have to write to disk.
+
+00:25:27.740 --> 00:25:28.820
+<v Vincent Warmerdam>So there's also maybe a reason
+
+00:25:29.000 --> 00:25:30.640
+<v Vincent Warmerdam>to just stick to caching mechanisms
+
+00:25:30.730 --> 00:25:31.640
+<v Vincent Warmerdam>that use Python memory
+
+00:25:31.800 --> 00:25:32.680
+<v Vincent Warmerdam>because I also think,
+
+00:25:32.960 --> 00:25:34.400
+<v Vincent Warmerdam>I would imagine it to be quicker too,
+
+00:25:37.519 --> 00:25:40.360
+<v Vincent Warmerdam>But that should be quicker.
+
+00:25:40.460 --> 00:25:41.660
+<v Vincent Warmerdam>It's just that if you're capped at memory,
+
+00:25:41.900 --> 00:25:43.020
+<v Vincent Warmerdam>then you might want to spill to disk,
+
+00:25:43.060 --> 00:25:44.600
+<v Vincent Warmerdam>and then disk cache becomes interesting too.
+
+00:25:44.800 --> 00:25:44.920
+<v Michael Kennedy>Right.
+
+00:25:45.040 --> 00:25:47.320
+<v Michael Kennedy>For example, you have literally zero serialization
+
+00:25:47.500 --> 00:25:48.100
+<v Michael Kennedy>deserialization.
+
+00:25:49.400 --> 00:25:52.260
+<v Michael Kennedy>What you put in LRU cache is the pointer to the object
+
+00:25:52.600 --> 00:25:53.100
+<v Michael Kennedy>that you're caching.
+
+00:25:53.620 --> 00:25:56.800
+<v Michael Kennedy>If you've got a class or a list that's part of the LRU cache.
+
+00:25:57.840 --> 00:25:59.440
+<v Vincent Warmerdam>The one thing that is good to mention
+
+00:25:59.560 --> 00:26:01.100
+<v Vincent Warmerdam>that's also a really nice feature of disk cache
+
+00:26:01.280 --> 00:26:03.320
+<v Vincent Warmerdam>is just like LRU cache has a decorator,
+
+00:26:03.500 --> 00:26:04.400
+<v Vincent Warmerdam>so you can decorate a function.
+
+00:26:05.340 --> 00:26:06.660
+<v Vincent Warmerdam>This cache also has that.
+
+00:26:07.190 --> 00:26:08.760
+<v Vincent Warmerdam>And it works kind of interestingly, too.
+
+00:26:09.000 --> 00:26:10.820
+<v Vincent Warmerdam>So when you decorate the function,
+
+00:26:12.800 --> 00:26:15.020
+<v Vincent Warmerdam>you do have to be a little bit careful if you use that.
+
+00:26:15.130 --> 00:26:16.280
+<v Vincent Warmerdam>But then this cache will--
+
+00:26:17.110 --> 00:26:20.240
+<v Vincent Warmerdam>I think it will hash the function name and the inputs
+
+00:26:20.400 --> 00:26:21.000
+<v Vincent Warmerdam>that you pass.
+
+00:26:21.780 --> 00:26:26.120
+<v Vincent Warmerdam>I don't know if it also hashes the contents of the function.
+
+00:26:26.210 --> 00:26:27.460
+<v Vincent Warmerdam>Like, if you change the function itself,
+
+00:26:27.670 --> 00:26:30.320
+<v Vincent Warmerdam>I don't know if this cache will actually put that
+
+00:26:30.380 --> 00:26:32.060
+<v Vincent Warmerdam>in a different slot, if that makes sense.
+
+00:26:33.980 --> 00:26:39.760
+<v Michael Kennedy>Yeah, you can say at cache memoize, which is the design pattern speak for just remember this.
+
+00:26:40.900 --> 00:26:40.960
+<v Michael Kennedy>Yeah.
+
+00:26:41.230 --> 00:26:41.880
+<v Vincent Warmerdam>It takes the arguments.
+
+00:26:42.760 --> 00:26:45.960
+<v Vincent Warmerdam>And then it has like the Fibonacci sequence, which is the classic example, of course.
+
+00:26:46.580 --> 00:26:48.840
+<v Vincent Warmerdam>And like there are some extra things you can set there as well.
+
+00:26:48.910 --> 00:26:54.060
+<v Vincent Warmerdam>So you can say things like, hey, I think you're able to, yeah, you're able to set the expiry.
+
+00:26:54.230 --> 00:26:57.520
+<v Vincent Warmerdam>So you can say things like I want to cache this, but only for the next five minutes or so,
+
+00:26:58.060 --> 00:27:01.260
+<v Vincent Warmerdam>which can make a lot of sense if you're doing like a front page kind of a thing.
+
+00:27:02.400 --> 00:27:03.640
+<v Vincent Warmerdam>so like the Reddit front page
+
+00:27:03.640 --> 00:27:04.240
+<v Vincent Warmerdam>or something like that
+
+00:27:04.250 --> 00:27:05.740
+<v Vincent Warmerdam>that updates but not every second
+
+00:27:05.860 --> 00:27:07.440
+<v Vincent Warmerdam>that probably updates like once every five minutes
+
+00:27:07.490 --> 00:27:08.200
+<v Vincent Warmerdam>or something like that
+
+00:27:08.630 --> 00:27:10.100
+<v Vincent Warmerdam>and then you do want to have something that's cached
+
+00:27:10.170 --> 00:27:12.180
+<v Vincent Warmerdam>but then after that you want the cache
+
+00:27:12.180 --> 00:27:13.400
+<v Vincent Warmerdam>to basically just reset
+
+00:27:14.140 --> 00:27:15.460
+<v Vincent Warmerdam>and that is something you can also control
+
+00:27:15.530 --> 00:27:16.480
+<v Vincent Warmerdam>with a few parameters here
+
+00:27:17.340 --> 00:27:18.380
+<v Michael Kennedy>right that's interesting
+
+00:27:18.560 --> 00:27:20.660
+<v Michael Kennedy>there's a couple good use cases that come to mind for me
+
+00:27:20.800 --> 00:27:22.660
+<v Michael Kennedy>like one if I put this on the function
+
+00:27:22.820 --> 00:27:25.540
+<v Michael Kennedy>that generated the RSS feed for Talk Python
+
+00:27:25.820 --> 00:27:27.280
+<v Michael Kennedy>I could just say every one minute
+
+00:27:28.120 --> 00:27:30.720
+<v Michael Kennedy>and then it might be a little bit expensive
+
+00:27:30.740 --> 00:27:35.260
+<v Michael Kennedy>to compute because it's got a pars, you know, 535 episodes or whatever.
+
+00:27:36.220 --> 00:27:38.800
+<v Michael Kennedy>But then for one minute, all the subsequent requests,
+
+00:27:39.000 --> 00:27:40.480
+<v Michael Kennedy>just here's the answer, here's the answer.
+
+00:27:40.630 --> 00:27:43.120
+<v Michael Kennedy>And then without me managing anything,
+
+00:27:43.390 --> 00:27:46.100
+<v Michael Kennedy>it will just automatically the next minute refresh itself
+
+00:27:47.440 --> 00:27:48.600
+<v Michael Kennedy>by the nature of how it works, right?
+
+00:27:48.920 --> 00:27:51.060
+<v Vincent Warmerdam>How much traffic do you get on that endpoint just roughly?
+
+00:27:52.080 --> 00:27:53.900
+<v Michael Kennedy>One terabyte of RSS a month.
+
+00:27:55.060 --> 00:27:55.660
+<v Michael Kennedy>Okay, gotcha.
+
+00:27:56.280 --> 00:27:57.500
+<v Vincent Warmerdam>Okay, but there you go.
+
+00:27:57.720 --> 00:28:01.420
+<v Vincent Warmerdam>Then just doing that once a minute instead of many times a minute
+
+00:28:01.480 --> 00:28:02.360
+<v Vincent Warmerdam>will be a huge cookie.
+
+00:28:02.800 --> 00:28:07.420
+<v Michael Kennedy>I would say it's probably more than one request a second.
+
+00:28:07.600 --> 00:28:11.380
+<v Michael Kennedy>And the response size of the RSS feed is over a meg.
+
+00:28:11.940 --> 00:28:14.680
+<v Michael Kennedy>And so it's a non-trivial amount of asking.
+
+00:28:15.480 --> 00:28:15.560
+<v Michael Kennedy>Yeah.
+
+00:28:16.300 --> 00:28:18.520
+<v Vincent Warmerdam>And then how do you fix that with a whole bunch of infrastructure?
+
+00:28:18.720 --> 00:28:19.700
+<v Vincent Warmerdam>No, with a decorator.
+
+00:28:20.380 --> 00:28:20.560
+<v Michael Kennedy>Exactly.
+
+00:28:21.600 --> 00:28:22.000
+<v Michael Kennedy>Exactly.
+
+00:28:22.240 --> 00:28:25.120
+<v Michael Kennedy>You pretty much summed up all the reasons why I'm so excited about this
+
+00:28:25.140 --> 00:28:27.800
+<v Michael Kennedy>because it's like you could do all of this complex stuff
+
+00:28:27.850 --> 00:28:32.540
+<v Michael Kennedy>or you could just literally, in such a simple way,
+
+00:28:32.860 --> 00:28:34.700
+<v Michael Kennedy>just not recompute it as often.
+
+00:28:35.920 --> 00:28:36.600
+<v Michael Kennedy>Here's the danger.
+
+00:28:36.710 --> 00:28:37.760
+<v Michael Kennedy>What if there's a race condition?
+
+00:28:38.320 --> 00:28:40.260
+<v Michael Kennedy>And oh my goodness, two of them sneak in.
+
+00:28:40.590 --> 00:28:41.160
+<v Michael Kennedy>You know what I mean?
+
+00:28:41.740 --> 00:28:44.200
+<v Michael Kennedy>Okay, so you've done a little bit of extra work
+
+00:28:44.200 --> 00:28:44.640
+<v Michael Kennedy>and you throw it away.
+
+00:28:44.650 --> 00:28:44.980
+<v Michael Kennedy>Who cares?
+
+00:28:45.360 --> 00:28:46.500
+<v Vincent Warmerdam>I want to use Redis now.
+
+00:28:46.620 --> 00:28:48.520
+<v Vincent Warmerdam>And Redis is cool, but I've never used it before.
+
+00:28:48.730 --> 00:28:49.460
+<v Vincent Warmerdam>Better buy a book.
+
+00:28:49.710 --> 00:28:50.180
+<v Vincent Warmerdam>Okay, no.
+
+00:28:50.780 --> 00:28:51.860
+<v Vincent Warmerdam>With this cache, if you...
+
+00:28:52.180 --> 00:28:54.440
+<v Vincent Warmerdam>I mean, I'm sure it won't solve everything,
+
+00:28:54.520 --> 00:28:59.040
+<v Vincent Warmerdam>but this, I make a bit of a joke by saying just use a decorator, but it's honestly that feeling
+
+00:28:59.200 --> 00:29:04.520
+<v Vincent Warmerdam>that this library really does give you. You can just use it as a decorator, which has a lot of
+
+00:29:04.560 --> 00:29:08.900
+<v Vincent Warmerdam>great use cases. You can just use it as a dictionary. So it still feels like you're writing Python.
+
+00:29:09.320 --> 00:29:12.620
+<v Vincent Warmerdam>It's just Python with one concern less. And that is the magic.
+
+00:29:13.380 --> 00:29:20.860
+<v Michael Kennedy>And it takes on so many of the cool aspects of these high-end servers like Postgres or Redis or
+
+00:29:20.880 --> 00:29:24.080
+<v Michael Kennedy>Valkey, Valkey sort of the shiny new Redis, right?
+
+00:29:24.500 --> 00:29:26.460
+<v Vincent Warmerdam>I'd actually love to do a Redis benchmark.
+
+00:29:26.490 --> 00:29:27.360
+<v Vincent Warmerdam>I haven't done that yet.
+
+00:29:27.390 --> 00:29:30.740
+<v Vincent Warmerdam>But one thing I do wonder with disks are getting so much faster.
+
+00:29:30.960 --> 00:29:31.240
+<v Michael Kennedy>Yes.
+
+00:29:31.920 --> 00:29:32.040
+<v Vincent Warmerdam>Right.
+
+00:29:32.220 --> 00:29:35.860
+<v Vincent Warmerdam>And so you can actually at some point wonder like how much faster is Redis really going to be
+
+00:29:35.910 --> 00:29:37.940
+<v Vincent Warmerdam>and how much money are you willing to spend on it?
+
+00:29:38.030 --> 00:29:42.480
+<v Vincent Warmerdam>Because if your cache is huge and it all has to go in memory in Redis,
+
+00:29:43.000 --> 00:29:45.520
+<v Vincent Warmerdam>it could be wrong, but Redis is fully in memory, I think, right?
+
+00:29:45.630 --> 00:29:46.220
+<v Michael Kennedy>I believe so.
+
+00:29:46.520 --> 00:29:47.840
+<v Michael Kennedy>There is a database aspect.
+
+00:29:48.140 --> 00:29:49.600
+<v Michael Kennedy>Redis is weird because it could be so many.
+
+00:29:50.580 --> 00:29:51.060
+<v Michael Kennedy>Redis is cool.
+
+00:29:51.400 --> 00:29:52.360
+<v Michael Kennedy>It can do a lot.
+
+00:29:54.620 --> 00:29:56.940
+<v Michael Kennedy>They do have, they actually have benchmarks here on.
+
+00:29:57.120 --> 00:29:57.860
+<v Vincent Warmerdam>Oh, there you go.
+
+00:29:58.500 --> 00:30:02.940
+<v Michael Kennedy>Compared against memcached and Redis.
+
+00:30:03.740 --> 00:30:05.400
+<v Michael Kennedy>And it has the get speed and the write speed.
+
+00:30:05.640 --> 00:30:07.560
+<v Michael Kennedy>And this is smaller is better.
+
+00:30:07.860 --> 00:30:08.560
+<v Michael Kennedy>Yeah, look at this.
+
+00:30:09.020 --> 00:30:10.700
+<v Michael Kennedy>Disc cache beats Redis.
+
+00:30:12.340 --> 00:30:15.120
+<v Vincent Warmerdam>And I imagine that's because of the network hop or something.
+
+00:30:15.580 --> 00:30:15.980
+<v Michael Kennedy>Yeah, exactly.
+
+00:30:16.020 --> 00:30:17.960
+<v Michael Kennedy>I bet it's the network, the network connection.
+
+00:30:18.420 --> 00:30:20.140
+<v Vincent Warmerdam>So if you're running it on the same machine,
+
+00:30:20.400 --> 00:30:21.480
+<v Vincent Warmerdam>would have a different number there.
+
+00:30:22.340 --> 00:30:23.620
+<v Vincent Warmerdam>Might be good to maybe caveat that.
+
+00:30:24.060 --> 00:30:24.980
+<v Michael Kennedy>Yeah, it might be.
+
+00:30:25.970 --> 00:30:27.360
+<v Vincent Warmerdam>I mean, but also that I think that,
+
+00:30:27.550 --> 00:30:28.720
+<v Vincent Warmerdam>I don't know when they ran this benchmark,
+
+00:30:28.940 --> 00:30:30.980
+<v Vincent Warmerdam>but they probably, I just checked on PyPI.
+
+00:30:31.400 --> 00:30:32.880
+<v Vincent Warmerdam>This project started in 2016.
+
+00:30:33.900 --> 00:30:34.720
+<v Vincent Warmerdam>So it might-
+
+00:30:34.720 --> 00:30:37.580
+<v Michael Kennedy>I bet this is 2016 data right here.
+
+00:30:37.580 --> 00:30:39.620
+<v Michael Kennedy>I know how these docs go.
+
+00:30:39.770 --> 00:30:41.580
+<v Vincent Warmerdam>Yeah, so like it could also be
+
+00:30:41.580 --> 00:30:44.360
+<v Vincent Warmerdam>that those are old disks comparing old memories, right?
+
+00:30:44.840 --> 00:30:46.420
+<v Vincent Warmerdam>So then this is one of those weird benchmarks.
+
+00:30:46.420 --> 00:30:49.180
+<v Vincent Warmerdam>You got to really run them every six months or so
+
+00:30:49.180 --> 00:30:50.020
+<v Vincent Warmerdam>for them to remain relevant.
+
+00:30:50.580 --> 00:30:51.520
+<v Michael Kennedy>Yeah, yeah.
+
+00:30:52.190 --> 00:30:55.420
+<v Michael Kennedy>I mean, the new NVM, VVM, whatever,
+
+00:30:56.180 --> 00:30:57.980
+<v Michael Kennedy>disks, SSD disks are so fast.
+
+00:30:58.580 --> 00:31:00.260
+<v Michael Kennedy>And also, they're not memory.
+
+00:31:00.390 --> 00:31:01.580
+<v Michael Kennedy>And memory is expensive nowadays.
+
+00:31:02.320 --> 00:31:03.320
+<v Vincent Warmerdam>Yes, it is.
+
+00:31:03.430 --> 00:31:04.980
+<v Vincent Warmerdam>People want to build data centers with them, I've heard.
+
+00:31:05.800 --> 00:31:06.140
+<v Vincent Warmerdam>Yeah, yeah.
+
+00:31:06.600 --> 00:31:08.540
+<v Michael Kennedy>And on the cloud there, this is a totally,
+
+00:31:08.920 --> 00:31:11.980
+<v Michael Kennedy>this is another really interesting aspect to discuss.
+
+00:31:13.260 --> 00:31:15.500
+<v Michael Kennedy>Probably more of a web dev side of things.
+
+00:31:15.660 --> 00:31:25.360
+<v Michael Kennedy>But if you do LRU caches or even to a bigger degree, I run a whole separate server, even if it is just a Docker container that holds a bunch of this stuff in memory.
+
+00:31:25.980 --> 00:31:30.860
+<v Michael Kennedy>That's going to take more memory on your VM or your cloud deployment or whatever.
+
+00:31:31.500 --> 00:31:39.920
+<v Michael Kennedy>And if you just say, well, I have this 160 gig hard drive that's an NVVM high speed drive, like maybe I could just put a bunch of stuff there.
+
+00:31:40.360 --> 00:31:53.500
+<v Michael Kennedy>And you can really thin down your deployments, not just because it's not in memory in a cache somewhere, but if you're not having any form of cache, you might be able to dramatically lower how much compute you need and avoid the memory.
+
+00:31:53.720 --> 00:31:55.920
+<v Michael Kennedy>Like there's layers of how this could like shave off.
+
+00:31:56.200 --> 00:32:00.380
+<v Vincent Warmerdam>And again, it's one of those things of like, oh, I just, can I pay for disk instead?
+
+00:32:00.460 --> 00:32:01.300
+<v Vincent Warmerdam>Oh, that's a whole lot cheaper.
+
+00:32:01.460 --> 00:32:02.440
+<v Vincent Warmerdam>What else do I got to do?
+
+00:32:02.580 --> 00:32:03.620
+<v Vincent Warmerdam>You just got to write a decorator.
+
+00:32:04.460 --> 00:32:09.140
+<v Michael Kennedy>Yeah, I think I pay $5 for, I think I remember exactly.
+
+00:32:09.220 --> 00:32:12.580
+<v Michael Kennedy>but I pay something like $5 for 400 gigs of disc.
+
+00:32:13.100 --> 00:32:13.460
+<v Vincent Warmerdam>There you go.
+
+00:32:13.990 --> 00:32:16.660
+<v Michael Kennedy>Do you know how much 400 gigs of RAM will cost on the cloud?
+
+00:32:19.100 --> 00:32:19.720
+<v Vincent Warmerdam>Well, I mean.
+
+00:32:19.960 --> 00:32:20.200
+<v Vincent Warmerdam>More.
+
+00:32:20.940 --> 00:32:21.720
+<v Vincent Warmerdam>More than five.
+
+00:32:22.240 --> 00:32:23.240
+<v Vincent Warmerdam>There goes the college tuition.
+
+00:32:24.040 --> 00:32:24.100
+<v Vincent Warmerdam>Exactly.
+
+00:32:24.510 --> 00:32:24.880
+<v Vincent Warmerdam>Sorry, kids.
+
+00:32:25.300 --> 00:32:25.560
+<v Vincent Warmerdam>Yeah.
+
+00:32:25.960 --> 00:32:30.280
+<v Vincent Warmerdam>No, but like it's, and again, like I vividly remember when I started college,
+
+00:32:30.440 --> 00:32:32.980
+<v Vincent Warmerdam>people were always saying, oh, keep it in memory because it's way faster than disc.
+
+00:32:33.050 --> 00:32:36.020
+<v Vincent Warmerdam>But I think we've got to let a lot of that stuff just go.
+
+00:32:36.660 --> 00:32:37.240
+<v Michael Kennedy>Interesting idea.
+
+00:32:37.460 --> 00:32:38.040
+<v Michael Kennedy>Yeah, I agree though.
+
+00:32:38.330 --> 00:32:38.920
+<v Michael Kennedy>I think you're right.
+
+00:32:39.760 --> 00:32:44.420
+<v Vincent Warmerdam>But anyway, so far, we've mainly been discussing the mechanics of it.
+
+00:32:44.430 --> 00:32:46.860
+<v Vincent Warmerdam>But there's some bills and whistles I think we should maybe also mention.
+
+00:32:47.060 --> 00:32:48.560
+<v Vincent Warmerdam>The expiry definitely is one of them.
+
+00:32:49.620 --> 00:32:52.140
+<v Vincent Warmerdam>There's also first in, first out kinds of things that you can do.
+
+00:32:53.810 --> 00:32:55.060
+<v Vincent Warmerdam>So maybe if we could go back--
+
+00:32:55.170 --> 00:32:57.760
+<v Michael Kennedy>Yeah, there's a bunch of features actually there.
+
+00:32:59.270 --> 00:32:59.900
+<v Michael Kennedy>Like, what was it?
+
+00:33:00.030 --> 00:33:02.240
+<v Michael Kennedy>I think the expiry is interesting already.
+
+00:33:04.100 --> 00:33:07.480
+<v Michael Kennedy>Because if you do regular, say, LRU caching or something like that,
+
+00:33:08.620 --> 00:33:11.660
+<v Michael Kennedy>You have a natural, it's going to go away when the process restarts.
+
+00:33:11.840 --> 00:33:13.320
+<v Michael Kennedy>And that's going to happen eventually.
+
+00:33:14.080 --> 00:33:15.540
+<v Michael Kennedy>Even in a web app, you ship a new version,
+
+00:33:15.660 --> 00:33:17.720
+<v Michael Kennedy>you've got to restart the thing or something.
+
+00:33:18.360 --> 00:33:21.020
+<v Michael Kennedy>But when it goes to the disk, it starts to pile up, right?
+
+00:33:21.100 --> 00:33:22.780
+<v Michael Kennedy>That's why I have this little admin page that has like,
+
+00:33:23.580 --> 00:33:24.320
+<v Michael Kennedy>how big is this?
+
+00:33:24.480 --> 00:33:25.480
+<v Michael Kennedy>And a button to clear it.
+
+00:33:26.220 --> 00:33:29.500
+<v Vincent Warmerdam>In fairness, that can blow up to a lot of Palooza as well,
+
+00:33:29.600 --> 00:33:30.180
+<v Vincent Warmerdam>if you're not careful.
+
+00:33:30.360 --> 00:33:30.860
+<v Michael Kennedy>It is a concern.
+
+00:33:31.000 --> 00:33:32.660
+<v Michael Kennedy>Yeah, it is definitely a concern.
+
+00:33:32.820 --> 00:33:34.580
+<v Michael Kennedy>And so I think a big way to fix it,
+
+00:33:35.120 --> 00:33:36.540
+<v Michael Kennedy>like the expiry we already talked about,
+
+00:33:36.620 --> 00:33:39.540
+<v Michael Kennedy>why it's interesting for stale data.
+
+00:33:39.600 --> 00:33:41.080
+<v Michael Kennedy>You want it to just auto refresh.
+
+00:33:41.300 --> 00:33:44.360
+<v Michael Kennedy>But it's also just a safeguard of--
+
+00:33:44.780 --> 00:33:46.660
+<v Michael Kennedy>maybe we'll just recompute this once a month.
+
+00:33:46.880 --> 00:33:48.020
+<v Michael Kennedy>It's really quick and easy.
+
+00:33:48.980 --> 00:33:49.360
+<v Michael Kennedy>Yeah.
+
+00:33:49.840 --> 00:33:52.260
+<v Michael Kennedy>Maybe just don't let it linger forever.
+
+00:33:52.660 --> 00:33:55.060
+<v Vincent Warmerdam>I think what you can also do, though, if I'm not mistaken,
+
+00:33:55.140 --> 00:33:57.200
+<v Vincent Warmerdam>is I think you can also set a max key size.
+
+00:33:57.360 --> 00:33:59.740
+<v Vincent Warmerdam>So you can say, this particular disk cache
+
+00:33:59.860 --> 00:34:01.320
+<v Vincent Warmerdam>can only have 10,000 keys in it.
+
+00:34:01.820 --> 00:34:04.060
+<v Vincent Warmerdam>And use a first in, first out kind of a principle.
+
+00:34:04.680 --> 00:34:07.360
+<v Michael Kennedy>Right, or last accessed or number of times.
+
+00:34:07.680 --> 00:34:10.100
+<v Michael Kennedy>There's a bunch of metrics there, actually, for how that works.
+
+00:34:10.320 --> 00:34:11.800
+<v Michael Kennedy>Yeah, it's pretty interesting.
+
+00:34:12.839 --> 00:34:15.340
+<v Vincent Warmerdam>I've never had to fiddle around with them too much,
+
+00:34:15.480 --> 00:34:18.860
+<v Vincent Warmerdam>but it's one of those things where even if I don't need it right now,
+
+00:34:18.990 --> 00:34:21.139
+<v Vincent Warmerdam>it is just a relief to see that the feature is there
+
+00:34:21.230 --> 00:34:22.460
+<v Vincent Warmerdam>in case you might need it later.
+
+00:34:23.119 --> 00:34:24.860
+<v Michael Kennedy>Yeah, yeah, for sure.
+
+00:34:25.600 --> 00:34:26.960
+<v Michael Kennedy>Let me see if I can find out where that is.
+
+00:34:26.960 --> 00:34:28.340
+<v Michael Kennedy>I don't know, keep bouncing around the same spot.
+
+00:34:28.879 --> 00:34:30.120
+<v Michael Kennedy>I've got it, let's just talk through them.
+
+00:34:30.260 --> 00:34:34.000
+<v Michael Kennedy>So I think the tags and expiries are pretty interesting,
+
+00:34:34.240 --> 00:34:36.540
+<v Michael Kennedy>But then there's also, I think, something that surprised me
+
+00:34:36.540 --> 00:34:38.419
+<v Michael Kennedy>a little bit is these different kinds of caches.
+
+00:34:38.840 --> 00:34:41.320
+<v Michael Kennedy>So there's like a fan out cache.
+
+00:34:43.139 --> 00:34:43.740
+<v Michael Kennedy>Have you looked at these?
+
+00:34:43.940 --> 00:34:44.679
+<v Michael Kennedy>These are interesting.
+
+00:34:44.919 --> 00:34:47.500
+<v Vincent Warmerdam>I remember reading about, I've never used them,
+
+00:34:47.500 --> 00:34:48.700
+<v Vincent Warmerdam>but I do remember reading them.
+
+00:34:49.379 --> 00:34:50.720
+<v Michael Kennedy>So let me give you the quick rundown,
+
+00:34:50.740 --> 00:34:52.139
+<v Michael Kennedy>and then you'll understand instantly.
+
+00:34:52.280 --> 00:34:52.780
+<v Michael Kennedy>It's super quick.
+
+00:34:52.860 --> 00:34:55.639
+<v Michael Kennedy>So it uses sharding, which is a database term, right?
+
+00:34:56.340 --> 00:34:58.860
+<v Michael Kennedy>So sharding is like, if I've got a billion records,
+
+00:34:59.840 --> 00:35:02.680
+<v Michael Kennedy>and it's a challenge to put them all in the same database entry,
+
+00:35:02.820 --> 00:35:07.520
+<v Michael Kennedy>database table or server, I could actually have 10 servers and decide, well, okay, what we're going
+
+00:35:07.540 --> 00:35:14.100
+<v Michael Kennedy>to do is if it's a number of the ID of the user, if the first number is one, then they go into this
+
+00:35:14.200 --> 00:35:18.880
+<v Michael Kennedy>database. If it's two, then they go in that, right? So 2005 goes into the second database and so on.
+
+00:35:20.580 --> 00:35:25.100
+<v Michael Kennedy>So it does that as well. This is one of the things it does to try to avoid the issues of multiple
+
+00:35:25.280 --> 00:35:30.780
+<v Michael Kennedy>writers, I believe. So you're less likely to write to the same database, so it doesn't have to lock as
+
+00:35:30.800 --> 00:35:30.860
+<v Michael Kennedy>hard.
+
+00:35:31.480 --> 00:35:35.460
+<v Vincent Warmerdam>It's kind of what you do where you say, oh, I've got this for the YouTube link and I've
+
+00:35:35.520 --> 00:35:42.220
+<v Vincent Warmerdam>got this for the HTML markdown, except those are like, those are like different chunks because
+
+00:35:42.260 --> 00:35:42.860
+<v Vincent Warmerdam>of their use case.
+
+00:35:42.920 --> 00:35:46.300
+<v Vincent Warmerdam>But you can also imagine, well, I've got this long list of users, but I still want to benefit
+
+00:35:46.420 --> 00:35:47.880
+<v Vincent Warmerdam>from having multiple SQLite instances.
+
+00:35:48.440 --> 00:35:50.120
+<v Vincent Warmerdam>And I suppose that's when you use this, right?
+
+00:35:51.059 --> 00:35:52.640
+<v Michael Kennedy>Yeah, I think that is why.
+
+00:35:52.820 --> 00:35:58.080
+<v Michael Kennedy>So it says, it's built on top of cache, just cache fanout, automatically shards, automatically
+
+00:35:58.220 --> 00:36:00.220
+<v Michael Kennedy>you just said how many you want, it figures out what that means.
+
+00:36:00.780 --> 00:36:02.740
+<v Michael Kennedy>and it says while readers and writers don't block each other
+
+00:36:02.960 --> 00:36:05.000
+<v Michael Kennedy>writers block other writers therefore the shard
+
+00:36:05.400 --> 00:36:06.200
+<v Michael Kennedy>a sharded
+
+00:36:06.640 --> 00:36:08.500
+<v Michael Kennedy>a shard for every concurrent writer
+
+00:36:08.800 --> 00:36:10.560
+<v Michael Kennedy>suggested this will depend on your scenario default is
+
+00:36:10.760 --> 00:36:12.540
+<v Michael Kennedy>8 so that's pretty cool
+
+00:36:13.160 --> 00:36:14.480
+<v Vincent Warmerdam>yeah okay and
+
+00:36:14.620 --> 00:36:16.420
+<v Michael Kennedy>presumably internally does something like
+
+00:36:16.560 --> 00:36:17.860
+<v Michael Kennedy>hashing to figure out how to like
+
+00:36:18.780 --> 00:36:20.040
+<v Michael Kennedy>send it around the shards
+
+00:36:20.620 --> 00:36:22.560
+<v Michael Kennedy>right the keys themselves have to be hashable anyway
+
+00:36:23.180 --> 00:36:24.660
+<v Michael Kennedy>probably so just hashes the key
+
+00:36:24.760 --> 00:36:26.660
+<v Michael Kennedy>and then shards on like the first couple letters
+
+00:36:26.840 --> 00:36:27.280
+<v Michael Kennedy>or whatever
+
+00:36:28.920 --> 00:36:30.520
+<v Michael Kennedy>yeah this is cool so it avoids the
+
+00:36:31.140 --> 00:36:32.540
+<v Michael Kennedy>concurrency crashes the one
+
+00:36:32.660 --> 00:36:34.500
+<v Michael Kennedy>difference for me the reason I didn't choose fanout
+
+00:36:34.640 --> 00:36:36.480
+<v Michael Kennedy>cache is because I
+
+00:36:36.560 --> 00:36:38.280
+<v Michael Kennedy>want to be able to say I want to clear all the YouTube
+
+00:36:38.540 --> 00:36:40.480
+<v Michael Kennedy>IDs but I want to keep the really expensive to
+
+00:36:40.640 --> 00:36:42.460
+<v Michael Kennedy>compute hashes of the remote
+
+00:36:42.660 --> 00:36:44.460
+<v Michael Kennedy>like I want to be able to clear stuff if I really
+
+00:36:44.620 --> 00:36:46.060
+<v Michael Kennedy>have to by category
+
+00:36:46.480 --> 00:36:48.360
+<v Michael Kennedy>and I guess you could also do that with tags but I'm just not
+
+00:36:48.400 --> 00:36:48.880
+<v Michael Kennedy>that advanced
+
+00:36:50.220 --> 00:36:52.340
+<v Vincent Warmerdam>and also keep it simple right like and again it's
+
+00:36:52.400 --> 00:36:54.340
+<v Vincent Warmerdam>one of those things where it's oh it's nice to know that this
+
+00:36:54.360 --> 00:36:56.000
+<v Vincent Warmerdam>is in here even if you don't use it directly
+
+00:36:56.740 --> 00:36:57.060
+<v Vincent Warmerdam>I agree.
+
+00:36:57.110 --> 00:36:57.200
+<v Vincent Warmerdam>Yeah, yeah.
+
+00:36:57.400 --> 00:36:58.280
+<v Vincent Warmerdam>This is a really nice feature.
+
+00:36:58.700 --> 00:37:00.980
+<v Michael Kennedy>It is, and I probably will never in my life use it,
+
+00:37:00.990 --> 00:37:02.280
+<v Michael Kennedy>but it's really cool that it's like--
+
+00:37:02.510 --> 00:37:04.580
+<v Michael Kennedy>you know, it's one of those things about a library
+
+00:37:04.780 --> 00:37:06.080
+<v Michael Kennedy>when you're thinking about picking it.
+
+00:37:06.100 --> 00:37:09.680
+<v Michael Kennedy>It's like, OK, the core feature is great,
+
+00:37:09.710 --> 00:37:13.020
+<v Michael Kennedy>but if I outgrow it, what is my next step?
+
+00:37:13.100 --> 00:37:15.280
+<v Michael Kennedy>Do I have to completely switch to something really different
+
+00:37:15.420 --> 00:37:16.320
+<v Michael Kennedy>like Redis or Valkey?
+
+00:37:16.979 --> 00:37:19.460
+<v Michael Kennedy>Or do I just change the class I'm using?
+
+00:37:20.640 --> 00:37:21.600
+<v Vincent Warmerdam>I had that with this.
+
+00:37:21.700 --> 00:37:23.280
+<v Vincent Warmerdam>So I actually had that feeling a while ago.
+
+00:37:23.630 --> 00:37:25.400
+<v Vincent Warmerdam>We're going to get to my example I think a bit later.
+
+00:37:25.580 --> 00:37:27.700
+<v Vincent Warmerdam>it. I was using the Memoize
+
+00:37:27.980 --> 00:37:29.380
+<v Vincent Warmerdam>decorator to decorate a function
+
+00:37:29.500 --> 00:37:30.680
+<v Vincent Warmerdam>to properly cache that.
+
+00:37:31.960 --> 00:37:33.460
+<v Vincent Warmerdam>But the one issue I had
+
+00:37:33.600 --> 00:37:35.480
+<v Vincent Warmerdam>is an input to that function was a
+
+00:37:35.640 --> 00:37:37.460
+<v Vincent Warmerdam>progress bar. It's kind of a remote
+
+00:37:37.620 --> 00:37:39.580
+<v Vincent Warmerdam>specific thing. I wanted this one progress bar to update
+
+00:37:40.040 --> 00:37:41.400
+<v Vincent Warmerdam>from inside of this one function.
+
+00:37:42.120 --> 00:37:43.520
+<v Vincent Warmerdam>But the downside was that every
+
+00:37:43.680 --> 00:37:45.580
+<v Vincent Warmerdam>time I rerun the notebook, I make a new
+
+00:37:45.740 --> 00:37:46.540
+<v Vincent Warmerdam>progress bar object.
+
+00:37:47.800 --> 00:37:49.600
+<v Vincent Warmerdam>Oh, and that means that the input has a different
+
+00:37:49.880 --> 00:37:51.480
+<v Vincent Warmerdam>object going in. Right, so you never actually
+
+00:37:51.560 --> 00:37:53.540
+<v Vincent Warmerdam>hit the cache. So, oh my god, I'm never
+
+00:37:53.680 --> 00:37:55.260
+<v Vincent Warmerdam>hitting the cache. This is horrible.
+
+00:37:55.820 --> 00:38:00.600
+<v Vincent Warmerdam>Then it turns out the Memwise decorator also allows you to ignore a couple of the inputs of the function.
+
+00:38:00.780 --> 00:38:01.180
+<v Vincent Warmerdam>So you can't.
+
+00:38:01.180 --> 00:38:01.580
+<v Vincent Warmerdam>Oh, interesting.
+
+00:38:01.700 --> 00:38:03.100
+<v Michael Kennedy>Like ignore by keyword or something.
+
+00:38:03.300 --> 00:38:03.760
+<v Michael Kennedy>Keyword argument.
+
+00:38:04.200 --> 00:38:04.520
+<v Vincent Warmerdam>Precisely.
+
+00:38:04.600 --> 00:38:05.900
+<v Vincent Warmerdam>And there's a bunch of use cases for it.
+
+00:38:05.900 --> 00:38:06.640
+<v Vincent Warmerdam>And this was one.
+
+00:38:07.120 --> 00:38:10.400
+<v Vincent Warmerdam>And you can just imagine my relief after writing the entire notebook.
+
+00:38:11.320 --> 00:38:13.780
+<v Vincent Warmerdam>So then look at the docs and go, oh, sweet.
+
+00:38:15.040 --> 00:38:15.360
+<v Michael Kennedy>Solved.
+
+00:38:15.960 --> 00:38:16.800
+<v Michael Kennedy>Yeah, that's super sweet.
+
+00:38:17.080 --> 00:38:17.220
+<v Michael Kennedy>Yeah.
+
+00:38:17.940 --> 00:38:18.100
+<v Michael Kennedy>Okay.
+
+00:38:19.480 --> 00:38:20.620
+<v Michael Kennedy>I think there's right below this.
+
+00:38:20.700 --> 00:38:21.300
+<v Michael Kennedy>Yeah, there's a couple.
+
+00:38:21.360 --> 00:38:22.380
+<v Michael Kennedy>We can just go down this list here.
+
+00:38:22.520 --> 00:38:22.800
+<v Michael Kennedy>There's some cool ones.
+
+00:38:22.800 --> 00:38:23.160
+<v Michael Kennedy>Oh, Django.
+
+00:38:23.560 --> 00:38:25.900
+<v Michael Kennedy>So they have a legit Django cache.
+
+00:38:26.400 --> 00:38:26.860
+<v Vincent Warmerdam>Yeah, yeah, yeah.
+
+00:38:27.060 --> 00:38:27.360
+<v Michael Kennedy>Straight in.
+
+00:38:27.840 --> 00:38:28.020
+<v Vincent Warmerdam>Sweet.
+
+00:38:28.340 --> 00:38:32.060
+<v Vincent Warmerdam>Yeah, I recall that it was like a huge Django following for this thing.
+
+00:38:32.560 --> 00:38:34.880
+<v Michael Kennedy>Yeah, and I think this is part why, and when I first saw it,
+
+00:38:35.200 --> 00:38:36.720
+<v Michael Kennedy>the reason it got sent to me is somebody's like,
+
+00:38:36.740 --> 00:38:39.400
+<v Michael Kennedy>oh, this disk cache, Django cache,
+
+00:38:39.860 --> 00:38:42.340
+<v Michael Kennedy>is a really cool thing to just drop into Django.
+
+00:38:42.400 --> 00:38:43.200
+<v Michael Kennedy>And I'm like, that's cool.
+
+00:38:44.060 --> 00:38:45.840
+<v Michael Kennedy>I'm not using Django, but I admire it.
+
+00:38:46.220 --> 00:38:47.520
+<v Michael Kennedy>That's why I didn't really look into it
+
+00:38:47.540 --> 00:38:49.440
+<v Michael Kennedy>until I saw your use case outside of Django.
+
+00:38:49.540 --> 00:38:51.900
+<v Michael Kennedy>I'm like, oh, okay, I understand how much this can do.
+
+00:38:52.420 --> 00:38:54.960
+<v Michael Kennedy>So the Django dish cache says it uses the fan out cache,
+
+00:38:55.120 --> 00:38:56.540
+<v Michael Kennedy>which we just discussed with the sharding,
+
+00:38:56.860 --> 00:38:59.420
+<v Michael Kennedy>to provide a Django compatible cache interface.
+
+00:39:00.800 --> 00:39:02.480
+<v Michael Kennedy>And you just do that in your settings file.
+
+00:39:02.610 --> 00:39:05.480
+<v Michael Kennedy>And you just say the back end is disk cache.django cache.
+
+00:39:05.610 --> 00:39:06.440
+<v Michael Kennedy>And you give it a location.
+
+00:39:07.130 --> 00:39:07.260
+<v Michael Kennedy>Boom.
+
+00:39:07.900 --> 00:39:08.600
+<v Michael Kennedy>Off it goes, right?
+
+00:39:08.740 --> 00:39:09.620
+<v Michael Kennedy>So really, really nice.
+
+00:39:10.200 --> 00:39:10.560
+<v Vincent Warmerdam>Cool.
+
+00:39:12.140 --> 00:39:12.500
+<v Michael Kennedy>Yeah.
+
+00:39:12.900 --> 00:39:14.640
+<v Michael Kennedy>And it sounds like you've done more Django than me.
+
+00:39:15.640 --> 00:39:16.520
+<v Michael Kennedy>How does this sit with you?
+
+00:39:16.860 --> 00:39:21.200
+<v Vincent Warmerdam>I mean, to be very clear, I do think Django is really nice
+
+00:39:21.250 --> 00:39:21.760
+<v Vincent Warmerdam>and really mature.
+
+00:39:22.320 --> 00:39:24.260
+<v Vincent Warmerdam>I do sometimes have a bit of a love-hate relationship
+
+00:39:24.460 --> 00:39:26.920
+<v Vincent Warmerdam>with it because Django can go really, really deep.
+
+00:39:27.740 --> 00:39:28.920
+<v Vincent Warmerdam>And some of the configuration stuff
+
+00:39:29.580 --> 00:39:31.060
+<v Vincent Warmerdam>definitely can be a little bit in your face.
+
+00:39:31.620 --> 00:39:33.220
+<v Vincent Warmerdam>So the main thing I just want to observe
+
+00:39:33.360 --> 00:39:36.900
+<v Vincent Warmerdam>is doing everything manually inside of Django
+
+00:39:37.040 --> 00:39:38.120
+<v Vincent Warmerdam>can be very time consuming.
+
+00:39:38.280 --> 00:39:39.920
+<v Vincent Warmerdam>So it's definitely nice to know that someone took the effort
+
+00:39:40.040 --> 00:39:42.760
+<v Vincent Warmerdam>to make a proper Django plugin in the way that Django wants it.
+
+00:39:43.500 --> 00:39:44.980
+<v Vincent Warmerdam>That's definitely the things I appreciate here.
+
+00:39:45.680 --> 00:39:47.800
+<v Vincent Warmerdam>I've never really used this in a Django app, to be honest.
+
+00:39:48.940 --> 00:39:49.040
+<v Michael Kennedy>Yeah.
+
+00:39:50.079 --> 00:39:51.580
+<v Michael Kennedy>It has a lot of nice settings here.
+
+00:39:51.680 --> 00:39:54.360
+<v Michael Kennedy>You can set the number of shards, the timeout,
+
+00:39:54.660 --> 00:39:57.960
+<v Michael Kennedy>so in case there's a write or read contention,
+
+00:39:58.090 --> 00:39:58.840
+<v Michael Kennedy>it can deal with that,
+
+00:39:59.000 --> 00:40:00.160
+<v Michael Kennedy>or it can at least let you know you're failing.
+
+00:40:00.640 --> 00:40:02.340
+<v Michael Kennedy>It even has a size limit.
+
+00:40:02.920 --> 00:40:05.300
+<v Vincent Warmerdam>Does it say how you can configure what to cache and whatnot?
+
+00:40:07.779 --> 00:40:09.700
+<v Vincent Warmerdam>I've never really used caches in Django in general,
+
+00:40:09.750 --> 00:40:12.140
+<v Vincent Warmerdam>so I don't know if there's a general cache feature
+
+00:40:12.210 --> 00:40:13.860
+<v Vincent Warmerdam>in Django itself that it will just plug into?
+
+00:40:14.559 --> 00:40:17.540
+<v Michael Kennedy>I think there is a general cache feature in Django.
+
+00:40:17.590 --> 00:40:19.840
+<v Michael Kennedy>The Django people are screaming silently.
+
+00:40:20.240 --> 00:40:21.600
+<v Michael Kennedy>I apologize.
+
+00:40:21.930 --> 00:40:22.540
+<v Michael Kennedy>I know, I know.
+
+00:40:22.830 --> 00:40:26.820
+<v Michael Kennedy>But I'm pretty sure it's just a built-in Django cache functionality.
+
+00:40:27.020 --> 00:40:27.420
+<v Michael Kennedy>Exactly.
+
+00:40:27.580 --> 00:40:29.560
+<v Michael Kennedy>It just routes into this thing.
+
+00:40:30.140 --> 00:40:30.280
+<v Vincent Warmerdam>Exactly.
+
+00:40:30.430 --> 00:40:32.700
+<v Vincent Warmerdam>So instead of configuring Redis, you just feed it this and you're good.
+
+00:40:32.960 --> 00:40:33.960
+<v Vincent Warmerdam>That's the idea then.
+
+00:40:34.460 --> 00:40:35.100
+<v Michael Kennedy>Yes, exactly.
+
+00:40:35.440 --> 00:40:35.540
+<v Michael Kennedy>Exactly.
+
+00:40:36.900 --> 00:40:37.560
+<v Michael Kennedy>So there's more.
+
+00:40:38.520 --> 00:40:41.240
+<v Michael Kennedy>The next one, I have to rage against the machine.
+
+00:40:41.400 --> 00:40:45.480
+<v Michael Kennedy>I'm sure it's the way, but DQ, pronounced deck.
+
+00:40:47.420 --> 00:40:48.340
+<v Michael Kennedy>So I don't know.
+
+00:40:48.440 --> 00:40:49.380
+<v Michael Kennedy>For me, I still say DQ.
+
+00:40:49.380 --> 00:40:50.020
+<v Michael Kennedy>I don't say deck.
+
+00:40:50.280 --> 00:40:54.740
+<v Michael Kennedy>like it's spelled D-E-Q-U-E and I know a lot of computer science people just call that deck but
+
+00:40:55.360 --> 00:41:02.380
+<v Michael Kennedy>um disk cache dot dq or deck however you want to use it it provides there's there's a couple of
+
+00:41:02.560 --> 00:41:06.980
+<v Michael Kennedy>higher order data structures that like operate on what we talked about so far but to give you
+
+00:41:07.640 --> 00:41:12.880
+<v Michael Kennedy>data structure behavior right like what we talked about so far is sort of dictionary but not list or
+
+00:41:12.900 --> 00:41:14.080
+<v Michael Kennedy>order or any of that.
+
+00:41:14.560 --> 00:41:15.540
+<v Michael Kennedy>But this you can actually
+
+00:41:17.280 --> 00:41:17.360
+<v Michael Kennedy>do
+
+00:41:20.119 --> 00:41:21.160
+<v Michael Kennedy>go and add a thing.
+
+00:41:22.080 --> 00:41:22.900
+<v Michael Kennedy>How do we add one?
+
+00:41:23.300 --> 00:41:24.540
+<v Michael Kennedy>Anyway, you can say like pop left
+
+00:41:25.240 --> 00:41:26.840
+<v Michael Kennedy>over and over to get, I guess you
+
+00:41:26.960 --> 00:41:28.840
+<v Vincent Warmerdam>just add it. It's kind of like a queue.
+
+00:41:29.359 --> 00:41:30.380
+<v Michael Kennedy>Yeah, like a queue, exactly.
+
+00:41:31.720 --> 00:41:33.040
+<v Michael Kennedy>With the goal of taking stuff out of it
+
+00:41:33.180 --> 00:41:33.800
+<v Michael Kennedy>instead of into it.
+
+00:41:34.800 --> 00:41:36.840
+<v Michael Kennedy>But you don't normally think of a cache as doing that.
+
+00:41:36.880 --> 00:41:38.660
+<v Michael Kennedy>But it'd be a cool way actually to fan out work
+
+00:41:39.100 --> 00:41:40.060
+<v Michael Kennedy>across processes.
+
+00:41:40.520 --> 00:41:42.860
+<v Vincent Warmerdam>I was about to say, that's a really good
+
+00:41:42.880 --> 00:41:46.060
+<v Vincent Warmerdam>I think, I mean, there's people that have made,
+
+00:41:46.740 --> 00:41:49.500
+<v Vincent Warmerdam>I forget the name, what's the Python queuing system,
+
+00:41:50.180 --> 00:41:50.540
+<v Vincent Warmerdam>Salary.
+
+00:41:52.020 --> 00:41:54.340
+<v Vincent Warmerdam>So that one is also built in such a way that you can say,
+
+00:41:54.530 --> 00:41:57.400
+<v Vincent Warmerdam>oh, where do you have the list of jobs that still need doing?
+
+00:41:57.660 --> 00:41:59.080
+<v Vincent Warmerdam>And I think also Redis is used.
+
+00:41:59.180 --> 00:42:00.240
+<v Vincent Warmerdam>Yeah, right, Redis and Queue.
+
+00:42:00.600 --> 00:42:01.040
+<v Michael Kennedy>Yeah, exactly.
+
+00:42:01.380 --> 00:42:02.580
+<v Michael Kennedy>Or Rabbit and Queue as well.
+
+00:42:03.160 --> 00:42:03.900
+<v Vincent Warmerdam>Yeah, exactly.
+
+00:42:04.000 --> 00:42:06.720
+<v Vincent Warmerdam>But you can configure SQLite if you want to, though,
+
+00:42:06.800 --> 00:42:07.660
+<v Vincent Warmerdam>if I recall with those.
+
+00:42:07.840 --> 00:42:09.160
+<v Vincent Warmerdam>It's just that in this particular case,
+
+00:42:09.220 --> 00:42:10.660
+<v Vincent Warmerdam>if you don't want to use Salary,
+
+00:42:10.740 --> 00:42:13.440
+<v Vincent Warmerdam>You can still kind of roll your own by using this cache as well.
+
+00:42:14.260 --> 00:42:15.820
+<v Vincent Warmerdam>I'm assuming it uses the same pickle tricks,
+
+00:42:15.920 --> 00:42:17.120
+<v Vincent Warmerdam>so you can do general Python things
+
+00:42:17.220 --> 00:42:19.300
+<v Vincent Warmerdam>and if the process breaks for whatever reason,
+
+00:42:19.370 --> 00:42:20.660
+<v Vincent Warmerdam>you still have the jobs that need doing.
+
+00:42:20.860 --> 00:42:21.180
+<v Michael Kennedy>Yeah.
+
+00:42:21.180 --> 00:42:22.340
+<v Michael Kennedy>We're going to still have to-- we're still
+
+00:42:22.370 --> 00:42:24.520
+<v Michael Kennedy>going to have to talk about this serialization thing,
+
+00:42:24.990 --> 00:42:25.360
+<v Michael Kennedy>these pickles.
+
+00:42:26.020 --> 00:42:26.320
+<v Michael Kennedy>Yes.
+
+00:42:26.839 --> 00:42:27.320
+<v Michael Kennedy>Not yet.
+
+00:42:27.400 --> 00:42:28.160
+<v Michael Kennedy>Let's go through this list.
+
+00:42:28.160 --> 00:42:30.660
+<v Michael Kennedy>Let's go through this first before we get distracted,
+
+00:42:32.039 --> 00:42:33.120
+<v Michael Kennedy>because it's a deep--
+
+00:42:35.359 --> 00:42:36.080
+<v Michael Kennedy>so DEC--
+
+00:42:36.470 --> 00:42:37.180
+<v Michael Kennedy>I guess we'll go DEC.
+
+00:42:39.420 --> 00:42:44.760
+<v Michael Kennedy>deck provides an efficient and safe means for cross-thread cross-process communication like
+
+00:42:44.970 --> 00:42:52.200
+<v Michael Kennedy>you would never think you would get that out of a cache really but it's uh yeah exactly but you
+
+00:42:52.340 --> 00:42:55.660
+<v Michael Kennedy>would do work to do that right you would do like transactions and you would do sorting you would
+
+00:42:55.760 --> 00:43:00.320
+<v Michael Kennedy>figure out well what if there's contention i mean the fact that it's just kind of a pop it's pretty
+
+00:43:00.480 --> 00:43:04.460
+<v Vincent Warmerdam>nice yeah that's definitely nice no that's definitely true although one thing that makes
+
+00:43:04.460 --> 00:43:09.380
+<v Vincent Warmerdam>it easy in this case though is again it is all running in like one process so it's not like we've
+
+00:43:09.400 --> 00:43:13.420
+<v Vincent Warmerdam>SQLite running in one place and there's 16 Docker containers that can randomly interact with it.
+
+00:43:13.560 --> 00:43:20.040
+<v Michael Kennedy>That can though. Is that the case? Because it's because this cache itself is already cross process
+
+00:43:20.360 --> 00:43:24.120
+<v Michael Kennedy>safe. Like that's why I was so excited about it for the, but it has to be on the same machine
+
+00:43:24.440 --> 00:43:28.620
+<v Michael Kennedy>though. Like that's the, I do think, yes, it's gotta at least be accessible rush, right? That is true
+
+00:43:30.120 --> 00:43:33.700
+<v Michael Kennedy>because technically there's nothing that says you can't put the file anywhere. I think there's
+
+00:43:34.060 --> 00:43:38.080
+<v Michael Kennedy>mega performance issues and locking issues on, it says basically don't use it on network drives.
+
+00:43:38.900 --> 00:43:39.900
+<v Vincent Warmerdam>Yeah, so that's the thing.
+
+00:43:40.980 --> 00:43:41.920
+<v Vincent Warmerdam>Some of this is like--
+
+00:43:41.990 --> 00:43:43.020
+<v Vincent Warmerdam>OK, you can do the locking.
+
+00:43:43.130 --> 00:43:43.820
+<v Vincent Warmerdam>You can do all those things.
+
+00:43:43.870 --> 00:43:44.340
+<v Vincent Warmerdam>You can do it well.
+
+00:43:44.470 --> 00:43:46.220
+<v Vincent Warmerdam>But the practicality of the network overhead
+
+00:43:46.400 --> 00:43:48.620
+<v Vincent Warmerdam>is something that usually causes a lot of confuffle,
+
+00:43:48.960 --> 00:43:49.820
+<v Vincent Warmerdam>at least in my experience.
+
+00:43:50.140 --> 00:43:50.320
+<v Michael Kennedy>Yeah.
+
+00:43:50.890 --> 00:43:52.660
+<v Michael Kennedy>OK, another one is disk cache index,
+
+00:43:53.580 --> 00:43:56.260
+<v Michael Kennedy>which creates a mutable mapping and ordered dictionary.
+
+00:43:56.580 --> 00:43:58.780
+<v Michael Kennedy>So if you really want to lay into the dictionary side,
+
+00:43:59.720 --> 00:44:00.200
+<v Michael Kennedy>you can do that.
+
+00:44:00.790 --> 00:44:02.660
+<v Michael Kennedy>That one's-- transactions as well.
+
+00:44:03.330 --> 00:44:06.080
+<v Michael Kennedy>So you can actually-- it has sort of in-place updates
+
+00:44:06.170 --> 00:44:07.180
+<v Michael Kennedy>and other things you can do.
+
+00:44:07.700 --> 00:44:10.040
+<v Michael Kennedy>So you can say, I want to make sure
+
+00:44:10.160 --> 00:44:12.620
+<v Michael Kennedy>that I'm going to get two different things out of the cache.
+
+00:44:12.880 --> 00:44:15.720
+<v Michael Kennedy>And I want to make sure that they're not changed
+
+00:44:15.920 --> 00:44:16.940
+<v Michael Kennedy>while I'm doing that, right?
+
+00:44:17.250 --> 00:44:18.580
+<v Michael Kennedy>Just like you would with threading or something.
+
+00:44:19.100 --> 00:44:20.920
+<v Michael Kennedy>Yeah, so nothing can happen in between.
+
+00:44:21.190 --> 00:44:22.700
+<v Vincent Warmerdam>So they both have to come out at the same time.
+
+00:44:22.840 --> 00:44:23.960
+<v Vincent Warmerdam>So the two values that I get, they
+
+00:44:26.470 --> 00:44:28.020
+<v Vincent Warmerdam>both existed at the same time in the cache
+
+00:44:28.050 --> 00:44:29.500
+<v Vincent Warmerdam>at the point in time that I was retrieving it.
+
+00:44:30.200 --> 00:44:31.100
+<v Michael Kennedy>Yeah, exactly.
+
+00:44:31.490 --> 00:44:36.360
+<v Michael Kennedy>So just with cache.transact, and you just go to town on it.
+
+00:44:36.480 --> 00:44:37.860
+<v Michael Kennedy>That's pretty straightforward, right?
+
+00:44:38.680 --> 00:44:38.740
+<v Michael Kennedy>Yep.
+
+00:44:38.900 --> 00:44:39.820
+<v Michael Kennedy>Are there any more in here?
+
+00:44:40.660 --> 00:44:44.080
+<v Michael Kennedy>There's a bunch of recipes for barriers and throttling
+
+00:44:44.460 --> 00:44:46.060
+<v Michael Kennedy>and probably semaphore-like stuff,
+
+00:44:46.260 --> 00:44:49.560
+<v Michael Kennedy>but I don't really want to talk about.
+
+00:44:49.650 --> 00:44:51.160
+<v Michael Kennedy>But you touched on these eviction policies.
+
+00:44:51.380 --> 00:44:52.240
+<v Michael Kennedy>Here's where I was looking for.
+
+00:44:52.360 --> 00:44:54.440
+<v Michael Kennedy>There's these different ones here that are kind of cool.
+
+00:44:54.840 --> 00:44:54.900
+<v Michael Kennedy>Whoops.
+
+00:44:55.500 --> 00:44:56.040
+<v Michael Kennedy>Don't mean to go away.
+
+00:44:56.160 --> 00:44:56.300
+<v Vincent Warmerdam>Yeah.
+
+00:44:56.480 --> 00:45:00.440
+<v Vincent Warmerdam>So you can set a maximum to the cache.
+
+00:45:00.900 --> 00:45:03.360
+<v Vincent Warmerdam>I think you do that by number of items typically in it.
+
+00:45:03.460 --> 00:45:04.700
+<v Vincent Warmerdam>It could also be the case.
+
+00:45:04.700 --> 00:45:05.800
+<v Michael Kennedy>Key size or something, yeah.
+
+00:45:06.200 --> 00:45:09.060
+<v Vincent Warmerdam>Yeah, or like total disk size, maybe we should double check.
+
+00:45:09.510 --> 00:45:11.800
+<v Michael Kennedy>Actually, the default for the disk size is one gig.
+
+00:45:12.460 --> 00:45:12.940
+<v Michael Kennedy>Yeah, there you go.
+
+00:45:13.280 --> 00:45:14.400
+<v Michael Kennedy>There's already a built in one.
+
+00:45:14.430 --> 00:45:16.300
+<v Michael Kennedy>Yeah, which might catch people off guard.
+
+00:45:18.500 --> 00:45:20.200
+<v Michael Kennedy>Much of the stuff is cash, but not always.
+
+00:45:20.290 --> 00:45:20.920
+<v Michael Kennedy>I don't understand.
+
+00:45:21.090 --> 00:45:23.320
+<v Vincent Warmerdam>Like, oh, yeah, you gotta be a little bit mindful of that, I
+
+00:45:23.410 --> 00:45:23.520
+<v Vincent Warmerdam>suppose.
+
+00:45:23.760 --> 00:45:27.020
+<v Vincent Warmerdam>But the but the same default not to have it go to
+
+00:45:27.180 --> 00:45:27.320
+<v Vincent Warmerdam>infinity.
+
+00:45:28.680 --> 00:45:29.040
+<v Vincent Warmerdam>Agreed.
+
+00:45:29.900 --> 00:45:30.240
+<v Vincent Warmerdam>Agreed.
+
+00:45:30.780 --> 00:45:32.860
+<v Vincent Warmerdam>Yeah, I guess small screen on my side.
+
+00:45:33.000 --> 00:45:34.720
+<v Vincent Warmerdam>But like, yeah, last recently.
+
+00:45:35.180 --> 00:45:36.480
+<v Michael Kennedy>I'll read them out for you.
+
+00:45:36.480 --> 00:45:38.680
+<v Michael Kennedy>Yeah, so we got last recently stored as a default.
+
+00:45:39.400 --> 00:45:42.440
+<v Michael Kennedy>Every cache item records the time it was stored in the cache,
+
+00:45:43.220 --> 00:45:46.800
+<v Michael Kennedy>and that adds an index to that field, so it's nice and fast, which is cool.
+
+00:45:48.300 --> 00:45:52.560
+<v Michael Kennedy>There's some other ones that are more nuanced, like least recently used.
+
+00:45:53.620 --> 00:45:58.920
+<v Michael Kennedy>So not in terms of time, but we've got one that was accessed 100 times
+
+00:45:59.020 --> 00:46:00.240
+<v Michael Kennedy>and one that was accessed two times.
+
+00:46:00.880 --> 00:46:02.900
+<v Michael Kennedy>Even if the one that was accessed two times was just accessed,
+
+00:46:02.980 --> 00:46:04.760
+<v Michael Kennedy>that one's getting kicked out because it's not as useful.
+
+00:46:04.960 --> 00:46:06.520
+<v Michael Kennedy>I don't know. That's a pretty neat feature.
+
+00:46:06.680 --> 00:46:08.680
+<v Michael Kennedy>And then the one people would expect
+
+00:46:08.980 --> 00:46:10.540
+<v Michael Kennedy>is, I don't know,
+
+00:46:10.940 --> 00:46:12.200
+<v Michael Kennedy>maybe at least recently used.
+
+00:46:12.619 --> 00:46:12.980
+<v Michael Kennedy>LRU.
+
+00:46:14.300 --> 00:46:14.400
+<v Vincent Warmerdam>Yeah.
+
+00:46:17.019 --> 00:46:17.640
+<v Vincent Warmerdam>Yeah, exactly.
+
+00:46:18.260 --> 00:46:20.660
+<v Vincent Warmerdam>And there's also pruning mechanisms, if I'm not mistaken.
+
+00:46:21.680 --> 00:46:22.580
+<v Vincent Warmerdam>There's all sorts of fun.
+
+00:46:23.620 --> 00:46:24.860
+<v Vincent Warmerdam>You can argue there are bells and whistles
+
+00:46:25.340 --> 00:46:25.940
+<v Vincent Warmerdam>until you need them.
+
+00:46:27.040 --> 00:46:28.640
+<v Vincent Warmerdam>And one thing I have always found is
+
+00:46:28.800 --> 00:46:30.060
+<v Vincent Warmerdam>every item that I see here,
+
+00:46:31.400 --> 00:46:32.600
+<v Vincent Warmerdam>you might not need it right now,
+
+00:46:32.650 --> 00:46:34.600
+<v Vincent Warmerdam>but for every item you see, you do plausibly go,
+
+00:46:35.000 --> 00:46:39.420
+<v Vincent Warmerdam>oh but that might be useful later down the line somewhere like the right like the transaction
+
+00:46:39.780 --> 00:46:43.020
+<v Vincent Warmerdam>thing where you retrieve two things at the same time i don't really have a use case for it but i
+
+00:46:43.100 --> 00:46:46.960
+<v Vincent Warmerdam>don't even know but but i can imagine that one might where the consistency really matters
+
+00:46:48.020 --> 00:46:54.520
+<v Michael Kennedy>yeah i can i could see using the fan out cash yeah definitely but probably probably not the
+
+00:46:55.010 --> 00:47:00.199
+<v Michael Kennedy>the transaction but you know i'm already talking to mongo db which doesn't have transactions
+
+00:47:00.900 --> 00:47:01.260
+<v Michael Kennedy>effectively.
+
+00:47:02.420 --> 00:47:02.960
+<v Michael Kennedy>Not really.
+
+00:47:03.810 --> 00:47:05.780
+<v Michael Kennedy>What about performance? Should we talk about your graphs?
+
+00:47:06.700 --> 00:47:07.320
+<v Michael Kennedy>You brought pictures.
+
+00:47:08.000 --> 00:47:08.220
+<v Vincent Warmerdam>Yes.
+
+00:47:09.880 --> 00:47:11.840
+<v Vincent Warmerdam>When you told me, hey, let's do an episode on
+
+00:47:11.940 --> 00:47:13.380
+<v Vincent Warmerdam>DiscCache, I told myself, okay,
+
+00:47:13.660 --> 00:47:15.860
+<v Vincent Warmerdam>I need to do some homework. I actually have to use it for something
+
+00:47:16.060 --> 00:47:16.820
+<v Vincent Warmerdam>real. It's a bit complex.
+
+00:47:18.220 --> 00:47:19.680
+<v Vincent Warmerdam>What we're going to try and do is
+
+00:47:19.930 --> 00:47:21.800
+<v Vincent Warmerdam>we're looking at a chart right now, and I'm going to explain
+
+00:47:21.830 --> 00:47:23.800
+<v Vincent Warmerdam>to Michael what it does. I'm going to try to
+
+00:47:24.120 --> 00:47:25.740
+<v Vincent Warmerdam>explain it in such a way, such that if you're not
+
+00:47:25.860 --> 00:47:27.820
+<v Vincent Warmerdam>watching but listening, that you're also going to be
+
+00:47:28.060 --> 00:47:29.260
+<v Vincent Warmerdam>fairly interested in what you're seeing.
+
+00:47:30.180 --> 00:47:31.860
+<v Michael Kennedy>And I'll link to the chart, of course, people can.
+
+00:47:32.240 --> 00:47:34.040
+<v Vincent Warmerdam>Yeah, so this is all running on GitHub pages.
+
+00:47:34.460 --> 00:47:39.440
+<v Vincent Warmerdam>And the charts that you see here definitely needed a bit of disk cache to make it less painful.
+
+00:47:40.760 --> 00:47:43.560
+<v Vincent Warmerdam>So what I've done is I've downloaded a Git repository.
+
+00:47:44.160 --> 00:47:46.420
+<v Vincent Warmerdam>What you're looking at right now is the Git repository for Marimo.
+
+00:47:47.100 --> 00:47:51.880
+<v Vincent Warmerdam>And then I just take a point in time and I say, okay, let's just see all the lines of code.
+
+00:47:52.440 --> 00:47:53.940
+<v Vincent Warmerdam>And then I take another point in time.
+
+00:47:54.980 --> 00:47:59.440
+<v Vincent Warmerdam>And then I basically just do kind of a Git blame to see if the line got changed in between.
+
+00:48:00.540 --> 00:48:07.920
+<v Vincent Warmerdam>So what you're looking at here is kind of a chart over time where it's basically like a bar chart, but it changes colors as time moves forward.
+
+00:48:08.620 --> 00:48:19.300
+<v Vincent Warmerdam>And the shape that you see is that things that happened early on, well, there's a nice thick slab, but it gets a little bit thinner and thinner as time moves forward because some of those lines of code got replaced.
+
+00:48:20.360 --> 00:48:25.960
+<v Vincent Warmerdam>But in the case of Marimo, you can see that most of the lines of code actually stay around
+
+00:48:26.080 --> 00:48:26.680
+<v Vincent Warmerdam>for a long time.
+
+00:48:26.860 --> 00:48:31.520
+<v Vincent Warmerdam>It's kind of like a smooth sedimentary layer every time we move over.
+
+00:48:32.520 --> 00:48:34.380
+<v Michael Kennedy>It's compressing a little over time.
+
+00:48:34.660 --> 00:48:37.360
+<v Michael Kennedy>The weight of the project has sort of compressed it.
+
+00:48:37.370 --> 00:48:38.520
+<v Michael Kennedy>So yeah, it's pretty interesting.
+
+00:48:38.900 --> 00:48:40.360
+<v Michael Kennedy>So that's pretty cool.
+
+00:48:40.500 --> 00:48:41.960
+<v Vincent Warmerdam>But you can also go to Django.
+
+00:48:43.180 --> 00:48:44.740
+<v Michael Kennedy>So there's a director on top.
+
+00:48:45.120 --> 00:48:45.920
+<v Michael Kennedy>Yeah, Django.
+
+00:48:46.290 --> 00:48:47.880
+<v Michael Kennedy>Oh, you can put this cache in here.
+
+00:48:48.640 --> 00:48:49.400
+<v Michael Kennedy>This is really different.
+
+00:48:49.980 --> 00:48:50.120
+<v Michael Kennedy>Yes.
+
+00:48:50.790 --> 00:48:51.660
+<v Vincent Warmerdam>What is this telling us?
+
+00:48:52.080 --> 00:48:55.340
+<v Vincent Warmerdam>So OK, so what you can see here is that at some point in time,
+
+00:48:55.460 --> 00:48:56.760
+<v Vincent Warmerdam>there's a huge shift in the sediment.
+
+00:48:57.560 --> 00:49:00.220
+<v Vincent Warmerdam>There's a lot of light sand and a lot of the dark sand goes away.
+
+00:49:00.700 --> 00:49:03.560
+<v Vincent Warmerdam>There's also a button that allows you to show the version number.
+
+00:49:05.380 --> 00:49:06.460
+<v Vincent Warmerdam>So I've-- yep, there you go.
+
+00:49:06.480 --> 00:49:07.260
+<v Michael Kennedy>There we go, yeah.
+
+00:49:07.500 --> 00:49:09.600
+<v Vincent Warmerdam>So you can see that right before a new version,
+
+00:49:09.800 --> 00:49:12.220
+<v Vincent Warmerdam>a bunch of changes got introduced, or like right after.
+
+00:49:12.420 --> 00:49:14.480
+<v Vincent Warmerdam>It's usually around the version number that you can see that shift.
+
+00:49:14.540 --> 00:49:18.480
+<v Michael Kennedy>Right, once the feature freeze is lifted,
+
+00:49:19.160 --> 00:49:21.240
+<v Michael Kennedy>some stuff comes in, PRs come in maybe or something.
+
+00:49:21.619 --> 00:49:25.140
+<v Vincent Warmerdam>Yes, and one other thing that's actually kind of fun,
+
+00:49:25.200 --> 00:49:27.600
+<v Vincent Warmerdam>if you go, there's this project called Psychot Lego
+
+00:49:27.760 --> 00:49:29.260
+<v Vincent Warmerdam>that you can also go ahead and select.
+
+00:49:29.430 --> 00:49:30.420
+<v Vincent Warmerdam>And folks...
+
+00:49:30.440 --> 00:49:32.140
+<v Michael Kennedy>I've heard a pretty cool guy maintains that, yeah.
+
+00:49:33.160 --> 00:49:34.360
+<v Vincent Warmerdam>Well, so the funny thing is,
+
+00:49:34.390 --> 00:49:36.260
+<v Vincent Warmerdam>you can see that there's a massive shift there at some point.
+
+00:49:36.600 --> 00:49:36.720
+<v Michael Kennedy>Okay.
+
+00:49:37.340 --> 00:49:38.500
+<v Vincent Warmerdam>That's when we got the new maintainer.
+
+00:49:40.360 --> 00:49:41.980
+<v Michael Kennedy>Are you on the purple or the green side?
+
+00:49:42.600 --> 00:49:46.060
+<v Vincent Warmerdam>So there's this dark blue sediment that sort of goes down massively at that point.
+
+00:49:46.260 --> 00:49:50.600
+<v Vincent Warmerdam>But in this case, the first thing he did is redid all the docs.
+
+00:49:50.730 --> 00:49:52.360
+<v Vincent Warmerdam>So we went from Sphinx to make docs.
+
+00:49:52.620 --> 00:49:54.060
+<v Vincent Warmerdam>And that's like a huge...
+
+00:49:54.260 --> 00:49:58.520
+<v Vincent Warmerdam>If you look at the lines of code that changed as a result, that's quite a lot.
+
+00:49:59.499 --> 00:50:02.380
+<v Vincent Warmerdam>But if we now start talking about how you make a chart like this,
+
+00:50:02.450 --> 00:50:04.720
+<v Vincent Warmerdam>you got to imagine like I take the start of the GitHub history.
+
+00:50:05.140 --> 00:50:06.400
+<v Vincent Warmerdam>I take the end of the GitHub history.
+
+00:50:06.750 --> 00:50:08.440
+<v Vincent Warmerdam>I sample like 100 points in between.
+
+00:50:09.110 --> 00:50:12.360
+<v Vincent Warmerdam>And then for every line in every file, I do a git blame.
+
+00:50:15.420 --> 00:50:18.460
+<v Michael Kennedy>I think Django is something like 300,000 lines of code.
+
+00:50:18.460 --> 00:50:19.580
+<v Michael Kennedy>I mean, that's a lot of fun.
+
+00:50:20.060 --> 00:50:23.780
+<v Vincent Warmerdam>So that thing took two hours and 15 minutes on my M4 Mac.
+
+00:50:24.080 --> 00:50:26.220
+<v Vincent Warmerdam>And if you go there, you can actually select it.
+
+00:50:28.460 --> 00:50:30.800
+<v Vincent Warmerdam>That was a chunky boy, is what I'll say.
+
+00:50:32.420 --> 00:50:34.240
+<v Vincent Warmerdam>Yeah, 550,000 lines.
+
+00:50:35.400 --> 00:50:35.940
+<v Vincent Warmerdam>There you go.
+
+00:50:35.990 --> 00:50:38.420
+<v Vincent Warmerdam>But you can see that there's one version change, I think,
+
+00:50:38.460 --> 00:50:39.580
+<v Vincent Warmerdam>where they made a bunch of changes.
+
+00:50:39.740 --> 00:50:46.460
+<v Vincent Warmerdam>And it could be that that might have been, again, because I checked the docs as well on Markdown files, it might have been like a big docs change.
+
+00:50:46.660 --> 00:50:51.340
+<v Vincent Warmerdam>But hopefully by just looking at this, you can kind of go like, oh, yeah, this is probably a notebook somewhere.
+
+00:50:52.230 --> 00:50:58.100
+<v Vincent Warmerdam>And there's like a huge like for loop that does threading and like tries to do as much in parallel as possible.
+
+00:50:58.560 --> 00:51:00.760
+<v Vincent Warmerdam>And there's a progress bar, right?
+
+00:51:01.180 --> 00:51:01.540
+<v Vincent Warmerdam>Yeah.
+
+00:51:04.240 --> 00:51:06.440
+<v Michael Kennedy>Now I see why you had this problem with the caching.
+
+00:51:07.360 --> 00:51:07.740
+<v Vincent Warmerdam>That's right.
+
+00:51:07.820 --> 00:51:11.140
+<v Vincent Warmerdam>So but yeah, but here's also where the threading kind of came in.
+
+00:51:11.190 --> 00:51:15.200
+<v Vincent Warmerdam>Because the moment you say this point in time, now do all the files, do the git blame, that's
+
+00:51:15.280 --> 00:51:16.860
+<v Vincent Warmerdam>definitely something that can happen in parallel.
+
+00:51:17.600 --> 00:51:21.500
+<v Vincent Warmerdam>But then for every file, for every point in time, you do want to have something in the
+
+00:51:21.640 --> 00:51:25.280
+<v Vincent Warmerdam>cache that says, OK, if I have to restart this notebook for whatever reason, that number
+
+00:51:25.400 --> 00:51:25.860
+<v Vincent Warmerdam>is just known.
+
+00:51:26.100 --> 00:51:26.720
+<v Vincent Warmerdam>Don't check it again.
+
+00:51:26.980 --> 00:51:27.180
+<v Michael Kennedy>Yeah.
+
+00:51:28.860 --> 00:51:29.580
+<v Michael Kennedy>Yeah, super interesting.
+
+00:51:30.050 --> 00:51:30.160
+<v Michael Kennedy>OK.
+
+00:51:31.040 --> 00:51:37.300
+<v Michael Kennedy>I wonder if this 4.0 in 2022, is that might be when they switched to async?
+
+00:51:37.400 --> 00:51:38.460
+<v Michael Kennedy>They started supporting async.
+
+00:51:39.960 --> 00:51:41.540
+<v Michael Kennedy>It could be docs as well.
+
+00:51:41.540 --> 00:51:42.000
+<v Michael Kennedy>I'm not sure.
+
+00:51:42.440 --> 00:51:42.900
+<v Vincent Warmerdam>Well, yeah.
+
+00:51:42.920 --> 00:51:45.280
+<v Vincent Warmerdam>So that's kind of the hard thing with some of these charts.
+
+00:51:45.980 --> 00:51:51.900
+<v Vincent Warmerdam>I could expand these charts by saying things like, okay, only the Python files, et cetera.
+
+00:51:54.340 --> 00:51:59.640
+<v Vincent Warmerdam>But the way that this is hosted, this is really using the disk as a cache because all these charts are Altair charts.
+
+00:51:59.720 --> 00:52:03.260
+<v Vincent Warmerdam>You can save them to disk, and then you can easily upload them to GitHub pages.
+
+00:52:03.580 --> 00:52:11.500
+<v Vincent Warmerdam>So I do everything in disk cache to make sure that if I, for whatever reason, the notebook fails, I don't have to sort of do anything fancy to get it back up.
+
+00:52:13.280 --> 00:52:19.140
+<v Vincent Warmerdam>But then once it's time to actually put it on the site, I could use disk cache to show the charts, but then I would need a server.
+
+00:52:19.580 --> 00:52:26.260
+<v Vincent Warmerdam>So actually using disk to actually just serve some files is also just a pretty fine and good idea.
+
+00:52:27.220 --> 00:52:29.420
+<v Vincent Warmerdam>There are some things on the Marimo side
+
+00:52:29.720 --> 00:52:32.860
+<v Vincent Warmerdam>where we are also hoping to maybe give better caching tools
+
+00:52:33.330 --> 00:52:34.060
+<v Vincent Warmerdam>to the library itself.
+
+00:52:35.240 --> 00:52:36.340
+<v Vincent Warmerdam>It's just that when I was doing this,
+
+00:52:36.350 --> 00:52:37.820
+<v Vincent Warmerdam>I actually found a bug in our caching layer,
+
+00:52:37.890 --> 00:52:39.240
+<v Vincent Warmerdam>so then I switched back to disk cache.
+
+00:52:40.100 --> 00:52:40.660
+<v Michael Kennedy>You know what?
+
+00:52:40.710 --> 00:52:41.340
+<v Vincent Warmerdam>Look, that's valuable.
+
+00:52:41.720 --> 00:52:43.540
+<v Michael Kennedy>It's maybe not the way you will find, but it's valuable.
+
+00:52:46.359 --> 00:52:48.800
+<v Vincent Warmerdam>One thing you learn is that caching is actually hard to get right.
+
+00:52:49.320 --> 00:52:49.940
+<v Michael Kennedy>Oh, it is.
+
+00:52:50.240 --> 00:52:50.660
+<v Michael Kennedy>It is.
+
+00:52:51.380 --> 00:52:51.880
+<v Michael Kennedy>It's very hard.
+
+00:52:52.200 --> 00:52:54.060
+<v Vincent Warmerdam>It's on par with naming things.
+
+00:52:56.220 --> 00:52:58.800
+<v Michael Kennedy>It is one of the two things that goes wrong.
+
+00:52:59.560 --> 00:53:02.300
+<v Michael Kennedy>Naming things, cache invalidation, and off by one errors.
+
+00:53:02.480 --> 00:53:03.080
+<v Vincent Warmerdam>Yes, exactly.
+
+00:53:03.280 --> 00:53:04.140
+<v Vincent Warmerdam>It's the middle one.
+
+00:53:07.079 --> 00:53:08.060
+<v Vincent Warmerdam>Dad jokes are amazing.
+
+00:53:08.520 --> 00:53:12.640
+<v Vincent Warmerdam>Anyway, so one thing about this repo, by the way,
+
+00:53:12.760 --> 00:53:14.860
+<v Vincent Warmerdam>this is all my, we're going to add a link to the show notes.
+
+00:53:15.200 --> 00:53:18.420
+<v Vincent Warmerdam>There is a notebook, so if you feel like adding your own project
+
+00:53:18.580 --> 00:53:21.540
+<v Vincent Warmerdam>that you want to just add, feel free to spend your compute resources
+
+00:53:22.440 --> 00:53:24.420
+<v Vincent Warmerdam>two and a half hours to add a popular project.
+
+00:53:24.540 --> 00:53:25.240
+<v Vincent Warmerdam>I would love to have that.
+
+00:53:25.560 --> 00:53:27.360
+<v Vincent Warmerdam>One thing I think will be cool with these sorts of charts
+
+00:53:27.430 --> 00:53:30.100
+<v Vincent Warmerdam>is to see what will change when LLMs kind of get into the mix.
+
+00:53:30.740 --> 00:53:35.240
+<v Vincent Warmerdam>Do we see more code shifts happen if more LLMs get used for these libraries?
+
+00:53:35.330 --> 00:53:35.700
+<v Michael Kennedy>Very interesting.
+
+00:53:36.480 --> 00:53:39.540
+<v Michael Kennedy>I don't know if more code, old code will get changed,
+
+00:53:39.640 --> 00:53:42.360
+<v Michael Kennedy>but they are verbose code writers, those things.
+
+00:53:42.720 --> 00:53:42.980
+<v Vincent Warmerdam>Yes.
+
+00:53:43.550 --> 00:53:46.820
+<v Vincent Warmerdam>So this, assuming we can do this over time
+
+00:53:46.870 --> 00:53:48.420
+<v Vincent Warmerdam>and we're going to start tracking this,
+
+00:53:49.260 --> 00:53:50.960
+<v Vincent Warmerdam>I'm calling this code archaeology.
+
+00:53:51.880 --> 00:53:54.300
+<v Vincent Warmerdam>I do think it will be an interesting chart.
+
+00:53:54.480 --> 00:53:56.400
+<v Vincent Warmerdam>as is, I think it's already quite interesting to see differences
+
+00:53:56.710 --> 00:53:58.460
+<v Vincent Warmerdam>between different projects. I think if you go to
+
+00:53:58.560 --> 00:54:00.440
+<v Vincent Warmerdam>sentence transformers, you can also see when the project
+
+00:54:00.600 --> 00:54:02.360
+<v Vincent Warmerdam>got moved from an academic lab to hugging
+
+00:54:02.600 --> 00:54:04.620
+<v Vincent Warmerdam>face. So there are interesting
+
+00:54:04.860 --> 00:54:06.160
+<v Vincent Warmerdam>things you can see with these charts.
+
+00:54:07.380 --> 00:54:08.340
+<v Vincent Warmerdam>But you are going through
+
+00:54:08.720 --> 00:54:10.160
+<v Vincent Warmerdam>every file, every line,
+
+00:54:10.800 --> 00:54:12.580
+<v Vincent Warmerdam>git blame, 100 times.
+
+00:54:13.660 --> 00:54:14.400
+<v Michael Kennedy>Yeah, a lot.
+
+00:54:15.060 --> 00:54:16.500
+<v Michael Kennedy>Oh, you got to do 100 times per
+
+00:54:16.740 --> 00:54:18.400
+<v Michael Kennedy>line as well? Well, so
+
+00:54:19.279 --> 00:54:20.480
+<v Vincent Warmerdam>the start of the project
+
+00:54:20.570 --> 00:54:22.540
+<v Vincent Warmerdam>with a git repository, and then to make
+
+00:54:22.560 --> 00:54:27.120
+<v Vincent Warmerdam>a chart like this, you got a sample over the entire timeline. And it is a bit cheeky, because
+
+00:54:27.270 --> 00:54:30.760
+<v Vincent Warmerdam>sometimes you can go like, okay, but there's like a character that changed because of a linter. And
+
+00:54:30.790 --> 00:54:33.480
+<v Vincent Warmerdam>then like, is that is that really a change? Does it really matter?
+
+00:54:34.400 --> 00:54:38.920
+<v Michael Kennedy>It's whoever decided to run, you know, format on the thing.
+
+00:54:39.720 --> 00:54:43.060
+<v Vincent Warmerdam>We're looking at the Django chart. It could also just be that black just got an update or something
+
+00:54:43.160 --> 00:54:43.520
+<v Vincent Warmerdam>like that. Right?
+
+00:54:43.540 --> 00:54:43.900
+<v Vincent Warmerdam>Yeah, exactly.
+
+00:54:44.440 --> 00:54:45.120
+<v Vincent Warmerdam>It's also possible.
+
+00:54:45.940 --> 00:54:46.640
+<v Vincent Warmerdam>It's very possible.
+
+00:54:46.940 --> 00:54:49.860
+<v Vincent Warmerdam>It's unlikely, but it's not impossible, let me say. But yeah, anyway.
+
+00:54:51.980 --> 00:54:54.700
+<v Vincent Warmerdam>Yeah, this was one of the benchmarks that I did with disk cache
+
+00:54:54.820 --> 00:54:57.480
+<v Vincent Warmerdam>that I thought was pretty amusing and pretty interesting.
+
+00:54:58.500 --> 00:55:01.000
+<v Vincent Warmerdam>But there's this one other feature that I think we should also talk about,
+
+00:55:01.140 --> 00:55:03.020
+<v Vincent Warmerdam>which is that if you want to,
+
+00:55:03.570 --> 00:55:06.440
+<v Vincent Warmerdam>disk cache actually lets you do the serialization yourself.
+
+00:55:06.920 --> 00:55:09.660
+<v Vincent Warmerdam>So normally, what it would do is it would say,
+
+00:55:09.730 --> 00:55:11.660
+<v Vincent Warmerdam>like, okay, let's do the pickle thing.
+
+00:55:11.990 --> 00:55:12.760
+<v Vincent Warmerdam>And it's a bit clever, right?
+
+00:55:12.960 --> 00:55:15.280
+<v Vincent Warmerdam>So if the thing you're storing is like an integer,
+
+00:55:15.470 --> 00:55:16.920
+<v Vincent Warmerdam>then it doesn't go through the whole pickle thing.
+
+00:55:16.920 --> 00:55:17.960
+<v Vincent Warmerdam>It just stores it as an integer.
+
+00:55:18.180 --> 00:55:20.040
+<v Vincent Warmerdam>There's these native types that SQLite has,
+
+00:55:20.050 --> 00:55:21.320
+<v Vincent Warmerdam>and then it's able to do something clever.
+
+00:55:21.720 --> 00:55:24.100
+<v Michael Kennedy>but as soon as it becomes like a custom class
+
+00:55:24.380 --> 00:55:26.340
+<v Michael Kennedy>or a list of weird things
+
+00:55:26.460 --> 00:55:27.920
+<v Michael Kennedy>then it's
+
+00:55:28.880 --> 00:55:30.300
+<v Michael Kennedy>I personally don't like
+
+00:55:30.340 --> 00:55:32.260
+<v Michael Kennedy>it pickling I would prefer that it makes
+
+00:55:32.260 --> 00:55:34.240
+<v Michael Kennedy>me do something I think it's weird
+
+00:55:34.600 --> 00:55:36.240
+<v Vincent Warmerdam>well so the thing is you can write
+
+00:55:36.300 --> 00:55:38.280
+<v Vincent Warmerdam>your own disk class and then what you can
+
+00:55:38.320 --> 00:55:40.040
+<v Vincent Warmerdam>do is you can pass set disk class
+
+00:55:40.320 --> 00:55:42.100
+<v Vincent Warmerdam>onto the disk cache itself
+
+00:55:42.640 --> 00:55:44.140
+<v Vincent Warmerdam>and I was just kind of wondering like when
+
+00:55:44.300 --> 00:55:45.940
+<v Vincent Warmerdam>might it make sense to do this sort of a thing
+
+00:55:46.000 --> 00:55:48.240
+<v Vincent Warmerdam>and if you go to the docs there's actually like a really good example
+
+00:55:48.540 --> 00:55:50.160
+<v Vincent Warmerdam>just right there which is
+
+00:55:50.140 --> 00:55:50.380
+<v Vincent Warmerdam>It's JSON.
+
+00:55:51.360 --> 00:55:51.740
+<v Michael Kennedy>Yeah.
+
+00:55:52.290 --> 00:55:52.640
+<v Vincent Warmerdam>Weird one.
+
+00:55:52.840 --> 00:55:54.040
+<v Michael Kennedy>I lost your example.
+
+00:55:54.230 --> 00:55:54.700
+<v Michael Kennedy>I'll get it back.
+
+00:55:54.880 --> 00:55:56.520
+<v Vincent Warmerdam>If you type disk, you'll find it.
+
+00:55:56.620 --> 00:55:58.580
+<v Vincent Warmerdam>So JSON has this interesting thing.
+
+00:55:59.580 --> 00:56:01.200
+<v Vincent Warmerdam>It is text, if you think about it.
+
+00:56:01.200 --> 00:56:02.500
+<v Vincent Warmerdam>But it's text that has a bit of structure.
+
+00:56:04.020 --> 00:56:06.800
+<v Vincent Warmerdam>And that means that there are these compression libraries
+
+00:56:06.830 --> 00:56:08.120
+<v Vincent Warmerdam>you can actually run on them.
+
+00:56:08.380 --> 00:56:11.180
+<v Vincent Warmerdam>And especially if you have a pattern that repeats itself,
+
+00:56:11.460 --> 00:56:13.780
+<v Vincent Warmerdam>let's say a list of users or something like that,
+
+00:56:13.860 --> 00:56:15.980
+<v Vincent Warmerdam>and there's always the user key, and there's always maybe
+
+00:56:16.120 --> 00:56:18.080
+<v Vincent Warmerdam>the email key, and those things just repeat themselves
+
+00:56:18.350 --> 00:56:19.240
+<v Vincent Warmerdam>all over the place.
+
+00:56:19.940 --> 00:56:22.480
+<v Vincent Warmerdam>then there is an opportunity to--
+
+00:56:22.900 --> 00:56:24.640
+<v Vincent Warmerdam>there's this library called zlib where you can just
+
+00:56:24.840 --> 00:56:26.580
+<v Vincent Warmerdam>take that string, you can compress it,
+
+00:56:26.700 --> 00:56:27.820
+<v Vincent Warmerdam>and then that compressed representation
+
+00:56:28.000 --> 00:56:29.400
+<v Vincent Warmerdam>could go into disk cache instead.
+
+00:56:31.640 --> 00:56:34.500
+<v Vincent Warmerdam>And yeah, I figured that sounds like a lot of fun.
+
+00:56:34.600 --> 00:56:36.500
+<v Vincent Warmerdam>You can just grab the implementation there.
+
+00:56:36.700 --> 00:56:39.500
+<v Vincent Warmerdam>So I have this notebooks repository where I have LLMs
+
+00:56:39.640 --> 00:56:40.680
+<v Vincent Warmerdam>just write fun little notebooks.
+
+00:56:41.020 --> 00:56:43.260
+<v Vincent Warmerdam>I always check the results, obviously, just to be clear on that.
+
+00:56:43.960 --> 00:56:45.780
+<v Vincent Warmerdam>But one thing that was, I think, pretty cool to see,
+
+00:56:46.000 --> 00:56:49.360
+<v Vincent Warmerdam>if you just do the normal data type and you pickle it,
+
+00:56:49.480 --> 00:56:52.080
+<v Vincent Warmerdam>then you get a certain size.
+
+00:56:52.550 --> 00:56:57.560
+<v Vincent Warmerdam>And if you just have a very short, normal Python dictionary basic thing,
+
+00:56:57.950 --> 00:56:58.960
+<v Vincent Warmerdam>then it's negligible.
+
+00:56:59.210 --> 00:57:00.580
+<v Vincent Warmerdam>You shouldn't use this JSON trick.
+
+00:57:01.020 --> 00:57:02.120
+<v Vincent Warmerdam>But the moment you get text heavy,
+
+00:57:03.460 --> 00:57:05.980
+<v Vincent Warmerdam>there's just a lot of text that you're inputting there
+
+00:57:05.990 --> 00:57:07.300
+<v Vincent Warmerdam>and there's some repetition of characters.
+
+00:57:08.560 --> 00:57:10.660
+<v Vincent Warmerdam>Or if you really do something that's highly compressible,
+
+00:57:11.140 --> 00:57:18.180
+<v Vincent Warmerdam>it is not unheard of to get 80%, 90% savings on your disk space, basically.
+
+00:57:20.140 --> 00:57:23.120
+<v Vincent Warmerdam>now there is a little bit of overhead because you were doing the compression and sort of
+
+00:57:23.240 --> 00:57:27.900
+<v Vincent Warmerdam>decompression but if you're doing text heavy stuff uh this is something that can actually save you a
+
+00:57:27.910 --> 00:57:33.860
+<v Vincent Warmerdam>whole bunch and i can imagine for llms this would also be like kind of a win okay so this json disk
+
+00:57:34.420 --> 00:57:40.740
+<v Michael Kennedy>not only does it serialize to and from json which i think is safer it can be a pain if you got date
+
+00:57:40.900 --> 00:57:46.559
+<v Vincent Warmerdam>times you gotta you gotta use or or json or something like that yeah yeah i think but then
+
+00:57:46.580 --> 00:57:50.960
+<v Michael Kennedy>it's using Zlib here. You know, I just actually did something like this for just something in my
+
+00:57:51.140 --> 00:57:58.360
+<v Michael Kennedy>database. It had nothing to do with caching, but these records are holding like tons of text for
+
+00:57:58.620 --> 00:58:05.600
+<v Michael Kennedy>something sort of tangential to the podcast. And I'm like, I don't really want to put 100k of text
+
+00:58:06.380 --> 00:58:13.000
+<v Michael Kennedy>that I'm not going to query against or search into the database. So I used Python's XZ implementation.
+
+00:58:13.290 --> 00:58:13.800
+<v Michael Kennedy>And like you said,
+
+00:58:14.300 --> 00:58:15.960
+<v Vincent Warmerdam>there's a bunch of compression algorithms you could use.
+
+00:58:15.960 --> 00:58:17.960
+<v Michael Kennedy>It was way fast. So I just store it as bytes now
+
+00:58:18.060 --> 00:58:19.500
+<v Michael Kennedy>and it's like a tenth the size. It's great.
+
+00:58:19.980 --> 00:58:21.720
+<v Michael Kennedy>So I guess this is the same but for the cache
+
+00:58:22.160 --> 00:58:23.760
+<v Vincent Warmerdam>backend, right? Yeah.
+
+00:58:23.980 --> 00:58:25.860
+<v Vincent Warmerdam>And I think, well, you can see, I think Zlib is being
+
+00:58:26.060 --> 00:58:27.680
+<v Michael Kennedy>used internally. Yeah. I mean, it's not XZ,
+
+00:58:27.880 --> 00:58:29.760
+<v Michael Kennedy>but it's the same idea. Yeah.
+
+00:58:30.619 --> 00:58:32.000
+<v Vincent Warmerdam>Exactly. And, you know,
+
+00:58:32.120 --> 00:58:33.880
+<v Vincent Warmerdam>there's always new compression algorithms. Like, feel
+
+00:58:33.940 --> 00:58:35.700
+<v Vincent Warmerdam>free to check whatever makes sense. But
+
+00:58:36.260 --> 00:58:37.380
+<v Vincent Warmerdam>the fact that you have
+
+00:58:37.900 --> 00:58:39.760
+<v Vincent Warmerdam>one very cool example to add on the docs
+
+00:58:39.940 --> 00:58:41.980
+<v Vincent Warmerdam>because you can just copy and paste it. A lot of people benefit from it.
+
+00:58:42.460 --> 00:58:43.660
+<v Vincent Warmerdam>But why stop here?
+
+00:58:44.280 --> 00:58:45.780
+<v Vincent Warmerdam>because this is something you can do for JSON.
+
+00:58:46.020 --> 00:58:46.720
+<v Vincent Warmerdam>What else can you do?
+
+00:58:47.820 --> 00:58:50.180
+<v Michael Kennedy>Before we move on, though, if I were writing this,
+
+00:58:50.200 --> 00:58:52.420
+<v Michael Kennedy>I would recommend using like OJSON,
+
+00:58:53.800 --> 00:58:55.440
+<v Michael Kennedy>microJSON or ORJSON or whatever,
+
+00:58:56.300 --> 00:58:58.260
+<v Michael Kennedy>some of the more high-performance versions right there.
+
+00:58:58.780 --> 00:59:02.120
+<v Vincent Warmerdam>Yeah, and I think ORJSON, I mean, performance is cool.
+
+00:59:02.320 --> 00:59:04.020
+<v Vincent Warmerdam>The reason I use ORJSON a lot more
+
+00:59:04.100 --> 00:59:05.440
+<v Vincent Warmerdam>has to do with the types that it supports.
+
+00:59:05.680 --> 00:59:07.940
+<v Vincent Warmerdam>So it can accept NumPy arrays, for example,
+
+00:59:08.040 --> 00:59:09.120
+<v Vincent Warmerdam>and just listifies it.
+
+00:59:09.300 --> 00:59:12.099
+<v Vincent Warmerdam>And I think it has a few things with dates as well
+
+00:59:12.160 --> 00:59:14.180
+<v Vincent Warmerdam>and just has a slightly better support for a few things.
+
+00:59:14.460 --> 00:59:15.240
+<v Michael Kennedy>Okay, good to know.
+
+00:59:15.360 --> 00:59:16.380
+<v Michael Kennedy>All right, where are we going?
+
+00:59:17.200 --> 00:59:17.440
+<v Michael Kennedy>What's next?
+
+00:59:19.099 --> 00:59:19.660
+<v Vincent Warmerdam>NumPy arrays.
+
+00:59:20.640 --> 00:59:20.980
+<v Vincent Warmerdam>Okay.
+
+00:59:22.079 --> 00:59:24.660
+<v Vincent Warmerdam>So a lot of people like to do things with embeddings nowadays.
+
+00:59:24.920 --> 00:59:27.540
+<v Vincent Warmerdam>So like texting goes in, some sort of array thing comes out,
+
+00:59:27.630 --> 00:59:29.480
+<v Vincent Warmerdam>and then hopefully if two texts are similar,
+
+00:59:29.630 --> 00:59:30.740
+<v Vincent Warmerdam>then the arrays are also similar,
+
+00:59:30.870 --> 00:59:32.620
+<v Vincent Warmerdam>so you can do all sorts of fun little lookups.
+
+00:59:34.020 --> 00:59:36.360
+<v Vincent Warmerdam>And I do a fair share of doing things with embeddings,
+
+00:59:36.430 --> 00:59:40.920
+<v Vincent Warmerdam>and embeddings are also not notoriously expensive to calculate,
+
+00:59:41.100 --> 00:59:42.340
+<v Vincent Warmerdam>but it's still pretty expensive to calculate.
+
+00:59:43.420 --> 00:59:46.580
+<v Vincent Warmerdam>Okay, but you can write your full Python thing in there.
+
+00:59:46.780 --> 00:59:51.260
+<v Vincent Warmerdam>So if you compare storing NumPy as bytes
+
+00:59:51.680 --> 00:59:53.780
+<v Vincent Warmerdam>compared to that to a pickle, it's actually even.
+
+00:59:54.020 --> 00:59:55.540
+<v Vincent Warmerdam>There's very little to gain there.
+
+00:59:56.220 --> 00:59:58.040
+<v Vincent Warmerdam>But one thing you could do is you could say,
+
+00:59:58.150 --> 01:00:01.840
+<v Vincent Warmerdam>well, let's maybe bring it down to float 16.
+
+01:00:02.700 --> 01:00:03.560
+<v Vincent Warmerdam>That's a thing you can do.
+
+01:00:03.670 --> 01:00:05.280
+<v Vincent Warmerdam>You can sort of say before we save it,
+
+01:00:05.320 --> 01:00:08.420
+<v Vincent Warmerdam>we actually make it just a little bit less accurate
+
+01:00:08.540 --> 01:00:09.500
+<v Vincent Warmerdam>on the numeric part of it,
+
+01:00:09.600 --> 01:00:11.060
+<v Vincent Warmerdam>But that'll save us a whole bunch of disk space.
+
+01:00:11.200 --> 01:00:12.120
+<v Vincent Warmerdam>So that's already coming home.
+
+01:00:12.540 --> 01:00:14.740
+<v Michael Kennedy>Well, you need it to be super precise
+
+01:00:15.400 --> 01:00:16.360
+<v Michael Kennedy>with its evolving calculations.
+
+01:00:17.540 --> 01:00:19.760
+<v Michael Kennedy>But then in the end, if you're not going to report the numbers
+
+01:00:20.720 --> 01:00:23.560
+<v Michael Kennedy>to great decimal places, maybe going down is good, yeah.
+
+01:00:23.840 --> 01:00:25.100
+<v Vincent Warmerdam>Yeah, it depends on the use case.
+
+01:00:25.180 --> 01:00:29.300
+<v Vincent Warmerdam>But typically, you could argue maybe a 1% difference in similarity
+
+01:00:29.620 --> 01:00:32.420
+<v Vincent Warmerdam>if we have 100x savings on disk.
+
+01:00:32.620 --> 01:00:33.640
+<v Vincent Warmerdam>That'll be kind of a win.
+
+01:00:34.540 --> 01:00:37.320
+<v Vincent Warmerdam>So one thing I was sort of focusing on is just this.
+
+01:00:39.160 --> 01:00:47.020
+<v Vincent Warmerdam>You can do things like, okay, come up with your own little weird data structure where you say like, okay, let's pretend we're going to quantize the whole thing.
+
+01:00:47.500 --> 01:00:51.920
+<v Vincent Warmerdam>So we're going to calculate the quantiles of the float values that it can take.
+
+01:00:52.560 --> 01:00:57.160
+<v Vincent Warmerdam>And we're going to take like basically 256 buckets.
+
+01:00:58.100 --> 01:00:59.480
+<v Vincent Warmerdam>We're going to store the scale.
+
+01:01:00.100 --> 01:01:01.260
+<v Vincent Warmerdam>We're going to store the mean.
+
+01:01:01.480 --> 01:01:04.000
+<v Vincent Warmerdam>And then we're going to store in what bucket the number was in.
+
+01:01:04.560 --> 01:01:06.120
+<v Vincent Warmerdam>And you can turn that into a string representation.
+
+01:01:06.720 --> 01:01:08.120
+<v Vincent Warmerdam>These things are pretty fun to write.
+
+01:01:09.720 --> 01:01:10.600
+<v Vincent Warmerdam>and yeah
+
+01:01:10.970 --> 01:01:12.560
+<v Vincent Warmerdam>and then you scroll down in your big notebook
+
+01:01:12.690 --> 01:01:14.500
+<v Vincent Warmerdam>and then you find this
+
+01:01:16.160 --> 01:01:16.800
+<v Vincent Warmerdam>there you
+
+01:01:17.040 --> 01:01:18.280
+<v Vincent Warmerdam>go, that's a retrieval time
+
+01:01:18.940 --> 01:01:20.660
+<v Vincent Warmerdam>I think I got like a
+
+01:01:21.120 --> 01:01:22.860
+<v Vincent Warmerdam>4x improvement in terms
+
+01:01:22.890 --> 01:01:24.480
+<v Vincent Warmerdam>of like disk space being saved
+
+01:01:24.490 --> 01:01:26.800
+<v Vincent Warmerdam>it was like a 1% similarity score that I had
+
+01:01:26.800 --> 01:01:28.560
+<v Vincent Warmerdam>to give up for doing things like this
+
+01:01:28.760 --> 01:01:30.060
+<v Vincent Warmerdam>mileage can vary of course but like
+
+01:01:30.640 --> 01:01:32.600
+<v Vincent Warmerdam>again these are fun things to sort of
+
+01:01:32.740 --> 01:01:34.640
+<v Vincent Warmerdam>start playing with because you have access to the
+
+01:01:34.650 --> 01:01:36.440
+<v Vincent Warmerdam>way that you write that down
+
+01:01:37.780 --> 01:01:38.160
+<v Vincent Warmerdam>so
+
+01:01:38.180 --> 01:01:40.080
+<v Vincent Warmerdam>That was also a fun little exercise.
+
+01:01:40.540 --> 01:01:43.080
+<v Michael Kennedy>MARK MANDEL: Yeah, could you save NumPy arrays
+
+01:01:43.260 --> 01:01:45.840
+<v Michael Kennedy>by just converting it to bytes?
+
+01:01:46.200 --> 01:01:47.440
+<v Michael Kennedy>There's probably some efficient--
+
+01:01:47.440 --> 01:01:47.920
+<v Michael Kennedy>GARY GENSLER: Yeah, well, yeah.
+
+01:01:48.140 --> 01:01:48.820
+<v Michael Kennedy>MARK MANDEL: You know what?
+
+01:01:48.860 --> 01:01:49.820
+<v Michael Kennedy>What about a Parquet file?
+
+01:01:50.900 --> 01:01:53.160
+<v Michael Kennedy>In-memory Parquet file, then you just say,
+
+01:01:53.180 --> 01:01:54.420
+<v Michael Kennedy>here's the value in bytes.
+
+01:01:55.620 --> 01:01:58.820
+<v Vincent Warmerdam>GARY GENSLER: So I tried the bytes thing
+
+01:01:58.920 --> 01:02:00.140
+<v Vincent Warmerdam>and compared it to the pickle thing,
+
+01:02:00.300 --> 01:02:01.580
+<v Vincent Warmerdam>and that was basically the same size.
+
+01:02:02.060 --> 01:02:02.580
+<v Michael Kennedy>MARK MANDEL: OK.
+
+01:02:02.640 --> 01:02:04.240
+<v Vincent Warmerdam>GARY GENSLER: That barely led to anything.
+
+01:02:04.960 --> 01:02:08.620
+<v Vincent Warmerdam>About the parquet one, I mean--
+
+01:02:08.860 --> 01:02:09.780
+<v Vincent Warmerdam>You do get compression.
+
+01:02:10.279 --> 01:02:12.660
+<v Vincent Warmerdam>Well, yeah, but I could be wrong on this one.
+
+01:02:12.660 --> 01:02:16.240
+<v Vincent Warmerdam>But I think parquet is optimized to be a disk representation.
+
+01:02:16.910 --> 01:02:18.120
+<v Vincent Warmerdam>And then once you want to have it in memory,
+
+01:02:18.220 --> 01:02:19.460
+<v Vincent Warmerdam>it becomes an arrow representation.
+
+01:02:20.100 --> 01:02:20.620
+<v Vincent Warmerdam>I see.
+
+01:02:20.980 --> 01:02:21.320
+<v Vincent Warmerdam>Yeah, probably.
+
+01:02:22.080 --> 01:02:23.620
+<v Vincent Warmerdam>So in that sense, what I would do is,
+
+01:02:23.740 --> 01:02:26.320
+<v Vincent Warmerdam>if you have something in arrow, you use disk cache
+
+01:02:26.330 --> 01:02:28.080
+<v Vincent Warmerdam>to make sure it's written as parquet.
+
+01:02:28.170 --> 01:02:30.500
+<v Vincent Warmerdam>But then you kind of have to know what you're doing
+
+01:02:30.590 --> 01:02:33.300
+<v Vincent Warmerdam>if you're going to make parquet files.
+
+01:02:33.720 --> 01:02:36.580
+<v Vincent Warmerdam>And also the benefit of a parquet file is that you have like one huge table.
+
+01:02:37.200 --> 01:02:38.240
+<v Vincent Warmerdam>Right, you can scan it, yeah.
+
+01:02:38.650 --> 01:02:39.620
+<v Vincent Warmerdam>Yeah, it's a columnar format.
+
+01:02:39.750 --> 01:02:42.740
+<v Vincent Warmerdam>So then if I were a column, boy, would I want to have all the rows in me.
+
+01:02:45.619 --> 01:02:51.780
+<v Vincent Warmerdam>So in that sense, what I would do instead is,
+
+01:02:52.550 --> 01:02:54.660
+<v Vincent Warmerdam>for whatever reason, you just have a lot of data.
+
+01:02:54.810 --> 01:02:57.260
+<v Vincent Warmerdam>It's still kind of a cache, but it makes more sense to store all of it
+
+01:02:57.360 --> 01:02:58.420
+<v Vincent Warmerdam>in like a huge parquet file.
+
+01:02:58.900 --> 01:03:00.840
+<v Vincent Warmerdam>In parquet, you can store partitions.
+
+01:03:01.040 --> 01:03:02.820
+<v Vincent Warmerdam>So you can say this one column that's partitioned,
+
+01:03:03.210 --> 01:03:05.780
+<v Vincent Warmerdam>a date would be a very typical thing to partition on.
+
+01:03:06.260 --> 01:03:09.080
+<v Vincent Warmerdam>And then if you point polars to parquet, but you say,
+
+01:03:09.080 --> 01:03:11.200
+<v Vincent Warmerdam>I only want to have this date, it can sort of do the forward
+
+01:03:11.520 --> 01:03:13.460
+<v Vincent Warmerdam>scan and only pick the rows that you're interested in.
+
+01:03:15.099 --> 01:03:19.160
+<v Vincent Warmerdam>And I would imagine that that would beat anything
+
+01:03:19.290 --> 01:03:21.340
+<v Vincent Warmerdam>we might do with this cache, especially if the table is big.
+
+01:03:24.400 --> 01:03:26.420
+<v Michael Kennedy>So you don't always want to cache stuff.
+
+01:03:26.820 --> 01:03:32.380
+<v Michael Kennedy>Like I said, I actually don't avoid hitting the Mongo database a lot for my projects because
+
+01:03:32.720 --> 01:03:35.160
+<v Michael Kennedy>it's like the response time is quick enough and I might as well.
+
+01:03:37.090 --> 01:03:38.960
+<v Michael Kennedy>So I want to take two little avenues here.
+
+01:03:38.970 --> 01:03:41.980
+<v Michael Kennedy>But the first one is, what about DuckDB?
+
+01:03:42.580 --> 01:03:48.300
+<v Michael Kennedy>I know at least on the data science side and the analytics side, DuckDB is really popular,
+
+01:03:48.760 --> 01:03:50.600
+<v Michael Kennedy>really well respected, really fast.
+
+01:03:50.800 --> 01:03:52.660
+<v Michael Kennedy>Maybe you don't even cache it.
+
+01:03:52.690 --> 01:03:55.480
+<v Michael Kennedy>Maybe you just use DuckDB as a thing.
+
+01:03:56.360 --> 01:03:56.920
+<v Vincent Warmerdam>How do you feel about that?
+
+01:03:57.340 --> 01:04:00.380
+<v Vincent Warmerdam>I mean, DuckDB does solve a very different problem
+
+01:04:00.540 --> 01:04:02.300
+<v Vincent Warmerdam>than SQLite or Postgres in a way.
+
+01:04:02.370 --> 01:04:04.900
+<v Vincent Warmerdam>So I don't believe, to name one thing,
+
+01:04:05.400 --> 01:04:09.320
+<v Vincent Warmerdam>I believe DuckDB does assume that everything under the hood is immutable.
+
+01:04:09.700 --> 01:04:11.580
+<v Vincent Warmerdam>So it will never be ACID compliant
+
+01:04:11.670 --> 01:04:12.940
+<v Vincent Warmerdam>because it doesn't necessarily have to be.
+
+01:04:12.970 --> 01:04:14.700
+<v Vincent Warmerdam>You can still insert rows if I'm not mistaken,
+
+01:04:15.180 --> 01:04:18.020
+<v Vincent Warmerdam>but the use case is just assumed to be analytical in general.
+
+01:04:20.520 --> 01:04:23.600
+<v Vincent Warmerdam>It's really designed to sort of fit that use case.
+
+01:04:24.320 --> 01:04:25.420
+<v Vincent Warmerdam>You can insert rows though.
+
+01:04:25.600 --> 01:04:26.460
+<v Michael Kennedy>So like--
+
+01:04:26.460 --> 01:04:28.560
+<v Michael Kennedy>I mean, you might be caching data science things
+
+01:04:28.760 --> 01:04:29.820
+<v Michael Kennedy>that you're only computing once.
+
+01:04:29.980 --> 01:04:32.200
+<v Michael Kennedy>Like, for example, your charts.
+
+01:04:33.240 --> 01:04:34.280
+<v Michael Kennedy>I mean, once you've computed that,
+
+01:04:34.400 --> 01:04:35.740
+<v Michael Kennedy>it's not going to change because it's historical.
+
+01:04:36.599 --> 01:04:38.500
+<v Vincent Warmerdam>I mean, I might want to rerun it a month later
+
+01:04:38.660 --> 01:04:39.320
+<v Vincent Warmerdam>or something like that.
+
+01:04:39.440 --> 01:04:40.640
+<v Vincent Warmerdam>That's something I might want to do.
+
+01:04:41.280 --> 01:04:43.160
+<v Vincent Warmerdam>And in that particular case, it would be cool
+
+01:04:43.380 --> 01:04:45.020
+<v Vincent Warmerdam>if the sampling is the same and I just
+
+01:04:45.020 --> 01:04:47.400
+<v Vincent Warmerdam>want to add one sample at the end that all those samples I had
+
+01:04:47.540 --> 01:04:49.160
+<v Vincent Warmerdam>before, that those are in a cache somewhere.
+
+01:04:49.500 --> 01:04:51.960
+<v Michael Kennedy>Or maybe you want faster, better resolution.
+
+01:04:52.140 --> 01:04:54.200
+<v Michael Kennedy>Instead of going 100, you're going to go to 1,000 points.
+
+01:04:54.460 --> 01:04:56.940
+<v Michael Kennedy>but you could do 10% less because those are done, right?
+
+01:04:57.220 --> 01:04:57.880
+<v Vincent Warmerdam>So stuff like that.
+
+01:04:57.910 --> 01:04:59.620
+<v Vincent Warmerdam>But then what you would never do with a cache
+
+01:04:59.650 --> 01:05:01.920
+<v Vincent Warmerdam>is do like a group by and then a mean, for example.
+
+01:05:05.119 --> 01:05:06.660
+<v Michael Kennedy>It's outgrown its use at that point.
+
+01:05:06.780 --> 01:05:07.080
+<v Michael Kennedy>That's for sure.
+
+01:05:07.100 --> 01:05:07.360
+<v Vincent Warmerdam>Yeah.
+
+01:05:08.630 --> 01:05:10.660
+<v Vincent Warmerdam>And if it were a part of it, then the docs would say so.
+
+01:05:10.800 --> 01:05:13.200
+<v Vincent Warmerdam>But like, no, so in my mind,
+
+01:05:13.330 --> 01:05:15.380
+<v Vincent Warmerdam>like DuckDB really just solves a different problem.
+
+01:05:15.610 --> 01:05:17.520
+<v Vincent Warmerdam>Similar to like general SQLite
+
+01:05:17.610 --> 01:05:19.280
+<v Vincent Warmerdam>also solves a different problem than this cache.
+
+01:05:19.380 --> 01:05:21.960
+<v Vincent Warmerdam>And also Postgres is also solving a slightly different problem.
+
+01:05:22.160 --> 01:05:22.260
+<v Michael Kennedy>Sure.
+
+01:05:23.240 --> 01:05:23.680
+<v Vincent Warmerdam>All right, fair.
+
+01:05:25.880 --> 01:05:26.240
+<v Michael Kennedy>yeah
+
+01:05:27.200 --> 01:05:28.260
+<v Michael Kennedy>no go ahead finish your thought
+
+01:05:28.799 --> 01:05:31.060
+<v Vincent Warmerdam>well I also really love Postgres I gotta say
+
+01:05:31.180 --> 01:05:32.940
+<v Vincent Warmerdam>the thing I really like about it is that it is
+
+01:05:33.120 --> 01:05:35.120
+<v Vincent Warmerdam>boring but in a good way software where like
+
+01:05:35.420 --> 01:05:37.220
+<v Vincent Warmerdam>I have a Postgres
+
+01:05:37.420 --> 01:05:39.020
+<v Vincent Warmerdam>thing running there and
+
+01:05:40.519 --> 01:05:41.240
+<v Vincent Warmerdam>whatever SSH
+
+01:05:41.420 --> 01:05:43.160
+<v Vincent Warmerdam>thing I need I can swap the cloud provider
+
+01:05:43.290 --> 01:05:45.220
+<v Vincent Warmerdam>and it'll just go ahead and still run without me having to
+
+01:05:45.360 --> 01:05:47.240
+<v Vincent Warmerdam>move the data or do any migration or anything like that
+
+01:05:47.720 --> 01:05:49.140
+<v Vincent Warmerdam>that is also just like a nice feeling
+
+01:05:50.039 --> 01:05:51.160
+<v Vincent Warmerdam>but it solves a different problem
+
+01:05:53.319 --> 01:05:53.680
+<v Michael Kennedy>yeah
+
+01:05:53.700 --> 01:05:56.620
+<v Michael Kennedy>These would very likely be used together instead of--
+
+01:05:56.980 --> 01:05:58.600
+<v Michael Kennedy>I mean, Postgres can be used instead of disk cache,
+
+01:05:58.670 --> 01:06:01.820
+<v Michael Kennedy>but disk cache definitely not instead of Postgres.
+
+01:06:02.559 --> 01:06:04.940
+<v Michael Kennedy>So the other angle I wanted to riff on,
+
+01:06:05.120 --> 01:06:06.220
+<v Michael Kennedy>have you riff on just a little bit,
+
+01:06:06.380 --> 01:06:12.100
+<v Michael Kennedy>is I think people, especially people who are maybe new to this idea
+
+01:06:12.200 --> 01:06:16.060
+<v Michael Kennedy>of caching, they can end up thinking, OK, I'm going to store stuff.
+
+01:06:16.070 --> 01:06:18.060
+<v Michael Kennedy>We talked a lot about, I get something back from the database.
+
+01:06:18.170 --> 01:06:21.160
+<v Michael Kennedy>I could store that in a cache so I don't have to query it again
+
+01:06:21.370 --> 01:06:21.780
+<v Michael Kennedy>or whatever.
+
+01:06:21.960 --> 01:06:23.200
+<v Michael Kennedy>And those are certainly good use cases.
+
+01:06:23.890 --> 01:06:26.180
+<v Michael Kennedy>But I think a lot of times an even better use case
+
+01:06:26.380 --> 01:06:29.480
+<v Michael Kennedy>is if you're going to get 20 rows back from a database,
+
+01:06:29.980 --> 01:06:32.060
+<v Michael Kennedy>do some Python and construct them along
+
+01:06:32.280 --> 01:06:35.140
+<v Michael Kennedy>with a little other information into some object.
+
+01:06:35.960 --> 01:06:37.460
+<v Michael Kennedy>And then that's really what you want to work with.
+
+01:06:37.980 --> 01:06:41.160
+<v Michael Kennedy>Store that constructed thing in the cache.
+
+01:06:41.890 --> 01:06:42.300
+<v Michael Kennedy>You know what I mean?
+
+01:06:42.340 --> 01:06:45.200
+<v Michael Kennedy>Like as far as you can go down the compute layer,
+
+01:06:45.460 --> 01:06:46.880
+<v Michael Kennedy>like don't just stop like, well, it comes back
+
+01:06:46.930 --> 01:06:48.080
+<v Michael Kennedy>from the database, so we cache it.
+
+01:06:48.140 --> 01:06:49.560
+<v Michael Kennedy>Like if there's a way to say it, like there's
+
+01:06:49.560 --> 01:06:51.920
+<v Michael Kennedy>a bunch of work after that, think about how you might
+
+01:06:52.000 --> 01:06:52.860
+<v Michael Kennedy>cache at that level.
+
+01:06:53.120 --> 01:06:55.220
+<v Vincent Warmerdam>Okay, I'm going to pitch you a dream then.
+
+01:06:56.380 --> 01:06:57.680
+<v Vincent Warmerdam>Imagine you have a Python notebook
+
+01:06:58.980 --> 01:06:59.380
+<v Vincent Warmerdam>and
+
+01:07:00.200 --> 01:07:01.800
+<v Vincent Warmerdam>you're running a cell, you're running a cell,
+
+01:07:01.860 --> 01:07:03.620
+<v Vincent Warmerdam>you're running a cell, and halfway the kernel dies
+
+01:07:03.680 --> 01:07:04.700
+<v Vincent Warmerdam>for whatever weird reason.
+
+01:07:05.700 --> 01:07:07.360
+<v Vincent Warmerdam>It'd be nice if I could just reboot the notebook
+
+01:07:07.580 --> 01:07:09.200
+<v Vincent Warmerdam>and it would just pick it up again and move further.
+
+01:07:09.520 --> 01:07:11.240
+<v Vincent Warmerdam>Because again, I'm picking something out of a database
+
+01:07:11.480 --> 01:07:12.860
+<v Vincent Warmerdam>and I'm doing something little with it and
+
+01:07:13.360 --> 01:07:14.560
+<v Vincent Warmerdam>processing, processing, processing.
+
+01:07:15.140 --> 01:07:17.900
+<v Vincent Warmerdam>But wouldn't it be nice if maybe every cell had a caching mechanism?
+
+01:07:20.060 --> 01:07:26.180
+<v Vincent Warmerdam>If only you had some influence over a company that did this kind of stuff.
+
+01:07:27.360 --> 01:07:29.820
+<v Vincent Warmerdam>But you can imagine these are things that we are thinking about.
+
+01:07:29.900 --> 01:07:33.200
+<v Vincent Warmerdam>And again, what I'm about to suggest is definitely a dream.
+
+01:07:33.320 --> 01:07:34.660
+<v Vincent Warmerdam>This is not something that works right now.
+
+01:07:34.860 --> 01:07:35.640
+<v Vincent Warmerdam>Don't pin me on this.
+
+01:07:36.060 --> 01:07:37.240
+<v Vincent Warmerdam>We're thinking out loud here.
+
+01:07:38.020 --> 01:07:41.620
+<v Vincent Warmerdam>You can also imagine this being super useful where an entire team can share the cache.
+
+01:07:43.100 --> 01:07:43.360
+<v Vincent Warmerdam>Yeah.
+
+01:07:43.940 --> 01:07:44.060
+<v Vincent Warmerdam>Right?
+
+01:07:44.300 --> 01:07:47.740
+<v Vincent Warmerdam>So if your colleague already calculated something, you don't have to recalculate it again.
+
+01:07:48.400 --> 01:07:50.960
+<v Vincent Warmerdam>There's all sorts of use cases like that as well.
+
+01:07:51.510 --> 01:07:53.460
+<v Vincent Warmerdam>But there may be, there are these moments
+
+01:07:53.620 --> 01:07:56.140
+<v Vincent Warmerdam>when you want to have very tight manual control
+
+01:07:56.310 --> 01:07:58.000
+<v Vincent Warmerdam>over what goes into the cache.
+
+01:07:58.370 --> 01:07:59.480
+<v Vincent Warmerdam>That makes a lot of sense, and it's great.
+
+01:07:59.880 --> 01:08:01.440
+<v Vincent Warmerdam>But there are also moments when you just really
+
+01:08:01.490 --> 01:08:02.460
+<v Vincent Warmerdam>don't want to think about it at all,
+
+01:08:02.870 --> 01:08:04.120
+<v Vincent Warmerdam>and you just want everything to be cached.
+
+01:08:04.300 --> 01:08:06.000
+<v Michael Kennedy>Could I just use this thing as a checkpoint?
+
+01:08:07.020 --> 01:08:09.960
+<v Michael Kennedy>I can autosave, sort of, as my code runs.
+
+01:08:09.990 --> 01:08:10.520
+<v Michael Kennedy>Yeah, that's cool.
+
+01:08:11.219 --> 01:08:14.440
+<v Vincent Warmerdam>Yeah, and again, doing this right is hard
+
+01:08:14.630 --> 01:08:16.279
+<v Vincent Warmerdam>because there's all sorts of weird Python types,
+
+01:08:16.359 --> 01:08:17.819
+<v Vincent Warmerdam>and I mentioned the progress bar thing.
+
+01:08:18.080 --> 01:08:19.620
+<v Vincent Warmerdam>And there's all sorts of things
+
+01:08:20.120 --> 01:08:21.400
+<v Vincent Warmerdam>that we've got to be mindful of here.
+
+01:08:21.560 --> 01:08:23.859
+<v Vincent Warmerdam>But if you're thinking about really
+
+01:08:24.500 --> 01:08:25.759
+<v Vincent Warmerdam>how would you use this in data science
+
+01:08:25.940 --> 01:08:27.680
+<v Vincent Warmerdam>when you fetch a little bit of data and deal with it,
+
+01:08:28.460 --> 01:08:30.680
+<v Vincent Warmerdam>to me, it is starting to feel more natural
+
+01:08:30.799 --> 01:08:32.359
+<v Vincent Warmerdam>to then think about cells in a notebook
+
+01:08:32.640 --> 01:08:33.700
+<v Vincent Warmerdam>and maybe cache on that level.
+
+01:08:34.299 --> 01:08:35.279
+<v Michael Kennedy>Yeah, that's pretty interesting.
+
+01:08:36.660 --> 01:08:38.400
+<v Michael Kennedy>Just sort of cascade them along
+
+01:08:38.660 --> 01:08:42.839
+<v Michael Kennedy>as a hash of the hashes of the prior cells.
+
+01:08:44.060 --> 01:08:46.319
+<v Vincent Warmerdam>Well, and this is where things become tricky
+
+01:08:46.339 --> 01:08:48.100
+<v Vincent Warmerdam>of course, because then, OK, I've got this one cell
+
+01:08:48.299 --> 01:08:49.740
+<v Vincent Warmerdam>and I change one function in it.
+
+01:08:50.259 --> 01:08:51.819
+<v Vincent Warmerdam>Oh, if you're going to cache on the entire cell,
+
+01:08:52.040 --> 01:08:53.080
+<v Vincent Warmerdam>everything has to rerun.
+
+01:08:53.170 --> 01:08:54.140
+<v Vincent Warmerdam>And then, oh, if you're not careful,
+
+01:08:54.240 --> 01:08:55.339
+<v Vincent Warmerdam>your cache is going to be huge.
+
+01:08:55.620 --> 01:08:58.640
+<v Vincent Warmerdam>So OK, how do you do this in a user-friendly way?
+
+01:08:58.819 --> 01:09:01.420
+<v Vincent Warmerdam>There's all sorts of-- it sounds easier than it is,
+
+01:09:01.420 --> 01:09:02.240
+<v Vincent Warmerdam>is the one thing I want to say.
+
+01:09:02.370 --> 01:09:04.020
+<v Michael Kennedy>Well, I think you've got a better chance with Marima
+
+01:09:04.210 --> 01:09:06.859
+<v Michael Kennedy>than with Jupyter, at least, because you have a dependency
+
+01:09:07.240 --> 01:09:07.380
+<v Michael Kennedy>graph.
+
+01:09:08.040 --> 01:09:11.000
+<v Michael Kennedy>So you can at least say, if this one is invalid,
+
+01:09:11.500 --> 01:09:13.660
+<v Michael Kennedy>that means the following three are also invalid.
+
+01:09:15.080 --> 01:09:16.819
+<v Michael Kennedy>You know, you sort of propagate it there.
+
+01:09:17.460 --> 01:09:17.779
+<v Vincent Warmerdam>Totally.
+
+01:09:18.259 --> 01:09:22.839
+<v Vincent Warmerdam>But I try to focus a little bit more on the user experience side of things.
+
+01:09:22.960 --> 01:09:30.339
+<v Vincent Warmerdam>And one thing I've really learned from the notebook with, like, the progress bar is just there were moments when I felt like, oh, I just want this entire thing to be automated.
+
+01:09:30.500 --> 01:09:31.339
+<v Vincent Warmerdam>Don't make me think about this.
+
+01:09:31.540 --> 01:09:34.940
+<v Vincent Warmerdam>And then there were moments where I thought, oh, it's really nice to have tight manual control.
+
+01:09:35.740 --> 01:09:36.819
+<v Vincent Warmerdam>How do I provide you with both?
+
+01:09:39.000 --> 01:09:39.759
+<v Vincent Warmerdam>That's quite tricky.
+
+01:09:40.759 --> 01:09:41.279
+<v Vincent Warmerdam>But it is a dream.
+
+01:09:41.480 --> 01:09:42.520
+<v Vincent Warmerdam>So that's something to keep in mind.
+
+01:09:43.420 --> 01:09:47.440
+<v Michael Kennedy>Yeah, maybe someday there'll be a turn on cash flow checkbox.
+
+01:09:48.580 --> 01:09:48.680
+<v Michael Kennedy>Something.
+
+01:09:49.240 --> 01:09:51.880
+<v Vincent Warmerdam>Yeah, or well, at least till then,
+
+01:09:52.600 --> 01:09:54.900
+<v Vincent Warmerdam>I do think having something that works on disk instead of memory
+
+01:09:55.320 --> 01:09:57.700
+<v Vincent Warmerdam>these days is also just a boon.
+
+01:09:57.900 --> 01:10:01.160
+<v Michael Kennedy>Right, so this works in data science notebooks.
+
+01:10:01.580 --> 01:10:02.660
+<v Michael Kennedy>It works in web apps.
+
+01:10:02.740 --> 01:10:03.920
+<v Michael Kennedy>It works in little TUIs.
+
+01:10:04.160 --> 01:10:05.660
+<v Michael Kennedy>It doesn't care.
+
+01:10:05.940 --> 01:10:07.100
+<v Vincent Warmerdam>It works with LLMs.
+
+01:10:08.160 --> 01:10:10.180
+<v Vincent Warmerdam>And like, if you have a kind of-- yeah, actually,
+
+01:10:10.980 --> 01:10:13.380
+<v Vincent Warmerdam>similar to your set up, like if you have multiple processes
+
+01:10:13.380 --> 01:10:14.340
+<v Vincent Warmerdam>web app running on one VM.
+
+01:10:14.520 --> 01:10:16.260
+<v Vincent Warmerdam>If you have one big VM that you share with your colleagues,
+
+01:10:16.310 --> 01:10:18.100
+<v Vincent Warmerdam>you can also just share the cache, actually.
+
+01:10:18.480 --> 01:10:19.500
+<v Michael Kennedy>MARK MANDEL: Yeah, that's true.
+
+01:10:19.860 --> 01:10:21.680
+<v Michael Kennedy>So there's no reason you can't just point the same file.
+
+01:10:21.770 --> 01:10:21.860
+<v Michael Kennedy>Yeah.
+
+01:10:22.090 --> 01:10:23.220
+<v Vincent Warmerdam>MARK MANDEL: Yeah, and especially if you're
+
+01:10:23.220 --> 01:10:25.340
+<v Vincent Warmerdam>doing big experiments like grid search results or stuff
+
+01:10:25.500 --> 01:10:26.500
+<v Vincent Warmerdam>like that, that you really don't want
+
+01:10:26.510 --> 01:10:28.360
+<v Vincent Warmerdam>to recalculate the big compute thing.
+
+01:10:29.320 --> 01:10:30.580
+<v Vincent Warmerdam>That's actually not too unreasonable.
+
+01:10:31.170 --> 01:10:31.920
+<v Michael Kennedy>MARK MANDEL: Yeah, that's cool.
+
+01:10:32.580 --> 01:10:34.460
+<v Michael Kennedy>Yeah, if you have a shared Jupyter server.
+
+01:10:35.290 --> 01:10:36.820
+<v Vincent Warmerdam>MARK MANDEL: Yeah, and a bunch of universities
+
+01:10:37.000 --> 01:10:37.480
+<v Vincent Warmerdam>have that, right?
+
+01:10:37.710 --> 01:10:38.380
+<v Michael Kennedy>MARK MANDEL: Yeah, exactly.
+
+01:10:39.880 --> 01:10:41.600
+<v Michael Kennedy>I don't want to go down this path because we're basically
+
+01:10:41.790 --> 01:10:42.200
+<v Michael Kennedy>out of time.
+
+01:10:42.840 --> 01:10:43.740
+<v Michael Kennedy>I don't want to respect your time.
+
+01:10:44.150 --> 01:10:48.700
+<v Michael Kennedy>However, I do think there's a whole interesting conversation to be had
+
+01:10:48.710 --> 01:10:54.700
+<v Michael Kennedy>about how do you choose the right key for what goes into the cache
+
+01:10:54.890 --> 01:10:59.300
+<v Michael Kennedy>because you can end up with staleness really easy if something changes.
+
+01:10:59.410 --> 01:11:01.220
+<v Michael Kennedy>But if you incorporate the right stuff,
+
+01:11:02.530 --> 01:11:04.940
+<v Michael Kennedy>you might never run into stale data problems
+
+01:11:05.870 --> 01:11:09.580
+<v Michael Kennedy>because, for example, I talked about the YouTube ID.
+
+01:11:09.860 --> 01:11:21.020
+<v Michael Kennedy>Basically, the cache key is something like episode, episode data, episode YouTube thing, colon, YouTube, colon, the hash of the show notes, right?
+
+01:11:21.180 --> 01:11:28.240
+<v Michael Kennedy>Something like that where there's no way that the show notes are going to change and I'll get the old data because guess what?
+
+01:11:29.680 --> 01:11:31.460
+<v Michael Kennedy>It's constructed out of the source, right?
+
+01:11:31.530 --> 01:11:32.140
+<v Michael Kennedy>Things like that.
+
+01:11:33.800 --> 01:11:37.100
+<v Michael Kennedy>There's probably a lot, especially like in your notebook side.
+
+01:11:37.460 --> 01:11:39.060
+<v Michael Kennedy>There's a lot to consider there, I think.
+
+01:11:39.980 --> 01:11:40.540
+<v Vincent Warmerdam>yeah I mean so
+
+01:11:41.340 --> 01:11:43.080
+<v Vincent Warmerdam>I remember this one thing with the course where
+
+01:11:43.400 --> 01:11:44.660
+<v Vincent Warmerdam>I still wanted it to be cached
+
+01:11:45.260 --> 01:11:47.160
+<v Vincent Warmerdam>but I wanted to have like text goes in
+
+01:11:47.340 --> 01:11:49.380
+<v Vincent Warmerdam>and then five responses from the LLM
+
+01:11:49.500 --> 01:11:51.280
+<v Vincent Warmerdam>go out and the way you solve that is you just
+
+01:11:51.400 --> 01:11:53.320
+<v Vincent Warmerdam>add another key but you have to
+
+01:11:53.360 --> 01:11:55.040
+<v Vincent Warmerdam>be mindful of the cache key and you can
+
+01:11:55.420 --> 01:11:57.200
+<v Vincent Warmerdam>use tuples by the way that's also something you can
+
+01:11:57.340 --> 01:11:58.140
+<v Vincent Warmerdam>totally use as a cache key
+
+01:11:59.260 --> 01:12:01.120
+<v Vincent Warmerdam>so that was easy to fix it's just that
+
+01:12:01.240 --> 01:12:01.800
+<v Vincent Warmerdam>you have to be mindful
+
+01:12:02.840 --> 01:12:04.580
+<v Michael Kennedy>I want to give a quick shout out to that
+
+01:12:05.140 --> 01:12:05.980
+<v Michael Kennedy>I want to leave
+
+01:12:06.700 --> 01:12:09.080
+<v Michael Kennedy>I don't want to leave on a sour note but I think
+
+01:12:09.100 --> 01:12:16.720
+<v Michael Kennedy>I think it's necessary to give this shout out or this like call this out rather is the way I should say it is I think this project is awesome.
+
+01:12:16.850 --> 01:12:17.480
+<v Michael Kennedy>You think it's awesome.
+
+01:12:18.170 --> 01:12:20.380
+<v Michael Kennedy>Honestly, I think it doesn't need really very much.
+
+01:12:21.100 --> 01:12:33.140
+<v Michael Kennedy>But if you look at last updated, if you look at the last updated date, it's really, it hasn't got a lot of attention in the last six months or something like that.
+
+01:12:34.840 --> 01:12:41.100
+<v Vincent Warmerdam>Yeah, if I look at PyPI, the last release was 2023, which, yeah, a year and a half ago.
+
+01:12:42.060 --> 01:12:42.720
+<v Michael Kennedy>Yeah, and it's okay.
+
+01:12:42.940 --> 01:12:45.980
+<v Michael Kennedy>I would like to say that it's okay for things to be done.
+
+01:12:48.520 --> 01:12:51.680
+<v Michael Kennedy>It doesn't have to, things don't have to change.
+
+01:12:52.800 --> 01:12:59.100
+<v Michael Kennedy>But there's also a decent amount of, like, conversations on the issues.
+
+01:12:59.290 --> 01:13:03.340
+<v Michael Kennedy>And they haven't, you know, like a couple days ago, actually, someone asked about this.
+
+01:13:04.060 --> 01:13:16.200
+<v Michael Kennedy>But, you know, the last changes, I believe the guy, Grant, who works on it, started working at OpenAI about the time changes stopped going on.
+
+01:13:16.340 --> 01:13:17.600
+<v Michael Kennedy>I'm not entirely sure.
+
+01:13:17.930 --> 01:13:20.320
+<v Michael Kennedy>I feel like I could be confused with that with another project.
+
+01:13:20.540 --> 01:13:22.580
+<v Michael Kennedy>So, Grant, if that's not true, I apologize.
+
+01:13:22.780 --> 01:13:23.780
+<v Michael Kennedy>But I think that it is.
+
+01:13:26.020 --> 01:13:27.000
+<v Michael Kennedy>I'm pretty sure that it is.
+
+01:13:27.000 --> 01:13:27.560
+<v Michael Kennedy>Do we have LinkedIn?
+
+01:13:28.100 --> 01:13:32.440
+<v Michael Kennedy>I mean, I am comfortable stating, let me put it this way.
+
+01:13:33.280 --> 01:13:36.340
+<v Vincent Warmerdam>Yes, my colleague might make a different caching mechanism,
+
+01:13:36.580 --> 01:13:38.140
+<v Vincent Warmerdam>and yes, I might use that at some point,
+
+01:13:38.300 --> 01:13:39.960
+<v Vincent Warmerdam>but at least for where I'm at right now,
+
+01:13:40.360 --> 01:13:43.260
+<v Vincent Warmerdam>this cache needs to break vividly in front of my face
+
+01:13:43.480 --> 01:13:44.880
+<v Vincent Warmerdam>for me to consider not using it
+
+01:13:45.830 --> 01:13:48.500
+<v Vincent Warmerdam>because it does feel like it's done in a really good way.
+
+01:13:48.660 --> 01:13:51.200
+<v Vincent Warmerdam>The main thing that needs to happen, I think, functionally
+
+01:13:51.600 --> 01:13:54.560
+<v Vincent Warmerdam>to make sure this doesn't get deprecated too badly
+
+01:13:54.720 --> 01:13:56.080
+<v Vincent Warmerdam>is just you've got to update the Python version.
+
+01:13:56.250 --> 01:13:57.420
+<v Vincent Warmerdam>When a new Python version comes out,
+
+01:13:57.520 --> 01:13:58.780
+<v Vincent Warmerdam>you've got to update PyPI to confirm,
+
+01:13:58.960 --> 01:14:00.480
+<v Vincent Warmerdam>like, okay, we do support this Python version.
+
+01:14:01.200 --> 01:14:07.300
+<v Vincent Warmerdam>But I mean, most of the, like, if you look at the area that needs to be covered, a lot of that has been covered by SQLite.
+
+01:14:07.340 --> 01:14:10.420
+<v Vincent Warmerdam>And that thing is definitely still being maintained.
+
+01:14:10.420 --> 01:14:12.020
+<v Michael Kennedy>Yeah, it's getting mega maintained.
+
+01:14:12.300 --> 01:14:12.600
+<v Michael Kennedy>That's right.
+
+01:14:12.800 --> 01:14:14.960
+<v Michael Kennedy>So I also don't see the problem.
+
+01:14:15.080 --> 01:14:17.000
+<v Michael Kennedy>I don't, I don't, I'm not going to not use it.
+
+01:14:17.640 --> 01:14:23.920
+<v Michael Kennedy>I just want to put it out there on the radar for people for whom my co-look is to go, oh, Michael and Vincent were so psyched.
+
+01:14:23.920 --> 01:14:24.540
+<v Michael Kennedy>And I started to use this.
+
+01:14:24.660 --> 01:14:27.460
+<v Michael Kennedy>And now I'm really disappointed because, you know, whatever, I saw this.
+
+01:14:29.380 --> 01:14:32.540
+<v Vincent Warmerdam>the only real doom scenario I can come up with is if SQLite made like a
+
+01:14:32.680 --> 01:14:34.560
+<v Vincent Warmerdam>breaking change. That's the only thing I can kind of,
+
+01:14:34.900 --> 01:14:39.060
+<v Michael Kennedy>but the odds of that seem very low. Yeah. And it's, it's on GitHub.
+
+01:14:39.140 --> 01:14:42.380
+<v Michael Kennedy>You can fork it. I forked it. Exactly. Exactly. So no, I'm,
+
+01:14:42.440 --> 01:14:45.100
+<v Michael Kennedy>I definitely am still super excited about it.
+
+01:14:45.100 --> 01:14:46.640
+<v Michael Kennedy>I just want to make sure that we put that out there.
+
+01:14:47.260 --> 01:14:50.800
+<v Michael Kennedy>I'd mentioned intended to talk about it sooner, but in the, in the conversation,
+
+01:14:50.980 --> 01:14:54.760
+<v Vincent Warmerdam>but you know what, we were just so excited. Yeah, no. So if,
+
+01:14:54.780 --> 01:14:58.860
+<v Vincent Warmerdam>if this is definitely in my top five favorite Python libraries outside of the
+
+01:14:59.880 --> 01:15:03.000
+<v Michael Kennedy>awesome yeah i've really really have gotten awesome results out of it as well
+
+01:15:03.720 --> 01:15:06.780
+<v Michael Kennedy>so remember the way we opened the show and you talked about this like on the
+
+01:15:07.560 --> 01:15:11.520
+<v Michael Kennedy>when we talked about the llm building block stuff on the previous time you were on the show it's like
+
+01:15:11.600 --> 01:15:17.020
+<v Michael Kennedy>oh we better not go too deep on this even though we're both so excited because it's going to derail
+
+01:15:17.020 --> 01:15:22.600
+<v Michael Kennedy>the show we're now one hour and 15 minutes into it we kind of cut ourselves off i think that was
+
+01:15:22.820 --> 01:15:28.240
+<v Vincent Warmerdam>accurate it's uh yeah i mean you get you get two dads making dad jokes and riffing on tools they
+
+01:15:28.260 --> 01:15:33.820
+<v Vincent Warmerdam>of like it's it's bound to like yeah bound to exceed a barbecue yes i know i wonder what would
+
+01:15:33.960 --> 01:15:40.580
+<v Michael Kennedy>happen if sometime we just removed the time limit just got real comfortable and just rift on something
+
+01:15:40.580 --> 01:15:48.360
+<v Michael Kennedy>it could be hours it'd be fun but maybe two hour live streams exist michael i know i've i've listened
+
+01:15:48.360 --> 01:15:51.300
+<v Michael Kennedy>to some podcasts that are over three hours i'm like how's this still going but you know what
+
+01:15:51.710 --> 01:15:57.660
+<v Vincent Warmerdam>yeah but uh but yeah but this is a good point point in time to put we're both excited that's
+
+01:15:57.680 --> 01:15:59.580
+<v Vincent Warmerdam>the summary. That is the summary.
+
+01:15:59.900 --> 01:16:01.620
+<v Michael Kennedy>And I think I'm going to let you have
+
+01:16:01.620 --> 01:16:03.160
+<v Michael Kennedy>the final word on this topic here.
+
+01:16:04.280 --> 01:16:05.680
+<v Michael Kennedy>Maybe speak to people just about
+
+01:16:06.140 --> 01:16:07.620
+<v Michael Kennedy>caching in general and just cache
+
+01:16:07.820 --> 01:16:09.420
+<v Michael Kennedy>in particular as we close it out.
+
+01:16:09.900 --> 01:16:11.740
+<v Vincent Warmerdam>I mean, I guess the main thing
+
+01:16:11.900 --> 01:16:13.700
+<v Vincent Warmerdam>that I learned with the whole caching thing
+
+01:16:13.800 --> 01:16:15.660
+<v Vincent Warmerdam>in the last couple of years, I always thought it was kind of
+
+01:16:15.720 --> 01:16:17.620
+<v Vincent Warmerdam>like a web thing. Like, oh, you know, front
+
+01:16:17.820 --> 01:16:19.400
+<v Vincent Warmerdam>page of Reddit, that thing has to be cached.
+
+01:16:19.560 --> 01:16:20.360
+<v Vincent Warmerdam>That's the way you think about it. Yeah, of course.
+
+01:16:21.200 --> 01:16:23.640
+<v Vincent Warmerdam>And thinking about it too much that way totally blocked
+
+01:16:23.740 --> 01:16:25.640
+<v Vincent Warmerdam>me from considering like, oh, but if you do stuff in notebooks
+
+01:16:25.840 --> 01:16:27.520
+<v Vincent Warmerdam>and data science land, then you need this as well.
+
+01:16:28.280 --> 01:16:33.540
+<v Vincent Warmerdam>And I think there's actually a little emerging discovery phenomenon happening where people
+
+01:16:33.660 --> 01:16:37.040
+<v Vincent Warmerdam>that do things with LLM at some point go like, "Oh, I need a cache."
+
+01:16:37.040 --> 01:16:37.680
+<v Vincent Warmerdam>And then, "Oh."
+
+01:16:37.680 --> 01:16:37.840
+<v Vincent Warmerdam>Yeah.
+
+01:16:40.040 --> 01:16:41.900
+<v Vincent Warmerdam>So that's the main thing I suppose I want to say.
+
+01:16:42.040 --> 01:16:44.720
+<v Vincent Warmerdam>Even if you're doing more data stuff, give this disk cache thing a try.
+
+01:16:44.900 --> 01:16:45.580
+<v Vincent Warmerdam>It's just good software.
+
+01:16:46.200 --> 01:16:46.420
+<v Michael Kennedy>Yeah.
+
+01:16:47.000 --> 01:16:48.900
+<v Michael Kennedy>It's so easy to adopt and try out.
+
+01:16:49.740 --> 01:16:50.500
+<v Michael Kennedy>You can throw it in there.
+
+01:16:50.740 --> 01:16:51.400
+<v Michael Kennedy>Just add a decorator.
+
+01:16:52.240 --> 01:16:52.600
+<v Michael Kennedy>Exactly.
+
+01:16:52.810 --> 01:16:53.320
+<v Michael Kennedy>See what you get.
+
+01:16:53.780 --> 01:16:54.360
+<v Michael Kennedy>See what you get.
+
+01:16:54.900 --> 01:16:55.080
+<v Michael Kennedy>All right.
+
+01:16:55.420 --> 01:16:55.980
+<v Michael Kennedy>Vincent, welcome.
+
+01:16:56.880 --> 01:16:58.220
+<v Michael Kennedy>for coming back. I really appreciate it.
+
+01:16:58.980 --> 01:17:00.500
+<v Michael Kennedy>Thanks for having me. Always good to talk to you.
+
+01:17:02.320 --> 01:17:03.060
+<v Vincent Warmerdam>See you next time
+
+01:17:03.060 --> 01:17:04.980
+<v Vincent Warmerdam>when we again find out there's a cool Python library.
+
+01:17:05.960 --> 01:17:06.840
+<v Michael Kennedy>Yeah, that's going to be
+
+01:17:07.540 --> 01:17:08.620
+<v Michael Kennedy>the three-hour episode.
+
+01:17:08.860 --> 01:17:09.240
+<v Michael Kennedy>Watch out, y'all.
+
+01:17:10.540 --> 01:17:10.940
+<v Michael Kennedy>Have a good one.
+
+01:17:11.400 --> 01:17:11.720
+<v Michael Kennedy>Later.
+

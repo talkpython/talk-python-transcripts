@@ -1,0 +1,4178 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:02.600
+<v Michael Kennedy>Building on the web is like working with the perfect clay.
+
+00:00:02.980 --> 00:00:05.320
+<v Michael Kennedy>It's malleable and can become almost anything.
+
+00:00:05.900 --> 00:00:09.660
+<v Michael Kennedy>Too often, frameworks try to hide the web's best parts away from us.
+
+00:00:10.120 --> 00:00:15.060
+<v Michael Kennedy>Today, we're looking at PyView, a project that brings real-time power of Phoenix LiveView
+
+00:00:15.360 --> 00:00:20.660
+<v Michael Kennedy>directly into your Python world while keeping the web elements front and center.
+
+00:00:21.280 --> 00:00:24.000
+<v Michael Kennedy>I'm joined by Larry Ogrenek to dive into PyView.
+
+00:00:24.250 --> 00:00:29.580
+<v Michael Kennedy>This is Talk Python To Me, episode 535, recorded January 9th, 2026.
+
+00:00:47.580 --> 00:00:51.900
+<v Michael Kennedy>Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:00:52.420 --> 00:00:57.740
+<v Michael Kennedy>This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
+
+00:00:58.460 --> 00:00:59.500
+<v Michael Kennedy>Let's connect on social media.
+
+00:00:59.580 --> 00:01:02.900
+<v Michael Kennedy>You'll find me and Talk Python on Mastodon, BlueSky, and X.
+
+00:01:03.260 --> 00:01:05.080
+<v Michael Kennedy>The social links are all in your show notes.
+
+00:01:05.860 --> 00:01:09.360
+<v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:09.540 --> 00:01:12.740
+<v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:13.020 --> 00:01:13.580
+<v Michael Kennedy>That's right.
+
+00:01:13.820 --> 00:01:17.020
+<v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:17.620 --> 00:01:22.040
+<v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:22.300 --> 00:01:25.920
+<v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:26.720 --> 00:01:27.020
+<v Michael Kennedy>Hey, everyone.
+
+00:01:27.260 --> 00:01:27.780
+<v Michael Kennedy>A quick announcement.
+
+00:01:27.800 --> 00:01:31.920
+<v Michael Kennedy>I recently added a pair of features to talk Python to me to make it work way better with AI.
+
+00:01:32.480 --> 00:01:36.000
+<v Michael Kennedy>For example, you can ask questions such as, what was the last episode?
+
+00:01:36.340 --> 00:01:38.280
+<v Michael Kennedy>Or which episodes featured David Lord?
+
+00:01:38.800 --> 00:01:43.320
+<v Michael Kennedy>The AI can use a couple of endpoints, a new MCP server implemented in Quart,
+
+00:01:43.520 --> 00:01:50.320
+<v Michael Kennedy>and the emerging llms.txt standard to answer those questions with 100% accuracy and real-time data.
+
+00:01:50.740 --> 00:01:55.660
+<v Michael Kennedy>If you use an AI that supports MCP, then take just a moment and install our MCP server.
+
+00:01:56.180 --> 00:02:03.780
+<v Michael Kennedy>If not, you can always point your AI at talkpython.fm/llms.txt to get it started talking about the show.
+
+00:02:04.300 --> 00:02:09.179
+<v Michael Kennedy>Weirdly, ChatGPT says it can't read that file on our website and it gets a 400 response code,
+
+00:02:09.560 --> 00:02:15.780
+<v Michael Kennedy>even though asking it to do so results in a 200 okay from the open AI bot in our logs.
+
+00:02:16.100 --> 00:02:22.180
+<v Michael Kennedy>Oh well, for chat, you'll just have to copy the contents into your prompt until they fix whatever weirdness this is.
+
+00:02:22.820 --> 00:02:29.020
+<v Michael Kennedy>I did a write-up for this on the Talk Python blog called Announcing Talk Python AI Integrations at talkpython.fm/blog.
+
+00:02:29.330 --> 00:02:31.260
+<v Michael Kennedy>The full link is in your later show notes.
+
+00:02:31.760 --> 00:02:37.620
+<v Michael Kennedy>I hope you enjoy this new way to interact with our over 7.5 million words of content at Talk Python To Me.
+
+00:02:38.020 --> 00:02:39.900
+<v Michael Kennedy>Thanks for listening. Now let's get on to the show.
+
+00:02:41.300 --> 00:02:43.500
+<v Michael Kennedy>Larry, welcome to Talk Python To Me. Awesome to have you here.
+
+00:02:43.800 --> 00:02:45.080
+<v Michael Kennedy>Yeah, thanks, Michael. It's great to be here.
+
+00:02:45.500 --> 00:02:51.060
+<v Michael Kennedy>I saw your project, PyView, and you're like, oh, hey, maybe you could just give it a little shout-out.
+
+00:02:51.140 --> 00:02:53.740
+<v Michael Kennedy>And I'm like, this is super neat, the way this thing works.
+
+00:02:54.020 --> 00:02:57.620
+<v Michael Kennedy>And as most people know who listen, I'm a big fan of web development.
+
+00:02:58.220 --> 00:03:02.040
+<v Michael Kennedy>The last episode that we just released, not actually the one,
+
+00:03:03.640 --> 00:03:05.580
+<v Michael Kennedy>time shifting because of recording podcasts,
+
+00:03:05.880 --> 00:03:09.480
+<v Michael Kennedy>was with all the creators of the popular Python web frameworks as a panel.
+
+00:03:09.600 --> 00:03:11.000
+<v Michael Kennedy>And that was super popular.
+
+00:03:11.240 --> 00:03:14.500
+<v Michael Kennedy>So here we are back with another web topic, PyView.
+
+00:03:14.640 --> 00:03:17.340
+<v Michael Kennedy>And it's got a really, really unique twist.
+
+00:03:18.040 --> 00:03:20.740
+<v Michael Kennedy>And I think people are going to dig it.
+
+00:03:20.840 --> 00:03:21.940
+<v Larry Ogrodnek>It's quite interesting.
+
+00:03:22.260 --> 00:03:24.100
+<v Larry Ogrodnek>Gosh, I've been doing technology for a long time now,
+
+00:03:24.130 --> 00:03:26.560
+<v Larry Ogrodnek>and I think the web has always just been amazing, right?
+
+00:03:26.740 --> 00:03:28.660
+<v Larry Ogrodnek>It's an amazing platform, and so I think that's why people
+
+00:03:28.840 --> 00:03:31.140
+<v Larry Ogrodnek>kind of gravitate towards web frameworks
+
+00:03:31.530 --> 00:03:33.840
+<v Larry Ogrodnek>and interesting web technologies and what can you do now
+
+00:03:34.000 --> 00:03:34.840
+<v Larry Ogrodnek>and how can we make it easier?
+
+00:03:35.600 --> 00:03:36.100
+<v Larry Ogrodnek>Yeah, it's funny.
+
+00:03:36.110 --> 00:03:37.820
+<v Larry Ogrodnek>I did think PyView would resonate with you a little bit
+
+00:03:37.900 --> 00:03:40.260
+<v Larry Ogrodnek>just because I know that, I don't know if this is true,
+
+00:03:40.400 --> 00:03:43.260
+<v Larry Ogrodnek>but it seems like you do appreciate really not just like,
+
+00:03:43.530 --> 00:03:45.140
+<v Larry Ogrodnek>you know, obviously Python, but web technologies
+
+00:03:45.270 --> 00:03:47.580
+<v Larry Ogrodnek>and especially like embracing web technologies
+
+00:03:47.960 --> 00:03:50.300
+<v Larry Ogrodnek>and maybe not necessarily kind of hiding them.
+
+00:03:50.540 --> 00:04:14.360
+<v Michael Kennedy>Yeah, exactly. That is one of the things that really appealed to me because there are some Python frameworks that build webmaps, but their goal is to pretend that HTML and CSS is really bad. It's like, you don't want to write a simile. We're going to put that away from you. You don't need to see this HTML or the CSS or any of those things. Get it away. And I feel like something is lost there.
+
+00:04:14.420 --> 00:04:19.060
+<v Michael Kennedy>Like building on the web is just, it's like the perfect clay, right?
+
+00:04:19.200 --> 00:04:23.720
+<v Michael Kennedy>It's, it is so malleable and it can become almost anything that you want it to be.
+
+00:04:24.160 --> 00:04:26.640
+<v Michael Kennedy>And a lot of those frameworks, I think they just miss that.
+
+00:04:26.800 --> 00:04:28.260
+<v Michael Kennedy>And I don't feel like what you built does.
+
+00:04:28.460 --> 00:04:31.380
+<v Michael Kennedy>So I'm going to be, I think we're having a good time talking about it.
+
+00:04:31.520 --> 00:04:31.960
+<v Larry Ogrodnek>No, thanks.
+
+00:04:32.040 --> 00:04:32.920
+<v Larry Ogrodnek>Yeah, I'm excited to get into it.
+
+00:04:33.200 --> 00:04:35.340
+<v Larry Ogrodnek>But quick introduction, Larry, who are you?
+
+00:04:36.880 --> 00:04:37.000
+<v Larry Ogrodnek>Thanks.
+
+00:04:37.260 --> 00:04:37.360
+<v Larry Ogrodnek>Yeah.
+
+00:04:37.480 --> 00:04:39.140
+<v Larry Ogrodnek>So my name is Larry Ogranik.
+
+00:04:39.720 --> 00:04:43.880
+<v Larry Ogrodnek>I've been a software developer for, you know, I guess let's just say over 25 years now.
+
+00:04:44.300 --> 00:04:48.560
+<v Larry Ogrodnek>I don't age myself too much. But through that time, obviously, I've done a bunch of different
+
+00:04:48.800 --> 00:04:54.020
+<v Larry Ogrodnek>things and worked at startups. I worked at big companies. I've worked at freelancing for a few
+
+00:04:54.140 --> 00:05:01.740
+<v Larry Ogrodnek>years even. And so my early career, it was more kind of on the C pro side, a lot of backend work,
+
+00:05:03.040 --> 00:05:08.940
+<v Larry Ogrodnek>diving into Java and then Scala. And when I was doing freelancing, obviously the language of the
+
+00:05:09.060 --> 00:05:13.920
+<v Larry Ogrodnek>tech kind of depended on the client wanted to do and what the project entailed. But that's kind of
+
+00:05:13.940 --> 00:05:15.540
+<v Larry Ogrodnek>to get more serious about using Python.
+
+00:05:16.660 --> 00:05:20.020
+<v Larry Ogrodnek>And nowadays, I work at a startup in the construction industry.
+
+00:05:20.690 --> 00:05:21.660
+<v Larry Ogrodnek>And we think of ourselves--
+
+00:05:21.660 --> 00:05:21.720
+<v Larry Ogrodnek>JOHN MUELLER: Oh, really?
+
+00:05:21.720 --> 00:05:21.840
+<v Larry Ogrodnek>Yes.
+
+00:05:22.770 --> 00:05:26.080
+<v Larry Ogrodnek>But we're really trying to invest heavily in technology
+
+00:05:26.200 --> 00:05:26.640
+<v Larry Ogrodnek>and software.
+
+00:05:27.080 --> 00:05:29.260
+<v Larry Ogrodnek>We're trying to be a technology-enabled home builder.
+
+00:05:29.740 --> 00:05:31.000
+<v Larry Ogrodnek>And so we have a huge investment.
+
+00:05:31.050 --> 00:05:33.960
+<v Larry Ogrodnek>And we have-- I mean, not necessarily a huge tech team,
+
+00:05:34.080 --> 00:05:38.100
+<v Larry Ogrodnek>but spending any money and employment on tech
+
+00:05:38.150 --> 00:05:40.260
+<v Larry Ogrodnek>is kind of a big deal in this industry.
+
+00:05:41.340 --> 00:05:46.600
+<v Larry Ogrodnek>And I think it's an industry that hasn't really had technology get great adoption.
+
+00:05:48.460 --> 00:05:53.240
+<v Larry Ogrodnek>Different people are doing different things, but overall, there's been a hard time to kind of get it in that process.
+
+00:05:53.350 --> 00:05:54.520
+<v Larry Ogrodnek>But there's a lot of areas for improvement.
+
+00:05:54.690 --> 00:05:57.720
+<v Larry Ogrodnek>And so, you know, we're trying to make that process better, faster, smoother.
+
+00:05:59.060 --> 00:06:08.040
+<v Michael Kennedy>I think there's a lot of possibility for pick your underserved by tech specialization and build businesses around there.
+
+00:06:08.290 --> 00:06:10.780
+<v Michael Kennedy>If you're a Python developer or any kind of developer.
+
+00:06:10.960 --> 00:06:17.220
+<v Michael Kennedy>But if you really have the skill to build things like connecting APIs and automations and stuff,
+
+00:06:18.580 --> 00:06:20.000
+<v Michael Kennedy>it's just such fertile ground.
+
+00:06:20.140 --> 00:06:23.060
+<v Michael Kennedy>It's like, wow, there's nobody building stuff here that is like, good.
+
+00:06:23.540 --> 00:06:23.920
+<v Michael Kennedy>Let's go.
+
+00:06:24.240 --> 00:06:25.040
+<v Michael Kennedy>I could do this, right?
+
+00:06:26.400 --> 00:06:26.800
+<v Larry Ogrodnek>100%.
+
+00:06:26.840 --> 00:06:30.300
+<v Larry Ogrodnek>And I think, yeah, like, Tim, maybe to your point, there's a lot of kind of low-hanging fruit
+
+00:06:30.500 --> 00:06:34.620
+<v Larry Ogrodnek>where it's just like just even getting some of the information in people's heads in a structured
+
+00:06:34.920 --> 00:06:38.100
+<v Larry Ogrodnek>way and even having, like, different processes defined in a structured way.
+
+00:06:38.500 --> 00:06:40.360
+<v Larry Ogrodnek>Like, you get huge improvements from that.
+
+00:06:40.580 --> 00:06:42.340
+<v Larry Ogrodnek>And this is kind of just like why we love technology, right?
+
+00:06:42.460 --> 00:06:45.500
+<v Larry Ogrodnek>Is you have these building blocks and it's like, oh, now that we have this in a structured
+
+00:06:45.740 --> 00:06:48.540
+<v Larry Ogrodnek>format, we can actually do these interesting things with it that we couldn't do before
+
+00:06:48.840 --> 00:06:50.760
+<v Larry Ogrodnek>because it was just on someone's notepad or whatever.
+
+00:06:51.900 --> 00:06:52.760
+<v Larry Ogrodnek>And so, yeah, you're right.
+
+00:06:52.860 --> 00:06:54.600
+<v Larry Ogrodnek>I think there's still a lot of issues like that.
+
+00:06:54.720 --> 00:06:56.200
+<v Larry Ogrodnek>And home building is for sure a big one.
+
+00:06:58.199 --> 00:06:59.540
+<v Larry Ogrodnek>And yeah, it's been interesting.
+
+00:06:59.620 --> 00:07:05.340
+<v Larry Ogrodnek>I mean, our main, actually, construction platform that manages our construction projects.
+
+00:07:05.700 --> 00:07:10.540
+<v Larry Ogrodnek>So we have an interesting part of that, what you were saying, is it can be hard in underserved
+
+00:07:10.560 --> 00:07:14.040
+<v Larry Ogrodnek>There are underserved areas to sort of have that domain expertise.
+
+00:07:14.250 --> 00:07:15.360
+<v Larry Ogrodnek>And so you have to find a good partner.
+
+00:07:15.610 --> 00:07:18.460
+<v Larry Ogrodnek>And one of the things we've done is we actually build the homes.
+
+00:07:18.680 --> 00:07:22.600
+<v Larry Ogrodnek>So we're not just writing software for other builders to use, but we're building homes ourselves.
+
+00:07:22.870 --> 00:07:27.940
+<v Larry Ogrodnek>And that's been a huge benefit because we have people building homes that we can sit down with and say, like, does this make sense?
+
+00:07:28.240 --> 00:07:28.900
+<v Larry Ogrodnek>Like, does it not make sense?
+
+00:07:29.030 --> 00:07:29.800
+<v Larry Ogrodnek>Like, why, why not?
+
+00:07:30.420 --> 00:07:35.200
+<v Larry Ogrodnek>And, you know, we have to obviously push on both sides sometimes because we are trying to change things.
+
+00:07:35.330 --> 00:07:35.420
+<v Larry Ogrodnek>Right.
+
+00:07:36.960 --> 00:07:40.300
+<v Larry Ogrodnek>But that's been, I think it'd be almost impossible to do without.
+
+00:07:41.020 --> 00:07:45.260
+<v Michael Kennedy>It's the dog fooding equivalent, the software dog fooding, right?
+
+00:07:45.380 --> 00:07:45.540
+<v Michael Kennedy>Exactly.
+
+00:07:46.380 --> 00:07:46.880
+<v Michael Kennedy>You're building.
+
+00:07:47.580 --> 00:07:48.460
+<v Michael Kennedy>They're building, you're building.
+
+00:07:48.640 --> 00:07:49.840
+<v Michael Kennedy>So then you can.
+
+00:07:50.360 --> 00:07:50.720
+<v Larry Ogrodnek>I know.
+
+00:07:50.880 --> 00:07:53.700
+<v Larry Ogrodnek>And it can be frustrating to get these phone calls like, why is this working?
+
+00:07:54.020 --> 00:07:55.700
+<v Larry Ogrodnek>Like, you're going to make me late for this or that.
+
+00:07:55.960 --> 00:08:01.880
+<v Larry Ogrodnek>But, you know, again, like those having those really strong partnerships, like, I don't know, it's critical to be able to get something that actually works.
+
+00:08:02.320 --> 00:08:02.540
+<v Michael Kennedy>Yeah.
+
+00:08:02.600 --> 00:08:04.420
+<v Michael Kennedy>Well, it sounds actually super exciting.
+
+00:08:04.520 --> 00:08:05.240
+<v Michael Kennedy>I mean, I know you sold it.
+
+00:08:05.260 --> 00:08:06.140
+<v Michael Kennedy>It's like, oh, we're just building.
+
+00:08:06.600 --> 00:08:07.400
+<v Michael Kennedy>Just working in a building.
+
+00:08:07.640 --> 00:08:08.660
+<v Michael Kennedy>No, this is cool.
+
+00:08:09.420 --> 00:08:10.100
+<v Larry Ogrodnek>It's cool, yeah.
+
+00:08:10.190 --> 00:08:14.800
+<v Larry Ogrodnek>And for the last couple of years, I've been doing a lot on our kind of more AI services team.
+
+00:08:15.180 --> 00:08:23.420
+<v Larry Ogrodnek>And I'm not a machine learning researcher, but most of the work I've been doing has been around kind of productionizing that work and building services around it.
+
+00:08:24.780 --> 00:08:30.400
+<v Larry Ogrodnek>And we've done really cool stuff like with, I mean, just like pricing models for the homes, which is kind of more traditional machine learning stuff.
+
+00:08:30.580 --> 00:08:32.360
+<v Larry Ogrodnek>and then like schedule simulation stuff.
+
+00:08:33.260 --> 00:08:35.240
+<v Larry Ogrodnek>And more recently, a lot of LLM-based stuff,
+
+00:08:35.719 --> 00:08:37.099
+<v Larry Ogrodnek>both for kind of like, you know,
+
+00:08:37.280 --> 00:08:38.180
+<v Larry Ogrodnek>rag style chat workflows.
+
+00:08:38.310 --> 00:08:39.280
+<v Larry Ogrodnek>Like you can imagine you're in the field
+
+00:08:39.310 --> 00:08:40.180
+<v Larry Ogrodnek>and you're like, you know,
+
+00:08:40.280 --> 00:08:42.159
+<v Larry Ogrodnek>is this the right tile pattern?
+
+00:08:42.659 --> 00:08:44.640
+<v Larry Ogrodnek>And maybe that's buried on like page 500
+
+00:08:44.770 --> 00:08:46.880
+<v Larry Ogrodnek>of a Google spreadsheet or something like that.
+
+00:08:46.930 --> 00:08:48.440
+<v Larry Ogrodnek>And being able to pull up quickly is huge.
+
+00:08:49.460 --> 00:08:50.780
+<v Larry Ogrodnek>And now some of the stuff we're trying to do
+
+00:08:50.900 --> 00:08:53.220
+<v Larry Ogrodnek>is more around automating schedule updates.
+
+00:08:53.570 --> 00:08:55.680
+<v Larry Ogrodnek>So someone can kind of walk through a home
+
+00:08:55.940 --> 00:08:56.820
+<v Larry Ogrodnek>and just, you know,
+
+00:08:56.960 --> 00:08:57.960
+<v Larry Ogrodnek>do kind of stream of consciousness.
+
+00:08:58.440 --> 00:09:03.660
+<v Larry Ogrodnek>Like, you know, this is the status of like this, like, you know, this is running late, whatever.
+
+00:09:04.170 --> 00:09:14.600
+<v Larry Ogrodnek>And then we kind of, we have a multi-stage process, but we kind of, you know, turn the video into images and turn the transcription into notes and then try and like see what we can, what's in the photo, right?
+
+00:09:14.800 --> 00:09:23.180
+<v Larry Ogrodnek>Like, is that the right tile pattern? Is that the right stove? And use LLMs for different parts of this process to kind of, you know, come up with recommendations at the end.
+
+00:09:23.300 --> 00:09:27.840
+<v Larry Ogrodnek>like, oh, it actually looks like the drywall is totally installed and we can mark that as done
+
+00:09:27.920 --> 00:09:32.880
+<v Larry Ogrodnek>or whatever. And, you know, having the automation is actually super helpful because having up-to-date
+
+00:09:33.120 --> 00:09:37.980
+<v Larry Ogrodnek>schedules drives a lot of stuff, right? It's just like the efficiency of making sure people are on
+
+00:09:38.240 --> 00:09:41.040
+<v Larry Ogrodnek>site and not delayed is huge. So that's been really-
+
+00:09:41.040 --> 00:09:46.020
+<v Michael Kennedy>There's so many touch points of so many subcontractors and things, right? Like,
+
+00:09:46.020 --> 00:09:49.599
+<v Michael Kennedy>when is the plumber going to be here? Well, they need to be here when the inspection for plumbing
+
+00:09:49.620 --> 00:09:54.860
+<v Michael Kennedy>is here but that got you know like it's people who haven't gone through like somehow some kind of
+
+00:09:55.080 --> 00:09:59.580
+<v Michael Kennedy>a house like i had a big home home improvement it's not quite the right word but like this big
+
+00:10:00.580 --> 00:10:05.900
+<v Michael Kennedy>outside project with like a barbecue thing and so on done and wow after doing that i'm like there's
+
+00:10:05.960 --> 00:10:11.240
+<v Michael Kennedy>i've got a lot of ideas for making this better this is bad no i know right and some of those
+
+00:10:11.460 --> 00:10:14.540
+<v Larry Ogrodnek>delays are like super costly and it's funny because like a lot of things even in terms of
+
+00:10:14.540 --> 00:10:18.739
+<v Larry Ogrodnek>like budgeting like right like if you buy too much material that's bad because you're wasting money
+
+00:10:19.000 --> 00:10:28.100
+<v Larry Ogrodnek>But if you buy too little, that's actually even worse because like maybe, you know, you need more whatever lumber and maybe there's, you know, two weeks, you know, turnaround time to get it.
+
+00:10:28.170 --> 00:10:34.480
+<v Larry Ogrodnek>And so and again, if you have to reschedule things like inspections, who knows when the next available one is, it might push the project out, you know, weeks.
+
+00:10:34.800 --> 00:10:42.380
+<v Larry Ogrodnek>And so, yeah, there's a lot of interdependencies, a lot of, like you said, people and communication remains a very tricky problem.
+
+00:10:43.340 --> 00:10:44.400
+<v Michael Kennedy>That's always one of the things.
+
+00:10:44.860 --> 00:11:13.480
+<v Michael Kennedy>Well, it sounds awesome. And I'm also interested to see if your project at all touches on that. But let's dive in. Let's dive into PyView. Now, the first thing I want to point out here with PyView is it is not PyWebView, which has been around for three or four years at minimum. And I imagine that like a lot of people have seen this. PyWebView is a way to embed basically a browser into something that you can wrap as a desktop app. PyView, totally different. What's the elevator pitch on PyView?
+
+00:11:13.540 --> 00:11:38.040
+<v Larry Ogrodnek>Totally different. Yeah. So the later pitch in PyView is basically, you know, it's one of those self-referential things. Hopefully I won't try and say Phoenix LiveView, but, you know, when you're building, when you're building modern web apps, and this is one of the things that I've seen, right, is, you know, if you want to have this rich interactivity, you want to have like a really rich client experience, maybe you reach for something like React or Vue. And, you know, those are great frameworks.
+
+00:11:38.540 --> 00:11:44.060
+<v Larry Ogrodnek>But then you also have your backend server maybe managing the state and the database and those relationships and maybe talking to other servers.
+
+00:11:44.320 --> 00:11:46.600
+<v Larry Ogrodnek>Maybe that's in Python or another language, whatever.
+
+00:11:47.120 --> 00:11:51.120
+<v Larry Ogrodnek>And you kind of have to manage these two different pieces and they each have their own state.
+
+00:11:51.500 --> 00:12:02.220
+<v Larry Ogrodnek>And it's very, you know, there can be a lot of complexity when you, yeah, the client is showing something slightly different than the server or vice versa and having to synchronize that state and keep them in sync.
+
+00:12:02.520 --> 00:12:04.900
+<v Larry Ogrodnek>Plus, often there's a lot of glue code in between them, right?
+
+00:12:05.180 --> 00:12:11.080
+<v Larry Ogrodnek>Like having to just go from the Python backend to the JavaScript frontend and back and forth.
+
+00:12:11.600 --> 00:12:16.620
+<v Larry Ogrodnek>Even when things are in the same language, like I've worked on TypeScript apps where it's TypeScript backend and frontend,
+
+00:12:16.840 --> 00:12:20.640
+<v Larry Ogrodnek>it's kind of rare that you actually share a lot of code for that layer.
+
+00:12:20.940 --> 00:12:23.060
+<v Larry Ogrodnek>Things end up kind of drifting anyway and being different.
+
+00:12:23.480 --> 00:12:37.540
+<v Larry Ogrodnek>And so PyView, the idea is, you know, what if you can have your backend server manage all your state, you're writing all your application logic in Python, you're just rendering HTML like you would for a static site.
+
+00:12:38.680 --> 00:12:47.960
+<v Larry Ogrodnek>But when different interactions happen, like when you just click a button or enters a form field or, you know, different things happen on the friend end, we send an event to the server.
+
+00:12:48.470 --> 00:12:50.560
+<v Larry Ogrodnek>The server processes the event and changes its state.
+
+00:12:50.760 --> 00:12:55.120
+<v Larry Ogrodnek>So for example, maybe, I mean, this is a simple counter example, but you press plus on the counter.
+
+00:12:55.530 --> 00:12:57.440
+<v Larry Ogrodnek>Then the server increments the count by one.
+
+00:12:57.670 --> 00:13:06.340
+<v Larry Ogrodnek>It does a full re-render, but it does kind of a diff and says, oh, actually, looking at this full page, all I need to do is tell the front end to change zero to one.
+
+00:13:06.770 --> 00:13:10.000
+<v Larry Ogrodnek>And so it efficiently sends that over a WebSocket connection.
+
+00:13:10.390 --> 00:13:13.520
+<v Larry Ogrodnek>And I feel like there's already a lot there that maybe that wasn't the clearest description.
+
+00:13:13.720 --> 00:13:27.080
+<v Larry Ogrodnek>But the idea is kind of more like, can we get SPA level interactivity, you know, including things like multi-user presence stuff, server push, really fast UI updates, you know, really fast local navigation, not doing full page reloads.
+
+00:13:27.230 --> 00:13:35.960
+<v Larry Ogrodnek>But on the back end, our mental model really is something like a traditional static, you know, not static site generator, but like a static rendering thing.
+
+00:13:36.110 --> 00:13:36.600
+<v Larry Ogrodnek>So I don't know.
+
+00:13:37.000 --> 00:13:37.780
+<v Larry Ogrodnek>Was that clear?
+
+00:13:39.550 --> 00:13:40.120
+<v Larry Ogrodnek>I think.
+
+00:13:42.300 --> 00:13:42.420
+<v Michael Kennedy>Yes.
+
+00:13:43.020 --> 00:13:44.180
+<v Michael Kennedy>It sounds like a lot.
+
+00:13:44.470 --> 00:13:46.460
+<v Michael Kennedy>And what I think is cool about PyView
+
+00:13:46.840 --> 00:13:48.920
+<v Michael Kennedy>is that it takes a lot of that
+
+00:13:49.060 --> 00:13:50.440
+<v Michael Kennedy>and it just makes it automatic
+
+00:13:50.920 --> 00:13:52.460
+<v Michael Kennedy>over a simple programming API, right?
+
+00:13:52.760 --> 00:13:53.320
+<v Larry Ogrodnek>Yeah, exactly.
+
+00:13:53.670 --> 00:13:55.120
+<v Larry Ogrodnek>So that's the thing is you don't have to think
+
+00:13:55.360 --> 00:13:56.680
+<v Larry Ogrodnek>about a lot of this kind of plumbing.
+
+00:13:57.240 --> 00:13:58.480
+<v Larry Ogrodnek>And this is the one kind of,
+
+00:13:58.540 --> 00:13:59.660
+<v Larry Ogrodnek>I mean, we'll get into this more.
+
+00:13:59.730 --> 00:14:00.880
+<v Larry Ogrodnek>Like this is something that I,
+
+00:14:01.130 --> 00:14:01.940
+<v Larry Ogrodnek>an idea that I came up with.
+
+00:14:01.940 --> 00:14:03.320
+<v Larry Ogrodnek>This is something that has been around
+
+00:14:03.330 --> 00:14:04.220
+<v Larry Ogrodnek>for a little while on,
+
+00:14:05.620 --> 00:14:06.540
+<v Larry Ogrodnek>in the Elixir side.
+
+00:14:06.690 --> 00:14:07.300
+<v Larry Ogrodnek>It comes from this,
+
+00:14:07.830 --> 00:14:09.000
+<v Larry Ogrodnek>this thing called Phoenix Live View.
+
+00:14:09.200 --> 00:14:10.320
+<v Larry Ogrodnek>But yeah, you know,
+
+00:14:10.700 --> 00:14:11.959
+<v Larry Ogrodnek>a framework actually can take care
+
+00:14:11.980 --> 00:14:13.080
+<v Larry Ogrodnek>of a lot of this for us.
+
+00:14:13.140 --> 00:14:15.120
+<v Larry Ogrodnek>And so as developers, all we really
+
+00:14:15.240 --> 00:14:18.700
+<v Larry Ogrodnek>need to worry about is updating our state when events come in
+
+00:14:19.100 --> 00:14:22.200
+<v Larry Ogrodnek>and rendering, doing a render of this.
+
+00:14:22.360 --> 00:14:24.520
+<v Larry Ogrodnek>Given the state, what should we render to the back end?
+
+00:14:24.520 --> 00:14:26.680
+<v Larry Ogrodnek>And the framework manages the Webseq connection.
+
+00:14:26.940 --> 00:14:27.860
+<v Larry Ogrodnek>It manages the messages.
+
+00:14:28.140 --> 00:14:29.940
+<v Larry Ogrodnek>It manages doing the diffing.
+
+00:14:30.260 --> 00:14:31.840
+<v Larry Ogrodnek>And so we don't have to think about any of that.
+
+00:14:32.120 --> 00:14:34.760
+<v Larry Ogrodnek>We really just need to think about how do I update my state
+
+00:14:35.080 --> 00:14:37.180
+<v Larry Ogrodnek>and how do I render the website?
+
+00:14:37.640 --> 00:14:39.720
+<v Larry Ogrodnek>And so it ends up being really powerful just having
+
+00:14:39.740 --> 00:14:40.880
+<v Larry Ogrodnek>these very simple building blocks.
+
+00:14:41.660 --> 00:14:43.260
+<v Larry Ogrodnek>And this is the kind of thing that--
+
+00:14:43.480 --> 00:14:45.120
+<v Larry Ogrodnek>I mean, I'm not anti-JavaScript in general,
+
+00:14:45.460 --> 00:14:47.380
+<v Larry Ogrodnek>but obviously we're using JavaScript on the front end.
+
+00:14:47.560 --> 00:14:51.100
+<v Larry Ogrodnek>But by having this very generic JavaScript layer that just
+
+00:14:51.200 --> 00:14:54.240
+<v Larry Ogrodnek>knows really simple things like, here's
+
+00:14:54.280 --> 00:14:58.480
+<v Larry Ogrodnek>how I send messages when a button is pressed
+
+00:14:58.700 --> 00:14:59.880
+<v Larry Ogrodnek>or when a text field changes.
+
+00:15:00.500 --> 00:15:01.660
+<v Larry Ogrodnek>There's very simple building blocks,
+
+00:15:01.800 --> 00:15:04.000
+<v Larry Ogrodnek>but you end up being this very powerful system
+
+00:15:04.180 --> 00:15:05.620
+<v Larry Ogrodnek>when you bring them together.
+
+00:15:05.840 --> 00:15:07.260
+<v Larry Ogrodnek>And you don't really have to write JavaScript
+
+00:15:07.400 --> 00:15:09.920
+<v Larry Ogrodnek>for these interactions because, again, most of the things
+
+00:15:10.340 --> 00:15:10.920
+<v Larry Ogrodnek>are very simple.
+
+00:15:11.180 --> 00:15:13.400
+<v Larry Ogrodnek>It's like, you know, I need to change whatever.
+
+00:15:14.180 --> 00:15:20.080
+<v Michael Kennedy>Your project is pretty new, which I'm hoping to shine a light on it because I think it's going to get a lot of attention.
+
+00:15:20.580 --> 00:15:29.240
+<v Michael Kennedy>Out in the audience, Alessio points out that, hey, this is kind of like HTMX and Django with fragments, but over WebSockets.
+
+00:15:29.580 --> 00:15:34.200
+<v Michael Kennedy>And yeah, I feel like it does have some HTMX vibes.
+
+00:15:34.760 --> 00:15:39.700
+<v Michael Kennedy>And for those of you who haven't tried it, HTMX is like, you sprinkle just a couple of extra attributes on there.
+
+00:15:39.880 --> 00:15:41.420
+<v Michael Kennedy>And then somehow behind the scenes,
+
+00:15:41.780 --> 00:15:44.260
+<v Michael Kennedy>there's additional communication that you don't worry about.
+
+00:15:44.440 --> 00:15:46.540
+<v Michael Kennedy>It's just say, oh, if somebody clicks this image,
+
+00:15:47.200 --> 00:15:49.800
+<v Michael Kennedy>actually do this server thing and replace part of the page--
+
+00:15:49.980 --> 00:15:51.200
+<v Michael Kennedy>maybe the image, maybe something else--
+
+00:15:51.340 --> 00:15:53.240
+<v Michael Kennedy>with the server HTML response.
+
+00:15:54.020 --> 00:15:57.500
+<v Michael Kennedy>How do you feel that PyView, Phoenix LiveView sort of
+
+00:15:57.720 --> 00:16:01.560
+<v Michael Kennedy>relates to that and like Datastar, who I'm going to have on the--
+
+00:16:01.620 --> 00:16:01.740
+<v Larry Ogrodnek>Yeah.
+
+00:16:02.280 --> 00:16:03.100
+<v Larry Ogrodnek>No, I think that's right.
+
+00:16:03.330 --> 00:16:07.140
+<v Larry Ogrodnek>I think that's a very thoughtful comment,
+
+00:16:07.170 --> 00:16:09.180
+<v Larry Ogrodnek>because I think that is a lot of it.
+
+00:16:09.320 --> 00:16:12.720
+<v Larry Ogrodnek>And if I had to think in terms of comparisons
+
+00:16:12.900 --> 00:16:16.060
+<v Larry Ogrodnek>to different frameworks, I think doing something with HTMX
+
+00:16:16.340 --> 00:16:18.360
+<v Larry Ogrodnek>probably is the closest comparison.
+
+00:16:18.540 --> 00:16:20.800
+<v Larry Ogrodnek>Because again, it's HTML based.
+
+00:16:21.520 --> 00:16:25.420
+<v Larry Ogrodnek>We are responding to events and wiring up to the server
+
+00:16:25.760 --> 00:16:28.040
+<v Larry Ogrodnek>and processing them and sending back HTML fragments.
+
+00:16:28.520 --> 00:16:31.020
+<v Larry Ogrodnek>I think the difference is that PyView
+
+00:16:31.180 --> 00:16:32.400
+<v Larry Ogrodnek>is a little more structured, right?
+
+00:16:32.560 --> 00:16:37.100
+<v Larry Ogrodnek>Because with HTMX, you have a lot more control,
+
+00:16:37.260 --> 00:16:38.060
+<v Larry Ogrodnek>which can be a good thing.
+
+00:16:38.440 --> 00:16:40.000
+<v Larry Ogrodnek>But it's a little more--
+
+00:16:40.700 --> 00:16:42.460
+<v Larry Ogrodnek>you're kind of wiring up these things yourself
+
+00:16:42.960 --> 00:16:45.660
+<v Larry Ogrodnek>to a certain extent, saying like, when you click on this,
+
+00:16:45.920 --> 00:16:50.140
+<v Larry Ogrodnek>call this back end route and replace the contents of this
+
+00:16:51.380 --> 00:16:52.760
+<v Larry Ogrodnek>element with the response from that.
+
+00:16:53.000 --> 00:16:55.480
+<v Larry Ogrodnek>And on the back end, you're sending full HTML
+
+00:16:55.870 --> 00:16:56.420
+<v Larry Ogrodnek>and things like that.
+
+00:16:56.520 --> 00:16:57.320
+<v Larry Ogrodnek>So that's one difference.
+
+00:16:58.020 --> 00:17:01.040
+<v Larry Ogrodnek>So yes, it is over WebSockets with PyView versus HTMX.
+
+00:17:01.360 --> 00:17:05.120
+<v Larry Ogrodnek>The other thing is we do have this kind of diffing technology
+
+00:17:05.459 --> 00:17:08.160
+<v Larry Ogrodnek>where we're only sending what actually changed.
+
+00:17:08.380 --> 00:17:13.800
+<v Larry Ogrodnek>So I mean, we can go into more detail at some point
+
+00:17:13.800 --> 00:17:14.800
+<v Larry Ogrodnek>about how the templating works.
+
+00:17:15.420 --> 00:17:17.520
+<v Larry Ogrodnek>But for something like changing the encounter from 0 to 1,
+
+00:17:17.680 --> 00:17:20.520
+<v Larry Ogrodnek>it's like we're really just sending back the 1.
+
+00:17:21.079 --> 00:17:22.720
+<v Larry Ogrodnek>And obviously, as the page gets more complex,
+
+00:17:24.000 --> 00:17:25.079
+<v Larry Ogrodnek>the diffs get more complex.
+
+00:17:25.300 --> 00:17:26.280
+<v Larry Ogrodnek>But we're just sending the diffs.
+
+00:17:26.740 --> 00:17:28.920
+<v Larry Ogrodnek>And again, the framework kind of handles--
+
+00:17:28.920 --> 00:17:29.880
+<v Larry Ogrodnek>no, you don't have-- as a developer,
+
+00:17:29.960 --> 00:17:31.260
+<v Larry Ogrodnek>you don't have to think about what part of the page
+
+00:17:31.340 --> 00:17:32.200
+<v Larry Ogrodnek>do I update.
+
+00:17:32.460 --> 00:17:34.300
+<v Larry Ogrodnek>And it's kind of encoded to a certain extent in your template.
+
+00:17:34.880 --> 00:17:38.520
+<v Larry Ogrodnek>you know, it's kind of more hands-off.
+
+00:17:38.620 --> 00:17:40.100
+<v Larry Ogrodnek>And so you do give up some flexibility,
+
+00:17:40.320 --> 00:17:43.660
+<v Larry Ogrodnek>but then, you know, the framework kind of gets to handle
+
+00:17:43.740 --> 00:17:47.140
+<v Larry Ogrodnek>a lot of things for you in a smoother integrated way,
+
+00:17:47.220 --> 00:17:47.740
+<v Larry Ogrodnek>I would say.
+
+00:17:47.960 --> 00:17:48.520
+<v Michael Kennedy>Just handles it.
+
+00:17:48.640 --> 00:17:48.700
+<v Michael Kennedy>Yeah.
+
+00:17:49.100 --> 00:17:50.740
+<v Michael Kennedy>With HTMLX, which I am a fan of,
+
+00:17:51.360 --> 00:17:53.460
+<v Michael Kennedy>you have to think about every little piece.
+
+00:17:53.940 --> 00:17:56.340
+<v Michael Kennedy>And you say, if somebody interacts with this part,
+
+00:17:56.420 --> 00:17:58.100
+<v Michael Kennedy>then I want this action to happen.
+
+00:17:58.320 --> 00:17:59.660
+<v Michael Kennedy>And then this thing over here, you know,
+
+00:17:59.860 --> 00:18:01.719
+<v Michael Kennedy>these parts of the pages are going to be
+
+00:18:02.020 --> 00:18:06.080
+<v Michael Kennedy>where the response of the server gets redirected back into.
+
+00:18:06.660 --> 00:18:09.860
+<v Michael Kennedy>And it seems like it's more just handled a little bit here.
+
+00:18:10.260 --> 00:18:12.680
+<v Michael Kennedy>Let's talk a little bit about Phoenix Live View,
+
+00:18:13.080 --> 00:18:17.140
+<v Michael Kennedy>because while your project is pretty new, Phoenix Live View has,
+
+00:18:17.540 --> 00:18:20.260
+<v Michael Kennedy>I don't know how old it is, a couple of years, it looks like,
+
+00:18:21.140 --> 00:18:23.740
+<v Michael Kennedy>but it's got 6,700 stars.
+
+00:18:24.020 --> 00:18:26.180
+<v Michael Kennedy>So it's a really solid foundation.
+
+00:18:26.840 --> 00:18:29.439
+<v Michael Kennedy>And your project, what's the relationship between
+
+00:18:29.460 --> 00:18:31.920
+<v Michael Kennedy>PyView and Phoenix LiveView?
+
+00:18:32.330 --> 00:18:32.440
+<v Larry Ogrodnek>Right.
+
+00:18:32.710 --> 00:18:35.520
+<v Larry Ogrodnek>So LiveView is obviously the inspiration for PyView.
+
+00:18:35.650 --> 00:18:40.640
+<v Larry Ogrodnek>I think, you know, when I mean, I don't know, when I started thinking about like,
+
+00:18:40.930 --> 00:18:44.500
+<v Larry Ogrodnek>you know, there's got to be a better way to building these kinds of apps in Python, I came
+
+00:18:44.640 --> 00:18:48.820
+<v Larry Ogrodnek>across Phoenix LiveView and kind of really loved this model, especially just, I don't
+
+00:18:48.860 --> 00:18:51.580
+<v Larry Ogrodnek>know, I kind of, I do like thinking this event kind of base system.
+
+00:18:52.350 --> 00:18:55.820
+<v Larry Ogrodnek>And it seemed like, yeah, you get all the really nice things for free.
+
+00:18:55.830 --> 00:18:56.920
+<v Larry Ogrodnek>So definitely was the inspiration.
+
+00:18:57.160 --> 00:19:04.080
+<v Larry Ogrodnek>And then when I started working on PyView, I had the thought like, well, they've already kind of figured out a good model for how this works and how things fit together.
+
+00:19:04.660 --> 00:19:09.780
+<v Larry Ogrodnek>And they already have a good client side story for implementing the client side component of this.
+
+00:19:09.980 --> 00:19:20.600
+<v Larry Ogrodnek>So what I tried to do with PyView is actually use, you know, I ship their Phoenix LiveView front end client JavaScript is what you're running in a PyView app on your front end.
+
+00:19:20.920 --> 00:19:23.660
+<v Larry Ogrodnek>And I kind of implemented a Python backend.
+
+00:19:23.680 --> 00:19:26.960
+<v Larry Ogrodnek>So if you think about LiveView as a protocol, which to be clear, it is not.
+
+00:19:28.020 --> 00:19:31.800
+<v Larry Ogrodnek>There's sort of just some, you know, have to do some reverse engineering of how things work.
+
+00:19:32.020 --> 00:19:38.940
+<v Larry Ogrodnek>It's not really documented because I think, you know, on their end, it really is an internal implementation detail about how the front end communicates with the back end.
+
+00:19:40.300 --> 00:19:47.580
+<v Larry Ogrodnek>But, you know, we get the, that really was a huge boost for me because I get to use their client JavaScript, which handles all the diffing.
+
+00:19:48.120 --> 00:19:51.080
+<v Larry Ogrodnek>And again, a big part of it too is just kind of they do have a really nice design.
+
+00:19:51.440 --> 00:19:53.820
+<v Larry Ogrodnek>So like you mentioned, Phoenix Live View has been around for a while.
+
+00:19:54.080 --> 00:19:55.100
+<v Larry Ogrodnek>It's a very popular project.
+
+00:19:55.320 --> 00:20:01.020
+<v Larry Ogrodnek>I think if you are in this ecosystem, so it's written in Elixir, which is a different programming
+
+00:20:01.220 --> 00:20:04.480
+<v Larry Ogrodnek>language that runs on the Erlang virtual machine.
+
+00:20:04.820 --> 00:20:07.700
+<v Larry Ogrodnek>And just to be clear, it's a totally great language.
+
+00:20:08.120 --> 00:20:09.400
+<v Larry Ogrodnek>It has a lot of really cool features.
+
+00:20:09.780 --> 00:20:10.920
+<v Larry Ogrodnek>It's nothing against Elixir.
+
+00:20:11.100 --> 00:20:17.960
+<v Larry Ogrodnek>It's just that for different reasons, I wanted this paradigm in the Python world because I'm
+
+00:20:17.920 --> 00:20:19.980
+<v Larry Ogrodnek>I'm working, you know, especially at work, I'm working on Python apps.
+
+00:20:20.090 --> 00:20:21.820
+<v Larry Ogrodnek>And that's the kind of world I live in.
+
+00:20:22.000 --> 00:20:26.200
+<v Larry Ogrodnek>And, you know, it's, it's, we can't change everything over to different languages.
+
+00:20:26.460 --> 00:20:28.520
+<v Michael Kennedy>Just, you know, I'll throw it out there for you.
+
+00:20:28.530 --> 00:20:29.860
+<v Michael Kennedy>You don't have to take the bullets.
+
+00:20:30.050 --> 00:20:33.780
+<v Michael Kennedy>But I think functional programming languages are super interesting.
+
+00:20:34.400 --> 00:20:38.420
+<v Michael Kennedy>They apply really well in certain to solve certain problems.
+
+00:20:38.530 --> 00:20:41.760
+<v Michael Kennedy>And I know some people, it's the hammer for all nails.
+
+00:20:42.460 --> 00:20:46.940
+<v Michael Kennedy>But for most people, functional programming is, it's just not what they're working in.
+
+00:20:47.020 --> 00:20:52.920
+<v Michael Kennedy>you know, things where you can change variables and have state turn out to be more productive
+
+00:20:53.000 --> 00:20:59.200
+<v Michael Kennedy>ways to write code, even if it maybe is not provably as correct or as thread safe or whatever,
+
+00:20:59.460 --> 00:20:59.560
+<v Michael Kennedy>right?
+
+00:20:59.600 --> 00:21:05.000
+<v Michael Kennedy>Like, so if most people are going to adopt it, most people are not using functional programming
+
+00:21:05.140 --> 00:21:08.980
+<v Michael Kennedy>languages and Erlang in particular, Python happens to be more popular than Erlang.
+
+00:21:09.220 --> 00:21:09.460
+<v Michael Kennedy>Yeah.
+
+00:21:09.900 --> 00:21:10.040
+<v Larry Ogrodnek>Yeah.
+
+00:21:10.220 --> 00:21:13.560
+<v Larry Ogrodnek>Well, there's different, I'll let you take those bullets, Michael.
+
+00:21:13.640 --> 00:21:16.580
+<v Larry Ogrodnek>But yeah, I mean, look, different languages are good for different use cases, right?
+
+00:21:16.760 --> 00:21:19.900
+<v Larry Ogrodnek>And but again, I think it's a really great idea that I thought, let me steal this.
+
+00:21:20.120 --> 00:21:24.240
+<v Larry Ogrodnek>And so, yeah, this is something that was written by, I think, Chris McCord is like the author of Live View.
+
+00:21:24.440 --> 00:21:26.300
+<v Larry Ogrodnek>And it's been around, yeah, for a long time.
+
+00:21:26.460 --> 00:21:27.300
+<v Larry Ogrodnek>It's gone through different iterations.
+
+00:21:28.260 --> 00:21:31.920
+<v Larry Ogrodnek>But yeah, it's incredibly popular in that ecosystem.
+
+00:21:32.180 --> 00:21:34.940
+<v Larry Ogrodnek>And yeah, they've done, I think, really great, great things with it.
+
+00:21:35.600 --> 00:21:35.920
+<v Michael Kennedy>Yeah.
+
+00:21:35.960 --> 00:21:38.300
+<v Michael Kennedy>And let's I just want to give a little shout out.
+
+00:21:38.440 --> 00:21:46.180
+<v Michael Kennedy>If you go to the Phoenix Live View GitHub, which, of course, I'll link in the show notes, there's a live demo on Fly that you can check out.
+
+00:21:46.380 --> 00:21:48.440
+<v Michael Kennedy>And there's also a two minute video.
+
+00:21:49.140 --> 00:21:49.940
+<v Michael Kennedy>Watch the two minute video.
+
+00:21:50.480 --> 00:21:56.920
+<v Michael Kennedy>It really shows like, okay, this is a quite an interesting and quite capable technology.
+
+00:21:56.960 --> 00:22:00.480
+<v Michael Kennedy>It might sound like, oh, you can't do very much with this because I don't know.
+
+00:22:00.880 --> 00:22:02.980
+<v Michael Kennedy>It seems like it's only built to make a few things easy.
+
+00:22:03.380 --> 00:22:07.680
+<v Michael Kennedy>I, after watching what he built there with this app with Phoenix Live View, I was impressed.
+
+00:22:08.120 --> 00:22:08.740
+<v Michael Kennedy>It's quite flexible.
+
+00:22:09.140 --> 00:22:09.680
+<v Larry Ogrodnek>No, for sure.
+
+00:22:09.840 --> 00:22:11.980
+<v Larry Ogrodnek>And there's a lot of, I think it took a lot of work to get there too, right?
+
+00:22:12.100 --> 00:22:16.340
+<v Larry Ogrodnek>Just to give, you know, them a little more, a lot of credit, like, because a lot of the
+
+00:22:16.420 --> 00:22:29.580
+<v Larry Ogrodnek>I mean, it's interesting because like once you take this approach to being having everything over WebSockets, well, then actually it's pretty great because it opens up a lot of things that could be hard, like things like, yeah, like presence, like knowing different users that are, you know, on the same documenter page as you or like server pushes.
+
+00:22:29.770 --> 00:22:35.800
+<v Larry Ogrodnek>You kind of get a lot of that stuff, not, you know, for free, but it's easy when that's kind of your base layer is everything over WebSockets.
+
+00:22:35.850 --> 00:22:42.540
+<v Larry Ogrodnek>But then some things like file uploads, like as part of this, they invented a way to kind of do file uploads over WebSockets.
+
+00:22:43.320 --> 00:22:43.980
+<v Larry Ogrodnek>Oh, that's interesting.
+
+00:22:44.060 --> 00:22:47.960
+<v Larry Ogrodnek>Yeah, because how do you do that, right?
+
+00:22:48.290 --> 00:22:51.000
+<v Larry Ogrodnek>And WebSecrets do support both like text and binary messages.
+
+00:22:51.220 --> 00:22:55.240
+<v Larry Ogrodnek>So it's not as crazy as you would think, but there is like a limit to, you know, you have to kind of, you know, chunk it and stuff like that.
+
+00:22:55.380 --> 00:22:58.180
+<v Larry Ogrodnek>But so it supports that.
+
+00:22:58.240 --> 00:23:04.220
+<v Larry Ogrodnek>And, you know, I mean, again, we can talk more about file, but there are other options for also going like direct to S3 or, you know, different things.
+
+00:23:04.440 --> 00:23:08.020
+<v Larry Ogrodnek>But, yeah, you know, a lot of work has gone into this and including around the optimization.
+
+00:23:08.270 --> 00:23:09.440
+<v Larry Ogrodnek>Like, what is that message format?
+
+00:23:09.520 --> 00:23:13.920
+<v Larry Ogrodnek>Like, how do you send minimal diffs for not just things like, you know, simple template changes?
+
+00:23:14.140 --> 00:23:19.820
+<v Larry Ogrodnek>but when you have lists or components or maybe you have huge lists of things,
+
+00:23:20.940 --> 00:23:24.620
+<v Larry Ogrodnek>how do you efficiently manage that on both the server side and the client side? And so I think
+
+00:23:24.700 --> 00:23:29.580
+<v Larry Ogrodnek>there's a lot of great ideas for dealing with this that were pioneered by Phoenix Live View that I
+
+00:23:29.590 --> 00:23:34.960
+<v Larry Ogrodnek>get to come along and kind of just steal. That's cool. Here's the downtime version.
+
+00:23:36.480 --> 00:23:41.020
+<v Larry Ogrodnek>Yeah, exactly. And I think that's kind of was like a lot of the focus early on was trying to
+
+00:23:40.940 --> 00:23:47.080
+<v Larry Ogrodnek>to stick to this just because, again, PyView, like you said, it is very early days and it is just
+
+00:23:47.260 --> 00:23:51.440
+<v Larry Ogrodnek>kind of like a personal side project. Although I am using it at my day job for a couple of production
+
+00:23:51.660 --> 00:23:59.020
+<v Larry Ogrodnek>apps now, which has been fantastic. But as a single developer with a Python web framework as a side
+
+00:23:59.120 --> 00:24:03.660
+<v Larry Ogrodnek>project, it was great to have a little bit of a roadmap on if I follow these patterns, I'm probably
+
+00:24:03.670 --> 00:24:08.840
+<v Larry Ogrodnek>going to end up in a good place. And I did. Of course, I did try and make things more Pythonic
+
+00:24:08.860 --> 00:24:09.600
+<v Larry Ogrodnek>where I could.
+
+00:24:11.220 --> 00:24:13.160
+<v Larry Ogrodnek>So PyView is very heavily typed.
+
+00:24:13.580 --> 00:24:15.480
+<v Larry Ogrodnek>So we're using obviously Python types for everything.
+
+00:24:15.740 --> 00:24:19.600
+<v Larry Ogrodnek>Whereas Elixir, I think they're adding types now.
+
+00:24:19.720 --> 00:24:22.280
+<v Larry Ogrodnek>It's been an ongoing thing to add some gradual typing
+
+00:24:22.340 --> 00:24:23.180
+<v Larry Ogrodnek>like Python has done.
+
+00:24:23.380 --> 00:24:25.680
+<v Larry Ogrodnek>But Python is a little further along
+
+00:24:25.720 --> 00:24:27.180
+<v Larry Ogrodnek>in terms of the typing story there.
+
+00:24:27.960 --> 00:24:31.340
+<v Larry Ogrodnek>And I think over time, maybe we'll diverge a little bit
+
+00:24:31.340 --> 00:24:34.100
+<v Larry Ogrodnek>in terms of making the APIs more Pythonic
+
+00:24:34.540 --> 00:24:35.760
+<v Larry Ogrodnek>to the extent anything is not.
+
+00:24:36.340 --> 00:24:38.820
+<v Larry Ogrodnek>But yeah, for sure, having this kind of at least
+
+00:24:38.840 --> 00:24:42.480
+<v Larry Ogrodnek>this core level protocol has been useful to follow.
+
+00:24:42.780 --> 00:24:46.160
+<v Michael Kennedy>Yeah, they've kind of worked out how the exchange works
+
+00:24:46.340 --> 00:24:47.160
+<v Michael Kennedy>and all those different things.
+
+00:24:47.320 --> 00:24:48.320
+<v Michael Kennedy>You're like, OK, let me do the--
+
+00:24:48.320 --> 00:24:49.980
+<v Larry Ogrodnek>Yeah, and I sort of have a roadmap to like,
+
+00:24:50.080 --> 00:24:51.220
+<v Larry Ogrodnek>oh, these are the problems you're going to get into.
+
+00:24:51.420 --> 00:24:53.020
+<v Larry Ogrodnek>Because that's when I first started PyView.
+
+00:24:55.000 --> 00:24:57.920
+<v Larry Ogrodnek>So I did start it a couple years ago, just as a very--
+
+00:24:58.440 --> 00:25:00.820
+<v Larry Ogrodnek>but again, very sparse.
+
+00:25:00.960 --> 00:25:03.760
+<v Larry Ogrodnek>Like, can I get anything to show up on the page over Websockets?
+
+00:25:03.840 --> 00:25:05.080
+<v Larry Ogrodnek>And then kind of iterated.
+
+00:25:05.560 --> 00:25:07.179
+<v Larry Ogrodnek>And it's interesting to--
+
+00:25:07.200 --> 00:25:09.180
+<v Larry Ogrodnek>when I started the first version of the LiveView client
+
+00:25:09.320 --> 00:25:10.700
+<v Larry Ogrodnek>JavaScript I used, then figuring out
+
+00:25:10.730 --> 00:25:12.560
+<v Larry Ogrodnek>what changed between that and the next version
+
+00:25:12.630 --> 00:25:13.760
+<v Larry Ogrodnek>and the next version and the next version.
+
+00:25:13.940 --> 00:25:15.820
+<v Larry Ogrodnek>You get to see the gradual progression of like,
+
+00:25:16.000 --> 00:25:17.480
+<v Larry Ogrodnek>oh, these are some problems we're going to run into,
+
+00:25:17.880 --> 00:25:20.360
+<v Larry Ogrodnek>because they've sort of addressed that in this future version.
+
+00:25:20.730 --> 00:25:21.760
+<v Larry Ogrodnek>But I still have to deal with it,
+
+00:25:22.380 --> 00:25:23.420
+<v Larry Ogrodnek>but I'll get there at some point.
+
+00:25:23.740 --> 00:25:25.720
+<v Michael Kennedy>Yeah, go look at the closed GitHub issues,
+
+00:25:25.790 --> 00:25:27.440
+<v Larry Ogrodnek>and you're like, whoa, there's a lot of conversation
+
+00:25:27.620 --> 00:25:28.020
+<v Larry Ogrodnek>around this one.
+
+00:25:28.620 --> 00:25:28.980
+<v Michael Kennedy>Yeah.
+
+00:25:29.440 --> 00:25:29.660
+<v Michael Kennedy>Interesting.
+
+00:25:30.860 --> 00:25:33.680
+<v Michael Kennedy>So I think a nice thing to do for people
+
+00:25:34.060 --> 00:25:36.500
+<v Michael Kennedy>would be to just do a quick walkthrough,
+
+00:25:36.840 --> 00:25:39.660
+<v Michael Kennedy>because you've got a nice little getting started thing.
+
+00:25:40.180 --> 00:25:43.280
+<v Michael Kennedy>You've just got to be careful that most people are listening, not seeing.
+
+00:25:43.650 --> 00:25:46.640
+<v Michael Kennedy>But let's talk through, let's maybe talk through what it means to create
+
+00:25:46.670 --> 00:25:49.280
+<v Michael Kennedy>just like a real simple program in PyView.
+
+00:25:49.680 --> 00:25:49.900
+<v Larry Ogrodnek>Sure.
+
+00:25:50.400 --> 00:25:54.180
+<v Larry Ogrodnek>Yeah, so I do, yeah, so the documentation is something, again,
+
+00:25:54.260 --> 00:25:57.200
+<v Larry Ogrodnek>it's a work in progress, but I did try to get to start getting some things together.
+
+00:25:57.480 --> 00:25:59.500
+<v Larry Ogrodnek>So yeah, I do have a cookie cutter project.
+
+00:25:59.710 --> 00:26:01.320
+<v Larry Ogrodnek>And I think, you know, the first one in documentation,
+
+00:26:02.060 --> 00:26:03.220
+<v Larry Ogrodnek>if you check out the cookie cutter project,
+
+00:26:03.400 --> 00:26:07.380
+<v Larry Ogrodnek>It gives you like a very quick project setup.
+
+00:26:08.700 --> 00:26:09.340
+<v Larry Ogrodnek>Sorry, I'm just going to go.
+
+00:26:09.360 --> 00:26:10.360
+<v Michael Kennedy>Yeah, for people who don't know,
+
+00:26:10.500 --> 00:26:12.460
+<v Michael Kennedy>like Cookie Cutter is a way to take
+
+00:26:12.500 --> 00:26:15.380
+<v Michael Kennedy>a pre-structured set of source files
+
+00:26:15.580 --> 00:26:17.820
+<v Michael Kennedy>of all varieties, even images and other things,
+
+00:26:18.200 --> 00:26:20.020
+<v Michael Kennedy>and say, I'm going to ask you a few questions,
+
+00:26:20.380 --> 00:26:21.220
+<v Michael Kennedy>I'm going to do a little text replace,
+
+00:26:21.640 --> 00:26:23.500
+<v Michael Kennedy>and then I'm going to generate that structure for you.
+
+00:26:23.720 --> 00:26:26.080
+<v Michael Kennedy>So a very nice way to kind of go like,
+
+00:26:26.380 --> 00:26:27.460
+<v Michael Kennedy>all right, we got everything set up
+
+00:26:27.940 --> 00:26:28.820
+<v Michael Kennedy>for you to get started, right?
+
+00:26:29.240 --> 00:26:29.580
+<v Larry Ogrodnek>Right, exactly.
+
+00:26:29.760 --> 00:26:30.920
+<v Larry Ogrodnek>Because I really wanted to get, you know,
+
+00:26:31.100 --> 00:26:33.440
+<v Larry Ogrodnek>And part of the thought with PyView
+
+00:26:33.440 --> 00:26:36.200
+<v Larry Ogrodnek>is I really do want it to be super easy to get started,
+
+00:26:37.140 --> 00:26:39.540
+<v Larry Ogrodnek>not just for other people, but also for myself.
+
+00:26:39.840 --> 00:26:41.380
+<v Larry Ogrodnek>Like, if I have a new idea of something,
+
+00:26:41.560 --> 00:26:43.480
+<v Larry Ogrodnek>it's like I want to go from zero to one super quickly.
+
+00:26:43.530 --> 00:26:44.980
+<v Larry Ogrodnek>And that's kind of been part of the motivation.
+
+00:26:45.070 --> 00:26:46.680
+<v Larry Ogrodnek>And so this cookie cutter is a great way to--
+
+00:26:46.960 --> 00:26:47.840
+<v Larry Ogrodnek>so you check out the cookie cutter,
+
+00:26:48.100 --> 00:26:50.620
+<v Larry Ogrodnek>and then you basically have a working example right away
+
+00:26:50.900 --> 00:26:51.820
+<v Larry Ogrodnek>with just the simple counter.
+
+00:26:51.930 --> 00:26:55.800
+<v Larry Ogrodnek>And so this example uses poetry for dependency management.
+
+00:26:56.100 --> 00:26:59.319
+<v Larry Ogrodnek>So if you do poetry install, and then--
+
+00:26:59.340 --> 00:27:01.540
+<v Larry Ogrodnek>It also includes Just, which is a command line runner.
+
+00:27:02.140 --> 00:27:03.700
+<v Larry Ogrodnek>So Just, it's kind of like--
+
+00:27:03.770 --> 00:27:04.640
+<v Larry Ogrodnek>I don't know if you've talked about this before,
+
+00:27:04.920 --> 00:27:07.620
+<v Larry Ogrodnek>but if anyone's ever used Makefiles or things
+
+00:27:07.780 --> 00:27:10.780
+<v Larry Ogrodnek>like that for doing common project tasks,
+
+00:27:11.780 --> 00:27:13.960
+<v Larry Ogrodnek>Just is a tool like that, but specifically written
+
+00:27:14.230 --> 00:27:15.740
+<v Larry Ogrodnek>for these types of things.
+
+00:27:15.790 --> 00:27:17.680
+<v Larry Ogrodnek>And so if you use Makefiles, you know
+
+00:27:17.800 --> 00:27:18.800
+<v Larry Ogrodnek>there's a lot of tricks you have to do
+
+00:27:18.900 --> 00:27:20.920
+<v Larry Ogrodnek>to kind of get it to work in the way you want
+
+00:27:21.130 --> 00:27:22.320
+<v Larry Ogrodnek>versus as a build tool.
+
+00:27:22.760 --> 00:27:26.660
+<v Larry Ogrodnek>And so Just kind of works the right way a lot easier,
+
+00:27:26.880 --> 00:27:27.820
+<v Larry Ogrodnek>and it's something that kind of--
+
+00:27:27.820 --> 00:27:28.100
+<v Larry Ogrodnek>Yeah, exactly.
+
+00:27:28.680 --> 00:27:29.420
+<v Larry Ogrodnek>I'm using more and more.
+
+00:27:29.760 --> 00:27:32.000
+<v Larry Ogrodnek>So if you check out the-- if you run the cookie cutter,
+
+00:27:32.430 --> 00:27:33.960
+<v Larry Ogrodnek>run poetry install, and then run just,
+
+00:27:34.900 --> 00:27:39.300
+<v Larry Ogrodnek>it'll tell you to open localhost to 8,000 in your browser.
+
+00:27:39.330 --> 00:27:41.460
+<v Larry Ogrodnek>And you'll have a counter example up and running already.
+
+00:27:42.520 --> 00:27:43.880
+<v Larry Ogrodnek>And the kind of interesting thing,
+
+00:27:44.000 --> 00:27:46.260
+<v Larry Ogrodnek>if you want to play along with this more--
+
+00:27:46.260 --> 00:27:48.620
+<v Larry Ogrodnek>and I do have this in the docs in terms of what's going on here.
+
+00:27:48.820 --> 00:27:51.680
+<v Larry Ogrodnek>But it's a really good example to kind of open up
+
+00:27:51.740 --> 00:27:57.519
+<v Larry Ogrodnek>in Firefox or Chrome, and then open the developer tools
+
+00:27:57.540 --> 00:27:58.220
+<v Larry Ogrodnek>and the network tab.
+
+00:27:58.680 --> 00:28:01.820
+<v Larry Ogrodnek>And when you load the page, what you'll see is--
+
+00:28:02.050 --> 00:28:04.680
+<v Larry Ogrodnek>and this is kind of the Live View model, right?
+
+00:28:05.180 --> 00:28:08.560
+<v Larry Ogrodnek>There's an initial page load, which is like the server--
+
+00:28:08.730 --> 00:28:12.980
+<v Larry Ogrodnek>so it goes to your view, and it runs your templating logic.
+
+00:28:13.340 --> 00:28:15.420
+<v Larry Ogrodnek>And it returns that as just straight HTML,
+
+00:28:15.590 --> 00:28:16.320
+<v Larry Ogrodnek>like a normal web page.
+
+00:28:16.460 --> 00:28:17.600
+<v Larry Ogrodnek>So if you had turned off JavaScript,
+
+00:28:18.400 --> 00:28:19.800
+<v Larry Ogrodnek>you'd still get the page back.
+
+00:28:20.460 --> 00:28:22.040
+<v Larry Ogrodnek>But if you have JavaScript on, which is obviously intention,
+
+00:28:22.570 --> 00:28:24.620
+<v Larry Ogrodnek>then what happens is included in that initial page load
+
+00:28:24.900 --> 00:28:26.400
+<v Larry Ogrodnek>is some JavaScript that comes back.
+
+00:28:26.760 --> 00:28:27.360
+<v Larry Ogrodnek>- Oh, obviously you have it open, Michael.
+
+00:28:27.460 --> 00:28:29.060
+<v Larry Ogrodnek>Yeah, so if you, if you, yeah, exactly.
+
+00:28:29.540 --> 00:28:31.220
+<v Larry Ogrodnek>So the HTML is right there.
+
+00:28:31.300 --> 00:28:32.780
+<v Larry Ogrodnek>So that's like the full HTML of the page.
+
+00:28:32.920 --> 00:28:34.040
+<v Larry Ogrodnek>So yeah, if you had turned off JavaScript,
+
+00:28:34.340 --> 00:28:35.260
+<v Larry Ogrodnek>that part would still work.
+
+00:28:35.560 --> 00:28:36.320
+<v Larry Ogrodnek>But then if you click on the,
+
+00:28:37.420 --> 00:28:39.600
+<v Larry Ogrodnek>do you see in there a WebSocket connection in your--
+
+00:28:39.700 --> 00:28:41.800
+<v Michael Kennedy>- Oh yeah, somewhere, socket, yep.
+
+00:28:42.080 --> 00:28:42.760
+<v Larry Ogrodnek>- So if you click on that,
+
+00:28:42.840 --> 00:28:44.080
+<v Larry Ogrodnek>you can see the messages back and forth.
+
+00:28:44.200 --> 00:28:46.940
+<v Larry Ogrodnek>So when you click on the messages tab there, yeah.
+
+00:28:47.440 --> 00:28:49.100
+<v Larry Ogrodnek>And so you can see--
+
+00:28:49.180 --> 00:28:49.660
+<v Michael Kennedy>- Interesting.
+
+00:28:49.960 --> 00:28:50.120
+<v Larry Ogrodnek>- Right.
+
+00:28:50.520 --> 00:28:53.540
+<v Michael Kennedy>- Yeah, so there's a whole set of examples,
+
+00:28:54.200 --> 00:28:55.880
+<v Michael Kennedy>or live interactive examples,
+
+00:28:56.320 --> 00:29:01.780
+<v Michael Kennedy>people can just go to pyv.rocks and click live examples and do this to see it right yeah yeah
+
+00:29:02.040 --> 00:29:06.980
+<v Larry Ogrodnek>okay this is super cool yeah that message you have right there it says diff zero one so like zero is
+
+00:29:07.040 --> 00:29:11.080
+<v Larry Ogrodnek>like the kind of slot in the template and so it says now that should be one so you click you know
+
+00:29:11.220 --> 00:29:14.640
+<v Larry Ogrodnek>plus again then the new message will be diff you know whatever and you can see this message says
+
+00:29:14.780 --> 00:29:19.200
+<v Larry Ogrodnek>event increment so this is what goes to your back end is you're getting a click event for increment
+
+00:29:19.550 --> 00:29:26.280
+<v Michael Kennedy>and you're sending back a response um and so yeah it's so does it like uh instrument your html with
+
+00:29:26.300 --> 00:29:29.280
+<v Michael Kennedy>of identifiers or something like that to then be able to do this?
+
+00:29:29.620 --> 00:29:34.240
+<v Larry Ogrodnek>Yeah, and so that was one of the things that I've been so unhappy with for a while
+
+00:29:34.660 --> 00:29:39.120
+<v Larry Ogrodnek>with PyView is because when I first started doing this, I was like, okay, I want a nice
+
+00:29:39.620 --> 00:29:43.900
+<v Larry Ogrodnek>HTML templating language, right? Or maybe even it'd be better if it was pluggable,
+
+00:29:44.040 --> 00:29:49.200
+<v Larry Ogrodnek>if you could use whatever templating language you want. But the problem is, most Python templating
+
+00:29:49.380 --> 00:29:55.480
+<v Larry Ogrodnek>languages, the input is your template and some data, and the output is a string.
+
+00:29:55.800 --> 00:29:59.580
+<v Larry Ogrodnek>And for this, what we're trying to produce is like a render tree.
+
+00:30:00.060 --> 00:30:08.020
+<v Larry Ogrodnek>And so really the mental model is a lot more like t-strings, if people are familiar with t-strings, where you have like a template, right?
+
+00:30:08.220 --> 00:30:15.560
+<v Larry Ogrodnek>Your HTML template, and it's separated into static parts, like strings, and dynamic parts, like things to be evaluated.
+
+00:30:15.920 --> 00:30:17.400
+<v Larry Ogrodnek>And that's kind of the live view model.
+
+00:30:17.470 --> 00:30:22.620
+<v Larry Ogrodnek>And the pie view model is like, basically, we take a template and we convert it into a list of statics and dynamics.
+
+00:30:22.900 --> 00:30:26.500
+<v Larry Ogrodnek>And each dynamic, like each evaluation spot itself
+
+00:30:28.020 --> 00:30:29.600
+<v Larry Ogrodnek>has static parts and dynamic parts.
+
+00:30:30.700 --> 00:30:32.140
+<v Larry Ogrodnek>And so we have to take an HTML template
+
+00:30:32.280 --> 00:30:33.800
+<v Larry Ogrodnek>and turn it into this render tree.
+
+00:30:34.240 --> 00:30:38.760
+<v Larry Ogrodnek>And so again, this is like a huge pain point
+
+00:30:39.040 --> 00:30:41.640
+<v Larry Ogrodnek>because I couldn't find a templating language that would
+
+00:30:41.640 --> 00:30:42.680
+<v Larry Ogrodnek>let me kind of get that level of control.
+
+00:30:42.840 --> 00:30:44.600
+<v Larry Ogrodnek>And maybe there is one, and I'm not familiar with it.
+
+00:30:44.600 --> 00:30:46.320
+<v Larry Ogrodnek>Or maybe there is a way to get to these internals.
+
+00:30:46.340 --> 00:30:47.040
+<v Larry Ogrodnek>I'm not familiar with it.
+
+00:30:47.180 --> 00:30:51.980
+<v Larry Ogrodnek>But what I am doing was there is this library called IBIS,
+
+00:30:52.080 --> 00:30:56.100
+<v Larry Ogrodnek>which someone had wrote an open source as a tutorial
+
+00:30:56.330 --> 00:30:57.660
+<v Larry Ogrodnek>on how to write your own templating language.
+
+00:30:57.960 --> 00:31:01.760
+<v Larry Ogrodnek>And so it's very similar to Jinja 2, but a lot simpler.
+
+00:31:01.830 --> 00:31:03.920
+<v Larry Ogrodnek>And so that was the initial templating language for PyView
+
+00:31:04.730 --> 00:31:09.980
+<v Larry Ogrodnek>because I could hack it just enough to get both HTML
+
+00:31:10.560 --> 00:31:15.320
+<v Larry Ogrodnek>and also this more template-like view that I need.
+
+00:31:15.440 --> 00:31:16.540
+<v Larry Ogrodnek>This is one of the things that I'm
+
+00:31:16.610 --> 00:31:21.159
+<v Larry Ogrodnek>very excited about with now that we have t-strings in 3.14
+
+00:31:21.180 --> 00:31:24.800
+<v Larry Ogrodnek>is that I think that model just maps so directly to this.
+
+00:31:24.910 --> 00:31:26.920
+<v Larry Ogrodnek>And I'm hopeful that we'll have a lot of different rendering
+
+00:31:27.160 --> 00:31:29.220
+<v Larry Ogrodnek>libraries or templating language for HTML.
+
+00:31:29.900 --> 00:31:31.220
+<v Larry Ogrodnek>Like I know there's already a good one,
+
+00:31:32.000 --> 00:31:33.680
+<v Larry Ogrodnek>or it's a work in progress called T-DOM
+
+00:31:34.520 --> 00:31:38.200
+<v Larry Ogrodnek>that people are working on to make t-strings more HTML--
+
+00:31:38.300 --> 00:31:39.740
+<v Larry Ogrodnek>not friendly, not that they're not already,
+
+00:31:40.680 --> 00:31:41.840
+<v Larry Ogrodnek>but there are certain things you want.
+
+00:31:42.020 --> 00:31:43.400
+<v Larry Ogrodnek>Like obviously, you want to be able to just
+
+00:31:43.620 --> 00:31:46.720
+<v Larry Ogrodnek>automatically scaping of user input so it's not malicious.
+
+00:31:47.280 --> 00:31:50.280
+<v Larry Ogrodnek>Maybe even merging things in HTML attributes.
+
+00:31:50.520 --> 00:31:54.400
+<v Larry Ogrodnek>Like there's nicer things you can kind of do when you're thinking about the HTML use case, right?
+
+00:31:55.060 --> 00:32:02.920
+<v Larry Ogrodnek>But I like having like a template as like the core building block, because if you can get to a template, that's super easy to turn into like the structure we need for a live view.
+
+00:32:03.340 --> 00:32:06.640
+<v Larry Ogrodnek>And I imagine there'll be multiple ways to do that in the future, you know?
+
+00:32:06.920 --> 00:32:08.280
+<v Michael Kennedy>Yeah, very interesting.
+
+00:32:08.440 --> 00:32:18.360
+<v Michael Kennedy>It sounds a little bit like almost a concrete syntax tree of the DOM that you've got to like, okay, we've got to understand all the pieces and what parts get pushed down.
+
+00:32:18.600 --> 00:32:23.300
+<v Michael Kennedy>Like from here down is the chunk we got to send down because this part changed.
+
+00:32:23.610 --> 00:32:24.200
+<v Larry Ogrodnek>Exactly, exactly.
+
+00:32:24.860 --> 00:32:26.600
+<v Larry Ogrodnek>And yeah, like you said, it is a little bit like that.
+
+00:32:26.600 --> 00:32:29.400
+<v Larry Ogrodnek>I mean, because there's, you know, it's not even as simple as like this,
+
+00:32:29.670 --> 00:32:34.960
+<v Larry Ogrodnek>because there is like some special handling for things like components, you know,
+
+00:32:35.820 --> 00:32:37.580
+<v Larry Ogrodnek>are sort of managed slightly differently.
+
+00:32:38.090 --> 00:32:41.480
+<v Larry Ogrodnek>And then even kind of that, like if you had, this is like not a great example,
+
+00:32:41.510 --> 00:32:44.640
+<v Larry Ogrodnek>but if you had multiple counters on your page, maybe you'd want to optimize like,
+
+00:32:44.760 --> 00:32:48.340
+<v Larry Ogrodnek>well, they really just need one set of static content for all the counters.
+
+00:32:48.640 --> 00:32:50.340
+<v Larry Ogrodnek>even though we kind of want to manage them separately.
+
+00:32:50.450 --> 00:32:52.520
+<v Larry Ogrodnek>And so there's different optimizations like that that are done.
+
+00:32:53.670 --> 00:32:54.540
+<v Larry Ogrodnek>But yeah, it is.
+
+00:32:54.740 --> 00:32:56.120
+<v Larry Ogrodnek>Everything comes from this kind of render tree
+
+00:32:56.380 --> 00:32:58.080
+<v Larry Ogrodnek>is how we can do those diffs.
+
+00:32:58.400 --> 00:32:58.600
+<v Michael Kennedy>Okay.
+
+00:32:59.010 --> 00:33:00.860
+<v Michael Kennedy>Let's talk through these examples a tad more.
+
+00:33:01.160 --> 00:33:02.720
+<v Michael Kennedy>And we don't necessarily need this going.
+
+00:33:03.320 --> 00:33:06.080
+<v Michael Kennedy>But, you know, back to the Alessio pointed out,
+
+00:33:06.130 --> 00:33:07.460
+<v Michael Kennedy>the HTMX example.
+
+00:33:07.580 --> 00:33:09.500
+<v Michael Kennedy>If you go to the HTMX website,
+
+00:33:09.800 --> 00:33:11.620
+<v Michael Kennedy>there's a bunch of cool live examples there as well.
+
+00:33:11.780 --> 00:33:13.220
+<v Michael Kennedy>And literally in the page,
+
+00:33:13.720 --> 00:33:16.080
+<v Michael Kennedy>Carson has put it such that you see these exchanges
+
+00:33:16.420 --> 00:33:17.460
+<v Michael Kennedy>as you interact with it.
+
+00:33:17.460 --> 00:33:17.780
+<v Michael Kennedy>You know what I mean?
+
+00:33:17.900 --> 00:33:19.980
+<v Michael Kennedy>That's how significant that is.
+
+00:33:20.330 --> 00:33:24.020
+<v Michael Kennedy>So maybe let's pick out just a couple of the examples here
+
+00:33:24.220 --> 00:33:27.640
+<v Michael Kennedy>that we could talk through that you think are worth pointing out.
+
+00:33:27.680 --> 00:33:30.760
+<v Michael Kennedy>Some of the capabilities are inspiring, but not insane.
+
+00:33:31.030 --> 00:33:31.360
+<v Michael Kennedy>I don't know.
+
+00:33:31.360 --> 00:33:31.880
+<v Larry Ogrodnek>JOHN MCWHORTER: Sure.
+
+00:33:32.110 --> 00:33:34.940
+<v Larry Ogrodnek>I mean, a really quick one is this volume control,
+
+00:33:35.060 --> 00:33:36.200
+<v Larry Ogrodnek>like the third one up at the top, which
+
+00:33:36.700 --> 00:33:38.720
+<v Larry Ogrodnek>it's not a super interesting example.
+
+00:33:39.100 --> 00:33:43.320
+<v Larry Ogrodnek>But just the thing about it is that it has keyboard control.
+
+00:33:43.410 --> 00:33:47.040
+<v Larry Ogrodnek>So you can see it's super easy to just do keyboard bindings.
+
+00:33:47.180 --> 00:33:48.540
+<v Larry Ogrodnek>And this is one of those things where like--
+
+00:33:48.540 --> 00:33:49.280
+<v Larry Ogrodnek>- Just arrow keys.
+
+00:33:49.880 --> 00:33:51.440
+<v Larry Ogrodnek>- Yeah, I mean, which seems like a small thing.
+
+00:33:51.440 --> 00:33:52.200
+<v Larry Ogrodnek>- I'm not using the mouse, right?
+
+00:33:52.500 --> 00:33:52.940
+<v Larry Ogrodnek>There it goes.
+
+00:33:53.660 --> 00:33:54.480
+<v Larry Ogrodnek>- Seems like a small thing,
+
+00:33:54.560 --> 00:33:56.160
+<v Larry Ogrodnek>but it's one of those things when you start to dive into,
+
+00:33:56.380 --> 00:33:59.300
+<v Larry Ogrodnek>right, like, you know, even like, you know,
+
+00:33:59.420 --> 00:34:00.900
+<v Larry Ogrodnek>sometimes you might wonder like, you know,
+
+00:34:01.140 --> 00:34:02.920
+<v Larry Ogrodnek>why are there all these different HTML component libraries
+
+00:34:03.140 --> 00:34:03.960
+<v Larry Ogrodnek>that do things like a button?
+
+00:34:04.180 --> 00:34:05.500
+<v Larry Ogrodnek>It's just like, well, you know,
+
+00:34:05.880 --> 00:34:07.560
+<v Larry Ogrodnek>when you wanna think about things like accessibility
+
+00:34:08.139 --> 00:34:09.500
+<v Larry Ogrodnek>and different languages and blah, blah, blah,
+
+00:34:09.800 --> 00:34:10.980
+<v Larry Ogrodnek>like there's actually a lot that goes into it.
+
+00:34:11.020 --> 00:34:13.040
+<v Larry Ogrodnek>And so something like keyboard bindings
+
+00:34:13.139 --> 00:34:16.079
+<v Larry Ogrodnek>is something I honestly would never take the time
+
+00:34:16.100 --> 00:34:18.399
+<v Larry Ogrodnek>to add to all that before because it seems like such an undertaking,
+
+00:34:19.010 --> 00:34:20.540
+<v Larry Ogrodnek>even though you could say, oh, it's simple.
+
+00:34:20.570 --> 00:34:23.139
+<v Larry Ogrodnek>You just add event handlers to all your things and blah, blah, blah.
+
+00:34:23.399 --> 00:34:27.260
+<v Larry Ogrodnek>But yeah, it was just slightly out of adding to an example project.
+
+00:34:27.620 --> 00:34:29.520
+<v Larry Ogrodnek>But now it's because it's built into the framework.
+
+00:34:29.980 --> 00:34:32.980
+<v Larry Ogrodnek>It's super easy, and it gets treated the same as any other event.
+
+00:34:33.300 --> 00:34:35.600
+<v Larry Ogrodnek>So pressing a key up or key down, send it to the event,
+
+00:34:35.720 --> 00:34:37.300
+<v Larry Ogrodnek>just clicking the button.
+
+00:34:37.409 --> 00:34:39.260
+<v Larry Ogrodnek>And so it's one of those things.
+
+00:34:39.760 --> 00:34:41.080
+<v Larry Ogrodnek>It's a simple example, but it's--
+
+00:34:41.090 --> 00:34:43.020
+<v Larry Ogrodnek>JOSHUA SHARFSTEIN: Yeah, so let me describe it for listeners.
+
+00:34:43.200 --> 00:34:45.800
+<v Michael Kennedy>So you've got this progress bar looking thing.
+
+00:34:46.000 --> 00:34:49.300
+<v Michael Kennedy>That's the volume control, like, you know, your standard macOS looking thing.
+
+00:34:49.639 --> 00:34:52.879
+<v Michael Kennedy>And it's got a mute button, a max volume, an up and down button.
+
+00:34:52.919 --> 00:34:57.260
+<v Michael Kennedy>And these are like buttons that, you know, you might be used to, but also you can just,
+
+00:34:57.660 --> 00:35:00.980
+<v Michael Kennedy>you know, use the arrow keys and it's just as if you're clicking the button and it all
+
+00:35:01.320 --> 00:35:05.580
+<v Michael Kennedy>updates even with like probably one of those CSS transitions to make it feel a little animated
+
+00:35:06.120 --> 00:35:06.980
+<v Michael Kennedy>instead of jumping.
+
+00:35:07.540 --> 00:35:07.600
+<v Michael Kennedy>Yeah.
+
+00:35:07.900 --> 00:35:08.400
+<v Michael Kennedy>Looks really nice.
+
+00:35:08.800 --> 00:35:10.420
+<v Michael Kennedy>So what about the source?
+
+00:35:12.640 --> 00:35:14.820
+<v Michael Kennedy>I think there's a couple interesting things here.
+
+00:35:14.890 --> 00:35:18.900
+<v Michael Kennedy>First of all, the volume.html, this looks Tailwind.
+
+00:35:18.990 --> 00:35:19.440
+<v Michael Kennedy>Is that right?
+
+00:35:19.760 --> 00:35:20.920
+<v Larry Ogrodnek>Yeah, this is using Tailwind.
+
+00:35:21.120 --> 00:35:21.200
+<v Larry Ogrodnek>Yeah.
+
+00:35:21.300 --> 00:35:21.440
+<v Larry Ogrodnek>Okay.
+
+00:35:21.840 --> 00:35:21.980
+<v Larry Ogrodnek>Yeah.
+
+00:35:23.420 --> 00:35:24.000
+<v Larry Ogrodnek>It's interesting.
+
+00:35:24.070 --> 00:35:27.900
+<v Larry Ogrodnek>I feel like it's one of those things where my first pass of this example's website used
+
+00:35:28.050 --> 00:35:30.480
+<v Larry Ogrodnek>almost no HTML CSS and was like super ugly.
+
+00:35:30.670 --> 00:35:35.440
+<v Larry Ogrodnek>But I kind of wanted the focus to be on like what is the, like what is like the really,
+
+00:35:35.490 --> 00:35:37.980
+<v Larry Ogrodnek>what are you really writing versus like what is, you know.
+
+00:35:38.320 --> 00:35:42.280
+<v Larry Ogrodnek>But I kind of gave in and used Talens because it looks a lot nicer.
+
+00:35:42.320 --> 00:35:45.240
+<v Larry Ogrodnek>It looks more professional, something people would want to pick up, right?
+
+00:35:45.700 --> 00:35:52.860
+<v Michael Kennedy>Yeah, I think this gets lost sometimes in different projects because, you know, I look at a lot of people send me projects all the time.
+
+00:35:52.920 --> 00:35:56.460
+<v Michael Kennedy>And like, hey, do you think this is what we're talking about in various venues or whatever?
+
+00:35:57.620 --> 00:36:04.060
+<v Michael Kennedy>Having something that looks like, oh, I wish my app looked like that or it did like that is highly inspiring.
+
+00:36:04.800 --> 00:36:15.280
+<v Michael Kennedy>It's not, you know, if you had like, hey, look, we have all of our live demos and they're exactly like 1993 web view, like appearance, but see how easy the program is.
+
+00:36:17.220 --> 00:36:24.700
+<v Michael Kennedy>I know if you look at this, the source, it's full of, you know, like P8 for padding eight and, you know, such and such.
+
+00:36:25.100 --> 00:36:25.520
+<v Michael Kennedy>It's worth it.
+
+00:36:25.760 --> 00:36:25.900
+<v Michael Kennedy>Right.
+
+00:36:26.320 --> 00:36:26.860
+<v Michael Kennedy>It's so worth it.
+
+00:36:27.160 --> 00:36:34.800
+<v Michael Kennedy>And the HTML is just pure HTML, except for you have these sort of attribute-driven things, right?
+
+00:36:35.200 --> 00:36:35.860
+<v Michael Kennedy>Right, exactly.
+
+00:36:36.050 --> 00:36:38.740
+<v Michael Kennedy>Can we talk about how is the HTML different then?
+
+00:36:39.220 --> 00:36:40.180
+<v Larry Ogrodnek>That's exactly it, yeah.
+
+00:36:40.250 --> 00:36:47.620
+<v Larry Ogrodnek>So for this example, the difference is, right, for a button, we have this phx click attribute,
+
+00:36:49.200 --> 00:36:53.460
+<v Larry Ogrodnek>which is what tells, you know, wires up with Phoenix Live View that when someone clicks on this,
+
+00:36:53.590 --> 00:36:54.560
+<v Larry Ogrodnek>we should send this event call.
+
+00:36:54.680 --> 00:36:56.420
+<v Larry Ogrodnek>So the first one says phx click equals down.
+
+00:36:57.020 --> 00:37:00.740
+<v Larry Ogrodnek>And so when someone clicks on that button, we send an event to the server that just says,
+
+00:37:00.870 --> 00:37:02.080
+<v Larry Ogrodnek>like, you know, click down.
+
+00:37:02.410 --> 00:37:07.120
+<v Larry Ogrodnek>And there's also this PHS, PHX window key down and PHX key.
+
+00:37:07.760 --> 00:37:12.560
+<v Larry Ogrodnek>So, you know, basically we're sending like a key update, you know, for this arrow down
+
+00:37:12.780 --> 00:37:13.940
+<v Larry Ogrodnek>is like one of the keys.
+
+00:37:14.070 --> 00:37:19.220
+<v Larry Ogrodnek>And so these parts are not something that I, again, this is like just the straight Phoenix,
+
+00:37:19.270 --> 00:37:21.800
+<v Larry Ogrodnek>like if you're an Elixir app, it would work exactly the same way.
+
+00:37:21.890 --> 00:37:24.120
+<v Larry Ogrodnek>You could take this HTML and run it on Elixir app.
+
+00:37:24.200 --> 00:37:28.040
+<v Larry Ogrodnek>And if you had the Elixir backend, it would work exactly the same way.
+
+00:37:28.070 --> 00:37:29.960
+<v Larry Ogrodnek>So that side looks exactly the same.
+
+00:37:30.200 --> 00:37:33.640
+<v Michael Kennedy>Yeah, I mean, what's the value in renaming that to PYW or something?
+
+00:37:34.940 --> 00:37:35.600
+<v Larry Ogrodnek>Yeah, I know.
+
+00:37:35.790 --> 00:37:37.540
+<v Larry Ogrodnek>And actually, I think you could.
+
+00:37:37.540 --> 00:37:42.300
+<v Larry Ogrodnek>I think they do have it configurable with the client JavaScript
+
+00:37:42.490 --> 00:37:44.580
+<v Larry Ogrodnek>where you can do a different specifier if you wanted to.
+
+00:37:44.720 --> 00:37:46.140
+<v Larry Ogrodnek>But it's kind of nice this way.
+
+00:37:46.230 --> 00:37:48.480
+<v Larry Ogrodnek>I mean, I think the other thing is, too, in the age of LLMs,
+
+00:37:49.040 --> 00:37:51.580
+<v Larry Ogrodnek>and just even examples, at this point,
+
+00:37:51.740 --> 00:37:54.160
+<v Larry Ogrodnek>there's a ton more Phoenix Live View code than there is
+
+00:37:54.200 --> 00:37:56.080
+<v Larry Ogrodnek>And so if you find a good LiveView example,
+
+00:37:56.440 --> 00:37:58.840
+<v Larry Ogrodnek>it's like you can get it to work in PyView hopefully.
+
+00:37:59.200 --> 00:37:59.760
+<v Larry Ogrodnek>- Yeah, that's interesting.
+
+00:37:59.860 --> 00:38:04.340
+<v Michael Kennedy>So in a sense, the front end stuff is API compatible
+
+00:38:04.680 --> 00:38:06.280
+<v Michael Kennedy>with both backends maybe.
+
+00:38:06.880 --> 00:38:07.220
+<v Michael Kennedy>Is that it?
+
+00:38:07.320 --> 00:38:08.080
+<v Larry Ogrodnek>- Yeah, sort of.
+
+00:38:08.320 --> 00:38:11.760
+<v Larry Ogrodnek>I mean, like, yeah, and like conceptually,
+
+00:38:12.240 --> 00:38:15.540
+<v Larry Ogrodnek>I mean, I think that the thing is the Phoenix LiveView
+
+00:38:15.820 --> 00:38:16.920
+<v Larry Ogrodnek>has a different templating language.
+
+00:38:18.140 --> 00:38:21.560
+<v Larry Ogrodnek>So things like loops or conditionals
+
+00:38:22.240 --> 00:38:23.200
+<v Larry Ogrodnek>look totally different, right?
+
+00:38:23.400 --> 00:38:24.840
+<v Larry Ogrodnek>So you might be able to pull up an example and go,
+
+00:38:24.850 --> 00:38:26.980
+<v Larry Ogrodnek>I see how I'll do it here, but it's not identical.
+
+00:38:27.460 --> 00:38:27.920
+<v Larry Ogrodnek>Right, exactly.
+
+00:38:28.190 --> 00:38:29.700
+<v Larry Ogrodnek>Or if you see something in an example where it's just like,
+
+00:38:29.760 --> 00:38:33.560
+<v Larry Ogrodnek>I'm trying to do a form, but my PHX update isn't firing,
+
+00:38:33.780 --> 00:38:36.220
+<v Larry Ogrodnek>it's like it's probably the same solution in both places.
+
+00:38:36.700 --> 00:38:36.940
+<v Michael Kennedy>Got it.
+
+00:38:37.260 --> 00:38:37.380
+<v Michael Kennedy>Got it.
+
+00:38:38.039 --> 00:38:43.020
+<v Michael Kennedy>So then you've got the HTML side, which is pretty interesting.
+
+00:38:43.500 --> 00:38:47.020
+<v Michael Kennedy>Tell us about how this-- what do we write over here on--
+
+00:38:47.180 --> 00:38:48.000
+<v Michael Kennedy>Yeah, so--
+
+00:38:48.360 --> 00:38:49.900
+<v Michael Kennedy>The data exchange looks like-- sorry.
+
+00:38:50.110 --> 00:38:52.160
+<v Michael Kennedy>The data exchange looks like you're exchanging data classes,
+
+00:38:52.540 --> 00:38:55.160
+<v Michael Kennedy>like the DTO sort of API aspect?
+
+00:38:55.780 --> 00:38:56.480
+<v Larry Ogrodnek>Yeah, exactly.
+
+00:38:56.670 --> 00:39:01.560
+<v Larry Ogrodnek>So, well, you can, yeah, so each live view, like page,
+
+00:39:01.730 --> 00:39:04.640
+<v Larry Ogrodnek>is basically like you would type it to a specific,
+
+00:39:05.280 --> 00:39:06.340
+<v Larry Ogrodnek>you know, I call it a context,
+
+00:39:06.530 --> 00:39:07.280
+<v Larry Ogrodnek>like which is like what,
+
+00:39:07.390 --> 00:39:08.460
+<v Larry Ogrodnek>basically what's going into your template.
+
+00:39:08.790 --> 00:39:11.220
+<v Larry Ogrodnek>And so you can do, I mean, it doesn't have to be,
+
+00:39:11.290 --> 00:39:12.380
+<v Larry Ogrodnek>I like using data classes.
+
+00:39:12.850 --> 00:39:15.840
+<v Larry Ogrodnek>It can be a data class, it can be a type dict,
+
+00:39:15.980 --> 00:39:17.420
+<v Larry Ogrodnek>it could be a Pydantic class,
+
+00:39:17.820 --> 00:39:19.180
+<v Larry Ogrodnek>it could probably just be a regular dict.
+
+00:39:19.350 --> 00:39:20.240
+<v Larry Ogrodnek>I don't know that I've ever tried that,
+
+00:39:20.420 --> 00:39:21.400
+<v Larry Ogrodnek>but I think that should work.
+
+00:39:21.780 --> 00:39:23.240
+<v Larry Ogrodnek>But it's just really just for the typing.
+
+00:39:25.020 --> 00:39:26.820
+<v Larry Ogrodnek>And it's what we'll get past here in template.
+
+00:39:27.080 --> 00:39:29.600
+<v Larry Ogrodnek>And then so maybe it's worth talking through.
+
+00:39:29.680 --> 00:39:32.060
+<v Larry Ogrodnek>Like there are these sort of different lifecycle components.
+
+00:39:32.660 --> 00:39:37.000
+<v Larry Ogrodnek>And so with your view, the first thing that gets called
+
+00:39:37.080 --> 00:39:38.440
+<v Larry Ogrodnek>is there's this mount command.
+
+00:39:39.260 --> 00:39:41.320
+<v Larry Ogrodnek>And that gets called any time--
+
+00:39:41.320 --> 00:39:43.020
+<v Larry Ogrodnek>I mean, when your view gets instantiated.
+
+00:39:43.060 --> 00:39:45.300
+<v Larry Ogrodnek>So when someone visits the page, we're
+
+00:39:45.400 --> 00:39:48.180
+<v Larry Ogrodnek>going to create an instance of your class, your LiveView class.
+
+00:39:48.640 --> 00:39:50.940
+<v Larry Ogrodnek>And mount will get called with the socket,
+
+00:39:51.340 --> 00:39:53.240
+<v Larry Ogrodnek>which is probably going to be more detailed than that,
+
+00:39:53.270 --> 00:39:55.520
+<v Larry Ogrodnek>but that's kind of like your interface to the communication.
+
+00:39:56.300 --> 00:39:58.520
+<v Larry Ogrodnek>It's not the web socket necessarily.
+
+00:39:58.940 --> 00:40:02.760
+<v Larry Ogrodnek>It's more like how you interoperate with the system.
+
+00:40:03.170 --> 00:40:03.920
+<v Larry Ogrodnek>And then also the session.
+
+00:40:04.280 --> 00:40:07.300
+<v Larry Ogrodnek>So if you want to copy stuff over from the HTTP session,
+
+00:40:07.740 --> 00:40:09.380
+<v Larry Ogrodnek>like user information or whatever,
+
+00:40:09.570 --> 00:40:12.600
+<v Larry Ogrodnek>you can copy that over in the mount to your data.
+
+00:40:12.980 --> 00:40:15.100
+<v Larry Ogrodnek>Then after that-- and it actually gets called--
+
+00:40:15.400 --> 00:40:16.400
+<v Larry Ogrodnek>well, I'll talk about that later.
+
+00:40:17.180 --> 00:40:19.080
+<v Larry Ogrodnek>But then after that, there's an optional--
+
+00:40:19.160 --> 00:40:20.480
+<v Larry Ogrodnek>it's not shown in this example, but there's
+
+00:40:20.500 --> 00:40:27.220
+<v Larry Ogrodnek>optional like handle params change, which gets called with path parameters or URL parameters.
+
+00:40:27.720 --> 00:40:30.900
+<v Larry Ogrodnek>And the reason that's separate is because your class might get just instantiated once
+
+00:40:31.140 --> 00:40:36.280
+<v Larry Ogrodnek>on when the page is viewed, but you might have like programmatic navigation that's not real
+
+00:40:36.400 --> 00:40:41.140
+<v Larry Ogrodnek>navigation. It's like JavaScript navigation where maybe for things like filter options or
+
+00:40:42.060 --> 00:40:46.620
+<v Larry Ogrodnek>pagination options, you want to put those in the URL so that it's kind of bookmarkable and shareable.
+
+00:40:47.040 --> 00:40:51.600
+<v Larry Ogrodnek>you don't want to do a full page reload and so anytime those get changed including on the initial
+
+00:40:51.800 --> 00:40:54.940
+<v Larry Ogrodnek>page load we'll call a handle prams method and you don't have to implement that if you don't care
+
+00:40:55.060 --> 00:40:59.520
+<v Michael Kennedy>about it um so that gets called in this case a volume is the volume it doesn't matter where
+
+00:40:59.690 --> 00:41:03.920
+<v Larry Ogrodnek>the volume exactly yeah but you might want to like be able to bookmark like this is a good volume or
+
+00:41:04.000 --> 00:41:07.840
+<v Larry Ogrodnek>whatever and i think the counting example does does have that just to kind of show how it would work
+
+00:41:08.370 --> 00:41:14.800
+<v Michael Kennedy>um i see so in that sense you get a bit of a deep linking into it exactly that's cool yeah okay yeah
+
+00:41:14.820 --> 00:41:21.480
+<v Larry Ogrodnek>Yeah, and again, it takes advantage of this kind of like JavaScript navigation that you can initiate from the front end or from the back end.
+
+00:41:21.480 --> 00:41:28.840
+<v Larry Ogrodnek>Like on the front end, you can initiate like a navigation transition that will like basically tell the back end, hey, change your prams to this.
+
+00:41:28.970 --> 00:41:34.160
+<v Larry Ogrodnek>And the browser takes care of like reading the prams and changing the, or the back end takes care of reading the prams and changing the state.
+
+00:41:34.580 --> 00:41:40.900
+<v Larry Ogrodnek>Or on the back end, you can also tell the front end like, oh, hey, because you did this, I want you to change the URL to be blah, blah, blah.
+
+00:41:41.500 --> 00:41:43.220
+<v Larry Ogrodnek>And here's what the new URL should be.
+
+00:41:43.550 --> 00:41:44.220
+<v Larry Ogrodnek>So you can do it both ways.
+
+00:41:44.560 --> 00:41:46.920
+<v Larry Ogrodnek>And then the render method gets called.
+
+00:41:47.080 --> 00:41:50.480
+<v Larry Ogrodnek>And it's not shown here because the base class, basically,
+
+00:41:50.960 --> 00:41:54.980
+<v Larry Ogrodnek>for the render method, it looks for a template
+
+00:41:55.240 --> 00:41:56.760
+<v Larry Ogrodnek>file called whatever.
+
+00:41:57.140 --> 00:41:58.440
+<v Larry Ogrodnek>This is volume.py.
+
+00:41:58.540 --> 00:41:59.680
+<v Larry Ogrodnek>So it looks for volume.html.
+
+00:42:00.060 --> 00:42:01.400
+<v Larry Ogrodnek>And it uses that as your template.
+
+00:42:01.760 --> 00:42:04.020
+<v Larry Ogrodnek>It also will look to see if there's a volume.css.
+
+00:42:04.260 --> 00:42:07.700
+<v Larry Ogrodnek>And it will just inject that in as the CSS for this.
+
+00:42:08.060 --> 00:42:08.540
+<v Larry Ogrodnek>It exists.
+
+00:42:09.140 --> 00:42:11.280
+<v Larry Ogrodnek>But if you wanted to override render, you can.
+
+00:42:11.320 --> 00:42:13.740
+<v Larry Ogrodnek>And that's how the T-Street rendering works,
+
+00:42:13.880 --> 00:42:15.260
+<v Larry Ogrodnek>is you basically do provide a render method
+
+00:42:15.620 --> 00:42:16.500
+<v Larry Ogrodnek>that returns a T string.
+
+00:42:17.160 --> 00:42:18.880
+<v Larry Ogrodnek>So after all that is done--
+
+00:42:19.240 --> 00:42:20.260
+<v Larry Ogrodnek>so that actually happens twice.
+
+00:42:20.600 --> 00:42:22.260
+<v Larry Ogrodnek>It happens once for the HTML render,
+
+00:42:22.700 --> 00:42:24.840
+<v Larry Ogrodnek>and then it happens again for the LiveView render.
+
+00:42:25.820 --> 00:42:26.820
+<v Larry Ogrodnek>And those are handled separately,
+
+00:42:27.520 --> 00:42:29.000
+<v Larry Ogrodnek>partially because that's how Phoenix LiveView does it,
+
+00:42:29.220 --> 00:42:30.820
+<v Larry Ogrodnek>but also because some things are different.
+
+00:42:31.580 --> 00:42:34.460
+<v Larry Ogrodnek>For the initial HTML render, some things are not available.
+
+00:42:34.700 --> 00:42:37.000
+<v Larry Ogrodnek>You can't do Pub/Sub stuff to subscribe to channels.
+
+00:42:37.440 --> 00:42:39.720
+<v Larry Ogrodnek>You can't do scheduling stuff.
+
+00:42:40.220 --> 00:42:41.700
+<v Larry Ogrodnek>It's a little bit more limited to what you can do.
+
+00:42:43.040 --> 00:42:44.100
+<v Larry Ogrodnek>But anyway, that's a separate step.
+
+00:42:44.220 --> 00:42:46.720
+<v Larry Ogrodnek>And then after render, if an event comes in,
+
+00:42:46.790 --> 00:42:47.920
+<v Larry Ogrodnek>this handle event gets called.
+
+00:42:48.080 --> 00:42:50.000
+<v Larry Ogrodnek>And what you're showing here for the volume control
+
+00:42:50.860 --> 00:42:54.340
+<v Larry Ogrodnek>is kind of like my V1 of the event method that basically just
+
+00:42:54.520 --> 00:42:55.160
+<v Larry Ogrodnek>takes an event.
+
+00:42:55.390 --> 00:42:56.700
+<v Larry Ogrodnek>So there's one method called handle event
+
+00:42:56.710 --> 00:42:58.460
+<v Larry Ogrodnek>that takes the event and a payload, which
+
+00:42:58.540 --> 00:43:00.620
+<v Larry Ogrodnek>is like a dict of the options.
+
+00:43:01.240 --> 00:43:01.900
+<v Larry Ogrodnek>Then you have the socket.
+
+00:43:01.990 --> 00:43:03.880
+<v Larry Ogrodnek>And so you can see here, it's just a bunch of if else.
+
+00:43:04.050 --> 00:43:05.040
+<v Larry Ogrodnek>It's like if the event is key update,
+
+00:43:05.280 --> 00:43:08.220
+<v Larry Ogrodnek>then just take the key as the event name.
+
+00:43:08.250 --> 00:43:11.100
+<v Larry Ogrodnek>If it's on or off, change the--
+
+00:43:11.120 --> 00:43:15.220
+<v Larry Ogrodnek>If it's off or they hit the left arrow, then set the volume to 0.
+
+00:43:15.500 --> 00:43:17.640
+<v Larry Ogrodnek>If it's on or they hit the right arrow, set the volume to 100.
+
+00:43:19.260 --> 00:43:22.620
+<v Larry Ogrodnek>And then there's some stuff that just bound the volume at the end.
+
+00:43:22.960 --> 00:43:24.540
+<v Larry Ogrodnek>And so that's all you do is you basically--
+
+00:43:24.680 --> 00:43:27.340
+<v Larry Ogrodnek>this handle event method gets called.
+
+00:43:27.720 --> 00:43:28.420
+<v Larry Ogrodnek>You're updating your state.
+
+00:43:28.750 --> 00:43:30.940
+<v Larry Ogrodnek>And then after this gets called, automatically,
+
+00:43:31.100 --> 00:43:32.100
+<v Larry Ogrodnek>your render method gets called again.
+
+00:43:33.659 --> 00:43:36.040
+<v Larry Ogrodnek>And basically, you're just re-rendering with the new state.
+
+00:43:36.560 --> 00:43:39.260
+<v Larry Ogrodnek>And then again, on the back end, we're figuring out,
+
+00:43:39.340 --> 00:43:41.280
+<v Larry Ogrodnek>Like, okay, last time you rendered this tree,
+
+00:43:41.640 --> 00:43:42.660
+<v Larry Ogrodnek>now you're rendering this tree.
+
+00:43:43.140 --> 00:43:43.680
+<v Larry Ogrodnek>What changed?
+
+00:43:43.900 --> 00:43:45.220
+<v Larry Ogrodnek>I'm just going to send what changed.
+
+00:43:45.560 --> 00:43:52.420
+<v Michael Kennedy>It looks very, I don't know, view or data binding like in here.
+
+00:43:52.600 --> 00:43:59.160
+<v Michael Kennedy>So when things start up, you say the context of this thing is an instance of the volume class.
+
+00:43:59.500 --> 00:44:05.220
+<v Michael Kennedy>And then all you write in your code is like socket.context.volume equals the various,
+
+00:44:05.500 --> 00:44:07.620
+<v Michael Kennedy>you know, plus equals 10, minus equals 10.
+
+00:44:08.160 --> 00:44:08.400
+<v Michael Kennedy>Exactly.
+
+00:44:09.260 --> 00:44:18.720
+<v Michael Kennedy>And somehow, iView says, okay, I've wrapped this thing in some kind of responsive or something that detects the changes, right, somehow?
+
+00:44:19.120 --> 00:44:21.840
+<v Larry Ogrodnek>Right. Well, yeah, actually, yeah, I mean, we're not even that smart right now.
+
+00:44:21.910 --> 00:44:30.360
+<v Larry Ogrodnek>I mean, we could be, and I think FinisLiveView is a little smarter about it, where they do wrap and kind of see if they, but like for this, basically, we just always render.
+
+00:44:30.820 --> 00:44:38.480
+<v Michael Kennedy>I see. So you re-render the page and just go, what is actually different about, oh, I see, when I re-rendered with new data, then the volume value changes.
+
+00:44:38.720 --> 00:44:38.880
+<v Michael Kennedy>Exactly.
+
+00:44:39.380 --> 00:44:41.100
+<v Larry Ogrodnek>But it is really nice because like you're saying,
+
+00:44:41.160 --> 00:44:42.820
+<v Larry Ogrodnek>it's like you don't really--
+
+00:44:42.820 --> 00:44:46.140
+<v Larry Ogrodnek>like your application logic becomes really simple
+
+00:44:46.520 --> 00:44:48.280
+<v Larry Ogrodnek>because it's really just, yeah, I update my state.
+
+00:44:49.100 --> 00:44:50.880
+<v Larry Ogrodnek>And then I know how to render my state object.
+
+00:44:51.400 --> 00:44:53.860
+<v Larry Ogrodnek>And I don't really care about whatever.
+
+00:44:54.180 --> 00:44:57.320
+<v Larry Ogrodnek>And even this handle event method, it's not really--
+
+00:44:57.440 --> 00:44:58.660
+<v Larry Ogrodnek>I mean, I don't know.
+
+00:44:59.240 --> 00:45:00.340
+<v Larry Ogrodnek>It feels like it'd be a little bit of a stretch
+
+00:45:00.440 --> 00:45:02.400
+<v Larry Ogrodnek>to call it stateless because you're mutating state.
+
+00:45:02.680 --> 00:45:04.440
+<v Larry Ogrodnek>But at the same time, you don't really
+
+00:45:04.680 --> 00:45:06.640
+<v Larry Ogrodnek>care where this state object came from.
+
+00:45:06.900 --> 00:45:08.680
+<v Larry Ogrodnek>It's like, given this event, how would I
+
+00:45:08.700 --> 00:45:14.220
+<v Michael Kennedy>this state. Yeah, and it's got a very strong view.js feel like I just changed the properties of the
+
+00:45:14.340 --> 00:45:19.960
+<v Michael Kennedy>thing and something makes it happen that it goes back to everywhere this value is used. It changes.
+
+00:45:20.600 --> 00:45:23.660
+<v Larry Ogrodnek>Exactly. And that's really how it works. I mean, that's the kind of cool thing, you know, where
+
+00:45:23.820 --> 00:45:27.160
+<v Larry Ogrodnek>we're talking about HTMX, where, you know, you have to be really intentional about like, OK,
+
+00:45:27.340 --> 00:45:31.380
+<v Larry Ogrodnek>like how do I want to segment, you know, what I'm changing? And, you know, when I do this, I know I
+
+00:45:31.440 --> 00:45:34.160
+<v Larry Ogrodnek>want to change this part of the render, this part of the render. And with this, you don't really have
+
+00:45:34.220 --> 00:45:37.660
+<v Larry Ogrodnek>to think about it, right? Like you just change what you want to change. And the part of the template
+
+00:45:37.680 --> 00:45:39.560
+<v Larry Ogrodnek>that needs to change will naturally change
+
+00:45:40.030 --> 00:45:42.620
+<v Larry Ogrodnek>because we're treating it as this diff operation.
+
+00:45:43.260 --> 00:45:44.180
+<v Michael Kennedy>Yeah, yeah, cool.
+
+00:45:44.400 --> 00:45:47.140
+<v Michael Kennedy>Let's do one more example, something that kind of shows
+
+00:45:47.260 --> 00:45:47.860
+<v Michael Kennedy>off what's possible.
+
+00:45:48.320 --> 00:45:52.160
+<v Larry Ogrodnek>OK, well, gosh, there's two things I'd want to show.
+
+00:45:53.000 --> 00:45:55.660
+<v Larry Ogrodnek>But we could do the maps thing, which
+
+00:45:55.740 --> 00:45:58.660
+<v Larry Ogrodnek>is just a way how to integrate with JavaScript,
+
+00:45:59.320 --> 00:46:01.240
+<v Larry Ogrodnek>and then also maybe one of the newer things,
+
+00:46:01.270 --> 00:46:05.120
+<v Larry Ogrodnek>or maybe the T Street version of the counter, just to--
+
+00:46:05.380 --> 00:46:06.620
+<v Larry Ogrodnek>yeah, so we'd look at the maps one.
+
+00:46:07.180 --> 00:46:09.940
+<v Larry Ogrodnek>And so this is very simple, but this is a thing that--
+
+00:46:11.480 --> 00:46:13.680
+<v Larry Ogrodnek>I think the thing with like frameworks with PyView
+
+00:46:13.840 --> 00:46:16.960
+<v Larry Ogrodnek>and other frameworks is I think maybe people try to bucket
+
+00:46:17.220 --> 00:46:19.600
+<v Larry Ogrodnek>into like, oh, you hate JavaScript or whatever.
+
+00:46:19.780 --> 00:46:20.960
+<v Larry Ogrodnek>And like, no, I don't hate JavaScript.
+
+00:46:21.620 --> 00:46:23.100
+<v Larry Ogrodnek>JavaScript's great at doing JavaScript things.
+
+00:46:23.860 --> 00:46:26.920
+<v Larry Ogrodnek>And you do need to integrate with JavaScript a lot of the times.
+
+00:46:27.000 --> 00:46:29.180
+<v Larry Ogrodnek>And there's a lot of really great, rich, interactive JavaScript
+
+00:46:29.480 --> 00:46:31.860
+<v Larry Ogrodnek>things that wouldn't really make sense to do in the server.
+
+00:46:32.080 --> 00:46:36.040
+<v Larry Ogrodnek>So this is an example of a Maps thing using leaflet.js,
+
+00:46:36.240 --> 00:46:38.840
+<v Larry Ogrodnek>It's like a JavaScript library that uses OpenStreet map data.
+
+00:46:39.540 --> 00:46:43.360
+<v Larry Ogrodnek>We're doing a Google Maps kind of style maps
+
+00:46:43.480 --> 00:46:44.640
+<v Larry Ogrodnek>view with tiles and stuff like that.
+
+00:46:45.180 --> 00:46:48.420
+<v Larry Ogrodnek>And so this example just kind of shows the events.
+
+00:46:49.140 --> 00:46:50.860
+<v Larry Ogrodnek>Basically, there's this hooks system,
+
+00:46:51.000 --> 00:46:52.900
+<v Larry Ogrodnek>is what they call it on the Phoenix Live View side,
+
+00:46:53.080 --> 00:46:54.140
+<v Larry Ogrodnek>and call it the same thing.
+
+00:46:55.000 --> 00:46:57.100
+<v Larry Ogrodnek>But basically, it's a way to kind of--
+
+00:46:57.280 --> 00:47:02.320
+<v Larry Ogrodnek>we saw things like PHX key click blah, blah, blah,
+
+00:47:02.480 --> 00:47:04.700
+<v Larry Ogrodnek>is kind of built-in event system.
+
+00:47:04.780 --> 00:47:06.600
+<v Larry Ogrodnek>So running JavaScript hooks is a way
+
+00:47:06.600 --> 00:47:09.760
+<v Larry Ogrodnek>to kind of let you integrate custom JavaScript
+
+00:47:10.380 --> 00:47:13.100
+<v Larry Ogrodnek>and have access to that same event system.
+
+00:47:13.220 --> 00:47:15.480
+<v Larry Ogrodnek>So for this, there is a JavaScript component,
+
+00:47:15.560 --> 00:47:17.000
+<v Larry Ogrodnek>which is kind of like a wrapper over--
+
+00:47:17.280 --> 00:47:19.320
+<v Larry Ogrodnek>not really a wrapper, but a wrapper over some JavaScript
+
+00:47:19.480 --> 00:47:20.760
+<v Larry Ogrodnek>stuff that handles this.
+
+00:47:21.220 --> 00:47:22.920
+<v Larry Ogrodnek>And so we have events going two ways.
+
+00:47:23.040 --> 00:47:28.220
+<v Larry Ogrodnek>And so when you click on one of the things in the sidebar,
+
+00:47:28.420 --> 00:47:29.780
+<v Larry Ogrodnek>it sends something to the back end saying,
+
+00:47:30.200 --> 00:47:32.740
+<v Larry Ogrodnek>oh, update your state to say you have this national park
+
+00:47:32.980 --> 00:47:33.140
+<v Larry Ogrodnek>selected.
+
+00:47:33.580 --> 00:47:36.260
+<v Larry Ogrodnek>And then the back end also sends a--
+
+00:47:36.560 --> 00:47:38.020
+<v Larry Ogrodnek>I'm getting mixed up with this.
+
+00:47:38.020 --> 00:47:38.900
+<v Larry Ogrodnek>I think when you click on the marker,
+
+00:47:39.160 --> 00:47:41.040
+<v Larry Ogrodnek>that's where the JavaScript sends the event to the back end.
+
+00:47:41.040 --> 00:47:41.420
+<v Michael Kennedy>MARK MIRCHANDANI: Yeah, yeah.
+
+00:47:42.580 --> 00:47:43.320
+<v Michael Kennedy>Literally, this is cool.
+
+00:47:43.640 --> 00:47:45.800
+<v Michael Kennedy>If I click-- so let me describe it for people.
+
+00:47:46.280 --> 00:47:49.240
+<v Michael Kennedy>So we've got on one side a map of the United States,
+
+00:47:49.640 --> 00:47:53.660
+<v Michael Kennedy>and on the left a nice list of the different national parks,
+
+00:47:53.780 --> 00:47:54.360
+<v Michael Kennedy>the famous ones.
+
+00:47:55.020 --> 00:47:57.720
+<v Michael Kennedy>If I go entirely into this JavaScript thing
+
+00:47:57.980 --> 00:48:00.780
+<v Michael Kennedy>and I click on something in the map, one
+
+00:48:00.780 --> 00:48:02.640
+<v Michael Kennedy>of the points of interest, which is one of these parks,
+
+00:48:03.220 --> 00:48:07.840
+<v Michael Kennedy>It communicates back to PyView and is selecting it in the list, right?
+
+00:48:07.880 --> 00:48:08.580
+<v Michael Kennedy>The Python bit.
+
+00:48:08.800 --> 00:48:14.640
+<v Michael Kennedy>But then again, if I click in the Python bit, like Glacier National Park or one near me, the Olympic National Park, right?
+
+00:48:14.820 --> 00:48:16.880
+<v Michael Kennedy>Then it will then drive the JavaScript.
+
+00:48:17.100 --> 00:48:19.360
+<v Michael Kennedy>So this is the bi-directional thing you're talking about.
+
+00:48:19.460 --> 00:48:20.040
+<v Michael Kennedy>This is very cool.
+
+00:48:20.260 --> 00:48:21.020
+<v Larry Ogrodnek>Right, exactly.
+
+00:48:21.260 --> 00:48:21.320
+<v Larry Ogrodnek>Yeah.
+
+00:48:21.440 --> 00:48:27.420
+<v Larry Ogrodnek>So the JavaScript part has access to a similar component system where it's just like, oh, if I get this event, I think I call it highlight park.
+
+00:48:27.800 --> 00:48:31.340
+<v Larry Ogrodnek>Then I know that, oh, I need to turn this marker on.
+
+00:48:31.820 --> 00:48:33.280
+<v Larry Ogrodnek>And going the other way, the JavaScript
+
+00:48:33.520 --> 00:48:35.740
+<v Larry Ogrodnek>has its own handling, like, oh, when this happens,
+
+00:48:35.960 --> 00:48:38.360
+<v Larry Ogrodnek>then I should call this method on the LiveView.
+
+00:48:38.360 --> 00:48:41.580
+<v Larry Ogrodnek>And so your LiveView side, like your Python side,
+
+00:48:42.380 --> 00:48:44.440
+<v Larry Ogrodnek>stays the same where it's still doing event handling
+
+00:48:45.000 --> 00:48:47.440
+<v Larry Ogrodnek>and also sending events if needed to the front end.
+
+00:48:47.440 --> 00:48:48.920
+<v Larry Ogrodnek>But you can get access to--
+
+00:48:49.140 --> 00:48:53.220
+<v Larry Ogrodnek>so maps, drag and drop stuff is a big one,
+
+00:48:53.480 --> 00:48:54.480
+<v Larry Ogrodnek>even really rich editors.
+
+00:48:54.780 --> 00:48:58.020
+<v Larry Ogrodnek>I've done something with using CodeMirror,
+
+00:48:58.160 --> 00:49:02.620
+<v Larry Ogrodnek>which is a really nice IDE kind of editing experience
+
+00:49:02.720 --> 00:49:03.180
+<v Larry Ogrodnek>in the browser.
+
+00:49:03.740 --> 00:49:04.420
+<v Larry Ogrodnek>And so you can still--
+
+00:49:04.620 --> 00:49:06.840
+<v Larry Ogrodnek>I think the thing with PyView, right, is it's not--
+
+00:49:07.160 --> 00:49:08.500
+<v Larry Ogrodnek>I don't know, for me anyway, it's not
+
+00:49:08.640 --> 00:49:09.860
+<v Larry Ogrodnek>about technology-focused.
+
+00:49:10.000 --> 00:49:10.820
+<v Larry Ogrodnek>I only want to use Python.
+
+00:49:11.040 --> 00:49:13.740
+<v Larry Ogrodnek>It's like, I want to have great web experiences,
+
+00:49:14.060 --> 00:49:16.500
+<v Larry Ogrodnek>whatever that takes, but in a simple way
+
+00:49:16.700 --> 00:49:19.440
+<v Larry Ogrodnek>that I can understand and debug and test.
+
+00:49:19.860 --> 00:49:20.400
+<v Larry Ogrodnek>So yeah.
+
+00:49:20.500 --> 00:49:22.020
+<v Michael Kennedy>JOHN MUELLER: Yeah, this is a very impressive--
+
+00:49:22.400 --> 00:49:23.020
+<v Michael Kennedy>that's an app.
+
+00:49:23.480 --> 00:49:23.800
+<v Michael Kennedy>Yeah.
+
+00:49:24.120 --> 00:49:27.019
+<v Michael Kennedy>I mean, I look at it, it's like, wow, that would be kind of a big
+
+00:49:27.040 --> 00:49:32.440
+<v Michael Kennedy>project to build and my feeling is it wasn't that big of a deal with pi. No it's very yeah that's
+
+00:49:32.540 --> 00:49:35.800
+<v Larry Ogrodnek>kind of part of the fun thing with like making these little examples is like super fun and also
+
+00:49:35.850 --> 00:49:39.820
+<v Larry Ogrodnek>like pretty easy yeah so similar one there's like that combat and board one just to quickly talk
+
+00:49:39.910 --> 00:49:44.160
+<v Larry Ogrodnek>it just is a similar thing with drag and drop but the same kind of concept. I want to throw out maybe
+
+00:49:44.380 --> 00:49:48.000
+<v Michael Kennedy>like just thinking back to that map one real quick before we move on it feels like this would actually
+
+00:49:48.030 --> 00:49:53.880
+<v Michael Kennedy>be quite relevant for data scientists as well right like I don't think you build it as data science
+
+00:49:53.960 --> 00:49:58.940
+<v Michael Kennedy>But there's a lot of like, oh, we need to build a dashboard that updates based on whatever.
+
+00:49:59.260 --> 00:50:00.540
+<v Michael Kennedy>And we need these different visualizations.
+
+00:50:00.820 --> 00:50:03.860
+<v Michael Kennedy>And with the JavaScript integration, I feel like you probably could do some pretty cool stuff.
+
+00:50:04.240 --> 00:50:05.400
+<v Larry Ogrodnek>Yeah, no, for sure.
+
+00:50:05.700 --> 00:50:06.200
+<v Larry Ogrodnek>Yeah, for sure.
+
+00:50:06.200 --> 00:50:11.500
+<v Larry Ogrodnek>And I've done, and I think there are a lot of really great JavaScript, like graphing libraries.
+
+00:50:11.680 --> 00:50:20.420
+<v Larry Ogrodnek>Like one that I've used before is something that I learned about just from figuring out that it's what like Google Notebook, like Google Collab, you know, their like Jupyter Notebooks thing uses called Altair.
+
+00:50:20.840 --> 00:50:27.040
+<v Larry Ogrodnek>And that's something which is cool because there's basically a Python backend for generating the graph data, but then the front end is this JavaScript thing.
+
+00:50:27.180 --> 00:50:38.420
+<v Larry Ogrodnek>And so I don't think I should put an example of that, but I've used it at work where we just have a very simple graph hook that wraps the Altair library and the backend generates the graph in Python code.
+
+00:50:38.820 --> 00:50:41.280
+<v Larry Ogrodnek>And it's just super easy to display and things like that.
+
+00:50:41.360 --> 00:50:43.220
+<v Larry Ogrodnek>And to your point, Michael, one of the really cool things
+
+00:50:43.280 --> 00:50:46.020
+<v Larry Ogrodnek>with PyView is because everything is over WebSockets,
+
+00:50:47.000 --> 00:50:49.560
+<v Larry Ogrodnek>any server push stuff, like if data comes in or data changes,
+
+00:50:51.260 --> 00:50:54.080
+<v Larry Ogrodnek>it's really no work to get to tell the browser
+
+00:50:54.140 --> 00:50:55.300
+<v Larry Ogrodnek>to update to the new state.
+
+00:50:55.460 --> 00:50:58.420
+<v Larry Ogrodnek>It's super, super easy to do, which is cool.
+
+00:50:58.600 --> 00:50:59.140
+<v Larry Ogrodnek>MICHAEL WOLFF: That's awesome.
+
+00:50:59.500 --> 00:51:00.720
+<v Larry Ogrodnek>MICHAEL WOLFF: Yeah, so the one other thing
+
+00:51:00.720 --> 00:51:02.020
+<v Larry Ogrodnek>I wanted to touch on quickly is just
+
+00:51:02.240 --> 00:51:04.480
+<v Larry Ogrodnek>because I think the first example we looked at the volume
+
+00:51:04.780 --> 00:51:05.800
+<v Larry Ogrodnek>was using the older events.
+
+00:51:05.820 --> 00:51:08.040
+<v Larry Ogrodnek>So if you look at maybe the basic counter t-string version,
+
+00:51:08.740 --> 00:51:10.260
+<v Larry Ogrodnek>like the source for that, I mean,
+
+00:51:10.340 --> 00:51:11.320
+<v Larry Ogrodnek>It's the same kind of counter example.
+
+00:51:11.450 --> 00:51:13.200
+<v Larry Ogrodnek>But the source is like, I think there's
+
+00:51:13.200 --> 00:51:14.880
+<v Larry Ogrodnek>a count tstring5 probably to click on.
+
+00:51:16.060 --> 00:51:17.800
+<v Larry Ogrodnek>And then it's the third one in the list there.
+
+00:51:18.200 --> 00:51:20.760
+<v Larry Ogrodnek>But so this is just to talk a little bit about--
+
+00:51:22.160 --> 00:51:23.320
+<v Larry Ogrodnek>again, it's kind of a work in progress.
+
+00:51:23.620 --> 00:51:25.780
+<v Larry Ogrodnek>But the first version of the events
+
+00:51:25.860 --> 00:51:26.920
+<v Larry Ogrodnek>was kind of like, oh, there's a handle event method
+
+00:51:27.040 --> 00:51:27.840
+<v Larry Ogrodnek>that all events go to.
+
+00:51:28.000 --> 00:51:29.400
+<v Larry Ogrodnek>But that kind of gets to be a little bit of a drag.
+
+00:51:29.690 --> 00:51:31.620
+<v Larry Ogrodnek>And so we added this @EventDecorator.
+
+00:51:32.000 --> 00:51:33.500
+<v Larry Ogrodnek>And so you can kind of--
+
+00:51:34.120 --> 00:51:36.560
+<v Larry Ogrodnek>instead of having handle event, oh, was the method increment?
+
+00:51:36.860 --> 00:51:37.400
+<v Larry Ogrodnek>Was it decrement?
+
+00:51:37.520 --> 00:51:39.580
+<v Larry Ogrodnek>You can just say @Event, decrement, @Event,
+
+00:51:39.700 --> 00:51:42.820
+<v Larry Ogrodnek>increment and have those separate functions.
+
+00:51:43.500 --> 00:51:46.260
+<v Larry Ogrodnek>And then this is also showing the kind of T string templating
+
+00:51:46.860 --> 00:51:48.700
+<v Larry Ogrodnek>where you use two strings to generate it.
+
+00:51:48.880 --> 00:51:51.840
+<v Larry Ogrodnek>And the cool thing with this too is on line 58,
+
+00:51:51.920 --> 00:51:55.000
+<v Larry Ogrodnek>you can see basically we're calling self.button,
+
+00:51:55.100 --> 00:51:57.200
+<v Larry Ogrodnek>which is a T string template, and then we're
+
+00:51:57.300 --> 00:51:59.400
+<v Larry Ogrodnek>passing in self.decrement, which is the method.
+
+00:51:59.480 --> 00:52:00.580
+<v Larry Ogrodnek>And so you can kind of--
+
+00:52:00.780 --> 00:52:03.260
+<v Larry Ogrodnek>I mean, it's basically just doing that binding for you
+
+00:52:03.420 --> 00:52:05.000
+<v Michael Kennedy>automatically where it ends up--
+
+00:52:05.020 --> 00:52:05.800
+<v Michael Kennedy>- Okay, hold on, hold on, hold on.
+
+00:52:05.810 --> 00:52:10.400
+<v Michael Kennedy>So people, you have a T string,
+
+00:52:11.080 --> 00:52:13.160
+<v Michael Kennedy>which is kind of Jinja-like,
+
+00:52:13.580 --> 00:52:15.420
+<v Michael Kennedy>and in here you have a format statement,
+
+00:52:15.660 --> 00:52:18.380
+<v Michael Kennedy>and one of the values you're putting in here
+
+00:52:18.600 --> 00:52:22.340
+<v Michael Kennedy>is literally the function that has the decorator
+
+00:52:22.460 --> 00:52:23.040
+<v Michael Kennedy>that is an event,
+
+00:52:23.270 --> 00:52:25.640
+<v Michael Kennedy>and then that gets called back through all the magic.
+
+00:52:25.980 --> 00:52:26.960
+<v Larry Ogrodnek>- Yeah, and it's like,
+
+00:52:27.020 --> 00:52:30.940
+<v Larry Ogrodnek>it's like, I think it's cool that it looks like magic,
+
+00:52:31.180 --> 00:52:32.560
+<v Larry Ogrodnek>but it's, I mean, it's really not magic.
+
+00:52:32.610 --> 00:52:33.080
+<v Larry Ogrodnek>I mean, the thing,
+
+00:52:33.620 --> 00:52:39.580
+<v Larry Ogrodnek>the simplest possible thing where basically it's just it's saving you from um like if you look at
+
+00:52:39.680 --> 00:52:45.120
+<v Larry Ogrodnek>that that button method um the button template it's saying like button phx click click equals
+
+00:52:46.099 --> 00:52:51.340
+<v Michael Kennedy>okay so you've created a wrapper function that then basically writes the component
+
+00:52:51.960 --> 00:52:57.820
+<v Michael Kennedy>yeah that that'll wire up all exactly yeah that's pretty cool yeah but this is something i'm i think
+
+00:52:57.880 --> 00:53:03.000
+<v Larry Ogrodnek>i'm really excited about because it's like um you know like one of the things that you really want
+
+00:53:02.820 --> 00:53:05.760
+<v Larry Ogrodnek>want to have, like after you've been making a complex app,
+
+00:53:05.900 --> 00:53:07.460
+<v Larry Ogrodnek>is a way to have components.
+
+00:53:08.080 --> 00:53:09.940
+<v Larry Ogrodnek>And that was kind of challenging in the templating system
+
+00:53:10.000 --> 00:53:13.780
+<v Larry Ogrodnek>that I originally started using, not just to have components
+
+00:53:13.860 --> 00:53:14.980
+<v Larry Ogrodnek>because you can have includes and stuff like that,
+
+00:53:15.060 --> 00:53:17.260
+<v Larry Ogrodnek>but to fit into the Phoenix Live View component system.
+
+00:53:17.440 --> 00:53:19.360
+<v Larry Ogrodnek>But I think t-strings are exciting for me
+
+00:53:19.380 --> 00:53:22.160
+<v Larry Ogrodnek>because it makes things like this really powerful.
+
+00:53:22.280 --> 00:53:23.880
+<v Larry Ogrodnek>And you think about just even things
+
+00:53:24.100 --> 00:53:27.200
+<v Larry Ogrodnek>like having really smart forms and form binding.
+
+00:53:27.320 --> 00:53:29.980
+<v Larry Ogrodnek>And I have some of that, but it's a little clunky.
+
+00:53:30.280 --> 00:53:32.460
+<v Larry Ogrodnek>And I think being able to have like really nice,
+
+00:53:32.740 --> 00:53:34.540
+<v Larry Ogrodnek>reasonable components that leverage t-strings,
+
+00:53:35.080 --> 00:53:37.200
+<v Larry Ogrodnek>make it so you have something that kind of looks very magically,
+
+00:53:37.400 --> 00:53:40.320
+<v Larry Ogrodnek>but it's, you know, it's basically just, you know, templating.
+
+00:53:41.080 --> 00:53:42.140
+<v Larry Ogrodnek>So, but I'm excited about it.
+
+00:53:42.140 --> 00:53:43.960
+<v Larry Ogrodnek>I think it'll make a lot of things easier
+
+00:53:44.080 --> 00:53:46.500
+<v Larry Ogrodnek>and easier to kind of share, you know, components.
+
+00:53:46.980 --> 00:53:47.360
+<v Michael Kennedy>I love it.
+
+00:53:47.360 --> 00:53:49.980
+<v Michael Kennedy>I really like the programming here, the API.
+
+00:53:50.340 --> 00:53:53.060
+<v Michael Kennedy>We've got a little bit, not a lot, a little bit of time left here.
+
+00:53:53.100 --> 00:53:56.440
+<v Michael Kennedy>So let's just, let's touch on actually just a couple of things.
+
+00:53:56.860 --> 00:53:58.980
+<v Michael Kennedy>I think one of the issues that, you know,
+
+00:53:59.060 --> 00:54:01.160
+<v Michael Kennedy>I talked about some of the magic, like some of these frameworks,
+
+00:54:01.340 --> 00:54:02.520
+<v Michael Kennedy>like hide away all the things.
+
+00:54:03.020 --> 00:54:06.600
+<v Michael Kennedy>Another one where there's these front end, back end,
+
+00:54:06.820 --> 00:54:09.700
+<v Michael Kennedy>connected all Python, they feel like sometimes you're like,
+
+00:54:09.730 --> 00:54:12.660
+<v Michael Kennedy>OK, and the way that works is you run it on our cloud system.
+
+00:54:13.030 --> 00:54:13.640
+<v Michael Kennedy>You know what I mean?
+
+00:54:13.880 --> 00:54:16.820
+<v Michael Kennedy>Or you run it on our special bit of infrastructure.
+
+00:54:17.640 --> 00:54:21.120
+<v Michael Kennedy>And then thoughts immediately go to like, well, how durable?
+
+00:54:21.360 --> 00:54:22.420
+<v Michael Kennedy>How proven is that?
+
+00:54:22.620 --> 00:54:23.940
+<v Michael Kennedy>Like, could we use Kubernetes?
+
+00:54:24.230 --> 00:54:25.100
+<v Michael Kennedy>Could we do it there?
+
+00:54:25.230 --> 00:54:26.700
+<v Michael Kennedy>Like, gosh, I don't even know.
+
+00:54:27.180 --> 00:54:28.660
+<v Michael Kennedy>So let's talk about some of the internals.
+
+00:54:28.760 --> 00:54:31.500
+<v Michael Kennedy>And at its heart, this is Starlet, right,
+
+00:54:31.700 --> 00:54:33.800
+<v Michael Kennedy>which is the same as FastAPI in a sense
+
+00:54:34.200 --> 00:54:35.680
+<v Michael Kennedy>in terms of how it runs, right?
+
+00:54:35.820 --> 00:54:36.440
+<v Larry Ogrodnek>JOHN MUELLER: Exactly.
+
+00:54:36.760 --> 00:54:40.720
+<v Larry Ogrodnek>Yeah, Starlette is doing all the heavy lifting.
+
+00:54:43.780 --> 00:54:46.280
+<v Larry Ogrodnek>And it handles the WebSockets and everything for you, right?
+
+00:54:46.360 --> 00:54:47.860
+<v Larry Ogrodnek>JOHN MUELLER: Yeah, the WebSockets, the HTTP,
+
+00:54:48.120 --> 00:54:51.160
+<v Larry Ogrodnek>the routing, even middleware, also the authentication,
+
+00:54:51.580 --> 00:54:53.340
+<v Larry Ogrodnek>like using it for the authentication.
+
+00:54:53.780 --> 00:55:06.640
+<v Larry Ogrodnek>Like I had to do a little bit of work to kind of make that available at the, you know, the web socket level in terms of like, because it handles like all the routing.
+
+00:55:06.720 --> 00:55:11.980
+<v Larry Ogrodnek>But just the way live view works is there's really one web socket connection that's getting managed.
+
+00:55:12.000 --> 00:55:15.140
+<v Larry Ogrodnek>And then internally there's routing that's done by the framework.
+
+00:55:15.580 --> 00:55:15.900
+<v Larry Ogrodnek>I see.
+
+00:55:16.140 --> 00:55:17.740
+<v Michael Kennedy>Because you never set that up, right?
+
+00:55:17.800 --> 00:55:19.860
+<v Michael Kennedy>You don't manage different sockets in like different.
+
+00:55:20.180 --> 00:55:20.280
+<v Michael Kennedy>Exactly.
+
+00:55:20.540 --> 00:55:22.440
+<v Michael Kennedy>You're just like, I just want to handle event.
+
+00:55:22.840 --> 00:55:23.120
+<v Larry Ogrodnek>Exactly.
+
+00:55:23.400 --> 00:55:23.480
+<v Larry Ogrodnek>Yeah.
+
+00:55:23.660 --> 00:55:29.640
+<v Larry Ogrodnek>But yeah, but another cover is we're using their auth system and framework.
+
+00:55:29.800 --> 00:55:33.500
+<v Larry Ogrodnek>And so if you have used that or familiar with it, it's exactly the same.
+
+00:55:34.100 --> 00:55:38.540
+<v Larry Ogrodnek>It's just that we make it also available at the LiveView specific layer.
+
+00:55:40.180 --> 00:55:42.680
+<v Larry Ogrodnek>But yeah, so anywhere you can run Starlet.
+
+00:55:43.220 --> 00:55:46.180
+<v Larry Ogrodnek>And I've been mostly using it.
+
+00:55:46.300 --> 00:55:53.160
+<v Larry Ogrodnek>So that examples website that we're looking at, that is itself a PyView app that is using just Uvacorn,
+
+00:55:53.440 --> 00:55:54.520
+<v Larry Ogrodnek>deploy as a Docker container.
+
+00:55:55.030 --> 00:55:57.280
+<v Larry Ogrodnek>And that's primarily how I've been using it for apps
+
+00:55:57.400 --> 00:55:59.920
+<v Larry Ogrodnek>that I've been writing or at work is like, yeah,
+
+00:56:00.040 --> 00:56:03.300
+<v Larry Ogrodnek>it's just a Docker app with Uvocorn.
+
+00:56:04.060 --> 00:56:09.620
+<v Larry Ogrodnek>But presumably, yeah, any HGI thing you could use.
+
+00:56:11.060 --> 00:56:11.920
+<v Larry Ogrodnek>So yeah, there's no magic there.
+
+00:56:12.130 --> 00:56:13.140
+<v Larry Ogrodnek>Yeah, anywhere you want to run it.
+
+00:56:13.180 --> 00:56:15.140
+<v Larry Ogrodnek>The one thing is-- this is something that's
+
+00:56:15.170 --> 00:56:18.280
+<v Larry Ogrodnek>kind of more of a future thing, but part of--
+
+00:56:18.280 --> 00:56:19.700
+<v Larry Ogrodnek>that you don't have to use for a lot of apps,
+
+00:56:19.880 --> 00:56:23.400
+<v Larry Ogrodnek>but some of the stuff like presence, like PubSub stuff
+
+00:56:23.420 --> 00:56:26.660
+<v Larry Ogrodnek>have built in, just because it's kind of something you want to have when you have this kind of
+
+00:56:26.800 --> 00:56:31.800
+<v Larry Ogrodnek>framework, but you can do stuff very easily. I have an example of this, but like, oh, this user
+
+00:56:32.060 --> 00:56:35.260
+<v Larry Ogrodnek>joined this page, this user left the page, and doing things like that. I don't have a way right
+
+00:56:35.420 --> 00:56:39.360
+<v Larry Ogrodnek>now for that to be multi-machine. It's really just single machine pub supplementation. And so
+
+00:56:39.760 --> 00:56:43.680
+<v Larry Ogrodnek>something I'm kind of working on for the future. But yeah, there's no special requirements. Anywhere
+
+00:56:43.780 --> 00:56:49.559
+<v Larry Ogrodnek>you're running a Starlette app or Fest API app or whatever should be totally fine. You do want to
+
+00:56:49.500 --> 00:56:53.380
+<v Larry Ogrodnek>have sticky sessions set up because it does require you
+
+00:56:53.440 --> 00:56:56.120
+<v Larry Ogrodnek>going to the same machine because we have this persistent state
+
+00:56:56.300 --> 00:56:56.620
+<v Larry Ogrodnek>for the user.
+
+00:56:56.900 --> 00:56:58.940
+<v Michael Kennedy>MARK MANDEL: Yeah, that is tricky with WebSockets.
+
+00:56:59.020 --> 00:57:01.220
+<v Michael Kennedy>I've been dealing with that for a project I'm working on.
+
+00:57:01.380 --> 00:57:05.060
+<v Michael Kennedy>And it's challenging because the natural inclination
+
+00:57:05.320 --> 00:57:08.260
+<v Michael Kennedy>and a lot of the recommendation is, oh, how many workers
+
+00:57:08.500 --> 00:57:11.780
+<v Michael Kennedy>do you want your uveacorn or your granion to run?
+
+00:57:12.080 --> 00:57:12.480
+<v Michael Kennedy>MARK MANDEL: Yeah.
+
+00:57:12.600 --> 00:57:14.320
+<v Michael Kennedy>MARK MANDEL: And oh, if you need to scale up,
+
+00:57:14.320 --> 00:57:15.380
+<v Michael Kennedy>you just put it behind a load balancer.
+
+00:57:15.940 --> 00:57:18.420
+<v Larry Ogrodnek>MARK MANDEL: Yeah, I agree with you.
+
+00:57:18.560 --> 00:57:21.560
+<v Larry Ogrodnek>It is challenging, but I think it's a solvable challenge.
+
+00:57:21.690 --> 00:57:24.040
+<v Larry Ogrodnek>And I think also it depends on kind of the app that you want.
+
+00:57:24.530 --> 00:57:29.420
+<v Larry Ogrodnek>Like for some use cases, I mean, you know, the sticky part you kind of need right now anyway.
+
+00:57:29.570 --> 00:57:32.340
+<v Larry Ogrodnek>But for some use cases, maybe you don't care about the PubSub or the presence,
+
+00:57:32.880 --> 00:57:34.580
+<v Larry Ogrodnek>or maybe you have a way to deal with that already.
+
+00:57:35.040 --> 00:57:35.260
+<v Larry Ogrodnek>Right.
+
+00:57:35.450 --> 00:57:38.680
+<v Michael Kennedy>If you don't care about PubSub or presence, then as long as it just sticks to.
+
+00:57:38.960 --> 00:57:39.620
+<v Larry Ogrodnek>As long as it just sticks.
+
+00:57:39.740 --> 00:57:42.680
+<v Larry Ogrodnek>And even the stickiness, I feel like there's potential solutions there, right?
+
+00:57:42.800 --> 00:57:48.080
+<v Larry Ogrodnek>Because like with the model, it really is like, you know, like we saw in examples,
+
+00:57:48.320 --> 00:57:51.440
+<v Larry Ogrodnek>like you get past this context to operate on,
+
+00:57:51.740 --> 00:57:52.740
+<v Larry Ogrodnek>you make changes to it,
+
+00:57:53.240 --> 00:57:56.120
+<v Larry Ogrodnek>and you don't really care like where that came from
+
+00:57:56.280 --> 00:57:56.800
+<v Larry Ogrodnek>or where it's running.
+
+00:57:57.140 --> 00:57:58.840
+<v Larry Ogrodnek>And so theoretically, I think it feels like
+
+00:57:58.840 --> 00:58:01.020
+<v Larry Ogrodnek>there could be a situation where that is somehow distributed
+
+00:58:01.400 --> 00:58:03.900
+<v Larry Ogrodnek>or there's some kind of shared storage or, you know,
+
+00:58:04.000 --> 00:58:05.360
+<v Larry Ogrodnek>it doesn't seem like impossible.
+
+00:58:05.640 --> 00:58:06.940
+<v Larry Ogrodnek>I don't know that it'd be worth the complexity
+
+00:58:07.200 --> 00:58:07.840
+<v Larry Ogrodnek>for a lot of use cases,
+
+00:58:08.140 --> 00:58:10.120
+<v Larry Ogrodnek>but I feel like there's sort of a challenge.
+
+00:58:10.300 --> 00:58:12.060
+<v Larry Ogrodnek>And the PubSub stuff, I think is something that, you know,
+
+00:58:12.060 --> 00:58:12.940
+<v Larry Ogrodnek>I plan to kind of address.
+
+00:58:13.020 --> 00:58:14.380
+<v Larry Ogrodnek>So I think, again, it's like,
+
+00:58:14.500 --> 00:58:15.780
+<v Larry Ogrodnek>if you're okay with running Redis,
+
+00:58:16.700 --> 00:58:21.700
+<v Larry Ogrodnek>that's a very solvable problem too having like multi-machine pub sub um right right right redis
+
+00:58:21.960 --> 00:58:28.660
+<v Michael Kennedy>or valky have like this web socket broker thing kind of which we manage uh basically i imagine
+
+00:58:28.730 --> 00:58:33.220
+<v Michael Kennedy>like your web socket connection talks to your server which then like puts you in the session
+
+00:58:33.480 --> 00:58:38.480
+<v Michael Kennedy>of of a redis or valky one but then that thing actually does the pub sub across yeah and that
+
+00:58:38.480 --> 00:58:41.720
+<v Larry Ogrodnek>could be that could be interesting for like i mean like one of the early things i was thinking is
+
+00:58:41.780 --> 00:58:46.660
+<v Larry Ogrodnek>like oh could i could deploy this with like abys lambda you know which like seems kind of impossible
+
+00:58:46.680 --> 00:58:48.440
+<v Larry Ogrodnek>And they do have, with their API gateway,
+
+00:58:48.630 --> 00:58:52.040
+<v Larry Ogrodnek>they have a WebSocket broker.
+
+00:58:52.779 --> 00:58:54.000
+<v Larry Ogrodnek>They manage WebSocket connections.
+
+00:58:54.590 --> 00:58:55.720
+<v Larry Ogrodnek>And you just kind of get events like,
+
+00:58:56.260 --> 00:58:59.740
+<v Larry Ogrodnek>oh, this WebSocket client 125 joined, whatever.
+
+00:59:00.320 --> 00:59:01.380
+<v Larry Ogrodnek>And then you kind of manage that.
+
+00:59:01.430 --> 00:59:03.400
+<v Larry Ogrodnek>And it kind of would be cool, just, I don't know,
+
+00:59:03.630 --> 00:59:06.940
+<v Larry Ogrodnek>if a proof of concept or just if you really wanted to host on Lambda
+
+00:59:06.970 --> 00:59:07.600
+<v Larry Ogrodnek>or something like that.
+
+00:59:07.630 --> 00:59:08.160
+<v Larry Ogrodnek>But it's not.
+
+00:59:08.350 --> 00:59:09.720
+<v Larry Ogrodnek>I don't know that I'll get to that anytime soon.
+
+00:59:10.180 --> 00:59:10.360
+<v Larry Ogrodnek>Yeah.
+
+00:59:11.539 --> 00:59:14.840
+<v Michael Kennedy>Well, certainly an interesting project with the way it is.
+
+00:59:15.560 --> 00:59:17.120
+<v Michael Kennedy>Could certainly go farther.
+
+00:59:17.360 --> 00:59:19.320
+<v Michael Kennedy>A lot of the frameworks that are good at this scale out,
+
+00:59:19.400 --> 00:59:22.260
+<v Michael Kennedy>they don't have any presence or collaboration.
+
+00:59:23.040 --> 00:59:23.620
+<v Michael Kennedy>It's fine, right?
+
+00:59:24.160 --> 00:59:24.480
+<v Larry Ogrodnek>Yeah.
+
+00:59:24.720 --> 00:59:25.900
+<v Michael Kennedy>No, it's a good problem to have.
+
+00:59:26.440 --> 00:59:30.380
+<v Larry Ogrodnek>But yeah, it's something we'll figure out at some point.
+
+00:59:30.560 --> 00:59:32.500
+<v Larry Ogrodnek>But I think there's still a lot of co-ops you can write without it.
+
+00:59:32.600 --> 00:59:33.680
+<v Michael Kennedy>So it hasn't been a huge priority.
+
+00:59:34.000 --> 00:59:35.160
+<v Michael Kennedy>No, it's very, very neat.
+
+00:59:35.440 --> 00:59:35.660
+<v Michael Kennedy>All right.
+
+00:59:35.740 --> 00:59:38.860
+<v Michael Kennedy>So I got two quick questions for you here.
+
+00:59:39.720 --> 00:59:41.940
+<v Michael Kennedy>One, you mentioned LLMs at the beginning.
+
+00:59:42.520 --> 00:59:45.100
+<v Michael Kennedy>How do LLMs do with writing PyView?
+
+00:59:45.200 --> 00:59:48.860
+<v Michael Kennedy>and do you have tips for making it more knowledgeable?
+
+00:59:49.040 --> 00:59:52.540
+<v Michael Kennedy>Are there, do you have like some sort of specification file
+
+00:59:52.680 --> 00:59:56.000
+<v Michael Kennedy>you can give to, you know, Claude or something and say,
+
+00:59:56.580 --> 00:59:57.940
+<v Michael Kennedy>I know you might not be familiar with this,
+
+00:59:57.960 --> 00:59:58.800
+<v Michael Kennedy>but here's what it is.
+
+00:59:59.940 --> 01:00:01.880
+<v Michael Kennedy>Now I'm going to ask you questions to work with it.
+
+01:00:02.900 --> 01:00:04.680
+<v Larry Ogrodnek>That's a really good push.
+
+01:00:04.760 --> 01:00:06.180
+<v Larry Ogrodnek>I feel like I should do something like that.
+
+01:00:06.600 --> 01:00:09.900
+<v Larry Ogrodnek>So I have used LMS to like write, you know,
+
+01:00:11.060 --> 01:00:12.920
+<v Larry Ogrodnek>like application code, not, you know,
+
+01:00:12.960 --> 01:00:14.619
+<v Larry Ogrodnek>like application code, like using PyView framework
+
+01:00:14.640 --> 01:00:16.600
+<v Larry Ogrodnek>like you're describing at work a lot.
+
+01:00:16.800 --> 01:00:18.820
+<v Larry Ogrodnek>And it's been mostly successful.
+
+01:00:19.110 --> 01:00:21.200
+<v Larry Ogrodnek>I think one of the things is it helps
+
+01:00:21.300 --> 01:00:22.860
+<v Larry Ogrodnek>that the templating language--
+
+01:00:23.700 --> 01:00:27.480
+<v Larry Ogrodnek>we're not using 3.14 at work yet for these projects.
+
+01:00:27.630 --> 01:00:29.140
+<v Larry Ogrodnek>And so we're using the older style templates.
+
+01:00:29.190 --> 01:00:31.480
+<v Larry Ogrodnek>It helps that that language is very, very similar to Jinja 2.
+
+01:00:32.880 --> 01:00:35.000
+<v Larry Ogrodnek>And so that's been great.
+
+01:00:35.440 --> 01:00:37.320
+<v Larry Ogrodnek>It does get confused sometimes where, obviously,
+
+01:00:37.600 --> 01:00:39.040
+<v Larry Ogrodnek>we don't have the same set of built-in filters.
+
+01:00:39.230 --> 01:00:41.300
+<v Larry Ogrodnek>And so I might try to use a filter that's only in Jinja 2
+
+01:00:41.320 --> 01:00:45.080
+<v Larry Ogrodnek>that we don't have or that includes syntax
+
+01:00:45.110 --> 01:00:45.780
+<v Larry Ogrodnek>is slightly different.
+
+01:00:45.980 --> 01:00:47.240
+<v Larry Ogrodnek>So those that gets tripped up on.
+
+01:00:47.500 --> 01:00:49.460
+<v Larry Ogrodnek>I think I've had a lot of success
+
+01:00:49.720 --> 01:00:53.120
+<v Larry Ogrodnek>with just really simple prompts like this is PyView.
+
+01:00:53.420 --> 01:00:55.460
+<v Larry Ogrodnek>It's Phoenix LiveView, but in Python.
+
+01:00:55.880 --> 01:00:57.240
+<v Larry Ogrodnek>And that's gotten a lot of mileage,
+
+01:00:58.000 --> 01:00:59.480
+<v Larry Ogrodnek>just even something basic like that.
+
+01:01:00.480 --> 01:01:02.980
+<v Michael Kennedy>It sounds like you could create a Claude skill
+
+01:01:03.380 --> 01:01:06.760
+<v Michael Kennedy>or an agent or just a set of really structured rules files
+
+01:01:07.110 --> 01:01:09.380
+<v Michael Kennedy>and maybe put it on the docs and say, here, grab it.
+
+01:01:09.700 --> 01:01:10.280
+<v Michael Kennedy>And throw this in.
+
+01:01:10.760 --> 01:01:11.960
+<v Larry Ogrodnek>I for sure should do that.
+
+01:01:12.160 --> 01:01:13.380
+<v Larry Ogrodnek>Yeah, I don't think that'd be helpful for me too.
+
+01:01:13.480 --> 01:01:14.760
+<v Larry Ogrodnek>I think that's something that I kind of,
+
+01:01:15.460 --> 01:01:16.820
+<v Larry Ogrodnek>yeah, just even personally want to get better at
+
+01:01:16.880 --> 01:01:18.060
+<v Larry Ogrodnek>is like, yeah, I've been using these tools
+
+01:01:18.100 --> 01:01:19.480
+<v Larry Ogrodnek>a lot for development and they've been great,
+
+01:01:19.660 --> 01:01:20.780
+<v Larry Ogrodnek>but I've been somewhat, you know,
+
+01:01:21.040 --> 01:01:23.620
+<v Larry Ogrodnek>lazy in terms of like improving my workflow.
+
+01:01:23.700 --> 01:01:25.580
+<v Larry Ogrodnek>And I do see how it's like very successful
+
+01:01:26.059 --> 01:01:27.960
+<v Larry Ogrodnek>when people kind of structure these things
+
+01:01:27.980 --> 01:01:28.920
+<v Larry Ogrodnek>a little better in terms of like
+
+01:01:29.160 --> 01:01:30.480
+<v Larry Ogrodnek>having custom commands or yeah,
+
+01:01:30.600 --> 01:01:32.000
+<v Larry Ogrodnek>like agents that know about specific things.
+
+01:01:32.440 --> 01:01:32.880
+<v Larry Ogrodnek>It does seem like-
+
+01:01:33.100 --> 01:01:35.560
+<v Michael Kennedy>Yeah, but I do think that your cookie cutter helps.
+
+01:01:35.660 --> 01:01:35.760
+<v Michael Kennedy>Right.
+
+01:01:35.940 --> 01:01:36.180
+<v Michael Kennedy>Right.
+
+01:01:36.180 --> 01:01:38.940
+<v Michael Kennedy>Because it says, okay, here's the structure.
+
+01:01:38.940 --> 01:01:40.380
+<v Michael Kennedy>Here's a little working bit of it.
+
+01:01:40.700 --> 01:01:41.480
+<v Michael Kennedy>now keep building on that.
+
+01:01:41.620 --> 01:01:42.460
+<v Michael Kennedy>That goes a long ways.
+
+01:01:42.820 --> 01:01:42.900
+<v Michael Kennedy>So--
+
+01:01:42.900 --> 01:01:43.480
+<v Larry Ogrodnek>- No, for sure.
+
+01:01:43.920 --> 01:01:45.880
+<v Larry Ogrodnek>And I think even like having things like the just file
+
+01:01:46.280 --> 01:01:47.500
+<v Larry Ogrodnek>seemed to help in terms of like,
+
+01:01:48.119 --> 01:01:49.600
+<v Larry Ogrodnek>it doesn't, you know, it knows like,
+
+01:01:49.680 --> 01:01:51.080
+<v Larry Ogrodnek>oh, to run tests, I run just tests.
+
+01:01:51.300 --> 01:01:52.640
+<v Larry Ogrodnek>To run type check, I run just type check.
+
+01:01:52.800 --> 01:01:54.080
+<v Larry Ogrodnek>Like it kind of knows a lot of this stuff.
+
+01:01:55.400 --> 01:01:56.620
+<v Larry Ogrodnek>Doesn't have to guess about it,
+
+01:01:56.860 --> 01:01:57.900
+<v Larry Ogrodnek>but it kind of would be useful.
+
+01:01:58.060 --> 01:01:59.180
+<v Larry Ogrodnek>I do find it like, it's funny.
+
+01:01:59.300 --> 01:02:01.360
+<v Larry Ogrodnek>It seems like the LLM get confused a lot about like,
+
+01:02:01.780 --> 01:02:04.380
+<v Larry Ogrodnek>oh, do I need to run poetry run versus just Python?
+
+01:02:04.720 --> 01:02:06.240
+<v Larry Ogrodnek>And it seems to always forget like
+
+01:02:07.000 --> 01:02:08.940
+<v Larry Ogrodnek>how your project is set up, you know?
+
+01:02:09.580 --> 01:02:10.240
+<v Michael Kennedy>Yeah, I know.
+
+01:02:10.780 --> 01:02:12.260
+<v Michael Kennedy>You got to keep reminding it.
+
+01:02:12.780 --> 01:02:14.120
+<v Michael Kennedy>All right, so that was question one.
+
+01:02:14.220 --> 01:02:15.760
+<v Michael Kennedy>Question two, final question.
+
+01:02:16.300 --> 01:02:16.920
+<v Michael Kennedy>What's the roadmap?
+
+01:02:17.520 --> 01:02:18.340
+<v Michael Kennedy>You open to contributors.
+
+01:02:19.200 --> 01:02:19.860
+<v Michael Kennedy>Where are we?
+
+01:02:20.060 --> 01:02:23.420
+<v Larry Ogrodnek>Yeah, so like you mentioned, it's very early days.
+
+01:02:24.020 --> 01:02:27.620
+<v Larry Ogrodnek>And I've tried to not be conservative about breaking
+
+01:02:27.820 --> 01:02:30.700
+<v Larry Ogrodnek>changes, but I think as we start getting closer to 1.0--
+
+01:02:30.700 --> 01:02:31.940
+<v Larry Ogrodnek>I think I'm at 0.8.0--
+
+01:02:32.480 --> 01:02:33.600
+<v Larry Ogrodnek>there probably will be some breaking changes,
+
+01:02:33.700 --> 01:02:35.880
+<v Larry Ogrodnek>because as we've already seen in some of the examples,
+
+01:02:36.320 --> 01:02:38.220
+<v Larry Ogrodnek>I've gone through multiple iterations of how
+
+01:02:38.240 --> 01:02:39.140
+<v Larry Ogrodnek>do I make this easier?
+
+01:02:39.380 --> 01:02:40.080
+<v Larry Ogrodnek>how do I make this easier?
+
+01:02:40.490 --> 01:02:41.860
+<v Larry Ogrodnek>And that's been a big focus for me
+
+01:02:41.920 --> 01:02:44.000
+<v Larry Ogrodnek>is making it really developer-friendly and simple.
+
+01:02:44.110 --> 01:02:45.660
+<v Larry Ogrodnek>And so I think I'll try and make some stuff
+
+01:02:45.690 --> 01:02:46.340
+<v Larry Ogrodnek>a little more cohesive.
+
+01:02:46.920 --> 01:02:47.820
+<v Larry Ogrodnek>So there may be some breaking changes.
+
+01:02:49.040 --> 01:02:50.100
+<v Larry Ogrodnek>But yeah, I mean, you know,
+
+01:02:50.170 --> 01:02:51.980
+<v Larry Ogrodnek>I want it to be super easy to get up and running.
+
+01:02:52.230 --> 01:02:53.760
+<v Larry Ogrodnek>And I feel like there's work to do there.
+
+01:02:53.830 --> 01:02:55.740
+<v Larry Ogrodnek>I think, you know, the short-term roadmap is,
+
+01:02:56.100 --> 01:02:57.400
+<v Larry Ogrodnek>again, I want to keep working on documentation,
+
+01:02:57.770 --> 01:02:58.360
+<v Larry Ogrodnek>updates, examples.
+
+01:02:59.080 --> 01:03:00.180
+<v Larry Ogrodnek>I saw a really great, you know,
+
+01:03:00.330 --> 01:03:02.340
+<v Larry Ogrodnek>YouTube talk recently called like Verbs, Not Nouns
+
+01:03:03.220 --> 01:03:04.500
+<v Larry Ogrodnek>about Brian McDonald about like
+
+01:03:05.020 --> 01:03:07.120
+<v Larry Ogrodnek>how to make your documentation more kind of like task-based.
+
+01:03:07.170 --> 01:03:08.200
+<v Larry Ogrodnek>Like what is the person trying to do
+
+01:03:08.220 --> 01:03:09.320
+<v Larry Ogrodnek>versus explaining technology.
+
+01:03:10.160 --> 01:03:11.060
+<v Larry Ogrodnek>So I want to do that.
+
+01:03:11.120 --> 01:03:13.580
+<v Larry Ogrodnek>Like I said, I think the T-string templating
+
+01:03:13.960 --> 01:03:16.640
+<v Larry Ogrodnek>is very exciting in terms of making that better,
+
+01:03:17.000 --> 01:03:19.480
+<v Larry Ogrodnek>figuring out the CSS story around that.
+
+01:03:20.040 --> 01:03:20.760
+<v Larry Ogrodnek>That's one thing that's annoying
+
+01:03:20.820 --> 01:03:22.900
+<v Larry Ogrodnek>is writing CSS in t-strings
+
+01:03:22.980 --> 01:03:24.760
+<v Larry Ogrodnek>because you have to double escape all the curly braces.
+
+01:03:26.620 --> 01:03:27.360
+<v Larry Ogrodnek>Better form support.
+
+01:03:27.700 --> 01:03:29.740
+<v Larry Ogrodnek>I have some initial form support
+
+01:03:30.240 --> 01:03:31.480
+<v Larry Ogrodnek>that kind of uses Pydantic.
+
+01:03:33.380 --> 01:03:35.240
+<v Larry Ogrodnek>But I kind of want to make that a little better.
+
+01:03:35.480 --> 01:03:37.440
+<v Larry Ogrodnek>And I've had situations where we have
+
+01:03:37.440 --> 01:03:39.880
+<v Larry Ogrodnek>like very complex, like nested forms.
+
+01:03:40.120 --> 01:03:41.800
+<v Larry Ogrodnek>And I would love to get to a point where it's just like,
+
+01:03:41.900 --> 01:03:44.120
+<v Larry Ogrodnek>yeah, you just throw, here's my pandemic data model,
+
+01:03:44.760 --> 01:03:46.260
+<v Larry Ogrodnek>make a form with error handling
+
+01:03:46.430 --> 01:03:47.560
+<v Larry Ogrodnek>and all this stuff and validation.
+
+01:03:47.810 --> 01:03:48.860
+<v Larry Ogrodnek>And I kind of want to get there.
+
+01:03:48.890 --> 01:03:51.080
+<v Larry Ogrodnek>And then I think again, like larger examples,
+
+01:03:51.400 --> 01:03:54.560
+<v Larry Ogrodnek>like I think you called out the Phoenix Live View,
+
+01:03:54.710 --> 01:03:55.800
+<v Larry Ogrodnek>like PyBeats example,
+
+01:03:56.000 --> 01:03:57.880
+<v Larry Ogrodnek>like they have this very big music player.
+
+01:03:57.950 --> 01:03:59.420
+<v Larry Ogrodnek>And I have some things like that
+
+01:03:59.500 --> 01:04:00.840
+<v Larry Ogrodnek>where I have like an AI chat example
+
+01:04:01.480 --> 01:04:02.260
+<v Larry Ogrodnek>that are slightly larger,
+
+01:04:02.500 --> 01:04:03.700
+<v Larry Ogrodnek>but kind of going to some more examples
+
+01:04:03.750 --> 01:04:04.580
+<v Larry Ogrodnek>to kind of inspire people,
+
+01:04:04.650 --> 01:04:05.860
+<v Larry Ogrodnek>like what can actually be done.
+
+01:04:06.360 --> 01:04:10.600
+<v Michael Kennedy>Could you fully implement the live beats thing in PyView?
+
+01:04:10.960 --> 01:04:12.060
+<v Larry Ogrodnek>Yes, I can.
+
+01:04:12.280 --> 01:04:13.640
+<v Larry Ogrodnek>And I was thinking about doing it.
+
+01:04:13.640 --> 01:04:17.480
+<v Larry Ogrodnek>I think it's interesting, the history there, I mean, I don't know.
+
+01:04:18.910 --> 01:04:22.500
+<v Larry Ogrodnek>But my intuition is that part of it was that as they were building certain technologies,
+
+01:04:22.550 --> 01:04:24.340
+<v Larry Ogrodnek>they wanted to show them off and have a good test bed.
+
+01:04:24.340 --> 01:04:27.760
+<v Larry Ogrodnek>And so the way that it works is based on file uploads.
+
+01:04:27.880 --> 01:04:29.480
+<v Larry Ogrodnek>You upload MP3s that you want to play.
+
+01:04:30.480 --> 01:04:33.480
+<v Larry Ogrodnek>And I feel like that's because they wanted to show off the file upload stuff, which was
+
+01:04:33.570 --> 01:04:34.440
+<v Larry Ogrodnek>new at the time, I think.
+
+01:04:34.630 --> 01:04:35.200
+<v Larry Ogrodnek>And I could do that.
+
+01:04:35.760 --> 01:04:41.200
+<v Larry Ogrodnek>support. In fact, I have like even multi-part S3, like very advanced file upload support.
+
+01:04:42.060 --> 01:04:46.860
+<v Larry Ogrodnek>But I was thinking about doing it, but just doing streaming. I found a streaming service that is
+
+01:04:47.100 --> 01:04:51.140
+<v Larry Ogrodnek>for like royalty-free music if you're using it in a non-commercial way. And I think that might be
+
+01:04:51.260 --> 01:04:55.260
+<v Larry Ogrodnek>more exciting to show off like present stuff and even some JavaScript integration stuff and like
+
+01:04:55.400 --> 01:04:59.680
+<v Larry Ogrodnek>synchronizing stuff. And I think also I have a simple AI chat thing, but I think maybe
+
+01:05:00.220 --> 01:05:03.800
+<v Larry Ogrodnek>beefing up a little bit would be kind of cool too, because I know people are into AI stuff.
+
+01:05:03.860 --> 01:05:15.840
+<v Larry Ogrodnek>But you mentioned contributions, and I think, yeah, for sure, I think the thing that, to be honest, would be the most helpful is to have people try it, try writing a simple app or a complex app, whatever.
+
+01:05:16.050 --> 01:05:22.620
+<v Larry Ogrodnek>And I really want to hear what works well, what's rough, what's confusing, what could be better, any feedback.
+
+01:05:24.100 --> 01:05:30.060
+<v Michael Kennedy>Yeah, more than people contributing features is people just using it to make sure it works and giving feedback on how it should be, right?
+
+01:05:30.260 --> 01:05:32.360
+<v Larry Ogrodnek>Yeah, no, and contribution features are good, too.
+
+01:05:32.520 --> 01:05:36.560
+<v Larry Ogrodnek>I mean, I recently set up, like, also just a call, like, on GitHub, the repo.
+
+01:05:36.760 --> 01:05:37.900
+<v Larry Ogrodnek>There's also, like, a discussions thing.
+
+01:05:38.050 --> 01:05:39.520
+<v Larry Ogrodnek>It doesn't have a lot of things or anything.
+
+01:05:39.600 --> 01:05:40.740
+<v Larry Ogrodnek>I mean, there's two topics right now.
+
+01:05:41.320 --> 01:05:44.340
+<v Larry Ogrodnek>But, you know, because I do want to get more feedback and encourage feedback.
+
+01:05:44.580 --> 01:05:46.540
+<v Larry Ogrodnek>And, like, I think that's a great place to put features suggestions.
+
+01:05:46.860 --> 01:05:50.280
+<v Larry Ogrodnek>But, yeah, I mean, contributions are also welcome.
+
+01:05:50.600 --> 01:05:54.920
+<v Larry Ogrodnek>But, yeah, I just can't underscore enough how much, like, I want to have feedback.
+
+01:05:55.160 --> 01:06:00.100
+<v Larry Ogrodnek>Because, again, I want it to be, like, I mean, I want it to be a really great app that people feel is fun to use.
+
+01:06:00.240 --> 01:06:01.040
+<v Larry Ogrodnek>And they like using it.
+
+01:06:01.100 --> 01:06:02.000
+<v Larry Ogrodnek>And it's easy to get started.
+
+01:06:02.280 --> 01:06:04.140
+<v Larry Ogrodnek>And I know that it's not there yet,
+
+01:06:05.119 --> 01:06:07.820
+<v Larry Ogrodnek>but any help to getting there would be great.
+
+01:06:08.040 --> 01:06:09.040
+<v Michael Kennedy>Yeah, very cool.
+
+01:06:09.340 --> 01:06:10.460
+<v Michael Kennedy>Larry, thanks for being on the show.
+
+01:06:10.880 --> 01:06:11.600
+<v Michael Kennedy>Very cool project.
+
+01:06:11.740 --> 01:06:14.260
+<v Michael Kennedy>I think people should certainly at least give it a look
+
+01:06:14.420 --> 01:06:17.260
+<v Michael Kennedy>to see maybe it'll help them go get their app up
+
+01:06:17.300 --> 01:06:18.980
+<v Michael Kennedy>and running a nice little interactive app
+
+01:06:19.060 --> 01:06:20.760
+<v Michael Kennedy>way quicker than maybe they thought they could.
+
+01:06:21.060 --> 01:06:21.880
+<v Larry Ogrodnek>Yeah, thanks so much, Michael.
+
+01:06:21.960 --> 01:06:23.780
+<v Larry Ogrodnek>Yeah, I really appreciate the chance to come on
+
+01:06:23.960 --> 01:06:24.540
+<v Larry Ogrodnek>and talk to you about this.
+
+01:06:24.680 --> 01:06:25.600
+<v Larry Ogrodnek>It's been a lot of fun.
+
+01:06:25.700 --> 01:06:28.360
+<v Larry Ogrodnek>I can't believe how much we talked about
+
+01:06:28.460 --> 01:06:29.600
+<v Larry Ogrodnek>and how much more we could talk about.
+
+01:06:29.780 --> 01:06:31.180
+<v Larry Ogrodnek>So it was really fun.
+
+01:06:31.200 --> 01:06:34.000
+<v Michael Kennedy>We've got a browser full of tabs of things we didn't even get to.
+
+01:06:34.280 --> 01:06:35.380
+<v Michael Kennedy>So yeah, sorry.
+
+01:06:37.000 --> 01:06:37.540
+<v Michael Kennedy>Now that's how it goes.
+
+01:06:37.660 --> 01:06:37.840
+<v Michael Kennedy>All right.
+
+01:06:38.240 --> 01:06:38.780
+<v Michael Kennedy>Thanks for being here.
+
+01:06:39.120 --> 01:06:39.500
+<v Michael Kennedy>Catch you later.
+
+01:06:39.840 --> 01:06:40.080
+<v Michael Kennedy>Bye everyone.
+
+01:06:40.320 --> 01:06:40.480
+<v Michael Kennedy>Bye.
+
+01:06:41.920 --> 01:06:44.040
+<v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:06:44.420 --> 01:06:45.140
+<v Michael Kennedy>Thank you to our sponsors.
+
+01:06:45.340 --> 01:06:46.680
+<v Michael Kennedy>Be sure to check out what they're offering.
+
+01:06:46.840 --> 01:06:48.200
+<v Michael Kennedy>It really helps support the show.
+
+01:06:48.760 --> 01:06:50.600
+<v Michael Kennedy>If you or your team needs to learn Python,
+
+01:06:50.840 --> 01:06:55.640
+<v Michael Kennedy>we have over 270 hours of beginner and advanced courses on topics ranging from
+
+01:06:55.980 --> 01:07:00.860
+<v Michael Kennedy>complete beginners to async code, Flask, Django, HTMX, and even LLMs.
+
+01:07:01.160 --> 01:07:03.380
+<v Michael Kennedy>Best of all, there's no subscription in sight.
+
+01:07:04.040 --> 01:07:05.700
+<v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:07:06.440 --> 01:07:08.360
+<v Michael Kennedy>And if you're not already subscribed to the show
+
+01:07:08.600 --> 01:07:09.760
+<v Michael Kennedy>on your favorite podcast player,
+
+01:07:10.410 --> 01:07:11.060
+<v Michael Kennedy>what are you waiting for?
+
+01:07:11.740 --> 01:07:13.480
+<v Michael Kennedy>Just search for Python in your podcast player.
+
+01:07:13.640 --> 01:07:14.460
+<v Michael Kennedy>We should be right at the top.
+
+01:07:14.900 --> 01:07:16.300
+<v Michael Kennedy>If you enjoyed that geeky rap song,
+
+01:07:16.510 --> 01:07:17.660
+<v Michael Kennedy>you can download the full track.
+
+01:07:17.890 --> 01:07:19.780
+<v Michael Kennedy>The link is actually in your podcast blur show notes.
+
+01:07:20.620 --> 01:07:21.940
+<v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:07:22.340 --> 01:07:23.400
+<v Michael Kennedy>Thank you so much for listening.
+
+01:07:23.610 --> 01:07:24.400
+<v Michael Kennedy>I really appreciate it.
+
+01:07:24.840 --> 01:07:25.540
+<v Michael Kennedy>I'll see you next time.
+
+01:07:35.660 --> 01:07:46.720
+I thought of me, and we ready to roll, upgrading the code, no fear of getting whole, we tapped
+
+01:07:46.830 --> 01:07:53.140
+into that modern vibe, overcame each storm, talk Python and me, I-sync is the norm.
+
+01:07:54.860 --> 01:07:56.260
+you
+
