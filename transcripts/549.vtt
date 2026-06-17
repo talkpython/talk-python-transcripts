@@ -1,0 +1,5311 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:02.300
+<v Michael Kennedy>Your documentation has two audiences now,
+
+00:00:02.480 --> 00:00:05.320
+<v Michael Kennedy>humans reading the rendered HTML and AI agents making
+
+00:00:05.560 --> 00:00:06.460
+<v Michael Kennedy>sense of your library.
+
+00:00:06.680 --> 00:00:07.680
+<v Michael Kennedy>Rich, I known,
+
+00:00:07.900 --> 00:00:10.960
+<v Michael Kennedy>and Michael Chow from Posit are back on Talk Python with a
+
+00:00:10.970 --> 00:00:15.180
+<v Michael Kennedy>brand new Python documentation tool called GreatDocs that takes both seriously.
+
+00:00:15.620 --> 00:00:16.700
+<v Michael Kennedy>Rich is the creator of
+
+00:00:16.760 --> 00:00:18.320
+<v Michael Kennedy>Great Tables and before that,
+
+00:00:18.500 --> 00:00:19.460
+<v Michael Kennedy>the R package GT.
+
+00:00:19.670 --> 00:00:22.160
+<v Michael Kennedy>The man has a serious eye for design and he's pointed
+
+00:00:22.210 --> 00:00:24.240
+<v Michael Kennedy>that energy at the Python Docs ecosystem.
+
+00:00:24.620 --> 00:00:27.500
+<v Michael Kennedy>We'll talk about how GreatDocs spins up a polished site
+
+00:00:27.540 --> 00:00:28.300
+<v Michael Kennedy>and three commands,
+
+00:00:28.500 --> 00:00:32.040
+<v Michael Kennedy>why every page ships as markdown for your favorite LLM,
+
+00:00:32.220 --> 00:00:32.980
+<v Michael Kennedy>how it leans
+
+00:00:33.080 --> 00:00:36.200
+<v Michael Kennedy>on Quarto for executable code blocks and tabbed install sections,
+
+00:00:36.780 --> 00:00:37.620
+<v Michael Kennedy>and where it lands against
+
+00:00:37.780 --> 00:00:38.120
+<v Michael Kennedy>Sphinx,
+
+00:00:38.440 --> 00:00:38.900
+<v Michael Kennedy>MkDocs,
+
+00:00:39.180 --> 00:00:39.620
+<v Michael Kennedy>and Zensical.
+
+00:00:39.820 --> 00:00:40.180
+<v Michael Kennedy>Plus,
+
+00:00:40.380 --> 00:00:42.680
+<v Michael Kennedy>you'll meet Tablin. Here we go. This is Talk Python To Me,
+
+00:00:42.840 --> 00:00:43.840
+<v Michael Kennedy>episode 549,
+
+00:00:44.200 --> 00:00:45.200
+<v Michael Kennedy>recorded May 19th,
+
+00:00:45.600 --> 00:00:46.380
+<v Michael Kennedy>2026.
+
+00:01:05.160 --> 00:01:09.480
+<v Michael Kennedy>Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:01:10.030 --> 00:01:10.740
+<v Michael Kennedy>This is your host,
+
+00:01:10.920 --> 00:01:11.380
+<v Michael Kennedy>Michael Kennedy.
+
+00:01:11.580 --> 00:01:15.320
+<v Michael Kennedy>I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:15.960 --> 00:01:17.020
+<v Michael Kennedy>Let's connect on social media.
+
+00:01:17.480 --> 00:01:19.660
+<v Michael Kennedy>You'll find me and Talk Python on Mastodon, Bluesky,
+
+00:01:20.020 --> 00:01:20.540
+<v Michael Kennedy>and X.
+
+00:01:20.840 --> 00:01:22.660
+<v Michael Kennedy>The social links are all in your show notes.
+
+00:01:23.420 --> 00:01:26.940
+<v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:27.120 --> 00:01:30.320
+<v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:30.680 --> 00:01:31.140
+<v Michael Kennedy>That's right.
+
+00:01:31.400 --> 00:01:34.600
+<v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:35.200 --> 00:01:39.520
+<v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:39.860 --> 00:01:43.480
+<v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:44.060 --> 00:01:48.020
+<v Michael Kennedy>Hey friends, before we dive in, I want to share something I just launched over at Talk Python,
+
+00:01:48.340 --> 00:01:48.960
+<v Michael Kennedy>a new course.
+
+00:01:49.380 --> 00:01:51.460
+<v Michael Kennedy>If you ship Python to production,
+
+00:01:51.780 --> 00:01:53.680
+<v Michael Kennedy>you've probably had that quiet thought about
+
+00:01:54.060 --> 00:01:55.680
+<v Michael Kennedy>what might be lurking in your code.
+
+00:01:55.920 --> 00:01:59.160
+<v Michael Kennedy>My new course turns that worry into a concrete workflow
+
+00:01:59.440 --> 00:02:02.380
+<v Michael Kennedy>and a reusable AI security agent that's yours forever.
+
+00:02:02.760 --> 00:02:04.440
+<v Michael Kennedy>It's Python Web Security,
+
+00:02:04.600 --> 00:02:06.780
+<v Michael Kennedy>the OWASP top 10 with agentic AI.
+
+00:02:07.720 --> 00:02:11.440
+<v Michael Kennedy>Check it out at talkpython.fm/AI dash web dash security.
+
+00:02:11.560 --> 00:02:13.960
+<v Michael Kennedy>The link is in your podcast player and on the episode page,
+
+00:02:14.220 --> 00:02:16.000
+<v Michael Kennedy>or just go to talkpython.fm
+
+00:02:16.220 --> 00:02:17.520
+<v Michael Kennedy>and click on courses at the top.
+
+00:02:17.780 --> 00:02:18.660
+<v Michael Kennedy>It should be right there.
+
+00:02:19.220 --> 00:02:23.180
+<v Michael Kennedy>So if you're interested in making sure the apps and APIs that you ship are secure,
+
+00:02:23.560 --> 00:02:24.160
+<v Michael Kennedy>this
+
+00:02:24.160 --> 00:02:24.780
+<v Michael Kennedy>is the course for you.
+
+00:02:25.520 --> 00:02:27.080
+<v Michael Kennedy>This episode is brought to you by Sentry.
+
+00:02:27.840 --> 00:02:29.240
+<v Michael Kennedy>You know Sentry for the error monitoring,
+
+00:02:29.540 --> 00:02:30.840
+<v Michael Kennedy>but they now have logs too.
+
+00:02:31.200 --> 00:02:31.720
+<v Michael Kennedy>And with Sentry,
+
+00:02:32.140 --> 00:02:33.840
+<v Michael Kennedy>your logs become way more usable,
+
+00:02:34.360 --> 00:02:36.340
+<v Michael Kennedy>interleaving into your error reports
+
+00:02:36.470 --> 00:02:38.200
+<v Michael Kennedy>to enhance debugging and understanding.
+
+00:02:38.740 --> 00:02:41.960
+<v Michael Kennedy>Get started today at talkpython.fm/sentry.
+
+00:02:42.740 --> 00:02:44.500
+<v Michael Kennedy>And it's brought to you by Temporal,
+
+00:02:44.660 --> 00:02:46.120
+<v Michael Kennedy>durable workflows for Python.
+
+00:02:46.560 --> 00:02:50.920
+<v Michael Kennedy>Write your workflows as normal Python code and Temporal ensures they run reliably,
+
+00:02:51.600 --> 00:02:53.180
+<v Michael Kennedy>even across crashes and restarts.
+
+00:02:53.760 --> 00:02:56.500
+<v Michael Kennedy>Get started at talkpython.fm/Temporal.
+
+00:02:57.460 --> 00:02:57.980
+<v Michael Kennedy>Rich, Michael,
+
+00:02:58.340 --> 00:03:00.060
+<v Michael Kennedy>welcome back to Talk Python To Me.
+
+00:03:00.410 --> 00:03:02.100
+<v Michael Kennedy>Awesome to have you both back on the show.
+
+00:03:02.440 --> 00:03:03.340
+<v Michael Kennedy>Yeah, thanks for having us.
+
+00:03:03.780 --> 00:03:04.840
+<v Michael Kennedy>We're going to talk about great things.
+
+00:03:05.230 --> 00:03:06.460
+<v Michael Kennedy>I know it's going to be a great show.
+
+00:03:06.710 --> 00:03:07.240
+<v Michael Kennedy>It's undoubtable,
+
+00:03:07.420 --> 00:03:07.480
+<v Michael Kennedy>right?
+
+00:03:08.140 --> 00:03:09.040
+<v Michael Chow>I have no doubt.
+
+00:03:09.220 --> 00:03:09.840
+<v Michael Chow>It's a great day,
+
+00:03:10.060 --> 00:03:10.320
+<v Michael Chow>you know,
+
+00:03:10.500 --> 00:03:11.300
+<v Michael Chow>and we're ready for,
+
+00:03:11.860 --> 00:03:12.680
+<v Michael Chow>I think what's going to be a
+
+00:03:12.880 --> 00:03:13.620
+<v Michael Chow>great chat.
+
+00:03:13.880 --> 00:03:14.000
+<v Michael Kennedy>Yeah.
+
+00:03:14.740 --> 00:03:16.160
+<v Michael Kennedy>About great docs,
+
+00:03:16.480 --> 00:03:16.960
+<v Michael Kennedy>great tables,
+
+00:03:17.280 --> 00:03:18.100
+<v Michael Kennedy>all of those things.
+
+00:03:18.460 --> 00:03:19.080
+<v Michael Kennedy>All the great things.
+
+00:03:19.280 --> 00:03:19.680
+<v Michael Kennedy>Yeah.
+
+00:03:20.100 --> 00:03:22.000
+<v Michael Kennedy>So I had you on to talk about great tables,
+
+00:03:22.540 --> 00:03:23.340
+<v Michael Kennedy>which was really fun.
+
+00:03:23.600 --> 00:03:24.800
+<v Michael Kennedy>You all both from Posit.
+
+00:03:25.400 --> 00:03:25.780
+<v Michael Kennedy>And
+
+00:03:26.260 --> 00:03:29.020
+<v Michael Kennedy>other than that, maybe let's do a quick introduction for folks.
+
+00:03:29.520 --> 00:03:30.820
+<v Michael Kennedy>I mean, I don't know why anybody would
+
+00:03:31.020 --> 00:03:32.800
+<v Michael Kennedy>not have listened to the great tables episode,
+
+00:03:33.180 --> 00:03:35.080
+<v Michael Kennedy>but in case they haven't. No, we honestly,
+
+00:03:35.160 --> 00:03:36.880
+<v Michael Kennedy>we get a bunch of new listeners all the time.
+
+00:03:37.120 --> 00:03:40.080
+<v Michael Kennedy>So yeah, let's do a quick round of introductions.
+
+00:03:40.230 --> 00:03:40.640
+<v Michael Kennedy>Who are you?
+
+00:03:40.850 --> 00:03:42.880
+<v Michael Kennedy>What do you do? Why are you working on this project?
+
+00:03:43.140 --> 00:03:43.300
+<v Michael Kennedy>Rich,
+
+00:03:43.520 --> 00:03:43.840
+<v Michael Kennedy>start with you.
+
+00:03:44.150 --> 00:03:44.280
+<v Rich lannone>Yeah.
+
+00:03:44.730 --> 00:03:44.860
+<v Rich lannone>Yeah.
+
+00:03:45.080 --> 00:03:45.400
+<v Rich lannone>I'm Rich.
+
+00:03:45.880 --> 00:03:46.800
+<v Rich lannone>I work at Posit,
+
+00:03:47.260 --> 00:03:47.460
+<v Rich lannone>PBC.
+
+00:03:48.000 --> 00:03:49.920
+<v Rich lannone>I've been doing traditionally lots of R stuff,
+
+00:03:50.310 --> 00:03:50.920
+<v Rich lannone>like in the past,
+
+00:03:51.190 --> 00:03:51.680
+<v Rich lannone>but more lately,
+
+00:03:51.880 --> 00:03:53.520
+<v Rich lannone>this is like the last three or four years,
+
+00:03:53.820 --> 00:03:54.740
+<v Rich lannone>a lot more Python
+
+00:03:55.020 --> 00:03:55.140
+<v Rich lannone>stuff.
+
+00:03:55.500 --> 00:03:56.760
+<v Rich lannone>And actually Michael,
+
+00:03:57.120 --> 00:03:58.040
+<v Rich lannone>who's with me today,
+
+00:03:58.350 --> 00:03:59.260
+<v Rich lannone>he taught me a lot about Python.
+
+00:03:59.620 --> 00:04:00.120
+<v Rich lannone>Like I was
+
+00:04:00.590 --> 00:04:01.400
+<v Rich lannone>pretty bad starting.
+
+00:04:01.600 --> 00:04:04.040
+<v Rich lannone>I mean, I used in the past, but I was open source stuff. I was,
+
+00:04:04.360 --> 00:04:09.840
+<v Rich lannone>oh that was bad michael has so much patience though so uh he'll make up speed over a period
+
+00:04:09.870 --> 00:04:15.680
+<v Rich lannone>of a year or so um so i owe a lot to him and yeah that's he's a great guy that's really cool i i
+
+00:04:16.180 --> 00:04:21.540
+<v Michael Kennedy>agree with that i think it's it's hard to change a language it's hard to switch to another language
+
+00:04:21.670 --> 00:04:26.860
+<v Michael Kennedy>and maybe you could speak to that real quick before michael jumps in and just i've done that a couple
+
+00:04:26.920 --> 00:04:32.320
+<v Michael Kennedy>times you know you spend so much time and energy and effort and getting really good at a not just
+
+00:04:32.320 --> 00:04:32.680
+<v Michael Kennedy>the language,
+
+00:04:32.880 --> 00:04:33.800
+<v Michael Kennedy>the tools, the ecosystem,
+
+00:04:33.980 --> 00:04:34.220
+<v Michael Kennedy>everything.
+
+00:04:34.680 --> 00:04:37.600
+<v Michael Kennedy>And then you're like, I'm one O, I think I have to go over there for a while.
+
+00:04:37.920 --> 00:04:38.160
+<v Rich lannone>Yeah.
+
+00:04:38.180 --> 00:04:39.340
+<v Rich lannone>It feels like a bizarro situation.
+
+00:04:39.560 --> 00:04:40.900
+<v Rich lannone>Like I know what I could be doing,
+
+00:04:41.100 --> 00:04:41.540
+<v Rich lannone>what should be doing,
+
+00:04:41.920 --> 00:04:42.560
+<v Rich lannone>like theoretically,
+
+00:04:43.040 --> 00:04:43.460
+<v Rich lannone>but things just
+
+00:04:43.580 --> 00:04:44.220
+<v Rich lannone>don't jive sometimes.
+
+00:04:44.600 --> 00:04:45.080
+<v Rich lannone>It's like, oh,
+
+00:04:45.400 --> 00:04:45.520
+<v Rich lannone>yeah.
+
+00:04:45.660 --> 00:04:49.000
+<v Rich lannone>But then you, then you get used to it and then your previous language degrades.
+
+00:04:49.920 --> 00:04:50.980
+<v Rich lannone>It's kind of like that sort of thing.
+
+00:04:51.480 --> 00:04:54.660
+<v Michael Kennedy>It's a little bit, a little bit sad in that regard, but you know, for me,
+
+00:04:54.900 --> 00:04:55.360
+<v Michael Kennedy>the real challenge
+
+00:04:55.480 --> 00:04:55.800
+<v Michael Kennedy>was I'm,
+
+00:04:56.200 --> 00:04:59.880
+<v Michael Kennedy>I have such a deep knowledge and mastery of this technology.
+
+00:05:00.440 --> 00:05:01.340
+<v Michael Kennedy>And if I switch,
+
+00:05:01.820 --> 00:05:08.420
+<v Michael Kennedy>at least the first time or two I did, I felt like I'm going to go back to the newbiest of noobs and it's going to feel really bad.
+
+00:05:08.540 --> 00:05:12.620
+<v Michael Kennedy>And I was so hard for this knowledge and this experience.
+
+00:05:13.260 --> 00:05:15.080
+<v Michael Kennedy>Why am I going to do this?
+
+00:05:15.400 --> 00:05:16.340
+<v Michael Kennedy>Maybe I should never do that.
+
+00:05:16.380 --> 00:05:17.900
+<v Michael Kennedy>It was really, it was a big deal for me.
+
+00:05:18.320 --> 00:05:18.900
+<v Michael Kennedy>Maybe you could just,
+
+00:05:19.100 --> 00:05:24.260
+<v Michael Kennedy>I want to say that for other people out there who are not necessarily going R to Python, but just one tech to another.
+
+00:05:24.600 --> 00:05:25.240
+<v Rich lannone>Yeah, it's humbling,
+
+00:05:25.560 --> 00:05:25.960
+<v Rich lannone>like I said.
+
+00:05:26.000 --> 00:05:27.040
+<v Rich lannone>And well,
+
+00:05:27.460 --> 00:05:27.620
+<v Rich lannone>you know,
+
+00:05:27.860 --> 00:05:29.420
+<v Rich lannone>with a good venture and lots of patience,
+
+00:05:30.200 --> 00:05:30.660
+<v Rich lannone>it can happen.
+
+00:05:31.120 --> 00:05:32.240
+<v Michael Kennedy>Yeah, it's good to expand your skills,
+
+00:05:32.440 --> 00:05:34.180
+<v Michael Kennedy>but the initial decision is rough.
+
+00:05:34.540 --> 00:05:34.860
+<v Michael Kennedy>Michael,
+
+00:05:35.200 --> 00:05:37.960
+<v Michael Kennedy>you've been shepherding Rich along the way.
+
+00:05:38.000 --> 00:05:38.440
+<v Michael Kennedy>I love it.
+
+00:05:38.720 --> 00:05:39.260
+<v Michael Kennedy>Tell us about yourself.
+
+00:05:39.620 --> 00:05:43.560
+<v Michael Chow>I wouldn't even say shepherding, or maybe there's like some mutual shepherding going on.
+
+00:05:44.080 --> 00:05:45.300
+<v Michael Chow>So I'm Michael Chow.
+
+00:05:45.560 --> 00:05:50.560
+<v Michael Chow>I'm a software engineer at Posit and have been for about four years on the open source team.
+
+00:05:51.020 --> 00:05:51.100
+<v Michael Chow>Yeah.
+
+00:05:51.220 --> 00:05:51.620
+<v Michael Chow>And I,
+
+00:05:52.100 --> 00:05:53.820
+<v Michael Chow>so I've worked with Rich on things like great tables.
+
+00:05:54.440 --> 00:05:55.100
+<v Michael Chow>And I think that,
+
+00:05:55.560 --> 00:05:56.920
+<v Michael Chow>yeah, I'm really interested in Python.
+
+00:05:57.020 --> 00:05:58.340
+<v Michael Chow>I work on Python full time.
+
+00:05:59.700 --> 00:06:03.120
+<v Michael Chow>I think if I had to send back what Rich is really good at,
+
+00:06:03.900 --> 00:06:05.500
+<v Michael Chow>Rich just has this crazy,
+
+00:06:05.760 --> 00:06:06.640
+<v Michael Chow>freaky sense of style.
+
+00:06:07.000 --> 00:06:11.660
+<v Michael Chow>And I think that's one thing that's drawn me to work with him on things is you just never know.
+
+00:06:12.180 --> 00:06:13.040
+<v Michael Chow>Like, to be totally honest,
+
+00:06:13.420 --> 00:06:15.980
+<v Michael Chow>people at Posit just never know what Rich is going to pull out.
+
+00:06:16.260 --> 00:06:18.600
+<v Michael Chow>And I don't think any of us could have imagined it.
+
+00:06:18.740 --> 00:06:19.000
+<v Michael Chow>He's a loose,
+
+00:06:19.240 --> 00:06:19.980
+<v Michael Chow>he's our wild card.
+
+00:06:21.080 --> 00:06:23.980
+<v Michael Chow>And it's been interesting because you can imagine like a programming language.
+
+00:06:24.580 --> 00:06:26.720
+<v Michael Chow>Yeah, you could be like, oh, this person taught me this programming language.
+
+00:06:27.080 --> 00:06:28.900
+<v Michael Chow>I don't really know how you teach Rich's style,
+
+00:06:29.120 --> 00:06:32.180
+<v Michael Chow>but I feel like I'm kind of along for the ride. I'm like eating popcorn,
+
+00:06:32.600 --> 00:06:37.160
+<v Michael Chow>helping out. And I think tools like Great Docs really reflect that, this interesting sense of style.
+
+00:06:37.340 --> 00:06:37.800
+<v Michael Chow>Great tables.
+
+00:06:38.220 --> 00:06:42.020
+<v Michael Chow>He's just dipped into this rich history of table styling.
+
+00:06:42.300 --> 00:06:46.080
+<v Michael Chow>How would you style it to present and maybe publish it?
+
+00:06:46.380 --> 00:06:55.360
+<v Michael Chow>And so I've been excited to be along for the ride to just watch him cook and bring this unique sense of kind of like style and design into tools.
+
+00:06:55.660 --> 00:06:55.960
+<v Michael Chow>Yeah,
+
+00:06:56.160 --> 00:06:56.700
+<v Michael Kennedy>that's really cool.
+
+00:06:57.280 --> 00:06:57.560
+<v Michael Kennedy>You know,
+
+00:06:57.840 --> 00:07:02.360
+<v Michael Kennedy>certain people just have a knack for APIs and the way that develop,
+
+00:07:02.520 --> 00:07:04.340
+<v Michael Kennedy>you know, the developer UX sort of thing.
+
+00:07:04.460 --> 00:07:04.760
+<v Michael Kennedy>That's cool.
+
+00:07:05.080 --> 00:07:07.580
+<v Michael Kennedy>I personally am excited for the mascot.
+
+00:07:08.060 --> 00:07:08.180
+<v Michael Kennedy>Yeah,
+
+00:07:08.360 --> 00:07:08.980
+<v Michael Kennedy>Rich,
+
+00:07:09.160 --> 00:07:11.660
+<v Michael Chow>I blew your cover.
+
+00:07:12.080 --> 00:07:18.100
+<v Michael Chow>we were yeah so michael and i were talking a little bit at pycon uh about uh tablin how you're
+
+00:07:18.260 --> 00:07:24.180
+<v Michael Chow>tablin yes he hasn't been trying out a mascot wizard yeah who is tablin though i wonder he's
+
+00:07:24.180 --> 00:07:29.380
+<v Rich lannone>just a little table guy a little table dude that appears gives you help and then disappears just
+
+00:07:29.390 --> 00:07:34.400
+<v Michael Chow>as fast um right he hasn't fully realized he's he's he's always thinking of you he's never thinking
+
+00:07:34.430 --> 00:07:40.059
+<v Michael Chow>of himself you know he's he's showing up helping you out he's like the new uh the bee or bob but
+
+00:07:40.080 --> 00:07:45.380
+<v Rich lannone>much cooler because he's a table and can display things this absolutely yeah and i do think this
+
+00:07:45.500 --> 00:07:50.240
+<v Michael Chow>speaks to our dynamic where tablin just appeared one day like well while we were preparing a pi
+
+00:07:50.280 --> 00:07:56.040
+<v Michael Chow>con talk two years ago tablin just appeared in the slides and i didn't know who tablin was and i was
+
+00:07:56.100 --> 00:08:01.080
+<v Michael Chow>like who or what is this it was like a slide of a table and tablin was popped out on the side was
+
+00:08:01.180 --> 00:08:05.959
+<v Michael Chow>saying good job and i was like who's this spreadsheet with eyes and a mouth cheering
+
+00:08:05.980 --> 00:08:10.760
+<v Michael Chow>people on and rich was like it's tablin of course yeah it's helpful to have a little dude that just
+
+00:08:10.880 --> 00:08:17.720
+<v Rich lannone>wants to help you know it's like having a pet like a cat i love it it's really good so michael
+
+00:08:18.040 --> 00:08:23.160
+<v Michael Kennedy>we had the great opportunity to meet up at pycon just last week i know i don't know how you feel
+
+00:08:23.220 --> 00:08:28.800
+<v Michael Kennedy>about it personally i'm still just a little bit recovering from the whole energy that was extracted
+
+00:08:29.060 --> 00:08:33.959
+<v Michael Kennedy>from me you know but it was really fun and maybe just give us your thoughts on pycon and how'd that
+
+00:08:33.840 --> 00:08:33.880
+<v Michael Kennedy>go.
+
+00:08:34.140 --> 00:08:34.360
+<v Michael Chow>Yeah.
+
+00:08:34.840 --> 00:08:35.900
+<v Michael Chow>Yeah. It's a great question.
+
+00:08:36.120 --> 00:08:36.240
+<v Michael Chow>I,
+
+00:08:36.740 --> 00:08:37.039
+<v Michael Chow>um,
+
+00:08:37.520 --> 00:08:40.140
+<v Michael Chow>it's so interesting because we work on tools for
+
+00:08:40.300 --> 00:08:40.820
+<v Michael Chow>data analysis,
+
+00:08:41.580 --> 00:08:44.980
+<v Michael Chow>but PyCon is much more general. It's almost like all things Python.
+
+00:08:45.410 --> 00:08:45.800
+<v Michael Chow>I think it's
+
+00:08:45.800 --> 00:08:51.500
+<v Michael Chow>a really interesting conference versus like a PyData or a SciPy, which are way oriented towards
+
+00:08:51.690 --> 00:08:53.260
+<v Michael Chow>like data tools specifically.
+
+00:08:53.840 --> 00:08:54.120
+<v Michael Chow>Um,
+
+00:08:54.520 --> 00:08:57.180
+<v Michael Chow>but I love it. I find it really nice to be able to drop in and
+
+00:08:57.340 --> 00:09:03.800
+<v Michael Chow>talk to just the full range of Python people who maybe have never used or done a lot of data
+
+00:09:04.640 --> 00:09:08.600
+<v Michael Chow>So I find it really interesting to talk to folks who maybe almost universally, I think
+
+00:09:08.840 --> 00:09:11.620
+<v Michael Chow>everybody has touched pandas, the library for data frames.
+
+00:09:12.200 --> 00:09:17.060
+<v Michael Chow>And so that's the like funny kind of like point you can always talk to anyone about at
+
+00:09:17.200 --> 00:09:17.420
+<v Michael Chow>PyCon,
+
+00:09:17.880 --> 00:09:19.380
+<v Michael Chow>but I find it really nice.
+
+00:09:19.380 --> 00:09:24.740
+<v Michael Chow>And I find the like PyCon organizers and the sort of Python software foundation,
+
+00:09:25.320 --> 00:09:25.540
+<v Michael Chow>it's just
+
+00:09:25.540 --> 00:09:26.960
+<v Michael Chow>so down to earth that,
+
+00:09:27.360 --> 00:09:29.040
+<v Michael Chow>yeah, I really love dropping in.
+
+00:09:29.040 --> 00:09:30.720
+<v Michael Chow>It doesn't feel super corporate.
+
+00:09:31.240 --> 00:09:37.040
+<v Michael Chow>It feels like they're really like a group of passionate volunteers putting this like pretty big conference on.
+
+00:09:37.300 --> 00:09:37.380
+<v Michael Chow>So,
+
+00:09:37.680 --> 00:09:37.740
+<v Michael Chow>yeah,
+
+00:09:37.930 --> 00:09:39.180
+<v Michael Chow>I always love dropping in,
+
+00:09:39.740 --> 00:09:44.020
+<v Michael Chow>even if it's like a kind of broader audience than the like data crew.
+
+00:09:44.440 --> 00:09:45.480
+<v Michael Chow>I'm curious your experience.
+
+00:09:45.700 --> 00:09:47.020
+<v Michael Chow>Have you gone to a lot of PyCons?
+
+00:09:47.290 --> 00:09:48.500
+<v Michael Kennedy>I think my first one,
+
+00:09:48.920 --> 00:09:49.680
+<v Michael Kennedy>when was my first?
+
+00:09:50.000 --> 00:09:51.760
+<v Michael Kennedy>Mid-teens,
+
+00:09:52.090 --> 00:09:53.200
+<v Michael Kennedy>I would say 2015,
+
+00:09:53.620 --> 00:09:54.220
+<v Michael Kennedy>2016,
+
+00:09:54.760 --> 00:09:55.220
+<v Michael Kennedy>something like that.
+
+00:09:55.500 --> 00:09:55.700
+<v Michael Kennedy>Yeah,
+
+00:09:55.860 --> 00:09:56.020
+<v Michael Kennedy>nice.
+
+00:09:56.480 --> 00:09:58.980
+<v Michael Kennedy>I'd probably have gone to maybe two thirds since then.
+
+00:09:59.340 --> 00:09:59.460
+<v Michael Kennedy>Most.
+
+00:09:59.900 --> 00:10:01.020
+<v Michael Kennedy>I mean, we did have COVID in the middle.
+
+00:10:01.110 --> 00:10:02.180
+<v Michael Kennedy>That was challenging.
+
+00:10:02.620 --> 00:10:03.040
+<v Michael Kennedy>But yeah,
+
+00:10:03.240 --> 00:10:05.580
+<v Michael Kennedy>I've been to a fair number and I really enjoy it.
+
+00:10:05.580 --> 00:10:08.520
+<v Michael Kennedy>And for me, it's just nice to get together,
+
+00:10:09.160 --> 00:10:10.780
+<v Michael Kennedy>meet folks like you and everyone else and
+
+00:10:10.810 --> 00:10:11.840
+<v Michael Kennedy>just kind of remember,
+
+00:10:12.020 --> 00:10:15.060
+<v Michael Kennedy>hey, this is a community of humans and not just docs.
+
+00:10:15.560 --> 00:10:15.880
+<v Michael Kennedy>Never mind.
+
+00:10:15.960 --> 00:10:16.160
+<v Michael Kennedy>I mean,
+
+00:10:16.460 --> 00:10:16.880
+<v Michael Kennedy>docs are great.
+
+00:10:16.940 --> 00:10:18.340
+<v Michael Kennedy>We're going to talk about how great docs can be.
+
+00:10:18.460 --> 00:10:23.200
+<v Michael Kennedy>But it's also nice to just have these human connections and just connect with people outside
+
+00:10:23.760 --> 00:10:24.480
+<v Michael Kennedy>of with,
+
+00:10:24.640 --> 00:10:26.080
+<v Michael Kennedy>but also outside of technology,
+
+00:10:26.400 --> 00:10:26.460
+<v Michael Kennedy>right?
+
+00:10:26.600 --> 00:10:26.680
+<v Michael Kennedy>Like,
+
+00:10:27.020 --> 00:10:28.700
+<v Michael Kennedy>let's just go sit in the sun for a while and talk.
+
+00:10:29.000 --> 00:10:30.260
+<v Michael Kennedy>Like, have you seen The Sun lately?
+
+00:10:30.340 --> 00:10:31.180
+<v Michael Kennedy>No, I haven't seen it either.
+
+00:10:31.300 --> 00:10:31.840
+<v Michael Kennedy>Let's go sit there.
+
+00:10:32.260 --> 00:10:32.680
+<v Michael Chow>All day.
+
+00:10:33.140 --> 00:10:33.240
+<v Michael Chow>Yeah.
+
+00:10:33.620 --> 00:10:34.160
+<v Michael Chow>Yeah, for real.
+
+00:10:34.260 --> 00:10:35.180
+<v Michael Chow>I feel like it is.
+
+00:10:35.620 --> 00:10:40.080
+<v Michael Chow>Just putting the face behind the name or actually like touching down to chat does seem like
+
+00:10:40.080 --> 00:10:43.980
+<v Michael Chow>a huge thing that you only do like say once or twice a year.
+
+00:10:44.420 --> 00:10:44.480
+<v Michael Chow>Yeah.
+
+00:10:44.500 --> 00:10:45.140
+<v Michael Kennedy>With those folks.
+
+00:10:45.640 --> 00:10:45.720
+<v Michael Kennedy>Yeah.
+
+00:10:45.900 --> 00:10:48.660
+<v Michael Kennedy>At least for me, I can come back and revitalize to do more.
+
+00:10:48.840 --> 00:10:49.880
+<v Michael Kennedy>So that's really, really sweet.
+
+00:10:50.320 --> 00:10:52.660
+<v Michael Kennedy>Let's start our journey here.
+
+00:10:54.020 --> 00:10:57.740
+<v Michael Kennedy>Talking about, just do a quick review of Great Tables.
+
+00:10:58.080 --> 00:11:00.840
+<v Michael Kennedy>Because I know Great Tables was one of the inspirations for Great Docs.
+
+00:11:00.920 --> 00:11:03.020
+<v Michael Kennedy>So we all both got together,
+
+00:11:03.260 --> 00:11:04.900
+<v Michael Kennedy>all three of us got together last year,
+
+00:11:05.100 --> 00:11:05.440
+<v Michael Kennedy>I guess,
+
+00:11:05.760 --> 00:11:06.760
+<v Michael Kennedy>to talk about Great Tables.
+
+00:11:07.140 --> 00:11:10.520
+<v Michael Kennedy>So who wants to just do a quick reminder of this one?
+
+00:11:11.699 --> 00:11:12.300
+<v Rich lannone>I'll go.
+
+00:11:13.120 --> 00:11:13.460
+<v Rich lannone>So basically,
+
+00:11:13.980 --> 00:11:14.620
+<v Rich lannone>yeah, Great Tables,
+
+00:11:15.200 --> 00:11:15.400
+<v Rich lannone>it's a,
+
+00:11:15.580 --> 00:11:17.640
+<v Rich lannone>maybe not many people know this,
+
+00:11:17.680 --> 00:11:19.320
+<v Rich lannone>it's a port of an R package called GT.
+
+00:11:20.000 --> 00:11:23.540
+<v Rich lannone>Not that important, but the idea is good as it was then.
+
+00:11:24.120 --> 00:11:25.220
+<v Rich lannone>You want display tables,
+
+00:11:25.760 --> 00:11:26.540
+<v Rich lannone>what I call them.
+
+00:11:26.660 --> 00:11:32.060
+<v Rich lannone>essentially summary tables like static tables and you want to present them say in a notebook or say
+
+00:11:32.200 --> 00:11:38.220
+<v Rich lannone>like in some other publishable document as html we also have a latex output format but the idea is
+
+00:11:38.220 --> 00:11:43.860
+<v Rich lannone>you compose tables step by step you know you add a header you want you want a title you get that too
+
+00:11:44.280 --> 00:11:50.420
+<v Rich lannone>you structure the table you can format different cells like usually entire columns of cells or and
+
+00:11:50.620 --> 00:11:55.719
+<v Rich lannone>you can also style a table which could be like you know like changing orders adding cell backgrounds
+
+00:11:55.780 --> 00:11:56.360
+<v Rich lannone>things like that.
+
+00:11:56.880 --> 00:12:00.320
+<v Rich lannone>And really the idea is to like to make a table that you might see like in a print
+
+00:12:00.440 --> 00:12:00.640
+<v Rich lannone>publication,
+
+00:12:01.600 --> 00:12:02.400
+<v Rich lannone>but using your data,
+
+00:12:02.780 --> 00:12:03.160
+<v Rich lannone>like directly,
+
+00:12:03.360 --> 00:12:04.060
+<v Rich lannone>like using a data frame.
+
+00:12:04.330 --> 00:12:05.560
+<v Rich lannone>So you have the data in
+
+00:12:05.560 --> 00:12:08.820
+<v Rich lannone>a form which is amenable to a summary table.
+
+00:12:09.200 --> 00:12:12.120
+<v Rich lannone>And then in just a few like method calls,
+
+00:12:12.600 --> 00:12:13.040
+<v Rich lannone>you've got
+
+00:12:13.040 --> 00:12:13.360
+<v Rich lannone>the table.
+
+00:12:14.440 --> 00:12:14.880
+<v Michael Kennedy>Yeah,
+
+00:12:15.360 --> 00:12:15.740
+<v Michael Kennedy>that's awesome.
+
+00:12:15.920 --> 00:12:17.280
+<v Michael Kennedy>What strikes me about this,
+
+00:12:18.000 --> 00:12:19.980
+<v Michael Kennedy>when we had our conversation last year,
+
+00:12:20.280 --> 00:12:26.880
+<v Michael Kennedy>It's just how much more there is to think about with tables than, you know, just an Excel-like thing.
+
+00:12:27.180 --> 00:12:31.280
+<v Michael Kennedy>I came away realizing that it goes way deeper and there's a lot more nuance.
+
+00:12:31.800 --> 00:12:37.640
+<v Michael Kennedy>It felt a little bit like, oh gosh, I can't remember the guy's name, but I'm sure you both have seen his books.
+
+00:12:37.880 --> 00:12:38.300
+<v Michael Kennedy>But it's...
+
+00:12:38.940 --> 00:12:39.760
+<v Michael Kennedy>Is it Stephen Peavy?
+
+00:12:40.140 --> 00:12:40.460
+<v Michael Kennedy>Tufte?
+
+00:12:40.540 --> 00:12:40.740
+<v Michael Kennedy>No,
+
+00:12:40.940 --> 00:12:41.240
+<v Michael Kennedy>no, no.
+
+00:12:41.520 --> 00:12:41.800
+<v Michael Kennedy>Tufte.
+
+00:12:42.220 --> 00:12:42.700
+<v Michael Kennedy>Tufte, yes.
+
+00:12:43.160 --> 00:12:43.280
+<v Michael Kennedy>Okay.
+
+00:12:43.580 --> 00:12:44.500
+<v Michael Kennedy>He's just like, oh,
+
+00:12:44.670 --> 00:12:44.980
+<v Michael Kennedy>I see.
+
+00:12:45.120 --> 00:12:46.720
+<v Michael Kennedy>Like there's some lines and stuff like, no, no, no, no.
+
+00:12:47.000 --> 00:12:47.460
+<v Michael Kennedy>Hold on.
+
+00:12:47.820 --> 00:12:48.900
+<v Michael Kennedy>There's a lot going on.
+
+00:12:49.020 --> 00:12:49.140
+<v Michael Kennedy>And like,
+
+00:12:49.860 --> 00:12:54.980
+<v Michael Kennedy>there's many things you can communicate subtly without just being like, well, let's just call this out.
+
+00:12:55.050 --> 00:12:56.540
+<v Michael Kennedy>Like, no, you don't even have to call it out.
+
+00:12:56.660 --> 00:12:59.840
+<v Michael Kennedy>It's communicated through something more interesting.
+
+00:13:00.920 --> 00:13:05.500
+<v Michael Kennedy>You know, a tough thing is that about just presenting sort of scientific information in general.
+
+00:13:05.700 --> 00:13:07.360
+<v Michael Kennedy>But I felt that way about tables as well.
+
+00:13:07.620 --> 00:13:08.460
+<v Rich lannone>Yeah, it's pretty well.
+
+00:13:08.530 --> 00:13:11.360
+<v Rich lannone>We talked about this in our talk a few years back in PyCon.
+
+00:13:12.700 --> 00:13:17.940
+<v Rich lannone>how like you can tell a story with a table where you can communicate data in a better way in a
+
+00:13:18.580 --> 00:13:23.420
+<v Rich lannone>not a more optimized way but a more legible way where like your main point is like describe like
+
+00:13:23.420 --> 00:13:29.280
+<v Rich lannone>a title and a subtitle and you have notes at the bottom and you can guide people through an analysis
+
+00:13:29.480 --> 00:13:33.480
+<v Rich lannone>summary that way and so just like with many different things there's a good way to do it
+
+00:13:33.820 --> 00:13:38.839
+<v Michael Kennedy>or a better way to do it yeah there's you could just look at certain types of presented information
+
+00:13:38.860 --> 00:13:39.500
+<v Michael Kennedy>and you go,
+
+00:13:39.690 --> 00:13:41.140
+<v Michael Kennedy>well, that looks really professional
+
+00:13:41.290 --> 00:13:42.280
+<v Michael Kennedy>or that looks really,
+
+00:13:42.460 --> 00:13:42.980
+<v Michael Kennedy>really good,
+
+00:13:43.360 --> 00:13:44.160
+<v Michael Kennedy>but I don't know why.
+
+00:13:44.560 --> 00:13:45.140
+<v Michael Kennedy>You know what I mean?
+
+00:13:45.420 --> 00:13:45.600
+<v Michael Kennedy>Yeah.
+
+00:13:45.720 --> 00:13:46.320
+<v Michael Kennedy>This looks bad.
+
+00:13:46.670 --> 00:13:47.900
+<v Michael Kennedy>That was good, but I don't, yes,
+
+00:13:48.140 --> 00:13:50.780
+<v Michael Kennedy>but I can't put my hand or my finger
+
+00:13:50.920 --> 00:13:52.420
+<v Michael Kennedy>on exactly what is really different,
+
+00:13:52.920 --> 00:13:54.580
+<v Michael Kennedy>but that's really good and that's not, you know?
+
+00:13:54.630 --> 00:13:57.560
+<v Michael Kennedy>And I feel like Great Tables kind of leans into that.
+
+00:13:57.800 --> 00:13:59.980
+<v Rich lannone>Yeah, I guess it takes the Tufte principle too,
+
+00:14:00.200 --> 00:14:01.780
+<v Rich lannone>like having just the right amount of ink,
+
+00:14:02.060 --> 00:14:02.300
+<v Rich lannone>I guess,
+
+00:14:02.400 --> 00:14:03.100
+<v Rich lannone>like not too much,
+
+00:14:03.300 --> 00:14:04.100
+<v Rich lannone>just enough to communicate
+
+00:14:05.130 --> 00:14:05.980
+<v Rich lannone>the structure of things,
+
+00:14:06.080 --> 00:14:10.700
+<v Rich lannone>like the sort of like the architecture of the data you're laying out and not doing much more than that.
+
+00:14:10.970 --> 00:14:12.900
+<v Rich lannone>So there's a lot of that that goes into this.
+
+00:14:13.290 --> 00:14:13.400
+<v Michael Chow>Indeed.
+
+00:14:13.760 --> 00:14:14.420
+<v Rich lannone>As a default thing.
+
+00:14:14.590 --> 00:14:15.880
+<v Michael Chow>To the Tufte point too,
+
+00:14:16.500 --> 00:14:17.100
+<v Michael Chow>Tufte's website,
+
+00:14:17.340 --> 00:14:20.480
+<v Michael Chow>Tufte has like all of these just dumps of examples,
+
+00:14:20.940 --> 00:14:22.200
+<v Michael Chow>just like example plot,
+
+00:14:22.420 --> 00:14:23.260
+<v Michael Chow>example plot, example plot.
+
+00:14:23.290 --> 00:14:24.960
+<v Michael Chow>It's almost like a very rough notebook.
+
+00:14:25.490 --> 00:14:26.780
+<v Michael Chow>And I feel like with great tables,
+
+00:14:27.450 --> 00:14:28.220
+<v Michael Chow>it was kind of similar.
+
+00:14:28.450 --> 00:14:32.680
+<v Michael Chow>Like when I first came on, I knew basically nothing about this topic.
+
+00:14:33.160 --> 00:14:36.180
+<v Michael Chow>And I saw the components of the table diagram.
+
+00:14:36.410 --> 00:14:37.240
+<v Michael Chow>So you have it pulled up,
+
+00:14:37.470 --> 00:14:40.440
+<v Michael Chow>but it has like a table broken apart into all its pieces,
+
+00:14:40.700 --> 00:14:40.760
+<v Michael Chow>like
+
+00:14:40.760 --> 00:14:41.140
+<v Michael Chow>a title,
+
+00:14:41.680 --> 00:14:42.200
+<v Michael Chow>subtitle.
+
+00:14:42.560 --> 00:14:45.400
+<v Michael Chow>There's this funny thing called the stub head and spanners.
+
+00:14:46.140 --> 00:14:46.720
+<v Michael Chow>And I thought like,
+
+00:14:47.050 --> 00:14:49.260
+<v Michael Chow>does a person really need to know all this?
+
+00:14:49.720 --> 00:14:53.280
+<v Michael Chow>But I think to the point of Tufte, like maybe what you're getting out to is Tufte really
+
+00:14:53.500 --> 00:14:55.620
+<v Michael Chow>dives into like very specific,
+
+00:14:56.190 --> 00:14:58.880
+<v Michael Chow>almost like dimensions of how you could represent data.
+
+00:14:59.320 --> 00:15:01.340
+<v Michael Chow>One thing he gets really into is like sparklines,
+
+00:15:01.600 --> 00:15:06.320
+<v Michael Chow>this idea that like how far could you get with a line that basically doesn't have any axis labels,
+
+00:15:06.960 --> 00:15:07.980
+<v Michael Chow>but it's just like a trend.
+
+00:15:08.530 --> 00:15:10.200
+<v Michael Chow>Like is it going up or is it going down?
+
+00:15:10.550 --> 00:15:11.640
+<v Michael Chow>And that happens a lot in tables.
+
+00:15:11.920 --> 00:15:14.620
+<v Michael Chow>You'll put like these sparklines in a cell.
+
+00:15:15.020 --> 00:15:16.040
+<v Michael Chow>Like if you're looking at stocks,
+
+00:15:16.600 --> 00:15:22.760
+<v Michael Chow>you'll have like the stock numbers and then you'll have a sparkline that like indicates the kind of trend so people can grab it really fast.
+
+00:15:23.140 --> 00:15:30.040
+<v Michael Chow>But I find what's interesting about Tufte is just that willingness to dive in so detailed about this one very specific action.
+
+00:15:30.580 --> 00:15:33.400
+<v Michael Chow>And I feel like this table diagram is sort of similar to me,
+
+00:15:33.580 --> 00:15:36.480
+<v Michael Chow>the willingness to break it apart so thoroughly.
+
+00:15:36.940 --> 00:15:38.500
+<v Michael Chow>At first, I wasn't really convinced.
+
+00:15:38.890 --> 00:15:40.380
+<v Michael Chow>It seemed like a lot of work.
+
+00:15:40.740 --> 00:15:42.300
+<v Michael Chow>But yeah, I think to your point about Tufte,
+
+00:15:42.460 --> 00:15:50.500
+<v Michael Chow>once you start looking at examples, you start to realize this kind of captures the flavor or design of good examples out there in the world.
+
+00:15:50.800 --> 00:15:50.960
+<v Rich lannone>Yeah,
+
+00:15:51.290 --> 00:15:52.500
+<v Rich lannone>I think it's really out there.
+
+00:15:52.830 --> 00:15:55.180
+<v Rich lannone>Like initially when I did too, it was like, oh, this is too much.
+
+00:15:55.490 --> 00:15:56.480
+<v Rich lannone>But naming things is so important.
+
+00:15:56.620 --> 00:15:59.560
+<v Rich lannone>Otherwise, you're just awkwardly describing something over and over again,
+
+00:15:59.960 --> 00:16:00.700
+<v Rich lannone>like that cell
+
+00:16:00.710 --> 00:16:03.120
+<v Rich lannone>to the top left or these cells off to the side.
+
+00:16:03.440 --> 00:16:05.020
+<v Rich lannone>And eventually you just have to give it a name,
+
+00:16:05.280 --> 00:16:06.380
+<v Rich lannone>even if it's not the best name.
+
+00:16:06.630 --> 00:16:12.120
+<v Rich lannone>And these are actually names I stole from like basically a census manual on tables,
+
+00:16:12.660 --> 00:16:13.840
+<v Rich lannone>I think written in 1949.
+
+00:16:14.380 --> 00:16:14.680
+<v Rich lannone>Great ideas,
+
+00:16:15.080 --> 00:16:16.080
+<v Rich lannone>like wonderful book.
+
+00:16:16.300 --> 00:16:19.140
+<v Rich lannone>And it's on the web as a PDF still.
+
+00:16:19.550 --> 00:16:20.240
+<v Rich lannone>It's a scam.
+
+00:16:20.260 --> 00:16:21.560
+<v Michael Kennedy>I remember I was talking about that.
+
+00:16:21.700 --> 00:16:21.880
+<v Michael Kennedy>Yeah.
+
+00:16:21.880 --> 00:16:22.820
+<v Michael Kennedy>How interesting is it?
+
+00:16:23.200 --> 00:16:23.320
+<v Michael Kennedy>Yeah.
+
+00:16:23.420 --> 00:16:28.240
+<v Michael Kennedy>How interesting is it that the inspiration comes from pre-digital times?
+
+00:16:28.740 --> 00:16:28.820
+<v Michael Kennedy>Yeah.
+
+00:16:29.060 --> 00:16:29.580
+<v Michael Kennedy>And I think that,
+
+00:16:29.800 --> 00:16:30.340
+<v Michael Kennedy>yeah,
+
+00:16:30.600 --> 00:16:34.480
+<v Michael Kennedy>because a lot of the software reduces some of these ideas.
+
+00:16:34.760 --> 00:16:36.040
+<v Michael Kennedy>It's like, well, I have grids.
+
+00:16:36.370 --> 00:16:39.340
+<v Michael Kennedy>I have a grid of cells and sometimes the rows can be taller.
+
+00:16:39.860 --> 00:16:41.080
+<v Michael Kennedy>Sometimes you can span a row.
+
+00:16:41.410 --> 00:16:41.500
+<v Michael Kennedy>Okay.
+
+00:16:41.900 --> 00:16:42.340
+<v Michael Kennedy>That's that.
+
+00:16:42.640 --> 00:16:45.800
+<v Michael Kennedy>But if you just write it by hand when you have to way back in the day,
+
+00:16:46.180 --> 00:16:46.440
+<v Michael Kennedy>it's like, oh,
+
+00:16:46.540 --> 00:16:46.620
+<v Michael Kennedy>well,
+
+00:16:47.060 --> 00:16:48.120
+<v Michael Kennedy>maybe we could draw it differently,
+
+00:16:48.340 --> 00:16:48.440
+<v Michael Kennedy>right?
+
+00:16:48.660 --> 00:16:48.940
+<v Rich lannone>Yeah.
+
+00:16:49.260 --> 00:16:49.360
+<v Rich lannone>Yeah.
+
+00:16:49.560 --> 00:16:50.620
+<v Rich lannone>And it's like, I was like searching,
+
+00:16:51.010 --> 00:16:51.560
+<v Rich lannone>like researching,
+
+00:16:51.760 --> 00:16:53.080
+<v Rich lannone>like anything on tables I could find
+
+00:16:53.190 --> 00:16:54.580
+<v Rich lannone>just to get ideas and like, you know,
+
+00:16:54.640 --> 00:16:56.100
+<v Rich lannone>like what people thought was good.
+
+00:16:56.410 --> 00:16:57.720
+<v Rich lannone>And it's really hard to find anything on tables.
+
+00:16:58.010 --> 00:16:59.800
+<v Rich lannone>It was like, oh, but I did find that one thing.
+
+00:17:00.020 --> 00:17:00.380
+<v Rich lannone>And like,
+
+00:17:00.540 --> 00:17:03.520
+<v Rich lannone>I'm forever in debt to the person who wrote it.
+
+00:17:03.700 --> 00:17:04.400
+<v Michael Kennedy>Yeah, that's awesome.
+
+00:17:06.439 --> 00:17:07.660
+<v Michael Kennedy>This portion of Talk Python To Me
+
+00:17:07.689 --> 00:17:08.720
+<v Michael Kennedy>is brought to you by Sentry.
+
+00:17:09.140 --> 00:17:11.260
+<v Michael Kennedy>You know Sentry for their great error monitoring,
+
+00:17:11.699 --> 00:17:12.640
+<v Michael Kennedy>but let's talk about logs.
+
+00:17:13.180 --> 00:17:14.000
+<v Michael Kennedy>Logs are messy.
+
+00:17:14.560 --> 00:17:16.420
+<v Michael Kennedy>Trying to grep through them and line them up
+
+00:17:16.540 --> 00:17:19.520
+<v Michael Kennedy>with traces and dashboards just to understand one issue
+
+00:17:19.540 --> 00:17:20.100
+<v Michael Kennedy>isn't easy.
+
+00:17:20.660 --> 00:17:22.800
+<v Michael Kennedy>Did you know that Sentry has logs too?
+
+00:17:23.060 --> 00:17:25.339
+<v Michael Kennedy>And your logs just became way more usable.
+
+00:17:25.900 --> 00:17:28.339
+<v Michael Kennedy>Sentry's logs are trace connected and structured,
+
+00:17:28.720 --> 00:17:31.120
+<v Michael Kennedy>so you can follow the request flow and filter by
+
+00:17:31.280 --> 00:17:31.760
+<v Michael Kennedy>what matters.
+
+00:17:32.440 --> 00:17:35.240
+<v Michael Kennedy>And because Sentry surfaces the context right where you're debugging,
+
+00:17:35.600 --> 00:17:36.760
+<v Michael Kennedy>the trace relevant logs,
+
+00:17:36.980 --> 00:17:37.360
+<v Michael Kennedy>the error,
+
+00:17:37.860 --> 00:17:40.500
+<v Michael Kennedy>and even the session replay all land in one timeline.
+
+00:17:41.040 --> 00:17:42.080
+<v Michael Kennedy>No timestamp matching,
+
+00:17:42.400 --> 00:17:43.100
+<v Michael Kennedy>no tool hopping.
+
+00:17:43.680 --> 00:17:45.100
+<v Michael Kennedy>From front end to mobile to back end,
+
+00:17:45.340 --> 00:17:45.860
+<v Michael Kennedy>whatever you're debugging,
+
+00:17:46.080 --> 00:17:48.560
+<v Michael Kennedy>Sentry gives you the context you need so you can fix
+
+00:17:48.600 --> 00:17:49.860
+<v Michael Kennedy>the problem and move on.
+
+00:17:50.400 --> 00:17:52.640
+<v Michael Kennedy>More than 4.5 million developers use Sentry,
+
+00:17:52.960 --> 00:17:53.600
+<v Michael Kennedy>including teams at
+
+00:17:53.800 --> 00:17:59.320
+<v Michael Kennedy>Anthropic and Disney+. Get started with Sentry logs and error monitoring today at talkpython.fm
+
+00:17:59.520 --> 00:18:00.420
+<v Michael Kennedy>slash Sentry.
+
+00:18:00.620 --> 00:18:03.080
+<v Michael Kennedy>Be sure to use our code, talkpython26.
+
+00:18:03.500 --> 00:18:05.320
+<v Michael Kennedy>The link is in your podcast player show notes.
+
+00:18:05.820 --> 00:18:07.300
+<v Michael Kennedy>Thank you to Sentry for supporting the show.
+
+00:18:09.220 --> 00:18:11.860
+<v Michael Kennedy>Let's move on, but if people are out there and
+
+00:18:11.900 --> 00:18:13.780
+<v Michael Kennedy>they're doing presentations that involve tables,
+
+00:18:14.220 --> 00:18:16.020
+<v Michael Kennedy>and especially if it's code generating those
+
+00:18:16.020 --> 00:18:16.160
+<v Michael Kennedy>tables.
+
+00:18:16.700 --> 00:18:17.060
+<v Michael Kennedy>Check this out.
+
+00:18:17.480 --> 00:18:18.340
+<v Michael Kennedy>It's quite interesting.
+
+00:18:18.690 --> 00:18:20.220
+<v Michael Kennedy>So the next thing I want to talk about is just
+
+00:18:20.480 --> 00:18:23.860
+<v Michael Kennedy>sort of surveying the landscape of what is out there,
+
+00:18:24.220 --> 00:18:26.140
+<v Michael Kennedy>because we're going to talk about great
+
+00:18:26.460 --> 00:18:29.420
+<v Michael Kennedy>docs and great docs can generate static sites.
+
+00:18:29.830 --> 00:18:32.480
+<v Michael Kennedy>So there's some existing tools that generate docs
+
+00:18:32.800 --> 00:18:36.720
+<v Michael Kennedy>as static site. There's some really good tools that just generate static sites that maybe people
+
+00:18:36.900 --> 00:18:40.780
+<v Michael Kennedy>could put into docs. Like there's a lot of things that are somewhat similar.
+
+00:18:41.000 --> 00:18:41.560
+<v Michael Kennedy>There's also stuff
+
+00:18:41.740 --> 00:18:45.020
+<v Michael Kennedy>that's in the same space, but different. So maybe we could kind of go through and,
+
+00:18:45.300 --> 00:18:45.980
+<v Michael Kennedy>you know, like
+
+00:18:46.000 --> 00:18:50.000
+<v Michael Kennedy>I know you all have mentioned Sphinx is a real popular one in the Python space.
+
+00:18:50.860 --> 00:18:51.660
+<v Michael Kennedy>There's MKDocs.
+
+00:18:52.140 --> 00:18:55.280
+<v Michael Kennedy>I had Martin from Zensical on not too long ago.
+
+00:18:55.460 --> 00:18:58.520
+<v Michael Kennedy>So maybe we could talk first about some of the existing tools that are,
+
+00:18:58.700 --> 00:19:01.360
+<v Michael Kennedy>I guess, as similar as possible to what you're doing.
+
+00:19:01.680 --> 00:19:01.940
+<v Rich lannone>Yeah.
+
+00:19:02.840 --> 00:19:04.480
+<v Rich lannone>Michael, would you like to speak on this?
+
+00:19:04.480 --> 00:19:06.820
+<v Rich lannone>Because I know you did a deep dive recently on these.
+
+00:19:07.020 --> 00:19:07.280
+<v Michael Chow>Yeah.
+
+00:19:08.100 --> 00:19:08.780
+<v Michael Chow>So Sphinx,
+
+00:19:09.240 --> 00:19:09.540
+<v Michael Chow>I think,
+
+00:19:09.760 --> 00:19:14.000
+<v Michael Chow>and maybe to kick off some helpful context to great docs is that, yeah,
+
+00:19:14.140 --> 00:19:18.280
+<v Michael Chow>I worked a lot on early support for documentation with a tool called quartodoc.
+
+00:19:18.580 --> 00:19:20.900
+<v Michael Chow>But Rich actually took it to the next level.
+
+00:19:21.050 --> 00:19:24.680
+<v Michael Chow>And this goes to, I think, Rich's style with great docs.
+
+00:19:25.200 --> 00:19:29.520
+<v Michael Chow>So I have a lot of bizarre experience looking at the history of Python docs.
+
+00:19:30.940 --> 00:19:34.220
+<v Michael Chow>I think Sphinx is one of the OG site builders.
+
+00:19:36.190 --> 00:19:37.680
+<v Michael Chow>I think this is the case.
+
+00:19:38.120 --> 00:19:41.960
+<v Michael Chow>So I think one interesting fact is, as I understand it, I think Python.org,
+
+00:19:42.320 --> 00:19:42.960
+<v Michael Chow>don't quote me on this.
+
+00:19:43.120 --> 00:19:46.480
+<v Michael Chow>I think it was originally done in like LaTeX or something like that,
+
+00:19:46.820 --> 00:19:47.580
+<v Michael Chow>the Python docs.
+
+00:19:48.160 --> 00:19:51.400
+<v Michael Chow>And I think that they moved to Sphinx at some point.
+
+00:19:52.740 --> 00:19:55.620
+<v Michael Chow>So like Sphinx has a really interesting history in Python.
+
+00:19:55.860 --> 00:19:57.380
+<v Michael Chow>Like if you go back 25,
+
+00:19:57.800 --> 00:19:58.220
+<v Michael Chow>30 years,
+
+00:19:58.760 --> 00:20:01.020
+<v Michael Chow>Python docs had to exist using some tool,
+
+00:20:01.360 --> 00:20:01.500
+<v Michael Chow>right?
+
+00:20:01.620 --> 00:20:08.160
+<v Michael Chow>And at some point Sphinx emerged as kind of like this dominant site builder for Python and Python docs.
+
+00:20:09.140 --> 00:20:09.880
+<v Michael Chow>Yeah, does it say?
+
+00:20:10.200 --> 00:20:10.320
+<v Michael Chow>Yeah.
+
+00:20:10.740 --> 00:20:12.800
+<v Michael Chow>So Python docs are in Sphinx.
+
+00:20:13.960 --> 00:20:19.000
+<v Michael Chow>you know this python doc site has a how-to python how-tos this is another weird fact
+
+00:20:19.490 --> 00:20:25.580
+<v Michael Chow>the how-tos emerged I don't remember exactly when they emerged it was like in the last 30 years I
+
+00:20:25.740 --> 00:20:33.960
+<v Michael Chow>think as part of the Linux project so the term how-to as I understand it emerged in the Linux
+
+00:20:34.120 --> 00:20:39.880
+<v Michael Chow>docs but all these things like it's so funny we see them today and and maybe it seems we just
+
+00:20:39.840 --> 00:20:40.420
+<v Michael Chow>think about like,
+
+00:20:40.580 --> 00:20:40.700
+<v Michael Chow>oh,
+
+00:20:40.940 --> 00:20:41.780
+<v Michael Chow>there's the Python docs,
+
+00:20:42.240 --> 00:20:44.120
+<v Michael Chow>but actually at a certain point,
+
+00:20:44.480 --> 00:20:44.580
+<v Michael Chow>you know,
+
+00:20:44.760 --> 00:20:45.000
+<v Michael Chow>Sphinx
+
+00:20:45.120 --> 00:20:45.580
+<v Michael Chow>emerged,
+
+00:20:45.920 --> 00:20:47.520
+<v Michael Chow>this concept of a how-to emerge.
+
+00:20:47.820 --> 00:20:49.800
+<v Michael Chow>These are all things that over the last, I think like
+
+00:20:50.120 --> 00:20:53.280
+<v Michael Chow>30 years sort of like came into existence.
+
+00:20:53.840 --> 00:20:55.600
+<v Michael Chow>So Sphinx is like the OG doc site.
+
+00:20:56.260 --> 00:20:57.040
+<v Michael Chow>A lot of tools
+
+00:20:57.580 --> 00:20:57.760
+<v Michael Chow>use it.
+
+00:20:57.920 --> 00:21:00.440
+<v Michael Chow>Pandas uses it to generate its APIs.
+
+00:21:01.980 --> 00:21:03.220
+<v Michael Chow>Polars uses it as well.
+
+00:21:03.500 --> 00:21:04.659
+<v Michael Chow>So some really big
+
+00:21:04.860 --> 00:21:11.460
+<v Michael Chow>python tools use it to generate their um api docs um it uses this thing called restructured text
+
+00:21:11.900 --> 00:21:18.940
+<v Michael Chow>i will say like i don't know that a lot of open tool developers i love love it um i'm going to be
+
+00:21:18.940 --> 00:21:24.620
+<v Michael Chow>a bit careful here because i think it's been so useful but i do think that restructured text is
+
+00:21:24.720 --> 00:21:30.600
+<v Michael Chow>kind of not the thing most open source developers are reaching for these days um but sphinx is like
+
+00:21:30.520 --> 00:21:37.140
+<v Michael Chow>the og uh doc site and it powers a ton of docs like python.org and pandas i'm sure if you know
+
+00:21:37.200 --> 00:21:41.880
+<v Michael Kennedy>i'm sure it was really made a huge improvement when it came out though right yeah i think if
+
+00:21:41.940 --> 00:21:47.220
+<v Michael Chow>you're doing a look at before that's got to be yeah yeah it's like zero to one essentially i think
+
+00:21:47.660 --> 00:21:53.000
+<v Michael Chow>switching from lit tech to sphinx for like your python docs yeah and if i see an rst file it's
+
+00:21:53.040 --> 00:21:58.340
+<v Michael Kennedy>a little tear wells up in my eye i'm like oh gosh here we go it's a it's almost like a rite of
+
+00:21:58.340 --> 00:22:04.380
+<v Michael Chow>passage i feel like as a python developer producing docs in the like sphinx world you just
+
+00:22:04.520 --> 00:22:10.100
+<v Michael Chow>kind of like you learn i learned sphinx and rst to generate docs essentially uh it's like yeah i
+
+00:22:10.160 --> 00:22:16.200
+<v Michael Chow>feel like that was my rite of passage into like software development 100 so we've also got mk docs
+
+00:22:16.520 --> 00:22:22.640
+<v Michael Chow>or make docs probably i don't know i always feel like i say make docs but no i i have no so i mean
+
+00:22:22.640 --> 00:22:28.300
+<v Michael Chow>you had the zensical people so i feel like they do you have a read on it if i try to remember i
+
+00:22:28.320 --> 00:22:35.560
+<v Michael Kennedy>like martin said mk docs but whoa i i not he could have easily said make docs and i was not paying
+
+00:22:35.740 --> 00:22:41.980
+<v Michael Kennedy>attention yeah um i'm a doctor so yeah no i think that i think that makes sense a lot of these that
+
+00:22:42.220 --> 00:22:46.920
+<v Michael Kennedy>could be said one way or another i really wish and maybe this does but i really wish on their
+
+00:22:47.180 --> 00:22:51.200
+<v Michael Kennedy>github repo they just have a little mp3 like here's how you say it you know what i mean
+
+00:22:51.420 --> 00:22:58.440
+<v Michael Kennedy>little audio button yeah exactly it's like a green unicorn like g unicorn versus goonicorn is
+
+00:22:58.620 --> 00:23:04.300
+<v Michael Kennedy>like a one that i think goes around and around still yeah okay so zensical is um one of the more
+
+00:23:04.450 --> 00:23:10.400
+<v Michael Kennedy>modern ones so i think that that's pretty interesting i don't honestly i'm not sure how
+
+00:23:10.560 --> 00:23:17.340
+<v Michael Kennedy>much it lands in the sphinx mcdocs world or in the other maybe the just pure static site generator
+
+00:23:17.600 --> 00:23:24.200
+<v Michael Chow>side of things i mean the sensical folks came on and probably have the best sense but um my sense
+
+00:23:24.260 --> 00:23:28.720
+<v Michael Chow>is it's also meant to be kind of a i might be wrong drop-in replacement for make docs i know
+
+00:23:28.730 --> 00:23:34.940
+<v Michael Kennedy>their community yeah yeah it is a it is a um compatibility at least compatible uh for a material
+
+00:23:35.100 --> 00:23:40.320
+<v Michael Kennedy>for make docs yeah right right right yeah for sure so yeah i would say it's in that in that realm
+
+00:23:40.560 --> 00:23:44.620
+<v Rich lannone>it also seems like they're heading towards general purpose or knowledge bases which goes
+
+00:23:44.640 --> 00:23:50.300
+<v Michael Kennedy>maybe a bit beyond just like yes exactly that was my like uncertainty is how do i classify it right
+
+00:23:50.300 --> 00:23:56.060
+<v Michael Kennedy>because it's it doesn't even necessarily if you look at their h2 it doesn't say the best way to
+
+00:23:56.060 --> 00:24:02.840
+<v Michael Kennedy>make your docs right it's it's a scalable way for technical writing right which makes it i think
+
+00:24:03.000 --> 00:24:10.020
+<v Michael Kennedy>land a little more in the hugo or ghost side of um thing so that's another part to part to talk
+
+00:24:09.980 --> 00:24:15.000
+<v Michael Kennedy>about it's just like static sites in general you know why would i choose say sphinx over hugo or
+
+00:24:15.140 --> 00:24:19.500
+<v Michael Kennedy>hugo over sphinx or something like that you guys got yeah it seems a bit like mitlefy they have the
+
+00:24:19.500 --> 00:24:24.900
+<v Rich lannone>same sort of thing going to they do documentation sites but they go a bit beyond it's like general
+
+00:24:25.060 --> 00:24:30.480
+<v Rich lannone>purpose lots of different languages supported uh but it is documentation but not really so much
+
+00:24:30.580 --> 00:24:36.300
+<v Michael Kennedy>like a site like just general purpose site generator so it's so hugo and ghost i don't know
+
+00:24:36.320 --> 00:24:37.040
+<v Michael Kennedy>goes very well,
+
+00:24:37.200 --> 00:24:37.580
+<v Michael Kennedy>but Hugo,
+
+00:24:37.760 --> 00:24:41.680
+<v Michael Kennedy>for example, I use that a lot for blogs. I've seen one of my friends does
+
+00:24:41.840 --> 00:24:46.120
+<v Michael Kennedy>really cool stuff just in general with Hugo making general purpose sites.
+
+00:24:46.620 --> 00:24:47.960
+<v Michael Kennedy>I feel like this is much
+
+00:24:48.120 --> 00:24:48.920
+<v Michael Kennedy>more focused on,
+
+00:24:49.200 --> 00:24:54.040
+<v Michael Kennedy>I just need a static site and much less, I need it to read my doc strings and
+
+00:24:54.420 --> 00:25:00.060
+<v Michael Kennedy>categorize my modules and, and API calls and put in that kind of stuff. Right. So that's another,
+
+00:25:00.620 --> 00:25:04.280
+<v Michael Kennedy>another realm that is similar to what you all are doing, but certainly not the same.
+
+00:25:04.460 --> 00:25:04.640
+<v Rich lannone>Yeah,
+
+00:25:04.830 --> 00:25:08.960
+<v Rich lannone>if you want to throw another one in, there's Quarto by the company we work at, Posit,
+
+00:25:09.200 --> 00:25:12.960
+<v Rich lannone>and that does sites and much more beyond.
+
+00:25:13.420 --> 00:25:19.960
+<v Michael Kennedy>I do think I had JJ on and I'm so sorry, I'm forgetting the name of the other guy.
+
+00:25:19.960 --> 00:25:20.040
+<v Michael Kennedy>Oh,
+
+00:25:20.220 --> 00:25:20.320
+<v Michael Kennedy>Charles.
+
+00:25:20.720 --> 00:25:21.260
+<v Michael Kennedy>Yeah, I think it was Charles.
+
+00:25:21.260 --> 00:25:21.320
+<v Michael Kennedy>Oh,
+
+00:25:21.580 --> 00:25:21.700
+<v Michael Kennedy>cool.
+
+00:25:21.840 --> 00:25:23.840
+<v Michael Kennedy>To talk about Quarto a little while ago.
+
+00:25:23.850 --> 00:25:24.280
+<v Michael Kennedy>That was fun.
+
+00:25:24.640 --> 00:25:24.900
+<v Michael Chow>Yeah.
+
+00:25:24.940 --> 00:25:30.800
+<v Michael Chow>I do think a lot of the questions with like Hugo versus something more targeted at like docs for a
+
+00:25:30.800 --> 00:25:32.900
+<v Michael Chow>tool is hitting on kind of like,
+
+00:25:33.220 --> 00:25:35.240
+<v Michael Chow>what are the parts of a doc site?
+
+00:25:35.580 --> 00:25:36.600
+<v Michael Chow>You know, like what's technical
+
+00:25:36.880 --> 00:25:38.740
+<v Michael Chow>writing versus like package documentation?
+
+00:25:39.620 --> 00:25:42.100
+<v Michael Chow>Am I just doing a Hugo thing? Like is what I'm doing
+
+00:25:42.680 --> 00:25:46.060
+<v Michael Chow>similar enough to like a blog or a website with content,
+
+00:25:46.580 --> 00:25:48.440
+<v Michael Chow>which is really common, like my website's
+
+00:25:48.460 --> 00:25:48.960
+<v Michael Chow>in Hugo?
+
+00:25:50.130 --> 00:25:55.560
+<v Michael Chow>Or do I need something special to like dump out my like API docs to dump out the things
+
+00:25:55.680 --> 00:25:57.120
+<v Michael Chow>from my like functions and classes?
+
+00:25:57.800 --> 00:25:59.780
+<v Michael Chow>Or could I jam that into Hugo?
+
+00:26:00.360 --> 00:26:01.660
+<v Michael Chow>That's a common kind of hybrid
+
+00:26:01.900 --> 00:26:02.080
+<v Michael Chow>path.
+
+00:26:02.440 --> 00:26:05.180
+<v Michael Chow>Could my thing just dump my info into Hugo?
+
+00:26:05.760 --> 00:26:07.860
+<v Michael Chow>It's all kind of this dance between really,
+
+00:26:08.220 --> 00:26:09.840
+<v Michael Chow>is this a general content problem?
+
+00:26:10.400 --> 00:26:13.140
+<v Michael Chow>Is this a like very specific tool problem?
+
+00:26:13.590 --> 00:26:14.680
+<v Michael Chow>Or can I kind of like
+
+00:26:14.700 --> 00:26:16.860
+<v Michael Chow>jam them both together into something.
+
+00:26:17.280 --> 00:26:18.900
+<v Michael Kennedy>Yeah, that's an interesting problem.
+
+00:26:18.980 --> 00:26:22.920
+<v Michael Kennedy>So maybe a good time to start talking about, you know, great docs.
+
+00:26:23.720 --> 00:26:24.120
+<v Michael Kennedy>What is it?
+
+00:26:24.960 --> 00:26:29.500
+<v Michael Kennedy>Like, what's its value prop and positioning with regard to these other areas?
+
+00:26:30.480 --> 00:26:32.120
+<v Rich lannone>Well, on your screen, you have package down.
+
+00:26:32.480 --> 00:26:32.740
+<v Rich lannone>Yes.
+
+00:26:33.240 --> 00:26:33.860
+<v Rich lannone>It has an origin.
+
+00:26:34.020 --> 00:26:34.140
+<v Rich lannone>Actually,
+
+00:26:34.560 --> 00:26:35.040
+<v Rich lannone>coming from R,
+
+00:26:35.200 --> 00:26:38.900
+<v Rich lannone>I can't help but to be a little bit influenced by package down.
+
+00:26:39.100 --> 00:26:41.300
+<v Rich lannone>I use it a lot in my R projects.
+
+00:26:42.000 --> 00:26:46.960
+<v Rich lannone>And I kind of felt like there was like a package downsized hole in the Python docs ecosystem,
+
+00:26:47.320 --> 00:26:50.960
+<v Rich lannone>just a little bit, where, you know, you can just point something at your docs and it makes
+
+00:26:51.060 --> 00:26:53.400
+<v Rich lannone>something pretty fast with pretty much no configuration.
+
+00:26:53.940 --> 00:26:54.440
+<v Rich lannone>That's like the challenge.
+
+00:26:54.680 --> 00:26:56.560
+<v Rich lannone>Does it present something that's serviceable,
+
+00:26:56.840 --> 00:26:57.740
+<v Rich lannone>like usable right away?
+
+00:26:58.680 --> 00:26:59.920
+<v Rich lannone>And that's what I was shooting for.
+
+00:26:59.920 --> 00:27:01.820
+<v Rich lannone>And I think that's kind of like where I landed.
+
+00:27:02.300 --> 00:27:04.700
+<v Rich lannone>And of course, we have tons of options to do way more things.
+
+00:27:04.980 --> 00:27:06.400
+<v Rich lannone>But I wanted to give something that was,
+
+00:27:06.960 --> 00:27:07.080
+<v Rich lannone>you know,
+
+00:27:07.240 --> 00:27:09.640
+<v Rich lannone>you just start it right away and it gives
+
+00:27:09.640 --> 00:27:09.920
+<v Rich lannone>you something.
+
+00:27:10.520 --> 00:27:11.160
+<v Rich lannone>Like, for instance,
+
+00:27:11.500 --> 00:27:12.840
+<v Rich lannone>you have doc strings and such,
+
+00:27:13.100 --> 00:27:18.420
+<v Rich lannone>and they all just get captured and put into the API reference section.
+
+00:27:18.700 --> 00:27:23.660
+<v Rich lannone>And then later on, you would, you know, attend to it and organize it and then, you know, arrange it and exclude things.
+
+00:27:24.420 --> 00:27:26.360
+<v Rich lannone>At the very beginning, it would just give you something at least.
+
+00:27:26.680 --> 00:27:28.580
+<v Rich lannone>So that was kind of like my goal.
+
+00:27:28.960 --> 00:27:32.340
+<v Michael Kennedy>The up and running super quick is one of the themes,
+
+00:27:32.540 --> 00:27:32.640
+<v Michael Kennedy>right?
+
+00:27:32.900 --> 00:27:33.180
+<v Rich lannone>Yeah,
+
+00:27:33.360 --> 00:27:33.500
+<v Rich lannone>yeah,
+
+00:27:33.880 --> 00:27:34.200
+<v Rich lannone>absolutely.
+
+00:27:34.580 --> 00:27:35.140
+<v Rich lannone>Because I think,
+
+00:27:35.330 --> 00:27:35.740
+<v Rich lannone>I suspect,
+
+00:27:35.960 --> 00:27:40.880
+<v Rich lannone>maybe a lot of people are getting more into Python now because of agents, AI, LLMs,
+
+00:27:41.030 --> 00:27:41.480
+<v Rich lannone>and such,
+
+00:27:41.820 --> 00:27:43.140
+<v Rich lannone>and are spinning up small projects.
+
+00:27:43.780 --> 00:27:49.680
+<v Rich lannone>And maybe they're even building their documentation sites with using the same things, like LLMs.
+
+00:27:50.640 --> 00:27:51.980
+<v Rich lannone>So getting something up quickly.
+
+00:27:52.230 --> 00:27:53.680
+<v Rich lannone>And maybe the project doesn't last very long.
+
+00:27:54.000 --> 00:27:56.040
+<v Rich lannone>It's just like something just to get going.
+
+00:27:56.320 --> 00:27:59.200
+<v Rich lannone>And you don't want to spend a ton of time on learning the docs,
+
+00:27:59.480 --> 00:28:00.400
+<v Rich lannone>a new doc system.
+
+00:28:00.730 --> 00:28:01.900
+<v Rich lannone>So this sort of thing is pretty valuable.
+
+00:28:02.520 --> 00:28:03.620
+<v Rich lannone>But we still give you the opportunity,
+
+00:28:03.820 --> 00:28:04.220
+<v Rich lannone>of course, to,
+
+00:28:04.480 --> 00:28:06.340
+<v Rich lannone>you know, like add things and do really
+
+00:28:06.500 --> 00:28:06.580
+<v Rich lannone>cool,
+
+00:28:06.980 --> 00:28:07.640
+<v Rich lannone>sophisticated sites.
+
+00:28:07.760 --> 00:28:10.380
+<v Rich lannone>But just the up and running part, it was super important to me.
+
+00:28:10.580 --> 00:28:11.460
+<v Michael Kennedy>So by default,
+
+00:28:11.680 --> 00:28:15.040
+<v Michael Kennedy>you can point it at a package or set of Python files or something and say,
+
+00:28:15.460 --> 00:28:16.660
+<v Michael Kennedy>generate docs around that.
+
+00:28:16.800 --> 00:28:21.220
+<v Michael Kennedy>And it will look for doc strings and so on, and then generate some kind of hierarchical.
+
+00:28:21.480 --> 00:28:21.940
+<v Rich lannone>Yeah, exactly.
+
+00:28:22.360 --> 00:28:26.020
+<v Rich lannone>And we tested it quite a bit on different package layouts,
+
+00:28:26.460 --> 00:28:26.520
+<v Rich lannone>like,
+
+00:28:26.720 --> 00:28:27.060
+<v Rich lannone>you know, different
+
+00:28:27.420 --> 00:28:27.860
+<v Rich lannone>packaging systems.
+
+00:28:28.340 --> 00:28:31.340
+<v Rich lannone>And it seems introspect pretty well based on all sorts of variation.
+
+00:28:32.200 --> 00:28:33.560
+<v Rich lannone>and we do test this a lot.
+
+00:28:34.020 --> 00:28:37.100
+<v Rich lannone>So the promise is that it does give you something.
+
+00:28:37.420 --> 00:28:38.500
+<v Michael Kennedy>And you can also create
+
+00:28:38.900 --> 00:28:41.200
+<v Michael Kennedy>just more static site type stuff as well, yeah?
+
+00:28:41.500 --> 00:28:42.400
+<v Rich lannone>Yeah, oh, absolutely,
+
+00:28:42.660 --> 00:28:42.720
+<v Rich lannone>yeah,
+
+00:28:42.960 --> 00:28:43.120
+<v Rich lannone>you can.
+
+00:28:43.300 --> 00:28:45.240
+<v Michael Chow>I think the user guide's a good example.
+
+00:28:45.540 --> 00:28:49.380
+<v Michael Chow>Like if you click the expandable thing in the top left.
+
+00:28:49.780 --> 00:28:51.120
+<v Michael Kennedy>Yeah, everything's so zoomed.
+
+00:28:51.340 --> 00:28:52.540
+<v Michael Kennedy>Yeah, everything's so zoomed
+
+00:28:52.550 --> 00:28:54.780
+<v Michael Kennedy>on my little small streaming screen.
+
+00:28:55.020 --> 00:28:55.740
+<v Michael Kennedy>So yeah,
+
+00:28:55.900 --> 00:28:56.700
+<v Michael Kennedy>the user guide got it.
+
+00:28:57.540 --> 00:28:59.180
+<v Michael Chow>It's nice, the user guide's just a folder
+
+00:28:59.440 --> 00:29:01.840
+<v Michael Chow>in the repo with files in it.
+
+00:29:01.880 --> 00:29:05.480
+<v Michael Chow>But it's nice like that that puts up this like,
+
+00:29:05.780 --> 00:29:05.860
+<v Michael Chow>yeah,
+
+00:29:06.040 --> 00:29:11.080
+<v Michael Chow>more kind of general bit of content where it's not your API reference,
+
+00:29:12.400 --> 00:29:15.320
+<v Michael Chow>which is like each individual function explained,
+
+00:29:15.560 --> 00:29:18.380
+<v Michael Chow>but a more general kind of guide,
+
+00:29:18.940 --> 00:29:19.600
+<v Michael Chow>kind of like a bigger,
+
+00:29:19.980 --> 00:29:20.860
+<v Michael Chow>higher level,
+
+00:29:21.400 --> 00:29:22.940
+<v Michael Chow>like introduction to the package.
+
+00:29:23.320 --> 00:29:24.840
+<v Michael Chow>But it's nice that to your point,
+
+00:29:25.000 --> 00:29:25.120
+<v Michael Chow>like,
+
+00:29:25.540 --> 00:29:27.080
+<v Michael Chow>can you have more general kind of content?
+
+00:29:27.560 --> 00:29:27.780
+<v Michael Chow>It's nice.
+
+00:29:27.880 --> 00:29:29.100
+<v Michael Chow>This is just a folder in the repo.
+
+00:29:29.700 --> 00:29:31.380
+<v Michael Chow>So getting started with the user guides,
+
+00:29:31.540 --> 00:29:32.400
+<v Michael Chow>like super fast.
+
+00:29:32.780 --> 00:29:32.840
+<v Rich lannone>Yeah.
+
+00:29:33.120 --> 00:29:34.540
+<v Rich lannone>And this site is like a demonstration.
+
+00:29:34.640 --> 00:29:38.900
+<v Rich lannone>We're showing like the great docs site and we're just looking at it and you can just
+
+00:29:39.160 --> 00:29:42.700
+<v Rich lannone>add another directory and like recipes at the top nav.
+
+00:29:43.040 --> 00:29:43.800
+<v Rich lannone>That's just another directory.
+
+00:29:44.000 --> 00:29:46.520
+<v Rich lannone>And we sort of declared it in our configuration file.
+
+00:29:46.940 --> 00:29:49.020
+<v Rich lannone>So you can just create something similar to a user guide.
+
+00:29:49.360 --> 00:29:53.520
+<v Rich lannone>But we sort of treat a user guide as a sort of like a first class thing because we,
+
+00:29:53.960 --> 00:29:56.760
+<v Rich lannone>well, I'm a little bit opinionated about how sites,
+
+00:29:57.300 --> 00:29:58.120
+<v Rich lannone>these doc sites should be.
+
+00:29:58.420 --> 00:29:59.360
+<v Rich lannone>So it kind of serves as a model.
+
+00:29:59.560 --> 00:30:01.640
+<v Rich lannone>So like the idea is that if someone sees this and says,
+
+00:30:02.020 --> 00:30:03.280
+<v Rich lannone>yeah, I would like something like this,
+
+00:30:03.540 --> 00:30:05.100
+<v Rich lannone>then like three docs would be a good fit.
+
+00:30:05.100 --> 00:30:06.720
+<v Rich lannone>You just have sort of emulate what we have here,
+
+00:30:07.080 --> 00:30:12.280
+<v Rich lannone>do a few things and you've pretty much got it beyond the simple sort of like init and then like build.
+
+00:30:12.600 --> 00:30:13.520
+<v Rich lannone>We can just go a little bit beyond.
+
+00:30:14.040 --> 00:30:14.120
+<v Michael Kennedy>Yeah,
+
+00:30:14.280 --> 00:30:17.840
+<v Michael Kennedy>sitting here talking to you makes me think, you know, I've got some open source projects.
+
+00:30:18.040 --> 00:30:19.340
+<v Michael Kennedy>I really should have better docs with him.
+
+00:30:19.680 --> 00:30:19.800
+<v Rich lannone>Maybe.
+
+00:30:20.220 --> 00:30:22.660
+<v Michael Kennedy>Maybe I'll try working on them with great docs.
+
+00:30:22.720 --> 00:30:23.380
+<v Michael Kennedy>That would be really fun.
+
+00:30:23.660 --> 00:30:24.140
+<v Michael Kennedy>Oh, yeah.
+
+00:30:24.420 --> 00:30:25.020
+<v Rich lannone>And I love your feedback.
+
+00:30:25.180 --> 00:30:26.840
+<v Rich lannone>I'm always looking for ideas and feedback.
+
+00:30:27.720 --> 00:30:27.960
+<v Rich lannone>Right now,
+
+00:30:28.380 --> 00:30:30.100
+<v Rich lannone>I'm not going to make a big deal of it.
+
+00:30:30.180 --> 00:30:32.100
+<v Rich lannone>But I'm looking for users because this is a brand new project.
+
+00:30:32.360 --> 00:30:34.920
+<v Rich lannone>So feedback is a bit scant at this point.
+
+00:30:35.240 --> 00:30:35.740
+<v Rich lannone>So yeah,
+
+00:30:35.920 --> 00:30:36.960
+<v Rich lannone>let me know how it goes.
+
+00:30:37.360 --> 00:30:38.100
+<v Michael Kennedy>Yeah, I will definitely.
+
+00:30:38.520 --> 00:30:43.460
+<v Michael Kennedy>One of the things that's nice here that I'm noticing is it's got a lot of elements of the
+
+00:30:43.480 --> 00:30:49.220
+<v Michael Kennedy>display that go beyond just standard markdown that i think are really nice like for example
+
+00:30:49.580 --> 00:30:55.600
+<v Michael Kennedy>you've got these oh because these are probably like little tags or badges yeah yeah and then
+
+00:30:55.700 --> 00:31:02.340
+<v Michael Kennedy>also you've got a tabbed ui for like here's how you install it on mac Linux windows but in the
+
+00:31:02.370 --> 00:31:06.760
+<v Michael Kennedy>same little area right you just like click the tab for your os yeah because tab sets in cordo
+
+00:31:06.850 --> 00:31:12.140
+<v Rich lannone>they're like a Quarto special really they just come part and parcel with Quarto yeah yeah i feel like
+
+00:31:12.060 --> 00:31:14.340
+<v Michael Kennedy>you can do some nice authorship beyond that.
+
+00:31:14.580 --> 00:31:15.920
+<v Michael Kennedy>Like when I was working on my book,
+
+00:31:16.020 --> 00:31:16.240
+<v Michael Kennedy>I'm like,
+
+00:31:16.580 --> 00:31:17.720
+<v Michael Kennedy>I'm going to write it in Markdown,
+
+00:31:17.880 --> 00:31:19.360
+<v Michael Kennedy>but I also want to have these little call outs
+
+00:31:19.520 --> 00:31:20.800
+<v Michael Kennedy>or like an action or,
+
+00:31:21.020 --> 00:31:22.180
+<v Michael Kennedy>you know, the little sidebar,
+
+00:31:22.300 --> 00:31:24.300
+<v Michael Kennedy>like how in the heck am I going to get that
+
+00:31:24.720 --> 00:31:25.920
+<v Michael Kennedy>to come out of Pandoc?
+
+00:31:26.040 --> 00:31:26.520
+<v Michael Kennedy>You know what I mean?
+
+00:31:26.980 --> 00:31:27.140
+<v Michael Kennedy>Yeah.
+
+00:31:27.720 --> 00:31:30.000
+<v Michael Kennedy>I eventually got it to work by basically
+
+00:31:30.580 --> 00:31:31.920
+<v Michael Kennedy>getting a little pre-parser
+
+00:31:32.160 --> 00:31:33.660
+<v Michael Kennedy>that would just turn those into HTML
+
+00:31:34.180 --> 00:31:35.660
+<v Michael Kennedy>and allow the Markdown to have HTML.
+
+00:31:35.920 --> 00:31:37.960
+<v Rich lannone>I think that's what makes a good user guide
+
+00:31:38.180 --> 00:31:38.960
+<v Rich lannone>a good user guide.
+
+00:31:39.140 --> 00:31:39.920
+<v Rich lannone>We actually show,
+
+00:31:40.220 --> 00:31:41.520
+<v Rich lannone>like, not just like show the code,
+
+00:31:41.640 --> 00:31:42.480
+<v Rich lannone>but actually show the results.
+
+00:31:43.020 --> 00:31:46.500
+<v Rich lannone>And you can totally do that with a good user guide.
+
+00:31:46.840 --> 00:31:48.640
+<v Rich lannone>And that's what I try to demonstrate here
+
+00:31:48.880 --> 00:31:50.380
+<v Rich lannone>in the Great Docs user guide
+
+00:31:50.720 --> 00:31:52.180
+<v Rich lannone>that we have these things.
+
+00:31:52.520 --> 00:31:53.140
+<v Rich lannone>Here's how they look.
+
+00:31:53.640 --> 00:31:54.420
+<v Rich lannone>You can have these too.
+
+00:31:54.620 --> 00:31:56.600
+<v Michael Chow>Yeah, that definitely looks good.
+
+00:31:56.800 --> 00:31:58.180
+<v Michael Chow>That's the one thing too with Quarto
+
+00:31:58.500 --> 00:32:01.080
+<v Michael Chow>that if I had to make the case for Quarto
+
+00:32:01.200 --> 00:32:03.180
+<v Michael Chow>for a lot of people doing documentation,
+
+00:32:03.920 --> 00:32:05.900
+<v Michael Chow>it's that it's really easy to run code.
+
+00:32:06.100 --> 00:32:08.820
+<v Michael Chow>Running code is kind of like most of Quarto's game.
+
+00:32:09.400 --> 00:32:12.000
+<v Michael Chow>It's a you author using a QMD.
+
+00:32:12.380 --> 00:32:13.900
+<v Michael Chow>It's essentially a markdown file,
+
+00:32:14.500 --> 00:32:17.260
+<v Michael Chow>but your code blocks can be executed.
+
+00:32:17.620 --> 00:32:19.140
+<v Michael Chow>So it's really inconvenient for docs,
+
+00:32:19.380 --> 00:32:24.640
+<v Michael Chow>like being able to include code snippets with their out and then they get run and their outputs are there.
+
+00:32:25.480 --> 00:32:27.100
+<v Michael Chow>So that's kind of the impetus,
+
+00:32:27.320 --> 00:32:32.060
+<v Michael Chow>I think, in this case for Bordeaux is doing like really easy execution of code.
+
+00:32:33.040 --> 00:32:34.780
+<v Michael Chow>It's possible in other tools.
+
+00:32:35.140 --> 00:32:37.380
+<v Michael Chow>And I know MakeDockstrings,
+
+00:32:37.890 --> 00:32:41.360
+<v Michael Chow>who I think its author is working with Zensical now too.
+
+00:32:41.660 --> 00:32:46.840
+<v Michael Chow>But they've created a lot of good ways for you to be able to do this as well, like execute code.
+
+00:32:47.070 --> 00:32:50.780
+<v Michael Chow>But I do think that's one area where people stub their toe a lot is like,
+
+00:32:51.060 --> 00:32:51.140
+<v Michael Chow>oh,
+
+00:32:51.360 --> 00:32:53.520
+<v Michael Chow>like if I'm Polars or Pandas, I'm a data frame library.
+
+00:32:54.060 --> 00:32:55.280
+<v Michael Chow>I probably want a lot of examples.
+
+00:32:56.760 --> 00:33:01.180
+<v Michael Chow>And then you get stuck in this like funny dance, like how do I execute the code for my examples?
+
+00:33:01.640 --> 00:33:04.940
+<v Michael Chow>And so I think tools like Quarto are really kind of aimed at that.
+
+00:33:05.260 --> 00:33:11.400
+<v Michael Chow>use case like you're a person running code and generating reports you know that that have code
+
+00:33:11.400 --> 00:33:17.740
+<v Rich lannone>and that produce graphs and tables and yeah and i think the examples like being executable made the
+
+00:33:17.940 --> 00:33:22.720
+<v Rich lannone>great tables examples really powerful you can see the code for a table and then see the table
+
+00:33:23.220 --> 00:33:27.620
+<v Rich lannone>right below like in the actual like site which is we didn't have to paste that in it was basically
+
+00:33:27.630 --> 00:33:31.880
+<v Rich lannone>just generated right there yeah that's amazing which is actually incredibly you can put pros
+
+00:33:31.900 --> 00:33:37.520
+<v Rich lannone>around it as well so it's like it reads just like a little mini guide in each doc string does it
+
+00:33:38.160 --> 00:33:44.300
+<v Michael Kennedy>run at build time or does it somehow run in the website oh build time yeah yeah yeah you guys
+
+00:33:44.540 --> 00:33:49.280
+<v Michael Kennedy>embedding WebAssembly or something fun like that no you could do that you could do that yeah i
+
+00:33:49.680 --> 00:33:55.960
+<v Michael Chow>another nice thing you can freeze it so like if you have a bit of code that um or like let's say
+
+00:33:55.960 --> 00:34:01.860
+<v Michael Chow>you have a blog post and you don't want to rerun it every time because like over the years maybe
+
+00:34:01.880 --> 00:34:05.780
+<v Michael Chow>you like know the code's going to get out of date or it takes a long time to run.
+
+00:34:06.120 --> 00:34:06.500
+<v Michael Chow>You can do
+
+00:34:06.620 --> 00:34:07.320
+<v Michael Chow>something called freeze.
+
+00:34:07.900 --> 00:34:08.980
+<v Michael Chow>You can quarter freeze it.
+
+00:34:09.159 --> 00:34:12.139
+<v Michael Chow>And that essentially like caches the outputs
+
+00:34:12.919 --> 00:34:18.320
+<v Michael Chow>so that you can re-render it without executing the code every time.
+
+00:34:18.560 --> 00:34:19.179
+<v Michael Chow>So that's useful.
+
+00:34:19.419 --> 00:34:19.480
+<v Michael Chow>Like
+
+00:34:19.760 --> 00:34:24.960
+<v Michael Chow>great tables, we have kind of a growing log of blog posts and we don't want to re-execute them
+
+00:34:25.120 --> 00:34:27.960
+<v Michael Chow>every time because that starts to get pretty time consuming.
+
+00:34:28.340 --> 00:34:29.940
+<v Michael Chow>So we can just freeze their outputs
+
+00:34:30.539 --> 00:34:32.360
+<v Michael Chow>and then they generate super fast.
+
+00:34:33.100 --> 00:34:34.320
+<v Michael Kennedy>Another reason you might want to freeze it
+
+00:34:34.860 --> 00:34:37.060
+<v Michael Kennedy>is you're doing accessing live data
+
+00:34:37.179 --> 00:34:38.120
+<v Michael Kennedy>off an API or website
+
+00:34:38.460 --> 00:34:39.740
+<v Michael Kennedy>and you want to talk about the results.
+
+00:34:40.100 --> 00:34:41.040
+<v Michael Kennedy>And if it changes,
+
+00:34:41.320 --> 00:34:42.760
+<v Michael Kennedy>like all of a sudden your pros is like,
+
+00:34:43.100 --> 00:34:43.919
+<v Michael Kennedy>why are you talking about this?
+
+00:34:44.000 --> 00:34:44.580
+<v Michael Kennedy>It doesn't say that.
+
+00:34:44.639 --> 00:34:45.800
+<v Michael Kennedy>Well, it used to when I did it.
+
+00:34:46.080 --> 00:34:48.520
+<v Michael Kennedy>You might imagine like a benchmark section example
+
+00:34:48.659 --> 00:34:49.659
+<v Rich lannone>if it runs a long time
+
+00:34:49.860 --> 00:34:50.159
+<v Rich lannone>or you just,
+
+00:34:50.540 --> 00:34:50.659
+<v Rich lannone>you know,
+
+00:34:50.820 --> 00:34:52.740
+<v Rich lannone>accessing some keys on your personal machine.
+
+00:34:53.240 --> 00:34:53.480
+<v Rich lannone>Absolutely.
+
+00:34:53.860 --> 00:34:54.580
+<v Rich lannone>Freezing is great for that.
+
+00:34:54.760 --> 00:34:56.960
+<v Rich lannone>You basically froze stuff on your personal computer
+
+00:34:57.380 --> 00:34:57.960
+<v Rich lannone>and you're just like,
+
+00:34:58.120 --> 00:34:58.260
+<v Rich lannone>you know,
+
+00:34:58.620 --> 00:34:59.580
+<v Rich lannone>sending it off to like CI.
+
+00:34:59.660 --> 00:34:59.700
+<v Rich lannone>high.
+
+00:35:00.640 --> 00:35:02.120
+<v Michael Chow>And I think there's like a million,
+
+00:35:02.560 --> 00:35:04.320
+<v Michael Chow>there's also like a million of these things that you
+
+00:35:04.560 --> 00:35:08.980
+<v Michael Chow>encounter when you start generating doc sites or like personal content,
+
+00:35:09.480 --> 00:35:10.060
+<v Michael Chow>which is like,
+
+00:35:10.360 --> 00:35:10.420
+<v Michael Chow>yeah,
+
+00:35:10.550 --> 00:35:11.760
+<v Michael Chow>maybe I don't want to run some stuff.
+
+00:35:12.380 --> 00:35:15.120
+<v Michael Chow>Maybe I want to like include a snippet from one thing
+
+00:35:15.370 --> 00:35:15.740
+<v Michael Chow>somewhere else,
+
+00:35:16.380 --> 00:35:21.540
+<v Michael Chow>or maybe I want to do like all kinds of like output customization.
+
+00:35:22.630 --> 00:35:23.140
+<v Michael Chow>I just feel
+
+00:35:23.120 --> 00:35:25.320
+<v Michael Chow>like there's a million little boxes to check.
+
+00:35:25.500 --> 00:35:27.720
+<v Michael Chow>So that's, that's one.
+
+00:35:28.120 --> 00:35:28.480
+<v Michael Chow>I mean,
+
+00:35:28.960 --> 00:35:29.640
+<v Michael Chow>one other reason we
+
+00:35:29.740 --> 00:35:32.460
+<v Michael Chow>use Quarto is we belong to the company that created Quarto.
+
+00:35:32.880 --> 00:35:34.240
+<v Michael Chow>But I think those like little
+
+00:35:34.860 --> 00:35:39.740
+<v Michael Chow>pieces of detail for people generating like scientific documents and stuff goes a long way.
+
+00:35:39.980 --> 00:35:44.360
+<v Rich lannone>It's pretty wild too, because Quarto has a pretty big extension system as well,
+
+00:35:44.580 --> 00:35:45.280
+<v Rich lannone>like pretty active.
+
+00:35:45.700 --> 00:35:46.620
+<v Rich lannone>So there's like ways,
+
+00:35:46.820 --> 00:35:48.600
+<v Rich lannone>I mean, besides like different output types,
+
+00:35:48.780 --> 00:35:49.660
+<v Rich lannone>there's like extensions,
+
+00:35:49.940 --> 00:35:51.440
+<v Rich lannone>and different types of extensions too,
+
+00:35:51.670 --> 00:35:52.860
+<v Rich lannone>like different classes of extensions.
+
+00:35:53.440 --> 00:35:53.940
+<v Michael Kennedy>So it goes really deep.
+
+00:35:54.370 --> 00:35:54.520
+<v Michael Kennedy>Yeah,
+
+00:35:54.740 --> 00:35:55.500
+<v Michael Kennedy>Quarto is really neat.
+
+00:35:56.740 --> 00:35:59.200
+<v Michael Kennedy>This portion of Talk Python To Me is sponsored by Temporal.
+
+00:35:59.640 --> 00:36:02.920
+<v Michael Kennedy>Ever since I had Mason Egger on the podcast for episode 515,
+
+00:36:03.560 --> 00:36:06.020
+<v Michael Kennedy>I've been fascinated with durable workflows in Python.
+
+00:36:06.620 --> 00:36:08.700
+<v Michael Kennedy>That's why I'm thrilled that Temporal has decided
+
+00:36:08.750 --> 00:36:11.120
+<v Michael Kennedy>to become a podcast sponsor since that episode.
+
+00:36:11.940 --> 00:36:14.220
+<v Michael Kennedy>If you've built background jobs or multi-step workflows,
+
+00:36:14.660 --> 00:36:17.540
+<v Michael Kennedy>you know how messy things get with retries, timeouts,
+
+00:36:17.700 --> 00:36:19.800
+<v Michael Kennedy>partial failures, and keeping state consistent.
+
+00:36:20.160 --> 00:36:22.480
+<v Michael Kennedy>I'm sure many of you have written brutal code to
+
+00:36:22.640 --> 00:36:25.560
+<v Michael Kennedy>keep the workflow moving and to track when you run into problems,
+
+00:36:26.140 --> 00:36:27.040
+<v Michael Kennedy>but it's trickier than that.
+
+00:36:27.200 --> 00:36:31.300
+<v Michael Kennedy>What if you have a long-running workflow and you need to redeploy the app or restart the server
+
+00:36:31.560 --> 00:36:32.140
+<v Michael Kennedy>while it's running?
+
+00:36:32.920 --> 00:36:36.060
+<v Michael Kennedy>This is where Temporal's open source framework is a game changer.
+
+00:36:36.820 --> 00:36:41.240
+<v Michael Kennedy>You write workflows as normal Python code and Temporal ensures that they execute reliably,
+
+00:36:41.860 --> 00:36:42.800
+<v Michael Kennedy>even across crashes,
+
+00:36:43.140 --> 00:36:43.480
+<v Michael Kennedy>restarts,
+
+00:36:43.840 --> 00:36:46.620
+<v Michael Kennedy>or long-running processes while handling retries,
+
+00:36:46.820 --> 00:36:46.960
+<v Michael Kennedy>states,
+
+00:36:47.040 --> 00:36:48.360
+<v Michael Kennedy>and orchestrations for you
+
+00:36:48.460 --> 00:36:49.500
+<v Michael Kennedy>so you don't have to build
+
+00:36:49.540 --> 00:36:50.880
+<v Michael Kennedy>and maintain that logic yourself.
+
+00:36:51.780 --> 00:36:54.460
+<v Michael Kennedy>You may be familiar with writing asynchronous code
+
+00:36:54.960 --> 00:36:56.840
+<v Michael Kennedy>using the async and await keywords in Python.
+
+00:36:57.400 --> 00:36:59.020
+<v Michael Kennedy>Temporal's brilliant programming model
+
+00:36:59.400 --> 00:37:01.520
+<v Michael Kennedy>leverages the exact same programming model
+
+00:37:01.820 --> 00:37:03.020
+<v Michael Kennedy>that you are familiar with,
+
+00:37:03.120 --> 00:37:04.180
+<v Michael Kennedy>but uses it for durability,
+
+00:37:04.640 --> 00:37:05.660
+<v Michael Kennedy>not just concurrency.
+
+00:37:06.480 --> 00:37:08.720
+<v Michael Kennedy>Imagine writing await workflow.sleep,
+
+00:37:09.180 --> 00:37:09.500
+<v Michael Kennedy>time delta,
+
+00:37:10.060 --> 00:37:10.460
+<v Michael Kennedy>30 days.
+
+00:37:10.920 --> 00:37:11.500
+<v Michael Kennedy>Yes, seriously,
+
+00:37:11.960 --> 00:37:12.780
+<v Michael Kennedy>sleep for 30 days.
+
+00:37:13.060 --> 00:37:13.640
+<v Michael Kennedy>Restart the server,
+
+00:37:13.940 --> 00:37:14.920
+<v Michael Kennedy>deploy new versions of the app.
+
+00:37:15.200 --> 00:37:15.580
+<v Michael Kennedy>That's it,
+
+00:37:15.780 --> 00:37:16.920
+<v Michael Kennedy>Temporal takes care of the rest.
+
+00:37:17.440 --> 00:37:21.840
+<v Michael Kennedy>temporal is used by teams at netflix snap and nvidia for critical production systems
+
+00:37:22.600 --> 00:37:27.680
+<v Michael Kennedy>get started with the open source python sdk today learn more at talkpython.fm/temporal
+
+00:37:28.400 --> 00:37:32.600
+<v Michael Kennedy>the link is in your podcast player's show notes thank you to temporal for supporting the show
+
+00:37:33.900 --> 00:37:38.640
+<v Michael Kennedy>and you all keep talking about Quarto because it's the foundation of what's happening with
+
+00:37:38.700 --> 00:37:43.020
+<v Michael Kennedy>great tables right it's been a while since it was um been a while since i had jj and carlos on
+
+00:37:43.020 --> 00:37:49.580
+<v Michael Kennedy>the podcast to talk about Quarto but so maybe just give folks a bit of a refresher of what is cordo
+
+00:37:49.660 --> 00:37:54.660
+<v Rich lannone>and then how that relates back to great tables um yeah so Quarto is a like a like open source
+
+00:37:55.300 --> 00:38:00.780
+<v Rich lannone>publishing system so you can make things like sites um like documents like books for
+
+00:38:00.960 --> 00:38:05.240
+<v Rich lannone>instance uh you can make presentations uh it's probably a few more i'm missing and it's cross
+
+00:38:05.460 --> 00:38:10.140
+<v Rich lannone>language as well and it and like you know code cells so it has computational notebooks is what
+
+00:38:10.040 --> 00:38:13.780
+<v Rich lannone>they call them because they have cells which are basically computational cells which can accept
+
+00:38:14.260 --> 00:38:18.400
+<v Rich lannone>which have different engines so you can like say like run some r code run some python some julia
+
+00:38:19.120 --> 00:38:22.240
+<v Rich lannone>uh what have you many other things as well and then you can stitch them you know basically render
+
+00:38:22.260 --> 00:38:26.860
+<v Rich lannone>them into into documents using handdoc for the most part and probably other things too for
+
+00:38:27.180 --> 00:38:31.580
+<v Rich lannone>different output types and it just really batteries included has things like you just see in them on
+
+00:38:31.580 --> 00:38:37.300
+<v Rich lannone>the site citations cross refs you know it's it's got it all essentially and so how it relates to
+
+00:38:37.520 --> 00:38:40.660
+<v Rich lannone>to quartodoc and to GreatDocs.
+
+00:38:41.520 --> 00:38:42.300
+<v Rich lannone>We're using quartodoc.
+
+00:38:43.710 --> 00:38:44.280
+<v Rich lannone>But not really.
+
+00:38:44.480 --> 00:38:45.740
+<v Rich lannone>I think with quartodoc,
+
+00:38:47.070 --> 00:38:48.560
+<v Rich lannone>the way I see it is like,
+
+00:38:49.740 --> 00:38:50.540
+<v Rich lannone>and correct me if I'm wrong, Michael,
+
+00:38:50.740 --> 00:38:51.220
+<v Rich lannone>at quartodoc,
+
+00:38:51.700 --> 00:38:53.480
+<v Rich lannone>you're creating a reference API,
+
+00:38:53.870 --> 00:38:55.380
+<v Rich lannone>but you're still basically using quartodoc.
+
+00:38:55.560 --> 00:38:56.560
+<v Rich lannone>You're within the quartodoc itself.
+
+00:38:56.810 --> 00:38:58.360
+<v Rich lannone>You're still creating the Quora config.
+
+00:38:59.600 --> 00:39:00.540
+<v Rich lannone>But with GreatDocs,
+
+00:39:00.570 --> 00:39:02.120
+<v Rich lannone>it's kind of like quartodoc is a bit sort of like
+
+00:39:02.120 --> 00:39:03.160
+<v Rich lannone>we're using it,
+
+00:39:03.340 --> 00:39:03.480
+<v Rich lannone>obviously,
+
+00:39:03.820 --> 00:39:05.480
+<v Rich lannone>but you don't have to know a lot about quartodoc.
+
+00:39:05.500 --> 00:39:07.880
+<v Rich lannone>you can basically get by with just a few things you see,
+
+00:39:08.300 --> 00:39:09.120
+<v Rich lannone>you know,
+
+00:39:09.170 --> 00:39:12.140
+<v Rich lannone>in like the user guide and not have to like go deeply into Quarto.
+
+00:39:12.270 --> 00:39:15.500
+<v Rich lannone>It sort of like hides it a little bit or doesn't really advertise it as much,
+
+00:39:16.380 --> 00:39:17.500
+<v Michael Chow>even though we're using a lot.
+
+00:39:17.680 --> 00:39:18.600
+<v Michael Chow>Just for some context.
+
+00:39:19.630 --> 00:39:19.760
+<v Michael Chow>Yeah.
+
+00:39:19.900 --> 00:39:22.020
+<v Michael Chow>I mentioned before I developed a tool called quartodoc,
+
+00:39:22.220 --> 00:39:25.620
+<v Michael Chow>which is another documentation generator for Quarto.
+
+00:39:26.160 --> 00:39:26.900
+<v Michael Chow>So just,
+
+00:39:27.060 --> 00:39:29.040
+<v Michael Chow>just to clarify like the context.
+
+00:39:29.810 --> 00:39:29.940
+<v Michael Chow>Yeah.
+
+00:39:30.020 --> 00:39:32.420
+<v Michael Chow>Like quartodoc is a much more kind of like low level,
+
+00:39:33.200 --> 00:39:33.820
+<v Michael Chow>no frills.
+
+00:39:33.920 --> 00:39:35.860
+<v Michael Chow>So like the IBIS project uses it.
+
+00:39:37.120 --> 00:39:38.460
+<v Michael Chow>So that's another pretty,
+
+00:39:38.760 --> 00:39:39.660
+<v Michael Chow>pretty big Python tool,
+
+00:39:40.000 --> 00:39:42.440
+<v Michael Chow>but it's like very like simple.
+
+00:39:42.980 --> 00:39:46.520
+<v Michael Chow>It's more about like dump your API reference and then you're responsible
+
+00:39:46.720 --> 00:39:48.000
+<v Michael Chow>for like customizing your website.
+
+00:39:48.400 --> 00:39:51.660
+<v Michael Chow>And so it's for people who really want to like be in control and set it all up.
+
+00:39:51.850 --> 00:39:54.180
+<v Michael Chow>I think Rich is kind of underselling.
+
+00:39:54.210 --> 00:39:56.560
+<v Michael Chow>I think great docs is just dripping in style.
+
+00:39:56.630 --> 00:39:57.440
+<v Michael Chow>I think that's the,
+
+00:39:57.650 --> 00:40:00.920
+<v Michael Chow>one of the keys is it's made to be kind of like an all in one,
+
+00:40:01.080 --> 00:40:04.240
+<v Michael Chow>something really nice out of the box that's opinionated.
+
+00:40:04.670 --> 00:40:06.340
+<v Michael Chow>But I just want to clarify for context,
+
+00:40:06.560 --> 00:40:08.940
+<v Michael Chow>QuartoDoc is another tool outside of Quarto.
+
+00:40:09.420 --> 00:40:11.480
+<v Michael Chow>So I know we've checked a lot of tools out.
+
+00:40:12.780 --> 00:40:15.060
+<v Michael Chow>But one thing that's interesting is I know,
+
+00:40:15.480 --> 00:40:17.280
+<v Michael Chow>like when we look at great docs,
+
+00:40:17.880 --> 00:40:20.260
+<v Michael Chow>it's easy to see like some of the stuff that jumps out.
+
+00:40:20.640 --> 00:40:21.240
+<v Michael Chow>But there's actually,
+
+00:40:21.940 --> 00:40:22.960
+<v Michael Chow>I think to Rich's credit,
+
+00:40:23.080 --> 00:40:25.660
+<v Michael Chow>there's a ton of like little things inside great docs
+
+00:40:25.750 --> 00:40:28.660
+<v Michael Chow>that you almost don't notice until you need them.
+
+00:40:29.940 --> 00:40:32.500
+<v Michael Chow>Like there's a million little pieces to doc sites.
+
+00:40:32.920 --> 00:40:34.480
+<v Michael Chow>And some of them are actually pretty intriguing.
+
+00:40:34.800 --> 00:40:37.860
+<v Michael Chow>Like if you go to the great docs API reference,
+
+00:40:38.460 --> 00:40:46.240
+<v Michael Chow>I think it kind of like speaks to Rich's style that he's included a ton of stuff out of the box for this,
+
+00:40:46.720 --> 00:40:48.740
+<v Michael Chow>including this little like filter bar.
+
+00:40:49.000 --> 00:40:50.860
+<v Michael Chow>So if you click on the top left,
+
+00:40:51.220 --> 00:40:51.700
+<v Michael Chow>there's a,
+
+00:40:52.200 --> 00:40:55.140
+<v Michael Chow>you can sort of like filter on the page for different pieces.
+
+00:40:55.980 --> 00:40:56.620
+<v Michael Chow>That's like,
+
+00:40:57.760 --> 00:40:57.820
+<v Michael Chow>yeah.
+
+00:40:58.300 --> 00:41:00.440
+<v Michael Chow>I think for just to illustrate the difference.
+
+00:41:00.580 --> 00:41:02.360
+<v Michael Chow>So quarter doc is a really bare bones tool.
+
+00:41:02.620 --> 00:41:04.680
+<v Michael Chow>It's like we generate an API for you.
+
+00:41:05.220 --> 00:41:10.080
+<v Michael Chow>Great docs like this thing, this filter bar where you can like type in it and it shows you live on the page.
+
+00:41:10.520 --> 00:41:12.840
+<v Michael Chow>Like it filters your reference items.
+
+00:41:13.500 --> 00:41:14.420
+<v Michael Chow>That's just pure rich,
+
+00:41:14.900 --> 00:41:18.020
+<v Michael Chow>just like wilding out on what docs could be.
+
+00:41:18.340 --> 00:41:23.300
+<v Michael Chow>And I think there are like a million little examples of this kind of in great docs.
+
+00:41:23.860 --> 00:41:24.240
+<v Rich lannone>Kind of. Yeah.
+
+00:41:24.440 --> 00:41:26.980
+<v Rich lannone>Cause like I find little things that annoy me and I want to fix them.
+
+00:41:27.360 --> 00:41:27.500
+<v Rich lannone>But,
+
+00:41:27.840 --> 00:41:28.100
+<v Rich lannone>um,
+
+00:41:28.370 --> 00:41:28.480
+<v Rich lannone>uh,
+
+00:41:28.800 --> 00:41:29.660
+<v Rich lannone>and so this is my,
+
+00:41:30.560 --> 00:41:31.220
+<v Rich lannone>this is almost like a,
+
+00:41:31.460 --> 00:41:33.540
+<v Rich lannone>like a, like a Python site generator
+
+00:41:34.000 --> 00:41:34.240
+<v Rich lannone>for,
+
+00:41:34.440 --> 00:41:38.200
+<v Rich lannone>for me in lots of ways, but I'm hoping that other people feel these little pain points
+
+00:41:38.250 --> 00:41:38.560
+<v Rich lannone>as well.
+
+00:41:38.880 --> 00:41:40.380
+<v Michael Kennedy>I've certainly felt I've gone to,
+
+00:41:40.650 --> 00:41:40.740
+<v Michael Kennedy>um,
+
+00:41:41.120 --> 00:41:43.420
+<v Michael Kennedy>documentation sites and search for stuff on there.
+
+00:41:43.720 --> 00:41:45.340
+<v Michael Kennedy>And then you see a little spinner searching,
+
+00:41:45.840 --> 00:41:47.260
+<v Michael Kennedy>searching static site.
+
+00:41:47.270 --> 00:41:47.740
+<v Michael Kennedy>What are we doing?
+
+00:41:48.000 --> 00:41:48.720
+<v Michael Kennedy>Why am I waiting?
+
+00:41:49.140 --> 00:41:50.600
+<v Michael Kennedy>This doesn't make any sense to me, but okay.
+
+00:41:51.020 --> 00:41:51.180
+<v Michael Chow>Yeah.
+
+00:41:51.480 --> 00:41:51.540
+<v Michael Kennedy>Yeah.
+
+00:41:51.940 --> 00:41:53.280
+<v Michael Chow>Even the CLI button,
+
+00:41:53.730 --> 00:41:53.860
+<v Michael Chow>like,
+
+00:41:54.630 --> 00:41:56.120
+<v Michael Chow>oh, sorry, if you click that,
+
+00:41:56.520 --> 00:41:59.000
+<v Michael Chow>that's like if you have a command line interface for your tool,
+
+00:41:59.270 --> 00:42:00.740
+<v Michael Chow>which is so hot today,
+
+00:42:01.000 --> 00:42:03.440
+<v Michael Chow>like AI loves command line interfaces.
+
+00:42:04.680 --> 00:42:07.380
+<v Michael Chow>Claude Codes just bash executing everything.
+
+00:42:08.020 --> 00:42:09.880
+<v Michael Chow>You know, a lot of people have CLIs.
+
+00:42:11.240 --> 00:42:17.500
+<v Michael Chow>I think it also speaks a lot to Richestile that he created this spot for your CLI docs to live.
+
+00:42:18.520 --> 00:42:18.980
+<v Michael Chow>Very important.
+
+00:42:20.160 --> 00:42:21.480
+<v Michael Chow>And then at the top right,
+
+00:42:21.780 --> 00:42:22.240
+<v Michael Chow>if you look,
+
+00:42:23.380 --> 00:42:24.180
+<v Michael Chow>there's like a copy.
+
+00:42:24.260 --> 00:42:28.000
+<v Michael Chow>You can copy the whole page to Markdown or view it as Markdown.
+
+00:42:28.460 --> 00:42:30.220
+<v Michael Chow>I never would have thought of that.
+
+00:42:30.420 --> 00:42:31.040
+<v Michael Chow>To me,
+
+00:42:31.240 --> 00:42:33.980
+<v Michael Chow>I would never go that far to give people something nice.
+
+00:42:34.340 --> 00:42:37.220
+<v Michael Chow>I don't know if I'm just like a curmudgeony engineer.
+
+00:42:37.660 --> 00:42:39.460
+<v Michael Chow>I think Rich is just dreaming up,
+
+00:42:39.680 --> 00:42:42.880
+<v Michael Chow>I don't know, different ways you could interact with docs,
+
+00:42:43.100 --> 00:42:44.300
+<v Michael Chow>copy the page to Markdown.
+
+00:42:44.560 --> 00:42:46.660
+<v Michael Chow>And I don't doubt that it's incredibly useful.
+
+00:42:47.320 --> 00:42:48.100
+<v Michael Chow>To me, this strikes me as like...
+
+00:42:48.100 --> 00:42:49.100
+<v Michael Chow>I think it's very useful, yeah.
+
+00:42:49.420 --> 00:42:49.580
+<v Michael Chow>Yeah.
+
+00:42:50.440 --> 00:42:52.740
+<v Michael Chow>When I saw that table graph for great tables,
+
+00:42:53.080 --> 00:42:55.520
+<v Michael Chow>like breaking apart the table into every little piece,
+
+00:42:56.040 --> 00:42:57.320
+<v Michael Chow>this strikes me as rich again,
+
+00:42:57.780 --> 00:43:01.360
+<v Michael Chow>like imagining every little thing a doc site could do.
+
+00:43:01.840 --> 00:43:05.460
+<v Michael Chow>So I think that's why I'm so kind of gassed up about great docs.
+
+00:43:05.720 --> 00:43:06.320
+<v Michael Kennedy>This is delightful.
+
+00:43:06.720 --> 00:43:10.940
+<v Michael Kennedy>And we're going to come back to AI stuff later, but we don't have that much time left,
+
+00:43:11.200 --> 00:43:11.380
+<v Michael Kennedy>honestly,
+
+00:43:11.560 --> 00:43:11.700
+<v Michael Kennedy>guys.
+
+00:43:11.820 --> 00:43:15.460
+<v Michael Kennedy>We've been talking and not making a lot of progress because it's really, we're just diving into it.
+
+00:43:15.480 --> 00:43:15.680
+<v Michael Kennedy>Docs talk.
+
+00:43:15.680 --> 00:43:16.180
+<v Michael Kennedy>It's so fun.
+
+00:43:16.340 --> 00:43:16.880
+<v Michael Kennedy>I know.
+
+00:43:16.980 --> 00:43:17.500
+<v Michael Kennedy>It's so fun.
+
+00:43:17.960 --> 00:43:24.500
+<v Michael Kennedy>But I can easily see I'm working on a project and I've got Claude or some codex or whatever,
+
+00:43:24.780 --> 00:43:27.420
+<v Michael Kennedy>and it's just not getting it for a certain function.
+
+00:43:27.820 --> 00:43:29.460
+<v Michael Kennedy>Just go over to the docs, hit copy pages,
+
+00:43:29.640 --> 00:43:31.500
+<v Michael Kennedy>markdown, and just go, no AI,
+
+00:43:31.880 --> 00:43:33.500
+<v Michael Kennedy>this is the docs, read it.
+
+00:43:33.940 --> 00:43:39.380
+<v Michael Kennedy>Because giving it a markdown result of what this is versus all the nav and all the stuff,
+
+00:43:39.390 --> 00:43:44.240
+<v Michael Kennedy>and it's trying to understand what's the essence of the page, if you tell it to just go to the page,
+
+00:43:44.520 --> 00:43:45.400
+<v Michael Kennedy>really, really different.
+
+00:43:45.720 --> 00:43:46.620
+<v Rich lannone>Yeah, it's been more immediate,
+
+00:43:46.880 --> 00:43:47.120
+<v Rich lannone>I think.
+
+00:43:47.460 --> 00:43:51.480
+<v Rich lannone>Also, you can change the URL if you really want to, to.md and just give it the URL.
+
+00:43:51.850 --> 00:43:53.040
+<v Rich lannone>So many ways to do it.
+
+00:43:53.560 --> 00:43:53.720
+<v Michael Kennedy>Yeah,
+
+00:43:53.940 --> 00:43:54.340
+<v Michael Kennedy>yeah, yeah.
+
+00:43:54.410 --> 00:43:54.960
+<v Michael Kennedy>I love that.
+
+00:43:55.260 --> 00:43:56.520
+<v Michael Kennedy>So it said html.md.
+
+00:43:56.900 --> 00:43:57.180
+<v Michael Kennedy>Yeah.
+
+00:43:57.480 --> 00:43:57.660
+<v Michael Kennedy>Yeah.
+
+00:43:58.120 --> 00:43:58.860
+<v Michael Chow>That's really cool.
+
+00:43:59.180 --> 00:44:01.840
+<v Michael Chow>So if you were plot code or reading the docs,
+
+00:44:02.080 --> 00:44:03.580
+<v Michael Chow>you know, a lot of good stuff.
+
+00:44:03.580 --> 00:44:03.620
+<v Michael Kennedy>Yeah,
+
+00:44:03.780 --> 00:44:04.280
+<v Michael Kennedy>season tokens.
+
+00:44:04.880 --> 00:44:05.040
+<v Michael Kennedy>Yeah,
+
+00:44:05.220 --> 00:44:05.520
+<v Michael Kennedy>yeah, yeah.
+
+00:44:05.640 --> 00:44:05.920
+<v Michael Kennedy>That's cool.
+
+00:44:06.240 --> 00:44:07.280
+<v Michael Kennedy>Did I do that for Talk Python?
+
+00:44:07.380 --> 00:44:08.180
+<v Michael Kennedy>I think I did.
+
+00:44:08.600 --> 00:44:08.660
+<v Michael Kennedy>Yeah.
+
+00:44:08.960 --> 00:44:10.300
+<v Michael Kennedy>You do that on Talk Python, by the way.
+
+00:44:10.950 --> 00:44:14.720
+<v Michael Kennedy>You can just put.md on the end of any episode name,
+
+00:44:15.030 --> 00:44:17.420
+<v Michael Kennedy>and it gives you the markdown equivalent
+
+00:44:17.640 --> 00:44:21.560
+<v Michael Kennedy>that as well so which is all the rage yeah so i mean we're on the same vibes here i'm loving it
+
+00:44:21.660 --> 00:44:26.840
+<v Michael Chow>you know what i mean and it might even help for context i'd be curious to hear your like when you
+
+00:44:27.020 --> 00:44:32.680
+<v Michael Chow>added that markdown and some of your motivation for markdownifying your site i didn't do it for
+
+00:44:32.800 --> 00:44:40.180
+<v Michael Kennedy>people i did it for ai and seo the machine stuff yeah for the machine so um i i added a i did an
+
+00:44:40.340 --> 00:44:47.400
+<v Michael Kennedy>llms.txt to try to get the ais to understand the podcast better and some of the things that i gave
+
+00:44:47.420 --> 00:44:50.200
+<v Michael Kennedy>was this ability to just put Markdown at the end,
+
+00:44:50.220 --> 00:44:52.900
+<v Michael Kennedy>but also I added like a CLI and an MCP
+
+00:44:53.200 --> 00:44:55.920
+<v Michael Kennedy>and different things for an API,
+
+00:44:56.280 --> 00:44:56.740
+<v Michael Kennedy>search API.
+
+00:44:56.940 --> 00:44:57.800
+<v Michael Kennedy>I'm like, okay, AI,
+
+00:44:58.200 --> 00:45:01.200
+<v Michael Kennedy>there's 7.5 million words of content over 11 years.
+
+00:45:01.380 --> 00:45:03.360
+<v Michael Kennedy>I want you to know about it and be able to use it.
+
+00:45:03.960 --> 00:45:07.060
+<v Michael Kennedy>How many ways can I imagine giving something to it?
+
+00:45:07.200 --> 00:45:09.680
+<v Michael Kennedy>And this render as Markdown was certainly one of them.
+
+00:45:09.920 --> 00:45:12.220
+<v Michael Kennedy>I also added some silly stuff that's like for,
+
+00:45:13.500 --> 00:45:13.900
+<v Michael Kennedy>just for me,
+
+00:45:14.260 --> 00:45:15.480
+<v Michael Kennedy>because I've got, for example,
+
+00:45:15.640 --> 00:45:16.900
+<v Michael Kennedy>I've got to update,
+
+00:45:17.220 --> 00:45:17.360
+<v Michael Kennedy>say,
+
+00:45:17.520 --> 00:45:19.340
+<v Michael Kennedy>the YouTube recommendations.
+
+00:45:20.319 --> 00:45:22.460
+<v Michael Kennedy>So, or listings after the live stream,
+
+00:45:22.530 --> 00:45:23.780
+<v Michael Kennedy>I want them to have like links and stuff.
+
+00:45:23.790 --> 00:45:25.880
+<v Michael Kennedy>So I can say dot YouTube on the end
+
+00:45:26.180 --> 00:45:29.080
+<v Michael Kennedy>and it gives me the contents for like the YouTube render.
+
+00:45:29.460 --> 00:45:31.080
+<v Michael Kennedy>So it kind of was building on this,
+
+00:45:31.240 --> 00:45:33.940
+<v Michael Kennedy>like how can I help myself be more efficient,
+
+00:45:34.070 --> 00:45:34.780
+<v Michael Kennedy>but also machines?
+
+00:45:35.020 --> 00:45:36.460
+<v Michael Kennedy>So anyway, that's the story.
+
+00:45:36.680 --> 00:45:36.980
+<v Michael Kennedy>This is great.
+
+00:45:36.990 --> 00:45:38.500
+<v Rich lannone>It's like Doc's workflow really,
+
+00:45:38.680 --> 00:45:38.760
+<v Rich lannone>right?
+
+00:45:38.980 --> 00:45:39.840
+<v Rich lannone>It fits in nicely.
+
+00:45:40.220 --> 00:45:41.060
+<v Michael Kennedy>You know, circling back around,
+
+00:45:41.120 --> 00:45:43.320
+<v Michael Kennedy>I'm really impressed with some of these little nuances
+
+00:45:43.580 --> 00:45:44.460
+<v Michael Kennedy>that are super nice.
+
+00:45:45.220 --> 00:45:45.620
+<v Michael Kennedy>I think that's great.
+
+00:45:46.120 --> 00:45:46.660
+<v Michael Kennedy>Great talks.
+
+00:45:46.830 --> 00:45:47.680
+<v Michael Kennedy>If you want to go further on this,
+
+00:45:48.299 --> 00:45:49.900
+<v Rich lannone>it's basically just nicing up the docs
+
+00:45:50.120 --> 00:45:51.100
+<v Rich lannone>and make them good for humans,
+
+00:45:51.350 --> 00:45:55.480
+<v Rich lannone>but also consumable by LLMs or agents and such.
+
+00:45:55.760 --> 00:45:56.460
+<v Michael Kennedy>Rich, it's a fad.
+
+00:45:56.740 --> 00:45:57.760
+<v Michael Kennedy>We don't really need to worry about it.
+
+00:45:58.220 --> 00:45:58.880
+<v Michael Kennedy>It's going to go away.
+
+00:45:59.000 --> 00:45:59.360
+<v Michael Kennedy>It'll pass,
+
+00:45:59.590 --> 00:45:59.680
+<v Michael Kennedy>yeah.
+
+00:45:59.800 --> 00:46:00.660
+<v Michael Kennedy>The bubble's going to burst.
+
+00:46:00.710 --> 00:46:02.280
+<v Michael Kennedy>We can just ignore it.
+
+00:46:02.340 --> 00:46:03.100
+<v Michael Kennedy>It's going to be fine.
+
+00:46:03.840 --> 00:46:03.940
+<v Michael Kennedy>No.
+
+00:46:04.680 --> 00:46:05.340
+<v Michael Kennedy>So let's talk.
+
+00:46:06.120 --> 00:46:07.620
+<v Michael Kennedy>I want to talk about a couple of things here.
+
+00:46:07.670 --> 00:46:10.120
+<v Michael Kennedy>So let's just do like a real quick little walkthrough
+
+00:46:10.360 --> 00:46:12.100
+<v Michael Kennedy>of maybe getting started with this.
+
+00:46:13.660 --> 00:46:16.440
+<v Michael Kennedy>It's honestly not a whole lot to get started, but give us this.
+
+00:46:17.020 --> 00:46:20.680
+<v Michael Kennedy>One of you all walk us through the quick start just so people know what's involved.
+
+00:46:21.020 --> 00:46:21.220
+<v Rich lannone>Yeah.
+
+00:46:21.480 --> 00:46:22.760
+<v Rich lannone>So really that command,
+
+00:46:23.140 --> 00:46:23.740
+<v Rich lannone>like great docs init,
+
+00:46:24.160 --> 00:46:25.900
+<v Rich lannone>that'll make the file that is basically what
+
+00:46:25.920 --> 00:46:26.780
+<v Rich lannone>you need for the build.
+
+00:46:27.100 --> 00:46:29.240
+<v Rich lannone>And with a lot of testing,
+
+00:46:29.420 --> 00:46:32.580
+<v Rich lannone>it should work on many different Python package layouts and
+
+00:46:32.740 --> 00:46:32.880
+<v Rich lannone>types.
+
+00:46:33.360 --> 00:46:34.220
+<v Rich lannone>So you just need that.
+
+00:46:34.400 --> 00:46:35.900
+<v Rich lannone>Of course, yeah, install great docs,
+
+00:46:36.320 --> 00:46:37.620
+<v Rich lannone>install Porto as well.
+
+00:46:37.780 --> 00:46:39.720
+<v Rich lannone>So we got that as well before that.
+
+00:46:40.020 --> 00:46:43.000
+<v Rich lannone>But once you have those things, it should do what it says on the screen, basically show
+
+00:46:43.020 --> 00:46:43.740
+<v Rich lannone>you stuff in the terminal,
+
+00:46:44.380 --> 00:46:45.180
+<v Rich lannone>which is all positive.
+
+00:46:45.360 --> 00:46:48.160
+<v Rich lannone>It's creating that great docs.yaml file.
+
+00:46:48.580 --> 00:46:49.960
+<v Rich lannone>And it should be pretty minimal what's in there.
+
+00:46:50.680 --> 00:46:52.220
+<v Rich lannone>It should actually also be a little bit dynamic.
+
+00:46:52.880 --> 00:46:53.640
+<v Rich lannone>Based on your project,
+
+00:46:53.880 --> 00:46:59.060
+<v Rich lannone>it'll craft the correct great docs.yaml file or the config file.
+
+00:46:59.400 --> 00:47:00.680
+<v Rich lannone>And then you could go ahead and customize,
+
+00:47:00.920 --> 00:47:02.680
+<v Rich lannone>but you might just jump to building your documentation
+
+00:47:03.480 --> 00:47:04.860
+<v Rich lannone>because that's the next easiest thing.
+
+00:47:05.080 --> 00:47:07.060
+<v Rich lannone>It's just another command, great docs build.
+
+00:47:07.500 --> 00:47:12.240
+<v Rich lannone>and what you get is a great hyphen docs directory
+
+00:47:12.740 --> 00:47:13.620
+<v Rich lannone>in your working directory.
+
+00:47:14.000 --> 00:47:15.520
+<v Rich lannone>And that contains like the site folder.
+
+00:47:15.980 --> 00:47:17.420
+<v Rich lannone>But you don't really have to worry about that
+
+00:47:17.420 --> 00:47:19.440
+<v Rich lannone>because you have another command called great docs preview,
+
+00:47:19.900 --> 00:47:22.840
+<v Rich lannone>which will basically launch like a web server
+
+00:47:23.360 --> 00:47:26.840
+<v Rich lannone>and then put the site in your default browser,
+
+00:47:27.100 --> 00:47:29.440
+<v Rich lannone>basically just like let you see the site locally.
+
+00:47:29.820 --> 00:47:32.260
+<v Rich lannone>And then because I'm a big fan of like people know what's going on,
+
+00:47:32.440 --> 00:47:33.720
+<v Rich lannone>so it should be totally a black box.
+
+00:47:34.100 --> 00:47:35.980
+<v Rich lannone>I give on this page, like a structure,
+
+00:47:36.320 --> 00:47:38.620
+<v Rich lannone>the basic structure of like how it should look
+
+00:47:39.270 --> 00:47:39.920
+<v Rich lannone>in your working directory.
+
+00:47:40.720 --> 00:47:41.560
+<v Rich lannone>But that's kind of it.
+
+00:47:41.560 --> 00:47:43.100
+<v Rich lannone>And I believe the next step for most people
+
+00:47:43.320 --> 00:47:45.140
+<v Rich lannone>will just be getting this on CI if they're satisfied
+
+00:47:45.560 --> 00:47:46.780
+<v Rich lannone>and then just working from there,
+
+00:47:46.950 --> 00:47:48.840
+<v Rich lannone>like modifying their initialization,
+
+00:47:49.340 --> 00:47:49.900
+<v Rich lannone>not initialization,
+
+00:47:50.550 --> 00:47:51.640
+<v Rich lannone>their config file
+
+00:47:52.170 --> 00:47:54.780
+<v Rich lannone>to give the site more customization personality
+
+00:47:55.060 --> 00:47:57.240
+<v Rich lannone>and there'll be authoring guides and things like that.
+
+00:47:57.400 --> 00:47:59.800
+<v Michael Kennedy>You've got the really nice watch feature.
+
+00:48:00.110 --> 00:48:01.780
+<v Michael Kennedy>So great docs build --watch.
+
+00:48:02.120 --> 00:48:02.220
+<v Michael Kennedy>Yes.
+
+00:48:02.500 --> 00:48:04.340
+<v Michael Kennedy>Which feels very Hugo to me.
+
+00:48:04.620 --> 00:48:07.780
+<v Michael Kennedy>Like you're going to build it so you can look at it, but then you want to edit it.
+
+00:48:07.830 --> 00:48:08.260
+<v Michael Kennedy>So just,
+
+00:48:08.640 --> 00:48:09.400
+<v Michael Kennedy>if you see any changes,
+
+00:48:09.660 --> 00:48:10.180
+<v Michael Kennedy>just rebuild,
+
+00:48:10.340 --> 00:48:10.440
+<v Michael Kennedy>right?
+
+00:48:10.700 --> 00:48:11.220
+<v Rich lannone>Yeah, exactly.
+
+00:48:11.770 --> 00:48:13.880
+<v Rich lannone>Small sites will build fast, but this is way faster,
+
+00:48:14.030 --> 00:48:14.140
+<v Rich lannone>obviously.
+
+00:48:14.600 --> 00:48:15.560
+<v Rich lannone>So yeah,
+
+00:48:15.840 --> 00:48:17.140
+<v Rich lannone>this is pretty essential for iterating,
+
+00:48:17.360 --> 00:48:17.860
+<v Rich lannone>especially initially.
+
+00:48:18.360 --> 00:48:18.660
+<v Michael Kennedy>Yeah.
+
+00:48:18.660 --> 00:48:18.720
+<v Michael Kennedy>Yeah.
+
+00:48:18.910 --> 00:48:19.980
+<v Michael Kennedy>And what about this version?
+
+00:48:20.090 --> 00:48:22.360
+<v Michael Kennedy>So this is an interesting aspect of the project.
+
+00:48:22.840 --> 00:48:23.180
+<v Rich lannone>Versions.
+
+00:48:23.820 --> 00:48:24.260
+<v Rich lannone>Well,
+
+00:48:25.880 --> 00:48:27.260
+<v Rich lannone>essentially you may have,
+
+00:48:27.480 --> 00:48:27.620
+<v Rich lannone>you know,
+
+00:48:27.780 --> 00:48:29.460
+<v Rich lannone>multiple tagged versions of your site.
+
+00:48:29.640 --> 00:48:31.680
+<v Rich lannone>And this, this is kind of like a wild thing.
+
+00:48:31.740 --> 00:48:35.880
+<v Rich lannone>You can have different documentation sites based on your version because you have,
+
+00:48:36.090 --> 00:48:36.380
+<v Rich lannone>for instance,
+
+00:48:36.930 --> 00:48:37.720
+<v Rich lannone>new things in your API.
+
+00:48:38.110 --> 00:48:41.680
+<v Michael Kennedy>Right. People maybe know that from Python where you can go up here and drop down.
+
+00:48:41.900 --> 00:48:42.800
+<v Michael Kennedy>Exactly. Like version selectors.
+
+00:48:42.960 --> 00:48:45.980
+<v Rich lannone>So this is kind of like just seeing like certain versions of your site and it gives you a selector.
+
+00:48:46.360 --> 00:48:47.440
+<v Rich lannone>On the GreatDocs site itself,
+
+00:48:47.730 --> 00:48:49.780
+<v Rich lannone>we have a selector which is maximal.
+
+00:48:49.950 --> 00:48:51.820
+<v Rich lannone>It has like every single version from the very first.
+
+00:48:52.150 --> 00:48:56.540
+<v Rich lannone>And you can cruise in there and you'll see that there'll be way less in the earliest versions.
+
+00:48:56.780 --> 00:48:57.120
+<v Rich lannone>Like the,
+
+00:48:57.620 --> 00:48:59.740
+<v Rich lannone>if you look at the user guide for 0.1,
+
+00:49:00.060 --> 00:49:01.020
+<v Rich lannone>which gives a little icon,
+
+00:49:01.420 --> 00:49:02.520
+<v Rich lannone>a little scary saying it's unsupported.
+
+00:49:02.860 --> 00:49:04.540
+<v Rich lannone>If you look at the user guide, it's pretty sparse.
+
+00:49:04.670 --> 00:49:07.000
+<v Rich lannone>Like it's, you know, it's not as long as the other one.
+
+00:49:07.180 --> 00:49:08.820
+<v Rich lannone>And if you look at the reference as well,
+
+00:49:09.240 --> 00:49:10.780
+<v Rich lannone>it'll have less items.
+
+00:49:11.580 --> 00:49:14.540
+<v Rich lannone>So it's aware of like what's available in which versions.
+
+00:49:15.420 --> 00:49:18.280
+<v Rich lannone>And so you sort of set that up yourself or you can just do it through that command.
+
+00:49:19.300 --> 00:49:21.120
+<v Michael Kennedy>Is that based on get tags or what is that?
+
+00:49:21.460 --> 00:49:22.220
+<v Michael Kennedy>Based on get tags.
+
+00:49:22.380 --> 00:49:22.760
+<v Michael Kennedy>Yeah, that's right.
+
+00:49:22.920 --> 00:49:23.020
+<v Michael Kennedy>Okay.
+
+00:49:23.320 --> 00:49:24.640
+<v Michael Kennedy>I was wondering how does it even know?
+
+00:49:24.900 --> 00:49:26.260
+<v Rich lannone>Yeah, you have to give it some information.
+
+00:49:26.420 --> 00:49:26.800
+<v Rich lannone>Like you have to,
+
+00:49:27.020 --> 00:49:30.080
+<v Rich lannone>of course, get the tags, but if you actually configure it to do what's doing here,
+
+00:49:30.380 --> 00:49:30.960
+<v Rich lannone>like make the site,
+
+00:49:31.400 --> 00:49:33.480
+<v Rich lannone>you just change your configuration to have,
+
+00:49:33.640 --> 00:49:37.180
+<v Rich lannone>it's basically just like a small config that you have to do.
+
+00:49:37.540 --> 00:49:39.500
+<v Rich lannone>And you can set labels and things like that.
+
+00:49:39.660 --> 00:49:42.700
+<v Michael Kennedy>Can I wildcard it or have it somehow pick up all the versions?
+
+00:49:43.080 --> 00:49:46.880
+<v Michael Kennedy>I mean, you don't want to pick up all tags, but it'd be like star dot star.
+
+00:49:47.320 --> 00:49:49.120
+<v Rich lannone>I don't think we have version expressions like that yet.
+
+00:49:49.440 --> 00:49:49.520
+<v Rich lannone>Yeah.
+
+00:49:49.820 --> 00:49:50.460
+<v Michael Kennedy>Not yet.
+
+00:49:50.660 --> 00:49:50.760
+<v Michael Kennedy>Okay.
+
+00:49:51.160 --> 00:49:51.800
+<v Rich lannone>You know, throw it in there.
+
+00:49:52.460 --> 00:49:56.300
+<v Michael Kennedy>I'm just thinking if I have a project with 27 versions over time.
+
+00:49:56.740 --> 00:49:58.480
+<v Rich lannone>Yeah, you probably wouldn't do it through like this interface,
+
+00:49:58.670 --> 00:49:59.400
+<v Rich lannone>like Great Docs build.
+
+00:49:59.640 --> 00:50:01.720
+<v Rich lannone>This is just for like a pretty quick comparison.
+
+00:50:02.380 --> 00:50:06.720
+<v Rich lannone>But if you would do it, like you probably put that in the config file and you'd have to
+
+00:50:07.000 --> 00:50:07.740
+<v Rich lannone>manually edit those.
+
+00:50:07.910 --> 00:50:10.660
+<v Rich lannone>But I think with a slot or something like that would be better.
+
+00:50:10.980 --> 00:50:11.600
+<v Michael Kennedy>And there's an API,
+
+00:50:11.800 --> 00:50:13.240
+<v Michael Kennedy>of course, if you want to just have a little control.
+
+00:50:13.240 --> 00:50:13.460
+<v Michael Kennedy>Yeah,
+
+00:50:13.620 --> 00:50:14.540
+<v Rich lannone>it's kind of, you wouldn't do this,
+
+00:50:14.780 --> 00:50:15.380
+<v Rich lannone>but it's just,
+
+00:50:15.560 --> 00:50:16.440
+<v Rich lannone>I threw it in there.
+
+00:50:16.880 --> 00:50:17.000
+<v Michael Kennedy>Well,
+
+00:50:17.200 --> 00:50:19.220
+<v Michael Kennedy>probably because your commands use that,
+
+00:50:19.380 --> 00:50:19.480
+<v Michael Kennedy>right?
+
+00:50:19.820 --> 00:50:20.240
+<v Michael Kennedy>Yeah, exactly.
+
+00:50:20.650 --> 00:50:22.080
+<v Michael Kennedy>Might as well just let people know that.
+
+00:50:22.080 --> 00:50:22.140
+<v Rich lannone>Just being transparent.
+
+00:50:22.320 --> 00:50:24.720
+<v Michael Kennedy>I suppose. Yeah. Where do we want to go next? Let's,
+
+00:50:24.960 --> 00:50:25.760
+<v Michael Kennedy>let's cover just a couple,
+
+00:50:26.180 --> 00:50:28.500
+<v Michael Kennedy>couple of remaining things here while we're,
+
+00:50:28.860 --> 00:50:31.000
+<v Michael Kennedy>we got time to have, what about open source
+
+00:50:31.320 --> 00:50:31.640
+<v Michael Kennedy>sustainability?
+
+00:50:32.440 --> 00:50:35.840
+<v Michael Kennedy>Like I know you all at Posit are doing a lot of things to open source
+
+00:50:36.580 --> 00:50:37.740
+<v Michael Kennedy>your work and so on.
+
+00:50:37.960 --> 00:50:38.100
+<v Rich lannone>Yeah.
+
+00:50:38.400 --> 00:50:41.000
+<v Rich lannone>Well, we're pretty much like full-time doing open source work.
+
+00:50:41.780 --> 00:50:42.660
+<v Rich lannone>So essentially,
+
+00:50:43.220 --> 00:50:47.560
+<v Rich lannone>and so I think these projects have like long life cycles with the same maintainer
+
+00:50:47.680 --> 00:50:48.540
+<v Rich lannone>for long periods of time,
+
+00:50:48.880 --> 00:50:51.960
+<v Rich lannone>which is great for project stability and things like that. And like,
+
+00:50:52.000 --> 00:50:52.260
+<v Rich lannone>you know,
+
+00:50:52.500 --> 00:50:55.740
+<v Rich lannone>we're accountable for like, you know, issues that come in and for, you know, releases
+
+00:50:56.160 --> 00:50:57.040
+<v Rich lannone>and making sure,
+
+00:50:57.400 --> 00:50:59.200
+<v Rich lannone>you know, it's not,
+
+00:50:59.420 --> 00:51:00.340
+<v Rich lannone>you know, like dead projects,
+
+00:51:00.560 --> 00:51:01.260
+<v Rich lannone>you know, like all the way
+
+00:51:01.380 --> 00:51:01.800
+<v Rich lannone>down or whatever.
+
+00:51:02.460 --> 00:51:03.200
+<v Rich lannone>So I think,
+
+00:51:03.520 --> 00:51:04.560
+<v Rich lannone>I think that's a great thing.
+
+00:51:04.940 --> 00:51:05.520
+<v Rich lannone>And for instance,
+
+00:51:05.680 --> 00:51:06.100
+<v Rich lannone>like great tables,
+
+00:51:06.660 --> 00:51:07.380
+<v Rich lannone>I've been at this since the beginning,
+
+00:51:07.700 --> 00:51:07.880
+<v Rich lannone>GT,
+
+00:51:08.080 --> 00:51:09.500
+<v Rich lannone>which is where it came from since 2017.
+
+00:51:10.640 --> 00:51:11.380
+<v Rich lannone>So I think that
+
+00:51:11.720 --> 00:51:15.060
+<v Rich lannone>helps a lot. Adds a lot of credibility to these projects that are not just being abandoned.
+
+00:51:15.220 --> 00:51:15.280
+<v Rich lannone>There's
+
+00:51:15.280 --> 00:51:17.860
+<v Rich lannone>no fear of it being abandoned or things like that.
+
+00:51:18.020 --> 00:51:18.200
+<v Rich lannone>There's,
+
+00:51:18.440 --> 00:51:19.560
+<v Rich lannone>there's a person there at least.
+
+00:51:20.000 --> 00:51:23.800
+<v Michael Kennedy>Yeah, and I think Posit's found an interesting business model
+
+00:51:23.960 --> 00:51:26.200
+<v Michael Kennedy>that's been long-term sustaining,
+
+00:51:26.560 --> 00:51:28.000
+<v Michael Kennedy>but still allows you, as you said,
+
+00:51:28.120 --> 00:51:29.480
+<v Michael Kennedy>to sort of work in open source.
+
+00:51:30.300 --> 00:51:31.120
+<v Michael Kennedy>Michael, we're joking.
+
+00:51:31.520 --> 00:51:31.580
+<v Michael Chow>Yeah,
+
+00:51:31.920 --> 00:51:33.060
+<v Michael Chow>it's really interesting.
+
+00:51:33.300 --> 00:51:36.900
+<v Michael Chow>And it's almost like not diving crazy deep
+
+00:51:37.240 --> 00:51:37.860
+<v Michael Chow>and doing a podcast.
+
+00:51:38.180 --> 00:51:39.900
+<v Michael Chow>My favorite thing to say to people is that
+
+00:51:40.200 --> 00:51:42.540
+<v Michael Chow>we have a really large open source engineering team,
+
+00:51:42.840 --> 00:51:43.980
+<v Michael Chow>dozens of open source engineers.
+
+00:51:44.480 --> 00:51:47.060
+<v Michael Chow>People often ask, how does Posit pay the bills
+
+00:51:47.580 --> 00:51:49.040
+<v Michael Chow>for people to work on open source?
+
+00:51:49.520 --> 00:51:51.240
+<v Michael Chow>And my favorite thing to say is like,
+
+00:51:51.520 --> 00:51:55.740
+<v Michael Chow>we have a bunch of boring enterprise tools and I'm
+
+00:51:56.690 --> 00:51:57.480
+<v Michael Chow>no shade on pause.
+
+00:51:57.480 --> 00:51:59.480
+<v Michael Chow>I actually think that this is the best case scenario.
+
+00:52:00.100 --> 00:52:04.500
+<v Michael Chow>Like we have a lot of tools that solve really painful problems.
+
+00:52:04.800 --> 00:52:05.340
+<v Michael Chow>If you're an enterprise,
+
+00:52:06.340 --> 00:52:07.560
+<v Michael Chow>they could be useful in other settings,
+
+00:52:07.800 --> 00:52:08.340
+<v Michael Chow>but it's like,
+
+00:52:08.620 --> 00:52:08.840
+<v Michael Chow>how do I
+
+00:52:08.930 --> 00:52:10.060
+<v Michael Chow>run a report every day?
+
+00:52:11.400 --> 00:52:17.880
+<v Michael Chow>Or how do I host like Jupyter notebooks or VS Code for my say like data team or our studio?
+
+00:52:18.400 --> 00:52:19.700
+<v Michael Chow>Those essentially pay the bills.
+
+00:52:20.200 --> 00:52:22.000
+<v Michael Chow>That's Posit Connect and Posit Teams.
+
+00:52:22.240 --> 00:52:24.220
+<v Michael Kennedy>You've got a team of data scientists,
+
+00:52:24.500 --> 00:52:26.420
+<v Michael Kennedy>but you don't necessarily have a DevOps team,
+
+00:52:26.560 --> 00:52:28.840
+<v Michael Kennedy>but you still want to have their stuff running reliably,
+
+00:52:29.080 --> 00:52:29.160
+<v Michael Kennedy>right?
+
+00:52:29.460 --> 00:52:29.620
+<v Michael Chow>Yeah,
+
+00:52:30.060 --> 00:52:31.320
+<v Michael Chow>and it's a hard problem.
+
+00:52:31.340 --> 00:52:32.020
+<v Michael Chow>If you're a company,
+
+00:52:32.400 --> 00:52:33.880
+<v Michael Chow>right, these are kind of tricky problems.
+
+00:52:33.940 --> 00:52:36.680
+<v Michael Chow>Or you have like a really mean IT team.
+
+00:52:37.500 --> 00:52:41.000
+<v Michael Chow>A cruel IT team could hamstring you for years.
+
+00:52:41.480 --> 00:52:44.720
+<v Michael Chow>But that's just to say we get to work on open source
+
+00:52:44.900 --> 00:52:46.540
+<v Michael Chow>because these tools exist.
+
+00:52:46.980 --> 00:52:48.260
+<v Michael Chow>And I think Posit exists,
+
+00:52:48.440 --> 00:52:51.900
+<v Michael Chow>I think, because the maintainers care so much about open source.
+
+00:52:53.160 --> 00:52:54.800
+<v Michael Chow>I will say in terms of sustainability,
+
+00:52:55.640 --> 00:53:00.480
+<v Michael Chow>one interaction I've really liked over the years is like in the docs realm,
+
+00:53:02.100 --> 00:53:02.580
+<v Michael Chow>there's this person.
+
+00:53:02.700 --> 00:53:04.300
+<v Michael Chow>I only know him as Pawe Moy,
+
+00:53:05.120 --> 00:53:05.880
+<v Michael Chow>his GitHub handle.
+
+00:53:06.140 --> 00:53:09.940
+<v Michael Chow>I think it's Maté or Timothy in France,
+
+00:53:10.340 --> 00:53:11.520
+<v Michael Chow>I think.
+
+00:53:11.820 --> 00:53:16.920
+<v Michael Chow>But he maintains the tools upstream of tools like Portadoc and GreatDocs.
+
+00:53:17.200 --> 00:53:21.420
+<v Michael Chow>And we've interacted a bit in the past where I've done PRs on his tools.
+
+00:53:22.400 --> 00:53:23.000
+<v Michael Chow>One's called Griff.
+
+00:53:24.140 --> 00:53:26.820
+<v Michael Chow>And I think that's such an important part of sustainability too,
+
+00:53:27.100 --> 00:53:29.980
+<v Michael Chow>is that he works on a documentation tool,
+
+00:53:30.380 --> 00:53:31.040
+<v Michael Chow>mkdocstrings.
+
+00:53:31.520 --> 00:53:34.440
+<v Michael Chow>But we're all able to collaborate on his tool, Griff,
+
+00:53:34.940 --> 00:53:37.160
+<v Michael Chow>that actually powers all of our documentation sites.
+
+00:53:37.540 --> 00:53:40.060
+<v Michael Chow>So I think that's a really important piece.
+
+00:53:40.120 --> 00:53:42.600
+<v Michael Chow>I think to your point about being at PyCon and seeing people,
+
+00:53:43.040 --> 00:53:44.300
+<v Michael Chow>I think us as open source
+
+00:53:44.560 --> 00:53:50.640
+<v Michael Chow>maintainers chatting and even contributing and working on say like upstream tools is
+
+00:53:50.640 --> 00:53:54.080
+<v Michael Chow>a really important part of keeping the ecosystem healthy and sustainable.
+
+00:53:54.260 --> 00:53:58.320
+<v Michael Chow>We're not like multiple doc tools competing to a degree.
+
+00:53:58.700 --> 00:54:00.040
+<v Michael Chow>I do think they compete,
+
+00:54:00.380 --> 00:54:02.920
+<v Michael Chow>but ultimately like we're working on open source because we're
+
+00:54:03.040 --> 00:54:03.320
+<v Michael Chow>passionate.
+
+00:54:03.640 --> 00:54:07.460
+<v Michael Chow>And I think it helps to collaborate on our kind of like shared tools.
+
+00:54:07.820 --> 00:54:08.500
+<v Michael Kennedy>A hundred percent agree.
+
+00:54:08.740 --> 00:54:09.000
+<v Michael Kennedy>Very cool.
+
+00:54:09.160 --> 00:54:09.380
+<v Michael Kennedy>Now,
+
+00:54:09.940 --> 00:54:12.280
+<v Michael Kennedy>Rich, you mentioned that pretty new project.
+
+00:54:12.760 --> 00:54:12.940
+<v Michael Kennedy>Yeah.
+
+00:54:13.220 --> 00:54:13.720
+<v Michael Kennedy>Where are we going?
+
+00:54:14.120 --> 00:54:15.240
+<v Michael Kennedy>What's on the roadmap?
+
+00:54:15.600 --> 00:54:16.260
+<v Rich lannone>Yeah, lots of things.
+
+00:54:16.660 --> 00:54:19.260
+<v Rich lannone>I even have a roadmap on the site if anyone's interested.
+
+00:54:20.140 --> 00:54:24.740
+<v Rich lannone>But I think it'll be like a lot more like documentation for different things, like new things.
+
+00:54:25.140 --> 00:54:26.120
+<v Rich lannone>Like the other day,
+
+00:54:26.380 --> 00:54:29.560
+<v Rich lannone>I was suggested to create documentation for MCP servers.
+
+00:54:29.980 --> 00:54:30.320
+<v Rich lannone>I was like,
+
+00:54:30.500 --> 00:54:30.900
+<v Rich lannone>good idea.
+
+00:54:31.240 --> 00:54:32.080
+<v Rich lannone>We don't really have that.
+
+00:54:32.280 --> 00:54:35.420
+<v Rich lannone>And it's pretty easy to document JSON,
+
+00:54:35.840 --> 00:54:36.080
+<v Rich lannone>essentially.
+
+00:54:36.340 --> 00:54:36.980
+<v Rich lannone>So we can take that apart,
+
+00:54:37.140 --> 00:54:38.600
+<v Rich lannone>parse that, and present something.
+
+00:54:38.940 --> 00:54:44.280
+<v Michael Kennedy>that's a good point because if you look at the mcp servers they don't have structure in the way that
+
+00:54:44.580 --> 00:54:49.160
+<v Michael Kennedy>traditional projects do right they don't just have like a separate function for each thing they've got
+
+00:54:49.240 --> 00:54:54.500
+<v Michael Kennedy>this kind of weird invocation entry point where you pass like the tool you want to use and yeah it's
+
+00:54:56.120 --> 00:55:00.320
+<v Rich lannone>documentation suggestions things like that uh so i think we could do a pretty good job there that's
+
+00:55:00.480 --> 00:55:06.119
+<v Rich lannone>the idea is pretty new but like i guess we're yeah just trying to be where or go where things are
+
+00:55:06.080 --> 00:55:12.180
+<v Michael Kennedy>going and be a little bit ahead so would that somehow show itself as like where you've got the
+
+00:55:12.210 --> 00:55:15.920
+<v Michael Kennedy>um the api and the cli would there also be an mcp or what do you think it's gonna be a bit crowded
+
+00:55:16.030 --> 00:55:20.860
+<v Michael Kennedy>so i'm rethinking i know yeah yeah i was like i don't really know this would be it like but no
+
+00:55:20.960 --> 00:55:26.120
+<v Rich lannone>that's not quite it there's you know maybe one or two more things uh so it might be just a drop down
+
+00:55:26.300 --> 00:55:32.500
+<v Rich lannone>nav on the top like a drop down on the top nav so that's part of the part of like uh what i
+
+00:55:32.420 --> 00:55:32.900
+<v Rich lannone>have to think about.
+
+00:55:33.420 --> 00:55:36.220
+<v Rich lannone>But there's things like that. And also like a recent thing we just did,
+
+00:55:36.740 --> 00:55:39.900
+<v Rich lannone>and this is very new, so it's almost like it's new enough,
+
+00:55:40.060 --> 00:55:40.820
+<v Rich lannone>is like skills,
+
+00:55:41.180 --> 00:55:41.900
+<v Rich lannone>like publishing skills
+
+00:55:42.160 --> 00:55:44.860
+<v Rich lannone>and making them available and making them browsable,
+
+00:55:45.200 --> 00:55:45.300
+<v Rich lannone>right?
+
+00:55:45.700 --> 00:55:46.060
+<v Rich lannone>So on the very,
+
+00:55:46.240 --> 00:55:46.820
+<v Rich lannone>it's not top
+
+00:55:47.020 --> 00:55:47.100
+<v Rich lannone>level.
+
+00:55:47.260 --> 00:55:48.360
+<v Rich lannone>If you go to the first page,
+
+00:55:48.560 --> 00:55:49.740
+<v Rich lannone>there's like a sidebar on the right,
+
+00:55:49.960 --> 00:55:50.620
+<v Rich lannone>which gives you a lot of
+
+00:55:50.840 --> 00:55:51.100
+<v Rich lannone>metadata.
+
+00:55:51.540 --> 00:55:52.920
+<v Rich lannone>And one of the first few things is skills.
+
+00:55:53.280 --> 00:55:55.360
+<v Rich lannone>And that gives you like a page on how to install
+
+00:55:55.500 --> 00:55:56.440
+<v Rich lannone>these skills. So it's kind of like a,
+
+00:55:57.000 --> 00:55:58.760
+<v Rich lannone>almost like a way not to just distribute,
+
+00:55:59.060 --> 00:56:00.020
+<v Rich lannone>but a way to sort of
+
+00:55:59.960 --> 00:56:01.020
+<v Rich lannone>like get ahold of skills.
+
+00:56:02.100 --> 00:56:04.180
+<v Rich lannone>And there's a nice little sort of like disclosure there,
+
+00:56:04.780 --> 00:56:05.280
+<v Rich lannone>install these skills,
+
+00:56:05.480 --> 00:56:07.840
+<v Rich lannone>it gives you instructions on how to do such things.
+
+00:56:08.380 --> 00:56:10.060
+<v Rich lannone>And you can just browse the skills below
+
+00:56:10.380 --> 00:56:11.020
+<v Rich lannone>and see what's there.
+
+00:56:11.110 --> 00:56:12.440
+<v Rich lannone>You might just take bits of them,
+
+00:56:12.640 --> 00:56:13.180
+<v Rich lannone>make your own skill,
+
+00:56:13.540 --> 00:56:14.200
+<v Rich lannone>or you might just say,
+
+00:56:14.580 --> 00:56:15.260
+<v Rich lannone>no, these all look good.
+
+00:56:15.460 --> 00:56:16.740
+<v Rich lannone>I'll just follow these instructions
+
+00:56:17.040 --> 00:56:19.000
+<v Rich lannone>and install them for my project or globally.
+
+00:56:19.750 --> 00:56:20.620
+<v Michael Kennedy>So we're trying to make that a bit easier.
+
+00:56:21.080 --> 00:56:21.540
+<v Michael Kennedy>Yeah, it's super cool.
+
+00:56:21.540 --> 00:56:21.720
+<v Michael Kennedy>Yeah, it's super cool.
+
+00:56:22.490 --> 00:56:22.580
+<v Michael Kennedy>Yeah,
+
+00:56:22.950 --> 00:56:24.540
+<v Michael Kennedy>that kind of brings me to the last thing
+
+00:56:24.640 --> 00:56:27.640
+<v Michael Kennedy>that I wanna talk about is the AI-ification.
+
+00:56:27.950 --> 00:56:29.500
+<v Michael Kennedy>And by that, I don't mean,
+
+00:56:29.920 --> 00:56:32.660
+<v Michael Kennedy>How do I, are you using AI to write it or not?
+
+00:56:32.740 --> 00:56:34.900
+<v Michael Kennedy>Like I imagine there's some degree of that or whatever,
+
+00:56:35.160 --> 00:56:38.620
+<v Michael Kennedy>but if I am a person with a project package
+
+00:56:38.920 --> 00:56:40.240
+<v Michael Kennedy>or something I want to document,
+
+00:56:40.720 --> 00:56:42.440
+<v Michael Kennedy>AI is really good at going like,
+
+00:56:42.490 --> 00:56:42.580
+<v Michael Kennedy>well,
+
+00:56:42.740 --> 00:56:43.880
+<v Michael Kennedy>let me pull out all these pieces
+
+00:56:44.760 --> 00:56:45.360
+<v Michael Kennedy>and then like,
+
+00:56:45.560 --> 00:56:47.080
+<v Michael Kennedy>you know, sketch some stuff out for you.
+
+00:56:47.580 --> 00:56:47.880
+<v Michael Kennedy>Is there,
+
+00:56:48.600 --> 00:56:49.500
+<v Michael Kennedy>you know, and I can see now
+
+00:56:49.550 --> 00:56:51.020
+<v Michael Kennedy>that you pointed me in the right direction
+
+00:56:51.160 --> 00:56:52.440
+<v Michael Kennedy>that there's a whole AI section,
+
+00:56:52.680 --> 00:56:55.060
+<v Michael Kennedy>like how do AIs work with great docs,
+
+00:56:55.290 --> 00:56:55.400
+<v Michael Kennedy>right?
+
+00:56:55.600 --> 00:56:57.620
+<v Michael Kennedy>And so you've got the llms.txt,
+
+00:56:57.940 --> 00:56:59.380
+<v Michael Kennedy>which is really nice.
+
+00:56:59.560 --> 00:57:00.420
+<v Michael Kennedy>you know, I referenced that before.
+
+00:57:00.860 --> 00:57:01.920
+<v Michael Kennedy>People don't know there's an,
+
+00:57:02.280 --> 00:57:04.420
+<v Michael Kennedy>this comes from, I believe from Jeremy Howard.
+
+00:57:04.800 --> 00:57:04.980
+<v Michael Kennedy>Yeah,
+
+00:57:05.240 --> 00:57:05.480
+<v Michael Kennedy>that's right.
+
+00:57:05.720 --> 00:57:06.840
+<v Rich lannone>Yeah, we looked at this closely, yeah.
+
+00:57:07.080 --> 00:57:07.240
+<v Michael Kennedy>Putting,
+
+00:57:07.520 --> 00:57:08.200
+<v Michael Kennedy>yeah, so did I,
+
+00:57:08.200 --> 00:57:09.380
+<v Michael Kennedy>and I find it super interesting.
+
+00:57:09.660 --> 00:57:09.900
+<v Michael Kennedy>Like this,
+
+00:57:10.060 --> 00:57:11.060
+<v Michael Kennedy>the idea is that if you,
+
+00:57:11.460 --> 00:57:13.020
+<v Michael Kennedy>you know, there's a robots.txt
+
+00:57:13.600 --> 00:57:15.060
+<v Michael Kennedy>and a sitemap.xml.
+
+00:57:15.260 --> 00:57:17.380
+<v Michael Kennedy>These are standard web things on sites
+
+00:57:17.540 --> 00:57:20.080
+<v Michael Kennedy>that humans rarely use to get any value from,
+
+00:57:20.540 --> 00:57:23.200
+<v Michael Kennedy>but machines and traditionally search engines
+
+00:57:23.700 --> 00:57:23.860
+<v Michael Kennedy>really,
+
+00:57:24.080 --> 00:57:24.580
+<v Michael Kennedy>really do.
+
+00:57:24.880 --> 00:57:26.600
+<v Michael Kennedy>And so, well, what do we put for AI
+
+00:57:27.060 --> 00:57:28.460
+<v Michael Kennedy>to make it better, LLMs and so on?
+
+00:57:28.600 --> 00:57:32.360
+<v Michael Kennedy>is this llms.txt file that describes in Markdown
+
+00:57:32.640 --> 00:57:34.480
+<v Michael Kennedy>to the LLMs, like how you can better work with this.
+
+00:57:34.700 --> 00:57:35.200
+<v Michael Kennedy>With that,
+
+00:57:35.660 --> 00:57:36.500
+<v Michael Kennedy>you all have that, right?
+
+00:57:36.620 --> 00:57:40.980
+<v Michael Kennedy>So you've got your llms.txt and the full one.
+
+00:57:41.280 --> 00:57:42.460
+<v Michael Kennedy>You know, this is not something I'm doing.
+
+00:57:42.600 --> 00:57:43.700
+<v Michael Kennedy>Maybe I need to do a full one.
+
+00:57:43.800 --> 00:57:44.720
+<v Rich lannone>This one's interesting.
+
+00:57:44.920 --> 00:57:45.420
+<v Rich lannone>It's a lot.
+
+00:57:45.840 --> 00:57:47.880
+<v Rich lannone>So basically it's the entire bit of documentation
+
+00:57:48.260 --> 00:57:49.320
+<v Rich lannone>distilled down, not distilled,
+
+00:57:49.460 --> 00:57:50.500
+<v Rich lannone>but like written as one file,
+
+00:57:50.960 --> 00:57:51.060
+<v Rich lannone>essentially.
+
+00:57:51.260 --> 00:57:52.380
+<v Rich lannone>All doc strings mashed together,
+
+00:57:52.640 --> 00:57:53.040
+<v Rich lannone>you might say,
+
+00:57:53.380 --> 00:57:54.540
+<v Rich lannone>including guide material as well.
+
+00:57:55.040 --> 00:57:55.720
+<v Rich lannone>So that's all in there.
+
+00:57:55.840 --> 00:57:57.420
+<v Michael Kennedy>Yeah, and you've got these skills as well,
+
+00:57:57.560 --> 00:58:00.460
+<v Michael Kennedy>which is looking super interesting and also a pretty neat,
+
+00:58:00.840 --> 00:58:03.600
+<v Michael Kennedy>the CLI that you've created a couple of things on that.
+
+00:58:03.880 --> 00:58:06.360
+<v Michael Kennedy>First of all, that it will actually install the skills.
+
+00:58:06.880 --> 00:58:07.120
+<v Rich lannone>Yeah.
+
+00:58:07.340 --> 00:58:08.960
+<v Rich lannone>So if you're an author,
+
+00:58:09.340 --> 00:58:11.140
+<v Rich lannone>you would just use great docs,
+
+00:58:11.340 --> 00:58:11.480
+<v Rich lannone>install,
+
+00:58:12.020 --> 00:58:12.420
+<v Rich lannone>skill install,
+
+00:58:12.660 --> 00:58:15.400
+<v Rich lannone>and then they may be the name of your library for other people.
+
+00:58:15.480 --> 00:58:16.880
+<v Rich lannone>That's what other people would see on their sites.
+
+00:58:16.880 --> 00:58:18.000
+<v Michael Chow>That's an interesting piece.
+
+00:58:18.360 --> 00:58:18.740
+<v Michael Chow>Cause if I'm an,
+
+00:58:18.940 --> 00:58:21.560
+<v Michael Chow>I have to admit, I haven't seen the skills piece a lot,
+
+00:58:21.720 --> 00:58:23.840
+<v Michael Chow>but if I'm understanding rich too,
+
+00:58:23.880 --> 00:58:26.500
+<v Michael Chow>this means great docs is also for like kind of all users,
+
+00:58:26.760 --> 00:58:26.820
+<v Michael Chow>right?
+
+00:58:26.960 --> 00:58:31.420
+<v Michael Chow>Like people who are interested in reading or consuming docs or using it with AI.
+
+00:58:31.740 --> 00:58:32.220
+<v Michael Chow>Is that right?
+
+00:58:32.400 --> 00:58:32.640
+<v Michael Chow>I see.
+
+00:58:32.640 --> 00:58:34.480
+<v Michael Chow>So that's kind of where we're going more and more.
+
+00:58:34.760 --> 00:58:34.900
+<v Michael Kennedy>Yeah.
+
+00:58:34.900 --> 00:58:37.540
+<v Michael Kennedy>So it looks like you're really leaning into making great docs,
+
+00:58:37.720 --> 00:58:38.580
+<v Michael Kennedy>something that works well
+
+00:58:38.940 --> 00:58:42.040
+<v Michael Kennedy>if you're trying to generate docs and maintain with AI,
+
+00:58:42.300 --> 00:58:42.440
+<v Michael Kennedy>right?
+
+00:58:42.520 --> 00:58:46.040
+<v Rich lannone>We also want, if you point your agent at this site,
+
+00:58:46.220 --> 00:58:47.380
+<v Rich lannone>it should be able to find these things
+
+00:58:47.580 --> 00:58:48.000
+<v Rich lannone>pretty quickly.
+
+00:58:48.240 --> 00:58:49.440
+<v Rich lannone>And you can actually like use tools.
+
+00:58:49.860 --> 00:58:53.020
+<v Rich lannone>Like there's one called whatdoagentsc.runtime.app.
+
+00:58:53.180 --> 00:58:53.700
+<v Rich lannone>Just search it up.
+
+00:58:54.020 --> 00:58:58.600
+<v Rich lannone>You can put it in your URL and it'll show you what pieces are picked up by different agents.
+
+00:58:58.780 --> 00:59:01.320
+<v Rich lannone>It actually simulates it really nicely.
+
+00:59:01.760 --> 00:59:06.880
+<v Rich lannone>And I found that this sort of validated things that different agents do pick up LLMs.txt, LLMs.full.
+
+00:59:07.320 --> 00:59:10.840
+<v Rich lannone>And there's other little pieces of metadata,
+
+00:59:11.700 --> 00:59:16.480
+<v Rich lannone>things that go in the meta tag that can be picked up to like robots.txt and very accept,
+
+00:59:16.840 --> 00:59:17.280
+<v Rich lannone>things like that.
+
+00:59:17.940 --> 00:59:20.020
+<v Rich lannone>So we're working towards making this even easier.
+
+00:59:20.320 --> 00:59:27.500
+<v Rich lannone>Like you just point at the site or point at any site that you author using great docs and your agent should be able to find things pretty quick.
+
+00:59:27.760 --> 00:59:28.400
+<v Michael Kennedy>Very exciting.
+
+00:59:28.820 --> 00:59:29.200
+<v Michael Kennedy>I love it.
+
+00:59:29.300 --> 00:59:29.400
+<v Michael Kennedy>Okay.
+
+00:59:29.780 --> 00:59:32.480
+<v Michael Kennedy>And also just you mentioned that there's the CLI,
+
+00:59:32.780 --> 00:59:32.900
+<v Michael Kennedy>right?
+
+00:59:33.060 --> 00:59:34.560
+<v Michael Kennedy>Or I don't know what I was mentioning.
+
+00:59:34.980 --> 00:59:38.460
+<v Michael Kennedy>But the fact that there is a CLI is another really great enablement.
+
+00:59:38.660 --> 00:59:44.620
+<v Michael Kennedy>You can say, hey, Cloud or Codex or any of these tool using agentic AI is just like, here's the CLI to do the things.
+
+00:59:44.820 --> 00:59:46.520
+<v Michael Kennedy>Here's the docs and the skill.
+
+00:59:47.060 --> 00:59:47.500
+<v Michael Kennedy>Make this happen.
+
+00:59:47.820 --> 00:59:48.080
+<v Michael Kennedy>You know, right?
+
+00:59:48.600 --> 00:59:48.720
+<v Michael Kennedy>Yeah.
+
+00:59:48.900 --> 00:59:49.040
+<v Rich lannone>Yeah.
+
+00:59:49.240 --> 00:59:50.280
+<v Rich lannone>And you can even,
+
+00:59:51.020 --> 00:59:51.940
+<v Rich lannone>the skills I include,
+
+00:59:52.220 --> 00:59:54.240
+<v Rich lannone>like in great docs could be used to author your
+
+00:59:54.340 --> 00:59:55.120
+<v Rich lannone>own great doc site.
+
+00:59:55.580 --> 00:59:59.700
+<v Rich lannone>Like there's all sorts of things in there for like just how it works and like, you know,
+
+00:59:59.800 --> 00:59:59.900
+<v Rich lannone>like,
+
+01:00:00.120 --> 01:00:00.860
+<v Rich lannone>like writing pages,
+
+01:00:01.700 --> 01:00:03.960
+<v Rich lannone>they're kind of split up into like multiple name skills.
+
+01:00:04.540 --> 01:00:07.160
+<v Michael Kennedy>So you can, you can just use that or make your own skills.
+
+01:00:07.580 --> 01:00:07.660
+<v Michael Kennedy>Yeah.
+
+01:00:07.700 --> 01:00:07.960
+<v Michael Kennedy>Very neat.
+
+01:00:08.420 --> 01:00:08.600
+<v Michael Kennedy>All right.
+
+01:00:08.700 --> 01:00:09.560
+<v Michael Kennedy>Two really quick things.
+
+01:00:09.680 --> 01:00:11.120
+<v Michael Kennedy>I know we're pretty much out of time for you guys.
+
+01:00:11.520 --> 01:00:11.840
+<v Michael Kennedy>One,
+
+01:00:12.320 --> 01:00:16.080
+<v Michael Kennedy>what I get out of this is just a static site and I can just host it on any static
+
+01:00:16.320 --> 01:00:16.840
+<v Michael Kennedy>site place.
+
+01:00:17.240 --> 01:00:17.380
+<v Michael Kennedy>Okay.
+
+01:00:17.740 --> 01:00:18.280
+<v Michael Kennedy>That's really good.
+
+01:00:18.460 --> 01:00:18.840
+<v Michael Kennedy>For sure.
+
+01:00:19.160 --> 01:00:26.040
+<v Michael Kennedy>it could be netlify it could be you know pages for me on provide some fine grained instructions
+
+01:00:26.130 --> 01:00:30.100
+<v Rich lannone>for different uh hosts and things like that github pages like seems like a nice default
+
+01:00:30.780 --> 01:00:35.060
+<v Rich lannone>it's not you know but of course yeah netlify Vercel things like that we provide some hints
+
+01:00:35.400 --> 01:00:40.340
+<v Michael Kennedy>that it works for me i i was running on netlify for a while but i actually had my monitoring
+
+01:00:40.580 --> 01:00:45.199
+<v Michael Kennedy>software monitoring it and it actually went down surprisingly often i'm like why is my static site
+
+01:00:45.220 --> 01:00:50.200
+<v Michael Kennedy>going down this makes no sense so i've ended up recently i've already got like a big server with
+
+01:00:50.340 --> 01:00:55.480
+<v Michael Kennedy>tons of sites so i just i'll just have a config on nginx that just runs it you know and so there's
+
+01:00:55.560 --> 01:00:59.420
+<v Michael Chow>a lot of options there yeah it's so interesting not not to dwell on it but i do remember you saying
+
+01:00:59.600 --> 01:01:06.080
+<v Michael Chow>i think on a podcast with um hugo talking about your hugo van anderson your approach that you're
+
+01:01:06.390 --> 01:01:11.599
+<v Michael Chow>you have way less downtime than even some of the cloud providers so not not to go too deep
+
+01:01:11.620 --> 01:01:18.620
+<v Michael Kennedy>that's interesting to hear about let's it is i i could go for hours on this so be careful there
+
+01:01:18.780 --> 01:01:24.720
+<v Michael Kennedy>michael i find it really interesting that you just the extreme simplicity of like i've got a server
+
+01:01:25.200 --> 01:01:31.220
+<v Michael Kennedy>and either it's got a self-contained python and database runtime or it's just even a static site
+
+01:01:31.410 --> 01:01:36.579
+<v Michael Kennedy>that goes a long ways you know really long ways instead of like all the 100 connected services
+
+01:01:36.600 --> 01:01:39.300
+<v Michael Kennedy>powered by some dynamic thing underneath.
+
+01:01:39.540 --> 01:01:41.600
+<v Michael Kennedy>And if one of them goes down, it takes a chunk with it.
+
+01:01:41.780 --> 01:01:42.080
+<v Michael Chow>Yeah,
+
+01:01:42.460 --> 01:01:42.500
+<v Michael Chow>yeah,
+
+01:01:42.680 --> 01:01:42.960
+<v Michael Chow>for sure.
+
+01:01:43.280 --> 01:01:44.320
+<v Michael Kennedy>Maybe that was my last question.
+
+01:01:44.420 --> 01:01:48.460
+<v Michael Kennedy>I think just the deployment side of things is really interesting.
+
+01:01:48.560 --> 01:01:49.540
+<v Michael Kennedy>So it sounds like just wherever,
+
+01:01:49.940 --> 01:01:50.040
+<v Michael Kennedy>right?
+
+01:01:50.240 --> 01:01:51.780
+<v Michael Kennedy>Anything that serves static files, you get to go.
+
+01:01:52.000 --> 01:01:52.640
+<v Rich lannone>Pretty much, yeah.
+
+01:01:52.820 --> 01:01:55.860
+<v Rich lannone>Because you get the site directory and you just go with that.
+
+01:01:56.120 --> 01:01:57.620
+<v Rich lannone>Like it's complete site in a directory.
+
+01:01:57.940 --> 01:01:58.180
+<v Michael Kennedy>Yeah, okay.
+
+01:01:58.260 --> 01:02:01.600
+<v Michael Kennedy>So the second, now I remember, the second thing I wanted to talk about was
+
+01:02:01.880 --> 01:02:04.380
+<v Michael Kennedy>if I go over to the user guide and I do a quick start,
+
+01:02:04.720 --> 01:02:08.460
+<v Michael Kennedy>You show me the structure and I get this here,
+
+01:02:08.880 --> 01:02:11.900
+<v Michael Kennedy>this yourprojectgreatdocs.aml, greatdocs, et cetera, et cetera.
+
+01:02:12.500 --> 01:02:16.500
+<v Michael Kennedy>So it looks like the recommendation is to have great docs
+
+01:02:16.760 --> 01:02:22.800
+<v Michael Kennedy>as a sub directory of your actual things that it is documenting.
+
+01:02:23.160 --> 01:02:23.480
+<v Michael Kennedy>Is that right?
+
+01:02:23.920 --> 01:02:25.220
+<v Michael Kennedy>Sort of, but you don't have to keep it.
+
+01:02:25.380 --> 01:02:29.160
+<v Rich lannone>I mean, like it's just going to appear there when you render locally
+
+01:02:29.540 --> 01:02:31.200
+<v Rich lannone>and you can look at the site, you can preview it,
+
+01:02:31.580 --> 01:02:32.360
+<v Rich lannone>but you can just delete it.
+
+01:02:32.500 --> 01:02:33.760
+<v Rich lannone>I can have it on CI or whatever,
+
+01:02:34.160 --> 01:02:36.260
+<v Rich lannone>like on your CI system or however you're deploying.
+
+01:02:36.320 --> 01:02:39.560
+<v Michael Kennedy>Like your step could be build and then copy and then delete.
+
+01:02:39.990 --> 01:02:40.080
+<v Michael Kennedy>Yeah,
+
+01:02:40.350 --> 01:02:40.440
+<v Michael Kennedy>exactly.
+
+01:02:40.590 --> 01:02:40.720
+<v Michael Kennedy>The folder,
+
+01:02:41.200 --> 01:02:42.840
+<v Michael Kennedy>not necessarily the YAML.
+
+01:02:43.310 --> 01:02:44.080
+<v Michael Kennedy>Well, yeah, you want to keep that.
+
+01:02:44.290 --> 01:02:44.420
+<v Rich lannone>Yeah,
+
+01:02:44.570 --> 01:02:44.700
+<v Rich lannone>yeah,
+
+01:02:44.860 --> 01:02:45.240
+<v Rich lannone>that's config.
+
+01:02:45.660 --> 01:02:46.720
+<v Rich lannone>So that, commit that.
+
+01:02:47.160 --> 01:02:49.200
+<v Rich lannone>And hopefully I sort of like outlined it here on this page,
+
+01:02:49.350 --> 01:02:50.040
+<v Rich lannone>what should be like,
+
+01:02:50.460 --> 01:02:50.600
+<v Rich lannone>you know,
+
+01:02:50.860 --> 01:02:51.020
+<v Rich lannone>committed.
+
+01:02:51.170 --> 01:02:52.820
+<v Rich lannone>And we automatically .gitignore some things too.
+
+01:02:52.870 --> 01:02:54.020
+<v Rich lannone>So you don't accidentally commit things.
+
+01:02:54.070 --> 01:02:54.660
+<v Rich lannone>You don't have to.
+
+01:02:54.860 --> 01:02:57.360
+<v Michael Kennedy>If I want to do the freeze though, I probably have to keep it.
+
+01:02:57.440 --> 01:02:57.520
+<v Michael Kennedy>Yeah.
+
+01:02:57.780 --> 01:02:57.920
+<v Rich lannone>No,
+
+01:02:58.080 --> 01:02:59.280
+<v Rich lannone>we actually work around that.
+
+01:02:59.900 --> 01:03:01.580
+<v Rich lannone>So we do like a, like a pre.
+
+01:03:02.000 --> 01:03:02.940
+<v Rich lannone>We got a little system there.
+
+01:03:03.030 --> 01:03:04.400
+<v Rich lannone>So I know it wipes everything out,
+
+01:03:04.510 --> 01:03:05.780
+<v Rich lannone>but we have a freeze mechanism
+
+01:03:05.960 --> 01:03:06.840
+<v Rich lannone>that sort of works around
+
+01:03:06.990 --> 01:03:09.100
+<v Rich lannone>this sort of like ephemeral nature of things.
+
+01:03:09.470 --> 01:03:09.580
+<v Rich lannone>Yeah,
+
+01:03:09.840 --> 01:03:10.440
+<v Rich lannone>still uses coral freeze.
+
+01:03:10.840 --> 01:03:12.280
+<v Rich lannone>So it just does it a little bit different.
+
+01:03:12.400 --> 01:03:13.400
+<v Michael Kennedy>Yeah, very interesting.
+
+01:03:13.580 --> 01:03:14.980
+<v Michael Kennedy>Okay, final thoughts.
+
+01:03:15.180 --> 01:03:16.060
+<v Michael Kennedy>People are interested in this.
+
+01:03:16.070 --> 01:03:16.860
+<v Michael Kennedy>They want to get started.
+
+01:03:17.280 --> 01:03:17.740
+<v Michael Kennedy>What do you tell them?
+
+01:03:18.460 --> 01:03:19.280
+<v Rich lannone>Yeah, just check out the site.
+
+01:03:19.610 --> 01:03:21.940
+<v Rich lannone>I'm hoping you'll be not wowed,
+
+01:03:22.100 --> 01:03:24.080
+<v Rich lannone>but that it will resonate a little bit
+
+01:03:24.300 --> 01:03:26.640
+<v Rich lannone>and the site should demonstrate what's possible.
+
+01:03:28.640 --> 01:03:29.360
+<v Rich lannone>And again,
+
+01:03:29.680 --> 01:03:30.000
+<v Rich lannone>like, you know,
+
+01:03:30.360 --> 01:03:31.420
+<v Rich lannone>Even just like have your agent,
+
+01:03:32.100 --> 01:03:33.560
+<v Rich lannone>like, you know, like have some AI,
+
+01:03:34.020 --> 01:03:36.540
+<v Rich lannone>take a small Python package
+
+01:03:36.610 --> 01:03:38.000
+<v Rich lannone>of yours and see what it could do.
+
+01:03:38.350 --> 01:03:39.180
+<v Rich lannone>Take it for a little spin.
+
+01:03:39.560 --> 01:03:42.020
+<v Rich lannone>And if there's anything that you think is missing or lacking,
+
+01:03:42.180 --> 01:03:43.120
+<v Rich lannone>just drop me a line,
+
+01:03:43.340 --> 01:03:43.420
+<v Rich lannone>like
+
+01:03:43.580 --> 01:03:44.280
+<v Rich lannone>through the issues.
+
+01:03:44.760 --> 01:03:45.040
+<v Rich lannone>That's like,
+
+01:03:45.320 --> 01:03:46.340
+<v Rich lannone>that's basically it.
+
+01:03:46.520 --> 01:03:48.160
+<v Michael Kennedy>Can I publish on read, read the docs?
+
+01:03:48.540 --> 01:03:49.440
+<v Rich lannone>I don't think we have that yet.
+
+01:03:49.960 --> 01:03:50.100
+<v Rich lannone>Yeah.
+
+01:03:50.410 --> 01:03:54.720
+<v Rich lannone>I actually never even considered that as a, as a publishing point.
+
+01:03:54.880 --> 01:03:56.780
+<v Michael Kennedy>One of the standard places to put docs,
+
+01:03:57.190 --> 01:03:58.000
+<v Michael Kennedy>not necessarily required,
+
+01:03:58.220 --> 01:03:59.320
+<v Michael Kennedy>but it's, it'd be interesting,
+
+01:03:59.500 --> 01:03:59.680
+<v Michael Kennedy>you know?
+
+01:03:59.880 --> 01:04:00.080
+<v Rich lannone>Okay.
+
+01:04:00.200 --> 01:04:01.300
+<v Rich lannone>I'm going to log that down.
+
+01:04:01.500 --> 01:04:01.980
+<v Rich lannone>That's already like,
+
+01:04:02.140 --> 01:04:02.780
+<v Rich lannone>that's a good one.
+
+01:04:02.980 --> 01:04:05.040
+<v Michael Kennedy>All right. We're rewriting the roadmap live here.
+
+01:04:05.980 --> 01:04:06.080
+<v Michael Chow>Yeah.
+
+01:04:06.400 --> 01:04:06.980
+<v Michael Chow>That's a toughie.
+
+01:04:07.780 --> 01:04:09.640
+<v Michael Chow>You threw down the gauntlet,
+
+01:04:09.800 --> 01:04:10.660
+<v Michael Chow>you know, this is it.
+
+01:04:12.180 --> 01:04:12.680
+<v Michael Kennedy>Sounds good.
+
+01:04:13.340 --> 01:04:13.740
+<v Michael Kennedy>Well,
+
+01:04:13.980 --> 01:04:15.720
+<v Michael Kennedy>I really appreciate you both being here.
+
+01:04:16.280 --> 01:04:16.420
+<v Michael Kennedy>Michael,
+
+01:04:16.600 --> 01:04:19.660
+<v Michael Kennedy>you want to have a final word as well of inspiration for folks?
+
+01:04:19.980 --> 01:04:20.620
+<v Michael Kennedy>What a great question.
+
+01:04:20.980 --> 01:04:21.120
+<v Michael Chow>I,
+
+01:04:21.740 --> 01:04:23.600
+<v Michael Chow>my, my final nudge might be like,
+
+01:04:23.980 --> 01:04:26.900
+<v Michael Chow>we talked a lot about generating docs, the kind of technical activity.
+
+01:04:27.400 --> 01:04:30.080
+<v Michael Chow>I do think there's this world of how do you write docs?
+
+01:04:30.300 --> 01:04:31.680
+<v Michael Chow>Like what should your content be?
+
+01:04:32.100 --> 01:04:34.280
+<v Michael Chow>And what should your sections of your doc site be?
+
+01:04:34.660 --> 01:04:36.280
+<v Michael Chow>Obviously we're saying goodbye.
+
+01:04:36.550 --> 01:04:37.020
+<v Michael Chow>So that's,
+
+01:04:37.230 --> 01:04:38.500
+<v Michael Chow>we don't want to open that can of worms.
+
+01:04:38.740 --> 01:04:41.420
+<v Michael Chow>But I just wanted to cast a light on that.
+
+01:04:41.640 --> 01:04:44.800
+<v Michael Chow>That is a freaky big area on its own.
+
+01:04:45.580 --> 01:04:46.720
+<v Michael Chow>I don't have great answers.
+
+01:04:47.060 --> 01:04:49.520
+<v Michael Chow>So I'm just throwing some problems on people's laps.
+
+01:04:49.960 --> 01:04:54.100
+<v Michael Chow>But I think that's a neat freaky area that is worth checking out.
+
+01:04:54.500 --> 01:04:58.320
+<v Michael Kennedy>I think what you're doing is you're setting the stage for another episode in the future.
+
+01:04:58.700 --> 01:04:59.160
+<v Michael Kennedy>Yeah, that's right.
+
+01:05:00.540 --> 01:05:02.120
+<v Michael Chow>We're just trying to make it a three,
+
+01:05:02.580 --> 01:05:02.840
+<v Michael Chow>you know,
+
+01:05:03.160 --> 01:05:03.580
+<v Michael Chow>like a trilogy.
+
+01:05:04.280 --> 01:05:07.080
+<v Michael Chow>So we're trying to get our third visit in.
+
+01:05:07.660 --> 01:05:07.880
+<v Michael Kennedy>Perfect.
+
+01:05:08.280 --> 01:05:08.520
+<v Michael Kennedy>All right.
+
+01:05:08.570 --> 01:05:08.660
+<v Michael Kennedy>Well,
+
+01:05:09.100 --> 01:05:09.300
+<v Michael Kennedy>Rich,
+
+01:05:09.460 --> 01:05:09.560
+<v Michael Kennedy>Michael,
+
+01:05:09.820 --> 01:05:10.440
+<v Michael Kennedy>thanks for being here.
+
+01:05:10.740 --> 01:05:11.220
+<v Michael Kennedy>It's great as always.
+
+01:05:11.540 --> 01:05:12.340
+<v Michael Kennedy>Thanks so much for having us.
+
+01:05:12.640 --> 01:05:12.800
+<v Michael Kennedy>Yeah.
+
+01:05:12.990 --> 01:05:13.080
+<v Michael Kennedy>Bye.
+
+01:05:13.540 --> 01:05:13.700
+<v Michael Kennedy>Thanks.
+
+01:05:14.940 --> 01:05:17.080
+<v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:05:17.350 --> 01:05:18.160
+<v Michael Kennedy>Thank you to our sponsors.
+
+01:05:18.410 --> 01:05:19.660
+<v Michael Kennedy>Be sure to check out what they're offering.
+
+01:05:19.870 --> 01:05:21.240
+<v Michael Kennedy>It really helps support the show.
+
+01:05:21.840 --> 01:05:23.440
+<v Michael Kennedy>This episode is brought to you by Sentry.
+
+01:05:24.200 --> 01:05:25.600
+<v Michael Kennedy>You know Sentry for the error monitoring,
+
+01:05:25.760 --> 01:05:27.200
+<v Michael Kennedy>but they now have logs too.
+
+01:05:27.420 --> 01:05:28.080
+<v Michael Kennedy>And with Sentry,
+
+01:05:28.240 --> 01:05:30.200
+<v Michael Kennedy>your logs become way more usable,
+
+01:05:30.720 --> 01:05:34.560
+<v Michael Kennedy>interleaving into your error reports to enhance debugging and understanding.
+
+01:05:35.100 --> 01:05:38.260
+<v Michael Kennedy>Get started today at talkpython.fm/sentry.
+
+01:05:39.060 --> 01:05:40.840
+<v Michael Kennedy>And it's brought to you by Temporal,
+
+01:05:41.200 --> 01:05:42.460
+<v Michael Kennedy>durable workflows for Python.
+
+01:05:42.880 --> 01:05:45.020
+<v Michael Kennedy>Write your workflows as normal Python code,
+
+01:05:45.020 --> 01:05:47.320
+<v Michael Kennedy>and Temporal ensures they run reliably,
+
+01:05:47.780 --> 01:05:49.500
+<v Michael Kennedy>even across crashes and restarts.
+
+01:05:50.080 --> 01:05:52.820
+<v Michael Kennedy>Get started at talkpython.fm/Temporal.
+
+01:05:53.280 --> 01:05:55.300
+<v Michael Kennedy>If you or your team needs to learn Python,
+
+01:05:55.490 --> 01:06:03.500
+<v Michael Kennedy>we have over 270 hours of beginner and advanced courses on topics ranging from complete beginners to async code, Flask, Django,
+
+01:06:03.900 --> 01:06:04.060
+<v Michael Kennedy>HTML,
+
+01:06:04.540 --> 01:06:05.580
+<v Michael Kennedy>and even LLMs.
+
+01:06:05.900 --> 01:06:06.280
+<v Michael Kennedy>Best of all,
+
+01:06:06.520 --> 01:06:08.180
+<v Michael Kennedy>there's no subscription in sight.
+
+01:06:08.740 --> 01:06:10.400
+<v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:06:11.100 --> 01:06:14.480
+<v Michael Kennedy>And if you're not already subscribed to the show on your favorite podcast player,
+
+01:06:14.680 --> 01:06:15.760
+<v Michael Kennedy>what are you waiting for?
+
+01:06:16.400 --> 01:06:18.200
+<v Michael Kennedy>Just search for Python in your podcast player.
+
+01:06:18.290 --> 01:06:19.180
+<v Michael Kennedy>We should be right at the top.
+
+01:06:19.580 --> 01:06:21.020
+<v Michael Kennedy>If you enjoy that geeky rap song,
+
+01:06:21.210 --> 01:06:22.440
+<v Michael Kennedy>you can download the full track.
+
+01:06:22.680 --> 01:06:24.500
+<v Michael Kennedy>The link is actually in your podcast below or share notes.
+
+01:06:25.400 --> 01:06:25.960
+<v Michael Kennedy>This is your host,
+
+01:06:26.180 --> 01:06:26.640
+<v Michael Kennedy>Michael Kennedy.
+
+01:06:26.970 --> 01:06:28.100
+<v Michael Kennedy>Thank you so much for listening.
+
+01:06:28.330 --> 01:06:29.120
+<v Michael Kennedy>I really appreciate it.
+
+01:06:29.540 --> 01:06:30.260
+<v Michael Kennedy>I'll see you next time.
+
+01:06:48.360 --> 01:06:49.460
+<v Michael Kennedy>of getting old.
+
+01:06:50.920 --> 01:06:52.960
+<v Rich lannone>We tapped into that modern vibe
+
+01:06:53.400 --> 01:06:54.360
+<v Rich lannone>overcame each storm.
+
+01:06:55.180 --> 01:06:56.460
+<v Michael Chow>Talk Python To Me.
+
+01:06:56.550 --> 01:06:57.840
+<v Michael Chow>I sync is the norm.
+
+01:07:27.040 --> 01:07:27.060
+<v Michael Chow>Продолжение следует...
