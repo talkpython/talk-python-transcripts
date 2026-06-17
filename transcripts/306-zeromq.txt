@@ -14,7 +14,7 @@
 
 00:00:31 You're almost certain to learn some new networking patterns and capabilities in this episode with our guest,
 
-00:00:37 Min Reagan-Kelly.
+00:00:37 Min Ragan-Kelley.
 
 00:00:38 He's here to discuss ZeroMQ for Python, as well as how ZeroMQ is central to the internals of Jupyter Notebooks.
 
@@ -438,7 +438,7 @@
 
 00:12:56 But it turned out that's not the user community that's really been the most excited about it.
 
-00:13:02 With things like Zero to JupyterHub, the JupyterHub on Kubernetes started by UVPanda and now led by a whole bunch of wonderful folks, we're shifted into a larger scale than initially designed for.
+00:13:02 With things like Zero to JupyterHub, the JupyterHub on Kubernetes started by Yuvi Panda and now led by a whole bunch of wonderful folks, we're shifted into a larger scale than initially designed for.
 
 00:13:13 It definitely seems like JupyterLab and the predecessors to it have really probably exploded beyond the scale that people initially expected.
 
@@ -516,7 +516,7 @@
 
 00:15:12 In Binder's case, it's running on Kubernetes.
 
-00:15:14 And Binder ties in another Jupyter project called Repo to Docker that says, look at a repo, build a Docker image with the contents of that.
+00:15:14 And Binder ties in another Jupyter project called repo2docker that says, look at a repo, build a Docker image with the contents of that.
 
 00:15:21 Hopefully that can run everything.
 
@@ -760,7 +760,7 @@
 
 00:22:51 Yeah.
 
-00:22:52 So the main thing that distinguishes ZRMQ is that you have you, so a context is kind of an implementation detail that you shouldn't need to care about, but you still need to create.
+00:22:52 So the main thing that distinguishes ZeroMQ is that you have you, so a context is kind of an implementation detail that you shouldn't need to care about, but you still need to create.
 
 00:23:00 Okay.
 
@@ -776,13 +776,13 @@
 
 00:23:26 Maybe in web server land, maybe it's a server side events, you know, an event stream connection.
 
-00:23:32 And with ZRMQ, the difference between those is the socket type.
+00:23:32 And with ZeroMQ, the difference between those is the socket type.
 
 00:23:36 So if you're creating a publish subscribe relationship, you create a publish socket on one side and you create a subscribe socket on the other side.
 
 00:23:44 If you're doing a request reply, you use a socket called a dealer and a router.
 
-00:23:49 There's a request and a reply socket in ZRMQ, but nobody should ever use them.
+00:23:49 There's a request and a reply socket in ZeroMQ, but nobody should ever use them.
 
 00:23:53 They're just a special case of router dealer.
 
@@ -798,7 +798,7 @@
 
 00:24:13 You've got 10 machines that could all do the work and you want to somehow evenly distribute that work, right?
 
-00:24:20 So you're like, all right, well, we're just going to throw it at ZRMQ.
+00:24:20 So you're like, all right, well, we're just going to throw it at ZeroMQ.
 
 00:24:23 All the things that are available to do work can subscribe.
 
@@ -806,13 +806,13 @@
 
 00:24:27 They could even like drop out after doing some work, but then not receive anymore, potentially something like that.
 
-00:24:33 So that's what ZRMQ, one of the main things that ZRMQ does is it takes control over those things like multiple peers and connection events and stuff like that.
+00:24:33 So that's what ZeroMQ, one of the main things that ZeroMQ does is it takes control over those things like multiple peers and connection events and stuff like that.
 
 00:24:43 Because take, for example, the publish subscribe.
 
 00:24:46 There's two key.
 
-00:24:48 The things to think about with ZRMQ are what happens when you've got more than one peer connected.
+00:24:48 The things to think about with ZeroMQ are what happens when you've got more than one peer connected.
 
 00:24:54 Right.
 
@@ -828,17 +828,17 @@
 
 00:25:20 Right.
 
-00:25:21 So with when you're thinking of ZRMQ from Python, sending messages is really the other thing about it is that it's asynchronous.
+00:25:21 So with when you're thinking of ZeroMQ from Python, sending messages is really the other thing about it is that it's asynchronous.
 
 00:25:29 That send is not actually send doesn't return when the message is on the TCP buffer or whatever.
 
-00:25:36 Send returns when you have handed control of the message to the ZRMQ IO thread.
+00:25:36 Send returns when you have handed control of the message to the ZeroMQ IO thread.
 
-00:25:42 And this is why ZRMQ has this concept of context.
+00:25:42 And this is why ZeroMQ has this concept of context.
 
 00:25:45 Contexts are what own the IO threads that actually do all the real work of talking to over the network.
 
-00:25:51 So when you're sending in PyZMQ, you're really just passing ownership of the memory to ZRMQ and it returns immediately.
+00:25:51 So when you're sending in PyZMQ, you're really just passing ownership of the memory to ZeroMQ and it returns immediately.
 
 00:25:58 And so you don't actually know when that message is actually is finally sent and you shouldn't care.
 
@@ -846,23 +846,23 @@
 
 00:26:05 Yeah.
 
-00:26:05 But ZRMQ tries to make you not care.
+00:26:05 But ZeroMQ tries to make you not care.
 
 00:26:07 Interesting.
 
 00:26:08 So basically you set up the relationships between the clients and the server through like these different models.
 
-00:26:14 And then you drop off the messages to ZRMQ and it just it deals from there.
+00:26:14 And then you drop off the messages to ZeroMQ and it just it deals from there.
 
 00:26:19 Right.
 
 00:26:19 It figures out who gets what and when.
 
-00:26:22 So your application, as soon as it gets the message passed off to the ZRMQ layer, it can go about doing other stuff, right?
+00:26:22 So your application, as soon as it gets the message passed off to the ZeroMQ layer, it can go about doing other stuff, right?
 
 00:26:29 Exactly.
 
-00:26:30 So ZRMQ, because it's a C++ library, it's not going to grab the GIL or anything.
+00:26:30 So ZeroMQ, because it's a C++ library, it's not going to grab the GIL or anything.
 
 00:26:35 So it's a true, even if you're using Python, it's a true multi-threaded application, even if you're only using one Python thread.
 
@@ -870,7 +870,7 @@
 
 00:26:41 You handed that memory off to C++, which is running in the background.
 
-00:26:43 You can do some GIL holding intense operation and ZRMQ will be happily dealing with all the network stuff.
+00:26:43 You can do some GIL holding intense operation and ZeroMQ will be happily dealing with all the network stuff.
 
 00:26:49 Right.
 
@@ -892,9 +892,9 @@
 
 00:27:24 Is there a way to say, you know, pile that up and then send it along when it catches up or whatever?
 
-00:27:30 The ZRMQ perspective is that that's an application level problem.
+00:27:30 The ZeroMQ perspective is that that's an application level problem.
 
-00:27:33 So ZRMQ helps you build the messaging layer to not, so that it doesn't crash.
+00:27:33 So ZeroMQ helps you build the messaging layer to not, so that it doesn't crash.
 
 00:27:39 And that's part of why it drops messages.
 
@@ -902,7 +902,7 @@
 
 00:27:51 It's up to your application to say, okay, keep a, you know, keep a recent history buffer so that folks can come back with a different pattern, a request reply pattern to say, give me a batch of recent messages that I missed so that I can resume.
 
-00:28:06 But ZRMQ doesn't help you with that.
+00:28:06 But ZeroMQ doesn't help you with that.
 
 00:28:08 It handles all the networking stuff, you know, connections.
 
@@ -914,11 +914,11 @@
 
 00:28:17 Nice.
 
-00:28:18 David out there on the live stream asks, what alternatives to ZRMQ could have been used to build the Jupyter protocol?
+00:28:18 David out there on the live stream asks, what alternatives to ZeroMQ could have been used to build the Jupyter protocol?
 
 00:28:24 So maybe before we, thanks for the question.
 
-00:28:27 Before we get to that though, maybe let's just talk about like, oh wait, ZRMQ was used to build the Jupyter protocol?
+00:28:27 Before we get to that though, maybe let's just talk about like, oh wait, ZeroMQ was used to build the Jupyter protocol?
 
 00:28:33 Yeah.
 
@@ -928,7 +928,7 @@
 
 00:28:46 We can build basically a REPL protocol, an interactive shell protocol.
 
-00:28:51 And that ultimately became the Jupyter protocol, which was built with this kind of ZRMQ mindset of, I want to be able to have multiple front ends at the same time.
+00:28:51 And that ultimately became the Jupyter protocol, which was built with this kind of ZeroMQ mindset of, I want to be able to have multiple front ends at the same time.
 
 00:29:03 So let's say, and we had in 2010, I think, Fernando and Brian had a working prototype of real-time collaboration on a terminal.
 
@@ -944,7 +944,7 @@
 
 00:29:34 And there's another channel called IOPub where we publish output.
 
-00:29:38 So when you do a print statement or you display a map.plit figure, that's a message that goes on PubSub channel, which means that every connected front end, right?
+00:29:38 So when you do a print statement or you display a matplotlib figure, that's a message that goes on PubSub channel, which means that every connected front end, right?
 
 00:29:49 So you could have multiple JupyterLab instances.
 
@@ -1030,7 +1030,7 @@
 
 00:32:31 There have been, I think, three prototypes at this point that have been developed and are, and ultimately not finished for various reasons.
 
-00:32:39 There's another one that's picking up again and going strong using YJS, working with QuantStack, I believe.
+00:32:39 There's another one that's picking up again and going strong using Yjs, working with QuantStack, I believe.
 
 00:32:45 Okay.
 
@@ -1126,7 +1126,7 @@
 
 00:36:00 Okay, so a follow-up question from Nawa that makes me think.
 
-00:36:04 So he asks, he, she, sorry, asks whether it is a good idea to replace REST communication with CRMQ.
+00:36:04 So he asks, he, she, sorry, asks whether it is a good idea to replace REST communication with ZeroMQ.
 
 00:36:11 And so that leads me to wonder.
 
@@ -1204,7 +1204,7 @@
 
 00:38:00 Yeah.
 
-00:38:00 Or IPC with BST sockets or UDP.
+00:38:00 Or IPC with BSD sockets or UDP.
 
 00:38:03 Even lower level than that.
 
@@ -1216,7 +1216,7 @@
 
 00:38:06 Yeah.
 
-00:38:06 This gets us to the last piece of XeromQ that we haven't talked about yet.
+00:38:06 This gets us to the last piece of ZeroMQ that we haven't talked about yet.
 
 00:38:10 And that's what is a message.
 
@@ -1346,7 +1346,7 @@
 
 00:40:49 Maybe partition up the work across them or something like that.
 
-00:40:52 The fun thing about ZerumQ is that in a Jupyter notebook, the kernel is the server.
+00:40:52 The fun thing about ZeroMQ is that in a Jupyter notebook, the kernel is the server.
 
 00:40:57 The kernel listens for connections on its various sockets.
 
@@ -1354,7 +1354,7 @@
 
 00:41:06 and it connects to those sockets.
 
-00:41:08 So I Python parallel, because of this fun stuff about ZerumQ not caring about connection,
+00:41:08 So I Python parallel, because of this fun stuff about ZeroMQ not caring about connection,
 
 00:41:12 direction, or count, adds a scheduler layer, and it modifies the kernel, the IPython kernel
 
@@ -1370,17 +1370,17 @@
 
 00:41:35 There's one controller and many engines instead of many clients connecting to one kernel.
 
-00:41:40 And then, again, using kind of some of the magic of the ZerumQ routing identities,
+00:41:40 And then, again, using kind of some of the magic of the ZeroMQ routing identities,
 
 00:41:45 there's a multiplexer in PyZMQ called a monitored queue, where if you have router socket,
 
 00:41:54 so a router socket is one where the first...
 
-00:41:56 So we talked about a ZerumQ message is a sequence of blobs of memory.
+00:41:56 So we talked about a ZeroMQ message is a sequence of blobs of memory.
 
 00:42:00 So it can just be one.
 
-00:42:01 With a router socket, it's always at least two, because the first part is the routing identity to tell the underlying ZerumQ
+00:42:01 With a router socket, it's always at least two, because the first part is the routing identity to tell the underlying ZeroMQ
 
 00:42:07 which peer should it actually send to.
 
@@ -1410,9 +1410,9 @@
 
 00:42:41 And that allows us to build a multiplexing scheduler that from one client connected to one scheduler,
 
-00:42:48 just send messages, regular, plain old ZerumQ protocol messages, but with an identity prefix from the client.
+00:42:48 just send messages, regular, plain old ZeroMQ protocol messages, but with an identity prefix from the client.
 
-00:42:55 And those will end up at the right kernel just by the magic of ZerumQ routing identities.
+00:42:55 And those will end up at the right kernel just by the magic of ZeroMQ routing identities.
 
 00:42:59 Yeah, yeah.
 
@@ -1428,15 +1428,15 @@
 
 00:43:22 because they're fairly different than, oh, this is what I know from web servers.
 
-00:43:25 So the big thing to do with, if you're getting into ZerumQ is to read the, there's something called the guide.
+00:43:25 So the big thing to do with, if you're getting into ZeroMQ is to read the, there's something called the guide.
 
 00:43:29 And there'll be a link in the notes.
 
 00:43:32 And if you go to zerumq.org, it'll be prominently linked.
 
-00:43:34 And this goes through kind of the different patterns that ZerumQ thinks about,
+00:43:34 And this goes through kind of the different patterns that ZeroMQ thinks about,
 
-00:43:38 the abstractions in ZerumQ, and the different socket types and what they're for.
+00:43:38 the abstractions in ZeroMQ, and the different socket types and what they're for.
 
 00:43:43 And the guide will help you.
 
@@ -1454,7 +1454,7 @@
 
 00:44:00 Yes.
 
-00:44:01 That's, I think, the way to internalize what are the ZerumQ concepts and how do I deal with this.
+00:44:01 That's, I think, the way to internalize what are the ZeroMQ concepts and how do I deal with this.
 
 00:44:06 So when it comes to serialization, this is really important for iPython Parallel.
 
@@ -1462,17 +1462,17 @@
 
 00:44:13 if you use the really intense ones that do like 3D visualization, interactive 3D visualization in the browser that sometimes are streaming a lot of data from the kernel.
 
-00:44:22 Because a ZerumQ, this combines two things, one from PyZMQ and one from ZerumQ itself.
+00:44:22 Because a ZeroMQ, this combines two things, one from PyZMQ and one from ZeroMQ itself.
 
-00:44:27 So the ZerumQ concept that a message is actually a collection of frames.
+00:44:27 So the ZeroMQ concept that a message is actually a collection of frames.
 
-00:44:31 This lets you and another that ZerumQ can be zero copy and PyZMQ supports zero copy.
+00:44:31 This lets you and another that ZeroMQ can be zero copy and PyZMQ supports zero copy.
 
 00:44:38 So anything that supports the Python buffer interface can be sent without copying,
 
 00:44:42 meaning it's still copied over the network, but at no point are there any copies in memory.
 
-00:44:47 So you can send 100 megabyte NumPy array with ZerumQ without copying it.
+00:44:47 So you can send 100 megabyte NumPy array with ZeroMQ without copying it.
 
 00:44:51 But then you've got to think about, oh, wait, if I send a NumPy array using the Python buffer interface,
 
@@ -1626,9 +1626,9 @@
 
 00:48:42 So the example you talked about is how to create a server, but you know, web version would be use request to do a request.get against the server to be the client that talks to it.
 
-00:48:53 What's the, that version in PysmQ?
+00:48:53 What's the, that version in PyZMQ?
 
-00:48:55 In PysmQ, a client looks very much like a server, except instead of bind, you'd call connect.
+00:48:55 In PyZMQ, a client looks very much like a server, except instead of bind, you'd call connect.
 
 00:49:01 And instead of receive, you do a send.
 
@@ -1790,11 +1790,11 @@
 
 00:53:24 And supporting as many Python implementations as possible was also important to us.
 
-00:53:30 So PyzianQ was originally written all in Cython, which is a wonderful library for this when you're interfacing with the C library, especially when you want to do things with the buffer interface.
+00:53:30 So PyZMQ was originally written all in Cython, which is a wonderful library for this when you're interfacing with the C library, especially when you want to do things with the buffer interface.
 
 00:53:42 So when you have a C object and a Python object that represent the same memory, Cython is the best.
 
-00:53:48 And that's a lot of what we do for the zero copy stuff in PyzianQ.
+00:53:48 And that's a lot of what we do for the zero copy stuff in PyZMQ.
 
 00:53:54 So when we were working on this, wheels didn't exist.
 
@@ -1802,7 +1802,7 @@
 
 00:53:59 Yeah.
 
-00:54:00 So if you pip install something like PyzianQ, it doesn't compile it, right?
+00:54:00 So if you pip install something like PyZMQ, it doesn't compile it, right?
 
 00:54:04 You get a wheel and that just unzips it and it's really nice.
 
@@ -1816,11 +1816,11 @@
 
 00:54:25 But you had to use easy install if you wanted to get a binary, which means effectively, if you're on Windows, you had to use easy install.
 
-00:54:32 And so we had a really complicated, there actually used to be a big delay, might even still be there, in PyzianQ.
+00:54:32 And so we had a really complicated, there actually used to be a big delay, might even still be there, in PyZMQ.
 
 00:54:38 No, this is definitely not.
 
-00:54:40 So there was a big delay in PyzianQ that if you ran setup.py, it would sleep for 10 seconds and show you a big message that says you might want to easy install.
+00:54:40 So there was a big delay in PyZMQ that if you ran setup.py, it would sleep for 10 seconds and show you a big message that says you might want to easy install.
 
 00:54:47 But now we're in a very different world, right?
 
@@ -2078,9 +2078,9 @@
 
 01:00:44 And I finally solved that problem thanks to two wonderful packages.
 
-01:00:47 One is CI build wheel, which is a more generally useful.
+01:00:47 One is cibuildwheel, which is a more generally useful.
 
-01:00:51 If you have compiled Python packages, CI build wheel is a wonderful thing for building and distributing all your wheels on all kinds of platforms.
+01:00:51 If you have compiled Python packages, cibuildwheel is a wonderful thing for building and distributing all your wheels on all kinds of platforms.
 
 01:00:59 So now PyZMQ wheels are all built on GitHub actions, and I don't need to do anything other than tag a release.
 
@@ -2088,15 +2088,15 @@
 
 01:01:06 Nice.
 
-01:01:06 The other one that I wanted to highlight that probably fewer people know about that's related to CI build wheel, because when you build a Python package that has an external dependency, there's an extra step to say, I built PyZMQ.
+01:01:06 The other one that I wanted to highlight that probably fewer people know about that's related to cibuildwheel, because when you build a Python package that has an external dependency, there's an extra step to say, I built PyZMQ.
 
 01:01:18 I linked it against LibZMQ over here.
 
 01:01:20 But if somebody else installs that wheel as it is, it's not going to work because it's going to say, like, I don't have LibZMQ.
 
-01:01:25 So for a long time, there's a Mac thing called Delocate and a Linux one called Audit Wheel that say, look at the binaries in there and find them on your system, bring them in and update the linking to make sure they load.
+01:01:25 So for a long time, there's a Mac thing called Delocate and a Linux one called auditwheel that say, look at the binaries in there and find them on your system, bring them in and update the linking to make sure they load.
 
-01:01:38 So the wonderful thing that I just found is someone created something called Delve Wheel, which is Audit Wheel or Delocate, but for Windows.
+01:01:38 So the wonderful thing that I just found is someone created something called delvewheel, which is auditwheel or Delocate, but for Windows.
 
 01:01:46 And I don't understand anything about Windows.
 
@@ -2108,11 +2108,11 @@
 
 01:01:55 And so for a long, long time, for, yeah, I guess 10 years plus, PyZMQ built LibZMQ on Windows as an extension.
 
-01:02:03 So it actually took the XerunQ sources and then just said, hey, I have a Python, this is a Python extension.
+01:02:03 So it actually took the ZeroMQ sources and then just said, hey, I have a Python, this is a Python extension.
 
 01:02:08 Don't, you don't need to worry about the fact that it's actually a C++ library.
 
-01:02:12 Just pass it to disutils and compile it as an extension.
+01:02:12 Just pass it to distutils and compile it as an extension.
 
 01:02:15 And there were a lot of issues with that.
 
@@ -2130,9 +2130,9 @@
 
 01:02:38 That's beautiful.
 
-01:02:38 Thanks to Delve Wheel.
+01:02:38 Thanks to delvewheel.
 
-01:02:39 So Delve Wheel is my big one.
+01:02:39 So delvewheel is my big one.
 
 01:02:41 Yeah.
 
@@ -2232,7 +2232,7 @@
 
 01:04:07 This has been another episode of Talk Python To Me.
 
-01:04:10 Our guest on this episode was Min Reagan Kelly.
+01:04:10 Our guest on this episode was Min Ragan-Kelley.
 
 01:04:12 And it's been brought to you by Linode and Mido.
 
