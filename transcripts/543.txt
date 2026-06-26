@@ -1,0 +1,750 @@
+00:00:00 When you type a question in the ChatGPT, the model only has what you typed to work with.
+
+00:00:05 But tools like Claude Code can plan, iterate, test, and recover from mistakes.
+
+00:00:09 They work more like we do. The difference is the agent harness. Planning tools, file system access, sub-agents, and carefully crafted system prompts that turn raw LLMs into something genuinely
+
+00:00:21 capable. Sydney Rinkle is back on Talk Python from LangChain to talk about their new open-source library DeepAgents, a framework for building your own DeepAgents with plain Python functions,
+
+00:00:32 middleware hooks, and MCP support. This is a framework that allows you to build tools similar to Claude Code. This is Talk Python To Me, episode 543, recorded February 19th, 2026.
+
+00:00:57 We started in Pyramid, cruising old-school lanes, had that stable base, yes sir.
+
+00:01:02 Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:01:07 This is your host, Michael Kennedy. I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:13 Let's connect on social media. You'll find me and Talk Python on Mastodon, BlueSky, and X. The social links are all in your show notes. You can find over 10 years of past episodes at talkpython.fm. And if you want to be part of the show, you can join our recording live streams.
+
+00:01:27 That's right, we live stream the raw, uncut version of each episode on YouTube.
+
+00:01:32 Just visit talkpython.fm/youtube to see the schedule of upcoming events. Be sure to subscribe there and press the bell so you'll get notified anytime we're recording. This episode is brought
+
+00:01:42 to you by Sentry. You know Sentry for the error monitoring, but they now have logs too. And with Sentry, your logs become way more usable, interleaving into your error reports to enhance debugging and
+
+00:01:53 understanding. Get started today at talkpython.fm/sentry. And it's brought to you by Temporal, durable workflows for Python. Write your workflows as normal Python code and Temporal ensures they run
+
+00:02:06 reliably, even across crashes and restarts. Get started at talkpython.fm/Temporal.
+
+00:02:12 Sydney, welcome back to Talk Python on me. Awesome to have you here.
+
+00:02:16 Thanks. Yeah, super excited to be back.
+
+00:02:18 I am super excited to have you here. We're going to be talking about almost the topic du jour, the AI, but not in the way that people might think. Not using AI to build code, although what we're
+
+00:02:31 talking about could be used for that, and so on. But actually, how do you build your own AI tools?
+
+00:02:37 How do you build your own Claude Code equivalent if you wanted to have a lot more control over that?
+
+00:02:43 So I'm really excited about it. I think it's pretty eye-opening and great tools. Last time we were on, I think we talked about LangGraph. Was that right?
+
+00:02:52 Yeah, yeah, I think so.
+
+00:02:54 And now, carrying on with more Lang things from LangChain, we're going to talk about Deep Agents.
+
+00:02:59 So, super cool topic. I think people who feel like this is mysterious, or you sign up for some frontier model and it does all the magic. Well, we're going to dig into how that magic works and
+
+00:03:13 how you might build your own as well with some really cool tools here. Now, it has been a little while since you've been on. I think you've been on three times, which is amazing. But here's number four. There's a ton of new people listening to the show or coming into the Python space in general.
+
+00:03:27 I mean, it's amazing to me that 50% of the people doing Python are new to it professionally the last two years. I guess it makes sense. Anyway, quick introduction about who you are for everyone who doesn't know already.
+
+00:03:40 Yeah, sure thing. Well, very excited to get to share all of our new Deep Agents stuff with folks.
+
+00:03:47 My name is Sydney. I currently work at LangChain, which might sound familiar. It started as an open source package helping folks use AI. Basically, as soon as LLMs started to blow up, LangChain emerged
+
+00:04:01 as a toolkit for building with LLMs in Python. And then it since has evolved into a company. So we offer
+
+00:04:09 observability and evals products for agents. We basically are building a platform for folks to build agents. But we still are kind of built on our open source core, which is that LangChain project,
+
+00:04:23 and now Deep Agents. And then I've also spoken with you about LangGraph. So we'll kind of talk about how all of those open source projects are related today. And then I guess I'll also note I've chatted
+
+00:04:34 with you before about other open source projects like Pydantic and Pydantic AI is where I worked previously. So very excited to kind of be in the open source AI space.
+
+00:04:43 It's been quite the roller coaster I think you've probably been on the last couple years.
+
+00:04:48 We talked about the Young Coders Blueprint for success, right? As you were graduating college, and now you spent a good stint with Pydantic.dev, which is awesome. And that's a really,
+
+00:04:58 that's a big center of the open source Python world. And so is LangChain. So very exciting, I'm sure.
+
+00:05:05 Yeah, yeah. I think if I could redo the Young Coders Blueprint success now, it would probably look pretty different than it did when we chatted.
+
+00:05:12 I was wondering about that as well. Maybe we'll get to that later. Maybe we will.
+
+00:05:16 So let's start by setting the stage with, let's start here. So I want to talk about this idea of deep agents, obviously the name of the product or the library that we're going to be talking about,
+
+00:05:31 but more high level for the moment, as opposed to shallow agents. So give us a contrast, I guess, if you will, between what is a shallow agent as you all refer to it? And then why the term deep agents?
+
+00:05:45 Yeah, great question. So I think a shallow agent is sort of what the agents of a year or two ago looked like. So agents are basically a model calling tools in a loop in response to some prompt.
+
+00:05:58 And so a shallow agent maybe does like a couple of tool calls to help an end user achieve a goal.
+
+00:06:05 So maybe you need help with a flight booking and your agent has powers to, you know, call flight and hotel booking tools. So that's like a relatively simple task. It's pretty easy to like judge whether
+
+00:06:17 or not that was successful. But deep agents have access to much more context and are able to perform
+
+00:06:26 much more complex tasks with kind of longer horizons. And so we're generally seeing a trend towards, you know, folks always pushing the boundaries of like how complex of tasks can agents solve?
+
+00:06:39 And then also like, you know, how long can they run for in a sustainable way?
+
+00:06:43 Yeah, I think deep agents, I think they're where it's at. You know, one of the, I feel like there's this sort of split in what people feel like is possible with AI. And a lot of it comes down to this,
+
+00:06:55 I believe. I go to ChatGPT or Gemini or somewhere, you know, like ChatGPT.com and I type into the text box, create me a function to do this, or I want you to solve this problem. And all it has to work
+
+00:07:10 with is the text that you've typed into the text box, right? And it's, it's got very little to go on. I mean, depending on how much you give it as a prompt, I guess, but generally it has very little to go on and you get pretty good answers. I mean, to be honest, ChatGPT and things are like utter magic,
+
+00:07:25 but relative to deep agents, they, they don't necessarily come up with the best answers.
+
+00:07:30 And really, I think the essence of it is that they can't check and revalidate, right? As opposed to something like Claude Code or Codex, where it has an idea, it reads about the code and it's okay,
+
+00:07:43 well, let me try to write that. Now let me apply some tools to see how that worked, right? Let me run ruff against it and see if that passed. Oh, the rough, does it work? It says there's wrong code.
+
+00:07:54 Well, let me go back and do it again. Let me run the unit tests. Oh, look, they did pass. Okay. I think I'm on the right track, right? This back and forth and this kind of tool use and iteration,
+
+00:08:03 that is more indicative of a deep agent, would you say? Yeah, definitely. I think like a deep agent has kind of much more agency than a shallow agent, if we're calling it that. And yeah, the more like
+
+00:08:17 capabilities and power you give your agent, the more useful it has the potential to be. And so what we're doing in building deep agents is kind of trying to build the most effective harness,
+
+00:08:27 trying to equip this, you know, agent builder with the best set of tools and instructions so that, yeah, it can do really challenging things. And you're, you're kind of talking through some of
+
+00:08:41 the like coding agent applications that I think a lot of us are seeing kind of revolutionize our day-to-day workflows. Absolutely. And I'm using coding agents because I feel like that probably most significant and most strongly connects with the audience, but it doesn't have to be coding,
+
+00:08:55 right? It could be, be anything. But before we get into what that might be, I just want to circle back and say, I really think that there's, I don't know if you have a better way you individually,
+
+00:09:05 you as a LinkedIn representative, a better way to represent this. Because when people talk about, oh, AI makes this mistake or AI hallucinates or this or that or whatever, right? People use the
+
+00:09:17 same words, but they're not necessarily talking about the same thing. And then they debate whether their version of the thing that they don't really make clear is better or worse than some other thing that's not actually the same thing, right? It's kind of people are talking a bit past each other.
+
+00:09:31 Do you see a good way of this conversation being more specific, evolving, or is that where we are for a while? Yeah, that's a great question. Basically, just is what you mean the fact that
+
+00:09:43 people are very concerned about AI not being grounded in truth or hallucinating and that sort of thing?
+
+00:09:48 Yeah, yeah. So for example, let's say somebody says, oh, this stuff is terrible. It made up all this stuff and it gave me really shout and it was actually wrong about a fact. And what they meant is they use
+
+00:09:57 the free non-logged-in version of ChatGPT with the lowest model, like instant answer, versus another person who used, let's say, deep research, the top pro model, and a 500-word
+
+00:10:12 prompt with a couple of files to back. People say, well, I used it and it's wrong and it's bad and I did it and look how amazing it is. And they think they're talking about the same thing. And those are
+
+00:10:21 even putting agents aside. Those are really different things, right? We're debating whether we're sort of comparing those as if they're the same experience and then judging them.
+
+00:10:32 Yeah, I think that's a great question. So, you know, I think there's always the baseline thing that like, you know, you should be skeptical and ask questions of your results that you get from AI
+
+00:10:43 tooling. That being said, the rate at which AI tooling is improving is pretty hard to believe. And so I think, you know, even thinking about things like citations and, yeah, deep research abilities,
+
+00:10:55 agents and AI tools are getting pretty good at grounding things in truth and like in current truth, not just like data that they were trained on, right? And so I generally have high confidence
+
+00:11:08 in the AI tools that I use with that like asterisk of like, okay, but like I do ask follow-up questions and like get them to check their work sometimes.
+
+00:11:17 Yeah, yeah, yeah. I think there's a big, there's a wide varied skill gap here and tool chain gap and so it's, it's super interesting. So as a way to sort of set the stage for deep agents, yeah. Would you
+
+00:11:29 say Claude Code is a pretty good representative of this idea? Maybe describe why if you think so?
+
+00:11:34 Yeah, I think so. When I think about a deep agent, I think about something that has access to an abundance of context. And so for Claude Code, that's like your file system.
+
+00:11:46 I think about something that's autonomous and kind of can organize complex tasks. And so that's like, you know, spitting up sub-agents and keeping a to-do list handy to be able to organize all the
+
+00:11:59 things going on. And then I also think about, you know, an agent being really kind of optimized for the user that it's working with. And so that really ties into like memory and updating memory. And I think
+
+00:12:11 Claude Code does all of those things. So I think it's a very like, you know, coding specific deep agent.
+
+00:12:17 Right. Very cool. So the blog post that announced deep agents at LinkedIn referenced this X post, which is, I think it's pretty interesting. It's certainly something that resonates with me. And
+
+00:12:28 it says, this person, Alex Albert says, I'm making a list of all the non-coding things people are doing with Claude Code. What are you using Claude Code for? I got, you know, in parentheses, like silent,
+
+00:12:39 that's not coding. So I think that really highlights how powerful this stuff is of people who are not even coders are like, you know what, I'm willing to open up the terminal. I figured out where that is
+
+00:12:50 and I made it not white on my Mac. And now I'm able to do way, way more by basically giving it access to the file system and other things. And then, you know, Cloud themselves came out with Cowork,
+
+00:13:03 which is basically Claude Code for non-coders, you know, something like that, right? If you install the desktop app, it will, you can give it access to a files, a part of your file system and it'll, it can use much of the things that Claude Code would do, right?
+
+00:13:17 Yep. Yeah. Definitely like a big motivator here for us. I think like, you know, we saw how revolutionary Claude Code was just within like almost weeks of release. And so I think the idea is like,
+
+00:13:29 well, certainly this revolution is coming to other areas. And so how can we kind of generalize that?
+
+00:13:35 This portion of Talk Python To Me is brought to you by Sentry. You know Sentry for their great error monitoring, but let's talk about logs. Logs are messy. Trying to grep through them and line
+
+00:13:47 them up with traces and dashboards just to understand one issue isn't easy. Did you know that Sentry has logs too? And your logs just became way more usable. Sentry's logs are trace connected and
+
+00:13:58 structured. So you can follow the request flow and filter by what matters. And because Sentry surfaces the context, right where you're debugging, the trace relevant logs, the error, and even the session
+
+00:14:09 replay all land in one timeline. No timestamp matching, no tool hopping. From front end to mobile to backend, whatever you're debugging, Sentry gives you the context you need so you can fix the
+
+00:14:19 problem and move on. More than 4.5 million developers use Sentry, including teams at Anthropic and Disney Plus. Get started with Sentry logs and error monitoring today at talkpython.fm/sentry.
+
+00:14:31 Be sure to use our code talkpython26. The link is in your podcast player show notes.
+
+00:14:36 Thank you to Sentry for supporting the show.
+
+00:14:39 Yeah, so I'm going to just kind of, I'll just scroll through here a little bit and see what people put down, but I think, yeah, 319 replies. So I guess people are doing stuff with it.
+
+00:14:50 So somebody says notes plus research plus knowledge base plus obsidian. And I think that's pretty interesting. I've heard about somebody building, I don't know if people have read the
+
+00:15:01 book, a second brain, but the idea that you drop stuff into like an inbox and then eventually you categorize it. And it means you don't have to remember so much. And somebody building,
+
+00:15:11 basically using clon code automation to build that kind of stuff. Somebody says writing a book.
+
+00:15:17 I hope that means it's helping them write the book, not actually Claude is writing the book, but I don't know. I don't know how you feel. I feel a little creeped out if it's just like, here's a whole bunch of text created purely by AI. You know, I gave it a vague idea and now read it.
+
+00:15:32 Yeah, I definitely feel a little bit more kind of ethically conflicted about like work that I would like to consume that's like original versus like, I don't really have ethical qualms with code not being
+
+00:15:43 like original thoughts from someone, but definitely like writing or art. I think the lines start to get fuzzy. Yeah, I really dislike it. And I'm, it's so bad on YouTube. Now you go to YouTube and you see
+
+00:15:54 videos and you're like, Oh, this is just pictures with some AI generated thing and then text to speech thing. And, you know, I don't know, it feels, feels not good. So hopefully this is not, this book is
+
+00:16:07 like, it's helping me write the book, not writing the book. And then, yeah, what else we got?
+
+00:16:11 helped me learn H ledger, including, working with banks and all sorts of stuff. person says, yeah, another person says a second brain browser use calendar and scheduling medical
+
+00:16:23 diagnosis for my oncologist wife. Okay. That almost sounds like coding, but there's a lot of ideas here. And I've certainly personally actually have in my editor, I have a project called
+
+00:16:34 clawed as chat, where I just want to talk about a bunch of documents and have it, you know, be more thorough and maybe create other documents and then reference those back and so on. So instead
+
+00:16:44 of opening up a kind of chat thing, I'll open up my, my code editor and, you know, fire up Claude Code or something and go after it. So yeah. Are you doing anything like this?
+
+00:16:53 That's a good question. I have been using deep agents kind of our, more general purpose equivalent to help me with some like life admin things, or even just like work admin things.
+
+00:17:05 So working in open source, we get, a lot of, you know, incoming PRs and issues, et cetera.
+
+00:17:12 so we're working on using deep agents to kind of help us like triage and categorize there. what else? I have been experimenting with a deep agent that helps learn from my past
+
+00:17:26 social media posts and their performance. and then help me write new ones, based on like docs that I provide, et cetera. Admittedly, again, I think that like crosses the fuzzy line
+
+00:17:38 with writing. And I've kind of found that like, I actually prefer to just like write quick tweets and LinkedIn posts, you know, originally, and then, maybe have like Claude help me edit if
+
+00:17:48 I'm like really struggling with a line. but I do think that's an interesting use case because it like definitely has gotten better at kind of learning my style, but at some, yeah. Yeah.
+
+00:17:58 Very interesting. So it's, it's not just Claude code. You'll also point out that, you know, as I mentioned as well, open AI is deep research, which is incredible as well as Manus. I just
+
+00:18:09 recently learned about Manus, but I feel like this is a little bit similar. It's a little more agentic, but it still feels like just a ChatGPT chat experience. So interesting. I don't know. I've
+
+00:18:19 used Manus any, I don't know anything about it. I haven't used it a ton, but we've definitely taken some inspiration from their, their features. I'm sure. Cool. all I know now is that Manus
+
+00:18:30 is part of meta apparently. Yeah. I guess. Congratulations Manus people. Yeah. Yeah.
+
+00:18:35 That's cool. Yeah. There have been a lot of crazy acquisitions recently. Yeah, absolutely. All right.
+
+00:18:40 So that brings us to maybe what is the essence, the characteristics of deep agents, right? There's these different examples, but what, how is that different than just an LLM or you ask it a question,
+
+00:18:52 right? What you guys laid out with a nice little picture, kind of what that means to you.
+
+00:18:57 Yeah. Yeah. So when we think about deep agents, we think about it as an agent harness. And so, it's a tool for building agents that comes with these, built in things that kind of build up
+
+00:19:10 the harness so that the agents are highly effective at those complex long running tasks. and so I'll talk a little bit more about kind of what's built in here. before we do, I think we got to do some,
+
+00:19:21 we got to do some nomenclature, some definitions here. Yeah. Yeah. So you, you said that an agent harness. So what is an agent harness? Yeah. That's invisible to many people, but it's,
+
+00:19:33 it's part of the magic, right? Yeah. so this is an agent harness is kind of add-ons around that core like model and tool calling loop, that help to make an agent more effective with more complex
+
+00:19:47 tasks. so you kind of have your like basic agent. That's just like you give a model, prompt and some tools and it like runs in a loop and then produces a final result. whereas a
+
+00:19:59 harness adds in extra support to make the agent more effective.
+
+00:20:03 I see. So a little bit like when people would say you are a marketing wizard who was created seven successful, whatever, and then you ask it something like that's the, that's a real baby version of,
+
+00:20:17 of maybe what a harness, maybe a little flavor of what a harness is, right? It's, here's all of the things that you're doing. Here's your skills. Here's what I want you to focus on. Here's maybe
+
+00:20:26 your tool chain that you can use, right? To, you can call these things to do more, to learn more, something like that. Yeah. Yeah. So the harness helps to provide the model with like extra
+
+00:20:39 context and capabilities so that it can perform better. I think it's a little bit easier to understand kind of what a harness is if we talk about some of the components of an agent
+
+00:20:51 harness. Got it. Yeah. Okay. So what are the characteristics maybe? Yeah. Yeah. So for the first, the first thing we think about with our agent harness is giving the agent access to a planning
+
+00:21:01 tool. So for Cloud code users, you're, you know, very intimately familiar with the to-do list that Cloud generates and then kind of checks off as it makes its way through various tasks. And this just
+
+00:21:13 helps your agent to like stay organized and kind of ensure that it gets through all of the various steps in, in a complex problem. And even just giving the agent this planning tool can help it
+
+00:21:24 like have a better trajectory for those harder problems. It's really wild the plan, how much the planning helps, but it really does. You know, Cloud code and cursor and others even have planning mode.
+
+00:21:36 And I think probably this harness shifts a little bit when you switch it into planning mode, it probably gets a different set of instructions that you don't even see you're in planning mode and here's how you're
+
+00:21:47 going to act. And you're going to now interview the user to really try to understand what it is they want and so on. Right. Like they don't, they don't tell you that it's just a drop down planning mode, but it probably means something like that. Right. Yeah. Yeah, exactly. And I think we've even seen
+
+00:22:02 the power of planning kind of reflected at the model level where like models, you know, there was a big boom in kind of like reasoning or thinking models about a year ago. And just the idea that if a model
+
+00:22:16 thinks through or like reasons about tasks more before producing a final result, then it's likely to do better. So yeah, the planning tools kind of part one. Another thing that's big for our harness is
+
+00:22:31 access to a file system. So, you know, models have limited context windows, which is just like the amount of tokens, text and other things that you can send to the model. And so being able to use a
+
+00:22:45 file system and kind of selectively search or read or write files is a really effective tool for kind of context management that's more organized than just like sending everything all at once to
+
+00:22:57 the model. Yeah. And I think that might be a little bit why my Claudius chat fake programming project actually is useful. Right. Because I can, because it has a file system. Right. And like, here's a couple files you start with. And then when you need to, you create more files and then you reference that.
+
+00:23:11 You're right. It's, it's some of those files. I don't know. I think, you know, 20, 30,000 words, which is a lot of, it's most of the context, just try to keep that in memory, right. If it had to do it
+
+00:23:22 that way. And so letting the AI unload its mind, it's like asking you to read a textbook and remember everything instead of ever going back to it. Right. Yeah. One shot, read a textbook. Now go.
+
+00:23:33 Yeah, exactly. I think like we're kind of starting to see this pattern emerge where it's like, well, effective agents are just like effective people, right? They like think carefully and plan
+
+00:23:43 and then they keep their notes and thoughts organized and, you know, make things accessible when they need them, but don't like, you know, it makes much more sense to like read a textbook
+
+00:23:53 chapter than just like read the textbook. Yeah. Yeah, absolutely. It's like using a highlighter almost. Okay. So planning tool, file system, and then sub agents. This one is less obvious to me.
+
+00:24:06 Tell me about the sub agents. Yeah. So in my mind, sub agents are largely for helping a,
+
+00:24:14 your deep agent accomplish tasks more efficiently. So if you, you know, ask your deep agent to go do a bunch of research on some given thing, it probably wants to like pursue a couple different
+
+00:24:28 paths for that research, right? Like you want it to be really thorough. And it's more effective if you spin up sub agents to do that in parallel than if you just had your main agent do like all of the
+
+00:24:40 research in sequence. And then we also, I'll give a coding example too. Like if you wanted your agent to edit a bunch of files in like a similar way, it'd probably be better for it to go edit like 10
+
+00:24:53 files at the same time than to do the first file. Then when it finishes, go to the second. And so the name of the game here really is like parallelization. And then the final like buzzword
+
+00:25:04 that I'll drop here is context isolation. which is that like, if you have kind of a like small subtask, an agent is likely to perform better. If you like just give it the context it needs rather
+
+00:25:15 than like all of this other history and things like that. and so that's really what motivates sub agents. Awesome. Yeah. I think the parallelism is pretty straightforward. People probably think, oh, sub agent, maybe you can fan out. Like we're going to go read this article and we're going to
+
+00:25:29 read the document you gave us. Then we'll write if you did those two in parallel, that's great. But I think it's the context management is also super important, right? The little sub agent that might read the Wikipedia article doesn't consume all the, it doesn't have to know all the other
+
+00:25:43 stuff. All it has to do is say, given this article, get this piece of information out of it. And then it kind of resets almost back to just a sentence or two. Right. So it's a good way to do that context
+
+00:25:53 isolation, like you say. Yep. Yep. Definitely. and then the fourth one we have listed here is, system prompt. Perhaps what I'll like, elaborate on here is the fact that we do give it
+
+00:26:07 like a system prompt that instructs it on how to use the file system and the planning tool and, you know, the fact that it can invoke sub agents. but we also load, memory into the system
+
+00:26:20 prompt. and so that's something that can like persist across conversations and things like that.
+
+00:26:25 and so the idea here just being like prompts power agents and we want to, you know, really optimize the kind of under the hood prompt that's powering this harness. Yeah. two thoughts on
+
+00:26:36 that really quick. I think that's great. There was, I'm sure you've seen this, but there was an article that said something to the effect of 13 Markdown files just took a billion dollars off the stock market
+
+00:26:47 or no, it was some huge amount, maybe 200 billion. I don't know. It was some huge number. And effectively that was when like Claude released the legal agent as a Markdown file or, you know,
+
+00:26:59 a couple other specialized knowledge worker things. And people just realized, wow, it can actually solve all these problems that we used to employ people for, which is really kind of, it's a whole
+
+00:27:10 another kind of tough debate, but that just shows how powerful prompts are, right? If like, oh, we just gave it a different addition to its prompt. And now it it's wall street is freaked out
+
+00:27:21 because it's right. That's crazy. Do you see that? Do you see that article? Yeah. Yeah. Yeah. It's, it's definitely, wild. I mean, I think we've known for a long time that like prompt engineering
+
+00:27:31 and, you know, really carefully tailoring your prompt to your use case is super powerful. but I think people are like really starting to realize how much that might affect like various
+
+00:27:43 industries. Yeah. A hundred percent. So I'll, I'll link to, actually the Claude code system prompt and how many words this is. It's, it's a lot, it's a lot of words. let
+
+00:27:55 me see if I can answer that question, but I'll link to the Claude code system prompt and people can check it out. It's, it's kinda, yeah, it's 16,000 words, which is third of a novel.
+
+00:28:05 And I think that's noteworthy because if, if you ask a question of your AI, some of them show the context that's being used up, right? That counts towards it, right? That's kind of,
+
+00:28:16 that precedes your, your, your one sentence question. You know, if you're like fix failing test, you know, 16,000 words that precedes fix failing test. Yeah. It's crazy, right?
+
+00:28:27 Yeah, definitely. One of the, key things that we also add in deep agents under the hood is like prompt caching. so you might think like, oh man, like my cost is really going to rack up if,
+
+00:28:38 this is being sent every time under the hood, but, we can kind of cache those like shared prompts across invocations. so that, that's very helpful for very verbose symptom system prompts.
+
+00:28:50 Good. You'll want to send that every time. I mean, this is the Claude code one, but you, you'll probably have a non-trivial one as well, right? Yeah. but this definitely speaks to the fact that like, obviously prompts are important, you know, we're like very dependent
+
+00:29:01 on Claude code for, productivity and like the detailed system prompt is a big part of why it's so effective. Yeah, absolutely. And why people are like, well, I feel like it's changed. It's now less friendly or whatever, you know, maybe that means just this, the model might not have even
+
+00:29:16 changed. It could just be the system prompt has changed and now it's doing something slightly different. Yeah. This portion of talk Python to me is sponsored by Temporal. Ever since I had Mason
+
+00:29:26 Edgar on the podcast for episode 515, I've been fascinated with durable workflows in Python. That's why I'm thrilled that Temporal has decided to become a podcast sponsor since that episode. If you've built
+
+00:29:38 background jobs or multi-step workflows, you know how messy things get with retries, timeouts, partial failures, and keeping state consistent. I'm sure many of you have written brutal code to keep the workflow moving and to track when you run into problems, but it's trickier
+
+00:29:52 than that. What if you have a long running workflow and you need to redeploy the app or restart the server while it's running? This is where Temporal's open source framework is a game changer. You write
+
+00:30:03 workflows as normal Python code and Temporal ensures that they execute reliably, even across crashes, restarts, or long running processes while handling retries, states, and orchestrations for you so you
+
+00:30:14 don't have to build and maintain that logic yourself. You may be familiar with writing asynchronous code using the async and await keywords in Python. Temporal's brilliant programming model leverages the exact
+
+00:30:26 same programming model that you are familiar with, but uses it for durability, not just concurrency.
+
+00:30:31 Imagine writing awaitworkflow.sleep, time delta, 30 days. Yes, seriously, sleep for 30 days. Restart the server, deploy new versions of the app. That's it. Temporal takes care of the rest. Temporal is used
+
+00:30:44 by teams at Netflix, Snap, and NVIDIA for critical production systems. Get started with the open source Python SDK today. Learn more at talkpython.fm/Temporal. The link is in your podcast player's show
+
+00:30:56 notes. Thank you to Temporal for supporting the show. All right, let's talk about
+
+00:31:01 Deep Agents, LinkChain style, not just in general the concept of it. And you have a GitHub repo over here just
+
+00:31:11 called Deep Agents. And I thought it might be interesting just to kind of talk through what we got over here.
+
+00:31:17 So some of it we've already talked about, right? Like the planning, the file system, the sub-agents.
+
+00:31:22 But there's also more things like tools, middleware, the whole programming model. Where do we want to start? I guess before we start, let me, how old is this project? Not super old, right?
+
+00:31:34 Not super old.
+
+00:31:35 Let me see. I'll go here. I'll hit the history on the readme. That's usually the best way.
+
+00:31:39 Yeah.
+
+00:31:39 So August. Okay, so it's been around since August. That doesn't tell you when it's been public, right? That's the thing. Yeah. When was it early? I think it was made public very soon after. I think
+
+00:31:52 it might have started public, honestly. We're a very like first company, which is great. But yeah, so it started just this summer. Okay. Yeah. So it's already got, you know, 10,000 stars. It's
+
+00:32:02 pretty popular here. All right. So let's see. I guess maybe let's talk about the programming model, because I think that'll help make it concrete for people. Like what is the value of this? You know,
+
+00:32:13 maybe just talk us through like this quick start. Yeah. So as we mentioned kind of at the beginning, deep agents are, and the agents you can build with the deep agents package are very general. So
+
+00:32:27 Claude Code is an example of a like coding agent. But you might want to build deep agents with all sorts of specializations. And so our new open source library helps you do that. And so you can see
+
+00:32:40 here, we have basically a three line code snippet. You import create deep agent from the deep agents package, you call create deep agent, and you can add your own model tools, prompt additions,
+
+00:32:55 kind of other configuration. And then you like have a an agent that's ready to use and even deploy.
+
+00:33:02 So very basically easy way to get started with building effective agents.
+
+00:33:08 Awesome. So you might just say agent.invoke and use that research lane graph and write a summary.
+
+00:33:14 Yeah. Yeah.
+
+00:33:14 So then what? How does it know what model to use? How does it, you know, how does it go about that?
+
+00:33:21 Can it use tools and to-dos, you know, planning like we've discussed?
+
+00:33:25 Yeah. So when you use the create deep agent function under the hood, we add tools for planning
+
+00:33:34 and also for file system access and things like that. We'll have a user or a developer specify like
+
+00:33:42 what file systems they'd like to use. And then you can bring your own tools in addition to the ones that we provide under the hood. So maybe going back to my like travel agent example, you could,
+
+00:33:55 you know, bring like, or actually I'll use like a personal assistant example. If you want to have, you know, a calendar API tool and a Gmail API tool, you could bring those along as well.
+
+00:34:07 So kind of more use case specific.
+
+00:34:09 I see. Maybe I'm working with Obsidian or some other Markdown thing for organization. And you could point it and say, you're allowed to access any of my Markdown files for this project or just in general, right? Something that could be a tool and you could teach it to do that. Yeah. So I noticed
+
+00:34:23 below that you can do things like specify a little more detail. For example, you can say it can use a certain model in this case. See how long that'll last. You could use GPT 4.0. I hear,
+
+00:34:35 aren't they taking that away again? They took it away. People are freaked out on them. They put it back, but I think it's also not long for this world, but whatever you pick some model. And then as you pointed out, this tools as my custom tool, it's not super obvious from this code snippet,
+
+00:34:49 but my custom tool is just a Python function, right? Yes. Yep. That's correct. It's pretty easy to define tools. It can be just, yeah, a very simple Python function, can use some API of your
+
+00:35:02 choice, like maybe the calendar API, for example. I see. So you could, you could write pretty much any type of function. It just has to take in text and spit out text or something to that effect.
+
+00:35:14 Yeah. We actually support like multimodal content for tools as well. So it could produce images. It
+
+00:35:21 could produce files of other types and can take, you know, a varying, it can take any types of arguments. So the model is populating those arguments. But. Right. Okay. How does it,
+
+00:35:35 I mean, this might be getting too deep in the weeds for a quick start, but how does it know what to pass to your Python function and how does it know what to do with the return value? Yeah, that's a great
+
+00:35:45 question. So it all comes back to the prompt. And this is kind of a like wonderful marriage between developer docs and LLMs. So when you define a function, let's say like, I'll use a simple example,
+
+00:35:59 a weather tool, a get weather tool. You can imagine the arguments might be something like, I'll say like city and state or something like that. And then you might expect kind of structured
+
+00:36:12 weather data back, like, you know, current temperature, current conditions, et cetera.
+
+00:36:18 And when you define that function and your Python code, you can write a doc string and it says, this tool is used for getting the weather in a given city and state. And then you can document
+
+00:36:29 your arcs. And so city, you would say the city to get the weather for, and then state, you know, this is all pretty self-explanatory. And then that information is parsed under the hood and actually
+
+00:36:39 passed to the model as part of its prompt. And so what that looks like is, you know, we would parse the fact that we would parse the signature of the tool and the documentation and tell the model
+
+00:36:53 effectively like, hey, you have a get weather tool. If you, you know, you should call it when you want to get the weather for a given city and state. We pull that out of the doc string.
+
+00:37:03 And then we also say, when you call it, make sure to pass these arcs in.
+
+00:37:07 Right, right, right. So a lot of times I see this happening and people are like, well, let's try to specify a JSON schema. And your job is to generate data that looks like this and then maybe even validate and say, no, you did it wrong. Try it again. But this is really interesting
+
+00:37:22 using the native Python syntax and help, you know, doc strings, right? That's wild.
+
+00:37:28 Yeah, it's really nice. I think it lets developers kind of focus on just writing the code that makes sense for their use case. And then, yeah, under the hood, like we convert these schemas to LOM usable
+
+00:37:40 things. And this is a nice like intersection of my previous work and current work, which is like a lot of the, you know, function parsing uses tools like Pydantic to define schemas for models. So that's a cool overlap.
+
+00:37:52 Yeah, I know that that's an interesting aspect of what Pydantic is used for a lot. So as you were describing this, I was wondering, hmm, are you using Pydantic for this? Perhaps. Okay, amazing. I think
+
+00:38:02 this also blends well with Claude Code type written, I guess, just clod, not, you know, clod opus on it, whatever. The models, they're very keen to write doc strings, right? They just, even if you don't ask it
+
+00:38:15 to a lot of times, it's doc string, doc string, doc string. So I guess that would be really helpful, right? Yeah, yeah, definitely. I think it's nice that like some of the things that we as developers weren't necessarily the best about in terms of like code cleanliness or quality, we can now kind
+
+00:38:30 of get some help enforcing as well. It was too much work, but it's not too much work for you, AI, because you don't get tired, so you do it. Yeah, exactly.
+
+00:38:38 Yeah. What about type int? Does that play into anything that you consider? If I say it's an int versus a string, does it communicate, oh, you'd have to pass an integer here? Yeah, yeah, we do. So we
+
+00:38:50 generate the JSON schema, both from the documentation for the parameters, as well as the types associated with them. So that helps the model kind of align to... Yeah, that's very cool. I see also that it says
+
+00:39:04 an MCP is supported. Yes. What does that mean?
+
+00:39:08 Yeah. So MCP stands for model context protocol. And as of now, MCP, the protocol has specs for a lot of things. But the thing that it's most popular for is kind of having a specification for what tools
+
+00:39:23 should look like. And so MCP clients can use tools provided on MCP servers. And this means basically
+
+00:39:31 that you can use tools provided elsewhere. So not just in your own code that have a tinder.
+
+00:39:38 So that means that you can plug in an MCP server as basically as a custom tool to this. Not that it itself does MCP server stuff, but it can consume MCP servers. Is that correct?
+
+00:39:51 Yes. So you can fetch tools from MCP servers to use in your agents, which is really helpful if you want to use tools defined by others or maybe defined by others, you know, on a team adjacent to yours, things like that.
+
+00:40:05 Yeah. Well, I think the world sleeps a little bit on MCP servers. I think we could do a lot of neat stuff if more AI support them. You know, Claude Code, Cursor, Cloud, just no adjectives. Those
+
+00:40:17 all support MCP servers. But for example, ChatGPT doesn't, right? And that's probably the biggest one people use. But if you could say, I know it's got connect my calendar or three other things of all the
+
+00:40:28 possible data sources in the world. But you know, you could have a lot more things if there was a little bit more support for this stuff. But it's cool that you all support it.
+
+00:40:35 Yeah, definitely. I think it just helps a lot with like cross team collaboration. And then also just like general community collaboration, right? Like if there's some great idea for a tool, someone's probably implemented it somewhere. It's nice to have that standardized interface.
+
+00:40:49 Yeah. Yeah. The other thing I think is just the timeliness and the accuracy of the data. Because when you call it MCP server, you're basically just calling an API and it can give you back the data.
+
+00:40:59 Whereas, you know, ask if there was a weather MCP server, for example, instead of saying, what's the weather? It's like, well, my training data goes back to January, 2025. So then the weather, you're like, that is unhelpful to me. I want to know what the weather is now, right? It could ask
+
+00:41:13 exactly what it is. So I created MCP server for Talk Python for people who don't know. And you can plug it in a cloud and other things. You can say, what's the latest episode or what are the
+
+00:41:23 last five episodes? And if I published an episode 10 seconds ago, it'll show up if you ask the AI, right? I think that's one of the big benefits. That plus access to data that's like private,
+
+00:41:34 you know? Yeah. Yeah. It's very helpful. And I think another thing to like highlight on this page is we support like using any model, which is really nice. So you don't have kind of this like
+
+00:41:48 vendor lock in, like the same flexibility that you get from, you know, being able to use tools from any provider. It's nice to be able to switch models based on your use case.
+
+00:41:59 Yeah. That's super cool. So for example, if you use Claude Code, you get to pick anything long as it's a anthropic model, you can pick that one, right? Right. Right. Whereas this, you could pick anything.
+
+00:42:08 Could I pick, so I'm running on my Mac mini pro. It's a little bit better at those things.
+
+00:42:14 I'm running the open AI, open weights model locally, like the 20 billion parameter one. And I can, I got it set up so I can do basically treat it as an open AI API endpoint. Could I plug that in here
+
+00:42:28 and then talk to my Mac mini instead of talking to a cloud frontier model? Yeah. Yeah, you could.
+
+00:42:34 And so this is, you know, kind of been motivated by our like open source philosophy and like foundation, but you can use any, any model. We have tons of integrations in lane chain for all sorts of
+
+00:42:47 providers, including open source model adapters. And then it's also cool. Your, your sub agents can use different models than your main agent. So you might want sub agents to use like a cheaper and
+
+00:43:00 faster model inherently, right? Cause they should be handling kind of smaller tasks.
+
+00:43:04 Interesting. Yeah. Yeah. I think that is a pattern that people use. They sort of plan with the higher model, maybe plan with Opus, but then you execute with Sonnet or something like that. If you're in the cloud world that I think that can be really powerful because once you get
+
+00:43:18 everything set straight and you got the to do's broken down and the sub agents, you're right. It's a much smaller job to address the pieces. Also you got a CLI. See? Yeah. Very exciting. So the deep
+
+00:43:30 agent CLI is kind of our coding agent. You can think of it as analogous to Claude Code.
+
+00:43:36 we use it internally at lane chain, opposed to, as opposed to Claude Code. and enjoy some of those features. Like, we support streaming, which is really nice. So you can actually see like,
+
+00:43:49 you know, word by word outputs, which is kind of nice from like an end user perspective.
+
+00:43:54 and then the model switching and, built in memory and things like that. so basically CLI built on top of the deep agents, open source harness. Nice. let me go back real quick to this
+
+00:44:06 different model. So here it says open AI colon GPT four. Oh, does it basically just know how to talk to open AI and then it, you've got to set an environment variable or something to specify your
+
+00:44:18 API key or how does it get connected behind the scenes? Yeah. that's exactly right. So you can set your, API key and environment variables. You could also pass it in explicitly here if you wanted
+
+00:44:30 to do that. I think it's really, not like the best practice, but, we deep agents is built
+
+00:44:37 on top of lane chain, which is kind of our, tool for like standardizing using different, models.
+
+00:44:45 and so we, you know, have standard content blocks that represent, different types of messages and that's like standardized across providers and models. and so we use lane chain under the hood
+
+00:44:56 to talk with all these different providers and then provide you the end user with kind of a unified experience. Nice. Yeah. So people who know lane chain or lane graph, a lot of this is layered on,
+
+00:45:06 this is kind of on top of all that, right? Yeah, exactly. So it's actually built on both lane chain and lane graph. so we think of lane graph as like our agent runtime. This is like, you know,
+
+00:45:19 to get really like technical with it, the graph under the hood, that's powering those like model and tool call iterations and streaming and lane graph also powers. Like if you actually want
+
+00:45:31 to deploy your agent, it's kind of the framework that, enables that with like durability and, and all of those like, you know, production grade features. then lane chain itself is, what we
+
+00:45:44 call an agent framework that's different from an agent harness. Like it doesn't have all these things built in under the hood. but it just has those like agent building blocks. and then deep agents
+
+00:45:55 is the agent harness where we plug in all of that other logic. Got it. Okay. Very cool. Yeah. It says the create deep agent returns a compiled lane graph graph. So there you go, right? Yep. Yep. Um,
+
+00:46:07 one other thing I forgot to mention, just we'll bring it up here is, one of the most important parts of our harness is summarization. so if you have a really long conversation with like Claude Code,
+
+00:46:18 you might see it say like compacting and then it'll kind of spin for a minute or two. that's because you've actually hit or you're close to hitting the context limit, the context window
+
+00:46:29 limit for that model you're using. and so we see with these like long running long horizon tasks that effective summarization and compaction is super important. And so we basically guarantee
+
+00:46:40 with deep agents that you're never going to like hit your context overflow error because under the hood, we'll kind of keep track of things and, and summarize as we go. I love it. Okay. Yeah.
+
+00:46:49 That kind of brings us maybe to the, these life cycle events and middleware, I think a little bit. So this is an interesting idea because you have all these different capabilities that are,
+
+00:47:00 I guess I saw them middleware. I know where there's some, there's a list somewhere, I'm sure, but you can plug into what happens before code is sent to the model or what happens for each step
+
+00:47:14 and things like that. Right. Maybe maybe more about this. Yeah, sure. I'll send, I sent you the link for, I think we have a lot of, a lot of, middleware content on our docs. there we go.
+
+00:47:27 Yeah, perfect. So middleware is kind of this innovation that we shipped with lane chain 1.0 in October. and it's kind of the like intermediate step between it's what powers,
+
+00:47:41 or enables the harness. And so, we have that core model and tool calling loop, but you can imagine you might want to kind of hook into behavior around both of the model and tool
+
+00:47:53 kind of nodes. and I'll, I'll give some examples of what that might look like in context.
+
+00:47:58 So before your model runs, you might want to check if you need to summarize and do that before the model call, after the model runs and before you call a tool, you might want to check if, that
+
+00:48:12 tool requires a human in the loop to like approve, before that kind of sensitive tool call runs.
+
+00:48:18 The classic example there is like, if the model calls the send email tool, you might want to, like approve that email before it's, you know, sent to your boss, for example.
+
+00:48:27 Yeah. Do stock trade.
+
+00:48:28 Yeah. Yeah, exactly. and then, there's, some less flashy, but you know, still important things like, just robustness and like fallbacks, model fallbacks or tool
+
+00:48:42 retries or things like that, that you can support via middleware.
+
+00:48:46 Okay. Yeah. And you can build your own and as well, for sure. And there's also some that are prebuilt, right? Like you, you said some human in the loop summarization, personal information
+
+00:48:57 detection. That's pretty interesting. The to-do list or the retry.
+
+00:49:04 Yeah. Yeah. So we kind of tried to like standardize, and, and just observe common patterns that we saw for folks building agents and, expose some common middlewares, but you can kind of build your
+
+00:49:16 own as well. and then deep agents uses middleware to power all of the things we're doing, for our agents.
+
+00:49:24 Yeah. And I saw one of the presentations y'all did that, you know, Claude Code and so on, they have these, these types of custom tools and middleware as well. So people probably are familiar
+
+00:49:35 with experiencing them, just not quite realizing exactly how, right?
+
+00:49:39 Yeah. Yeah. I think that's true. And like middleware is generally just kind of a common software pattern, right? Like you want to hook into life cycle events and perform logic that's, you know, appropriate for your application.
+
+00:49:51 Yeah. A hundred percent. All right. Let's, we're getting short on time. Let's talk examples before we run out of time. And I think this will lead us into a couple more interesting elements that we maybe haven't necessarily talked about. So I'll link to this examples
+
+00:50:04 subfolder here on, on the GitHub repo. So we've got a deep research one, which I think is really cool.
+
+00:50:10 The content builder for writing the text to SQL agent, Ralph mode. I've, I've yet to experience Ralph mode. I haven't done anything with that, but that's just the, I don't care. Just keep trying.
+
+00:50:21 If you fail, just keep trying. All right. Sort of mode. Ralph from Simpsons South Park. I don't know one of them. Yeah. Anyway, maybe we could talk about the deep research one first, because it's got a cool
+
+00:50:32 UI component. So like you can run this in both as a Jupyter notebook and play with it or a Lang graph dev UI. And then you also have some other UIs as well, right? I can't remember.
+
+00:50:45 I feel like there's a third, third UI that you all support for this, this kind of stuff. So maybe let's talk through this one and then tell me, tell me about it. Yeah, definitely. So the idea with
+
+00:50:55 deep research is that you are going to be doing a pretty long running task. Like you want your model to be really thorough. And then one of the most important tools for deep research is web search,
+
+00:51:08 because you want to get like current and relevant information. So we use Tably for web search.
+
+00:51:14 And then I can talk a little bit about our like UI as well. So we, I guess I'll, yeah, I can chat a little bit about our UI, but generally it's, it's hard to build agents, right? Like we talk about prompt
+
+00:51:28 optimizations and things. And LangChain, the company provides a lot of tools to make it easier to build agents. And so one of them is this kind of agent viewer where you can see each of the like steps
+
+00:51:40 in your agent. In this case, we see like the summarization middleware step and then the model and tool steps. And then, yeah, so, so that kind of makes it easier to like step through and understand the behavior of your model.
+
+00:51:54 Right. Ultimately, as we talked about, it's a bit of a lane graph thing anyway. So it shows you how that all comes together, right?
+
+00:52:03 Yes. Yep. And you can see on the right, we're looking at kind of the trace of things. And so we see like the to do middleware being called and other tool calls, et cetera. So we try to really
+
+00:52:16 make those like agent behavior primitives first class. So you can really narrow into like, what is the model doing once I invoke it?
+
+00:52:26 Yeah. So that's lane graph dev for this project. You can also do the notebook and there's a really nice, actually nice visualizations in there for, you know, what is the prompt that is the result and
+
+00:52:38 so on. Right. I think it comes out pretty, maybe I can open up the notebook and it's got the results cached. You know, sometimes that's, that's both a benefit and a drawback in notebooks, but right now
+
+00:52:47 would be a benefit of some of the, yeah, for example, has like a really nice display of what the prompt was with formatting and so on. Right. And then there's a third one, if I remember correctly,
+
+00:52:57 that's kind of like a web UI for like ChatGPT or Claude, just no adjectives.
+
+00:53:03 Yeah. So we had kind of a deep research UI that we built out as a POC around like, we just want to make this easy for folks to view. I will note, we have recently rolled out a product
+
+00:53:16 called Agent Builder, which is like a no code agent builder powered by deep agents. And it is, you know, somewhat inspired from this UI. It basically is like a chat interface for an agent
+
+00:53:28 that gives you insights into the tool calls that are happening and things like that. That's kind of our like modern version of how you would probably go about seeing this in a UI. Sure. Okay. What else?
+
+00:53:39 I guess a couple of other examples here. What's this text to SQL story? Yeah. So the idea here is that
+
+00:53:49 if an agent has some information about data structure for your, you know, for your database, et cetera, it is much easier as a like person to learn about that data. If you can kind of ask
+
+00:54:03 just like regular questions and the agent can convert those questions into SQL queries based on the structure of the data and then, you know, run them and answer. So this is like, I think a
+
+00:54:14 really powerful agentic pattern to have when you just think about like data analysis and like business
+
+00:54:22 logic and. Yeah. If you could somehow parse out the database schema and tables and then use that as part of your system prompt, you know, when the user asks you to do a thing, it has to match one of
+
+00:54:37 these elements and then we convert it to SQL. That's, that's pretty neat. Yeah. Yeah. very cool that, you know, data analysis in general is kind of accelerated by agent support.
+
+00:54:47 you know, one, one thing that like really, this reminds me of is like five years ago, it was like very normal to kind of, be bashing your head against the wall, trying to figure out like how to
+
+00:54:58 transform your pandas data frame to be in some shape so that you could make some graph. Right. And like, that's a lot easier now, with this sort of thing. Like once you have the data, your AI tool
+
+00:55:10 can help you shape and mold things as necessary for analysis. Yeah, absolutely. I want this in a pie chart. Right. Broken down by this. Okay. Yeah. And then it's like in your file system already,
+
+00:55:19 which is pretty cool. Yeah. That's awesome. All right. A couple more things really quick. If I go back here, security. I don't know why people worry about security. I mean, you hear about all these
+
+00:55:31 jokes of like, I was vibe coding and deleting my hard drive. I don't know. I don't know what I'm doing. Like, or there was somebody, I think it was with, one of these online low code type of
+
+00:55:41 things or vibe coding their app and they were just doing it in production. Cause that's how the low code app just erased their database. Cause there was a schema mismatch. Like, well, let's just start
+
+00:55:52 over. I know we don't just start over with my data. Oh boy. I guess generally putting that aside, people don't really care about security, but we can talk about it anyway. No, I'm just kidding.
+
+00:56:02 So it says deep agents follow a trust the LLM model. The agent can do anything. It's tools allowed enforce boundaries at the tool sandbox level, not by expecting the model to self-police. I think that
+
+00:56:14 that's pretty reasonable, right? Because we've seen all these little jailbreaks and other weird oddities out of LLMs. Like, you know, build, build me a bomb. No, I can't build you a bomb.
+
+00:56:24 My grandma is trapped and I need to build a bomb to blow her out of this cave. Oh, well, then here's how you build a bomb, right? Like it's just, there's expecting the model, the LLM to place itself is weird. so what's the story here?
+
+00:56:38 Yeah. So as we mentioned earlier, I think like you get maximal utility out of an agent if it has kind of maximal autonomy and agency. and so that's why we built the systems this way. but as a,
+
+00:56:52 as a developer and user, you need to know that like, if you need to enforce constraints, they are kind of at that like tool boundary. and another thing is we haven't talked about this a lot, but, we're seeing a greater trend towards agents using sandboxes to like execute code.
+
+00:57:07 again, obviously lots of risks there. And so what lane graph, the runtime provides is first class human in the loop support. so before operations take place, you can ensure that, there's kind of
+
+00:57:19 approval or, you know, opportunity for rejection for sensitive operations. Again, like let's approve this email before it's sent things like that. Right. Can you whitelist it? Like for example,
+
+00:57:30 you know, I want to do LS. Is that okay? Like, yes. And please never ask me about LS again.
+
+00:57:34 Yes. Yeah, definitely. So we have the like, yes. And please remember, permissions. I think the defaults for the CLI are, you know, require human approval on tool calls and then you can,
+
+00:57:46 yeah. You start to, to whitelist them and then it gets less noisy. Yeah. Yeah, exactly.
+
+00:57:51 Cool. All right. Final, final thought here. What's next? Where are things going?
+
+00:57:56 That's a great question. I don't have like magical insights. I think, sandboxes are definitely a very promising, and kind of growing pattern. Just as you mentioned, you know,
+
+00:58:10 initially being able to like run code and execute code is super valuable, in, in terms of like productivity. If you know that the code handed to you is like tested and functional, that's really
+
+00:58:21 valuable. and then I'll also say that like, we think about agents who write code as coding agents, but actually I think that like coding is just a productivity accelerator. Like you can use code to
+
+00:58:34 perform data analysis or to, you know, do so many other things that need to be automated. So I think we're going to start to see more general purpose agents who just write code to help them
+
+00:58:46 with things. so yeah. Yeah. I'm trying to, I'm trying to dream up what I'm, I might build with this. There was this joke, joke that I did on the Python bites podcast. And it just, it comes to mind.
+
+00:58:57 And now there's this, this character putting their hands up. It's a silent side project. The new side project is talking. And I feel like that's how my life is. There's, it was just so exciting.
+
+00:59:08 You can build so many things with AI, have AI build the thing or any with this, like imbue it with really powerful agentic capabilities. And there's just, I think the real challenge is finding time and
+
+00:59:18 focusing and finishing in anything at all. Cause it's just so exciting to try ideas out, you know?
+
+00:59:23 Yeah. Yeah, definitely. It is nice that it's easier to, you know, get further with ideas in a very short period of time due to these tools. Yeah. Yeah. I think it's great. Cause you can, you can test out an idea and go, ah, that's not that great. Actually, this is a really good idea
+
+00:59:38 that I'm going to keep going, you know? So that's really cool. Anything new or anything planned with deep agents that's coming that we don't know about, or it's not obvious I haven't talked about yet.
+
+00:59:47 I think we'll probably release a more detailed roadmap soon. I mean, we're, we're really sprinting towards, I think a 1.0 eventually. we just kind of want to solidify
+
+01:00:00 those like core primitives. Like I mentioned, we have, file systems that you can use like remote file systems as well. Like, you know, an S3 backend or a database backed backend. And so,
+
+01:00:14 yeah, just, excited to kind of keep sprinting on what the latest and greatest trends are in agent harnesses. one resource that I would, point to, let me see if I can find the
+
+01:00:25 link is, more and more we're seeing with, with agent development that you're not really able to do it well. If you can't like look under the hood and see what your agent's doing. and so
+
+01:00:38 we just released this blog post on, harness engineering. So basically like how we go about improving our harness systematically. and it was very dependent on looking at our traces of,
+
+01:00:51 you know, agent behavior and like even using LOMs to analyze those traces. and yeah, like the tail is in the trace. So I guess, lesson here just being, it's really cool to use traces to self-improve,
+
+01:01:06 our own, you know, harness and things like that.
+
+01:01:09 Yeah. That's wild to actually see the steps and, and I guess you could probably even look at like failures and retries and how does the context vary?
+
+01:01:19 Yeah. Yeah, exactly.
+
+01:01:20 Interesting. Okay. Well, very cool. Thank you, Sydney. Maybe final call to action. People want to get started with deep agents. What do they do?
+
+01:01:28 You do pip, uv pip install deep agents. yeah, but super easy to get started in just a couple lines of code. and we're an open source team. So always happy to, answer questions or accepting contributions, et cetera.
+
+01:01:43 Awesome. Do you have a discord channel or something like that?
+
+01:01:45 I don't like a community group.
+
+01:01:48 We do have a forum, that we, yeah, I would, I would direct people to the forum generally.
+
+01:01:54 Sweet. All right. Very interesting. What a wild time. What a weird and interesting time we live in, but very cool.
+
+01:02:00 Yeah. Great to, great to chat with you about all things deep agents. Thanks for having me on.
+
+01:02:04 Yeah. You bet. Keep up the good work. Talk to you next time.
+
+01:02:07 This has been another episode of Talk Python To Me. Thank you to our sponsors. Be sure to check out what they're offering. It really helps support the show. This episode is brought to you by Sentry.
+
+01:02:16 You know Sentry for the error monitoring, but they now have logs too. And with Sentry, your logs become way more usable, interleaving into your error reports to enhance debugging and
+
+01:02:26 understanding. Get started today at talkpython.fm/sentry. And it's brought to you by Temporal. Durable workflows for Python. Write your workflows as normal Python code and Temporal
+
+01:02:38 ensures they run reliably, even across crashes and restarts. Get started at talkpython.fm/Temporal.
+
+01:02:45 If you or your team needs to learn Python, we have over 270 hours of beginner and advanced courses on topics ranging from complete beginners to async code, Flask, Django, HTMX, and even LLMs. Best of all,
+
+01:02:59 there's no subscription in sight. Browse the catalog at talkpython.fm. And if you're not already subscribed to the show on your favorite podcast player, what are you waiting for? Just search for Python in your podcast player. We should be right at the top. If you enjoy that geeky rap song,
+
+01:03:13 you can download the full track. The link is actually in your podcast blog or share notes.
+
+01:03:17 This is your host, Michael Kennedy. Thank you so much for listening. I really appreciate it.
+
+01:03:22 I'll see you next time.
+
+01:03:22 Tuck Python for some time.
+
+01:03:34 Tuck Python for some time.
+
+01:03:35 Yeah we ready to roll Upgrading the code No fear of getting old We tapped into that modern vibe Overcame each storm
+
+01:03:47 Talk Python To Me, iSync is the norm
+

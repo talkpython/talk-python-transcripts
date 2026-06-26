@@ -1,0 +1,1430 @@
+00:00:00 You wake up, brew the coffee, open GitHub, and there it is, another pull request on your open source project.
+
+00:00:05 13,000 lines added, no issue filed first, no discussion, just here, please review this for me.
+
+00:00:11 Over the past year, GitHub activity has spiked roughly 12 times in a few short months, and a huge chunk of that signal is landing on the same small group of maintainers who are already stretched very thin.
+
+00:00:23 The curl bug bounty got buried under AI-generated noise, jazz band, the home of Django classics like pip-tools, and the Django debug toolbar hit what its maintainers called an apocalypse and started sunsetting.
+
+00:00:36 Even CorePython just shipped fresh guidelines on AI-assisted contributions this week.
+
+00:00:41 So what does all this actually look like from the receiving end of the pull requests?
+
+00:00:45 On this episode, Paolo Machare joins us to tell the story from inside the maintainer's chair.
+
+00:00:50 Paolo is the director of the Django Software Foundation, an organizer of PyCon Italy, a Django's girls coach, and has spent the past year carefully collecting examples of how AI is reshaping open source contributions, the good, the bad, and the extra fingers.
+
+00:01:04 We dig into his PyCon US talk on AI-assisted contributions and maintainer load, why AI is best understood as an amplifier rather than a new kind of contributor, the widely different policies across 86 open source foundations and projects,
+
+00:01:18 and we ponder whether projects banning AI today are reacting to last year's models.
+
+00:01:24 This is Talk Python To Me, episode 551, recorded May 22nd, 2026.
+
+00:01:29 Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:01:53 This is your host, Michael Kennedy.
+
+00:01:55 I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:58 Let's connect on social media.
+
+00:02:00 You'll find me and Talk Python on Mastodon, Bluesky, and X.
+
+00:02:04 The social links are all in your show notes.
+
+00:02:06 You can find over 10 years of past episodes at talkpython.fm, and if you want to be part of the show, you can join our recording live streams.
+
+00:02:14 That's right, we live stream the raw, uncut version of each episode on YouTube.
+
+00:02:18 Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:02:23 Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:02:27 What if your AI agents worked like FastAPI microservices, typed, autonomous, and discovering each other at runtime?
+
+00:02:34 That's the world Agent Field is building.
+
+00:02:36 Join them at talkpython.fm/Agent Field.
+
+00:02:39 Hey friends, before we dive in, I want to share something I just launched over at Talk Python, a new course.
+
+00:02:45 If you ship Python to production, you've probably had that quiet thought about what might be lurking in your code.
+
+00:02:52 My new course turns that worry into a concrete workflow and a reusable AI security agent that's yours forever.
+
+00:02:59 It's Python Web Security, the OWASP top 10 with agentic AI.
+
+00:03:03 Check it out at talkpython.fm/AI dash web dash security.
+
+00:03:07 The link is in your podcast player and on the episode page, or just go to talkpython.fm and click on courses at the top.
+
+00:03:13 It should be right there.
+
+00:03:15 So if you're interested in making sure the apps and APIs that you ship are secure, this is the course for you.
+
+00:03:21 Welcome to Talk Python To Me.
+
+00:03:22 Great to have you here, man.
+
+00:03:23 Hi, Michael.
+
+00:03:24 Thanks for having me and meeting you again after PyCon US last week.
+
+00:03:28 We had a great time at PyCon.
+
+00:03:30 I mean, I don't know how you feel about it.
+
+00:03:32 Given all the work that you do, I suspect you feel similarly.
+
+00:03:35 But to me, PyCon is like my geek holiday.
+
+00:03:37 It doesn't feel like work.
+
+00:03:39 It's like the reward for all the work throughout the year.
+
+00:03:42 Yeah.
+
+00:03:42 So for me, it's very nice to meet in person all these people that you talk with during the year.
+
+00:03:49 And then finally, for a world week, you can chat with them, drink a beer together, or meeting also new people.
+
+00:03:56 Yeah, absolutely.
+
+00:03:57 It was tons of fun.
+
+00:03:58 So we're going to talk about, honestly, I think it's going to be a fad, but we're going to talk about this new fad called AI.
+
+00:04:04 Probably not going to last.
+
+00:04:06 But in the meantime, it's kind of a hot topic at the moment.
+
+00:04:09 So we're going to talk about AI and specifically your talk from PyCon about the effect of AI on open source maintainers, which I think is a perspective that many people don't consider.
+
+00:04:23 Right?
+
+00:04:23 There was this graph from GitHub saying, look, we're really sorry that GitHub is down a lot lately.
+
+00:04:29 But here is the usage graph of GitHub.
+
+00:04:32 And it did something like 12 times increase in activity over a couple of months.
+
+00:04:38 I don't know, which I'm not necessarily totally going to give GitHub a pass on that.
+
+00:04:43 But it is a signal and an indicator of just how much more the contributions, issues, pull requests are to GitHub.
+
+00:04:53 Some of those are going to private repos or public one person repos.
+
+00:04:57 But some of that traffic is going towards Django, Flask, Postgres, Curl, whatever.
+
+00:05:04 Right?
+
+00:05:04 And there's still one person or a couple of people on the receiving ends of those projects.
+
+00:05:09 Yeah, it's true.
+
+00:05:10 As I would say during my talk, I think AI here is a tool that amplified all the contribution, positive and negative effects.
+
+00:05:19 So also small project or one-man project now have tons and tons of pull requests and issues opened in a very few months of time.
+
+00:05:28 This is not the best thing to have if you have a very few time as a maintainer or you have also a job in the family.
+
+00:05:35 So this is what I try to analyze in my talk.
+
+00:05:39 It's tricky.
+
+00:05:39 It's very tricky.
+
+00:05:40 Now, before we get into a bunch of different things, primarily your talk, who are you?
+
+00:05:45 Quick introduction for everyone.
+
+00:05:46 Yeah.
+
+00:05:46 Very quick one.
+
+00:05:47 I am a software engineer from Italy.
+
+00:05:51 I studied in Bologna and just after my career in the university, I started working with Python, which I never used at university.
+
+00:05:58 But I started using Zope, which is a very old web framework from the 2000s.
+
+00:06:03 And also, I think, we do work in the Zope Corporation back in the time.
+
+00:06:07 But I liked a lot the backend work with database, relational database in particular.
+
+00:06:15 So I jumped from the Plone community into the community in the Django one in 2011.
+
+00:06:20 And I've been more and more involved.
+
+00:06:22 Until today, I'm a member of the Django Software Foundation.
+
+00:06:26 I'm a Python Software Foundation fellow.
+
+00:06:30 And I tried to involve in a buddy initiative like Python Italia organization.
+
+00:06:36 I founded the local Python Pescal in my city, local meetup.
+
+00:06:41 And I tried to talk about Python, different conferences in person and remotely.
+
+00:06:48 Nice.
+
+00:06:49 Well, that will keep you busy.
+
+00:06:50 That's a lot going on.
+
+00:06:52 Let's actually just let me switch over here.
+
+00:06:55 Let's just jump right into that.
+
+00:06:56 I think maybe talking about some of your work.
+
+00:06:59 You mentioned some of these in your introduction here.
+
+00:07:02 But people are probably familiar with the Python Software Foundation.
+
+00:07:06 But when you switch from Plone and Zope over to Django, you move to a place that has an incredible community.
+
+00:07:14 It's probably the biggest community, organized community in all of Python.
+
+00:07:19 That's not Python itself.
+
+00:07:21 Maybe something in data science, but I don't think so.
+
+00:07:24 I think Django has got the most gravity of all of these different organizations.
+
+00:07:29 So it has its own software foundation with people that work for the Django Software Foundation and so on.
+
+00:07:34 So you're the director of Django Software Foundation, yes?
+
+00:07:37 Yeah.
+
+00:07:38 Tell us about it.
+
+00:07:39 Django, last year we had the 20th birthday.
+
+00:07:43 So it's 20 years around.
+
+00:07:44 Now this year, 21.
+
+00:07:45 One of the oldest community that now is organized.
+
+00:07:50 They created the foundation from the beginning.
+
+00:07:53 So now it's one of the few projects with a big foundation and also a big community.
+
+00:07:59 And we organized Django Cone since a long time now in different countries, in the US, in Europe, in Africa, in Australia.
+
+00:08:07 We are starting also some initiatives like that in India.
+
+00:08:10 And the foundation here has the role to preserve the community and the software.
+
+00:08:17 I think the Django Software Foundation is one of the most interesting because we experiment a lot of solutions.
+
+00:08:26 Also before the Python Software Foundation, for example, we started having the Django Fellow a long time ago.
+
+00:08:31 And now the Python Foundation is the developer in residence, which is the same things.
+
+00:08:37 We try to be involved in the various initiatives.
+
+00:08:42 We create, we sustain the conference, the event as a Django Software Foundation.
+
+00:08:47 For example, we give money for the organization of Django Girls Workshop all around the world.
+
+00:08:53 Now we created, we are sustaining the Django Naut Space program, which has been the subject of the topic of the last keynote in PyCon US last week.
+
+00:09:04 And other small initiatives like events or Django on the Mads.
+
+00:09:09 So the goal of the foundation is to sustain the community, the various aspects of the community, and also have higher.
+
+00:09:16 Now we have three Django Fellows that can be full-time working in triaging, helping the community to having the best code.
+
+00:09:26 We can have released the version on Python of Django, sorry.
+
+00:09:30 And yeah, this is the work we try to do every month.
+
+00:09:33 It's amazing, really.
+
+00:09:34 You think about it.
+
+00:09:35 There's a lot of other Python web frameworks.
+
+00:09:37 They don't have this.
+
+00:09:38 You know what I mean?
+
+00:09:39 There's a lot of data science groups and they have it.
+
+00:09:42 You know, there's PyData.
+
+00:09:43 So in a sense, it's somewhat, but that's all the PyData.
+
+00:09:47 It's not, you know, pandas or whatever, right?
+
+00:09:49 So this is really impressive.
+
+00:09:50 And I think it's honestly one of the bits of the secret to the success of Django.
+
+00:09:56 Yeah, I agree.
+
+00:09:57 The fact that we had people that can dedicate full-time or volunteers in the boards.
+
+00:10:03 We all are volunteer and they spend time during the week.
+
+00:10:07 And then for the meeting to sustain all the working group we are creating now.
+
+00:10:12 We try to defend the trademark of Django and sustain all the working group that we are now for the security part and for other things.
+
+00:10:21 So the goalie here is trying to be organized a little to let everyone join the community and stay inside the community of Django.
+
+00:10:30 Right.
+
+00:10:31 You're also a, not that one.
+
+00:10:33 I don't think I have a link for it, but you're a Django Girls coach as well.
+
+00:10:36 What does that mean?
+
+00:10:37 I mean, we know what Django Girls is.
+
+00:10:39 It's like an organization that specifically supports women in tech by helping them get good at Django and providing community there.
+
+00:10:46 But what does it mean to be a coach for Django Girls?
+
+00:10:49 Yeah.
+
+00:10:49 Django Girls is an initiative that started in EuroPython more than 10 years ago, if I remember correctly, or longer than that.
+
+00:10:57 So they are workshops for one whole day.
+
+00:11:02 And you invited girls and also low representative people in this workshop for free.
+
+00:11:10 Being a coach there means only stay there with the people that join and help them through the process of completing the workshop.
+
+00:11:18 There is a very good guide.
+
+00:11:20 A lot of people can do at home, but being there for them means starting, creating a human connection with people, demonstrating them that their community is not only code, but also a person.
+
+00:11:32 And I also organized two of these other than being coached here in Pescara.
+
+00:11:38 The goal is to organize more of that.
+
+00:11:40 And if you go on the website, you see that every week, a lot of this workshop happen everywhere in the world, from Australia to US, Europe, Africa, everywhere.
+
+00:11:50 Yeah, very nice.
+
+00:11:51 I think that's something that's super important for people to learn earlier, that there's more than just the code and there's more than just the docs and compiler or runtime errors and warnings and stuff like that.
+
+00:12:03 The stereotype of a software developer, someone who is kind of antisocial, just sits there and, you know, holds themselves up in a basement or whatever.
+
+00:12:13 And really, it's a team sport.
+
+00:12:15 And I think that's coming back around to PyCon.
+
+00:12:17 I think that's why PyCon is so interesting, because you make those, you put a face to the name and you realize, oh, there's all these people doing this and making this possible.
+
+00:12:24 It's not just this, you know, pip install this package or whatever.
+
+00:12:28 Totally true.
+
+00:12:28 Python is a community-driven language, but it means that there is a whole community that sustains everyone.
+
+00:12:36 100%.
+
+00:12:37 Now, something else that Django has that's pretty interesting is DjangoNuts, DjangoNuts.space.
+
+00:12:44 I had Sarah Boyce and Tushar Gupta on a while ago to dive deep into this, but this is a really interesting idea as well.
+
+00:12:51 And I think this, pulling this up specifically, because I think it relates, it starts to get into the space of where your talk actually lands, right?
+
+00:12:59 So when I first heard this, I thought, oh, this is to help people get good at Django.
+
+00:13:03 But really, that's not exactly what it is, is it?
+
+00:13:06 Yeah.
+
+00:13:06 I remember seeing the first presentation of the program.
+
+00:13:09 I was very impressed.
+
+00:13:10 So if the Django Girls program helps people that do know anything about programming, start doing that.
+
+00:13:19 This program wants to answer the question of people that already know how to program in Python or in Django, how to start be more involved and start contributing back to the code of Django in particular or other projects.
+
+00:13:33 So now we added in the footer, you can see Beware, Wigdale, other initiatives, very connected with Python and Django.
+
+00:13:41 So the goal is to have a small group of people with a navigator that can help them to start contributing, start reading an issue from the issue tracker, understanding how to contribute in the best effective way and to help them do the steps with other people that already did it.
+
+00:14:00 And it's an accelerator for people that want to contribute back.
+
+00:14:04 I was part of that once as a navigator, and that's been a very great experience.
+
+00:14:10 And now I organize more than one per year, more than one session per year.
+
+00:14:15 And it was great seeing all these people coming for the program and then staying to start contributing effectively.
+
+00:14:23 You can track them on the code base or the blog of Django or these places that they contribute now.
+
+00:14:29 And they go in, I forgot what they're called, but like cohorts or whatever, right?
+
+00:14:34 That goes for a certain period of time.
+
+00:14:36 And then you apply to be part of the cohort and then the cohort runs and so on.
+
+00:14:42 So people out there can go apply.
+
+00:14:44 It's free, right?
+
+00:14:44 You just have to get accepted.
+
+00:14:46 Yeah.
+
+00:14:47 A lot of people apply.
+
+00:14:48 There is a review of the application.
+
+00:14:50 So the admins form a small group of four people, of three or four people with a navigator that can add them.
+
+00:14:59 And then there is a period of six weeks.
+
+00:15:02 And during the while they meet once in a while, they can work to each other because they have a chat.
+
+00:15:07 And they have a way to track all the things they learn, the attempt to contribute.
+
+00:15:15 And they are together as a team for this part of the year, helping them each other and having feedback.
+
+00:15:23 We have a lot of initiative during this period, like talks and meeting online.
+
+00:15:27 And a way to have a support also for things that happen in life is a small version of what can happen for real and the whole community.
+
+00:15:36 When you meet people and you not talk only about the code, sometimes you talk about what happens live, job, other multiple things.
+
+00:15:45 This is a small version of it.
+
+00:15:48 Nice.
+
+00:15:48 You know, there's at least people who are junior developers or earlier stage developers.
+
+00:15:53 I think there's a pretty real challenge of getting a job right now.
+
+00:15:57 And contributing to open source is certainly one of those areas that helps you stand above.
+
+00:16:03 Certainly on a popular project like Django, if you go around and say, yeah, I'm a Django core developer, contributor or whatever, that would make a big difference.
+
+00:16:10 Right.
+
+00:16:10 So I think projects like this, you know, people are really super excited.
+
+00:16:15 Maybe this is a good opportunity to put another feather in the cap or something good on the resume, you know?
+
+00:16:22 Yeah.
+
+00:16:22 Yeah.
+
+00:16:22 Every time I met some new partners in the community, also in my job, every time I pushed them to try to contribute back.
+
+00:16:31 It's good in your resume, if you can show that you contributed.
+
+00:16:35 But more than that, you learn so much in contributing to Django, respect of only using Django in your daily job.
+
+00:16:43 because you are forced to go in the internals of Django with the help of the core contributors.
+
+00:16:49 You can work also in one of the biggest companies, but it's impossible that you have so many skilled Django contributors or Python contributors when you contribute directly with the code.
+
+00:17:00 And it's the fastest way to improve as a developer.
+
+00:17:03 It's more important than having something to put in your CV.
+
+00:17:07 I think it's an accelerator of your learning.
+
+00:17:10 So I've seen multiple people who come out of university or other things like that, gotten onto an open source project and it's just skyrocketed their career, which is super cool.
+
+00:17:23 This portion of Talk Python on Me is brought to you by Agentfield.
+
+00:17:27 What happens when you give hundreds of AI agents a shared code base and let them write code, review each other's work and ship to production?
+
+00:17:35 Well, that's exactly what the team behind Agentfield AI built.
+
+00:17:38 And the wild part, it's not some proprietary system locked behind a paywall.
+
+00:17:43 It's an open source Python library.
+
+00:17:45 Now, where most agent frameworks have you wiring up DAGs and workflows, Agentfield lets you build AI agents the way you build FastAPI microservices.
+
+00:17:55 Think typed Python functions that become autonomous services.
+
+00:17:59 They discover each other at runtime, call each other like APIs, scale independently, fail independently, and recover on their own.
+
+00:18:07 And here's the thing.
+
+00:18:08 You're not just orchestrating LLM calls.
+
+00:18:11 You can orchestrate entire anonymous tools.
+
+00:18:14 Spin up multiple Claude Code instances, codex sessions, any coding harness you want, all running as live nodes on the same architecture, collaborating and verifying each other's output.
+
+00:18:25 That's how they build the factory.
+
+00:18:27 And it's completely free and open source.
+
+00:18:29 Check it out at talkpython.fm/agentfield.
+
+00:18:32 That's talkpython.fm/agentfield.
+
+00:18:34 The link is in your podcast player's show notes.
+
+00:18:37 Thank you to Agentfield for supporting the show.
+
+00:18:40 Okay, last thing before we dive into your main topic is PyCon Italy organizer.
+
+00:18:46 And this is coming up.
+
+00:18:47 First of all, I love the website design.
+
+00:18:49 It looks very fun.
+
+00:18:50 But it's coming up really soon.
+
+00:18:51 Basically seven, no, five days from now from recording.
+
+00:18:56 So people, I think this episode will actually come out after that in terms of on the podcast channels.
+
+00:19:01 But on the YouTube channel, at least, we can encourage people to attend if they're local, somewhat local, or want to just go to Italy for a few days.
+
+00:19:08 Yeah, yeah.
+
+00:19:09 So I started, PyCon Italy is, of course, my preferred conference because it is the first one that I started attending a long time ago.
+
+00:19:17 And after a while, I decided to be involved and help other organizers to organize it.
+
+00:19:24 It will happen next year.
+
+00:19:25 After a long time being organized in Florence, this year we moved, the last year we moved in Bologna.
+
+00:19:32 And now we have a wider venue.
+
+00:19:34 So last year we had more than 1,000 people.
+
+00:19:37 90% of the talk.
+
+00:19:38 Yeah, it's quite big.
+
+00:19:40 90% of the talk are in English.
+
+00:19:42 The keynote, the workshop, we have multiple tracks, I think.
+
+00:19:46 Six tracks plus the workshop and the keynotes.
+
+00:19:49 We usually organize social events like drinks and dinner with local food, of course.
+
+00:19:55 It's from Italy.
+
+00:19:57 And we have the same approach as other community-driven conferences like PyCon US or Europython.
+
+00:20:04 But we give a lot of importance to maybe the lunchtime.
+
+00:20:09 We've spent two hours for having lunch because we think it's a way to network better with other people, with proper food and wine and other things.
+
+00:20:18 You see, we have very great keynotes.
+
+00:20:21 The one you are showing from different communities.
+
+00:20:24 Diego is on the PyCon core team.
+
+00:20:27 Sarah is one Django fellow.
+
+00:20:29 And Dawn is involved in community and so many different things, PyLadis and other things.
+
+00:20:34 And we try to attract a lot of people from Europe.
+
+00:20:37 Usually, a lot of people from Europe and US attend because they can then spend other days traveling around in Italy, which is not bad.
+
+00:20:46 And Bologna this year and also last year is a way to be the central part of Italy.
+
+00:20:53 And traveling very easy to all the other parts of Italy, like you can go in Florence in 30 minutes by train.
+
+00:20:58 The train system works very well.
+
+00:21:00 And yeah, we have the first day, which is open and free for everyone.
+
+00:21:05 So if people listen to you in YouTube, they want to join, they don't have a ticket or they cannot afford it.
+
+00:21:11 The first day is day for beginners.
+
+00:21:14 There is workshop for free for everyone.
+
+00:21:16 You only have to go there and show up without a ticket.
+
+00:21:20 It's a way to bring people, start attending a conference like that, participate in Jungle Girls workshop or other workshops.
+
+00:21:28 It can help you be more involved.
+
+00:21:30 And if you understand only now that you cannot attend because it's too late, you can join us next year because for sure we will have the same enthusiasm, the same great people.
+
+00:21:44 That sounds great.
+
+00:21:44 Do you have a mailing list or something people can sign up for?
+
+00:21:48 Yeah, I think it's in the contact here in the website.
+
+00:21:53 Yeah, on the footer, you can, you can join there and there is a group on Telegram.
+
+00:22:00 There are the mail, the mail for be contacted.
+
+00:22:06 We can share maybe the link in the description of the podcast.
+
+00:22:10 Perfect.
+
+00:22:11 Yeah.
+
+00:22:11 And of course, yeah, yeah.
+
+00:22:13 And of course, if your company is interested, you can sponsor the comfort because there are a lot of opportunities to, you know, meet people, hire developers and, or connect with other communities.
+
+00:22:26 So it'd be great.
+
+00:22:27 Yeah.
+
+00:22:28 Yeah.
+
+00:22:28 Very cool.
+
+00:22:28 All right.
+
+00:22:29 Let's, let's talk about your talk here.
+
+00:22:34 Perfect.
+
+00:22:34 Yeah.
+
+00:22:35 Let's, let's dive into it.
+
+00:22:36 So you do, your talk was AI assisted contributions and maintainer load over here at, at PyCon, which there's your, your selfie getting ready.
+
+00:22:44 That's cool.
+
+00:22:45 Yeah.
+
+00:22:45 Yeah.
+
+00:22:45 I did it at the last moment before closing with, with, with Simon Wilson, was the host of the AI track.
+
+00:22:54 Yeah.
+
+00:22:55 Yeah.
+
+00:22:55 So this was definitely in the, I thought it was cool.
+
+00:22:57 They had an AI track, right?
+
+00:22:58 Yeah.
+
+00:22:59 Yeah.
+
+00:22:59 It was the first one in the track.
+
+00:23:01 There was a security track and an AI track.
+
+00:23:03 And I'll tell you what, the AI track was hacked.
+
+00:23:06 There was a lot of people in those talks.
+
+00:23:08 So I thought that was really cool.
+
+00:23:10 Yeah.
+
+00:23:10 So tell us a bit about your talk and then we can dive into, you know, you had a bunch of like pull quotes, little examples from different maintainers and luminaries and so on.
+
+00:23:20 So I thought we could kind of talk through those as a way to cover in the topic, but tell people a bit about high level about your talk.
+
+00:23:27 Yeah.
+
+00:23:27 So the idea for the talk came to me when I started seeing more and more contribution in the Django project or Python or connected projects, open source project in general.
+
+00:23:38 So, since the last year, I started seeing more and more contribution, very strange to be go to wide as a scope and maintainer start complaining about it.
+
+00:23:50 And I collected the tons of them.
+
+00:23:51 Then I selected a few to show in the, here in the talk.
+
+00:23:56 The point was that using AI is a good thing.
+
+00:24:00 It's a, it can be a good thing.
+
+00:24:02 It's a tool that can improve your productivity during the day.
+
+00:24:05 If you know how to use it, but can be also, bad things for maintainer that have to filter and review more pull requests than before, more issue or bigger
+
+00:24:16 pull requests without having in the other side, someone that know what they are sending to you because they can create a lot of code very easily.
+
+00:24:25 But maybe if they are not careful, they cannot understand what they are proposing to merge.
+
+00:24:32 And in the process of this month, the past year, I was seeing that this was accelerating.
+
+00:24:38 It was accelerating a lot from very few.
+
+00:24:41 Yeah.
+
+00:24:41 I found, I've yeah, I found that graph, on GitHub in it's, I mean, you cannot imagine a more vertical increase in usage.
+
+00:24:51 And I'll put this in a link in the show notes for people, but it's, it's crazy, right?
+
+00:24:54 And that's what the maintainers are experiencing.
+
+00:24:57 Exactly.
+
+00:24:58 So I was collecting all this information, realizing that it was a scalar rating.
+
+00:25:03 And so after collecting a lot of them also, because in the, also in the jungle community, we were observing this amount of requests.
+
+00:25:11 Then I, started singing different, project and we started reasoning on how to do, how to face this amount of requests.
+
+00:25:21 we created a, working group in the jungle community or the AI.
+
+00:25:26 We started doing some work workshop and I wanted to share what was happening.
+
+00:25:31 I don't share any solution, how to face it, but I was interesting to, to share what was happening and what different project were doing to face it.
+
+00:25:40 Yeah.
+
+00:25:41 It's, it's a challenge.
+
+00:25:42 It's definitely a challenge.
+
+00:25:43 so let's go through, I think we can, you're a big fan of movies.
+
+00:25:48 I can tell you have a lot of movie quotes and the space odyssey and other ones.
+
+00:25:54 I introduced my daughter to the concept of, how and, and the space odyssey when she first learned about AI and she thought it was the most amazing thing.
+
+00:26:03 Yeah.
+
+00:26:04 Yeah.
+
+00:26:05 True.
+
+00:26:06 So let's see, here we are.
+
+00:26:07 All right.
+
+00:26:08 So the first quote comes from Ken, which, which Ken is this?
+
+00:26:12 You remember?
+
+00:26:13 Ken Thompson was the co-creator of, co-creator of Unix.
+
+00:26:17 Yeah.
+
+00:26:18 Yeah.
+
+00:26:19 Cool.
+
+00:26:20 And so the quote is, you can't trust code that you did not totally create yourself.
+
+00:26:24 I think this is an interesting way to start this conversation because this comes from a time far before open source, right?
+
+00:26:32 Unix was created quite a while ago and there's something true to this, but I also think you, you don't, you can't necessarily trust code that you did write yourself.
+
+00:26:42 Yeah.
+
+00:26:43 For complicated systems.
+
+00:26:44 And I think we've seen that you, you can actually trust code in the right systems with the right guardrails.
+
+00:26:52 Like look at Django, for example, most of the code that you run when you run Django, even if you're a core developer, you yourself didn't write.
+
+00:26:59 Right.
+
+00:27:00 Simon Wilson and a few other folks who created it, even they probably didn't write most of the Django code at the way it is today.
+
+00:27:07 Right.
+
+00:27:08 Yeah.
+
+00:27:09 So that you can still find some code that they wrote, but now there are so many contributors.
+
+00:27:13 Yeah.
+
+00:27:14 I showed these quotes and also the previous one, not because I think they were totally right in general, but to show people that the fear of new technology has been something in the Howard community that started from the beginning of open source from the late seventies.
+
+00:27:30 And it is normal that when a new technology like AI show up, the first reaction can be both refusing it totally, or maybe to embrace it because it's something sucking in new.
+
+00:27:42 And, I wanted to show that some quotes from the past apply also perfectly today from some reaction we are seeing in the community.
+
+00:27:51 Yeah.
+
+00:27:52 Yeah.
+
+00:27:53 It's very, it's a good quote.
+
+00:27:54 And it's, and I like the idea of you putting it there.
+
+00:27:56 It's, it's easy to feel like this is a brand new problem in some ways.
+
+00:28:00 And it is a brand new problem, but not entirely.
+
+00:28:03 Right.
+
+00:28:04 These ideas have been there before.
+
+00:28:05 And open source was revolutionary when it came out.
+
+00:28:08 Yeah.
+
+00:28:09 Yeah.
+
+00:28:10 Totally.
+
+00:28:11 Not just in the fact that it made a big change, but as it was kind of overthrowing some of the ideas of how software should be built, sold, shared, licensed, all that kind of stuff.
+
+00:28:19 Yeah. Yeah.
+
+00:28:20 I think the open source preserved the first, the beginning of, computer science as a science, discipline, because before then the science was sharing then everything with everyone in every part of the world and discussing it.
+
+00:28:35 And before companies started closing part of the code, they decided to continue that track and continue to sharing as much as possible.
+
+00:28:44 And this is what bring us today discussing, open source languages or framework.
+
+00:28:49 There's the obligatory single developer in Nebraska, Lego block block or J, J, J, not Jenga.
+
+00:28:56 Jenga.
+
+00:28:57 Jenga.
+
+00:28:58 What is that?
+
+00:28:59 Jenga.
+
+00:29:00 Thank you.
+
+00:29:01 Jenga.
+
+00:29:02 And so it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like it seems like
+
+00:29:32 So I like these two words because you can put there instead of Nebraska, your hometown or your project that you like the most that you contribute to.
+
+00:29:42 And it's worked the same.
+
+00:29:45 I think this is the majority of open source projects.
+
+00:29:47 And it's interesting how some of them are so central.
+
+00:29:50 We're going to come back to talk about curl a little bit later, I think.
+
+00:29:53 And that's one of them we had.
+
+00:29:55 Was it OpenSSL, I think, was one that really felt maybe inspired this diagram?
+
+00:30:00 Actually, I can't exactly remember, but yeah.
+
+00:30:03 And that's why I kind of talked so much about Django and the DSF and stuff.
+
+00:30:08 It's true there's not that many people relative to how many are using it, but it's actually quite a bit more than most projects that do look like this.
+
+00:30:15 And so when you start swamping that little peg at the end with 15,000 line PRs, it just fixes a minor problem, just optimizes.
+
+00:30:25 Here you go.
+
+00:30:26 It's just too much, right?
+
+00:30:27 Exactly.
+
+00:30:27 You had this interesting analogy with a picture of Django, the guitar player.
+
+00:30:33 And there was a lot of funny, and this is the AI generator one, right?
+
+00:30:38 So there's a lot of interesting things that came up when you said, make me such a picture, right?
+
+00:30:42 You want to talk us through this analogy real quick?
+
+00:30:44 Yeah.
+
+00:30:45 So to show how AI can impact the project, I contribute more, which is Django.
+
+00:30:51 I said, okay, let's try to ask AI to improve the image of Django Reinhardt, which is the chess guitarist that inspired the name of Django, the framework.
+
+00:30:59 And asking the AI to improve the picture, it did different things.
+
+00:31:04 That is very, a metaphor of what it can do to your code too.
+
+00:31:08 For example, you bring a new, very new guitar, which is something that AI usually do.
+
+00:31:15 When you try to modernize your code or use AI in your code, it usually brings new packages or new things.
+
+00:31:21 Maybe your code is very old, but it brings new dependencies, the latest technologies.
+
+00:31:28 The other things that I changed it was removing some bad parts, like for example, the smoking cigarette.
+
+00:31:33 It was common at the time when the pictures originally were taken, but nowadays we know that maybe it cannot be so good things.
+
+00:31:41 And it did also a strange thing that took me a few times to see.
+
+00:31:48 It was adding an additional finger in the hand of Django Reinhardt, which is strange.
+
+00:31:56 It's the metaphor of the code you can have generated from the AI that at first look, it seems normal.
+
+00:32:03 But when you dip that a bit, you understand that it is something that was not possible, having, in this case, an additional finger.
+
+00:32:10 That's a really good analogy.
+
+00:32:12 Yeah, you're like, oh, look, this is a great, I can't believe how perfect, look, everything looks, wait a minute.
+
+00:32:18 And that's also true for AI contributions as well, is it looks fine.
+
+00:32:23 I found that's also true actually for speech to text.
+
+00:32:27 It's really, I broke my hand really badly, like in three places up and down my hand in, I don't know, quite a while ago, but seven or eight years.
+
+00:32:36 But I was still running Talk Python and the business I had, I still get, but I had an insane amount of email and stuff I had to do to keep things going.
+
+00:32:43 And so I had to use speech to text.
+
+00:32:45 And I think the reason I bring this up is I think it's a bit of an interesting analogy for AI as well as I would use speech to text.
+
+00:32:51 It would transcribe it.
+
+00:32:53 And then I would, I would go to send it.
+
+00:32:55 And I had the hardest time actually finding the grammar errors.
+
+00:32:59 But I would say stuff like, we're going to look at their project and figure something, you know, and it would, it would use the different kind of there, right?
+
+00:33:07 Not the belonging of the person, but the location there.
+
+00:33:10 But because it was phonetically correct, I would read it back and it would sound okay.
+
+00:33:15 And there was just something about my brain couldn't find the problem.
+
+00:33:18 So I had to put a footer in my email, like, sorry, I hurt my hand, have to do voice to text.
+
+00:33:23 Please just forgive the mistakes.
+
+00:33:25 I couldn't, I couldn't find a point where I could get it down to zero mistakes.
+
+00:33:28 And nowadays probably the transcription would be quite a bit better, but it's, there's something about looking at it and it looks right and it sounds right, but it's not right.
+
+00:33:37 That just makes it very hard to internalize the mistake, you know?
+
+00:33:41 Totally true.
+
+00:33:42 AI is very great in generating content that look like perfect when you see at first glance.
+
+00:33:48 But when you deep dive a bit, especially for code, you can find that one, small characters can change the meaning of the things.
+
+00:33:58 And a lot of people, when I show this picture, didn't realize at the first glance that this is an additional finger on the, on the picture because it seems very, very nice at the beginning.
+
+00:34:08 Yeah.
+
+00:34:08 The most subtle thing for me is the amplifier, honestly.
+
+00:34:11 Yeah.
+
+00:34:12 Yeah.
+
+00:34:12 Yeah.
+
+00:34:12 Yeah.
+
+00:34:12 That was interesting.
+
+00:34:15 I use it as a metaphor because I say that beginning AI can amplify the effect of so many things.
+
+00:34:23 I use it then in the rest of my talk to say a lot of project already recognize AI as a tool that can amplify a lot of effects.
+
+00:34:33 You have to be aware that it can amplify positive and negative effects, you know, your code.
+
+00:34:38 Yeah.
+
+00:34:38 Yeah.
+
+00:34:39 It's an amplifier, but what is it amplifying, right?
+
+00:34:42 This is an amazing analogy.
+
+00:34:43 Now people who know me know that I certainly am on the positive side of, of working with AI, especially the newer agentic ones.
+
+00:34:51 I think you can do really incredible stuff, not necessarily discussing the environmental and, and copyright aspects, but just as a tool, I think it's absolutely incredible.
+
+00:34:59 But I think it's also really important to acknowledge its weaknesses where you have to put in guardrails, how you should use it.
+
+00:35:06 Right.
+
+00:35:06 And, and I think that's a good analogy for it.
+
+00:35:08 okay.
+
+00:35:10 Yeah.
+
+00:35:10 Amplifier.
+
+00:35:10 So if you got low quality code, maybe it just really like makes way more of that.
+
+00:35:16 Right?
+
+00:35:17 So yeah.
+
+00:35:18 So recognizing the fact that AI is a very good tool that can amplify positive and negative think is something real.
+
+00:35:26 I think I use AI every day for my daily job, but I can recognize the fact that people can use it in a bad way.
+
+00:35:34 And so open tons of poor requests that are bad in your project.
+
+00:35:39 So we have to be realistic here and to see that maybe it can use correctly.
+
+00:35:44 Everyone want to do that, but it's not every time the case.
+
+00:35:48 So, yeah, we're going to get into the different projects that do and some of their policies or whatever, and some of them are just no.
+
+00:35:56 I think that's a little bit short sighted, but we're going to get to we'll get to that.
+
+00:35:59 We'll get to that.
+
+00:36:00 So you put out there that AI does not change the nature of open source.
+
+00:36:04 It changes the scale.
+
+00:36:05 Yeah.
+
+00:36:05 This is what my thoughts when I, for the first time, work on the slides for what I was observing.
+
+00:36:13 Then I changed a bit this idea because when I spoke with people, I realized that was a slightly different because I, exactly, I presented this talk
+
+00:36:25 DjangoCon Europe in Athens in April, one month ago, and I received this very interesting feedback.
+
+00:36:32 one of them was the fact that maybe changing the scale, the scale of the contribution of the amplifying things, AI was a tool that was able to change the nature of open source.
+
+00:36:45 Because if you cannot trust people that open up requests, if you lose your trust in other members
+
+00:36:54 that are involved because they have too much, so they contribute in a bad way, open source will change.
+
+00:37:00 So we have to be aware of that.
+
+00:37:03 I think.
+
+00:37:03 A rule of thumbs or whatever, like sort of AI ethics, I guess, is it shouldn't, it shouldn't take you less time to create a thing that it takes someone else to review that thing.
+
+00:37:14 It shouldn't take you less time to just read a thing.
+
+00:37:19 Right.
+
+00:37:19 But I imagine there's a lot of people out there who are just, oh, I've got this great idea for Django or whatever, you know, open source project.
+
+00:37:26 Make it for me and then I'll submit it as a PR and did they test it?
+
+00:37:29 Did they verify it?
+
+00:37:30 Did they work on dry principles of refactoring everything just right?
+
+00:37:34 You know, some people absolutely.
+
+00:37:36 And that's, that's the challenge.
+
+00:37:38 You don't want to throw that away necessarily, but a lot of times I think they just see it works and test pass maybe and send it.
+
+00:37:45 You know, one of the projects I showed later in the talk stated in the guideline exactly what you just said, that if your pull request required less effort and has reviewing it.
+
+00:37:56 So we throw away that the contribution because it can be a waste of time.
+
+00:38:02 It's good that we can use this tool to vibe code things.
+
+00:38:05 So to create them locally for ourselves, but, contributing and deploying it in production is a different thing.
+
+00:38:13 Now you put out an example from OCaml that says there was a, somebody did a PR with a 13,323 lines, added 30 or changed and 36 lines removed.
+
+00:38:25 No issue.
+
+00:38:26 Just drop the pull request.
+
+00:38:28 Right?
+
+00:38:28 Like that's problematic.
+
+00:38:30 I think this is, I tried to show some examples starting from the beginning to show how it escalated.
+
+00:38:36 So this is one of the first I saw in November, a few months ago.
+
+00:38:41 I was one of the first with a proper discussion that, people talk about.
+
+00:38:45 So this pull request was created without any discussion from someone that was involved in the project and they closed it.
+
+00:38:53 Of course, which was impossible to review.
+
+00:38:55 It doesn't have to be this way.
+
+00:38:57 You know, you could go to your AI and say, I want to add this feature.
+
+00:39:00 Your job is to minimally add the absolute minimum amount of changes to the code such that this feature works or whatever.
+
+00:39:08 Right?
+
+00:39:09 Like just as if you were a developer, you know, I'm going to reformat the entire project and you're, you're a different formatter.
+
+00:39:16 And then just change a bunch of other things.
+
+00:39:18 Right.
+
+00:39:19 It's, it's, but again, I think it's the amplification, the amplifier that you talked about.
+
+00:39:24 The person who did this PR doesn't understand contributing to open source.
+
+00:39:27 They may understand software, but not, not working on a team sort of thing.
+
+00:39:32 Right?
+
+00:39:32 Exactly.
+
+00:39:33 In fact, they were forced to close the discussion of this because it was.
+
+00:39:37 That's right.
+
+00:39:38 The, the, it says something like, I have the impression that this conversation is becoming less productive.
+
+00:39:43 So I'll move ahead and lock the topic.
+
+00:39:45 Cause it's just out of control.
+
+00:39:46 Right?
+
+00:39:47 Yeah, absolutely.
+
+00:39:48 Go dot was another.
+
+00:39:49 Yeah, these things escalated from one single request to a lot of them.
+
+00:39:55 So, each in only three months from the previous example to this one, I saw in the months that there was, escalated and this case, they created so many slow pull requests
+
+00:40:08 for this project that they were exhausted and they put out in the social, this, this emergency.
+
+00:40:15 Yeah.
+
+00:40:16 I'll throw out another example.
+
+00:40:17 Cause I want to come back to it as a counter example, but this is does not just, disprove or devalue it.
+
+00:40:24 the maintainer of curl, Daniel Stenberg, I believe he's become sort of a poster child for, maintainer abuse, I think, cause he's written a lot about it and curls so popular, but they had a bug bounty program, which is slightly different than accepting PRs, but
+
+00:40:39 it's still accepting contributions from people.
+
+00:40:41 And this bug bounty program was out there to help find bugs in curl, which is really important and you get paid for it.
+
+00:40:47 And the motivation to, come contribute to go dot or OCaml is like, Hey, I get my name listed as a contributor.
+
+00:40:55 That's great.
+
+00:40:55 Or I just get a feature I want, but for the bug bounty, you got money.
+
+00:40:59 So that thing just got absolutely swamped to the point where they canceled.
+
+00:41:04 I don't know if they canceled the bug bounty, but they certainly took away the financial reward for it.
+
+00:41:08 Right.
+
+00:41:09 That's pretty bad.
+
+00:41:10 Yeah.
+
+00:41:10 I thought that the project was facing this problem.
+
+00:41:13 I can say that also Django used this type of program and we starting seeing more and
+
+00:41:19 more, issue when they tried to modify things or the environment of some very old bug, trying
+
+00:41:28 to find edge cases for the main goal to have a rewarding from that, but the issue were not real.
+
+00:41:36 We're only trying to force some strange cases when the code behaved like that.
+
+00:41:42 And we saw something like that also when there was some initiative like, October 1st or similar, where people in the past tried to open us very small pull requests with a typo only to have
+
+00:41:56 some rewards from, from that.
+
+00:41:58 I really disliked.
+
+00:42:00 October fest.
+
+00:42:01 I mean, I run, I have a bunch of GitHub repositories.
+
+00:42:04 I'd looked the other day.
+
+00:42:04 I have some like 390 GitHub repositories, but a much smaller, much, much smaller portion are actual projects that people can use mostly web stuff.
+
+00:42:13 But even for these little tiny projects that have a couple hundred stars, I would get PRs.
+
+00:42:19 Like I've, there was a problem with your read me.
+
+00:42:22 I fixed it and they'll like change an adjective from like quickly to fastly or something.
+
+00:42:27 I'm like, no, I am not playing your, oh, I contributed and got a PR accepted game.
+
+00:42:32 And I was just like, why do, why do we need this?
+
+00:42:35 This is, this is not in the spirit of it and it's not, it's just not right.
+
+00:42:39 So I can only imagine with AI now what it's like.
+
+00:42:43 Yeah.
+
+00:42:43 And this is the main motivation because we, as I said before, we started that project like Django not space to help people to properly contribute to a project, not only fix a typo to have a reward, it can be a t-shirt or money.
+
+00:42:56 It's not our open source work.
+
+00:42:58 Yeah, for sure.
+
+00:43:00 Jazz band.
+
+00:43:01 This is another project that I don't know if this is what directly caused such a problem, but it might've been the final straw.
+
+00:43:07 So tell us about jazz band.
+
+00:43:09 Yeah.
+
+00:43:09 so Janice was the creator of jazz band was also now in the board of PSF contributed in the Django ecosystem for so long time.
+
+00:43:18 And they created this very good project where people can go and self-maintain projects in a direct and democratic way.
+
+00:43:28 And was very effective.
+
+00:43:29 There is a lot of projects that are very well used, like the Django debug toolbar, but also not specific for Django, like pip-tools that I personally use for long times was very effective to generate your log file.
+
+00:43:44 You can do today with uv lock, for example.
+
+00:43:47 Yeah.
+
+00:43:47 I was on team, I'm on team pip-tools as well.
+
+00:43:50 I love that thing.
+
+00:43:51 Perfect.
+
+00:43:51 I used for so many times.
+
+00:43:53 I liked the fact that you were able to create a log file locally and don't have any additional dependencies on production, only installing it with pips.
+
+00:44:02 So in the, this context, Jetsband was the containers, that, hosted all these projects,
+
+00:44:12 maintained, but more and more, he has issues with the lack of maintainers, lack of time of people, having more and more, contribution open it.
+
+00:44:22 So in this case, the, the, some issues were already there in the project, maintaining, maybe move to the other things in the meantime, but the AI accelerated, amplified the process
+
+00:44:36 suddenly having the slope of pull requests, you know, this project accelerated the process to sunset.
+
+00:44:42 And in fact, then it's wrote directly here in the article, I extracted only that parts that was useful for the slide, but at a certain point he writes clearly that there is, was the slope apocalypse as he wrote here.
+
+00:44:58 And then they decided to set the project.
+
+00:45:00 Yeah.
+
+00:45:01 That's too bad.
+
+00:45:02 You know, I think it's really, it's really interesting, the timing of this, because you said use AI at work.
+
+00:45:08 I definitely do as well.
+
+00:45:09 And I think recently it has gotten so incredibly good.
+
+00:45:13 I would encourage people to absolutely use the very best model that you can afford to, to do your work.
+
+00:45:21 And especially if you're going to do a PR or something, I think a lot of the challenges is the AIs were not as good.
+
+00:45:27 And I think people would say, oh, I, I'll just use, I don't want to wait.
+
+00:45:32 So I'll use this fast one, or I don't want to spend that much money on it.
+
+00:45:34 So I'll use haiku rather than opus or something like that.
+
+00:45:38 And coming back around to curl, Daniel Stenberg recently wrote a new post called high quality chaos, saying there's, there's not really much more AI slop actually said, I complained and complained
+
+00:45:50 about the high frequency junk submissions of the, to the curl bug bounty program in March.
+
+00:45:55 Once again, something like said, the slop, the slop situation is not a problem anymore.
+
+00:46:02 Actually has graphs of like percent of slop, which is a really interesting thing, but it's just the amount of contributions, even though they're finding real issues are, it's like out of
+
+00:46:12 control. So even, even if you have, if you have all of this stuff coming in, how are you going to deal with it? So I think partly this, this is just speculation on my part. I'd love to hear what you
+
+00:46:22 think as well, but I think this slop apocalypse is a little bit fading, but it's just left such a sour taste in the mouth of so many maintainers that now they see AI. They're just like, no, that puts aside
+
+00:46:35 the thing of like 13,000 lines of PR, which is just also no. But what is your thought on, on the kind of kind of legacy of older AI versus newer AI? Do you, do you agree? Do you disagree? I thought it was
+
+00:46:46 interesting that Daniel Stenberg kind of like was so against it. And I was like, I'm against it, but for a new reason now.
+
+00:46:51 Yeah. it, it remembers me, reading the hackers for Steven Levy, the book from the eighties when he wrote about the beginning of, occurs in the original meaning and the open source
+
+00:47:05 context, the story was that at the beginning at the initial, teams or university, they
+
+00:47:12 started creating code and sharing with, with each other without any license at all, or very freely. And then someone show up and started applying some license on it and started to sell this code.
+
+00:47:26 So they face in that moment, they realized that some type of mutings was needed, like open source
+
+00:47:33 license and started using it. We are now in a similar situation when until yesterday was enough to have
+
+00:47:42 the process of having pull requests and trust each other. Now with this amount of pull requests, it's not
+
+00:47:50 enough. this mechanism, we have to find something new to try to filter better the amount of contribution.
+
+00:47:58 The, the tool is not bad per se is the way people are using it. And maybe it's changing because, when you have your new toys, you want to try with everything, you start creating things after a while you realize
+
+00:48:13 the best way to use it. So maybe now people are more aware of, or to use properly AI or LLM. So people are improving, but still we need some way to collect or to handle better this new.
+
+00:48:26 Yeah, I agree. I agree. I agree. In your research, did you find something I haven't seen a lot from, and I'm wondering if you found it is, did you find people using AI as a first level analysis before
+
+00:48:40 they even looked at it? So were people setting up AI bots on like the GitHub or other, other work and say a CI flow to analyze the PR for certain criteria before they even have to look at it? I feel like,
+
+00:48:54 I mean, there's like code rabbit and some other things. I saw many different way to use it.
+
+00:49:01 I don't, I, I'm not, this is not a recommendation by the way. I just, it's just, something that I've heard of, that's sort of in that space, you know? Yeah. I remember seeing multiple
+
+00:49:12 way to, to use AI. Someone who of course was to use AI to analyze AI contribution.
+
+00:49:19 Like turn it against themselves. Like if there's AI slop coming in, like get an AI guardian though, just battles it back. You know? Yeah. Yeah. It can work. It can also work very bad for, for us if it's not
+
+00:49:32 working properly. more and more, I've seen project experimenting, trying to have different approach of this, this problem. For example, I remember seeing a project from Armin Ronacher,
+
+00:49:45 the creator of original creator of Flask. They remember exactly the project was, experiencing heat, but the thing was to close every pull request. That's the first thing.
+
+00:49:55 They close every pull request. And they ask the creator to open and trying to explain, you know, in some way, why, it's worth it to reopening hits. For some reason, the AI was not good at doing
+
+00:50:07 this stuff. And so in this way they recognized that people were effectively interacting, you know, not a bot, for example, and like a GitHub recapture. Exactly. Exactly. It was an experiment.
+
+00:50:20 Another interesting one is, do you know, Granyan, the server, they're writing in Rust for Whiskey.
+
+00:50:27 Yeah. Yeah, absolutely. I've had Giovanni on the show to talk about it. And it's also powers talk Python and the courses and stuff. So yeah, I definitely know it. And the maintainer,
+
+00:50:36 was listening in, in, in, in some interview and he said that he was using AI after they merged
+
+00:50:44 the commit, he went back in time to the previous pointed of the code and asked AI to, create the same feature for them. And they, they analyzed the difference between what was the quality of code
+
+00:50:57 created by AI and was, was merged to have some sort of comparison, to see how, how good was the work of core contributed that not very well that they called. So I had so many different
+
+00:51:10 experiments and I'm not sure one of these is the best of the others, but it's interesting that people are experimenting with it. Yeah. I think we're still finding our way. Yeah. I think we're still
+
+00:51:20 finding our way. Speaking of finding our way, let's, I want to talk about this next. So Mariota just, announced, a new guidelines for using AI tools when contributing to CPython. Thank you, Paolo,
+
+00:51:32 for pointing me at this morning. So this came out, I don't know, what was the time on this?
+
+00:51:37 Day and a half ago, something like that. Yeah. Exactly. And it's, it's interesting. Is this the link? No, this says the person submitting an issue or PR is responsible for its content,
+
+00:51:48 regardless of whether AI tools were used in its creation. Generative AI tools can produce output quickly, but discretion, good judgment, critical thinking are the foundation of all good contributions.
+
+00:51:58 We value good code, concise, accurate documentation, and well-scoped PRs without the unneeded code churn.
+
+00:52:05 It goes on with details about acceptable use and other things. What's I think noteworthy here is that it's not just, no, we will not, we will not accept AI generated PRs. It's, it's, you have to use good
+
+00:52:19 engineering regardless of the tools, right? Yeah. I showed multiple examples of, guidelines or API and AI policy in different projects. And the Python one was the first one, the first level.
+
+00:52:31 when I used it, they, they was slightly different, but the meaning is exactly the same. You are responsible for what you contribute. you can use different tools and AI is a tool as another one.
+
+00:52:43 So, but still the responsibility is yours when you contribute. And this is one of the first level of strictness or guidelines I found that it is important that they state the fact that they
+
+00:52:55 consider AI as another tool and not a person. and you can use it, but you have to do.
+
+00:53:01 Yeah. Consciously.
+
+00:53:02 Yeah. I think it's reasonable. Another one is over here. There's this article on Redmonk by Kate Holterhoff called the generative AI policy landscape and open source. And this is much, much broader. It says,
+
+00:53:14 she compiled and analyzed the generative AI policies of 86 open source foundations, including, organizations, including foundations, like the Linux foundation, Apache eclipse,
+
+00:53:25 kernel curl, matplotlib, and so on. And then there's this bunch of graphs and stuff, about 60,
+
+00:53:31 55% said permissive. We allow it. 25% said banned instantly, somewhere undecided. There's what you've seen this too, right? What are your thoughts on this? Pretty interesting.
+
+00:53:43 Yeah. I saw it. The article is from, four, five months ago. So I was, was observing was the
+
+00:53:51 fact that it was, changing every week. This is every week there are new project or like we just saw that Python project changed a bit, the guidelines about AI and so are doing all the other, yeah,
+
+00:54:04 extrapolated from this, some of, project that analyze, other than that here, you see, there are a majority of projects that are permissive. What I did is to analyze how permissive they were in the
+
+00:54:18 same context. So from Python to Arch or FastAPI or Matplotlib, they are, different shades of
+
+00:54:27 permission level they guaranteed to the contributor. only one project that I found was no contribution, no AI contribution at all. the other one were slightly different to each other. And they tried
+
+00:54:40 to, to show how can be slightly different between every, every small, every different project.
+
+00:54:46 I think a really interesting part of this report is there's a different reason. They asked the different projects. What reasons do you have for either having a policy or having a ban? And they
+
+00:54:57 broke it down by quality, copyright, and ethics. And certainly it looks like the biggest area is just quality. Like there is ethics is some of them are high and some of them are low, right? There's some
+
+00:55:09 debate there. Copyright is maybe in the middle, but certainly quality is where people seem to like, well, you know, ethics aside, just the peer, just like, it doesn't give me good stuff is what
+
+00:55:18 people said they were worried about. Yeah. I also think they are connected. a lot of time, what we do here is to have high qualities in maintaining good connection between projects. So
+
+00:55:32 ethics and copyright is also a way to maintain high quality. It's only not only how fast can be your code
+
+00:55:40 in executing is also of us can exchange with other projects we are using. You usually use a stack of layers in your project when you deploy it. If you can interact better with others, it's the better.
+
+00:55:55 I do. I do wonder how much of this is old opinion versus new opinion. The reports, when is the report published? Although it's been updated, like published and updated. It's
+
+00:56:04 February 26th, 2026. That's not super, super old, but the report was written now, but the people's opinion from say, Ashi Linux may have been formed two years ago, right? Like I, in terms of the quality
+
+00:56:18 bar, like, I don't think ethics or copyright really changes meaningfully over that time period, but I think the quality may, so it's going to be interesting to see how this evolves.
+
+00:56:26 Yeah. Yeah, for sure.
+
+00:56:28 All right. We're getting short on time. I think maybe let's wrap this up with two things. I'm going to include, some levity, a joke at the end for people, that they can appreciate because I think
+
+00:56:38 it's good, but let's sort of have you close things out. Let's just give, what advice you have for maintainers and you know, all this research you've, you've studied a lot of it. You've lived in the space a lot. So what do you think? What do you say to folks out there?
+
+00:56:50 Yeah. Well, I say that exactly at the, at the end of the, my talk is that, we have to consider this AI, as a tools, new tools, very powerful that we can use and we have to use properly. It can
+
+00:57:04 change the scale of your project and the things we need more is having more human, the loop to face all these things, like be connected more and more in community, like with it's PyCon US more and more
+
+00:57:18 when I met people in PyCon US people asked to be in a channel together to discuss this type of things.
+
+00:57:24 Another example I show was to start collaborating more closely between person of the community. And for example, we are just starting now with cartoon ribs on the experiment to have small Django sprints.
+
+00:57:38 We named it Django on the Mad that we had an experiment additional last year in Spain. In September, we will have another one here where I live in Pescara, on the Arctic Arctic sea. And we, but we want to
+
+00:57:51 create a format that people can replicate elsewhere, to meet in person, to, share their personal thoughts and the, about how to use properly these new tools and how to manage it. So I think the secret
+
+00:58:05 here is to, to be more connected with your community, which is the most important value of your project. AI can produce code. The things that AI cannot produce is connection between people. It's
+
+00:58:19 impossible to generate that. You only have to create in person or directly or online, but directly with other people that like we are doing now here, speaking with each other. And this is the best thing we can
+
+00:58:32 continue doing, creating connection, speaking, because it's the only way to find a solution, a better solution, experimenting together and evolving as a community, as a project. This is the point I think.
+
+00:58:43 Yeah. Very nice. I certainly want to encourage people out there to think, think before they just fire off a AI based ER, you know, maybe have, maybe open an issue and have a conversation about it. Is this
+
+00:58:55 what you want, what exactly you want with it? And then, you know, kind of like the Python and CPython guidelines recommended. All right. I want to leave some, I want to leave the audience with something fun here for this, this conversation, just, just as a bit of a joke. If you're feeling, you're
+
+00:59:10 feeling a bit overwhelmed, too much AI, I believe Glyph turned me onto this. this German guy does incredible videos and this one is called Senior Engineer Tries Vibe Coding. Have you seen this, Paulo?
+
+00:59:22 No, no, it's first time. Oh, you have to watch it. It's, you know, it's, it's absolutely golden.
+
+00:59:27 It's, it's, this guy is just like, got a towel, like he's not working out too much. And we've tried this for four and a half days now. I'm not even getting paid. We're going to do the UI over
+
+00:59:38 again, but it's just, you'll really appreciate it if you've worked with AI and it's been.
+
+00:59:43 Yeah. I need to check it for sure. Yeah. So I'll, I'll leave that in the show notes for everyone as a a bit of a way to lighten, lighten the mood and enjoy it. But I don't know. Let's also,
+
+00:59:54 let's get your final thoughts on AI going forward and in the world of open source, which is how do you see it shaping up? Yeah. My final thought is, you have to track it as a, as a tool and,
+
+01:00:07 be more connected with other people to exchange as many interesting things you can do with this tool without, leaving, high heads, other people. The only way you can improve us, this field is,
+
+01:00:21 we, we together with other, with other people. So experiment it, share your thoughts, the more you can, and it's the best way you can improve.
+
+01:00:30 Yeah. A hundred percent. I feel like this is, there is an engineering skill that is different than the engineering skills we had before. And a lot of people just see it as a chat box and without
+
+01:00:42 looking at it and applying it as a, a practice of engineering, you end up with a lot of the junk and you end up with this like joke video we got here. So I just encourage people to look into,
+
+01:00:51 treat this as a serious skill, not just a chat box that's supposed to understand every nuanced thing you ask for. Yeah. And don't trust something or someone that say that you're
+
+01:01:02 absolutely right every, every time. Oh my gosh. You're absolutely right. This has absolutely been a great episode. Thank you, Paulo. Thank you for having me and goodbye for everyone.
+
+01:01:12 Yeah. Bye. Bye.
+
+01:01:15 This has been another episode of Talk Python To Me. Thank you to our sponsors. Be sure to check out what they're offering. It really helps support the show. What if your AI agents worked like fast
+
+01:01:24 API microservices, typed autonomous and discovering each other at runtime. That's the world agent field is building. Join them at talkpython.fm/agent field. If you or your team needs to learn Python,
+
+01:01:36 we have over 270 hours of beginner and advanced courses on topics ranging from complete beginners to async code, Flask, Django, HTMX, and even LLMs. Best of all, there's no subscription in sight.
+
+01:01:50 Browse the catalog at talkpython.fm. And if you're not already subscribed to the show on your favorite podcast player, what are you waiting for? Just search for Python in your podcast player. We should be right at the top. If you enjoy that geeky rap song, you can download the full track. The link is
+
+01:02:04 actually in your podcast below, share notes. This is your host, Michael Kennedy. Thank you so much for listening. I really appreciate it. I'll see you next time.
+
+01:02:11 Bye.
+
+01:02:21 Talk Python To Me.
+
+01:02:24 Yeah, we ready to roll. Upgrading the code. No fear of getting old.
+
+01:02:31 We tapped into that modern vibe. Overcame each storm. Talk Python To Me. I sync is the norm.
+
