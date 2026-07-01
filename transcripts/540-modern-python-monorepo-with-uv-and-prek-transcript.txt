@@ -2,7 +2,7 @@
 
 00:00:11 What if you could crack open a real production monorepo, one with over a million lines of Python code and over a hundred sub-packages, and actually see what's being built step-by-step using modern tools and standards?
 
-00:00:24 Well, that's exactly what Apache Airflow gives us. On this episode, I sit down with Yarek Patuk and Amag Desai, two of Airflow's top contributors, to go inside one of the largest open-source Python monorepos in the world and learn how they manage it with uv, pyproject.toml, and the latest packaging standards, so you can apply the same patterns to your own projects.
+00:00:24 Well, that's exactly what Apache Airflow gives us. On this episode, I sit down with Jarek Potiuk and Amogh Desai, two of Airflow's top contributors, to go inside one of the largest open-source Python monorepos in the world and learn how they manage it with uv, pyproject.toml, and the latest packaging standards, so you can apply the same patterns to your own projects.
 
 00:00:47 This is Talk Python To Me, episode 540, recorded February 10th, 2026.
 
@@ -26,9 +26,9 @@
 
 00:01:58 Visit talkpython.fm/Agentic-AI.
 
-00:02:02 Hello, hello, Yarek, Amag. Welcome to Talk Python To Me.
+00:02:02 Hello, hello, Jarek, Amogh. Welcome to Talk Python To Me.
 
-00:02:06 Awesome to have Amag, you here, and Yarek, you back.
+00:02:06 Awesome to have Amogh, you here, and Jarek, you back.
 
 00:02:09 Very nice to be again at Talk Python To Me. It's one of my favorite podcasts I listen to all the time.
 
@@ -74,7 +74,7 @@
 
 00:03:17 Tell people who you are.
 
-00:03:18 I'm an Apache Airflow maintainer, one of the DMC members as well, and also one of the Apache Software Foundation members.
+00:03:18 I'm an Apache Airflow maintainer, one of the PMC members as well, and also one of the Apache Software Foundation members.
 
 00:03:26 I've got this nice, thin new logo of Apache Software Foundation that we got at FOSDEM.
 
@@ -92,7 +92,7 @@
 
 00:04:02 So, yeah, potentially to have you back for that.
 
-00:04:04 Hey, I'm Amok Desai.
+00:04:04 Hey, I'm Amogh Desai.
 
 00:04:05 Again, similar to Jarek, I'm a PMC member and a computer at Apache Airflow.
 
@@ -146,7 +146,7 @@
 
 00:05:44 He does both.
 
-00:05:45 The funny part is Yarek does both.
+00:05:45 The funny part is Jarek does both.
 
 00:05:47 His velocity amazes me or, I don't know, shocks me sometimes.
 
@@ -160,7 +160,7 @@
 
 00:06:04 It's some, it's a little bit.
 
-00:06:05 Before we move on though, Yarek, what is the Apache Software Foundation?
+00:06:05 Before we move on though, Jarek, what is the Apache Software Foundation?
 
 00:06:09 What is this Apache thing that you're talking about?
 
@@ -180,7 +180,7 @@
 
 00:06:29 where members are corporates.
 
-00:06:30 And people make decisions in both foundation and projects or NPMCs, so-called project management committees.
+00:06:30 And people make decisions in both foundation and projects or PMCs, so-called project management committees.
 
 00:06:39 And Airflow is one of the PMCs.
 
@@ -526,7 +526,7 @@
 
 00:15:57 I actually had a talk about that at the Global Vulnerability Intelligence Platform Summit just before Fosden.
 
-00:16:03 So that was exactly like, I even quoted Daniel Stenberg and I met him there at Fosden, which like, that was really cool.
+00:16:03 So that was exactly like, I even quoted Daniel Stenberg and I met him there at FOSDEM, which like, that was really cool.
 
 00:16:09 There are some different motivations of people who are submitting those those AI issues and we should fight with the in different ways with different approaches or like, you know, the respond to those motivations.
 
@@ -552,7 +552,7 @@
 
 00:17:28 A lot of times it just it doesn't it doesn't get the Zen of it.
 
-00:17:31 You know, Amag, what do you think?
+00:17:31 You know, Amogh, what do you think?
 
 00:17:33 It'll generate code, which it thinks is good, but we don't really know the ripple effect and we want to avoid such things.
 
@@ -568,7 +568,7 @@
 
 00:18:12 So 100 or 1.2 million lines of Python, 918,000 excluding comments, maybe a little over counting the way this thing works, but still 200,000 restructured texts.
 
-00:18:23 The one that really stood out to me, 81,000 lines of YAML and 16,000 lines of TAML.
+00:18:23 The one that really stood out to me, 81,000 lines of YAML and 16,000 lines of TOML.
 
 00:18:28 You guys, that's impressive. And you know what?
 
@@ -594,15 +594,15 @@
 
 00:19:08 And the spec of the providers is written in YAML.
 
-00:19:11 And TAML, sure, will come to it very, very, very soon.
+00:19:11 And TOML, sure, will come to it very, very, very soon.
 
-00:19:14 That's kind of why I pulled this up, actually, is the TAML aspect is quite interesting, which leave us with that number as we move on.
+00:19:14 That's kind of why I pulled this up, actually, is the TOML aspect is quite interesting, which leave us with that number as we move on.
 
-00:19:23 16,000 lines of TAML. That's a lot of pyproject.TAML going on right there, folks.
+00:19:23 16,000 lines of TOML. That's a lot of pyproject.TOML going on right there, folks.
 
 00:19:28 Oh, yes. And lots of it is generated, actually.
 
-00:19:31 So like, because we actually generate quite a lot of the YAML and TAML that we have and keep it in the repo.
+00:19:31 So like, because we actually generate quite a lot of the YAML and TOML that we have and keep it in the repo.
 
 00:19:37 So we don't want to regenerate every time.
 
@@ -610,7 +610,7 @@
 
 00:19:43 Maybe we can start by introducing this by just giving a shout out to this series that you wrote over here on Medium.
 
-00:19:50 Yarek, modern Python repo for Apache Airflow, parts one through four.
+00:19:50 Jarek, modern Python repo for Apache Airflow, parts one through four.
 
 00:19:55 Yes, I initially started discussing this blog post idea with a few people.
 
@@ -636,13 +636,13 @@
 
 00:21:12 So those are the kind of history why we are doing it.
 
-00:21:16 The, you know, the packaging, the automated verification with Prec.
+00:21:16 The, you know, the packaging, the automated verification with prek.
 
 00:21:22 So that was the third part.
 
 00:21:23 And the fourth part was about like the, this chart, libraries, innovation, innovative concept, but we added for, for, for.
 
-00:21:29 I'll link to the series as well as to a talk that you gave at Fostum that just got published, right?
+00:21:29 I'll link to the series as well as to a talk that you gave at FOSDEM that just got published, right?
 
 00:21:34 Yes.
 
@@ -676,7 +676,7 @@
 
 00:22:24 What were some of the problems?
 
-00:22:25 Let me start with this cooperation and maybe, you know, Amok can also explain like what was before and after, because like he experienced that firsthand as a, as a user kind of this kind of repository structure.
+00:22:25 Let me start with this cooperation and maybe, you know, Amogh can also explain like what was before and after, because like he experienced that firsthand as a, as a user kind of this kind of repository structure.
 
 00:22:34 But for me, the idea was like, I was working on it for years.
 
@@ -712,7 +712,7 @@
 
 00:23:36 Now, when we did that, I, we had to do all manually and like working with that was like really cumbersome.
 
-00:23:43 Maybe, you know, like I can switch to, to Amok.
+00:23:43 Maybe, you know, like I can switch to, to Amogh.
 
 00:23:45 So he can say like the past experience and new experience because like he experienced the change himself.
 
@@ -722,7 +722,7 @@
 
 00:23:55 Whenever I, switch branches or have to rebase for whatever reason, I had a nightmare, a very bad time trying to, you know, package things together and try to run something.
 
-00:24:05 And I think Yarek found me often, you know, ranting on the Slack channels that, Hey, this doesn't work.
+00:24:05 And I think Jarek found me often, you know, ranting on the Slack channels that, Hey, this doesn't work.
 
 00:24:09 Hey, that doesn't work.
 
@@ -994,7 +994,7 @@
 
 00:32:50 Right.
 
-00:32:51 Again, Amok can say like, I introduced it, but Amok was the one to switch to use uv at some point of time.
+00:32:51 Again, Amogh can say like, I introduced it, but Amogh was the one to switch to use uv at some point of time.
 
 00:32:56 Yep.
 
@@ -1054,9 +1054,9 @@
 
 00:34:26 120 plus.
 
-00:34:27 It changes by day because Amok is doing a lot to increase the number very, very quickly because we are just now in the middle of finishing some isolation kind of restructuring.
+00:34:27 It changes by day because Amogh is doing a lot to increase the number very, very quickly because we are just now in the middle of finishing some isolation kind of restructuring.
 
-00:34:38 And Amok is the one that that's why he's here also to lead the introduction of new packages that we or new distributions that we that we have like a shared libraries that we will talk about later.
+00:34:38 And Amogh is the one that that's why he's here also to lead the introduction of new packages that we or new distributions that we that we have like a shared libraries that we will talk about later.
 
 00:34:48 So we have a lot of those.
 
@@ -1064,7 +1064,7 @@
 
 00:34:50 I think this is super important to dive into and how uv makes this possible.
 
-00:34:54 And I think you said also Hatch, you talked with Ofec, who runs Hatch as well about this, right?
+00:34:54 And I think you said also Hatch, you talked with Ofek, who runs Hatch as well about this, right?
 
 00:35:00 Yes.
 
@@ -1132,7 +1132,7 @@
 
 00:36:56 As a transitive dependency as well.
 
-00:36:58 So if it refers to another project project inside the workspace, it will also use it from there, not from like installed by by PR.
+00:36:58 So if it refers to another project project inside the workspace, it will also use it from there, not from like installed by by PyPI.
 
 00:37:05 So you can immediately start working on this because everything after uv sync, everything is exactly as you expect for this particular subset of the repository that you were on.
 
@@ -1176,7 +1176,7 @@
 
 00:38:18 We'll, will know where to look for particular distributions.
 
-00:38:21 So that's the, that's the simple discovery and the way how we know that we are using it from the sources and not from the, from the IPI.
+00:38:21 So that's the, that's the simple discovery and the way how we know that we are using it from the sources and not from the, from the PyPI.
 
 00:38:29 But then like the shared libraries as, as it's like something that we added on top of it and the sim links are on the top of it.
 
@@ -1184,7 +1184,7 @@
 
 00:38:44 This is really cool.
 
-00:38:45 So one of the things that happens here is these different slices or subsections of the monorepo PI project.toml that PI project.toml depend, defines its true dependencies and its dev dependencies and so on.
+00:38:45 So one of the things that happens here is these different slices or subsections of the monorepo pyproject.toml that pyproject.toml depend, defines its true dependencies and its dev dependencies and so on.
 
 00:38:59 So when you go and jump into a section, it will, uv will basically realign the virtual environment with whatever dependencies are supposed to be there from those things.
 
@@ -1218,7 +1218,7 @@
 
 00:40:58 Depends like which dependencies are defined.
 
-00:41:00 And this is like, this all magically happens, like by just defining the dependency in PI project.
+00:41:00 And this is like, this all magically happens, like by just defining the dependency in pyproject.
 
 00:41:06 And uv sync will handle it for you in the workspace.
 
@@ -1252,7 +1252,7 @@
 
 00:42:21 We still have them for shared libraries, which we can talk about now, because I think this is an important modification of the concept.
 
-00:42:28 So we do have some automated check for quality and for imports with Prec, our Prec commit hook implementation.
+00:42:28 So we do have some automated check for quality and for imports with prek, our Prec commit hook implementation.
 
 00:42:36 But before that, it was just completely, completely like handwritten and unmaintainable.
 
@@ -1262,7 +1262,7 @@
 
 00:42:56 And this is like the best part of, of uv understanding that and, and doing everything that is like reasonable in this case.
 
-00:43:03 The other major tool involved here was Prec, which it's a pre commit framework for running hooks, many languages, but especially Python relevant here written in Rust.
+00:43:03 The other major tool involved here was prek, which it's a pre commit framework for running hooks, many languages, but especially Python relevant here written in Rust.
 
 00:43:15 So it pairs well with uv, I suppose.
 
@@ -1274,17 +1274,17 @@
 
 00:43:25 Great.
 
-00:43:26 How's Prec show up here?
+00:43:26 How's prek show up here?
 
 00:43:27 I feel like this is leading towards what you were hinting at earlier.
 
-00:43:30 It's a new name, Prec.
+00:43:30 It's a new name, prek.
 
 00:43:31 So, yep.
 
 00:43:32 This allows us to do a few things which pre commit did not do, or, you know, did not accept as suggestions.
 
-00:43:39 So, one certain thing that Prec offers is obviously it's written in Rust.
+00:43:39 So, one certain thing that prek offers is obviously it's written in Rust.
 
 00:43:45 So speed is the obvious one is that we get.
 
@@ -1300,17 +1300,17 @@
 
 00:44:04 So, yeah.
 
-00:44:05 So this Prec allowed us to, Prec again, you know, it, it consumed the concept of workspaces here, I would say.
+00:44:05 So this prek allowed us to, prek again, you know, it, it consumed the concept of workspaces here, I would say.
 
-00:44:11 So it allowed you to define pre commit hooks or Prec hooks within a module itself.
+00:44:11 So it allowed you to define pre commit hooks or prek hooks within a module itself.
 
 00:44:18 And this paired well with uv in the sense that when you have to run hooks that are bound to a certain distribution,
 
-00:44:26 all you have to do is check in into the, you know, the sub module and just do a Prec run.
+00:44:26 all you have to do is check in into the, you know, the sub module and just do a prek run.
 
 00:44:31 It will run the relevant hooks for that particular module.
 
-00:44:34 And the other, other thing that I really love about Prec is auto completion, which is not something pre commit had.
+00:44:34 And the other, other thing that I really love about prek is auto completion, which is not something pre commit had.
 
 00:44:41 So you can imagine that something fails in the CI, you have to copy that and copy the ID and try to kind of backtrack it in your repo as to which one is failing.
 
@@ -1322,9 +1322,9 @@
 
 00:45:02 I have some story about that very, very short.
 
-00:45:04 So like we actually tried to get out the completion for hook names with, with Prec commit, which was the predecessor of Prec.
+00:45:04 So like we actually tried to get out the completion for hook names with, with Prec commit, which was the predecessor of prek.
 
-00:45:11 Like Prec was largely based on Prec commit, but somehow the author of it didn't accept even idea of us contributing it or actually had some very, very excessive expectations for that.
+00:45:11 Like prek was largely based on Prec commit, but somehow the author of it didn't accept even idea of us contributing it or actually had some very, very excessive expectations for that.
 
 00:45:22 And we, you know, discussed and like, there were like, other people were also trying to convince the author to do that, but they refused.
 
@@ -1344,29 +1344,29 @@
 
 00:45:55 So I think the collaboration and being, you know, working together, listening to your users and be responding and actually working as an open source maintainers together.
 
-00:46:04 This actually worked perfectly well here, both, both in uv and Prec.
+00:46:04 This actually worked perfectly well here, both, both in uv and prek.
 
-00:46:08 And this is why we love Prec actually because, because we know we can rely, if something is not working, that it's going to be like, we can discuss and either submit a fix or, or, you know, Joe will do this or even like lots of other people can do it.
+00:46:08 And this is why we love prek actually because, because we know we can rely, if something is not working, that it's going to be like, we can discuss and either submit a fix or, or, you know, Joe will do this or even like lots of other people can do it.
 
 00:46:22 Because there was a few features that we wanted and somebody else implemented it.
 
-00:46:26 And that wasn't Joe, they contributed Prec because of this openness and, you know, being able to accept the needs of the users.
+00:46:26 And that wasn't Joe, they contributed prek because of this openness and, you know, being able to accept the needs of the users.
 
-00:46:35 That was very, very important part, like why we moved to Prec.
+00:46:35 That was very, very important part, like why we moved to prek.
 
-00:46:38 Yeah. I think Airflow was also one of the initial case studies for Prec.
+00:46:38 Yeah. I think Airflow was also one of the initial case studies for prek.
 
 00:46:41 It's a project of that scale. And if you kind of satisfy that project's needs, you are, you're pretty good with most use cases.
 
 00:46:48 I think that's quite both Prec and UVS.
 
-00:46:51 Yeah. Right there at the top of the Prec repo, it says, although Prec is pretty new, it's already powering real projects, you know, little things like CPython, Apache Airflow and FastAPI.
+00:46:51 Yeah. Right there at the top of the prek repo, it says, although Prec is pretty new, it's already powering real projects, you know, little things like CPython, Apache Airflow and FastAPI.
 
-00:47:01 I know Hugo van Kameret from the release manager of Python. So we met at Fosdem as well. And like, he was actually listening to our Prec discussion and he converted, you know, CPython to use Prec because of the, of the needs they had.
+00:47:01 I know Hugo van Kemenade from the release manager of Python. So we met at Fosdem as well. And like, he was actually listening to our prek discussion and he converted, you know, CPython to use prek because of the, of the needs they had.
 
 00:47:13 So like, it was all about, you know, people talking to each other, word of mouth and things like that.
 
-00:47:19 You know, there's a feature listed here that just makes me jealous. One of the features of Prec is a single binary with no dependencies that doesn't require Python or any other runtime to be installed.
+00:47:19 You know, there's a feature listed here that just makes me jealous. One of the features of prek is a single binary with no dependencies that doesn't require Python or any other runtime to be installed.
 
 00:47:29 Like how incredible would it be with Python if we had a, a Python --build app or something, you know what I mean?
 
@@ -1458,7 +1458,7 @@
 
 00:52:33 Some parts of the PyProject DOM are generated to make it actually work.
 
-00:52:37 But this is all automated with Preq, which is like, we don't have to think about that even.
+00:52:37 But this is all automated with prek, which is like, we don't have to think about that even.
 
 00:52:41 And once we do that, and once we create some Simlinks between different parts of code, like one library, one distribution is Simlinks in code from the shared distribution.
 
@@ -1504,7 +1504,7 @@
 
 00:54:30 That's wild.
 
-00:54:31 Amag?
+00:54:31 Amogh?
 
 00:54:32 Sounds like you were instrumental in this, Pari.
 
@@ -1522,7 +1522,7 @@
 
 00:55:02 And also it could be brittle.
 
-00:55:04 So Yarek came up with this particular option with Simlinks, which again was discussed within the community.
+00:55:04 So Jarek came up with this particular option with Simlinks, which again was discussed within the community.
 
 00:55:10 A few of us picked this PR up, passed it locally, played around and gave the feedback.
 
@@ -1552,7 +1552,7 @@
 
 00:56:17 Yeah.
 
-00:56:18 It's just that it's really like one or two kind of preq hooks which are maintaining the consistency.
+00:56:18 It's just that it's really like one or two kind of prek hooks which are maintaining the consistency.
 
 00:56:23 And like, so that you don't forget to add this symlink here and that kind of I project com definition here and or that hatch definition for the hatch link to actually embed your symlink code into the final distribution.
 

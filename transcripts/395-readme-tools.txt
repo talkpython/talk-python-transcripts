@@ -1246,7 +1246,7 @@
 
 00:28:24 the presses. Let's see if we can find... Oh, it says initial commit. We got it 10 days ago.
 
-00:28:30 Will McGuggan of Rich... Rich and Textual. And Textual, yeah. Put out a tool to generate a GitHub
+00:28:30 Will McGugan of Rich... Rich and Textual. And Textual, yeah. Put out a tool to generate a GitHub
 
 00:28:37 flavored FAQ.markdown document. This is pretty neat. This is a tool. I just took a quick look at it. It's
 

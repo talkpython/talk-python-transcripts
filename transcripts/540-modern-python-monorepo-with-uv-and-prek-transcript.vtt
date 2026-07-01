@@ -7,7 +7,7 @@ Monorepos. You've heard the talks, you've read the blog posts, maybe you've seen
 What if you could crack open a real production monorepo, one with over a million lines of Python code and over a hundred sub-packages, and actually see what's being built step-by-step using modern tools and standards?
 
 00:00:24.760 --> 00:00:46.440
-Well, that's exactly what Apache Airflow gives us. On this episode, I sit down with Yarek Patuk and Amag Desai, two of Airflow's top contributors, to go inside one of the largest open-source Python monorepos in the world and learn how they manage it with uv, pyproject.toml, and the latest packaging standards, so you can apply the same patterns to your own projects.
+Well, that's exactly what Apache Airflow gives us. On this episode, I sit down with Jarek Potiuk and Amogh Desai, two of Airflow's top contributors, to go inside one of the largest open-source Python monorepos in the world and learn how they manage it with uv, pyproject.toml, and the latest packaging standards, so you can apply the same patterns to your own projects.
 
 00:00:47.080 --> 00:00:52.200
 This is Talk Python To Me, episode 540, recorded February 10th, 2026.
@@ -43,10 +43,10 @@ Learn to work with AI that actually understands your code base and build real fe
 Visit talkpython.fm/Agentic-AI.
 
 00:02:02.460 --> 00:02:05.840
-Hello, hello, Yarek, Amag. Welcome to Talk Python To Me.
+Hello, hello, Jarek, Amogh. Welcome to Talk Python To Me.
 
 00:02:06.160 --> 00:02:09.560
-Awesome to have Amag, you here, and Yarek, you back.
+Awesome to have Amogh, you here, and Jarek, you back.
 
 00:02:09.820 --> 00:02:14.920
 Very nice to be again at Talk Python To Me. It's one of my favorite podcasts I listen to all the time.
@@ -115,7 +115,7 @@ Who are you?
 Tell people who you are.
 
 00:03:18.200 --> 00:03:22.620
-I'm an Apache Airflow maintainer, one of the DMC members as well,
+I'm an Apache Airflow maintainer, one of the PMC members as well,
 
 00:03:22.720 --> 00:03:25.980
 and also one of the Apache Software Foundation members.
@@ -151,7 +151,7 @@ Yeah, I have something like that, a topic somewhat like that brewing.
 So, yeah, potentially to have you back for that.
 
 00:04:04.020 --> 00:04:05.080
-Hey, I'm Amok Desai.
+Hey, I'm Amogh Desai.
 
 00:04:05.220 --> 00:04:10.040
 Again, similar to Jarek, I'm a PMC member and a computer at Apache Airflow.
@@ -253,7 +253,7 @@ Well, not.
 He does both.
 
 00:05:45.460 --> 00:05:46.900
-The funny part is Yarek does both.
+The funny part is Jarek does both.
 
 00:05:47.260 --> 00:05:50.340
 His velocity amazes me or, I don't know, shocks me sometimes.
@@ -277,7 +277,7 @@ in terms of like open source activity.
 It's some, it's a little bit.
 
 00:06:05.640 --> 00:06:09.360
-Before we move on though, Yarek, what is the Apache Software Foundation?
+Before we move on though, Jarek, what is the Apache Software Foundation?
 
 00:06:09.460 --> 00:06:12.560
 What is this Apache thing that you're talking about?
@@ -307,7 +307,7 @@ So every member is an individual, not a corporate, as opposed to like Linux Soft
 where members are corporates.
 
 00:06:30.760 --> 00:06:38.720
-And people make decisions in both foundation and projects or NPMCs, so-called project management committees.
+And people make decisions in both foundation and projects or PMCs, so-called project management committees.
 
 00:06:39.280 --> 00:06:41.160
 And Airflow is one of the PMCs.
@@ -826,7 +826,7 @@ It is.
 I actually had a talk about that at the Global Vulnerability Intelligence Platform Summit just before Fosden.
 
 00:16:03.700 --> 00:16:09.700
-So that was exactly like, I even quoted Daniel Stenberg and I met him there at Fosden, which like, that was really cool.
+So that was exactly like, I even quoted Daniel Stenberg and I met him there at FOSDEM, which like, that was really cool.
 
 00:16:09.700 --> 00:16:21.700
 There are some different motivations of people who are submitting those those AI issues and we should fight with the in different ways with different approaches or like, you know, the respond to those motivations.
@@ -865,7 +865,7 @@ But it has this sort of shotgun effect often of just like, I'm going to change a
 A lot of times it just it doesn't it doesn't get the Zen of it.
 
 00:17:31.700 --> 00:17:33.700
-You know, Amag, what do you think?
+You know, Amogh, what do you think?
 
 00:17:33.700 --> 00:17:40.700
 It'll generate code, which it thinks is good, but we don't really know the ripple effect and we want to avoid such things.
@@ -889,7 +889,7 @@ So I want to just highlight maybe you all like can riff on this a little bit to 
 So 100 or 1.2 million lines of Python, 918,000 excluding comments, maybe a little over counting the way this thing works, but still 200,000 restructured texts.
 
 00:18:23.700 --> 00:18:28.700
-The one that really stood out to me, 81,000 lines of YAML and 16,000 lines of TAML.
+The one that really stood out to me, 81,000 lines of YAML and 16,000 lines of TOML.
 
 00:18:28.700 --> 00:18:32.700
 You guys, that's impressive. And you know what?
@@ -928,19 +928,19 @@ So integration with other systems is something we call as providers.
 And the spec of the providers is written in YAML.
 
 00:19:11.700 --> 00:19:14.700
-And TAML, sure, will come to it very, very, very soon.
+And TOML, sure, will come to it very, very, very soon.
 
 00:19:14.700 --> 00:19:23.700
-That's kind of why I pulled this up, actually, is the TAML aspect is quite interesting, which leave us with that number as we move on.
+That's kind of why I pulled this up, actually, is the TOML aspect is quite interesting, which leave us with that number as we move on.
 
 00:19:23.700 --> 00:19:28.700
-16,000 lines of TAML. That's a lot of pyproject.TAML going on right there, folks.
+16,000 lines of TOML. That's a lot of pyproject.TOML going on right there, folks.
 
 00:19:28.700 --> 00:19:31.700
 Oh, yes. And lots of it is generated, actually.
 
 00:19:31.700 --> 00:19:37.700
-So like, because we actually generate quite a lot of the YAML and TAML that we have and keep it in the repo.
+So like, because we actually generate quite a lot of the YAML and TOML that we have and keep it in the repo.
 
 00:19:37.700 --> 00:19:39.700
 So we don't want to regenerate every time.
@@ -952,7 +952,7 @@ So like, we don't write YAML by hand.
 Maybe we can start by introducing this by just giving a shout out to this series that you wrote over here on Medium.
 
 00:19:50.700 --> 00:19:55.700
-Yarek, modern Python repo for Apache Airflow, parts one through four.
+Jarek, modern Python repo for Apache Airflow, parts one through four.
 
 00:19:55.700 --> 00:20:00.700
 Yes, I initially started discussing this blog post idea with a few people.
@@ -991,7 +991,7 @@ And then the last part was like really the kind of a little bit innovative appro
 So those are the kind of history why we are doing it.
 
 00:21:16.700 --> 00:21:22.700
-The, you know, the packaging, the automated verification with Prec.
+The, you know, the packaging, the automated verification with prek.
 
 00:21:22.700 --> 00:21:23.700
 So that was the third part.
@@ -1000,7 +1000,7 @@ So that was the third part.
 And the fourth part was about like the, this chart, libraries, innovation, innovative concept, but we added for, for, for.
 
 00:21:29.700 --> 00:21:34.700
-I'll link to the series as well as to a talk that you gave at Fostum that just got published, right?
+I'll link to the series as well as to a talk that you gave at FOSDEM that just got published, right?
 
 00:21:34.700 --> 00:21:35.700
 Yes.
@@ -1054,7 +1054,7 @@ Right.
 What were some of the problems?
 
 00:22:25.700 --> 00:22:34.700
-Let me start with this cooperation and maybe, you know, Amok can also explain like what was before and after, because like he experienced that firsthand as a, as a user kind of this kind of repository structure.
+Let me start with this cooperation and maybe, you know, Amogh can also explain like what was before and after, because like he experienced that firsthand as a, as a user kind of this kind of repository structure.
 
 00:22:34.700 --> 00:22:39.700
 But for me, the idea was like, I was working on it for years.
@@ -1108,7 +1108,7 @@ Now we have more than hundreds.
 Now, when we did that, I, we had to do all manually and like working with that was like really cumbersome.
 
 00:23:43.700 --> 00:23:45.700
-Maybe, you know, like I can switch to, to Amok.
+Maybe, you know, like I can switch to, to Amogh.
 
 00:23:45.700 --> 00:23:50.700
 So he can say like the past experience and new experience because like he experienced the change himself.
@@ -1123,7 +1123,7 @@ The, the past experience was scary to be, to speak the least.
 Whenever I, switch branches or have to rebase for whatever reason, I had a nightmare, a very bad time trying to, you know, package things together and try to run something.
 
 00:24:05.700 --> 00:24:09.700
-And I think Yarek found me often, you know, ranting on the Slack channels that, Hey, this doesn't work.
+And I think Jarek found me often, you know, ranting on the Slack channels that, Hey, this doesn't work.
 
 00:24:09.700 --> 00:24:10.700
 Hey, that doesn't work.
@@ -1534,7 +1534,7 @@ Like uv has really done some powerful stuff here.
 Right.
 
 00:32:51.700 --> 00:32:56.700
-Again, Amok can say like, I introduced it, but Amok was the one to switch to use uv at some point of time.
+Again, Amogh can say like, I introduced it, but Amogh was the one to switch to use uv at some point of time.
 
 00:32:56.700 --> 00:32:57.700
 Yep.
@@ -1627,10 +1627,10 @@ So you've got this giant monorepo and how many different conceptually different 
 120 plus.
 
 00:34:27.700 --> 00:34:38.700
-It changes by day because Amok is doing a lot to increase the number very, very quickly because we are just now in the middle of finishing some isolation kind of restructuring.
+It changes by day because Amogh is doing a lot to increase the number very, very quickly because we are just now in the middle of finishing some isolation kind of restructuring.
 
 00:34:38.700 --> 00:34:48.700
-And Amok is the one that that's why he's here also to lead the introduction of new packages that we or new distributions that we that we have like a shared libraries that we will talk about later.
+And Amogh is the one that that's why he's here also to lead the introduction of new packages that we or new distributions that we that we have like a shared libraries that we will talk about later.
 
 00:34:48.700 --> 00:34:49.700
 So we have a lot of those.
@@ -1642,7 +1642,7 @@ Yes.
 I think this is super important to dive into and how uv makes this possible.
 
 00:34:54.700 --> 00:35:00.700
-And I think you said also Hatch, you talked with Ofec, who runs Hatch as well about this, right?
+And I think you said also Hatch, you talked with Ofek, who runs Hatch as well about this, right?
 
 00:35:00.700 --> 00:35:01.700
 Yes.
@@ -1744,7 +1744,7 @@ It actually updates the or recreates basically the virtual environment that you'
 As a transitive dependency as well.
 
 00:36:58.700 --> 00:37:05.700
-So if it refers to another project project inside the workspace, it will also use it from there, not from like installed by by PR.
+So if it refers to another project project inside the workspace, it will also use it from there, not from like installed by by PyPI.
 
 00:37:05.700 --> 00:37:14.700
 So you can immediately start working on this because everything after uv sync, everything is exactly as you expect for this particular subset of the repository that you were on.
@@ -1810,7 +1810,7 @@ They have described where they are and uv will read the by project from the top 
 We'll, will know where to look for particular distributions.
 
 00:38:21.700 --> 00:38:29.700
-So that's the, that's the simple discovery and the way how we know that we are using it from the sources and not from the, from the IPI.
+So that's the, that's the simple discovery and the way how we know that we are using it from the sources and not from the, from the PyPI.
 
 00:38:29.700 --> 00:38:36.700
 But then like the shared libraries as, as it's like something that we added on top of it and the sim links are on the top of it.
@@ -1822,7 +1822,7 @@ And this is kind of extra innovative thing that we are doing for something else 
 This is really cool.
 
 00:38:45.700 --> 00:38:59.700
-So one of the things that happens here is these different slices or subsections of the monorepo PI project.toml that PI project.toml depend, defines its true dependencies and its dev dependencies and so on.
+So one of the things that happens here is these different slices or subsections of the monorepo pyproject.toml that pyproject.toml depend, defines its true dependencies and its dev dependencies and so on.
 
 00:38:59.700 --> 00:39:10.700
 So when you go and jump into a section, it will, uv will basically realign the virtual environment with whatever dependencies are supposed to be there from those things.
@@ -1873,7 +1873,7 @@ And it can be completely different if you go to another directory, some of that 
 Depends like which dependencies are defined.
 
 00:41:00.700 --> 00:41:06.700
-And this is like, this all magically happens, like by just defining the dependency in PI project.
+And this is like, this all magically happens, like by just defining the dependency in pyproject.
 
 00:41:06.700 --> 00:41:09.700
 And uv sync will handle it for you in the workspace.
@@ -1924,7 +1924,7 @@ Don't import here, import here.
 We still have them for shared libraries, which we can talk about now, because I think this is an important modification of the concept.
 
 00:42:28.700 --> 00:42:36.700
-So we do have some automated check for quality and for imports with Prec, our Prec commit hook implementation.
+So we do have some automated check for quality and for imports with prek, our Prec commit hook implementation.
 
 00:42:36.700 --> 00:42:42.700
 But before that, it was just completely, completely like handwritten and unmaintainable.
@@ -1939,7 +1939,7 @@ With PyProject Tom being the, for each distribution being the single source of t
 And this is like the best part of, of uv understanding that and, and doing everything that is like reasonable in this case.
 
 00:43:03.700 --> 00:43:15.700
-The other major tool involved here was Prec, which it's a pre commit framework for running hooks, many languages, but especially Python relevant here written in Rust.
+The other major tool involved here was prek, which it's a pre commit framework for running hooks, many languages, but especially Python relevant here written in Rust.
 
 00:43:15.700 --> 00:43:17.700
 So it pairs well with uv, I suppose.
@@ -1957,13 +1957,13 @@ And, and Joe was mentioning, mentioned that, that he was actually contributing t
 Great.
 
 00:43:26.700 --> 00:43:27.700
-How's Prec show up here?
+How's prek show up here?
 
 00:43:27.700 --> 00:43:30.700
 I feel like this is leading towards what you were hinting at earlier.
 
 00:43:30.700 --> 00:43:31.700
-It's a new name, Prec.
+It's a new name, prek.
 
 00:43:31.700 --> 00:43:32.700
 So, yep.
@@ -1972,7 +1972,7 @@ So, yep.
 This allows us to do a few things which pre commit did not do, or, you know, did not accept as suggestions.
 
 00:43:39.700 --> 00:43:45.700
-So, one certain thing that Prec offers is obviously it's written in Rust.
+So, one certain thing that prek offers is obviously it's written in Rust.
 
 00:43:45.700 --> 00:43:48.700
 So speed is the obvious one is that we get.
@@ -1996,22 +1996,22 @@ You can imagine.
 So, yeah.
 
 00:44:05.700 --> 00:44:11.700
-So this Prec allowed us to, Prec again, you know, it, it consumed the concept of workspaces here, I would say.
+So this prek allowed us to, prek again, you know, it, it consumed the concept of workspaces here, I would say.
 
 00:44:11.700 --> 00:44:18.700
-So it allowed you to define pre commit hooks or Prec hooks within a module itself.
+So it allowed you to define pre commit hooks or prek hooks within a module itself.
 
 00:44:18.700 --> 00:44:26.700
 And this paired well with uv in the sense that when you have to run hooks that are bound to a certain distribution,
 
 00:44:26.700 --> 00:44:31.700
-all you have to do is check in into the, you know, the sub module and just do a Prec run.
+all you have to do is check in into the, you know, the sub module and just do a prek run.
 
 00:44:31.700 --> 00:44:34.700
 It will run the relevant hooks for that particular module.
 
 00:44:34.700 --> 00:44:41.700
-And the other, other thing that I really love about Prec is auto completion, which is not something pre commit had.
+And the other, other thing that I really love about prek is auto completion, which is not something pre commit had.
 
 00:44:41.700 --> 00:44:50.700
 So you can imagine that something fails in the CI, you have to copy that and copy the ID and try to kind of backtrack it in your repo as to which one is failing.
@@ -2029,10 +2029,10 @@ Yeah. Yeah. So, okay. I've seen.
 I have some story about that very, very short.
 
 00:45:04.700 --> 00:45:11.700
-So like we actually tried to get out the completion for hook names with, with Prec commit, which was the predecessor of Prec.
+So like we actually tried to get out the completion for hook names with, with Prec commit, which was the predecessor of prek.
 
 00:45:11.700 --> 00:45:22.700
-Like Prec was largely based on Prec commit, but somehow the author of it didn't accept even idea of us contributing it or actually had some very, very excessive expectations for that.
+Like prek was largely based on Prec commit, but somehow the author of it didn't accept even idea of us contributing it or actually had some very, very excessive expectations for that.
 
 00:45:22.700 --> 00:45:29.700
 And we, you know, discussed and like, there were like, other people were also trying to convince the author to do that, but they refused.
@@ -2062,22 +2062,22 @@ And like, I raised, I don't know how many issues in the initial kind of pre-rele
 So I think the collaboration and being, you know, working together, listening to your users and be responding and actually working as an open source maintainers together.
 
 00:46:04.700 --> 00:46:08.700
-This actually worked perfectly well here, both, both in uv and Prec.
+This actually worked perfectly well here, both, both in uv and prek.
 
 00:46:08.700 --> 00:46:22.700
-And this is why we love Prec actually because, because we know we can rely, if something is not working, that it's going to be like, we can discuss and either submit a fix or, or, you know, Joe will do this or even like lots of other people can do it.
+And this is why we love prek actually because, because we know we can rely, if something is not working, that it's going to be like, we can discuss and either submit a fix or, or, you know, Joe will do this or even like lots of other people can do it.
 
 00:46:22.700 --> 00:46:26.700
 Because there was a few features that we wanted and somebody else implemented it.
 
 00:46:26.700 --> 00:46:35.700
-And that wasn't Joe, they contributed Prec because of this openness and, you know, being able to accept the needs of the users.
+And that wasn't Joe, they contributed prek because of this openness and, you know, being able to accept the needs of the users.
 
 00:46:35.700 --> 00:46:38.700
-That was very, very important part, like why we moved to Prec.
+That was very, very important part, like why we moved to prek.
 
 00:46:38.700 --> 00:46:41.700
-Yeah. I think Airflow was also one of the initial case studies for Prec.
+Yeah. I think Airflow was also one of the initial case studies for prek.
 
 00:46:41.700 --> 00:46:48.700
 It's a project of that scale. And if you kind of satisfy that project's needs, you are, you're pretty good with most use cases.
@@ -2086,16 +2086,16 @@ It's a project of that scale. And if you kind of satisfy that project's needs, y
 I think that's quite both Prec and UVS.
 
 00:46:51.700 --> 00:47:01.700
-Yeah. Right there at the top of the Prec repo, it says, although Prec is pretty new, it's already powering real projects, you know, little things like CPython, Apache Airflow and FastAPI.
+Yeah. Right there at the top of the prek repo, it says, although Prec is pretty new, it's already powering real projects, you know, little things like CPython, Apache Airflow and FastAPI.
 
 00:47:01.700 --> 00:47:13.700
-I know Hugo van Kameret from the release manager of Python. So we met at Fosdem as well. And like, he was actually listening to our Prec discussion and he converted, you know, CPython to use Prec because of the, of the needs they had.
+I know Hugo van Kemenade from the release manager of Python. So we met at Fosdem as well. And like, he was actually listening to our prek discussion and he converted, you know, CPython to use prek because of the, of the needs they had.
 
 00:47:13.700 --> 00:47:19.700
 So like, it was all about, you know, people talking to each other, word of mouth and things like that.
 
 00:47:19.700 --> 00:47:29.700
-You know, there's a feature listed here that just makes me jealous. One of the features of Prec is a single binary with no dependencies that doesn't require Python or any other runtime to be installed.
+You know, there's a feature listed here that just makes me jealous. One of the features of prek is a single binary with no dependencies that doesn't require Python or any other runtime to be installed.
 
 00:47:29.700 --> 00:47:36.700
 Like how incredible would it be with Python if we had a, a Python --build app or something, you know what I mean?
@@ -2233,7 +2233,7 @@ So in our case, like the Simlink approach we have, it needs some pre-processing 
 Some parts of the PyProject DOM are generated to make it actually work.
 
 00:52:37.700 --> 00:52:41.700
-But this is all automated with Preq, which is like, we don't have to think about that even.
+But this is all automated with prek, which is like, we don't have to think about that even.
 
 00:52:41.700 --> 00:52:50.700
 And once we do that, and once we create some Simlinks between different parts of code, like one library, one distribution is Simlinks in code from the shared distribution.
@@ -2302,7 +2302,7 @@ That's very cool.
 That's wild.
 
 00:54:31.700 --> 00:54:32.700
-Amag?
+Amogh?
 
 00:54:32.700 --> 00:54:34.700
 Sounds like you were instrumental in this, Pari.
@@ -2329,7 +2329,7 @@ Somebody did a POC on that, but it felt like it's going to be difficult to achie
 And also it could be brittle.
 
 00:55:04.700 --> 00:55:10.700
-So Yarek came up with this particular option with Simlinks, which again was discussed within the community.
+So Jarek came up with this particular option with Simlinks, which again was discussed within the community.
 
 00:55:10.700 --> 00:55:16.700
 A few of us picked this PR up, passed it locally, played around and gave the feedback.
@@ -2374,7 +2374,7 @@ Absolutely.
 Yeah.
 
 00:56:18.700 --> 00:56:23.700
-It's just that it's really like one or two kind of preq hooks which are maintaining the consistency.
+It's just that it's really like one or two kind of prek hooks which are maintaining the consistency.
 
 00:56:23.700 --> 00:56:38.700
 And like, so that you don't forget to add this symlink here and that kind of I project com definition here and or that hatch definition for the hatch link to actually embed your symlink code into the final distribution.
