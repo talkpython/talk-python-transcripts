@@ -1154,7 +1154,7 @@
 
 00:25:39 So you just call the Mastodon API, public API to get stuff about your account and pull it.
 
-00:25:45 If you look at my Mastodon badge, which is on GitHub slash Nedbat or on the coverage.py page,
+00:25:45 If you look at my Mastodon badge, which is on github.com/Nedbat or on the coverage.py page,
 
 00:25:51 it has my count of followers.
 
