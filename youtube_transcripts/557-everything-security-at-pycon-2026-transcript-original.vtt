@@ -1,0 +1,2044 @@
+WEBVTT
+
+00:00:03.180 --> 00:00:07.160
+<v Michael Kennedy>Juanita, Mike, Seth, welcome all of you to Talk Python.
+
+00:00:08.200 --> 00:00:09.700
+Hi. Hello.
+
+00:00:10.520 --> 00:00:10.780
+Hello.
+
+00:00:11.250 --> 00:00:15.280
+<v Michael Kennedy>Awesome to have some of you back, some of you here for the first time, really, really great.
+
+00:00:16.400 --> 00:00:24.300
+<v Michael Kennedy>We're going to talk about Python security and I believe, Seth, I saw that you wrote up a post article,
+
+00:00:24.740 --> 00:00:38.500
+<v Michael Kennedy>just thinking back on this kind of unique python security track and this extra focus at pycon us this year but hey that'd be great to just get everyone involved together at least everyone
+
+00:00:38.720 --> 00:00:53.000
+<v Michael Kennedy>involved in the track not all eight seven or eight speakers whatever that number adds up to be many many speakers and just kind of talk broadly about python security and use this arc of the topics and
+
+00:00:53.020 --> 00:01:01.600
+<v Michael Kennedy>talks covered at PyCon and the security track as maybe a backdrop. So welcome, welcome. Now,
+
+00:01:01.820 --> 00:01:11.360
+<v Michael Kennedy>before we get into that exactly, let's just do quick introductions about who you are and how you're involved in stuff. Juanita, you want to kick us off?
+
+00:01:12.060 --> 00:01:23.580
+<v Juanita Gomez:>Juanita Gomez: Sure. My name is Juanita. I am a PhD researcher right now at UC Santa Cruz. I work with the hospital at my university doing research in open source security and sustainability.
+
+00:01:24.440 --> 00:01:33.160
+<v Juanita Gomez:>And I've been involved in like the Python and the scientific Python community for a while. So um yeah I got invited to coach here on the track and that was very exciting.
+
+00:01:34.140 --> 00:01:38.740
+<v Michael Kennedy>Very cool. Where are you in your PhD? Are you past quality quality exams?
+
+00:01:39.820 --> 00:01:45.880
+<v Michael Kennedy>I'm graduating in August. What? Oh my god that's awesome. Congratulations yes you're far past it.
+
+00:01:46.520 --> 00:01:46.740
+<v Juanita Gomez:>Yes.
+
+00:01:49.499 --> 00:01:51.120
+<v Michael Kennedy>So what's the plans after?
+
+00:01:53.220 --> 00:01:54.380
+<v Juanita Gomez:>I just got a job.
+
+00:01:54.970 --> 00:01:57.360
+<v Juanita Gomez:>I can't talk about it yet, but I just got a job.
+
+00:01:58.560 --> 00:01:59.740
+<v Juanita Gomez:>So but I'm going to industry.
+
+00:02:00.040 --> 00:02:04.020
+<v Juanita Gomez:>I'm going to keep working on security and sustainability in open source mostly.
+
+00:02:05.440 --> 00:02:06.380
+<v Juanita Gomez:>But yeah, industry.
+
+00:02:07.600 --> 00:02:11.740
+<v Michael Kennedy>Cool. Congratulations on both finishing the PhD and getting a job straight away.
+
+00:02:11.920 --> 00:02:12.360
+<v Michael Kennedy>That's super cool.
+
+00:02:13.140 --> 00:02:13.460
+<v Michael Kennedy>Thank you.
+
+00:02:14.330 --> 00:02:14.480
+<v Michael Kennedy>Yeah.
+
+00:02:15.280 --> 00:02:16.020
+<v Michael Kennedy>Mike, welcome back.
+
+00:02:16.220 --> 00:02:19.760
+<v Mike Fiedler>Hey, glad to be here.
+
+00:02:20.400 --> 00:02:28.880
+<v Mike Fiedler>Mike Fiedler, PyPI Safety and Security Engineer, working for the Python Software Foundation based out of New York City.
+
+00:02:30.760 --> 00:02:40.740
+<v Mike Fiedler>I'm coming up on my third year here at the PSF, which is a cool milestone that I will be sharing with my compatriot here, Seth.
+
+00:02:42.820 --> 00:02:43.180
+<v Michael Kennedy>Very cool.
+
+00:02:43.420 --> 00:02:46.280
+<v Michael Kennedy>And I know thanks for all the work.
+
+00:02:46.480 --> 00:02:48.440
+<v Michael Kennedy>It's been, I think, pretty impactful.
+
+00:02:49.640 --> 00:02:50.760
+<v Michael Kennedy>And three years already.
+
+00:02:52.140 --> 00:02:52.300
+<v Mike Fiedler>Yeah.
+
+00:02:52.980 --> 00:03:03.620
+<v Mike Fiedler>It's been kind of a wild ride of kind of incorporating this because I was a volunteer PyPI admin and contributor long before this job opened up.
+
+00:03:04.260 --> 00:03:11.379
+<v Mike Fiedler>And having the ability to sit here and think about and work on security features
+
+00:03:11.380 --> 00:03:20.880
+<v Mike Fiedler>and stuff for PyPI full-time has been a big eye-opener as to kind of where the gaps were
+
+00:03:21.180 --> 00:03:34.320
+<v Mike Fiedler>and kind of where they remain, but also kind of what are the very important things that we can do in the interim immediately while building up the kind of the piece-by-piece bits that we need to
+
+00:03:34.320 --> 00:03:45.640
+<v Mike Fiedler>get to these longer-term ideas, but being able to kind of still make progress while we're getting Again, it's that notion of rebuilding the plane while you're flying it.
+
+00:03:45.900 --> 00:03:58.060
+<v Mike Fiedler>It's like, okay, well, we had the plane, but now we're adding better sensors, better steering, better throttles, better toggles while we're still flying, and that flight is accelerating.
+
+00:03:59.020 --> 00:03:59.980
+<v Michael Kennedy>Yeah, 100%.
+
+00:04:00.220 --> 00:04:01.120
+<v Michael Kennedy>And seatbelts.
+
+00:04:01.140 --> 00:04:03.960
+<v Michael Kennedy>I think seatbelts belong in the security airplane analogy.
+
+00:04:05.060 --> 00:04:07.460
+<v Mike Fiedler>Probably, but again, it's arguable.
+
+00:04:07.840 --> 00:04:09.440
+<v Mike Fiedler>Sometimes seatbelts are a problem.
+
+00:04:09.560 --> 00:04:22.120
+<v Mike Fiedler>So like it becomes a very good discussion of tradeoffs and balances and kind of what actually will move a needle versus this is a nice to have, you know, ashtray.
+
+00:04:22.860 --> 00:04:27.080
+<v Michael Kennedy>Yeah. Ashtrays. Oh, my gosh. I remember. I remember when there are ashtrays on airplanes.
+
+00:04:27.880 --> 00:04:33.280
+<v Michael Kennedy>Yeah. That was crazy. I'm like, why is there still an ashtray on this airplane?
+
+00:04:33.580 --> 00:04:35.540
+<v Michael Kennedy>Like, I know they're not going to let anyone use it.
+
+00:04:35.820 --> 00:04:47.340
+<v Mike Fiedler>Fun fact, they still have them in airplane bathrooms because while it is against the law, they still want you to have a safe place to throw an ash, your cigarette butt if you're going to violate the law.
+
+00:04:47.700 --> 00:04:50.920
+<v Mike Fiedler>So that way you don't throw it into the trash can and set something on fire.
+
+00:04:52.340 --> 00:04:53.140
+<v Michael Kennedy>Seems reasonable.
+
+00:04:55.500 --> 00:05:00.500
+<v Michael Kennedy>So as a way of a segue, Mike, I'll have you take this first and then Seth, you can pick this up.
+
+00:05:00.580 --> 00:05:16.580
+<v Michael Kennedy>You pointed out being full-time on this project versus a bunch of contributors who get excited about part of it, but then there's this whole herding cats across thousands, hundreds of thousands of projects and users and contributors.
+
+00:05:17.820 --> 00:05:27.740
+<v Michael Kennedy>What is your thoughts on the impact of having a full-time dedicated role to this versus just a core dev type of situation?
+
+00:05:27.840 --> 00:05:39.980
+<v Mike Fiedler>you know yeah i think there's there's kind of two facets here right and there is very much a trade off right uh when it's full-time volunteers you get what you pay for which is nothing right you
+
+00:05:40.160 --> 00:05:50.080
+<v Mike Fiedler>haven't paid for anything volunteers are going to do what volunteers want to do and they're going to do their best effort uh when you hire somebody then you have you set expectations and you try to
+
+00:05:50.450 --> 00:06:02.280
+<v Mike Fiedler>make sure that you meet them right uh the double-edged sword there is that by hiring full-time employees, volunteers often will take a step off because it's like, okay, I don't need to volunteer
+
+00:06:02.600 --> 00:06:10.660
+<v Mike Fiedler>as much as I used to because now someone's getting paid for to do it. So it's both a good thing
+
+00:06:10.810 --> 00:06:17.980
+<v Mike Fiedler>because it highlights and focuses effort on areas that need kind of sanitization and focused effort
+
+00:06:18.410 --> 00:06:32.080
+<v Mike Fiedler>to make progress, but it also gives volunteers a much-needed break, which then in turn puts more pressure on the full-time employees to execute, which again, not enough capacity,
+
+00:06:32.340 --> 00:06:46.060
+<v Mike Fiedler>not enough time. So, you know, it's, it's, we're doing our best here, but like it's shown that if you do pay for a focused security effort, you do get good security outcomes. And I think that's
+
+00:06:46.100 --> 00:06:50.940
+<v Mike Fiedler>the, the takeaway for, for me and for anybody is if you pay for it, they will come.
+
+00:06:53.479 --> 00:06:55.560
+<v Michael Kennedy>Fair. Seth, welcome back.
+
+00:06:56.780 --> 00:06:57.560
+<v Seth Larson>Hey, Michael.
+
+00:06:59.420 --> 00:07:06.440
+<v Michael Kennedy>So quick intro for people who haven't listened to your episodes and then maybe your thoughts on this full-time thing.
+
+00:07:06.960 --> 00:07:08.660
+<v Seth Larson>Yeah, so hi everyone.
+
+00:07:08.800 --> 00:07:12.400
+<v Seth Larson>Seth Larson, a security developer in residence at the Python Software Foundation.
+
+00:07:13.240 --> 00:07:18.100
+<v Seth Larson>I work primarily on kind of like everything that is not PyPI backend.
+
+00:07:18.200 --> 00:07:31.840
+<v Seth Larson>So that's the Python language, the runtime, the security response team for Python and pip, packaging tools and standards, and then kind of like how the security world interacts with Python and vice versa, right?
+
+00:07:31.920 --> 00:07:33.040
+<v Seth Larson>So like CBE and all that.
+
+00:07:34.600 --> 00:07:36.280
+<v Seth Larson>And recently a core developer, very recently.
+
+00:07:38.380 --> 00:07:53.360
+<v Seth Larson>So to answer the how does this role and all that interacting with volunteers, the way that I've tried to like, because my space is like so large, my area of where I'm trying to focus,
+
+00:07:54.100 --> 00:08:04.100
+<v Seth Larson>what I end up doing is I try to find projects that are obviously like high impact, all of that, right? Like you don't want to be doing things. You don't want to be nibbling or what is the,
+
+00:08:04.180 --> 00:08:16.159
+<v Seth Larson>there's a snacking. That's the phrase for it. You don't want to be snacking, but you also don't want to be doing things that volunteers could technically do, right? So if it's a job that is
+
+00:08:17.260 --> 00:08:26.940
+<v Seth Larson>or a task or a project that a volunteer could do, maybe I will pause and wait on that because I'll leave space for someone to potentially contribute there.
+
+00:08:27.260 --> 00:08:40.700
+<v Seth Larson>And then the things that are less likely to get volunteer contributions, things like spinning up a CB numbering authority for the Python Software Foundation or being an admin on the PSRT or the Python Security Response Team where you're doing things like,
+
+00:08:40.930 --> 00:08:46.140
+<v Seth Larson>okay, we're going to be monitoring for spam being sent to our email thread.
+
+00:08:46.840 --> 00:08:59.500
+<v Seth Larson>Volunteers maybe don't want to do that, but maybe they would want to be on the security response team contributing to coordinating vulnerability reports and then getting acknowledged for their work in the NCD record and advisory.
+
+00:09:00.550 --> 00:09:02.180
+<v Seth Larson>So that's kind of how I think about it.
+
+00:09:02.250 --> 00:09:11.080
+<v Seth Larson>Because the area is so wide, I try to make sure that I leave space for other people to contribute just in case that people do get around to it before I end up getting to it.
+
+00:09:11.280 --> 00:09:14.760
+<v Seth Larson>So we want to build the community volunteer muscle
+
+00:09:14.780 --> 00:09:21.740
+<v Michael Kennedy>also not just have it be yeah yeah that's really cool how much do you focus on
+
+00:09:23.460 --> 00:09:38.440
+<v Michael Kennedy>popular third-party projects like django i mean jango already has full-time people above flask or something like that versus just pure python yeah so i would say my time doesn't necessarily
+
+00:09:38.520 --> 00:09:51.720
+<v Seth Larson>always like land directly on the project but I do spend time responding to maintainers if they have questions so like for example David from Flask him and I have talked many times about how to do
+
+00:09:52.160 --> 00:10:01.000
+<v Seth Larson>like a secure response program or a threat model or you know hey I'm seeing this like can you help like what what should I do in this situation like we've talked about that and I've talked about it
+
+00:10:01.000 --> 00:10:14.200
+<v Seth Larson>with many other maintainers not just Flask just to try to give them like advice but then also So whenever, like one of the nice things about this role being at like a nonprofit is that you can be super, super open.
+
+00:10:14.510 --> 00:10:19.940
+<v Seth Larson>You don't have to like keep the secrets to yourself about like what you've done and like how you've seen success.
+
+00:10:20.820 --> 00:10:33.480
+<v Seth Larson>So like we publish everything that we do and like where we see success and people in theory can just like take that copy paste it into their projects or their processes and have a better time than they were before.
+
+00:10:33.730 --> 00:10:34.900
+<v Seth Larson>So people can learn from each other.
+
+00:10:35.590 --> 00:10:37.140
+<v Seth Larson>And I really do appreciate that part of the work.
+
+00:10:38.020 --> 00:10:43.720
+<v Michael Kennedy>That is a bit of a unique aspect of doing an open source security thing as opposed to, I can't talk about it.
+
+00:10:43.900 --> 00:10:45.540
+<v Michael Kennedy>This is, no, we don't talk about anything.
+
+00:10:45.880 --> 00:10:47.540
+<v Michael Kennedy>So very interesting.
+
+00:10:51.780 --> 00:10:53.120
+<v Michael Kennedy>Let's talk about this track.
+
+00:10:53.620 --> 00:11:04.040
+<v Michael Kennedy>So there's this trailblazing Python security that talks about, for the first time ever, a day-long track devoted to the latest in Python security.
+
+00:11:04.540 --> 00:11:13.920
+<v Michael Kennedy>and if you pull up the schedule of talks, I believe it was Saturday was the track, and that was, there was just a whole room.
+
+00:11:14.050 --> 00:11:19.300
+<v Michael Kennedy>And what I also liked, it was a room, wasn't it, that was like a fixed place so you didn't have to keep moving.
+
+00:11:20.680 --> 00:11:29.840
+<v Michael Kennedy>Yeah, so Juanita, you want to kick us off and talk about why this, why do you guys focus on this year?
+
+00:11:31.500 --> 00:11:34.580
+<v Michael Kennedy>Why did you decide it's going to take a specific slot in?
+
+00:11:35.060 --> 00:11:38.360
+<v Michael Kennedy>There's only two dedicated slots, security and AI.
+
+00:11:38.530 --> 00:11:39.540
+<v Michael Kennedy>And I think that's very fitting.
+
+00:11:39.800 --> 00:11:41.240
+<v Michael Kennedy>But tell us about this track.
+
+00:11:42.700 --> 00:11:42.840
+<v Juanita Gomez:>Okay.
+
+00:11:43.110 --> 00:11:49.100
+<v Juanita Gomez:>Well, I will, let Seth, talk about how did the idea come to place because I was not part of that.
+
+00:11:49.320 --> 00:11:52.920
+<v Juanita Gomez:>But I'm going to talk about why I think it's important and why it was important in the conference.
+
+00:11:54.380 --> 00:11:58.140
+<v Juanita Gomez:>I think security is something that's parallel to everything in Python.
+
+00:11:58.540 --> 00:12:05.000
+<v Juanita Gomez:>I think that if you're a maintainer for a package, I think having security somewhere on your mind should be a thing.
+
+00:12:05.180 --> 00:12:07.760
+<v Juanita Gomez:>Like you should be thinking about security when you're developing anything.
+
+00:12:08.980 --> 00:12:18.100
+<v Juanita Gomez:>And I think there's like a big gap in like maybe the time that maintainers spend thinking about security or like even the expertise.
+
+00:12:19.700 --> 00:12:33.460
+<v Juanita Gomez:>And so I think this track was like a big opportunity for people that work in Python as maintainers or as users to just learn about some important security things when thinking about like their development processes.
+
+00:12:35.280 --> 00:12:40.600
+<v Juanita Gomez:>I thought it was great that it was like a dedicated track because I think it highlights the importance of security.
+
+00:12:41.140 --> 00:12:47.860
+<v Juanita Gomez:>Like it's not a bunch of talks that are kind of like in the schedule that people just kind of like figure out they want to go to.
+
+00:12:47.900 --> 00:12:51.220
+<v Juanita Gomez:>But it's like we've like made it a thing by making it like a full track.
+
+00:12:52.400 --> 00:13:00.220
+<v Juanita Gomez:>And I think that elevates the importance of security within Python, which I think it's not necessarily always the case.
+
+00:13:00.580 --> 00:13:05.380
+<v Juanita Gomez:>I think every time that I talk to Mike, I'm like, why are you the only getting paid for doing by security?
+
+00:13:06.320 --> 00:13:13.380
+<v Juanita Gomez:>um i think increasing the awareness of the importance of security is um like very important
+
+00:13:13.410 --> 00:13:21.320
+<v Juanita Gomez:>and i think that the track i think was meant to do that how much do you think what were in those
+
+00:13:21.880 --> 00:13:33.159
+<v Michael Kennedy>seven talks is representative of the broader security space you know getting your phd studying the stuff like you get maybe a little more than just python view
+
+00:13:35.140 --> 00:13:42.960
+<v Michael Kennedy>like um what did it capture and what did it miss i guess i think honestly we made it a track
+
+00:13:42.960 --> 00:13:55.300
+<v Juanita Gomez:>that was diverse enough that we could capture like very different things within the like the security brother um like image um and i also think that a lot of the things that we talked about are not even
+
+00:13:55.640 --> 00:14:06.120
+<v Juanita Gomez:>necessarily python specific like you should care about credentials you should care about phishing like all of these things are things that you should care about whether you do python or c or any other
+
+00:14:06.770 --> 00:14:16.100
+<v Juanita Gomez:>um like language development um i i think that something that maybe i i was missing a little bit
+
+00:14:16.260 --> 00:14:31.200
+<v Juanita Gomez:>after i like saw maybe after after after the conference i was thinking about um i would have liked maybe uh like an intro version of security something i think something that i work with in my
+
+00:14:31.100 --> 00:14:43.740
+<v Juanita Gomez:>in my research is actually like security practices mostly for like starting projects i work with like literally university projects um and like the goal of my all school is to improve the practices
+
+00:14:44.080 --> 00:14:55.880
+<v Juanita Gomez:>of the university projects and some of them are maybe not as advanced to take on some of the like i would say more advanced security practices and so maybe something like that is something that
+
+00:14:55.740 --> 00:15:07.160
+<v Juanita Gomez:>that maybe we did not capture as much basic things, like literally just going to GitHub and switching some switches on the configurations of your repository.
+
+00:15:07.700 --> 00:15:09.520
+<v Juanita Gomez:>Some of those things maybe were missing.
+
+00:15:09.650 --> 00:15:15.320
+<v Juanita Gomez:>And I think there's value on that for people that are literally nowhere in the security path.
+
+00:15:15.940 --> 00:15:18.840
+<v Juanita Gomez:>But apart from that, I think the diversity was really good on the track.
+
+00:15:19.460 --> 00:15:20.260
+<v Michael Kennedy>I love it.
+
+00:15:20.340 --> 00:15:27.140
+<v Michael Kennedy>I think that'd be a great talk to kick off the track and like security 101, let's not get hacked the first week or something like that.
+
+00:15:27.190 --> 00:15:29.700
+<v Michael Kennedy>You know, like maybe I'll do it next year.
+
+00:15:30.480 --> 00:15:31.220
+<v Michael Kennedy>Yes, let's do it.
+
+00:15:31.300 --> 00:15:32.360
+<v Michael Kennedy>I would love to see that.
+
+00:15:33.600 --> 00:15:38.900
+<v Michael Kennedy>Like, for example, maybe just add some, a little bit of rate limiting and some logging.
+
+00:15:38.970 --> 00:15:42.320
+<v Michael Kennedy>So if something does happen, you could actually tell and, you know, these kinds of things, right.
+
+00:15:42.320 --> 00:15:45.300
+<v Michael Kennedy>It would be, you know, there's a whole list of that stuff, right.
+
+00:15:45.580 --> 00:15:52.580
+<v Seth Larson>Another idea that like came up in when we were thinking about how the track went and how the themes, and this is, this is Juanito's idea.
+
+00:15:52.920 --> 00:15:54.840
+<v Seth Larson>So you're going to have to correct me.
+
+00:15:55.480 --> 00:16:07.580
+<v Seth Larson>But the idea of having a little bit more interactivity to kind of shake things up as opposed to it being- because I mean, with security, with these talks, maybe you're expecting it to- I mean, it's obviously more expert space.
+
+00:16:07.800 --> 00:16:11.260
+<v Seth Larson>But that ends up, if you're in a talk format, mostly talking to people.
+
+00:16:11.480 --> 00:16:25.240
+<v Seth Larson>But having something like a panel where you start off with a few questions to kind of set the theme, and then you kind of open it up to kind of get some vibes from the audience about what kind of questions they're having make it more interactive in that way.
+
+00:16:25.520 --> 00:16:27.440
+<v Seth Larson>That seemed like seemed really interesting to me as well.
+
+00:16:27.540 --> 00:16:30.460
+<v Seth Larson>So we're gonna see if we can experiment with that next year.
+
+00:16:31.400 --> 00:16:33.940
+<v Michael Kennedy>So am I hearing you say there's gonna be a one next year?
+
+00:16:35.340 --> 00:16:37.260
+<v Juanita Gomez:>We're hoping for it, for sure.
+
+00:16:38.600 --> 00:16:41.280
+<v Seth Larson>We think that we should have another one next year.
+
+00:16:41.300 --> 00:16:45.000
+<v Seth Larson>I mean, there was no indication that we shouldn't do this again is what we saw.
+
+00:16:45.320 --> 00:16:45.380
+<v Seth Larson>So.
+
+00:16:47.120 --> 00:16:49.880
+<v Michael Kennedy>Honestly, I mean, security might be solved next year.
+
+00:16:50.220 --> 00:16:50.420
+<v Michael Kennedy>Oh.
+
+00:16:51.700 --> 00:16:52.420
+<v Michael Kennedy>That'd be great, wouldn't it?
+
+00:16:53.250 --> 00:16:55.140
+<v Mike Fiedler>AI will solve all of our security problems.
+
+00:16:55.280 --> 00:16:56.040
+<v Seth Larson>It's what I've been told.
+
+00:16:56.340 --> 00:16:56.900
+<v Seth Larson>It's what I've read.
+
+00:16:59.760 --> 00:17:02.500
+<v Michael Kennedy>Mike, you're trying to take us down a path that is a very different path.
+
+00:17:03.380 --> 00:17:06.680
+<v Mike Fiedler>Well, I mean, it's been a few minutes and we haven't said AI yet.
+
+00:17:06.790 --> 00:17:09.319
+<v Mike Fiedler>Well, no, you actually did because you introduced the other tracks.
+
+00:17:09.490 --> 00:17:09.959
+<v Mike Fiedler>So, sorry.
+
+00:17:10.240 --> 00:17:10.300
+<v Michael Kennedy>Yeah.
+
+00:17:10.930 --> 00:17:14.180
+<v Michael Kennedy>Well, we only mentioned it in passing, but not with regard to this topic.
+
+00:17:14.270 --> 00:17:17.000
+<v Michael Kennedy>I do think, actually, maybe if we get some time, I do want to talk to you about it.
+
+00:17:19.660 --> 00:17:20.640
+<v Michael Kennedy>There's a lot to cover.
+
+00:17:20.640 --> 00:17:20.920
+<v Michael Kennedy>Very interesting.
+
+00:17:21.459 --> 00:17:27.000
+<v Michael Kennedy>There is so much. Maybe this could just be its own show that we could go into because there is a lot to cover.
+
+00:17:27.100 --> 00:17:33.040
+<v Michael Kennedy>I think there's like positives and negatives and that kind of sums up AI right there, doesn't it?
+
+00:17:34.180 --> 00:17:35.240
+<v Mike Fiedler>Sums up everything, honestly.
+
+00:17:36.040 --> 00:17:37.580
+<v Michael Kennedy>It sums up a lot of life, yes.
+
+00:17:38.660 --> 00:17:41.860
+<v Michael Kennedy>A lot of gray. Yeah, not so much black and white. A lot of gray.
+
+00:17:44.600 --> 00:17:49.520
+<v Michael Kennedy>So it was like standing room only. I mean, that sounds like that bodes well for our next year.
+
+00:17:51.600 --> 00:17:55.140
+<v Seth Larson>Yeah, next year, hopefully, I mean, it'd be really great to even have a bigger room.
+
+00:17:55.700 --> 00:18:00.140
+<v Seth Larson>Or, yeah, we were quite happy with the turnout.
+
+00:18:00.250 --> 00:18:04.460
+<v Seth Larson>We had a few talks that basically it was standing room and there was nowhere else to come into the room.
+
+00:18:04.820 --> 00:18:09.800
+<v Seth Larson>So that's always great to see as an organizer for a first time event is when the room is too small.
+
+00:18:10.240 --> 00:18:11.460
+<v Seth Larson>It means you're doing something right.
+
+00:18:12.400 --> 00:18:12.660
+<v Michael Kennedy>Exactly.
+
+00:18:14.000 --> 00:18:17.400
+<v Michael Kennedy>You've overachieved compared to what you were trying to work with or whatever.
+
+00:18:18.080 --> 00:18:27.300
+<v Michael Kennedy>Yeah, I guess just wanting to tell, like, what was your experience just co-sharing a track and so on?
+
+00:18:27.360 --> 00:18:29.160
+<v Michael Kennedy>Like, what was it like being on that side of the conference?
+
+00:18:30.480 --> 00:18:36.820
+<v Juanita Gomez:>I think it was I thought it was great because I think so.
+
+00:18:37.020 --> 00:18:40.220
+<v Juanita Gomez:>I've actually been organizing Syfy also for a couple of years.
+
+00:18:40.620 --> 00:18:45.640
+<v Juanita Gomez:>And for the longest time, I've actually tried to bring security as a conversation outside by.
+
+00:18:46.200 --> 00:18:52.220
+<v Juanita Gomez:>So I've gone a couple of like first of the feather session, but having a security track seems a little impossible.
+
+00:18:52.530 --> 00:18:52.920
+<v Juanita Gomez:>I don't know.
+
+00:18:54.660 --> 00:19:05.520
+<v Juanita Gomez:>So I don't know, like making this happen at PyCon was, it made me really, really happy because it gives you the opportunity to bring people to talk about the things that you really care about.
+
+00:19:06.040 --> 00:19:09.540
+<v Juanita Gomez:>Like security in Python is really like personal to me.
+
+00:19:09.640 --> 00:19:11.000
+<v Juanita Gomez:>I care a lot about it.
+
+00:19:11.070 --> 00:19:17.420
+<v Juanita Gomez:>And I think part of the problem is the lack of awareness of some of the things that we discussed at the shark.
+
+00:19:17.600 --> 00:19:25.360
+<v Juanita Gomez:>So I thought it was a great opportunity to just kind of bring that awareness into the table and making it happen, just like being part of that conversation.
+
+00:19:26.460 --> 00:19:28.600
+<v Juanita Gomez:>I felt really proud of doing that.
+
+00:19:28.910 --> 00:19:38.220
+<v Juanita Gomez:>And I think also, I think like Seth and I and like other couple of people we had, I mean, I had a lot of fun reviewing some of the talks that people submitted.
+
+00:19:39.240 --> 00:19:47.640
+<v Juanita Gomez:>We were unfortunately like limited to like egg slots, But there was a lot of things that I learned by just reading some of the talk proposals.
+
+00:19:47.790 --> 00:19:52.400
+<v Juanita Gomez:>So it was like, I think it was also like a learning experience for me to be part of the track.
+
+00:19:53.440 --> 00:19:54.140
+<v Michael Kennedy>Yeah, sure.
+
+00:19:54.660 --> 00:19:54.880
+<v Michael Kennedy>Seth?
+
+00:19:55.880 --> 00:20:09.480
+<v Seth Larson>Yeah, I was going to say, compared to Juanita, my experience with organizing sessions and talks and conferences, this was like the very first time that I've like really dipped my toe into organizing at this level for a conference.
+
+00:20:10.540 --> 00:20:15.060
+<v Seth Larson>So it was a lot of learning for me, and I thought it was a great experience.
+
+00:20:15.340 --> 00:20:18.700
+<v Seth Larson>I think other people could definitely, like, would enjoy doing this too.
+
+00:20:19.840 --> 00:20:27.480
+<v Seth Larson>So now I'm, like, just understanding and learning all of these things that are, about how a conference track or a talk schedule is put together.
+
+00:20:28.420 --> 00:20:33.900
+<v Seth Larson>And for me, like, the day of stuff was, like, so, so much.
+
+00:20:34.340 --> 00:20:48.800
+<v Seth Larson>it's you're running around and it was like very on the fly and you know they have all the recommendations but once the ball is rolling it's like it's rolling and it was really really fun i don't know we had a lot of fun up there i think that it was a great session everyone the energy
+
+00:20:48.940 --> 00:20:59.759
+<v Seth Larson>was so positive people are always coming up to you afterwards and saying like oh that was amazing like thank you for doing this all of that and yeah it was it was a really great experience so cool
+
+00:20:59.840 --> 00:21:04.080
+<v Michael Kennedy>Yeah, PyCon was really fun this year too. I thought Long Beach was a pretty nice venue.
+
+00:21:04.380 --> 00:21:08.780
+<v Michael Kennedy>There's some nice food carts and other things to do there. So that was really nice.
+
+00:21:10.800 --> 00:21:19.660
+<v Michael Kennedy>Yeah, now that we know the cool little bar open, you know, rooftop bars or outside bars, we just go meet up and hang out with friends or the cool restaurant you want to go back to or
+
+00:21:19.760 --> 00:21:31.100
+<v Michael Kennedy>whatever. Yeah. My first event there was to rent one of those like Lime or Bird scooters and just just spend an hour riding around the town and the beach just to like get used to it and then going
+
+00:21:31.400 --> 00:21:45.280
+<v Michael Kennedy>to check in so very fun let's let's bring it over to the conference with the first of seven i think we have seven six or seven tracks i put up for us to kind of riff on here and that would be
+
+00:21:46.000 --> 00:21:58.380
+<v Mike Fiedler>by none other than mike fiedler an anatomy of a fishing campaign what is this oh boy what is this um so this was uh the first track of the day wasn't it um yeah and i'll tell you what this
+
+00:21:58.480 --> 00:22:01.760
+<v Michael Kennedy>is this is why we can't have nice things mike this is why we can't have nice things
+
+00:22:02.410 --> 00:22:10.260
+<v Mike Fiedler>yeah really it really is true right like there's uh for me it was a good opportunity to kind of do
+
+00:22:10.500 --> 00:22:23.500
+<v Mike Fiedler>a little storytelling education because these are these are cases that happen right and this was a novel enough one that i was like this deserves some disambiguation because people hear
+
+00:22:23.720 --> 00:22:36.740
+<v Mike Fiedler>phishing attack is like oh yeah yeah this was this was different right uh and i i was very kind of excited to to speak and and be selected for the for the spot and uh you mentioned standing room
+
+00:22:36.920 --> 00:22:48.140
+<v Mike Fiedler>only standing up there on the stage and looking out into a large room and seeing people standing at the back wall and not seeing little dotted seats available throughout the room was
+
+00:22:48.160 --> 00:22:57.260
+<v Mike Fiedler>little intimidating, because it's like, you know, sometimes people don't sit in all the seats, and that's fine, or like the first two rows are empty. But no, Juanita and Seth had basically
+
+00:22:57.560 --> 00:23:04.260
+<v Mike Fiedler>packed this room with people, not intentionally, but purely by curating the timeline and like,
+
+00:23:04.800 --> 00:23:12.840
+<v Mike Fiedler>setting the tone of like, yeah, this is going to be a story. And I was able to relate my personal
+
+00:23:12.940 --> 00:23:21.560
+<v Mike Fiedler>firsthand experience of dealing with a phishing campaign that some of our users were tricked into
+
+00:23:22.500 --> 00:23:37.280
+<v Mike Fiedler>visiting a website that was a basically a proxy for PyPI. In previous phishing campaign attempts, a lot of folks talk about building a byte for byte or pixel perfect version of a different website
+
+00:23:37.760 --> 00:23:49.760
+<v Mike Fiedler>and steering traffic to that. Here, they didn't even need to do that. They just threw up another proxy in front of it um and it was uh you know using email addresses that are like publicly
+
+00:23:50.000 --> 00:24:02.920
+<v Mike Fiedler>available that maintainers put on their GitHub profiles and put in their uh you know python package metadata and they farmed out and emailed some unknowable number of uh maintainers what an
+
+00:24:03.000 --> 00:24:14.180
+<v Michael Kennedy>interesting security issue right like you're you've got to be pretty sure that the login people use for their GitHub is probably the same email address that they've registered at PyPI and
+
+00:24:15.320 --> 00:24:29.560
+<v Michael Kennedy>the packages that you want to take over from PyPI linked to their GitHub repo, right? It's a really, it really does condense what you got to do. A little bit, right? Like, so in a lot of
+
+00:24:29.740 --> 00:24:39.940
+<v Mike Fiedler>phishing campaigns, it's kind of a spray and pray, right? They're casting a very wide net and they're they're going to email 2 million people. And if they get two, that's a success for them, right?
+
+00:24:40.700 --> 00:24:47.980
+<v Mike Fiedler>Because we have to defend 100% of the time. They only have to be right once or twice, right? And
+
+00:24:48.840 --> 00:24:56.980
+<v Mike Fiedler>they were in this case. Again, PyPI is open source, right? You can read the entire code base.
+
+00:24:56.990 --> 00:25:08.720
+<v Mike Fiedler>You can see what our email templates look like. And you can see that, yeah, we do ask maintainers now and then to do an action and they emailed maintainers and asked them to do an action
+
+00:25:09.500 --> 00:25:16.500
+<v Mike Fiedler>and these maintainers did an action right they did what they were asked to do uh it is for example
+
+00:25:16.560 --> 00:25:22.280
+<v Michael Kennedy>you emailed people a couple years ago and said hey you need to turn on 2fa right yeah and like that's
+
+00:25:22.440 --> 00:25:31.740
+<v Mike Fiedler>that's totally legitimate and sometimes we will email people and say hey there's a problem with your metadata go in and fix it right we will we will occasionally tell people there's a problem
+
+00:25:32.560 --> 00:25:38.240
+<v Mike Fiedler>This one in particular would tell them it wasn't using our email infrastructure.
+
+00:25:38.840 --> 00:25:43.980
+<v Mike Fiedler>You know, if you had anti-spam things, then like maybe it would have caught it.
+
+00:25:44.230 --> 00:25:50.900
+<v Mike Fiedler>But it didn't because the mail was coming from the domain advertised for this hack.
+
+00:25:51.700 --> 00:25:57.340
+<v Mike Fiedler>And it was basically showing instead of PyPI.org, PyPJ.org.
+
+00:25:58.080 --> 00:26:10.040
+<v Mike Fiedler>And I would challenge you at, you know, looking at an email on your phone to hover on a link and see that difference between an I and a J in the lowercase Arial font on your phone.
+
+00:26:10.100 --> 00:26:11.620
+<v Mike Fiedler>Like, you're not going to notice it, right?
+
+00:26:11.780 --> 00:26:15.540
+<v Mike Fiedler>Humans, I have no qualms for the humans that fell for this, right?
+
+00:26:15.660 --> 00:26:18.000
+<v Mike Fiedler>Like, they did what they were supposed to do.
+
+00:26:19.380 --> 00:26:25.680
+<v Mike Fiedler>What was annoying about this attack is we've been talking about 2FA for a very long time now.
+
+00:26:26.360 --> 00:26:29.720
+<v Mike Fiedler>And this is still phishing.
+
+00:26:30.700 --> 00:26:35.080
+<v Mike Fiedler>You know, you can still get phished with certain forms of two-factor authentication.
+
+00:26:35.840 --> 00:26:44.680
+<v Mike Fiedler>Notably, the time-based one-time password that were TOTP or what folks might think of your, like, QR code or Google Authenticator app.
+
+00:26:44.680 --> 00:26:46.520
+<v Mike Fiedler>You know, all of those things are the same thing.
+
+00:26:47.200 --> 00:27:00.480
+<v Mike Fiedler>Whereas if you used WebAuthn or the underlying technology for pass keys or like a YubiKey, that's requiring a different sort of 2FA that is more phishing resistant.
+
+00:27:01.050 --> 00:27:05.380
+<v Mike Fiedler>So anybody who had the phishing resistant part was not subject to this attack.
+
+00:27:06.720 --> 00:27:17.280
+<v Michael Kennedy>I think it might be worth maybe just a quick conversation on that because I totally agree because you could just proxy.
+
+00:27:18.180 --> 00:27:29.080
+<v Michael Kennedy>They send over the thing and you've got 30, 15, whatever seconds to then, you know, curry those credentials over and you probably are fine to hack through with a proxy, right?
+
+00:27:29.980 --> 00:27:39.780
+<v Michael Kennedy>I mean, I think it's, I think the TOTP ones are more like if somebody gets hold of your credentials and they're leaked, right?
+
+00:27:40.040 --> 00:27:42.460
+<v Michael Kennedy>That's not enough to get in anymore, right?
+
+00:27:43.380 --> 00:27:48.880
+<v Michael Kennedy>Or if they're trying to brute force something, that can be a big challenge to limit that.
+
+00:27:48.910 --> 00:27:52.920
+<v Michael Kennedy>But for phishing, it really doesn't add a lot of safety, does it?
+
+00:27:54.020 --> 00:28:04.820
+<v Mike Fiedler>So it doesn't because the session token that you get once you have completed your username password, then you do your TOTP.
+
+00:28:05.190 --> 00:28:06.820
+<v Mike Fiedler>Now you have a session cookie, right?
+
+00:28:06.980 --> 00:28:14.220
+<v Mike Fiedler>This is what your browser uses instead of asking you for your password and 2FA every single page view, right?
+
+00:28:14.620 --> 00:28:19.020
+<v Mike Fiedler>You have a session cookie that is good for, I don't know, eight hours or something like that.
+
+00:28:19.880 --> 00:28:21.780
+<v Mike Fiedler>So you don't have to do that all the time.
+
+00:28:22.480 --> 00:28:29.380
+<v Mike Fiedler>And this session cookie is something that they can use to then, they don't even need the TOTP within those 30 seconds.
+
+00:28:29.570 --> 00:28:33.560
+<v Mike Fiedler>They now have a session cookie and use that to log in as you.
+
+00:28:34.180 --> 00:28:39.520
+<v Mike Fiedler>And then the next part that they did was create an API token to publish.
+
+00:28:40.480 --> 00:28:42.640
+<v Mike Fiedler>API tokens today do not have any expiry.
+
+00:28:43.340 --> 00:28:46.480
+<v Mike Fiedler>So they were like, all right, I'm going to create a new API token.
+
+00:28:46.550 --> 00:28:50.100
+<v Mike Fiedler>And now I don't need your username, your password, your TOTP, the session token.
+
+00:28:50.410 --> 00:28:51.120
+<v Mike Fiedler>I don't need any of that.
+
+00:28:51.170 --> 00:28:52.180
+<v Mike Fiedler>I have an API token.
+
+00:28:52.720 --> 00:29:06.220
+<v Mike Fiedler>right yeah i can go ahead and do the things that i want to do on this website uh you know with with this token so i think there's like layers of security something we added in the aftermath of
+
+00:29:06.360 --> 00:29:20.019
+<v Mike Fiedler>this was if you now are using a session token and it was obtained via totp and it's coming from a different ip address we're not going to accept that we're going to ask you to like re re re
+
+00:29:20.040 --> 00:29:24.800
+<v Mike Fiedler>certify that you are who you said you were because something is different now.
+
+00:29:26.320 --> 00:29:29.380
+<v Mike Fiedler>But if you use WebOFN, then you're fine.
+
+00:29:30.020 --> 00:29:42.340
+<v Mike Fiedler>The people who will get impacted by this are folks who are bouncing between VPNs or if you're riding a train and you keep changing IP addresses as you go to different cell towers,
+
+00:29:42.620 --> 00:29:54.260
+<v Mike Fiedler>which I don't think happens very often, but it can, those are the people who will get caught in that net but it's like yeah you know we can't tell that you are who you said you were based on those credentials yeah
+
+00:29:56.940 --> 00:30:09.100
+<v Juanita Gomez:>when nina seth thoughts i i want to say that this was one of my favorite talks of the track because it was very relatable like a lot of the people that are sitting down in the room are maintainers
+
+00:30:09.100 --> 00:30:21.220
+<v Juanita Gomez:>who publish their packages with my bi and just having mike's perspective on like oh this can happen to you like you need to be aware of this I think it makes it much more impactful because
+
+00:30:21.320 --> 00:30:33.720
+<v Juanita Gomez:>it's like it's like you are directly affected by some of these things and I think also Mike had like a really um like he not only told us a story about how all of these bad things happen but also
+
+00:30:33.840 --> 00:30:43.860
+<v Juanita Gomez:>at the end like a call for action like this is this is the things that you need to do in order to avoid these things from happening to you and so I thought that was really impactful for the people that were sitting down in that room.
+
+00:30:49.700 --> 00:30:50.100
+<v Michael Kennedy>Nice.
+
+00:30:50.360 --> 00:31:01.100
+<v Michael Kennedy>So one of the things I think is, I guess, I'm not sure if you mentioned it, but the result was there were some packages that got malicious code in them and then published a PyPI, right?
+
+00:31:02.039 --> 00:31:03.860
+<v Mike Fiedler>Just one that we know of, right?
+
+00:31:04.000 --> 00:31:07.720
+<v Mike Fiedler>We audited kind of a lot of the attacker signatures and kind of their behaviors.
+
+00:31:08.380 --> 00:31:10.060
+<v Mike Fiedler>We're only able to turn up one.
+
+00:31:10.580 --> 00:31:22.840
+<v Mike Fiedler>So only four of the user accounts of the, again, we have over a million user accounts on PyPI right now, but only four people fell for this phishing and clicked through and actually logged in.
+
+00:31:24.000 --> 00:31:28.760
+<v Mike Fiedler>And only one package was kind of harvested and republished.
+
+00:31:29.780 --> 00:31:40.440
+<v Mike Fiedler>And again, that doesn't mean that others weren't created as a backup, but they went after one that is a dependency of a dependency of a dependency, right?
+
+00:31:40.540 --> 00:31:42.420
+<v Mike Fiedler>They're working their way through the supply chain.
+
+00:31:43.010 --> 00:31:49.860
+<v Mike Fiedler>They didn't go after anything that, you know, these other four, sorry, the other three maintainers had.
+
+00:31:50.200 --> 00:31:54.520
+<v Mike Fiedler>They went after the one that the one maintainer who kind of fell for the fish.
+
+00:31:55.820 --> 00:32:01.020
+<v Mike Fiedler>And theirs was a dependency of Hugging Faces, Transformers library.
+
+00:32:02.240 --> 00:32:10.340
+<v Mike Fiedler>And if you're doing anything at all in AI land, which a lot of people are doing a lot in AI land, Transformers is kind of key.
+
+00:32:10.520 --> 00:32:12.960
+<v Mike Fiedler>It gets, I don't know, 30, 40 million downloads a day.
+
+00:32:14.240 --> 00:32:19.000
+<v Mike Fiedler>And Numb to Words is a sub-dependency of Transformers.
+
+00:32:19.640 --> 00:32:25.140
+<v Mike Fiedler>So by publishing a new version of Numb to Words, any Transformers user is going to get it.
+
+00:32:27.260 --> 00:32:27.500
+<v Michael Kennedy>Scary.
+
+00:32:28.080 --> 00:32:28.300
+<v Michael Kennedy>Yeah.
+
+00:32:28.340 --> 00:32:33.660
+<v Michael Kennedy>And it's, yeah, you know, and you maybe think I'm going to take on this dependency, so you'll review it.
+
+00:32:33.720 --> 00:32:36.820
+<v Michael Kennedy>But how far down the dependency chain do you follow, right?
+
+00:32:37.600 --> 00:32:40.220
+<v Mike Fiedler>I mean, the answer is like, you know, what was that TV show?
+
+00:32:40.220 --> 00:32:41.620
+<v Mike Fiedler>You are the weakest link, right?
+
+00:32:43.040 --> 00:32:45.680
+<v Mike Fiedler>You're only as strong as the weakest link in your chain.
+
+00:32:46.040 --> 00:32:50.240
+<v Mike Fiedler>And we all depend on something and somebody else and somewhere, right?
+
+00:32:50.880 --> 00:32:56.620
+<v Mike Fiedler>None of us are writing 100% everything by ourselves based on like a standards library.
+
+00:32:56.900 --> 00:32:58.880
+<v Mike Fiedler>Like you didn't write your compiler on your own.
+
+00:32:59.300 --> 00:33:00.360
+<v Mike Fiedler>You used somebody else's.
+
+00:33:00.600 --> 00:33:02.400
+<v Mike Fiedler>You didn't write the Python language on your own.
+
+00:33:02.460 --> 00:33:03.360
+<v Mike Fiedler>You used somebody else's.
+
+00:33:03.720 --> 00:33:08.040
+<v Mike Fiedler>And even if you are authoring Python, you're using tools that somebody else wrote.
+
+00:33:08.340 --> 00:33:10.540
+<v Mike Fiedler>You didn't write your editor on your own.
+
+00:33:11.160 --> 00:33:13.080
+<v Mike Fiedler>You didn't write your operating system on your own.
+
+00:33:13.140 --> 00:33:16.460
+<v Mike Fiedler>And again, if you are the one person who has done all of this, I commend you.
+
+00:33:16.540 --> 00:33:22.180
+<v Mike Fiedler>I also think you have put in a lot of effort that is commendable but is unnecessary in today's world.
+
+00:33:22.700 --> 00:33:26.300
+<v Mike Fiedler>But you are likely more secure as a result.
+
+00:33:26.540 --> 00:33:28.900
+<v Michael Kennedy>Yes, that is true.
+
+00:33:29.440 --> 00:33:41.460
+<v Michael Kennedy>So one thing that came to mind when I was looking at your talk is this whole concept of dependency cooldowns, which is making some waves.
+
+00:33:41.580 --> 00:33:49.580
+<v Michael Kennedy>I think I noticed it pretty early in, put this up for everyone, pretty early, I guess, with uv.
+
+00:33:50.640 --> 00:33:54.260
+<v Michael Kennedy>And I think Pep is getting it as well, but also some of the other package managers.
+
+00:33:54.800 --> 00:34:00.720
+<v Michael Kennedy>But I've seen it sort of picking up steam in other areas unrelated to Python, other package managers.
+
+00:34:02.100 --> 00:34:05.040
+<v Michael Kennedy>So I really like this idea.
+
+00:34:05.380 --> 00:34:05.980
+<v Michael Kennedy>I really like it.
+
+00:34:06.500 --> 00:34:10.740
+<v Mike Fiedler>I think cooldowns are a good idea for your average consumer.
+
+00:34:11.419 --> 00:34:35.120
+<v Mike Fiedler>So in a different attack that Seth and I talk about later, we talk about how the people without using version pinning or deciding I want to use version 1.0.0 only, if you use unbounded versions, you're going to get the latest one that the registry has to offer.
+
+00:34:35.940 --> 00:34:46.159
+<v Mike Fiedler>And when attackers are looking to exploit you, that's kind of one vector they're looking to exploit to say these people are not pinning their versions.
+
+00:34:46.760 --> 00:34:52.800
+<v Mike Fiedler>Numb to Words was not pinned in Transformers, so they're going to get whatever the latest one is.
+
+00:34:53.500 --> 00:35:07.900
+<v Mike Fiedler>Now, sub-dependency pinning and version bounds is a whole other set of conversations, but as an end consumer, cooldowns is the easiest way for you to say, I don't want what the latest the registry has.
+
+00:35:08.140 --> 00:35:23.360
+<v Mike Fiedler>I want to wait three days or seven days because in the scope of those three to seven days, it is very likely that some security scanners will have chewed through this and noticed if there's a problem and reported it.
+
+00:35:24.020 --> 00:35:31.320
+<v Mike Fiedler>And if they have, there is a, again, a very high likelihood that that version is no longer available for download in that time period.
+
+00:35:32.060 --> 00:35:32.240
+<v Michael Kennedy>Yeah.
+
+00:35:32.700 --> 00:35:36.920
+<v Michael Kennedy>So if you look at cool, the thing I'm linking to is cooldowns.dev.
+
+00:35:37.580 --> 00:35:40.820
+<v Michael Kennedy>And in here, it pointed out, said, does it actually work?
+
+00:35:40.860 --> 00:35:42.020
+<v Michael Kennedy>And they gave some stats.
+
+00:35:42.200 --> 00:35:45.820
+<v Michael Kennedy>You know, they talk about LiteLLM, some of the other issues that have come along.
+
+00:35:45.920 --> 00:35:56.880
+<v Michael Kennedy>They said, I think within a week, I think 90% of the vulnerable ones were taken down and most of them were taken down within a day.
+
+00:35:57.780 --> 00:35:58.640
+<v Michael Kennedy>Something like that, right?
+
+00:35:59.020 --> 00:35:59.340
+<v Mike Fiedler>Yeah.
+
+00:35:59.610 --> 00:36:04.940
+<v Mike Fiedler>I mean, a lot of that on PyPI is thanks to our group of volunteer reporters.
+
+00:36:05.520 --> 00:36:08.800
+<v Mike Fiedler>Again, we don't have any kind of commercial relationship.
+
+00:36:09.060 --> 00:36:12.100
+<v Mike Fiedler>There's just people out there in the community who like scanning stuff.
+
+00:36:12.230 --> 00:36:13.520
+<v Mike Fiedler>There are businesses who do it.
+
+00:36:13.860 --> 00:36:18.640
+<v Mike Fiedler>And some of them will report back to PyPI and say, hey, we found something fishy, something smelly.
+
+00:36:18.950 --> 00:36:20.240
+<v Mike Fiedler>We recommend you take a look.
+
+00:36:21.190 --> 00:36:35.740
+<v Mike Fiedler>Some of these folks have gotten such a very good or almost zero false positive rate that we kind of allow them on PyPI to put that into an automated quarantine status
+
+00:36:36.420 --> 00:36:43.260
+<v Mike Fiedler>that requires a human like myself to review it and either clear it or tank it completely.
+
+00:36:43.800 --> 00:36:46.700
+<v Mike Fiedler>But in that interim state, it's no longer downloadable.
+
+00:36:47.280 --> 00:37:00.240
+<v Mike Fiedler>So those, like our most notable one is Kamil Mankowski, who works out in Austria, and he has gotten it down to like his reports are often within, you know, 30 minutes of publish.
+
+00:37:01.320 --> 00:37:05.980
+<v Mike Fiedler>His tooling has scanned it, analyzed it and reported it back with zero false positives.
+
+00:37:06.660 --> 00:37:10.060
+<v Mike Fiedler>And, you know, that only comes with curation and time.
+
+00:37:10.110 --> 00:37:11.920
+<v Mike Fiedler>And he's doing this as a volunteer effort.
+
+00:37:12.200 --> 00:37:13.520
+<v Mike Fiedler>So kudos out to Kamil.
+
+00:37:14.800 --> 00:37:16.600
+<v Michael Kennedy>That's a lot of data to be processing.
+
+00:37:18.460 --> 00:37:23.500
+<v Seth Larson>Yeah, I wanted to comment on the cooldowns aspect too, like maybe about like the who is it for?
+
+00:37:23.720 --> 00:37:30.580
+<v Seth Larson>Because I think this is always a challenge whenever we're building something at the scale of Python, right?
+
+00:37:30.700 --> 00:37:33.040
+<v Seth Larson>Where it serves so many different communities and people.
+
+00:37:33.500 --> 00:37:43.860
+<v Seth Larson>And right, there's people that have, you're on a developer team in a really large organization and you have your own like security team who is deciding what your security policies are.
+
+00:37:43.860 --> 00:37:45.840
+<v Seth Larson>They're running a mirror of PyPI, right?
+
+00:37:45.920 --> 00:37:47.060
+<v Seth Larson>Like all this stuff is happening.
+
+00:37:47.760 --> 00:37:53.140
+<v Seth Larson>But then Python also needs to serve like students or people who this is their first programming language.
+
+00:37:54.060 --> 00:38:07.680
+<v Seth Larson>And my thinking is, is that this sort of config where you set it once and then you don't have to think about it and you benefit from this large apparatus that already exists out there in PyPI, people that are scanning,
+
+00:38:07.880 --> 00:38:12.100
+<v Seth Larson>people that are manually reviewing things, taking them down, all of Mike's work, right?
+
+00:38:12.300 --> 00:38:25.500
+<v Seth Larson>Like you get to benefit from all of that work without having to have this massive separate team or policy or having to necessarily think about like reviewing every single dependency, right?
+
+00:38:25.560 --> 00:38:30.240
+<v Seth Larson>Like this is something that I don't think that a lot of developers are doing, especially not students, right?
+
+00:38:30.420 --> 00:38:41.180
+<v Seth Larson>They want to run pip install with the thing that they want to install either for their course or because they're learning, they're not necessarily thinking about, oh, this is potentially a way that malware is gonna be installed on my system.
+
+00:38:41.650 --> 00:38:49.320
+<v Seth Larson>So set like a really aggressive, like seven days or something like that on your cool down one time and then you're pretty okay.
+
+00:38:49.720 --> 00:39:00.820
+<v Seth Larson>Like I think a lot of people should probably be using cool downs, especially for like developer machines or a personal machine that you're running Python on where you're not, you don't have this giant security apparatus working for you.
+
+00:39:02.040 --> 00:39:12.360
+<v Juanita Gomez:>Yeah, I wanna second that and say that a lot of the people that use Python packages have no idea of what is my PI, where they're coming from, what does pip install mean?
+
+00:39:12.800 --> 00:39:19.980
+<v Juanita Gomez:>And so having, like seriously, but when I started doing all of these things, I had no idea.
+
+00:39:20.890 --> 00:39:24.780
+<v Juanita Gomez:>I was just running commands that I was reading somewhere in Reddit or somewhere else.
+
+00:39:25.180 --> 00:39:39.500
+<v Juanita Gomez:>And I think just having some like default ways of keeping security, like in my own developer environment is, I think it's great for the most unexperienced developers.
+
+00:39:39.880 --> 00:39:41.640
+<v Juanita Gomez:>This is definitely more usable.
+
+00:39:43.700 --> 00:39:44.860
+<v Michael Kennedy>Yeah, I think it's a great idea.
+
+00:39:45.020 --> 00:39:45.900
+<v Michael Kennedy>I really like the idea.
+
+00:39:46.140 --> 00:39:50.860
+<v Michael Kennedy>So I adopted this to some degree and I thought it was amazing.
+
+00:39:51.000 --> 00:39:55.800
+<v Michael Kennedy>And then I ran into some problems and I'd love to hear your thoughts on this.
+
+00:39:55.940 --> 00:40:09.820
+<v Michael Kennedy>So I don't have unpinned dependencies, but I use uv pip compile, which will say with an update and say, okay, well, I've decided now I'm going to release a new version.
+
+00:40:09.960 --> 00:40:16.520
+<v Michael Kennedy>Let's go ahead and do like a refresh of the update of the dependencies and recompile it, and it will repin them to the newest, right?
+
+00:40:16.660 --> 00:40:19.320
+<v Michael Kennedy>And without this cooldown, it'll pin them to the very latest.
+
+00:40:19.510 --> 00:40:30.840
+<v Michael Kennedy>And so if for some reason something were to git pushed into PyPI an hour ago and I ran that command, well, I might as well have unpinned dependencies, right?
+
+00:40:31.250 --> 00:40:37.400
+<v Michael Kennedy>So I'm going to put uv pip compile dash dash, like wait, whatever the command is, exclude newer one week.
+
+00:40:38.860 --> 00:40:49.520
+<v Michael Kennedy>And I even put it into the Docker builds for all of my server stuff so that the Docker build would fail if using a combination of pip audit and this.
+
+00:40:49.540 --> 00:40:55.240
+<v Michael Kennedy>So if there's a CVE, it will fail because there's a problem with one of the packages.
+
+00:40:56.040 --> 00:40:57.560
+<v Michael Kennedy>And then I would use this so I wouldn't get older ones.
+
+00:40:57.580 --> 00:41:04.260
+<v Michael Kennedy>But here's what I ran into is there would be a CVE in something, And then it would window into the seven days ago.
+
+00:41:04.840 --> 00:41:06.920
+<v Michael Kennedy>And the fix would be like one day later.
+
+00:41:07.780 --> 00:41:12.260
+<v Michael Kennedy>But it wouldn't allow it to install the one without the CVE because that was excluding newer.
+
+00:41:12.980 --> 00:41:17.680
+<v Michael Kennedy>And so then I end up with all of these like, ignore this one because this one, you know what I mean?
+
+00:41:18.700 --> 00:41:20.040
+<v Michael Kennedy>It's these two things clashing.
+
+00:41:20.100 --> 00:41:23.540
+<v Michael Kennedy>It's kind of like one package says version has to be greater than two on a dependency.
+
+00:41:23.720 --> 00:41:25.100
+<v Michael Kennedy>The other one says version has to be less than two.
+
+00:41:25.100 --> 00:41:26.520
+<v Michael Kennedy>You're like, well, now what do I do?
+
+00:41:27.320 --> 00:41:36.780
+<v Seth Larson>Yeah, Michael, you're touching on the exact reason why I would have a hard time, at least right this moment, pushing for dependency cooldowns to be a default.
+
+00:41:39.280 --> 00:41:46.060
+<v Seth Larson>It confuses users, especially when there are other systems that are telling them that they need to resolve a problem.
+
+00:41:47.020 --> 00:41:56.580
+<v Seth Larson>And when they run the commands necessary that they know work because they've used them before to upgrade a dependency to a specific version or whatever, they don't work.
+
+00:41:56.760 --> 00:41:59.300
+<v Seth Larson>Or they'll say something like, oh, that version doesn't exist.
+
+00:42:00.640 --> 00:42:05.040
+<v Seth Larson>Because pip is literally dropping these versions from the candidate pool or something like this.
+
+00:42:05.420 --> 00:42:06.840
+<v Seth Larson>It'll say that version doesn't exist.
+
+00:42:07.140 --> 00:42:08.680
+<v Seth Larson>And you get these really confusing messages.
+
+00:42:10.100 --> 00:42:24.660
+<v Seth Larson>I mean, one day I would really like to have something- it doesn't necessarily have to be cooldowns, but some sort of system that the default is, if you are not- the way I like to think about it is,
+
+00:42:25.080 --> 00:42:33.120
+<v Seth Larson>if you are not showing through your tool usage, whether or not you have operational maturity is kind of how I think about it, right?
+
+00:42:33.200 --> 00:42:36.360
+<v Seth Larson>Like you're not using a mirror, you're installing direct from latest.
+
+00:42:36.680 --> 00:42:44.780
+<v Seth Larson>If you're not showing that sort of operational maturity, like asking for a lock or an exact version or whatever, then there is some sort of secure default.
+
+00:42:44.970 --> 00:42:49.500
+<v Seth Larson>But that secure default policy needs to take into account a lot of things.
+
+00:42:49.570 --> 00:42:57.820
+<v Seth Larson>And one of those things is whether a security vulnerability is being fixed by something that is within this cooldown window or reviewing window.
+
+00:42:57.920 --> 00:43:03.540
+<v Seth Larson>And maybe this can be easier if there's more of this happening on the index side.
+
+00:43:03.800 --> 00:43:10.760
+<v Seth Larson>Right now, PyPI is mostly-- you upload it, it's immediately available, and the scan comes after the fact.
+
+00:43:10.860 --> 00:43:14.820
+<v Seth Larson>There's no intermediate step where it's being reviewed because we just can't.
+
+00:43:14.900 --> 00:43:15.840
+<v Seth Larson>There's too much volume.
+
+00:43:17.500 --> 00:43:27.220
+<v Seth Larson>And so if we get to a world where that is happening, maybe tools can implement this sort of policy a little bit more easily because it'll be, for the most part, on the index side.
+
+00:43:27.400 --> 00:43:36.960
+<v Seth Larson>But from a tool perspective, it's really difficult to get a secure default that takes and respects all of these use cases perfectly right as a default.
+
+00:43:37.680 --> 00:43:38.380
+<v Seth Larson>It's very challenging.
+
+00:43:39.120 --> 00:43:46.440
+<v Juanita Gomez:>So what you're saying is we need to hire a lot more people to scan packages before they get published by BI.
+
+00:43:46.660 --> 00:43:47.580
+<v Juanita Gomez:>That's what you're saying, right?
+
+00:43:50.760 --> 00:43:52.000
+<v Seth Larson>I'm open to emails.
+
+00:43:53.640 --> 00:43:59.660
+<v Seth Larson>Email seth at python.org for any interested parties of solving this issue.
+
+00:44:01.720 --> 00:44:01.880
+<v Michael Kennedy>Indeed.
+
+00:44:02.900 --> 00:44:13.160
+<v Michael Kennedy>So earlier, Mike, you talked about API keys and how they're kind of outside the bounds of two-factor and so on.
+
+00:44:14.280 --> 00:44:17.280
+<v Michael Kennedy>So the next talk was zero trust in 200 milliseconds.
+
+00:44:17.540 --> 00:44:20.300
+<v Michael Kennedy>identity per transaction with Tristan and McKinnon.
+
+00:44:20.760 --> 00:44:32.920
+<v Michael Kennedy>And that comes from FediRAMP, which is a US government thing, the Federal Risk and Authorization Management Program that provides approach to security and risk and so on.
+
+00:44:33.420 --> 00:44:46.080
+<v Michael Kennedy>If I recall correctly, this is kind of a zero trust story where it's every single time you need to use an API key,
+
+00:44:46.520 --> 00:44:49.320
+<v Michael Kennedy>you have to get a new version of API key.
+
+00:44:50.380 --> 00:44:51.620
+<v Michael Kennedy>Like, I want to talk to AWS.
+
+00:44:52.120 --> 00:44:56.880
+<v Michael Kennedy>Great, here's a key you can use for two seconds or something, right?
+
+00:44:57.840 --> 00:44:58.160
+<v Michael Kennedy>Use it now.
+
+00:45:01.160 --> 00:45:02.400
+<v Michael Kennedy>Yeah, what was your thoughts on this?
+
+00:45:02.400 --> 00:45:03.540
+<v Michael Kennedy>What are the takeaways from this one?
+
+00:45:03.880 --> 00:45:03.980
+<v Michael Kennedy>Anyone?
+
+00:45:05.960 --> 00:45:06.500
+<v Michael Kennedy>How do you feel about it?
+
+00:45:09.420 --> 00:45:11.940
+<v Seth Larson>So I was gonna say, we're all pointing at each other.
+
+00:45:12.360 --> 00:45:22.160
+<v Seth Larson>I really love this talk because it talked about side of Python and development that a lot of people don't necessarily experience, which
+
+00:45:22.240 --> 00:45:34.360
+<v Seth Larson>is where you work in an industry that's regulated or needs to implement FedRAMP, right? It is a ton of extra work to do this. And a lot of times it's not really talked about a lot
+
+00:45:34.640 --> 00:45:46.480
+<v Seth Larson>online because, like you said, it's not necessarily open source communities that are doing this sort of work. It's mostly industry that is doing these things. And so it's really, really great
+
+00:45:46.720 --> 00:46:00.260
+<v Seth Larson>to see this sort of talk where you're talking about something like FedRAMP compliance and zero trust in Python with a lot of different tools that people already use. So using the AWS SDK and how
+
+00:46:00.260 --> 00:46:11.520
+<v Seth Larson>to implement this with AWS and then extrapolating that out to other different backends. So it's back-end agnostic. I really enjoyed this talk because of those reasons. This is just stuff that
+
+00:46:11.520 --> 00:46:25.000
+<v Seth Larson>you don't necessarily see at PyCon or at open source conferences, people talking about federal policy requirements and how to implement secure controls like this. So really, really interesting
+
+00:46:25.220 --> 00:46:31.000
+<v Michael Kennedy>talk. Yeah, it is a bit of a look in an area that you don't normally see. And yeah, it's quite cool.
+
+00:46:32.120 --> 00:46:39.360
+<v Michael Kennedy>The next one is Rust by Emma Smith.
+
+00:46:39.740 --> 00:46:51.340
+<v Michael Kennedy>And this one certainly, it's interesting because you can debate it technically, but then you also have to debate it from an organization perspective and so on.
+
+00:46:51.340 --> 00:47:00.380
+<v Michael Kennedy>And the idea is, what if we could have more of CPython written in Rust, right?
+
+00:47:01.720 --> 00:47:04.620
+<v Michael Kennedy>But of what are the people who work on CPython?
+
+00:47:05.700 --> 00:47:07.500
+<v Michael Kennedy>Hey, guess what? What is the name there?
+
+00:47:08.320 --> 00:47:16.380
+<v Michael Kennedy>CPython as in the language RC developers, and they don't necessarily want to rewrite stuff in Rust, and they don't necessarily have an expertise in it.
+
+00:47:18.220 --> 00:47:20.000
+<v Michael Kennedy>And a whole bunch of things like that.
+
+00:47:20.160 --> 00:47:23.480
+<v Michael Kennedy>So one, thoughts on the talk.
+
+00:47:23.860 --> 00:47:25.880
+<v Michael Kennedy>Two, thoughts on Rust and Python.
+
+00:47:27.880 --> 00:47:29.640
+<v Juanita Gomez:>I want to give my thoughts on the talk.
+
+00:47:29.860 --> 00:47:34.280
+<v Juanita Gomez:>I think I love this talk for two reasons.
+
+00:47:34.380 --> 00:47:43.560
+<v Juanita Gomez:>The first one is it was a talk about Rust in a Python conference, which shows the intersection between these two communities.
+
+00:47:44.940 --> 00:47:55.580
+<v Juanita Gomez:>And I think, I mean, I think Emma did a great job of explaining like the technical implications of the migration and like of why we need to do this.
+
+00:47:56.340 --> 00:48:03.060
+<v Juanita Gomez:>But at the same time, I think she was very clear about what these means from a community perspective.
+
+00:48:03.860 --> 00:48:09.940
+<v Juanita Gomez:>And I think part of the talk was actually talking about how can we actually make this happen?
+
+00:48:10.050 --> 00:48:19.280
+<v Juanita Gomez:>Not from a technical perspective, but from organizing the people and actually getting the people to agree with doing this and how do we make this happen?
+
+00:48:20.300 --> 00:48:25.800
+<v Juanita Gomez:>Which I think is very on point with open source and how open source works.
+
+00:48:26.160 --> 00:48:31.440
+<v Juanita Gomez:>you don't necessarily you don't just make a decision and like take a different path on something that you're doing.
+
+00:48:31.730 --> 00:48:35.860
+<v Juanita Gomez:>Like there's a whole lot of people that are involved in making decisions for a specific community.
+
+00:48:35.890 --> 00:48:42.460
+<v Juanita Gomez:>And I think Emma did a great job of illustrating how that specific aspect of open source works with this particular talk.
+
+00:48:42.770 --> 00:48:52.300
+<v Juanita Gomez:>So I loved it. And one of my highlights was that Guido was there and he ended up asking questions to Emma about this particular talk.
+
+00:48:52.300 --> 00:48:57.720
+<v Juanita Gomez:>And that was like, isn't it cool that you have the creator of Python asking you questions about your talk?
+
+00:48:58.250 --> 00:48:59.420
+<v Juanita Gomez:>That was one of my highlights.
+
+00:49:02.500 --> 00:49:03.960
+<v Seth Larson>Yeah, from like a security...
+
+00:49:03.960 --> 00:49:08.400
+<v Seth Larson>So I am very intrigued about this idea.
+
+00:49:10.360 --> 00:49:16.420
+<v Seth Larson>It makes sense, but it's also, like you said, like in a social sense, extremely challenging.
+
+00:49:17.320 --> 00:49:20.200
+<v Seth Larson>And also, even like a technical sense, it's extremely challenging.
+
+00:49:20.460 --> 00:49:22.400
+<v Seth Larson>This is not an easy project.
+
+00:49:24.000 --> 00:49:32.660
+<v Seth Larson>I think that there's maybe, when people think about rewriting in Rust and all of this stuff, it's almost kind of like a joke that you can just rewrite it in Rust.
+
+00:49:32.880 --> 00:49:34.420
+<v Seth Larson>And oh, Rust Python already exists.
+
+00:49:34.600 --> 00:49:36.720
+<v Seth Larson>Why would this be hard?
+
+00:49:37.140 --> 00:49:38.260
+<v Seth Larson>Like this already exists out there.
+
+00:49:39.400 --> 00:49:41.380
+<v Seth Larson>And it is extremely difficult.
+
+00:49:42.820 --> 00:49:47.040
+<v Seth Larson>I am really excited to talk about this at the language summit at EuroPython.
+
+00:49:47.820 --> 00:49:50.040
+<v Seth Larson>It is a talk there also.
+
+00:49:50.890 --> 00:49:56.960
+<v Seth Larson>And I think that Emma and the whole team that's working on Rust for Python have their work cut out for them.
+
+00:49:57.140 --> 00:49:58.100
+<v Seth Larson>It's going to be a long journey.
+
+00:49:59.880 --> 00:50:14.240
+<v Seth Larson>Talking about just the technical aspect of this, I think that they have made a really great choice in which library they're decided to potentially attack first as a first go, which is Zlib,
+
+00:50:14.900 --> 00:50:18.040
+<v Seth Larson>which is a compression library that's pretty understood.
+
+00:50:19.130 --> 00:50:22.940
+<v Seth Larson>It processes a lot of untrusted data, right?
+
+00:50:22.970 --> 00:50:35.980
+<v Seth Larson>So there's the memory management, memory of security vulnerability aspect, not necessarily that Zlib has had a ton of issues in that area, but it's like a really good one to attack as a first module.
+
+00:50:38.180 --> 00:50:40.020
+<v Seth Larson>Yeah, I'm going to be
+
+00:50:40.020 --> 00:50:42.200
+<v Michael Kennedy>Give us the idea of exactly what they're proposing here.
+
+00:50:42.200 --> 00:50:52.400
+<v Michael Kennedy>Is this like, there are portions of the standard library that right now are pure Python or C, and we propose rewriting some of them in Rust?
+
+00:50:52.400 --> 00:51:01.360
+<v Seth Larson>So the proposal right now is to rewrite a single standard library module in Rust with the long-term goal being maybe more.
+
+00:51:01.860 --> 00:51:05.820
+<v Seth Larson>and even potentially the parts of the language being rewritten in Rust.
+
+00:51:05.940 --> 00:51:16.720
+<v Seth Larson>So I believe it was the JIT, the just-in-time compiler, was another candidate for a larger project, or maybe like a, here, you can cut your teeth on this.
+
+00:51:16.840 --> 00:51:28.380
+<v Seth Larson>We won't merge it, but it'll prove out whether or not the tooling that's around this compiling stuff to Rust and having it actually work for Python would work, just as an option.
+
+00:51:28.640 --> 00:51:34.600
+<v Seth Larson>This got discussed a while back, too, And so this has kind of been ongoing for quite a long time.
+
+00:51:34.730 --> 00:51:42.960
+<v Seth Larson>And so I'm really excited that this talk, this is kind of like the first time that Emma and the team have poked their head out and be like, talk to the wider community about this is happening.
+
+00:51:43.100 --> 00:51:44.980
+<v Seth Larson>We're discussing this and what it could mean.
+
+00:51:45.830 --> 00:51:47.900
+<v Seth Larson>But yeah, it's going to be a long road ahead, I have a feeling.
+
+00:51:48.600 --> 00:51:48.880
+<v Michael Kennedy>Yeah.
+
+00:51:50.320 --> 00:51:51.060
+<v Michael Kennedy>All right, next up.
+
+00:51:51.720 --> 00:51:54.020
+<v Michael Kennedy>Asleep at the Wheel, S-Bombs for Python Builds.
+
+00:51:54.999 --> 00:51:58.660
+<v Michael Kennedy>Sanchitseye and Abhishek.
+
+00:51:59.320 --> 00:51:59.800
+<v Michael Kennedy>Ready, Poppy?
+
+00:52:00.539 --> 00:52:01.300
+<v Michael Kennedy>Sorry about that.
+
+00:52:01.700 --> 00:52:03.420
+<v Michael Kennedy>Yeah, so SBOMs.
+
+00:52:03.490 --> 00:52:05.480
+<v Michael Kennedy>What are the thoughts on SBOMs, folks?
+
+00:52:06.280 --> 00:52:07.260
+<v Michael Kennedy>We need more of them.
+
+00:52:08.440 --> 00:52:09.200
+<v Juanita Gomez:>Yes, and better.
+
+00:52:09.200 --> 00:52:09.980
+<v Juanita Gomez:>They need to be accurate.
+
+00:52:11.700 --> 00:52:12.140
+<v Juanita Gomez:>Exactly.
+
+00:52:14.460 --> 00:52:25.080
+<v Juanita Gomez:>I think, honestly, I was just going to comment really quick that I was very proud of this talk because Abby and Sancheid, they're both students.
+
+00:52:25.820 --> 00:52:27.400
+<v Juanita Gomez:>I think Sancheid is a master student.
+
+00:52:27.470 --> 00:52:28.440
+<v Juanita Gomez:>Abby is a PhD student.
+
+00:52:29.820 --> 00:52:38.120
+<v Juanita Gomez:>And as a PhD student, I love to see the research that people are doing in conferences are not academic conferences.
+
+00:52:39.300 --> 00:52:51.840
+<v Juanita Gomez:>And I think they have done a really good work on developing their research, but also interacting with the outside community to figure out how to make their tools available and usable.
+
+00:52:52.880 --> 00:53:06.660
+<v Juanita Gomez:>I love that they have made their project part of the OpenSSF, like, bigger ecosystem, because that kind of shows how they want to make sure that anything that they're doing is actually usable.
+
+00:53:07.070 --> 00:53:15.820
+<v Juanita Gomez:>And, yeah, like, it's not just a paper about something that's very abstract and not really relevant, but, like, it's actually something that the community can use and adopt.
+
+00:53:17.000 --> 00:53:18.840
+<v Juanita Gomez:>So I'm really proud of this talk.
+
+00:53:21.380 --> 00:53:31.120
+<v Seth Larson>Yeah, I was going to add that this talk is the talk that showed me what SBOMIT actually was, which is really, really cool.
+
+00:53:32.300 --> 00:53:36.180
+<v Seth Larson>I'd heard of it. I kind of knew what it meant, right?
+
+00:53:36.330 --> 00:53:47.240
+<v Seth Larson>It's one of these things where there's just so many security tools and approaches and so much area to cover that you kind of like end up knowing about something.
+
+00:53:47.780 --> 00:53:54.800
+<v Seth Larson>And you know when you'd maybe reach over there to learn more, but you don't know how deep the iceberg goes, right?
+
+00:53:55.020 --> 00:54:08.920
+<v Seth Larson>And how much work had to go into making this basically work like magic to record all of the stuff that happened during your build, all the network calls, all the command invocations, and how it gets then exported
+
+00:54:09.140 --> 00:54:13.780
+<v Seth Larson>into an SBOM, but then also this verifiable record using- I believe it's called Intoto.
+
+00:54:14.060 --> 00:54:16.280
+<v Seth Larson>That's what the IT is in SBOMIT.
+
+00:54:17.760 --> 00:54:19.400
+<v Seth Larson>And like how it all works end to end.
+
+00:54:19.500 --> 00:54:32.040
+<v Seth Larson>And so it just gets my mind thinking about like if we were to release this like either like a build farm for PyPI, if we ever to work on that project, this is the sort of thing that we would like reach for and say like,
+
+00:54:32.200 --> 00:54:34.500
+<v Seth Larson>okay, maybe we could integrate this technology into that.
+
+00:54:35.040 --> 00:54:48.160
+<v Seth Larson>Or if we were going to create a like a recommended builder, like a Docker image that did building, like this would potentially be a part of that story where you're recording network calls and
+
+00:54:48.280 --> 00:55:03.060
+<v Seth Larson>then you can get this extremely accurate software bill of materials document at the end that shows how a package was built and then you can have that be published with the package or you can use it as a user however you want to use it like that sort of information is really important and it's
+
+00:55:03.160 --> 00:55:13.120
+<v Seth Larson>really difficult to get after the fact as opposed to like when it's in flight and when the actual programs are doing the installations and the builds and all of that so i think you mentioned
+
+00:55:13.440 --> 00:55:25.540
+<v Juanita Gomez:>oh sorry godroni um i was just gonna say that this talk actually did a very good job of making people aware that the current tools that generate s-forms are not as accurate and there's still a lot of work
+
+00:55:25.860 --> 00:55:39.000
+<v Juanita Gomez:>needed to make s-forms like actually usable um for like within like a security perspective and they did a great job of just making that awareness like and they also were brave enough to do a demo which
+
+00:55:39.020 --> 00:55:44.380
+<v Juanita Gomez:>is like people people now don't do them because they all break but they did a demo and
+
+00:55:44.380 --> 00:55:52.540
+<v Michael Kennedy>it worked that was really cool very cool seth you theorize there might be some magical process
+
+00:55:53.940 --> 00:56:04.800
+<v Michael Kennedy>involving cooldowns and pin dependencies and review and maybe s bombs could be an input to that to say well this thing got no problem but has some source down you know in the supply chain
+
+00:56:05.460 --> 00:56:17.740
+<v Michael Kennedy>that actually we've discovered is problematic so everything downstream from that we can we need to like check or flag or whatever yeah yeah sbomb the way i think about sbomb is mostly as just this like
+
+00:56:17.980 --> 00:56:29.060
+<v Seth Larson>third party like third it's it's not a part of an ecosystem so it works really well for python because we have so many like so many python packages out there are not just python it's like
+
+00:56:29.080 --> 00:56:34.440
+<v Seth Larson>C, Fortran, Rust, JavaScript, all of these different ecosystems, right?
+
+00:56:34.800 --> 00:56:35.500
+<v Seth Larson>GPU shaders.
+
+00:56:36.160 --> 00:56:37.180
+<v Seth Larson>Yeah, GPU shaders.
+
+00:56:37.300 --> 00:56:37.820
+<v Seth Larson>Throw them in there.
+
+00:56:37.860 --> 00:56:38.140
+<v Seth Larson>Why not?
+
+00:56:38.300 --> 00:56:40.260
+<v Seth Larson>I mean, Mike knows this even more than I do.
+
+00:56:40.400 --> 00:56:41.120
+<v Seth Larson>Like, there's video.
+
+00:56:42.180 --> 00:56:45.600
+<v Seth Larson>It's just all sorts of great, great content on PyPI.
+
+00:56:47.180 --> 00:56:48.960
+<v Seth Larson>Yeah, not that we encourage that use case.
+
+00:56:50.960 --> 00:57:00.800
+<v Seth Larson>But there's a lot of stuff in Python packages, and SBOMs are a great way to represent, like, the provenance of all of that software without it being Python specific.
+
+00:57:02.400 --> 00:57:02.580
+<v Michael Kennedy>For sure.
+
+00:57:02.580 --> 00:57:04.980
+<v Michael Kennedy>All right, picking up speed because we got a couple more to go through.
+
+00:57:05.940 --> 00:57:13.880
+<v Michael Kennedy>We've got maybe the follow-on or the after case here.
+
+00:57:13.960 --> 00:57:19.600
+<v Michael Kennedy>It's post-incident runtime S-bomb generation from Python memory by Hala, Ali, and Andrew Case.
+
+00:57:19.880 --> 00:57:28.920
+<v Michael Kennedy>And the general idea is there's what you've declared to be your supply chain inputs, and then there's what's actually there.
+
+00:57:29.000 --> 00:57:34.560
+<v Michael Kennedy>So maybe look at what is loaded into memory, and you're like, oh, why is this library also loaded?
+
+00:57:34.840 --> 00:57:45.900
+<v Michael Kennedy>Or some other hacker type of thing got put on the machine and then loaded in, and now we can detect that through this generation of looking at loaded modules and so on, right?
+
+00:57:48.320 --> 00:58:00.040
+<v Seth Larson>Yeah, this one, I was really intrigued about this because it went so deep into Python memory management and how modules are loaded and how functions are called like extremely deep dive
+
+00:58:00.240 --> 00:58:14.840
+<v Seth Larson>into this topic. And so I was like super, I was like in awe watching this talk. I was like, there just kept on being more cool stuff happening. And so I was like looking at like, oh, runtime analysis, you can see what functions are being called. You can like to see whether or
+
+00:58:14.840 --> 00:58:16.820
+<v Seth Larson>not like a CVE is affecting your program.
+
+00:58:17.020 --> 00:58:21.600
+<v Seth Larson>So you can like introspect your program live while it's running and see whether- Oh, that's interesting.
+
+00:58:21.980 --> 00:58:23.840
+<v Seth Larson>--like something is even being used.
+
+00:58:23.860 --> 00:58:28.080
+<v Seth Larson>You don't even have to like look at the source code to check or whatever.
+
+00:58:28.180 --> 00:58:30.940
+<v Seth Larson>You just look at your program and see if it's using that code.
+
+00:58:31.160 --> 00:58:35.480
+<v Michael Kennedy>Yeah, yeah, because if you bother-- and I don't- maybe you all know better than I do.
+
+00:58:35.520 --> 00:58:43.760
+<v Michael Kennedy>But if I were to speculate, I'd say less than 1% of people actually run pip audit or uv pip audit sort of thing- uv audit, whatever it is- on their code.
+
+00:58:43.880 --> 00:58:50.940
+<v Michael Kennedy>But even if you do or you look at the CVE and you see one or maybe get dependable tells you, oh, there's a CVE in one of your dependencies.
+
+00:58:51.190 --> 00:58:52.060
+<v Michael Kennedy>You better go fix it.
+
+00:58:53.640 --> 00:58:56.140
+<v Michael Kennedy>And then you got to go look and say, does it really matter?
+
+00:58:56.320 --> 00:58:58.580
+<v Michael Kennedy>Like I remember one and one of the packages I was using.
+
+00:58:58.590 --> 00:59:07.620
+<v Michael Kennedy>It said, oh, on Windows, there's this issue that if you take untrusted input and it's a PDF and it's this way, it's going to do this terrible thing.
+
+00:59:07.780 --> 00:59:10.740
+<v Michael Kennedy>I'm like, yeah, but it's my deployment target is Linux on Docker.
+
+00:59:11.720 --> 00:59:14.460
+<v Michael Kennedy>And my dev machine is Mac.
+
+00:59:14.610 --> 00:59:17.280
+<v Michael Kennedy>And I don't think I've taken untrusted input whatsoever for this.
+
+00:59:17.410 --> 00:59:19.460
+<v Michael Kennedy>And so do I care?
+
+00:59:19.470 --> 00:59:20.060
+<v Michael Kennedy>I don't really care.
+
+00:59:20.650 --> 00:59:21.100
+<v Michael Kennedy>You know what?
+
+00:59:21.440 --> 00:59:22.500
+<v Michael Kennedy>I'm just going to not worry about it.
+
+00:59:22.620 --> 00:59:23.740
+<v Michael Kennedy>But PitBot will fill my build.
+
+00:59:23.790 --> 00:59:27.960
+<v Michael Kennedy>And then we're back to the cooldowns and all that.
+
+00:59:28.120 --> 00:59:30.500
+<v Michael Kennedy>But nonetheless, I think that's part of the problem.
+
+00:59:30.530 --> 00:59:38.640
+<v Michael Kennedy>And the fact if you could say somehow combine the CVE and say, actually, I can verify it doesn't touch that bit of code.
+
+00:59:38.800 --> 00:59:39.280
+<v Michael Kennedy>That's super cool.
+
+00:59:41.100 --> 00:59:54.300
+<v Mike Fiedler>Yeah, on that front, I think there's an ongoing effort through the open source vulnerability database to surface more rich details as to like code paths that are affected.
+
+00:59:54.910 --> 00:59:57.300
+<v Mike Fiedler>So that way you could automatically audit.
+
+00:59:57.870 --> 01:00:02.700
+<v Mike Fiedler>Do I use those code paths and then thus either fail or not fail your build?
+
+01:00:03.660 --> 01:00:23.720
+<v Mike Fiedler>But again, in languages like Python where dynamicism is used, getting that an accurate representation of am I using that code path is often a harder question to answer because you don't necessarily even have to import the library via an import statement.
+
+01:00:23.870 --> 01:00:24.980
+<v Mike Fiedler>You can use import lib.
+
+01:00:25.070 --> 01:00:27.580
+<v Mike Fiedler>You can do all sorts of other different things.
+
+01:00:28.320 --> 01:00:38.080
+<v Mike Fiedler>So the challenge is how do we surface enough information for you to make a confident decision without misleading you down the wrong path?
+
+01:00:39.319 --> 01:00:40.320
+<v Michael Kennedy>JOHN MUELLER: Indeed.
+
+01:00:41.040 --> 01:00:44.480
+<v Michael Kennedy>Let's keep moving on, because time is a ticking.
+
+01:00:45.200 --> 01:00:50.160
+<v Michael Kennedy>The next one is GitHub Action Security and Python Packages by Andrew Nesbitt.
+
+01:00:51.500 --> 01:00:52.620
+<v Michael Kennedy>So yeah.
+
+01:00:52.620 --> 01:00:53.440
+<v Mike Fiedler>ANDREW Nesbitt: Terrifying.
+
+01:00:54.480 --> 01:00:56.399
+<v Michael Kennedy>JOHN MUELLER: There's some really weird stuff-
+
+01:00:59.660 --> 01:01:06.360
+<v Mike Fiedler>Andrew is a nerd. He's the best kind of nerd. He loves researching things. He loves accumulating
+
+01:01:06.580 --> 01:01:18.520
+<v Mike Fiedler>data. He's the author behind ecosystems. That's ecosystem.sysda.ms. He analyzes lots of projects
+
+01:01:19.000 --> 01:01:32.260
+<v Mike Fiedler>and was able to analyze a lot of GitHub project, PyPI-linked repositories with Zizmor, which he did not write. But it is a very cool tool and great to audit your GitHub actions for security
+
+01:01:32.520 --> 01:01:46.740
+<v Mike Fiedler>vulnerabilities. It's scary what it surfaces. And when we're talking about folks getting started, this should be on that checklist of did you run Zismore on your repository? Better yet,
+
+01:01:46.760 --> 01:01:59.280
+<v Mike Fiedler>did you add it as a GitHub action to run always on your repository? But it surfaces a lot of easy to fix findings and then sometimes surfaces the scarier ones of you've left yourself open to
+
+01:01:59.280 --> 01:02:04.680
+<v Mike Fiedler>an injection that leads to a exploit and he talked about a couple of those
+
+01:02:07.560 --> 01:02:13.220
+<v Michael Kennedy>very interesting yeah the GitHub actions have a lot of nuance and weird there was some weird
+
+01:02:14.420 --> 01:02:22.680
+<v Michael Kennedy>cache poisoning that would people could submit prs that would trigger a GitHub action build
+
+01:02:23.560 --> 01:02:35.020
+<v Michael Kennedy>and even if they had no rights to the target system, their PR could point at a malicious package somehow,
+
+01:02:35.160 --> 01:02:45.100
+<v Michael Kennedy>and then that would get cached into the actual build because the build ran in the context of the target repo.
+
+01:02:46.160 --> 01:02:49.240
+<v Michael Kennedy>And hey, wouldn't it be nice if we could just cache this so we don't save it?
+
+01:02:49.320 --> 01:02:51.520
+<v Michael Kennedy>Maybe we should cache other people's inputs.
+
+01:02:51.700 --> 01:02:53.360
+<v Mike Fiedler>You said all the keywords there, Michael.
+
+01:02:53.420 --> 01:02:56.880
+<v Mike Fiedler>You said pull request and target, and that is the trigger for a lot of these.
+
+01:02:56.980 --> 01:03:03.980
+<v Mike Fiedler>So GitHub Actions has a lot of different trigger keywords, push, pull request, and there is one called pull request target.
+
+01:03:05.000 --> 01:03:06.840
+<v Mike Fiedler>That one runs on forks.
+
+01:03:07.300 --> 01:03:09.000
+<v Mike Fiedler>It runs with elevated privileges.
+
+01:03:10.180 --> 01:03:11.540
+<v Mike Fiedler>It is dangerous.
+
+01:03:12.020 --> 01:03:18.880
+<v Mike Fiedler>Zismore calls that out as like, you are probably using this wrong because it is a very sharp, sharp knife.
+
+01:03:19.560 --> 01:03:22.180
+<v Mike Fiedler>And if you pick it up the wrong way, you have now cut your hand.
+
+01:03:23.320 --> 01:03:25.840
+<v Mike Fiedler>And it's easy to pick up the wrong way.
+
+01:03:26.260 --> 01:03:28.420
+<v Michael Kennedy>So, yeah, please stop trying to juggle three of those.
+
+01:03:28.880 --> 01:03:30.000
+<v Michael Kennedy>Yeah, don't juggle three.
+
+01:03:30.480 --> 01:03:30.920
+<v Mike Fiedler>Runs is more.
+
+01:03:31.300 --> 01:03:32.140
+<v Mike Fiedler>Follow its recommendations.
+
+01:03:32.880 --> 01:03:33.700
+<v Mike Fiedler>Move on with your life.
+
+01:03:36.240 --> 01:03:36.560
+<v Michael Kennedy>All right.
+
+01:03:37.340 --> 01:03:38.480
+<v Michael Kennedy>One more here.
+
+01:03:39.360 --> 01:03:40.940
+<v Michael Kennedy>Breaking Bad Packages.
+
+01:03:41.260 --> 01:03:44.260
+<v Michael Kennedy>Why traditional vulnerability tracking fails supply chain attacks.
+
+01:03:44.920 --> 01:03:47.720
+<v Michael Kennedy>Shelby Cunningham and Madison Figuerely.
+
+01:03:53.520 --> 01:04:07.920
+<v Seth Larson>so I really like this one because it talks about the CVE system which is something that I've spent way too much time kind of digging around in and it it's it's this challenge between intentional
+
+01:04:08.400 --> 01:04:15.580
+<v Seth Larson>malicious software like malware that we see on PyPI and vulnerabilities and I think that there's this
+
+01:04:17.500 --> 01:04:30.020
+<v Seth Larson>sometimes we use cves for malware and sometimes we don't and because if we did there'd be you know millions and it's like do we do we not like what are the trade-offs does it overwhelm the system
+
+01:04:30.180 --> 01:04:44.860
+<v Seth Larson>is it even useful and it talked about all of these different uh watering hole attacks that ended up publishing malware to different uh open source ecosystems including pi pi and how the this
+
+01:04:44.880 --> 01:04:58.780
+<v Seth Larson>vulnerability record like CVE or OSV responded in turn and like how people got the word out how did people respond to it and yeah it's it's really challenging because it feels it feels so close
+
+01:04:59.050 --> 01:05:09.840
+<v Seth Larson>to being the right system to use but not quite and maybe that means that we need to build a new system maybe that means that you know who knows what it means we need to we need to do some more thinking in this area.
+
+01:05:11.540 --> 01:05:19.520
+<v Michael Kennedy>Yeah, I totally see it because malware is not a problem in valid software, right?
+
+01:05:19.620 --> 01:05:29.360
+<v Michael Kennedy>It's just a bad piece of software, whereas if I open up this PDF in Microsoft Word and it turns me into a botnet, that's a CVE.
+
+01:05:30.840 --> 01:05:32.820
+<v Michael Kennedy>Because Microsoft Word isn't intended to be malware.
+
+01:05:38.520 --> 01:05:39.080
+<v Michael Kennedy>All right, folks.
+
+01:05:39.970 --> 01:05:45.420
+<v Michael Kennedy>I think that might be it for the time that we've got.
+
+01:05:47.460 --> 01:05:49.440
+<v Michael Kennedy>So I guess final call to action here.
+
+01:05:49.470 --> 01:05:58.360
+<v Michael Kennedy>We have all these talks on PyCon US, and everyone links to them.
+
+01:05:59.190 --> 01:06:02.040
+<v Michael Kennedy>So every part of the show notes links up to them.
+
+01:06:02.090 --> 01:06:08.640
+<v Michael Kennedy>So I'll put the links in the show page for people listening and their podcast player and so on.
+
+01:06:08.670 --> 01:06:11.300
+<v Michael Kennedy>So go out and check out the interesting talks on YouTube.
+
+01:06:12.040 --> 01:06:12.100
+<v Michael Kennedy>Right.
+
+01:06:12.220 --> 01:06:16.440
+<v Michael Kennedy>I can put that out there, but let's, let's leave it with us.
+
+01:06:17.100 --> 01:06:19.760
+<v Michael Kennedy>Juanita, I'll give you the first word and you can each, each answer this one.
+
+01:06:20.050 --> 01:06:27.320
+<v Michael Kennedy>So if everyone out there listening did one thing this week because of this episode, because of what they heard us talking about, what should they do?
+
+01:06:27.580 --> 01:06:28.140
+<v Michael Kennedy>What would you tell them?
+
+01:06:28.150 --> 01:06:29.240
+<v Michael Kennedy>Like, here's the one thing really.
+
+01:06:31.500 --> 01:06:31.700
+<v Michael Kennedy>I recommend.
+
+01:06:34.420 --> 01:06:36.500
+<v Juanita Gomez:>If it's only one, I'll just pick uses more.
+
+01:06:37.240 --> 01:06:37.700
+<v Michael Kennedy>Okay.
+
+01:06:40.740 --> 01:06:41.040
+<v Michael Kennedy>Mike?
+
+01:06:42.280 --> 01:06:49.840
+<v Mike Fiedler>Look at trusted publishing, convert at least one of your projects to use it, and don't forget to delete the old token.
+
+01:06:52.560 --> 01:06:52.900
+<v Michael Kennedy>Got it.
+
+01:06:53.160 --> 01:06:53.260
+<v Michael Kennedy>Okay.
+
+01:06:53.720 --> 01:06:56.040
+<v Michael Kennedy>Spoken like a person who works on PyPI security.
+
+01:06:56.660 --> 01:06:56.900
+<v Michael Kennedy>Seth?
+
+01:06:58.120 --> 01:06:58.260
+<v Seth Larson>Yeah.
+
+01:06:58.320 --> 01:07:09.620
+<v Seth Larson>So my recommendation is if after hearing all of these security problems, solutions, like what's happening in security and how it's not this like solved thing to.
+
+01:07:10.780 --> 01:07:16.740
+<v Seth Larson>I'm assuming that because you're watching this show that you have an interest in Python and you maybe you even work with Python.
+
+01:07:17.760 --> 01:07:37.780
+<v Seth Larson>I would recommend if you depend on Python or third-party packages to look upstream and to see that all of this work is being done and that there is so much more to do and support those open source ecosystems that you depend on to enable them to do security.
+
+01:07:38.200 --> 01:07:50.160
+<v Seth Larson>So whether that's donating engineering time, so like working on a security team, making some of these security-focused contributions to open source projects that you care about, or whether that comes as like funding, right?
+
+01:07:50.300 --> 01:07:57.040
+<v Seth Larson>So like donating to the Python Software Foundation, for example, nonprofit that is the home for Mike and I's job.
+
+01:07:58.200 --> 01:07:59.180
+<v Seth Larson>Security is not free.
+
+01:08:00.100 --> 01:08:05.560
+<v Seth Larson>It costs a lot of time to implement all of these changes that everyone ends up benefiting from anyways.
+
+01:08:05.880 --> 01:08:16.839
+<v Seth Larson>And it really would not happen without internal advocates at companies and organizations working with their management and all of that to convince them to support open source that they support, that they depend on.
+
+01:08:17.140 --> 01:08:18.740
+<v Seth Larson>So that's my recommendation.
+
+01:08:19.920 --> 01:08:20.140
+<v Michael Kennedy>Perfect.
+
+01:08:20.569 --> 01:08:21.259
+<v Michael Kennedy>And one final thing.
+
+01:08:23.500 --> 01:08:25.980
+<v Michael Kennedy>Maybe Juanita, people want to keep in touch with you.
+
+01:08:26.279 --> 01:08:29.180
+<v Michael Kennedy>Where's, you know, can they follow you on social?
+
+01:08:29.460 --> 01:08:29.940
+<v Michael Kennedy>Do you got a blog?
+
+01:08:30.230 --> 01:08:30.759
+<v Michael Kennedy>Things like that.
+
+01:08:32.880 --> 01:08:38.500
+<v Juanita Gomez:>I have a website where I guess I sometimes put things that I have done or I'm doing currently.
+
+01:08:39.009 --> 01:08:41.400
+<v Juanita Gomez:>But honestly, the best way to reach me out is probably LinkedIn.
+
+01:08:42.589 --> 01:08:47.380
+<v Juanita Gomez:>I try to post where I'm going to be if I'm giving talks, where to find me.
+
+01:08:48.259 --> 01:08:50.400
+<v Juanita Gomez:>But if you just want to chat, just message me on LinkedIn.
+
+01:08:51.279 --> 01:08:54.660
+<v Juanita Gomez:>I'm very happy to connect with people that are interested in the things that I'm working on.
+
+01:08:55.620 --> 01:08:55.940
+<v Michael Kennedy>Right on.
+
+01:08:56.380 --> 01:08:56.480
+<v Michael Kennedy>Mike?
+
+01:08:57.420 --> 01:08:57.560
+<v Mike Fiedler>Yeah.
+
+01:08:57.720 --> 01:09:06.620
+<v Mike Fiedler>I have a landing page at MikeTheMan.dev, and that will link you out to all of my other different locations, socials, blogs, et cetera.
+
+01:09:09.880 --> 01:09:15.339
+<v Mike Fiedler>I'm also on LinkedIn, but I also try to post on all the different socials of like, yep, I'm going to be at EuroPython.
+
+01:09:15.520 --> 01:09:16.319
+<v Mike Fiedler>Here's where I'm going to be.
+
+01:09:17.200 --> 01:09:23.339
+<v Mike Fiedler>So that way people can accost me on the hallway track and demand some new security feature, which is wonderful.
+
+01:09:23.880 --> 01:09:26.560
+<v Michael Kennedy>The most well-attended track of the conference, indeed.
+
+01:09:26.569 --> 01:09:26.680
+<v Michael Kennedy>Yeah.
+
+01:09:27.440 --> 01:09:27.880
+<v Michael Kennedy>Seth.
+
+01:09:29.160 --> 01:09:31.839
+<v Seth Larson>Yeah, so you can find me online, sethmlarson.dev.
+
+01:09:32.160 --> 01:09:33.000
+<v Seth Larson>Links out to everywhere.
+
+01:09:33.259 --> 01:09:36.040
+<v Seth Larson>I prefer Mastodon, but I also respond to LinkedIn.
+
+01:09:37.600 --> 01:09:38.560
+<v Seth Larson>And there's even Signal there.
+
+01:09:38.660 --> 01:09:45.359
+<v Seth Larson>So if you want to just privately ask me a security question or something like that, or you just want to chat for a second, I respond to Signal.
+
+01:09:45.859 --> 01:09:48.240
+<v Seth Larson>So any of those locations work for me.
+
+01:09:48.420 --> 01:09:49.759
+<v Seth Larson>I publish a blog there as well.
+
+01:09:49.839 --> 01:09:55.280
+<v Seth Larson>So if you want to read anything about security or retro video games, those are your options.
+
+01:09:57.420 --> 01:09:59.480
+<v Michael Kennedy>Great. Thank you all for being here. See you later.
+
+01:10:00.540 --> 01:10:00.860
+Thank you.

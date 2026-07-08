@@ -1,0 +1,1993 @@
+WEBVTT
+
+00:00:00.479 --> 00:00:02.880
+<v Michael Kennedy>Edward, Richard, welcome to Talk Python To Me.
+
+00:00:03.060 --> 00:00:07.320
+<v Michael Kennedy>Great to be here with both of you and talking about parallel computing and beyond.
+
+00:00:08.740 --> 00:00:09.840
+<v Edward Oakes>Yeah, thanks for having us on.
+
+00:00:10.380 --> 00:00:14.940
+<v Edward Oakes>Excited to be here and share some hopefully interesting information about Ray with the audience.
+
+00:00:16.460 --> 00:00:17.360
+<v Edward Oakes>Thanks for having us.
+
+00:00:18.260 --> 00:00:18.920
+<v Michael Kennedy>Yeah, you bet.
+
+00:00:19.839 --> 00:00:31.980
+<v Michael Kennedy>I don't know how many people know about Ray, but it's a really cool parallel computing framework that's got this sort of big data angle, it's got an AI angle. We're going to talk about both of those and dive
+
+00:00:32.110 --> 00:00:43.700
+<v Michael Kennedy>into the history and maybe even the future, who knows. But before we get into those, let's just start with your stories. Edward, I'll let you go first. Introduce yourself, please.
+
+00:00:45.480 --> 00:00:58.420
+<v Edward Oakes>Yeah, my name is Edward, also go by Ed. And I've been working on Ray since I think about 2019, maybe late 2018. At that time, I was a grad student at UC Berkeley. So that's actually where
+
+00:00:58.520 --> 00:01:12.820
+<v Edward Oakes>Richard and I met. And that's where Ray kind of originated. So we were grad students in what was called the RISE lab under Professor Jan Stoica. So he's also the professor that had, and the
+
+00:01:13.080 --> 00:01:25.120
+<v Edward Oakes>predecessor to that lab is what Spark came out of. Oh, yeah, really? Wow. Yeah. So a lot of people view ray as like kind of a successor to spark um it's not really how we talk about it uh i think
+
+00:01:25.200 --> 00:01:37.200
+<v Edward Oakes>it's kind of a different system solving different problems um but we did originate from you know the same university and sort of a similar lab um yeah and and just kind of about me what i'm interested
+
+00:01:37.340 --> 00:01:49.900
+<v Edward Oakes>in i would say i'm not really like a an ai person as much as i am like an infrastructure and like distributed computing person. So the reason why I was originally attracted to working on Ray and why
+
+00:01:50.260 --> 00:01:55.980
+<v Edward Oakes>I'm still doing it however many years later is I just really feel motivated by this idea of
+
+00:01:57.280 --> 00:02:07.260
+<v Edward Oakes>providing an easier way for our users to leverage large-scale computing and building that abstraction
+
+00:02:07.380 --> 00:02:13.020
+<v Michael Kennedy>or bridge layer that enables people to do it. Incredible. Richard, how about you?
+
+00:02:14.280 --> 00:02:25.960
+<v Richard Laiw>Yeah, so I'm one of the founding engineers here with EdWord, and currently I'm on more of the product management side at AnyScale.
+
+00:02:26.740 --> 00:02:41.280
+<v Richard Laiw>And my background here is that I was actually an undergrad that was working on various machine learning research projects.
+
+00:02:43.020 --> 00:02:53.840
+<v Richard Laiw>And at the time, Ray wasn't really, like Ray was still not like a very, like, wasn't even like an early project yet.
+
+00:02:54.510 --> 00:03:00.180
+<v Richard Laiw>But the thing that was very exciting at Berkeley was reinforcement learning.
+
+00:03:01.760 --> 00:03:12.580
+<v Richard Laiw>At the time, like DeepMind was getting a lot of popularity and press for the game, like sort of innovations that they were doing for game AI.
+
+00:03:13.300 --> 00:03:17.400
+<v Richard Laiw>and eventually that sort of culminated in the AlphaGo moment.
+
+00:03:19.020 --> 00:03:19.540
+<v Richard Laiw>But at the time...
+
+00:03:19.540 --> 00:03:20.320
+<v Michael Kennedy>Tell people what that is.
+
+00:03:20.620 --> 00:03:33.200
+<v Michael Kennedy>I'm sure some of us know, but that was kind of the first time that an AI system beat other competitors where it wasn't just a memorization or like a,
+
+00:03:33.800 --> 00:03:37.920
+<v Michael Kennedy>we're going to load every possible combination of moves into the system, right?
+
+00:03:38.500 --> 00:03:39.040
+<v Michael Kennedy>Tell us about that.
+
+00:03:39.480 --> 00:03:53.300
+<v Richard Laiw>Yeah, so actually, I didn't follow it too closely, but at the time, there were previous game AIs like, you know, the IBM sort of.
+
+00:03:53.580 --> 00:03:55.680
+<v Richard Laiw>Yeah, Stockfish, I think is what it's called.
+
+00:03:55.800 --> 00:03:57.100
+<v Richard Laiw>The original chess AI.
+
+00:03:57.580 --> 00:03:57.800
+<v Richard Laiw>Right.
+
+00:03:58.200 --> 00:04:02.280
+<v Richard Laiw>And I think Go was a much more high-dimensional and complex game.
+
+00:04:03.760 --> 00:04:03.940
+<v Richard Laiw>Right.
+
+00:04:04.040 --> 00:04:15.500
+<v Michael Kennedy>The first one, IBM won beat one of the grandmasters, but people were like, yeah, but it doesn't really count because it just knew all the possibilities and played it out, you know, which is, I think that's a fair criticism.
+
+00:04:16.100 --> 00:04:16.239
+<v Edward Oakes>Yeah.
+
+00:04:16.250 --> 00:04:21.780
+<v Edward Oakes>And the other thing is there was, it was like a very like hand-tuned algorithm that took like years to build.
+
+00:04:22.660 --> 00:04:30.820
+<v Edward Oakes>So it was, it was like many people kind of using chess knowledge to like build a search algorithm that was like, you know, very specific to chess.
+
+00:04:32.720 --> 00:04:32.800
+<v Richard Laiw>Yeah.
+
+00:04:33.020 --> 00:04:39.820
+<v Richard Laiw>Whereas the AlphaGo one was, first of all, the game was much harder than chess.
+
+00:04:40.480 --> 00:04:43.580
+<v Richard Laiw>Second, it was a widely staged event.
+
+00:04:44.140 --> 00:04:49.740
+<v Richard Laiw>And then in terms of the learning algorithms, they did use reinforcement learning to train the model.
+
+00:04:50.490 --> 00:04:59.880
+<v Richard Laiw>And as far as I understand, a lot of the ways they applied the machine learning techniques were not memorization or were not caching,
+
+00:05:00.220 --> 00:05:08.260
+<v Richard Laiw>but rather like having sort of like neural networks that could estimate the state and the value of the current position
+
+00:05:08.410 --> 00:05:17.480
+<v Richard Laiw>and to be able to sort of extend and decide what the next move was given the internal representation of what the state was.
+
+00:05:19.160 --> 00:05:21.680
+<v Richard Laiw>So, yeah, so that was obviously very, very impressive.
+
+00:05:21.850 --> 00:05:29.360
+<v Richard Laiw>And a lot of the technology that led to that moment was reinforcing their name, right?
+
+00:05:29.620 --> 00:05:39.660
+<v Richard Laiw>And for us in Berkeley, we were interested in being able to sort of provide that sort
+
+00:05:39.670 --> 00:05:48.900
+<v Richard Laiw>of technology to researchers also at Berkeley that didn't have access to large engineering teams and Google's infrastructure and stuff like that.
+
+00:05:49.560 --> 00:05:51.520
+<v Richard Laiw>And so that's kind of where Ray came out of.
+
+00:05:52.390 --> 00:05:59.580
+<v Richard Laiw>It was baked out of doing reinforcement learning research and machine learning research and
+
+00:05:59.600 --> 00:06:13.440
+<v Michael Kennedy>evolved from that. Give people a look inside this research lab that y'all are talking about. It sounds super interesting and I guess I have a couple of things that are wondering about. One
+
+00:06:13.600 --> 00:06:21.160
+<v Michael Kennedy>is just what is a lab that generates grid computing systems and large big data systems?
+
+00:06:22.620 --> 00:06:30.340
+<v Michael Kennedy>How do you think about problems and then solve them? I know what a chemistry lab does, But I'm not entirely sure what this thing does to result in that coming out.
+
+00:06:30.860 --> 00:06:42.300
+<v Michael Kennedy>And then two, how does it go from being something created in the lab that's really powerful or useful to either an open source product or even a product product service type product?
+
+00:06:42.880 --> 00:06:44.340
+<v Michael Kennedy>Like what's that journey look like?
+
+00:06:45.440 --> 00:06:47.420
+<v Edward Oakes>So one thing that I think is pretty unique.
+
+00:06:48.440 --> 00:06:49.520
+<v Edward Oakes>Well, let me take a step back.
+
+00:06:49.980 --> 00:07:02.480
+<v Edward Oakes>Yeah, I think for this type of like computer systems research where, you know, like grid computing or like networking or like large scale data processing, it can be hard to do that in an academic setting.
+
+00:07:03.150 --> 00:07:09.460
+<v Edward Oakes>Because a lot of times the requirements and the infrastructure are like, well, they're expensive.
+
+00:07:09.920 --> 00:07:20.180
+<v Edward Oakes>And also the types of problems that you work on, like data center networking algorithms are only relevant to the few companies that operate data centers.
+
+00:07:20.660 --> 00:07:22.840
+<v Edward Oakes>So it can be kind of hard to do that in an academic setting.
+
+00:07:23.500 --> 00:07:25.800
+<v Michael Kennedy>Yeah, I was thinking about that when I was preparing for the show.
+
+00:07:26.480 --> 00:07:36.920
+<v Michael Kennedy>I really want to try out some things with Ray and some of this computing stuff, but I just don't have the problems or the data that justify genuinely using it, not just taking it through a sample.
+
+00:07:37.010 --> 00:07:37.520
+<v Michael Kennedy>You know what I mean?
+
+00:07:37.940 --> 00:07:38.280
+<v Edward Oakes>That's right.
+
+00:07:38.300 --> 00:07:40.020
+<v Michael Kennedy>I feel like academics would have a similar issue.
+
+00:07:41.000 --> 00:07:48.940
+<v Edward Oakes>So the thing that was unique, so the lab that we were in was called the Rise Lab, and the one before it was called the Amp Lab, and the one after it was called the Sky Lab, okay?
+
+00:07:49.580 --> 00:07:51.680
+<v Edward Oakes>And each of them kind of had a theme.
+
+00:07:52.240 --> 00:07:56.680
+<v Edward Oakes>So the Amp Lab was mostly about big data, so that was the one that generated Spark.
+
+00:07:57.300 --> 00:08:05.580
+<v Edward Oakes>The Rise Lab was about machine learning and reinforcement learning, and then the Sky Lab was about sky computing, so cross-cloud and stuff like that.
+
+00:08:06.160 --> 00:08:08.540
+<v Edward Oakes>Richard and I are a little bit less familiar with that one because it was after we left.
+
+00:08:09.190 --> 00:08:13.360
+<v Edward Oakes>But the thing about the AMP and specifically the Rise Lab is that it was very like interdisciplinary.
+
+00:08:15.139 --> 00:08:21.620
+<v Edward Oakes>So the professor I mentioned that we work with, Jan, he he had really intentionally set it up so that, you know,
+
+00:08:21.720 --> 00:08:31.860
+<v Edward Oakes>the students who are really passionate about like distributed systems and networking were working like really closely with the students who were the like machine learning and reinforcement learning experts.
+
+00:08:32.740 --> 00:08:38.580
+<v Edward Oakes>And then there were also, you know, folks who were really interested in security were also like working closely with both of them.
+
+00:08:39.250 --> 00:08:49.580
+<v Edward Oakes>And I think that kind of like cross pollination really helped yield like interesting project ideas and more kind of like realistic requirements.
+
+00:08:50.520 --> 00:09:01.320
+<v Edward Oakes>Because, you know, what Ray originally came from was like one of one of our classmates and then the co-founder of AnyScale or the two of them, Robert and Philip.
+
+00:09:02.020 --> 00:09:12.860
+<v Edward Oakes>They were more like ML focused people and they were trying to do reinforcement learning research, but they were trying to, you know, sort of put a square peg in a round hole by doing it on Spark.
+
+00:09:14.260 --> 00:09:22.040
+<v Edward Oakes>And it turned out that Spark like just really wasn't built for the requirements of reinforcement learning, which are a little bit more like dynamic in nature.
+
+00:09:24.460 --> 00:09:35.540
+<v Edward Oakes>And it was that kind of, and then they had access to professors and students who were passionate about distributed systems and data systems and stuff.
+
+00:09:35.940 --> 00:09:42.400
+<v Edward Oakes>So that's kind of where Ray came from, was organically, you had students who were trying to do reinforcement learning.
+
+00:09:42.530 --> 00:09:45.760
+<v Edward Oakes>They kind of hit this wall that the tools didn't help them solve.
+
+00:09:46.300 --> 00:09:49.420
+<v Edward Oakes>So it was like, okay, let's start a new project and build the tool that we need.
+
+00:09:50.900 --> 00:09:51.040
+<v Michael Kennedy>Okay.
+
+00:09:51.360 --> 00:09:51.440
+<v Michael Kennedy>Yeah.
+
+00:09:51.680 --> 00:09:52.420
+<v Michael Kennedy>That makes a lot of sense.
+
+00:09:52.820 --> 00:09:53.820
+<v Michael Kennedy>Richard, anything you want to add to that?
+
+00:09:54.580 --> 00:10:02.520
+<v Richard Laiw>Yeah, so I mean, Edward comes a little bit from the more systems side and I was a little bit more on like the machine learning applied side.
+
+00:10:04.380 --> 00:10:17.700
+<v Richard Laiw>And I remember when I was in the RISE lab, there was a lot of interactions with the best machine learning groups in Berkeley as well.
+
+00:10:19.660 --> 00:10:29.900
+<v Richard Laiw>mike jordan who who is one like the like very very famous you know ai professor had his group sort of co-located in the same space in addition to all these systems people you're talking about
+
+00:10:30.160 --> 00:10:35.320
+<v Edward Oakes>bear right berkeley research so there's there's bear and then there's also like a subset which is
+
+00:10:35.380 --> 00:10:50.160
+<v Richard Laiw>like um a lot of the mike's students were also in in the rise lab and in addition to that there was also a biannual so every six months we would have a industry retreat so there would be about
+
+00:10:50.340 --> 00:11:00.200
+<v Richard Laiw>200 250 people that show up at like a you know conference or like a hotel and 70 of them would
+
+00:11:00.400 --> 00:11:08.239
+<v Richard Laiw>be the students that we just talked about and 180 of them would be like top researchers or like
+
+00:11:08.460 --> 00:11:21.720
+<v Richard Laiw>executives from um from the industry so we were able to sort of cross-ponding and share ideas and collaborate and get feedback from um folks like bill dally who was um who's like the nvidia's
+
+00:11:21.820 --> 00:11:36.239
+<v Richard Laiw>chief scientist um or you know like um a lot of really you know top top people at google who were doing recommendation systems and and so on and so forth um so that was like that sort of moment was
+
+00:11:36.980 --> 00:11:38.700
+<v Richard Laiw>was very often reoccurring.
+
+00:11:38.700 --> 00:11:52.360
+<v Richard Laiw>So every six months, and then we would just have this opportunity to actually touch base with what was happening in the industry and therefore drive innovation so that we could be impactful
+
+00:11:52.470 --> 00:11:53.760
+<v Richard Laiw>and do impactful projects.
+
+00:11:55.820 --> 00:11:56.520
+<v Michael Kennedy>Yeah, sounds great.
+
+00:11:59.460 --> 00:12:06.740
+<v Michael Kennedy>What's the relationship between reinforcement learning and the transformer stuff that we see powering LLMs these days?
+
+00:12:07.340 --> 00:12:08.560
+<v Michael Kennedy>How similar or different is that?
+
+00:12:09.800 --> 00:12:10.340
+<v Richard Laiw>I can take that.
+
+00:12:10.680 --> 00:12:16.480
+<v Richard Laiw>So reinforcement learning is more of a, you can think of it as like a learning paradigm, right?
+
+00:12:16.680 --> 00:12:24.920
+<v Richard Laiw>It's like a way how you, you know, it's kind of like this framework that you would use to set up a problem.
+
+00:12:25.240 --> 00:12:38.260
+<v Richard Laiw>And then, and like, it's fundamentally about like having an agent or like a you know some actor or agent that interacts with the world gets uh rewards
+
+00:12:38.560 --> 00:12:44.220
+<v Richard Laiw>or like some feedback signal from that world that world and then sort of learns from that end and
+
+00:12:44.460 --> 00:12:56.979
+<v Michael Kennedy>continually updates it's like it's it's um policy and more focused on solving a single problem you might say or like a category problems no it's just like it's just it's just this very very
+
+00:12:57.000 --> 00:13:10.060
+<v Richard Laiw>generic framework right and it can apply to like you can imagine like the same thing is how like a mouse would interact with a maze or like a child would interact with a toy right so it's just a
+
+00:13:10.300 --> 00:13:24.419
+<v Richard Laiw>framework it's like a a symbolic representation of this framework and whereas transformers is like a uh it's like a model architecture right it's like a way for uh us to be able to
+
+00:13:24.440 --> 00:13:38.780
+<v Richard Laiw>ingrain a particular modeling heuristic that tells us that, like, hey, for certain types of data, in particular sequence data, there are patterns that you can learn across the sequences.
+
+00:13:39.840 --> 00:13:42.960
+<v Richard Laiw>And that can improve the quality of the modeling.
+
+00:13:43.940 --> 00:13:47.400
+<v Richard Laiw>And so the two can be used together.
+
+00:13:47.590 --> 00:13:49.700
+<v Richard Laiw>You can do reinforcement learning with a transformer.
+
+00:13:50.090 --> 00:13:57.640
+<v Richard Laiw>But you can also have a transformer that stands by itself, that's trained with supervised learning and reinforcement learning that is done without a transfer model.
+
+00:13:58.380 --> 00:13:58.940
+<v Michael Kennedy>Interesting.
+
+00:13:59.660 --> 00:14:05.160
+<v Edward Oakes>So that question that you asked is actually, I think, tightly intertwined with the history of Ray.
+
+00:14:05.620 --> 00:14:13.640
+<v Edward Oakes>Because as we mentioned in the 2017, 2018 era, Ray was originally motivated by reinforcement learning.
+
+00:14:14.340 --> 00:14:19.220
+<v Edward Oakes>But that reinforcement learning had very little to do with transformer models or LLMs.
+
+00:14:19.320 --> 00:14:30.860
+<v Edward Oakes>It was things along the line of the AlphaGo project talked about, or it was also being used a lot for robotics at Berkeley. And then reinforcement
+
+00:14:31.060 --> 00:14:36.380
+<v Edward Oakes>learning actually, like, sort of, I would say, died out for a while or, like, got less popular.
+
+00:14:36.540 --> 00:14:40.600
+<v Edward Oakes>It kind of, like, hit a wall and it didn't, it was, like, viewed as not that practical.
+
+00:14:41.400 --> 00:14:45.400
+<v Edward Oakes>So the original Ray library, like, the most popular one in the early days is called RLlib.
+
+00:14:47.239 --> 00:14:55.620
+<v Edward Oakes>And that was, like, far and away the most successful Ray library for a long time. And then it kind of, like petered out for a while. We had this like-
+
+00:14:55.620 --> 00:14:57.500
+<v Michael Kennedy>RL for reinforcement learning, right?
+
+00:14:57.780 --> 00:14:58.680
+<v Edward Oakes>Yeah, that's right. Reinforcement.
+
+00:14:58.890 --> 00:14:59.020
+<v Edward Oakes>Okay.
+
+00:14:59.940 --> 00:15:14.320
+<v Edward Oakes>Yeah. And then we had this kind of ChatGPT or like LLM moment, which by the way, Ray is also like tightly intertwined with because GPT-3 and I think four, I'm not actually sure about four,
+
+00:15:14.320 --> 00:15:21.579
+<v Edward Oakes>but at least three was trained using Ray as like the compute framework by OpenAI. And the really
+
+00:15:21.600 --> 00:15:36.100
+<v Edward Oakes>big innovation that went from like GPT to ChatGPT was by applying reinforcement learning to the transformer models. So this technique is called post-training, which is like you have, you do the
+
+00:15:36.340 --> 00:15:45.680
+<v Edward Oakes>supervised learning that Richard was kind of talking about, or you do like what they call pre-training and you generate these like model weights that basically encode like a huge amount
+
+00:15:45.660 --> 00:15:52.160
+<v Edward Oakes>of information, like the whole internet. And then they are, but they're kind of unrefined, right?
+
+00:15:52.270 --> 00:16:01.760
+<v Edward Oakes>You can think of it as like a, I don't know, a child with a lot of intelligence, but not very good at communication or something. And they applied reinforcement learning techniques as a
+
+00:16:01.760 --> 00:16:14.840
+<v Edward Oakes>way to sort of tailor the model to specific use cases. So the first one was for this like chat application. So that's how you go from like GPT to ChatGPT. And then another example of that more
+
+00:16:14.860 --> 00:16:28.780
+<v Edward Oakes>recently is like these coding agents are also a different version of like post-trained LLMs or transformers. And we're seeing, so we originally had Ray kind of used for reinforcement learning,
+
+00:16:29.420 --> 00:16:38.779
+<v Edward Oakes>kind of dipped and it was used for like LLM things. And now we're actually seeing a huge resurgence in reinforcement learning specifically for this like post-training use case that I was
+
+00:16:38.640 --> 00:16:49.720
+<v Michael Kennedy>talking about um wow okay yeah are you guys surprised just how far these gpt type things
+
+00:16:50.060 --> 00:16:57.880
+<v Michael Kennedy>and Claude Code and so on have come given that you saw a little bit before then yeah i remember like
+
+00:16:58.100 --> 00:17:03.020
+<v Richard Laiw>yawn would occasionally pull me aside and say like hey you should work on like program synthesis
+
+00:17:03.940 --> 00:17:16.720
+<v Richard Laiw>And program synthesis effectively is a model, it's a machine learning problem where you try to get models to write code.
+
+00:17:17.600 --> 00:17:22.260
+<v Richard Laiw>And then I don't think that was definitely not the right approach.
+
+00:17:24.300 --> 00:17:27.920
+<v Richard Laiw>It wasn't the program synthesis line of work that ended up with coding agents.
+
+00:17:28.900 --> 00:17:32.320
+<v Richard Laiw>But Yon was always like, "Hey, why don't you go work on programs for this?
+
+00:17:32.480 --> 00:17:34.040
+<v Richard Laiw>I have no idea what program synthesis is.
+
+00:17:34.220 --> 00:17:37.300
+<v Richard Laiw>I have no expertise in this thing, but he wanted to work on the problem.
+
+00:17:38.640 --> 00:17:48.180
+<v Richard Laiw>Well, which is funny because like in five years, seven years later, it turns out like, this is like the biggest known economically valuable sort of application of these machinery models.
+
+00:17:48.600 --> 00:17:53.360
+<v Edward Oakes>- And solved in just a completely different way that I don't think anybody really saw coming.
+
+00:17:54.400 --> 00:17:56.060
+<v Edward Oakes>That was definitely an emergent thing.
+
+00:17:56.700 --> 00:17:56.880
+<v Richard Laiw>- Yeah.
+
+00:17:57.120 --> 00:17:58.660
+<v Edward Oakes>- At least for me, I didn't expect that.
+
+00:17:58.660 --> 00:17:59.920
+<v Richard Laiw>- For sure, no, no, I think that's true.
+
+00:18:02.220 --> 00:18:04.060
+<v Michael Kennedy>Yeah, well, I'm blown away by it, honestly.
+
+00:18:05.200 --> 00:18:06.440
+<v Michael Kennedy>I'm happy that it exists.
+
+00:18:06.500 --> 00:18:09.120
+<v Michael Kennedy>I get to do cool stuff with it, but sure didn't see it coming.
+
+00:18:09.840 --> 00:18:15.480
+<v Michael Kennedy>So let's switch over and maybe set the foundations we're talking about, Ray, a little bit.
+
+00:18:16.360 --> 00:18:24.080
+<v Michael Kennedy>And by that, I mean let's talk about different options for parallel computing and that kind of thing.
+
+00:18:24.680 --> 00:18:29.580
+<v Michael Kennedy>So we have this sort of spectrum of compute.
+
+00:18:29.880 --> 00:18:47.500
+<v Michael Kennedy>And it sounds to me like the history, the idea is, hey, let's move towards scaling this compute out across all the cores, across multiple machines, so that when you're doing training and reinforcement learning, things like that, you can actually take advantage of all the compute.
+
+00:18:48.150 --> 00:18:50.560
+<v Michael Kennedy>And I'm guessing GPUs as well, right?
+
+00:18:51.760 --> 00:18:54.040
+<v Edward Oakes>Yeah, GPUs are definitely like bread and butter for Ray.
+
+00:18:55.320 --> 00:18:55.560
+<v Michael Kennedy>Yeah.
+
+00:18:56.370 --> 00:18:56.480
+<v Michael Kennedy>Yeah.
+
+00:18:56.480 --> 00:19:04.100
+<v Michael Kennedy>So at the very smallest layer of parallelism, at least in Python land, we've got asyncio, which really still runs on a single thread.
+
+00:19:04.230 --> 00:19:18.640
+<v Michael Kennedy>But it uses waiting periods, like waiting on databases, waiting on API calls, and so on to interlace work without true parallelism, but still kind of-- we have threads, which really, until recently, didn't do anything much different.
+
+00:19:20.420 --> 00:19:22.500
+<v Michael Kennedy>It's just less control structures, right?
+
+00:19:22.580 --> 00:19:23.400
+<v Michael Kennedy>Because we had the gil.
+
+00:19:23.640 --> 00:19:25.960
+<v Michael Kennedy>And now we've got free-threaded Python, so it's a little bit better.
+
+00:19:26.120 --> 00:19:27.620
+<v Michael Kennedy>But you've got to have the library support.
+
+00:19:28.900 --> 00:19:31.980
+<v Michael Kennedy>We have multi-processing and sub-processes.
+
+00:19:33.960 --> 00:19:36.380
+<v Michael Kennedy>And that's kind of what we have out of the box in Python.
+
+00:19:37.280 --> 00:19:48.920
+<v Michael Kennedy>But then we have stuff that both of you all are familiar with or have built, things like databases like Spark or Ray.
+
+00:19:49.460 --> 00:20:02.800
+<v Michael Kennedy>We've also got Dask and Coiled, which is-- I'm interested to hear how you all see yourself as the same or different than Dask and Coiled and so on, which itself is different than when it started, at least Coiled.
+
+00:20:04.200 --> 00:20:11.560
+<v Michael Kennedy>So maybe just speak to this arc of trying to get more compute out of our apps.
+
+00:20:12.600 --> 00:20:17.780
+<v Edward Oakes>So I would kind of try to organize a framework for thinking about those.
+
+00:20:20.260 --> 00:20:29.820
+<v Edward Oakes>and this is a little bit off the cuff so hopefully it's uh you guys can follow it but i would say there's kind of like two axes i would think about so the first one is like how specific versus kind
+
+00:20:29.820 --> 00:20:42.220
+<v Edward Oakes>of how general of like a parallelism framework you have so something that is like really specific uh like um like the most specific would be something that is like completely tailored to one use case
+
+00:20:42.380 --> 00:20:54.760
+<v Edward Oakes>like a this is not really python but like a sql database right it's like it's really good at uh like processing sql queries you can't really use it for anything else um and then you know a little
+
+00:20:54.760 --> 00:21:05.980
+<v Edward Oakes>bit more general than that is something like spark so you can use it for this kind of like big data processing uh type workload you can use it for some streaming um but if you try to do anything
+
+00:21:06.160 --> 00:21:20.860
+<v Edward Oakes>that kind of goes outside the bounds of that you start to run into a little bit of trouble because It has kind of an opinionated high-level API and an opinionated way that data moves throughout the system, for example.
+
+00:21:23.720 --> 00:21:32.660
+<v Edward Oakes>And then you have kind of on the more general purpose end, you have like Ray, and I would say Dask is also more general purpose than the others.
+
+00:21:36.940 --> 00:21:41.440
+<v Edward Oakes>So you have specific to general purpose, and then there's also, I think, the scale.
+
+00:21:41.960 --> 00:21:55.640
+<v Edward Oakes>So async.io is extremely useful for making many concurrent I.O. bound requests, like HTTP requests, database queries, file operations, anything like that.
+
+00:21:56.140 --> 00:21:58.300
+<v Edward Oakes>But it only works within one thread.
+
+00:21:58.740 --> 00:22:04.340
+<v Michael Kennedy>Yeah, it feels a little bit like a scale-up lever, even though you're not technically scaling up the hardware.
+
+00:22:04.420 --> 00:22:08.340
+<v Michael Kennedy>It's like you're still in the same box, just the box can do a little bit more.
+
+00:22:08.700 --> 00:22:09.700
+<v Edward Oakes>So, yeah, totally.
+
+00:22:10.230 --> 00:22:14.320
+<v Edward Oakes>I would say so asyncio is kind of scale up within a thread even.
+
+00:22:15.010 --> 00:22:17.880
+<v Edward Oakes>And then you can also have like scale up within a process.
+
+00:22:18.480 --> 00:22:24.420
+<v Edward Oakes>So if you have like multi-threading, of course, like, you know, with free threading, you can actually get like parallelism.
+
+00:22:25.540 --> 00:22:31.020
+<v Edward Oakes>What most people do to scale up within a process, like historically with Python, is they call into like native code.
+
+00:22:31.550 --> 00:22:31.680
+<v Edward Oakes>Right.
+
+00:22:31.790 --> 00:22:33.000
+<v Edward Oakes>So you're using NumPy.
+
+00:22:33.320 --> 00:22:39.560
+<v Edward Oakes>you have basically like Python bindings, but in reality, almost all of the compute is happening in like a C extension library.
+
+00:22:40.800 --> 00:22:42.220
+<v Edward Oakes>And that's also true for Torch.
+
+00:22:43.620 --> 00:22:46.780
+<v Edward Oakes>So those allow you to kind of like scale up to varying degrees.
+
+00:22:47.400 --> 00:22:51.180
+<v Edward Oakes>So like, you know, scale up within a thread, within a process.
+
+00:22:51.940 --> 00:22:56.380
+<v Edward Oakes>And then multiprocessing also lets you scale up within like a whole host.
+
+00:22:56.900 --> 00:23:00.440
+<v Edward Oakes>So you could use, you know, 64 cores of machine.
+
+00:23:02.440 --> 00:23:05.720
+<v Edward Oakes>And then at some point, you can't even fit on one machine anymore.
+
+00:23:05.860 --> 00:23:07.840
+<v Edward Oakes>You need to scale out even more.
+
+00:23:08.760 --> 00:23:17.620
+<v Edward Oakes>And that's where you need some kind of parallel computing or grid computing or cluster framework like Ray or Dask.
+
+00:23:18.620 --> 00:23:18.860
+<v Edward Oakes>Right.
+
+00:23:19.120 --> 00:23:22.320
+<v Michael Kennedy>It could be you need to scale because of memory or it could be a CPU.
+
+00:23:22.560 --> 00:23:24.340
+<v Michael Kennedy>I think often people think just CPU.
+
+00:23:25.080 --> 00:23:30.420
+<v Michael Kennedy>We just got to compute more, but it could be we've got a terabyte of stuff to try to process.
+
+00:23:31.140 --> 00:23:31.900
+<v Edward Oakes>Yep, could be.
+
+00:23:31.990 --> 00:23:39.240
+<v Edward Oakes>Or it could be also because you need to use more GPUs, either for compute or for memory.
+
+00:23:40.140 --> 00:23:48.680
+<v Edward Oakes>Like some of these large-scale LLMs, you can't even fit it inside of one single GPU, so you need to kind of shard it across many machines.
+
+00:23:49.320 --> 00:23:49.580
+<v Michael Kennedy>Sure.
+
+00:23:51.680 --> 00:23:54.800
+<v Michael Kennedy>Yeah, we'll even see there's some ways to put these together, right?
+
+00:23:54.980 --> 00:23:59.120
+<v Michael Kennedy>I guess it's probably pretty straightforward, but we'll talk about the programming model and stuff.
+
+00:23:59.200 --> 00:24:07.780
+<v Michael Kennedy>but you theoretically could use, I don't know, multi-processing or something in your code, but then scale that across machines with Ray, is that possible?
+
+00:24:08.760 --> 00:24:10.200
+<v Edward Oakes>- You could, that--
+
+00:24:10.200 --> 00:24:10.800
+<v Michael Kennedy>- Does it make sense?
+
+00:24:12.160 --> 00:24:18.780
+<v Edward Oakes>- There's a little bit of, so between a lot of these things, I think there's like some kind of unique parts and then some overlap.
+
+00:24:19.560 --> 00:24:22.720
+<v Edward Oakes>So like Ray can be used just on one machine, right?
+
+00:24:23.720 --> 00:24:36.180
+<v Edward Oakes>And in that case, you know, Ray kind of manages its own processes and does the delegation of work from what we call your driver process, which is the main Python program, to the other processes,
+
+00:24:36.520 --> 00:24:39.160
+<v Edward Oakes>which in Ray terminology are tasks and actors.
+
+00:24:40.780 --> 00:24:52.340
+<v Edward Oakes>If you're running Ray on one machine, then it looks quite similar to multiprocessing, just with a little bit more opinionated of an API and some integrated observability features and stuff like that.
+
+00:24:54.280 --> 00:25:01.500
+<v Edward Oakes>But Ray definitely is designed around the multi-node, larger scale cluster use case.
+
+00:25:02.200 --> 00:25:04.000
+<v Edward Oakes>That's where the value really comes in.
+
+00:25:04.540 --> 00:25:08.920
+<v Michael Kennedy>RICHARD WALTERS: Richard, anything else you want to add?
+
+00:25:09.060 --> 00:25:11.940
+<v Richard Laiw>RICHARD WALTERS: No, I think that's fairly accurate.
+
+00:25:12.100 --> 00:25:14.780
+<v Richard Laiw>I think you had a question about Dask and Coiled.
+
+00:25:16.000 --> 00:25:30.980
+<v Richard Laiw>I think Dask and Coiled, they were more of a comparison point for Ray, especially because there was a Pandas on Ray project in 2018.
+
+00:25:33.319 --> 00:25:43.060
+<v Richard Laiw>And at that point, I think they were, yeah, it did get brought up more often, but more recently we don't hear about Coil as often.
+
+00:25:43.200 --> 00:25:57.020
+<v Richard Laiw>I think in particular because we've sort of focused our product efforts a little bit more towards the AI side, whereas Coiled, I think, is more like a scientific computing slash
+
+00:25:57.230 --> 00:26:01.280
+<v Richard Laiw>like general, you know, scale up pandas, scale up NumPy sort of approach.
+
+00:26:01.730 --> 00:26:04.520
+<v Richard Laiw>So, yeah, diverged and we don't see each other that often.
+
+00:26:05.500 --> 00:26:17.919
+<v Michael Kennedy>Ian, from the last time I spoke with Matthew Rocklin, not too long ago, it looked like we were really focused on kind of creating and configuring and managing the infrastructure
+
+00:26:17.920 --> 00:26:23.120
+<v Michael Kennedy>that allows for grid computing with data science type of stuff.
+
+00:26:24.020 --> 00:26:33.720
+<v Michael Kennedy>A lot of managing AWS and scaling them and so on, and more than the original Dask story, I think.
+
+00:26:34.820 --> 00:26:39.480
+<v Michael Kennedy>All right, so that brings us to what is Ray?
+
+00:26:39.740 --> 00:26:48.360
+<v Michael Kennedy>I mean, we talked a little bit about it, but just give us the, what would you tell people if you made it a conference or something.
+
+00:26:50.480 --> 00:26:51.200
+<v Edward Oakes>You want to take this, Richard?
+
+00:26:51.260 --> 00:26:51.680
+<v Edward Oakes>You want me to?
+
+00:26:51.700 --> 00:26:52.940
+<v Richard Laiw>Yeah, I mean, I can start.
+
+00:26:53.100 --> 00:26:55.940
+<v Edward Oakes>We've both given that conference talk many times, by the way.
+
+00:26:56.000 --> 00:26:56.940
+<v Richard Laiw>So we should be good at this.
+
+00:26:58.020 --> 00:26:58.160
+<v Edward Oakes>Yeah.
+
+00:26:58.700 --> 00:26:59.380
+<v Richard Laiw>Here's a rehearsal.
+
+00:27:00.080 --> 00:27:00.200
+<v Richard Laiw>Yeah.
+
+00:27:00.800 --> 00:27:08.840
+<v Richard Laiw>So Ray is, by the way, I would probably put it as like, it's a distributed execution engine for AI workloads.
+
+00:27:10.480 --> 00:27:20.440
+<v Richard Laiw>And in particular, it handles a lot of the orchestration aspects of the AI workloads and also has a variety of first-party and third-party libraries
+
+00:27:20.680 --> 00:27:26.060
+<v Richard Laiw>that are built on top of it to help scale these AI workloads that we often see.
+
+00:27:27.000 --> 00:27:37.440
+<v Richard Laiw>So two very, very popular applications of RAID today is Reinforcing Learning and then Multimodal Data Processing.
+
+00:27:38.420 --> 00:27:53.360
+<v Richard Laiw>Both of them are very, very relevant in today's AI world, But reinforcement learning libraries, a lot of the third party ones, they will use Ray for coordinating the different components that you need to do reinforcement learning with.
+
+00:27:53.490 --> 00:27:56.000
+<v Richard Laiw>There is an inference engine that's involved.
+
+00:27:56.160 --> 00:27:57.720
+<v Richard Laiw>There's a training engine that's involved.
+
+00:27:57.860 --> 00:28:02.020
+<v Richard Laiw>And there is also agents and sandboxes that are involved.
+
+00:28:02.130 --> 00:28:06.620
+<v Richard Laiw>So all three things-- all these things need to be coordinated by one central orchestration system.
+
+00:28:07.270 --> 00:28:14.840
+<v Richard Laiw>And it's way easier to write this in Ray because Ray gives you that ability to control all these components as if you were writing single-threaded code.
+
+00:28:15.920 --> 00:28:26.680
+<v Richard Laiw>Working more with data processing is the other big one, where existing data processing libraries will focus on the ability to handle tabular data and work with Parquet, Iceberg, Delta, so on and so forth,
+
+00:28:27.280 --> 00:28:33.860
+<v Richard Laiw>whereas Ray finds its niche more in the intersection between the data and the GPU.
+
+00:28:34.640 --> 00:28:44.480
+<v Richard Laiw>And so typically you're working with larger unstructured data, for example, like images or embeddings.
+
+00:28:45.140 --> 00:28:51.480
+<v Richard Laiw>And oftentimes that requires more complex scheduling and more complex orchestration that Ray is really good at.
+
+00:28:52.700 --> 00:28:53.340
+<v Michael Kennedy>Cool.
+
+00:28:53.980 --> 00:29:03.380
+<v Michael Kennedy>So given the origins, it certainly makes sense that you've got this focus on really nailing ML training and other types of workloads.
+
+00:29:03.840 --> 00:29:07.840
+<v Michael Kennedy>Is it relevant to people who are just doing time series work?
+
+00:29:08.480 --> 00:29:08.900
+<v Edward Oakes>Oh, yeah.
+
+00:29:09.190 --> 00:29:09.740
+<v Edward Oakes>Yeah, absolutely.
+
+00:29:13.320 --> 00:29:20.840
+<v Edward Oakes>So I think we were going to talk about this at some point, but we kind of organize Ray in terms of layers in a way.
+
+00:29:20.930 --> 00:29:24.840
+<v Edward Oakes>So we call the base Python API, which is quite simple.
+
+00:29:25.340 --> 00:29:31.040
+<v Edward Oakes>It's really just for people very familiar with Python, you can think of it as multi-processing for a cluster.
+
+00:29:31.920 --> 00:29:45.300
+<v Edward Oakes>So that we call kind of Ray core, which is like that base, like distributed execution engine, sort of like core primitives for scaling up, distributing work and handling failures
+
+00:29:46.120 --> 00:29:48.620
+<v Edward Oakes>and like just overall kind of parallelism.
+
+00:29:49.460 --> 00:29:52.720
+<v Edward Oakes>And then on top of it, we have like a lot of library integrations.
+
+00:29:53.840 --> 00:29:56.840
+<v Edward Oakes>Like that's what the Ray libraries are, like Ray train and serve.
+
+00:29:57.330 --> 00:29:58.680
+<v Edward Oakes>And then some of these post-training libraries.
+
+00:29:59.520 --> 00:30:04.700
+<v Edward Oakes>So that core layer is like absolutely relevant for non kind of AI workloads.
+
+00:30:05.240 --> 00:30:17.920
+<v Edward Oakes>And we do have many, many users that use it for things like, like in the finance world, they use it for parallel back testing or time series analysis, like you mentioned.
+
+00:30:19.700 --> 00:30:25.720
+<v Edward Oakes>Yeah, and any kind of like generic, just like parallel workload that you need to scale beyond a single machine.
+
+00:30:28.400 --> 00:30:31.800
+<v Michael Kennedy>Now I'm thinking of it in finance and real time trading type stuff.
+
+00:30:31.910 --> 00:30:34.420
+<v Michael Kennedy>You could be running a whole bunch of scenarios in reverse and then.
+
+00:30:34.710 --> 00:30:34.860
+<v Edward Oakes>Yep.
+
+00:30:34.980 --> 00:30:35.120
+<v Michael Kennedy>Yeah.
+
+00:30:35.780 --> 00:30:35.860
+<v Edward Oakes>Yeah.
+
+00:30:35.910 --> 00:30:36.020
+<v Edward Oakes>Yeah.
+
+00:30:36.050 --> 00:30:41.660
+<v Edward Oakes>We, we, there are, many of the, largest hedge funds do exactly that using Ray.
+
+00:30:43.680 --> 00:30:43.820
+<v Michael Kennedy>Okay.
+
+00:30:44.440 --> 00:30:45.140
+<v Michael Kennedy>Super interesting.
+
+00:30:45.840 --> 00:30:55.900
+<v Michael Kennedy>So from my understanding, we could use Ray even on one machine and it has some capabilities to help you sort of take better advantage of all your hardware.
+
+00:30:55.980 --> 00:31:05.660
+<v Michael Kennedy>Like my little streaming Mac mini has 10 CPUs and if I just write regular Python code, I get like 16% or something or 10% of that, right?
+
+00:31:06.400 --> 00:31:09.140
+<v Edward Oakes>Yeah, you certainly can use Ray on one node.
+
+00:31:09.510 --> 00:31:16.440
+<v Edward Oakes>I think actually the kind of most compelling part of that is you can do it for development.
+
+00:31:17.280 --> 00:31:25.760
+<v Edward Oakes>So you can, like if you're working on this kind of large scale post-training thing, it's useful to kind of think about what you'd have to do without Ray.
+
+00:31:26.300 --> 00:31:43.080
+<v Edward Oakes>So you would have like, you know, four different containers, each one would have its own, like Python entry point. And you'd have to kind of like run and orchestrate them as like these independent services. So eventually, maybe you'd like deploy them on Kubernetes or something like that.
+
+00:31:43.820 --> 00:31:58.980
+<v Edward Oakes>But even when testing locally, it's like if you want to run all of them and make sure that kind of the integration points work well and quickly be able to iterate and debug stuff, it's really painful if those are all kind of loosely coupled as different processes.
+
+00:32:01.440 --> 00:32:07.920
+<v Edward Oakes>And especially if the way that you start them on your local machine is going to be very different than when you actually go to scale it up in a cluster.
+
+00:32:08.800 --> 00:32:12.380
+<v Michael Kennedy>Right. Even if you just make a change, like, OK, now I got to go restart all the workers.
+
+00:32:13.120 --> 00:32:16.320
+<v Edward Oakes>Yeah, I think a lot of people can relate to that pain.
+
+00:32:17.740 --> 00:32:27.480
+<v Edward Oakes>And with Ray, the thing that's really cool is you can write kind of one Python script that like starts all those different processes and does the orchestration.
+
+00:32:28.120 --> 00:32:32.760
+<v Edward Oakes>You can run it just on your like local Mac or whatever local machine you have.
+
+00:32:33.170 --> 00:32:39.820
+<v Edward Oakes>And then once you kind of like have it working, then you can run it on a cluster and like scale it up using like the same code.
+
+00:32:41.280 --> 00:32:48.020
+<v Michael Kennedy>Does it come with cluster management in terms of like infrastructures code type of stuff?
+
+00:32:48.560 --> 00:32:50.300
+<v Michael Kennedy>Will it spin up nodes and so on?
+
+00:32:50.300 --> 00:32:54.660
+<v Michael Kennedy>Or do you have to have your cluster set up and then just it knows about it?
+
+00:32:54.720 --> 00:32:55.160
+<v Michael Kennedy>You know what I mean?
+
+00:32:55.800 --> 00:32:56.040
+<v Edward Oakes>Yeah.
+
+00:32:57.260 --> 00:33:00.500
+<v Edward Oakes>The answer is kind of both depending on your use case.
+
+00:33:02.720 --> 00:33:08.660
+<v Edward Oakes>So I'd categorize it as like there are maybe three or four ways that people run Ray clusters.
+
+00:33:10.980 --> 00:33:15.860
+<v Edward Oakes>The first is using a tool that we call like the cluster launcher.
+
+00:33:16.510 --> 00:33:32.380
+<v Edward Oakes>So this is kind of like if you're an individual practitioner and you just want something like really low friction, we have a tool that will basically like spin up a rate cluster on like AWS or GCP or Azure or even on your own set of hardware.
+
+00:33:32.610 --> 00:33:35.240
+<v Edward Oakes>Like you can kind of like bring your own set of machines.
+
+00:33:35.240 --> 00:33:42.200
+<v Edward Oakes>machines. But that's not really like a fully managed experience. You can also run Ray on
+
+00:33:42.360 --> 00:33:55.460
+<v Edward Oakes>Kubernetes. So there's a community led project called kubray, which is a pretty tightly integrated like Kubernetes operator that makes it really easy to like run Ray clusters on Kubernetes.
+
+00:33:57.280 --> 00:34:05.660
+<v Edward Oakes>Or you can use like a more managed service like AnyScale, obviously, where Richard and I work, we have like managed infrastructure for Ray clusters.
+
+00:34:07.190 --> 00:34:14.600
+<v Edward Oakes>But there are also, I think there are some other providers who you can run Ray clusters to like AWS has an offering or Domino Data Labs has an offering.
+
+00:34:14.879 --> 00:34:16.139
+<v Edward Oakes>And I think there are a few more as well.
+
+00:34:16.980 --> 00:34:22.080
+<v Michael Kennedy>- Yeah, you know, that makes a lot of sense that you guys have this sort of, let us run the infrastructure side.
+
+00:34:22.200 --> 00:34:23.200
+<v Michael Kennedy>We'll talk more about that later.
+
+00:34:24.080 --> 00:34:34.860
+<v Michael Kennedy>With Kubray though, do you just say like, as long as you have a Kubernetes cluster, you can just let it kind of create pods scale up or down as needed there, something like that?
+
+00:34:35.120 --> 00:34:35.639
+<v Edward Oakes>- Pretty much.
+
+00:34:35.820 --> 00:34:42.060
+<v Edward Oakes>So when you install Qubray into your cluster, it will basically run the Qubray controller as like a background pod.
+
+00:34:42.899 --> 00:34:45.139
+<v Edward Oakes>It's called like an operator in Kubernetes lingo.
+
+00:34:45.919 --> 00:34:49.419
+<v Edward Oakes>And then at that point, you now have these like custom resources.
+
+00:34:49.740 --> 00:34:55.620
+<v Edward Oakes>So you can like create a RAID cluster or a RAID job as like a custom resource.
+
+00:34:55.970 --> 00:35:01.200
+<v Edward Oakes>And then it will get spun up as a bunch of pods and they will connect to each other and get health checked.
+
+00:35:01.420 --> 00:35:03.820
+<v Edward Oakes>and all of that infrastructure management is done.
+
+00:35:04.040 --> 00:35:04.540
+<v Michael Kennedy>- Yeah, cool.
+
+00:35:05.340 --> 00:35:07.520
+<v Michael Kennedy>Yeah, Kubray is pretty active.
+
+00:35:07.660 --> 00:35:11.580
+<v Michael Kennedy>2.5 thousand GitHub stars, commits 17 hours ago.
+
+00:35:12.200 --> 00:35:12.300
+<v Michael Kennedy>Nice.
+
+00:35:13.180 --> 00:35:21.680
+<v Edward Oakes>- Yeah, there's a huge community kind of initiative behind Kubray and we're involved with it too, but it really kind of has taken a life of its own.
+
+00:35:23.120 --> 00:35:28.420
+<v Edward Oakes>And it's really useful too, because even on Kubernetes, everyone's environment is a little bit different.
+
+00:35:29.080 --> 00:35:40.200
+<v Edward Oakes>So having maintainers and committers from many different companies and people who are running in different environments makes it easier to cover all the bases.
+
+00:35:40.960 --> 00:35:42.160
+<v Michael Kennedy>Yeah, for sure.
+
+00:35:42.660 --> 00:35:49.600
+<v Michael Kennedy>Yeah, that diversity of use cases and stuff is always nice to create a better API, better library, and so on.
+
+00:35:51.100 --> 00:35:53.280
+<v Michael Kennedy>All right, let's talk code.
+
+00:35:53.840 --> 00:35:54.720
+<v Michael Kennedy>Let's talk to an example.
+
+00:35:54.770 --> 00:35:55.680
+<v Michael Kennedy>You have a bunch of examples.
+
+00:35:56.360 --> 00:36:00.700
+<v Michael Kennedy>So you have examples, and then you've got-- also the gallery, are these the same thing?
+
+00:36:02.260 --> 00:36:03.880
+<v Michael Kennedy>I think those are the same.
+
+00:36:04.440 --> 00:36:04.880
+<v Michael Kennedy>Let me see.
+
+00:36:07.080 --> 00:36:09.160
+<v Michael Kennedy>I think maybe, I think there's more here.
+
+00:36:09.240 --> 00:36:09.740
+<v Michael Kennedy>There's a lot more.
+
+00:36:09.860 --> 00:36:10.520
+<v Michael Kennedy>There's a ton here.
+
+00:36:11.080 --> 00:36:13.180
+<v Michael Kennedy>Yeah, I think this is kind of like all of them,
+
+00:36:13.180 --> 00:36:14.760
+<v Edward Oakes>and the others are like highlighted ones.
+
+00:36:15.240 --> 00:36:16.380
+<v Michael Kennedy>Some highlighted ones, sure, got it.
+
+00:36:17.340 --> 00:36:29.160
+<v Michael Kennedy>So I think it would be nice to talk through the experience of doing a project in Ray, keeping in mind that it's always hard to talk about code over audio.
+
+00:36:30.359 --> 00:36:37.320
+<v Michael Kennedy>But maybe we could just sort of skim over whoever wants to narrate this experience of going through.
+
+00:36:37.950 --> 00:36:42.020
+<v Michael Kennedy>One of the examples, you have an audio batch inference type of experience.
+
+00:36:42.940 --> 00:36:46.080
+<v Richard Laiw>Can you score down so that I know where I'm going to end up?
+
+00:36:47.000 --> 00:36:47.100
+<v Michael Kennedy>Yeah.
+
+00:36:47.470 --> 00:36:47.600
+<v Michael Kennedy>Yeah.
+
+00:36:49.740 --> 00:36:51.320
+<v Michael Kennedy>Do some whisper stuff.
+
+00:36:51.510 --> 00:36:52.980
+<v Michael Kennedy>Do some GPU stuff.
+
+00:36:53.320 --> 00:36:54.720
+<v Michael Kennedy>Some LLM stuff.
+
+00:36:54.880 --> 00:36:56.540
+<v Michael Kennedy>Persist a curated subset.
+
+00:36:57.060 --> 00:36:58.180
+<v Richard Laiw>Yeah, okay, all right, cool.
+
+00:36:58.300 --> 00:36:59.620
+<v Richard Laiw>Yeah, I kind of get the sense.
+
+00:37:02.400 --> 00:37:07.080
+<v Richard Laiw>So Ray is basically very similar to writing a standard Python script.
+
+00:37:07.220 --> 00:37:21.760
+<v Richard Laiw>So ideally, the way you sort of think about things and the way you read the code, it should be very similar to, should be minimally intrusive and should be very familiar with how you might sort of reason about,
+
+00:37:23.800 --> 00:37:27.140
+<v Richard Laiw>about like, you know, serial code or like single thread code.
+
+00:37:27.880 --> 00:37:36.320
+<v Richard Laiw>And so like, obviously, a lot of the things that we do here don't demonstrate or like demonstrate how you might sort of set up a project by yourself.
+
+00:37:36.570 --> 00:37:42.960
+<v Richard Laiw>So including like standard pip installations, you can use uv if you want, and then like standard imports, right?
+
+00:37:43.110 --> 00:37:51.980
+<v Richard Laiw>And then moving down, we start to enter like using RAID data, which is the data processing multimodal data system that we have,
+
+00:37:52.680 --> 00:38:06.660
+<v Richard Laiw>a library on top of ray and it provides a lot of simple abstractions to do all sorts of like big data tasks so like here you have example which is simply just like reading the data set and and then
+
+00:38:06.780 --> 00:38:12.220
+<v Richard Laiw>like you know sub sampling it all right so let me ask you a question about this so you basically say
+
+00:38:12.420 --> 00:38:22.120
+<v Michael Kennedy>ray.data.readparquet and you give it an s3 link to a parquet file presumably either signed or public When I say that, does that load it into one machine?
+
+00:38:22.310 --> 00:38:25.320
+<v Michael Kennedy>Or does that instruct all of the workers all to go and load this?
+
+00:38:25.940 --> 00:38:27.940
+<v Richard Laiw>It actually doesn't load anything.
+
+00:38:28.320 --> 00:38:31.440
+<v Richard Laiw>But if you do end up executing it, so it's lazy.
+
+00:38:32.850 --> 00:38:38.360
+<v Richard Laiw>So right now what you're doing is you're just actually just constructing this program.
+
+00:38:39.780 --> 00:38:45.560
+<v Richard Laiw>But when you do execute it, it will execute on all the processes across the entire cluster.
+
+00:38:46.040 --> 00:38:46.480
+<v Michael Kennedy>Right.
+
+00:38:46.570 --> 00:38:52.100
+<v Michael Kennedy>So in this scenario, it doesn't necessarily need to have one of them populate the data for all the others.
+
+00:38:52.260 --> 00:38:54.280
+<v Michael Kennedy>They can all go straight to S3 and get it.
+
+00:38:54.820 --> 00:38:55.480
+<v Richard Laiw>That's right.
+
+00:38:56.160 --> 00:39:01.120
+<v Richard Laiw>And particularly in this example, this has-- it probably points to a folder.
+
+00:39:01.520 --> 00:39:03.160
+<v Richard Laiw>And the folder has many different files.
+
+00:39:03.230 --> 00:39:05.480
+<v Michael Kennedy>So like the file-- So maybe it breaks-- Yeah.
+
+00:39:05.600 --> 00:39:06.860
+<v Michael Kennedy>Yeah, maybe it breaks it up.
+
+00:39:06.880 --> 00:39:07.000
+<v Michael Kennedy>Yeah.
+
+00:39:07.580 --> 00:39:08.240
+<v Michael Kennedy>Yeah, OK.
+
+00:39:08.760 --> 00:39:09.040
+<v Michael Kennedy>Cool.
+
+00:39:11.380 --> 00:39:21.300
+<v Richard Laiw>So here, we have a thing where every single line of the parquet file, every single row, has some set of bytes.
+
+00:39:21.680 --> 00:39:29.360
+<v Richard Laiw>And what we want to do is transform those bytes into something that's more manageable, like a NumPy array.
+
+00:39:29.480 --> 00:39:31.160
+<v Richard Laiw>So that's kind of what we're doing here.
+
+00:39:31.240 --> 00:39:36.040
+<v Richard Laiw>We're loading the data with Torch audio, and then we're doing some resampling.
+
+00:39:37.680 --> 00:39:41.640
+<v Richard Laiw>And then we're sort of returning that back to array data.
+
+00:39:42.340 --> 00:39:44.020
+<v Richard Laiw>So this is like a single map test.
+
+00:39:44.540 --> 00:39:47.200
+<v Richard Laiw>Map, like a single-- So I see.
+
+00:39:47.470 --> 00:39:50.000
+<v Michael Kennedy>So you write a function that does this, what you just described.
+
+00:39:50.640 --> 00:39:53.060
+<v Michael Kennedy>It passes in an item.
+
+00:39:53.680 --> 00:39:54.520
+<v Michael Kennedy>It's a row, basically.
+
+00:39:55.140 --> 00:39:57.280
+<v Michael Kennedy>Yeah, so I think it's like a row in the parquet file.
+
+00:39:57.860 --> 00:40:06.640
+<v Michael Kennedy>And then you just say, go to your data that you loaded with Ray, and you say map given to the function, not called the function, right?
+
+00:40:06.780 --> 00:40:08.600
+<v Michael Kennedy>Just give it the pointer to the function.
+
+00:40:08.920 --> 00:40:09.380
+<v Richard Laiw>That's right.
+
+00:40:10.240 --> 00:40:14.300
+<v Michael Kennedy>And it figures out, like, okay, here's how we'll distribute it across the cluster.
+
+00:40:14.920 --> 00:40:22.240
+<v Richard Laiw>Yeah, this map, this resample function will be executed on hundreds of processes across the cluster.
+
+00:40:23.320 --> 00:40:23.700
+<v Michael Kennedy>I see.
+
+00:40:23.850 --> 00:40:29.100
+<v Michael Kennedy>And maybe it'll do something smart like, say, I'm on row 1000.
+
+00:40:29.230 --> 00:40:32.040
+<v Michael Kennedy>So it could do a skip maybe or something like that, potentially.
+
+00:40:32.040 --> 00:40:35.180
+<v Richard Laiw>No, so all the data is already sharded.
+
+00:40:36.880 --> 00:40:37.520
+<v Richard Laiw>Got it.
+
+00:40:37.740 --> 00:40:43.820
+<v Richard Laiw>So it will take whatever is available and then it will just run the function next door.
+
+00:40:44.380 --> 00:40:51.700
+<v Michael Kennedy>Okay. Yeah, that's pretty cool. And then you've got your Whisper processor. I definitely have
+
+00:40:51.840 --> 00:41:00.140
+<v Richard Laiw>written some Whisper processing code lately. Yeah. So this uses a class, not a function.
+
+00:41:01.300 --> 00:41:13.300
+<v Richard Laiw>And the reason for this is that, as you might have experienced, like loading Whisper might take a little bit of time. Yes. And then if you scroll to the right on this, okay, so here we
+
+00:41:13.320 --> 00:41:22.900
+<v Richard Laiw>don't use it but like you can also move the whisper model onto a gpu and the way you would do that is you set on the bottom like you just use like you know number gpus equals one right here it says
+
+00:41:23.120 --> 00:41:29.980
+<v Michael Kennedy>device equals cpu but yeah but you could put gpu here huh you could and also in map badges you
+
+00:41:30.000 --> 00:41:44.660
+<v Richard Laiw>would put the map like gpu whatever and so what what's happening is that as you are doing the execution what we will do is we will spawn a bunch of these classes across on different processes
+
+00:41:44.960 --> 00:41:59.180
+<v Richard Laiw>on the cluster and so they'll be able to like pre-load the model and then you can send data to this class and then it will call the double under call and then you have this basically is like operator that streaming data in and out.
+
+00:42:02.620 --> 00:42:04.220
+<v Michael Kennedy>- Okay, yeah, that's cool.
+
+00:42:04.450 --> 00:42:05.320
+<v Michael Kennedy>You certainly need to.
+
+00:42:07.220 --> 00:42:12.440
+<v Edward Oakes>- I have something very embarrassing to admit, which is these double underscore methods.
+
+00:42:12.710 --> 00:42:18.120
+<v Edward Oakes>I always knew they were called Dunder methods, but I didn't know that it's because it's like double underscore.
+
+00:42:18.530 --> 00:42:21.380
+<v Edward Oakes>I just put that together when Richard said double under.
+
+00:42:22.320 --> 00:42:26.440
+<v Edward Oakes>I've been using Python for like, you know, well over a decade and I never put that together.
+
+00:42:26.980 --> 00:42:37.940
+<v Michael Kennedy>- You know what's really interesting 'cause I have to talk about so much of the stuff that is written and yeah, I've certainly gone through stages where like, I'll get a message, Michael, mm-mm, not like that.
+
+00:42:38.100 --> 00:42:38.800
+<v Michael Kennedy>They say it like this.
+
+00:42:40.700 --> 00:42:41.120
+<v Michael Kennedy>Like really?
+
+00:42:41.310 --> 00:42:42.180
+<v Michael Kennedy>But how are we supposed to know?
+
+00:42:42.220 --> 00:42:43.180
+<v Michael Kennedy>There are so many projects.
+
+00:42:43.510 --> 00:42:50.380
+<v Michael Kennedy>I mean, Dunder doesn't necessarily fall under this, but there's a lot of open source projects that could be pronounced so differently, so many ways.
+
+00:42:50.620 --> 00:42:56.260
+<v Michael Kennedy>And I've seen a few that will have an MP3 file an audio file that says, this is how it's pronounced, press play.
+
+00:42:56.650 --> 00:42:57.240
+<v Michael Kennedy>You know what I mean?
+
+00:42:57.600 --> 00:42:57.760
+<v Michael Kennedy>Yeah.
+
+00:42:58.680 --> 00:43:01.140
+<v Michael Kennedy>But yeah, I'm right there with you.
+
+00:43:01.960 --> 00:43:02.320
+<v Michael Kennedy>Amazing.
+
+00:43:03.919 --> 00:43:06.120
+<v Michael Kennedy>So let's see, what else should we add?
+
+00:43:06.130 --> 00:43:07.200
+<v Michael Kennedy>I think that kind of gives-
+
+00:43:07.200 --> 00:43:11.040
+<v Edward Oakes>One thing I wanted to cover with that, so that NumGPUs thing is really powerful.
+
+00:43:11.040 --> 00:43:14.940
+<v Edward Oakes>This is kind of like one of the core powers of Ray.
+
+00:43:14.940 --> 00:43:24.120
+<v Edward Oakes>So this means that if you think about this pipeline, first we're kind of like chunking up the data and reading it across a bunch of processes in the cluster.
+
+00:43:24.370 --> 00:43:26.920
+<v Edward Oakes>So that's like a like IO bound operation.
+
+00:43:27.650 --> 00:43:34.740
+<v Edward Oakes>And then we had some kind of like preprocessing logic where we were like transforming those audio files, which is like a CPU bound operation.
+
+00:43:35.820 --> 00:43:46.920
+<v Edward Oakes>And then now we're doing this like GPU step, which here it's like this whisper preprocessor, or it could be any kind of like ML model inference or anything that runs on a GPU.
+
+00:43:47.530 --> 00:43:55.840
+<v Edward Oakes>So you have these like kind of very different compute profiles, like the IO bound, the CPU bound, the GPU bound.
+
+00:43:56.410 --> 00:44:05.240
+<v Edward Oakes>And Ray, the thing that makes it so powerful is that you can express this in one program, and then you can also efficiently use all of those resources.
+
+00:44:06.460 --> 00:44:13.420
+<v Michael Kennedy>Okay. So maybe I've got five GPUs, but I've got a whole bunch of cores on each machine.
+
+00:44:14.140 --> 00:44:20.180
+<v Michael Kennedy>Would it maybe make different choices about how it scales, given the different resources, like thinking about GPUs versus CPUs?
+
+00:44:20.580 --> 00:44:21.480
+<v Edward Oakes>Yeah, that's exactly right.
+
+00:44:21.500 --> 00:44:28.220
+<v Edward Oakes>So maybe you need four CPUs per GPU to keep the GPU busy.
+
+00:44:29.240 --> 00:44:36.460
+<v Edward Oakes>So RayData will basically do that kind of auto-scaling itself in order to keep the GPU as busy as possible.
+
+00:44:37.440 --> 00:44:37.700
+<v Michael Kennedy>Okay.
+
+00:44:38.060 --> 00:44:41.700
+<v Michael Kennedy>And this RayData, it says rawDS.
+
+00:44:42.680 --> 00:44:43.800
+<v Edward Oakes>That's a data set.
+
+00:44:44.240 --> 00:44:44.860
+<v Michael Kennedy>Yeah, data set.
+
+00:44:45.220 --> 00:44:56.040
+<v Michael Kennedy>But does this have any analogies or sort of similar APIs to like Dask or not Dask, to Polars or Pandas or any of these other?
+
+00:44:56.650 --> 00:45:00.900
+<v Michael Kennedy>Does it try to pretend to be one of these other things or is it just its own library?
+
+00:45:02.220 --> 00:45:03.940
+<v Richard Laiw>No, I don't think.
+
+00:45:04.670 --> 00:45:12.800
+<v Richard Laiw>So the way you would do like a data frame library, I think, would heavily index on the interactive experience.
+
+00:45:13.860 --> 00:45:16.780
+<v Richard Laiw>And that's not something that we focus so heavily on.
+
+00:45:18.619 --> 00:45:29.060
+<v Richard Laiw>In fact, there's oftentimes where-- and also the other thing is a lot of those libraries, they'll like Dask and folders and pandas and so on.
+
+00:45:29.560 --> 00:45:32.520
+<v Richard Laiw>They will focus a lot on tabular data.
+
+00:45:33.960 --> 00:45:40.380
+<v Richard Laiw>And I think that's important, but it's not our strong suite.
+
+00:45:42.180 --> 00:45:53.360
+<v Richard Laiw>But the thing I think we would want to be 10x better is being able to do this sort of heterogeneous compute and be able to orchestrate very complex pipelines very simply.
+
+00:45:55.000 --> 00:46:02.320
+<v Richard Laiw>And then come back and sort of improve and make the tabular support just on par and usable.
+
+00:46:03.520 --> 00:46:03.820
+<v Richard Laiw>Right.
+
+00:46:04.280 --> 00:46:04.400
+<v Richard Laiw>Yeah.
+
+00:46:04.600 --> 00:46:05.740
+<v Michael Kennedy>I think that makes a lot of sense.
+
+00:46:05.920 --> 00:46:06.500
+<v Michael Kennedy>It absolutely does.
+
+00:46:08.800 --> 00:46:15.240
+<v Michael Kennedy>I guess maybe the last little bit, we don't have to go through this whole example, but maybe the persist story is a little bit interesting.
+
+00:46:16.360 --> 00:46:28.300
+<v Richard Laiw>Like, well, I actually think that the, the, if you go up one more, like to the tab before, I think actually, this is also very interesting where we're using the LLM based quality filter.
+
+00:46:28.370 --> 00:46:31.280
+<v Richard Laiw>Okay. We're using VLM as part of the pipeline.
+
+00:46:32.580 --> 00:46:37.140
+<v Richard Laiw>So VLM is like optimized inference engine for LLM models.
+
+00:46:37.960 --> 00:46:43.340
+<v Richard Laiw>And what you can do with Ray data is you can actually just say like, Hey, hey, I just want to shove the element to one of the stages.
+
+00:46:44.680 --> 00:46:47.600
+<v Richard Laiw>And you can even do more complex parallels.
+
+00:46:47.720 --> 00:46:51.240
+<v Richard Laiw>And you can see, hey, this model is a trillion parameters.
+
+00:46:51.520 --> 00:46:53.060
+<v Richard Laiw>And I just want to put it somewhere inside.
+
+00:46:54.480 --> 00:46:57.160
+<v Richard Laiw>And that's something that you can very easily do with radio.
+
+00:46:58.300 --> 00:46:58.520
+<v Michael Kennedy>OK.
+
+00:46:58.980 --> 00:47:01.640
+<v Michael Kennedy>Is this OpenWeights local running model?
+
+00:47:01.700 --> 00:47:04.860
+<v Michael Kennedy>Or is this something like API call to--
+
+00:47:04.860 --> 00:47:09.620
+<v Richard Laiw>I mean, you can do-- here in this example, it is OpenWeights model.
+
+00:47:10.140 --> 00:47:11.560
+<v Richard Laiw>So you would be able to self-host.
+
+00:47:13.680 --> 00:47:16.360
+<v Richard Laiw>And there's also APIs to do like anthropocons.
+
+00:47:16.960 --> 00:47:17.400
+<v Michael Kennedy>Sure.
+
+00:47:18.020 --> 00:47:18.180
+<v Michael Kennedy>OK.
+
+00:47:19.060 --> 00:47:21.640
+<v Michael Kennedy>Yeah, that is an interesting idea to put that in the middle there.
+
+00:47:22.140 --> 00:47:22.380
+<v Richard Laiw>Yeah.
+
+00:47:23.080 --> 00:47:35.360
+<v Richard Laiw>And finally, writing out-- you can write out to any source storage, like S3, NFS, so on and so forth, useful for data transformation tasks.
+
+00:47:35.900 --> 00:47:43.160
+<v Edward Oakes>And this, again, will-- it's not like you're pulling all the data to one process and then writing, it's like a distributed partitioned write.
+
+00:47:45.860 --> 00:47:48.140
+<v Michael Kennedy>To the same file or to a set of files?
+
+00:47:49.720 --> 00:47:50.880
+<v Edward Oakes>To a set of files.
+
+00:47:51.590 --> 00:47:53.660
+<v Michael Kennedy>Yeah, that makes sense. That seems a lot easier to coordinate.
+
+00:47:54.760 --> 00:47:56.560
+<v Edward Oakes>Yeah, otherwise you'll have problems.
+
+00:47:57.500 --> 00:47:59.880
+<v Michael Kennedy>Yeah, exactly. A bit of a race condition or something.
+
+00:48:00.530 --> 00:48:00.640
+<v Michael Kennedy>Yeah.
+
+00:48:00.700 --> 00:48:03.620
+<v Michael Kennedy>Okay. This is super neat.
+
+00:48:03.670 --> 00:48:09.540
+<v Michael Kennedy>I think this is a cool way to start writing the code, but then you've got to visualize it, right?
+
+00:48:10.360 --> 00:48:11.180
+<v Michael Kennedy>See what's going on.
+
+00:48:12.280 --> 00:48:14.440
+<v Michael Kennedy>So you have a dashboard, which is pretty cool.
+
+00:48:14.520 --> 00:48:16.480
+<v Michael Kennedy>I'll scroll down and try to find some pictures of the dashboard.
+
+00:48:18.060 --> 00:48:19.660
+<v Michael Kennedy>There are nice videos here as well.
+
+00:48:21.500 --> 00:48:23.780
+<v Michael Kennedy>But it gives you-- tell us about the dashboard.
+
+00:48:23.820 --> 00:48:25.800
+<v Michael Kennedy>It gives you a lot of views into what's happening.
+
+00:48:26.520 --> 00:48:34.900
+<v Edward Oakes>Yeah, so the dashboard-- so the first thing I'd say is the mission of Ray is make distributed computing easy.
+
+00:48:35.660 --> 00:48:48.560
+<v Edward Oakes>And I think anyone who's ever written a multi-node application of any kind knows that observability and debugging are one of the core problems anytime that you're scaling out.
+
+00:48:50.060 --> 00:48:52.360
+<v Edward Oakes>So yeah, we invest a lot in this observability tooling.
+
+00:48:52.530 --> 00:49:02.400
+<v Edward Oakes>So the Ray dashboard, it kind of mirrors the rest of Ray where we have sort of this core, parallel computing, primitive part.
+
+00:49:02.960 --> 00:49:14.240
+<v Edward Oakes>so the ray dashboard you know you can get like a cluster level view where you see like a summary of each node and like the resource consumption like you know is it fully utilizing the cpus and gpus
+
+00:49:14.870 --> 00:49:26.220
+<v Edward Oakes>uh what is running on that node like that kind of physical layout um but then we also have like more logical views so um what's shown on the screen now is this like task and actor breakdown
+
+00:49:26.300 --> 00:49:36.680
+<v Edward Oakes>so you can see you know if you've submitted a thousand of a um like a read task if you think about how that ray data pipeline works you're like submitting a bunch of tasks that are reading the
+
+00:49:36.820 --> 00:49:43.160
+<v Edward Oakes>data um you can see how many of those are running how many have completed if they failed you can
+
+00:49:43.180 --> 00:49:54.500
+<v Edward Oakes>get like a summary of the stack traces um and then we also have uh some like higher level views that that are specific to the Ray libraries.
+
+00:49:56.040 --> 00:50:00.160
+<v Edward Oakes>So you can imagine like this Ray core layer, it's really like kind of generic.
+
+00:50:00.340 --> 00:50:13.300
+<v Edward Oakes>So you have like tasks and actors and nodes, but it doesn't necessarily tell you about like, the high level summary of what's happening in that data pipeline that we were talking about a few minutes ago.
+
+00:50:14.760 --> 00:50:24.080
+<v Edward Oakes>So we also have some high level visualizations for like serving and training that help you understand what's happening in the application.
+
+00:50:28.580 --> 00:50:30.880
+<v Michael Kennedy>- Yeah, there's a bunch of different libraries that you've talked about.
+
+00:50:30.900 --> 00:50:43.080
+<v Michael Kennedy>I don't know how much time we really have to go all into them, but you've got RayCore, which we talked about, and then RayData, which we were using to read the data, but Train, Tune, Serve, RL for reinforcement learning.
+
+00:50:43.580 --> 00:50:44.700
+<v Edward Oakes>- And then even more libraries.
+
+00:50:45.400 --> 00:50:45.620
+<v Edward Oakes>- Yeah.
+
+00:50:46.000 --> 00:50:47.140
+<v Edward Oakes>- More libraries drop down.
+
+00:50:47.320 --> 00:50:48.520
+<v Michael Kennedy>- Expanded out to more libraries.
+
+00:50:49.400 --> 00:50:49.800
+<v Edward Oakes>- Yeah.
+
+00:50:50.480 --> 00:51:01.100
+<v Edward Oakes>So one high-level comment is, I think Richard kind of mentioned this earlier, but one of the things that we've really invested in a lot is building this ecosystem around Ray.
+
+00:51:02.390 --> 00:51:07.980
+<v Edward Oakes>We want people to feel like Ray is not just a tool for one workload.
+
+00:51:08.320 --> 00:51:10.380
+<v Edward Oakes>It's really something you can build a platform around.
+
+00:51:11.360 --> 00:51:25.380
+<v Edward Oakes>So if you're doing any kind of like large scale, like machine learning or AI, you know, Ray is, it's like if you kind of build the infrastructure or like you use managed infrastructure for like the cluster setup and all that stuff.
+
+00:51:26.100 --> 00:51:39.500
+<v Edward Oakes>And then the people who are actually like writing the applications are like really empowered because they can write just like Python scripts to do all these different types of use cases from like training to tuning to RL to data processing.
+
+00:51:42.660 --> 00:51:51.420
+<v Edward Oakes>I think it's very common that people who are using Ray are not just using one of these libraries, they're really using a slew of them or maybe even all of them.
+
+00:51:51.440 --> 00:51:53.120
+<v Michael Kennedy>Sure. Yeah.
+
+00:51:54.290 --> 00:51:56.060
+<v Michael Kennedy>I do think it empowers people quite a bit.
+
+00:51:56.970 --> 00:52:02.160
+<v Michael Kennedy>Write code, like you know, but call a ray function instead and then guess what?
+
+00:52:02.240 --> 00:52:06.020
+<v Michael Kennedy>It's distributed across a bunch of machines, which is a really hard problem to solve.
+
+00:52:07.640 --> 00:52:11.280
+<v Michael Kennedy>One of the extra libraries that's cool is the multiprocessing pool.
+
+00:52:12.250 --> 00:52:13.940
+<v Michael Kennedy>Just saw that one. We expanded it.
+
+00:52:14.000 --> 00:52:26.300
+<v Michael Kennedy>That's cool because if you're already trying to do scale out through multiprocessing just to take advantage of the local cores, you could just say, use the Ray util multiprocessing pool and then boom, off it goes.
+
+00:52:26.780 --> 00:52:29.260
+<v Edward Oakes>Yeah. I haven't looked at this in a long time.
+
+00:52:29.420 --> 00:52:33.460
+<v Edward Oakes>This is something that I wrote, like, I don't know, eight years ago or something.
+
+00:52:34.560 --> 00:52:35.440
+<v Michael Kennedy>2020 probably.
+
+00:52:35.640 --> 00:52:35.960
+<v Michael Kennedy>Amazing.
+
+00:52:36.580 --> 00:52:39.820
+<v Michael Kennedy>But it's one of those, I think, that would be very general purpose.
+
+00:52:40.300 --> 00:52:51.900
+<v Edward Oakes>Yeah. It's also, I think, a good conceptual introduction to Ray because people are familiar with multiprocessing and they know that they can use it to scale out on one node.
+
+00:52:52.220 --> 00:52:56.140
+<v Edward Oakes>Well, then Ray is just the next step if you want to scale out across multiple nodes.
+
+00:52:56.260 --> 00:53:01.900
+<v Michael Kennedy>Yeah, exactly. I don't know where it is in our little docs here.
+
+00:53:02.860 --> 00:53:03.300
+<v Michael Kennedy>Here we go.
+
+00:53:03.820 --> 00:53:19.400
+<v Michael Kennedy>One thing that I thought is really cool is also you've got a debugger and a VS Code, presumably open VSX as well, extension that you can install and look at the cluster, look at the jobs running.
+
+00:53:19.510 --> 00:53:24.240
+<v Michael Kennedy>If something crashes, it'll break and wait for a debugger to attach potentially.
+
+00:53:24.410 --> 00:53:25.280
+<v Michael Kennedy>You want to talk about that?
+
+00:53:27.060 --> 00:53:35.020
+<v Edward Oakes>Yeah, so this basically, it's kind of like if you could use PDB, but across the cluster.
+
+00:53:35.570 --> 00:53:39.360
+<v Edward Oakes>So you can set a breakpoint inside a remote function.
+
+00:53:40.180 --> 00:53:44.540
+<v Edward Oakes>That remote function might be running on a different machine.
+
+00:53:45.330 --> 00:53:58.860
+<v Edward Oakes>And then if an exception is raised or there's just something happening there that you couldn't debug locally, then you can attach remotely to that process and you can get a backtrace and you can inspect local
+
+00:53:59.020 --> 00:54:13.080
+<v Edward Oakes>variables and stuff like that. So it's very useful in the cases where maybe you did local development and everything was working fine. And then for some reason, when you deploy to a cluster,
+
+00:54:13.860 --> 00:54:18.400
+<v Edward Oakes>something is going wrong. Maybe there's one piece of data that is behaving in an unexpected way.
+
+00:54:19.020 --> 00:54:25.760
+<v Edward Oakes>this kind of gives you a way to directly debug that without having to write a ton of print statements
+
+00:54:25.870 --> 00:54:37.460
+<v Michael Kennedy>and filter through them. Yeah, you don't have to like print step one, step two, step 2.1, step 2.2, step three, like because you had to insert some more like to like break it down. You know, the step
+
+00:54:38.460 --> 00:54:45.700
+<v Edward Oakes>2.3.a has saved me a lot of times in my life though. I mean, it's like basically a bisection
+
+00:54:45.720 --> 00:54:47.160
+<v Michael Kennedy>algorithm to find the problem.
+
+00:54:48.520 --> 00:54:51.660
+<v Michael Kennedy>But it's like having to go to and do the line numbers in basic.
+
+00:54:51.940 --> 00:54:53.760
+<v Michael Kennedy>Eventually, you just need to leave a gap.
+
+00:54:55.440 --> 00:55:03.920
+<v Michael Kennedy>But it is really nice to use in VS Code, because it gives you nearly the same debugger experience as you would get just for a regular debugger.
+
+00:55:04.340 --> 00:55:06.300
+<v Michael Kennedy>I saw a YouTube video about this.
+
+00:55:06.650 --> 00:55:09.420
+<v Michael Kennedy>And somebody said, hey, is there a PyTron version of this?
+
+00:55:10.460 --> 00:55:13.180
+<v Michael Kennedy>Is there a PyTron version of it, or just the VS Code derivative?
+
+00:55:13.960 --> 00:55:18.720
+<v Edward Oakes>I think it's only VS Code, but hey, we're always looking for contributors.
+
+00:55:19.820 --> 00:55:21.380
+<v Edward Oakes>It's probably not that hard to extend.
+
+00:55:21.600 --> 00:55:26.180
+<v Edward Oakes>It's just, as you can see from the number of libraries over there, the RAI team is quite busy.
+
+00:55:26.720 --> 00:55:27.520
+<v Michael Kennedy>Yeah, absolutely.
+
+00:55:29.660 --> 00:55:32.100
+<v Michael Kennedy>Let's talk real briefly about the ecosystem.
+
+00:55:32.320 --> 00:55:38.560
+<v Michael Kennedy>I'm getting a little short on time, but what is this ecosystem compared to all of your tools?
+
+00:55:38.740 --> 00:55:49.440
+<v Michael Kennedy>So integrations with say, Apache Airflow, or even Dask, which is kind of interesting that it integrates with Dask and so on.
+
+00:55:49.600 --> 00:55:50.420
+<v Michael Kennedy>What's the story with this?
+
+00:55:51.040 --> 00:55:52.040
+<v Richard Laiw>Yeah, I can take this.
+
+00:55:52.680 --> 00:55:53.140
+<v Richard Laiw>Yeah, go for it.
+
+00:55:53.380 --> 00:55:55.920
+<v Richard Laiw>I think there are two aspects to integration.
+
+00:55:56.180 --> 00:56:00.480
+<v Richard Laiw>Actually, I'm reminded of-- I need to update this page.
+
+00:56:02.060 --> 00:56:11.740
+<v Richard Laiw>There is projects where you want to interoperate with Ray, so they sit side by side, or it's a complementary tool.
+
+00:56:12.380 --> 00:56:14.740
+<v Richard Laiw>Airflow is an example of that.
+
+00:56:17.400 --> 00:56:26.380
+<v Richard Laiw>Dask would be something where you could do a lot more of your data processing on the side and then Ray stuff on the other side.
+
+00:56:28.080 --> 00:56:29.720
+<v Richard Laiw>Flight would be another.
+
+00:56:30.740 --> 00:56:36.740
+<v Richard Laiw>Workflow automation, you would use that with Ray, but not in Ray or around Ray.
+
+00:56:37.800 --> 00:56:40.700
+<v Richard Laiw>Whereas there are other projects that are built on top of Ray.
+
+00:56:41.700 --> 00:56:51.940
+<v Richard Laiw>So like Modin that you just saw, Daft, these are libraries that leverage Ray to orchestrate and scale.
+
+00:56:52.200 --> 00:56:53.980
+<v Richard Laiw>And there's a separate API.
+
+00:56:54.130 --> 00:56:57.100
+<v Richard Laiw>And Ray isn't necessarily exposed as the API to the users.
+
+00:56:58.400 --> 00:57:07.680
+<v Richard Laiw>So yeah, so I think that's something that is particularly lively, especially now in the reinforcement learning and multimodal data processing space.
+
+00:57:09.660 --> 00:57:22.020
+<v Richard Laiw>frankly, looking through this, a lot of these projects have sort of evolved or lost their
+
+00:57:22.100 --> 00:57:30.940
+<v Richard Laiw>community. And I think there's actually a massive Ray ecosystem that isn't represented on this screen here that is actively building on top of Ray.
+
+00:57:32.100 --> 00:57:34.020
+<v Michael Kennedy>All right. Well, just gave you some homework. There you go.
+
+00:57:34.320 --> 00:57:34.520
+<v Edward Oakes>Yeah.
+
+00:57:36.780 --> 00:57:44.540
+<v Edward Oakes>Yeah, Richard kind of mentioned this, but the way I think about it is kind of like things above Ray and things below Ray.
+
+00:57:44.770 --> 00:57:51.680
+<v Edward Oakes>So like above Ray is like the higher level libraries, like the reinforcement library, data processing library.
+
+00:57:52.070 --> 00:57:55.860
+<v Edward Oakes>And then below Ray is like integrating Ray into like the different infrastructure.
+
+00:57:56.310 --> 00:58:05.380
+<v Edward Oakes>So like with Airflow and the KubeRay and basically like allowing you to run Ray on top of like any type of like hardware cluster management solution.
+
+00:58:06.660 --> 00:58:16.020
+<v Edward Oakes>So we really like try to view Ray as this kind of like, like if people, I don't know if I'm dating myself, but you know, in the internet model, there's like the narrow waste, right?
+
+00:58:16.220 --> 00:58:18.400
+<v Edward Oakes>Which is like TCP IP.
+
+00:58:20.160 --> 00:58:25.240
+<v Edward Oakes>So we view Ray as kind of like the narrow waste of the like AI, like distributed computing system.
+
+00:58:27.320 --> 00:58:27.820
+<v Michael Kennedy>Yeah, great.
+
+00:58:30.740 --> 00:58:35.620
+<v Michael Kennedy>So one more thing, I think we're, we've got time to talk just a little bit about the business model.
+
+00:58:35.800 --> 00:58:51.640
+<v Michael Kennedy>So over on Ray.io, I can see that I can go to GitHub or go to the docs, but also you've got AnyScale, which lets you basically is the infrastructure behind running Ray, right?
+
+00:58:51.650 --> 00:58:54.640
+<v Michael Kennedy>Is that sort of the business side of Ray?
+
+00:58:56.460 --> 00:58:56.560
+<v Richard Laiw>Yeah.
+
+00:58:59.099 --> 00:59:02.060
+<v Richard Laiw>So AnyScale is a company, but also a product.
+
+00:59:02.620 --> 00:59:17.340
+<v Richard Laiw>So for example, Ray is like a software library that you can run, but there is a lot of, if you're sort of deploying Ray for your internal platform or company, there's still a lot of
+
+00:59:18.180 --> 00:59:21.160
+<v Richard Laiw>other bells and whistles that you'll sort of want.
+
+00:59:21.220 --> 00:59:34.460
+<v Richard Laiw>So for example, being able to have a fast interactive development, being able to optimize just the time it takes for the workloads to start up, having great observability and debuggability,
+
+00:59:36.460 --> 00:59:50.500
+<v Richard Laiw>and being able to share resources across different teams within-- across different RAID jobs, and then also being able to optimize your RAID workloads.
+
+00:59:51.080 --> 00:59:55.180
+<v Richard Laiw>So these are all features and capabilities that you would get with AnyScale.
+
+00:59:55.540 --> 01:00:08.780
+<v Richard Laiw>and um and yeah and then also like you know uh support uh being able to sort of deploy and manage and um upstream fixes to ray that that sort of help your your enterprise like in your company
+
+01:00:09.260 --> 01:00:12.820
+<v Richard Laiw>achieve the goals that it needs for your machine learning platform that's like the raw stuff that
+
+01:00:12.820 --> 01:00:22.720
+<v Michael Kennedy>we do nice i you know i think this is one of the core ways that people are making open source
+
+01:00:22.740 --> 01:00:32.940
+<v Michael Kennedy>stuff their business right like we built you a great library but there's this whole operational side of it that you maybe either don't want to do or you don't have a bunch of servers or whatever
+
+01:00:33.070 --> 01:00:39.640
+<v Michael Kennedy>and we'll just for for a price we'll just take care of that right yeah yeah i think there's there's
+
+01:00:39.740 --> 01:00:51.900
+<v Edward Oakes>like a couple of ways that you can go like so one thing i want to i want to say is that having a company like a successful company behind ray is like critical for its health um like there's no
+
+01:00:51.920 --> 01:01:04.140
+<v Edward Oakes>way that we could have built as many of the libraries and funded as many of the ecosystem integrations and just built something with as big of a scope as Ray if we didn't have
+
+01:01:04.950 --> 01:01:08.360
+<v Edward Oakes>a company backing it, paying as many people to work on it as were.
+
+01:01:10.760 --> 01:01:15.960
+<v Edward Oakes>And yeah, I think there's a few different ways that you can go about this kind of open source monetization thing.
+
+01:01:17.320 --> 01:01:23.340
+<v Edward Oakes>Any scale model is largely this kind of managed infrastructure and the hard parts around it.
+
+01:01:24.740 --> 01:01:28.540
+<v Edward Oakes>There's some people that also kind of go for the more support expertise model.
+
+01:01:29.480 --> 01:01:33.100
+<v Edward Oakes>I think that could work if you really want to stay small.
+
+01:01:34.080 --> 01:01:48.420
+<v Edward Oakes>If you have a smaller open source project, it's just a couple people, and you're trying to make enough money to survive and keep working on that project, then honestly, I think that's the easier route than trying to build a whole managed product because it's not easy.
+
+01:01:49.220 --> 01:01:53.780
+<v Michael Kennedy>It's kind of just a consulting story, this other side you're talking about.
+
+01:01:54.480 --> 01:02:00.160
+<v Michael Kennedy>I will be your open source project ex-consultant, and guess what?
+
+01:02:00.160 --> 01:02:02.260
+<v Michael Kennedy>I created it, so who else is going to be better?
+
+01:02:02.330 --> 01:02:02.780
+<v Michael Kennedy>You know what I mean?
+
+01:02:03.060 --> 01:02:04.280
+<v Edward Oakes>Oh, and that's very real.
+
+01:02:06.500 --> 01:02:09.740
+<v Edward Oakes>I would recommend a lot of open source people consider that.
+
+01:02:09.900 --> 01:02:19.620
+<v Edward Oakes>Even if it's just the start of something, because that's the way that you really engage with people and understand their problems and understand where the business value is.
+
+01:02:21.960 --> 01:02:22.440
+<v Michael Kennedy>100%.
+
+01:02:22.440 --> 01:02:25.820
+<v Michael Kennedy>Let me ask you one more tech-oriented question before we call it.
+
+01:02:27.320 --> 01:02:28.340
+<v Michael Kennedy>What about deployment?
+
+01:02:28.920 --> 01:02:30.660
+<v Michael Kennedy>I have 10 servers in my cluster.
+
+01:02:32.060 --> 01:02:35.860
+<v Michael Kennedy>I changed one line in my code, and I want to try it now.
+
+01:02:36.680 --> 01:02:37.200
+<v Michael Kennedy>Now what?
+
+01:02:38.420 --> 01:02:40.560
+<v Michael Kennedy>How hard is it to get it to update everywhere?
+
+01:02:40.880 --> 01:02:45.180
+<v Edward Oakes>So that is something that I personally spent a lot of time working on.
+
+01:02:45.290 --> 01:02:47.660
+<v Edward Oakes>I think that Ray actually has a very good story for it.
+
+01:02:48.160 --> 01:02:51.140
+<v Edward Oakes>So there's kind of a tiered approach.
+
+01:02:51.540 --> 01:02:52.680
+<v Edward Oakes>So it sort of depends.
+
+01:02:53.090 --> 01:03:03.460
+<v Edward Oakes>Obviously, if you're changing, if you need a different CUDA version or something, then that will require you to basically redeploy the cluster.
+
+01:03:04.490 --> 01:03:06.340
+<v Edward Oakes>But that's something that happens pretty seldom.
+
+01:03:06.800 --> 01:03:08.220
+<v Edward Oakes>Maybe you do that every couple months.
+
+01:03:08.460 --> 01:03:19.260
+<v Edward Oakes>something like that. If you're just changing, like, you know, in Ray, you have this like driver script, which is the main like orchestration code. So if you're just changing that, and that's like
+
+01:03:19.520 --> 01:03:34.200
+<v Edward Oakes>kind of what you're iterating on like more frequently, then you can just change like that code inline. And then when you submit the job or like connect to the cluster, Ray has this thing called the runtime environment, which includes basically auto packaging your local code.
+
+01:03:35.000 --> 01:03:41.380
+<v Edward Oakes>So what it does is it actually just like zips up the local files, uploads them to like a coordinator process in the cluster.
+
+01:03:42.000 --> 01:03:52.800
+<v Edward Oakes>And then when you go to actually run the tasks and actors that require that code, they have like kind of an internal ID that points to it and they'll pull it down.
+
+01:03:53.640 --> 01:04:00.380
+<v Edward Oakes>So that means that you can, like if you're just editing your script and rerunning, it's a matter of like less than one second to update.
+
+01:04:00.480 --> 01:04:01.240
+<v Michael Kennedy>Oh, that's nice. Yeah.
+
+01:04:01.940 --> 01:04:04.160
+<v Edward Oakes>Yeah, that's a huge productivity gain.
+
+01:04:04.320 --> 01:04:09.040
+<v Michael Kennedy>Yeah, I was thinking this must, the more you scale out, the harder it's going to be as well, right?
+
+01:04:09.560 --> 01:04:10.120
+<v Edward Oakes>Oh, absolutely.
+
+01:04:10.300 --> 01:04:10.400
+<v Edward Oakes>Yeah.
+
+01:04:11.020 --> 01:04:11.420
+<v Michael Kennedy>Yeah.
+
+01:04:11.440 --> 01:04:17.260
+<v Edward Oakes>And if you need to wait for 100 nodes to pull the Docker image, every time you change one line of code, you're going to have a bad time.
+
+01:04:17.900 --> 01:04:18.620
+<v Michael Kennedy>Yeah, for sure.
+
+01:04:19.700 --> 01:04:23.120
+<v Michael Kennedy>So that makes me think of one more real quick thing.
+
+01:04:23.640 --> 01:04:25.600
+<v Michael Kennedy>So I have a job that's running.
+
+01:04:26.200 --> 01:04:27.180
+<v Michael Kennedy>Maybe it takes 10 minutes.
+
+01:04:27.500 --> 01:04:31.340
+<v Michael Kennedy>I make a change three minutes after submitting it.
+
+01:04:32.340 --> 01:04:33.460
+<v Michael Kennedy>A new version gets deployed.
+
+01:04:33.540 --> 01:04:36.580
+<v Michael Kennedy>What's the story with versioning running workflows?
+
+01:04:37.820 --> 01:04:44.220
+<v Edward Oakes>So that's something that we kind of leave to the outside of Ray layer.
+
+01:04:45.420 --> 01:04:47.660
+<v Edward Oakes>So a lot of people have different ways to do that.
+
+01:04:47.710 --> 01:04:54.980
+<v Edward Oakes>Like if you're running on Kubernetes, maybe you're checking in your CRD into your repo, or maybe you're using something like Apache Airflow.
+
+01:04:56.460 --> 01:04:58.500
+<v Edward Oakes>So we kind of leave that to the orchestration layer.
+
+01:04:59.080 --> 01:05:09.440
+<v Edward Oakes>Inside of AnyScale, we have a concept of an AnyScale job, which is sort of the code artifact and like the cluster configuration and infrastructure
+
+01:05:09.860 --> 01:05:20.620
+<v Edward Oakes>configuration. So that's like inside of AnyScale, that's kind of like the unit of like reproducibility or versioning. And yeah, folks basically build that kind of on top of Ray.
+
+01:05:21.440 --> 01:05:33.360
+<v Michael Kennedy>Okay. Interesting. Well, very cool project. Richard and Edward, thank you both for being here. How When I get started with Ray, what do you tell them?
+
+01:05:35.740 --> 01:05:37.640
+<v Richard Laiw>Go to the Ray website and try it out.
+
+01:05:38.120 --> 01:05:39.080
+<v Edward Oakes>Check out the documentation.
+
+01:05:39.260 --> 01:05:40.240
+<v Edward Oakes>We got a whole lot of examples.
+
+01:05:41.060 --> 01:05:41.380
+<v Edward Oakes>Awesome.
+
+01:05:41.940 --> 01:05:48.640
+<v Edward Oakes>Yeah, I would say any machine learning workload or just general parallel Python, just give it a spin.
+
+01:05:49.640 --> 01:05:51.520
+<v Michael Kennedy>Okay. Amazing.
+
+01:05:51.780 --> 01:05:54.940
+<v Michael Kennedy>Well, thanks for being here and talk to you all later.
+
+01:05:55.700 --> 01:05:55.840
+Thank you.
+
+01:05:55.960 --> 01:05:56.280
+Thank you.

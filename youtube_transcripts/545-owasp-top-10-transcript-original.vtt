@@ -1,0 +1,3619 @@
+WEBVTT
+
+00:00:00.880 --> 00:00:04.720
+Hello, Tanya Janca. Welcome back to Talk Python To Me. Awesome to have you here.
+
+00:00:05.280 --> 00:00:19.520
+Oh my gosh, Michael. It's so nice to see you. Yeah, it's really great to see you as well. I'm remember last time I was nervous you were on the show because you're going to make me feel concerned about all my software running on the internet that now all these issues I just realized
+
+00:00:20.960 --> 00:00:25.840
+we're back for the 2025 edition and I know the year is 2026. Please don't email me.
+
+00:00:25.840 --> 00:00:34.640
+I mean email me but not for that reason. But this is the 2025 OWASP top 10 which is it's pretty new,
+
+00:00:34.640 --> 00:00:41.520
+right? Yeah, so we released it December 31st 2025 so that it could stay 2025 on it.
+
+00:00:42.800 --> 00:00:46.720
+Do you know how much branding has to change if we don't get it out this year? Let's just go.
+
+00:00:47.440 --> 00:00:49.760
+That's incredible. I didn't realize it was that close to the wire.
+
+00:00:50.400 --> 00:01:00.560
+We had released the release candidate so every time it's released you we released a release candidate to say this is what we're thinking and then we asked the
+
+00:01:00.560 --> 00:01:11.440
+community for feedback. And I don't know if you remember in previous versions before I joined there was some drama where sometimes the community is like absolutely not you are incorrect or there's
+
+00:01:11.440 --> 00:01:19.360
+vendor influence or whatever and then they've had to rework it. But this time it was the smoothest it's literally ever been since the first time. Wow.
+
+00:01:19.360 --> 00:01:32.800
+Where all the links were or all the GitHub issues were great. Like, hey, you know, here's a great example of that attack. Do you want to use it? And we're like, yes. Or, you know, the grammar is wrong
+
+00:01:32.800 --> 00:01:45.120
+here or the, you know, the links are wrong. We had a couple of, well, this one should be number one because that's what my product solves. We're like, well, that feedback. Or you failed to mention our
+
+00:01:45.120 --> 00:01:59.920
+product. I'm like, oh, I do see how that happened. Yeah. But other than like the feedback was overall just overwhelmingly, yes, we agree, which was very validating. Cool. Yeah. I'm sure there was a lot of,
+
+00:01:59.920 --> 00:02:12.880
+boy, if I could get the OWASP top 10 to reference my solution. That's, that's some good marketing right there. Oh yeah. Incredible. So before we dive into that with a bit of a Python focus,
+
+00:02:13.520 --> 00:02:25.600
+let's just hear a little bit about you, who you are. You've started a podcast since you've been on the show. Tell us, tell us about you. So I'm Tanya and I was a software developer that switched
+
+00:02:25.600 --> 00:02:39.920
+into application security. I went to the dark side, Michael. And I started speaking at conferences so I could get in free and writing and then ended up writing two books. And now I teach secure coding
+
+00:02:39.920 --> 00:02:52.720
+and like how to use AI securely and all of those things to large companies. And then speak at conferences, serve as like a habit. I can't stop. You don't get paid to do that usually. And so recently
+
+00:02:52.720 --> 00:03:01.600
+I started a podcast called DevSec Station and it's five to 10 minute lessons on secure coding and it's free.
+
+00:03:01.600 --> 00:03:14.320
+I used to have a podcast called We Hack Purple Podcast and I, like my company got bought and absorbed, et cetera. And eventually the podcaster's retired. I've missed having a podcast, Michael. I'm
+
+00:03:14.320 --> 00:03:28.320
+sure as a podcast host, you can relate. It's really nice to be able to create a piece of art and release it. It's a very interesting medium and you get to just reach out to people or explore ideas that are just
+
+00:03:28.320 --> 00:03:32.960
+interesting to you. And long as there's a through thread, you can kind of do whatever you want to.
+
+00:03:33.680 --> 00:03:47.520
+It's, it's great. Yeah. I love it. Yeah. And so I wanted to teach some lessons and I wanted them to be just really short. And the first season I'm exploring the idea that the supply chain is changing. The
+
+00:03:47.520 --> 00:03:58.400
+supply chain security used to be just dependencies that people worried about, but now I'm like, what if that tech surface is actually very different than we realize? And so I'm talking about how developers
+
+00:03:58.400 --> 00:04:03.200
+can protect themselves, protect the organizations, protect, you know, their build pipelines, et cetera.
+
+00:04:03.200 --> 00:04:08.960
+And so, yeah, I'm excited to see what people think of it. Yeah. I encourage people to subscribe.
+
+00:04:08.960 --> 00:04:16.560
+That's really cool. Five to 10 minutes. Is it daily or weekly? So I'm not sure how much I like.
+
+00:04:16.560 --> 00:04:30.560
+The cadence of Silla for debate. Yeah. So I released one two weeks ago and I was kind of thinking of releasing one tomorrow, but I need to just get the edits. It's, I have, I hired some students and they're learning video editing and it's been very exciting.
+
+00:04:33.280 --> 00:04:44.400
+Yeah. That's the back end of all this type of work that people don't realize is it's an hour or 10 minutes or whatever, but then there's the whole production distribution, et cetera.
+
+00:04:44.400 --> 00:04:48.720
+It's I'm just a control freak. That's the problem. Michael. I see. Yeah.
+
+00:04:48.720 --> 00:04:55.040
+I just want to do it myself. Yes, exactly. There was a bit of a wind noise thing. Can we do that again?
+
+00:04:55.040 --> 00:05:06.800
+No, it is tough. It is, it is really, really tough to kind of find that balance, but yeah, people check that out. That's awesome. Yeah. And is she hacks purple still your domain? Like,
+
+00:05:06.800 --> 00:05:13.200
+yeah. So if people go to she hacks purple.ca, you will find my website and my services and my blog.
+
+00:05:13.200 --> 00:05:25.120
+So lately I'm blogging a lot about how we can combine behavioral economic interventions, which is like the science of why people make decisions to the software development ecosystem.
+
+00:05:25.680 --> 00:05:38.640
+So that we basically set up security faults and other things that just nudge developers to do the secure thing and make the secure thing always the easiest path. And so not how do we manipulate them
+
+00:05:38.640 --> 00:05:49.760
+and pressure them and make them feel bad, but more, how can we remove cognitive load? That's not necessary. How can we make it more obvious what we hope that they'll do? How can we make it so like
+
+00:05:49.760 --> 00:06:02.800
+it requires effort to do the bad thing? So, yeah, I look, there's a phrase that I caught, I think from Scott Guthrie was the one who spoke about it at Microsoft, but it doesn't really matter. The fall,
+
+00:06:02.800 --> 00:06:11.520
+help people help developers and security folks fall into the pit of success. Like you've got to climb out of the thing you're supposed to do and actively do it wrong. You know what I mean?
+
+00:06:11.520 --> 00:06:22.240
+Exactly. Exactly. So I'm writing a series on that based on a talk I did. So sometimes I'll do a talk and then I'm really excited about it. And I'm like, well, now I can nerd out as much as I want on my blog.
+
+00:06:22.240 --> 00:06:33.360
+I love it. All right. Very cool. So I want to talk about what is the OWASP top 10? What is OWASP? What is the OWASP top 10?
+
+00:06:34.160 --> 00:06:47.200
+And all of that. But before we kind of get into that, I just want to set the stage just a little bit because when people think about Python security, or you pick your language, there's like every language
+
+00:06:47.200 --> 00:06:55.600
+hat and framework has a little security gotchas, you know, like in Python, there's a, I think it's a YAML parser,
+
+00:06:55.600 --> 00:07:08.320
+but it's too, it can run arbitrary code. So you got to do like the safe YAML parsing. And then there's, there's pickles, which is a serialization format that can run arbitrary code. So the people say, these are the things to look out
+
+00:07:08.320 --> 00:07:22.320
+for. I actually think those are fairly useless. I think the real problem is things that developers do to write code, and they either omit or add actions or steps that they should or shouldn't have done depending on the
+
+00:07:22.320 --> 00:07:33.520
+situation. And really, that's what OWASP focuses on, right? Oh, yeah. So OWASP is, so I, technically, it is
+
+00:07:34.000 --> 00:07:48.800
+a nonprofit organization. But in what I feel it is, is an international community of thousands and thousands and thousands of people who want there to be more secure software. And so we have chapters where people meet each month.
+
+00:07:49.200 --> 00:07:53.360
+There's over 300 worldwide, Michael. It's amazing. Wow.
+
+00:07:53.840 --> 00:08:01.120
+Yeah, almost every big city in all of Canada has one. And like, we can't agree on a lot of things in Canada, but apparently we love OWASP.
+
+00:08:01.520 --> 00:08:07.360
+And like in India, oh my gosh, they have so many. And in the United States, like, people love, oh, I love OWASP.
+
+00:08:07.360 --> 00:08:18.240
+And then we have over 100 active open source projects. So we have free books, free documents, free tools, free software, like everything you can think of.
+
+00:08:18.240 --> 00:08:24.480
+We're like, oh, I'll build one for you. And then, you know, there's a Slack channel with thousands of us on there being nerds together.
+
+00:08:25.200 --> 00:08:32.480
+And then twice a year, we have one in Europe and one in North America, where we have a conference and we gather.
+
+00:08:32.480 --> 00:08:44.400
+And there's talks and teachings and all the things, right? And I've been a part of OWASP since 2015 was the first thing I attended.
+
+00:08:44.400 --> 00:08:49.760
+And then 2016, I was a chapter leader because I don't know how to do small things. I only know how to do really big things.
+
+00:08:50.320 --> 00:08:51.880
+Because I was like, oh, I'm in.
+
+00:08:51.880 --> 00:08:52.880
+Yeah.
+
+00:08:52.880 --> 00:08:59.120
+And I've just been, so I'm now a lifetime distinguished member because I've volunteered for over 10 years.
+
+00:09:00.640 --> 00:09:05.480
+And I'm their biggest fan. I'm totally president of the non-existent fan club.
+
+00:09:06.840 --> 00:09:13.800
+And the thing, so the weird thing, Michael, so OWASP does so many amazing things. There's so many amazing people.
+
+00:09:13.800 --> 00:09:28.620
+But the thing that we're absolutely most famous for is called the OWASP top 10. And I volunteered in Norway at the OWASP booth at a conference because I gave a talk and then I had nothing else to do.
+
+00:09:28.860 --> 00:09:33.220
+And I don't mean to sound rude, but unless it's a security talk, I'm not going. And it was a developer talk.
+
+00:09:33.820 --> 00:09:38.560
+And so I went to the other two security talks and then I was like, what am I going to do? So I volunteered at the OWASP booth.
+
+00:09:38.560 --> 00:09:41.920
+And every person that walked by went top 10.
+
+00:09:42.860 --> 00:09:43.600
+That's awesome.
+
+00:09:44.000 --> 00:09:47.860
+Yeah. And any of them that knew us, they only knew the top 10.
+
+00:09:48.580 --> 00:09:51.920
+They didn't know we had chapters. They didn't know we had any other things to help them.
+
+00:09:52.640 --> 00:09:55.320
+But literally person after person, top 10.
+
+00:09:57.540 --> 00:09:57.980
+Yeah.
+
+00:09:58.160 --> 00:09:59.100
+That's pretty funny.
+
+00:09:59.600 --> 00:10:04.580
+Like a few weeks later, the top 10 team invited me to join and I was like, me?
+
+00:10:05.420 --> 00:10:06.840
+And I was like, okay.
+
+00:10:06.840 --> 00:10:13.880
+Yeah. I'll say I knew from, I knew about the whole project because of the top 10 as well, honestly.
+
+00:10:15.000 --> 00:10:16.740
+Well, I mean, then we're doing a great job.
+
+00:10:16.860 --> 00:10:22.280
+And so we finally wrote a new one and the team's like, okay, Tanya, you like talking the most.
+
+00:10:22.320 --> 00:10:23.360
+So you go tell them.
+
+00:10:23.820 --> 00:10:25.120
+You go tell them it's ready.
+
+00:10:25.980 --> 00:10:26.840
+It's here. It's here.
+
+00:10:27.080 --> 00:10:31.500
+Actually, there's a, if you go to the OWASP top 10, there's a GitHub link at the top.
+
+00:10:31.500 --> 00:10:40.640
+And you can see that there's, if you go there, you can actually see historically the 2003, 4, 7, 10, 2017, 2021, and the 2025.
+
+00:10:40.980 --> 00:10:44.920
+And you go and there's all the markdown files and presentations and et cetera.
+
+00:10:44.920 --> 00:10:46.960
+So you can kind of get the historical.
+
+00:10:47.740 --> 00:10:48.360
+Oh, yeah.
+
+00:10:48.600 --> 00:10:49.740
+And you can file issues.
+
+00:10:50.560 --> 00:10:57.580
+Like people file issues and then I have to answer me or, you know, or Torsten or like, that's what we do.
+
+00:10:57.820 --> 00:10:58.600
+We respond.
+
+00:10:58.600 --> 00:11:05.080
+Sometimes we respond and we're like, no, this is the third time you've asked.
+
+00:11:05.200 --> 00:11:07.000
+No, we talked about it twice.
+
+00:11:07.640 --> 00:11:07.820
+Yeah.
+
+00:11:08.280 --> 00:11:14.780
+But we try really hard to always be open because the community, sometimes we don't have the data that supports the thing.
+
+00:11:14.840 --> 00:11:16.420
+But let me tell everyone what it is.
+
+00:11:16.420 --> 00:11:31.740
+So if you've been hiding under a rock, the OWASP top 10 is an awareness document of the top 10 things, according to the data we gathered and multiple community surveys of risks to web applications.
+
+00:11:32.080 --> 00:11:37.680
+Most of them relate to all software, but technically this one is about web applications.
+
+00:11:37.680 --> 00:11:50.200
+And you might not realize, but underneath the next steps, there's three more secret items because we couldn't decide, Michael, and bipoding needed to be on there.
+
+00:11:50.820 --> 00:11:54.400
+And then there was sort of a tie for the number 10.
+
+00:11:54.680 --> 00:11:56.880
+So we want to include the one that was the tie.
+
+00:11:57.340 --> 00:12:02.520
+And then we felt memory safety is still so unbelievably critical.
+
+00:12:02.740 --> 00:12:04.580
+We had to comment on that as well.
+
+00:12:05.320 --> 00:12:05.500
+Yeah.
+
+00:12:05.500 --> 00:12:09.860
+So we had to talk about those as well.
+
+00:12:10.060 --> 00:12:11.260
+So that was good.
+
+00:12:11.360 --> 00:12:15.840
+So it's the top 10, but these are three other things for your consideration that are very important.
+
+00:12:16.380 --> 00:12:17.720
+I did not realize those.
+
+00:12:17.800 --> 00:12:18.240
+How interesting.
+
+00:12:18.400 --> 00:12:28.360
+I do think whenever you release your next version in two, three, four years, whatever, there's going to be a strong AI bent.
+
+00:12:28.360 --> 00:12:34.220
+And we're going to get into the AI angle of security in this conversation, which is going to be really fun.
+
+00:12:34.220 --> 00:12:37.540
+But yeah, I think we're just beginning this.
+
+00:12:37.680 --> 00:12:40.540
+Like you called it out with vibe coding, but there's more to that even.
+
+00:12:40.540 --> 00:12:41.260
+Oh, yeah.
+
+00:12:41.260 --> 00:12:42.680
+There's so much more to that.
+
+00:12:43.860 --> 00:12:52.320
+I think that making the top 10 is complicated because we have to do it based on data.
+
+00:12:52.320 --> 00:13:12.400
+And the data I would like would be the postmortem from security incidents and would be, you know, the AppSec team telling us the things that are happening, not what we actually get, which is a bunch of SaaS vendors and DAS vendors telling us what their automated tools are capable of finding.
+
+00:13:12.400 --> 00:13:21.440
+And then a bunch of boutique pen tester companies who are so generous to give us their reports and to try to normalize that for us.
+
+00:13:21.860 --> 00:13:24.860
+And like we end up with millions and millions and millions of records.
+
+00:13:25.720 --> 00:13:26.780
+And that's great.
+
+00:13:26.780 --> 00:13:36.200
+But if a SaaS tool is really good at finding X, that doesn't necessarily mean that X is the biggest problem in our industry.
+
+00:13:36.420 --> 00:13:45.600
+And so when we put supply chain security on there and expanded it from just being libraries, like, oh, you're using outdated or vulnerable components.
+
+00:13:46.160 --> 00:13:47.620
+Like, yeah, that's bad.
+
+00:13:47.620 --> 00:13:50.120
+But there's also malicious components.
+
+00:13:50.300 --> 00:14:01.000
+There's also you didn't lock down your CI and then the co-op term, like the co-op or you call them interns, put too many zeros on the Kubernetes deployment.
+
+00:14:01.320 --> 00:14:05.760
+And then you've got $30,000 bill you weren't expecting or like I've seen it.
+
+00:14:05.900 --> 00:14:06.080
+Right.
+
+00:14:06.400 --> 00:14:13.860
+And so I feel like it's hard to get data that tells the full picture.
+
+00:14:13.860 --> 00:14:16.860
+And we're not allowed to just say, well, this is what the team thinks.
+
+00:14:17.360 --> 00:14:17.460
+Right.
+
+00:14:17.460 --> 00:14:19.200
+So that's where the surveys come in.
+
+00:14:19.320 --> 00:14:21.480
+And we're like, this is what we see.
+
+00:14:21.540 --> 00:14:22.260
+This is what we think.
+
+00:14:22.320 --> 00:14:22.820
+Do you agree?
+
+00:14:22.920 --> 00:14:27.320
+And like across the board, everyone was like, supply chain must be on that list.
+
+00:14:27.380 --> 00:14:28.260
+You must expand it.
+
+00:14:28.320 --> 00:14:28.740
+We agree.
+
+00:14:29.360 --> 00:14:29.380
+So.
+
+00:14:29.640 --> 00:14:29.820
+Yeah.
+
+00:14:30.000 --> 00:14:30.360
+Yeah.
+
+00:14:31.020 --> 00:14:34.840
+It's I think it's the biggest issue of the year, at least of the last six months.
+
+00:14:35.760 --> 00:14:47.240
+If we look at reports like the Verizon breach report and the CrowdStrike and the like the big reports of many, many breaches, if we look at the big ones, the nation state ones,
+
+00:14:47.240 --> 00:14:53.420
+their supply chain or in my opinion, if we really look at it, we think about it.
+
+00:14:53.420 --> 00:14:55.160
+They exploited the developer.
+
+00:14:55.160 --> 00:14:58.680
+They compromised the developer within an organization.
+
+00:14:58.680 --> 00:15:02.200
+It gave them access to multiple parts of the supply chain.
+
+00:15:02.340 --> 00:15:04.780
+And then they owned the entire organization.
+
+00:15:04.780 --> 00:15:11.700
+So if you get SQL injection in one app, you got into one database and maybe you could read sensitive data.
+
+00:15:12.320 --> 00:15:14.380
+Maybe you could delete sensitive data.
+
+00:15:14.380 --> 00:15:22.100
+If that database was completely unpatched in a total like terrible mess, then maybe you could take over that server.
+
+00:15:22.500 --> 00:15:30.580
+Then if your network's totally not secure and crappy, which is not exactly that common, like I'll look at, you know, network diagrams with clients.
+
+00:15:30.580 --> 00:15:32.140
+And I'm like, oh, that line, is that a firewall?
+
+00:15:32.280 --> 00:15:33.720
+They're like, it's more aspirational.
+
+00:15:33.720 --> 00:15:37.380
+I've heard that many times, right?
+
+00:15:37.440 --> 00:15:39.760
+Then maybe they could pivot and get to a couple of places.
+
+00:15:39.980 --> 00:15:43.640
+But that's like, maybe, maybe, maybe, maybe, maybe you get a little bit.
+
+00:15:44.120 --> 00:15:47.820
+But you compromise a senior developer, right?
+
+00:15:47.960 --> 00:15:53.880
+And so, yeah, I was really glad when the team agreed that we would do this.
+
+00:15:53.960 --> 00:15:55.240
+And then the community supported it.
+
+00:15:55.300 --> 00:15:56.740
+So I was like, yes, win.
+
+00:15:56.740 --> 00:15:57.180
+Nice.
+
+00:15:58.000 --> 00:16:03.560
+Yeah, you compromise a developer, then you get arbitrary code execution.
+
+00:16:03.760 --> 00:16:04.220
+Yeah, exactly.
+
+00:16:04.360 --> 00:16:10.180
+You get arbitrary code execution on potentially all the stuff that they send out to the world.
+
+00:16:10.440 --> 00:16:11.240
+It's really bad.
+
+00:16:11.360 --> 00:16:14.260
+An example of that would be the LastPass breach.
+
+00:16:14.840 --> 00:16:15.320
+Yeah.
+
+00:16:15.640 --> 00:16:29.200
+And the way that that all started, from what I understand, is one of the developers had an outdated version of Plex, the, like, streaming ripped video player on his home network that was open on the internet.
+
+00:16:29.340 --> 00:16:30.240
+That got taken over.
+
+00:16:30.340 --> 00:16:31.640
+Then they got into the dev machine.
+
+00:16:31.780 --> 00:16:34.120
+And then they got everybody's password vaults.
+
+00:16:34.520 --> 00:16:35.980
+It's like, excuse me?
+
+00:16:36.040 --> 00:16:39.720
+Because you had a movie player on your home automation network?
+
+00:16:39.820 --> 00:16:40.680
+That's crazy.
+
+00:16:41.240 --> 00:16:41.760
+I know.
+
+00:16:42.060 --> 00:16:42.500
+I know.
+
+00:16:42.500 --> 00:16:50.560
+And there's been some recent hacks where the developers download, like, a plug-in or something, and it's malicious.
+
+00:16:50.560 --> 00:16:57.060
+And then not only is it trying to steal, like, secrets off their computer, but then it robs their crypto wallets.
+
+00:16:57.080 --> 00:16:59.380
+Because why don't you just kick someone when they're down?
+
+00:16:59.660 --> 00:17:00.060
+Exactly.
+
+00:17:00.060 --> 00:17:01.060
+Like, jerks!
+
+00:17:01.960 --> 00:17:02.320
+Yeah.
+
+00:17:02.700 --> 00:17:02.980
+Yeah.
+
+00:17:03.620 --> 00:17:04.520
+And it's terrible.
+
+00:17:04.880 --> 00:17:06.020
+Well, we'll circle back to that.
+
+00:17:06.080 --> 00:17:09.860
+But I do think the vibe coding side is going to be a big deal in the future.
+
+00:17:09.860 --> 00:17:12.340
+And you'll have a little bit of a challenge there, I think.
+
+00:17:12.460 --> 00:17:17.540
+Obviously, professional developers love to bag on vibe coding.
+
+00:17:17.660 --> 00:17:19.180
+And I think that that's totally fair.
+
+00:17:19.180 --> 00:17:24.200
+But the problem is, I think a lot of that is kind of dark matter.
+
+00:17:24.860 --> 00:17:26.460
+Like, you'll never see the people.
+
+00:17:26.580 --> 00:17:30.180
+Because the people who do vibe coding, they don't know to go and fill out a survey for OWASP.
+
+00:17:30.540 --> 00:17:32.820
+They don't even know what a line of code looks like.
+
+00:17:32.900 --> 00:17:33.180
+They're just...
+
+00:17:33.760 --> 00:17:34.180
+Oh, yeah.
+
+00:17:34.680 --> 00:17:36.240
+Make me happy.
+
+00:17:36.380 --> 00:17:36.500
+You know?
+
+00:17:36.580 --> 00:17:37.300
+It's crazy.
+
+00:17:37.300 --> 00:17:42.860
+Well, and now some companies are building dark factories, which is a term that was new for me.
+
+00:17:42.860 --> 00:17:51.960
+Which is where they replace their entire software development team only with complete AI end-to-end solutions where there's no human in the loop whatsoever.
+
+00:17:51.960 --> 00:17:52.260
+Wow.
+
+00:17:52.780 --> 00:17:57.460
+And, oh my gosh, Michael, imagine the security posture of what's being released there.
+
+00:17:57.640 --> 00:17:57.960
+Yeah.
+
+00:17:57.960 --> 00:18:00.560
+And the fact that they don't know what the posture is.
+
+00:18:00.920 --> 00:18:01.400
+Right?
+
+00:18:01.400 --> 00:18:05.720
+But they're getting to market faster than someone else.
+
+00:18:06.920 --> 00:18:07.400
+And so...
+
+00:18:07.400 --> 00:18:07.500
+Yeah.
+
+00:18:08.580 --> 00:18:09.400
+And...
+
+00:18:09.400 --> 00:18:14.260
+Like, consumers don't know that what they're buying has been put together with duct tape and glue.
+
+00:18:14.760 --> 00:18:15.400
+So I actually...
+
+00:18:15.400 --> 00:18:19.060
+We didn't talk about this beforehand, but I hope it's okay to mention.
+
+00:18:19.580 --> 00:18:22.180
+So I'm trying to push a secure coding law in Canada.
+
+00:18:22.520 --> 00:18:26.060
+So Canada is cute and quaint, just like all the stereotypes.
+
+00:18:26.060 --> 00:18:31.760
+And a citizen is allowed to create a petition if she could get a member of parliament to support her.
+
+00:18:31.880 --> 00:18:34.120
+And after three years of letter writing, one of them did.
+
+00:18:34.980 --> 00:18:35.000
+Wow.
+
+00:18:35.240 --> 00:18:35.640
+Congratulations.
+
+00:18:36.300 --> 00:18:37.800
+Thank you in the House of Commons.
+
+00:18:37.800 --> 00:18:38.840
+And I have enough signatures.
+
+00:18:39.820 --> 00:18:41.240
+So it's going to go to vote.
+
+00:18:41.240 --> 00:18:47.780
+And so right now I'm lobbying all of the public to try to get them to call their member of parliament and ask them to vote yes.
+
+00:18:47.860 --> 00:18:53.960
+Because what happens is my member of parliament will be like, hey, 7115 says this.
+
+00:18:54.740 --> 00:18:58.740
+You know, we should create a secure coding law for all governmental organizations.
+
+00:18:59.560 --> 00:19:00.440
+Have a standard.
+
+00:19:00.940 --> 00:19:03.320
+And then, you know, assure the standard.
+
+00:19:03.480 --> 00:19:04.640
+Make sure there's compliance.
+
+00:19:05.220 --> 00:19:08.540
+And I also, like, wrote the standard for them and sent it to them because that's what I'm like.
+
+00:19:08.540 --> 00:19:11.380
+Like, I'm like, you don't have to use it, but, like, here it is in case you want one.
+
+00:19:13.460 --> 00:19:14.820
+I've been writing letters for years.
+
+00:19:14.900 --> 00:19:15.480
+I'm very annoying.
+
+00:19:16.560 --> 00:19:20.100
+Anyway, so guess what?
+
+00:19:20.160 --> 00:19:22.340
+Members of parliament don't know what the word cyber means.
+
+00:19:22.480 --> 00:19:23.320
+Like, they're very smart.
+
+00:19:23.560 --> 00:19:24.680
+I'm not trying to mock them.
+
+00:19:24.800 --> 00:19:27.080
+I'm not an expert in what they do either, right?
+
+00:19:27.400 --> 00:19:29.020
+And so I need members.
+
+00:19:29.020 --> 00:19:34.020
+So Canadians, if you're listening, go, like, look up petition E7115.
+
+00:19:34.700 --> 00:19:35.220
+You'll find me.
+
+00:19:35.280 --> 00:19:35.720
+Sign it.
+
+00:19:35.820 --> 00:19:37.620
+And then call or write your member of parliament.
+
+00:19:37.620 --> 00:19:46.180
+So if enough of us call, if, like, 10 or 20, 30 people call the member of parliament or they receive emails, Michael, when the petition comes up, they're like, oh, yeah, my constituents care.
+
+00:19:46.600 --> 00:19:47.200
+Therefore, I do.
+
+00:19:47.240 --> 00:19:48.100
+And they'll raise their hand.
+
+00:19:48.880 --> 00:19:51.220
+And I get one chance.
+
+00:19:51.780 --> 00:19:57.220
+And I really want a lot of hands going up, specifically at least half of 334 people.
+
+00:19:58.680 --> 00:19:59.040
+Exactly.
+
+00:19:59.780 --> 00:20:00.200
+Well, cool.
+
+00:20:00.360 --> 00:20:01.100
+Good luck with that.
+
+00:20:01.180 --> 00:20:02.160
+I hope that goes through.
+
+00:20:02.200 --> 00:20:02.560
+That's cool.
+
+00:20:04.660 --> 00:20:05.840
+We'll note by you.
+
+00:20:05.840 --> 00:20:11.240
+Yeah, that's the challenge with, you know, legislature and government in general.
+
+00:20:11.360 --> 00:20:18.960
+So many of the people, especially elected officials, they're not elected because they're developers or security specialists or whatever, right?
+
+00:20:18.960 --> 00:20:25.640
+So, but the difference is, like you said, it's fine because you don't know what they do.
+
+00:20:25.740 --> 00:20:27.220
+You're not an expert in law or whatever.
+
+00:20:27.360 --> 00:20:28.200
+That is true.
+
+00:20:28.340 --> 00:20:36.360
+But they have to choose how it's going to work for us through technology, whereas you don't have to choose how law works for them as a technology.
+
+00:20:36.420 --> 00:20:36.820
+You know what I mean?
+
+00:20:36.900 --> 00:20:38.440
+Like, they decide.
+
+00:20:38.440 --> 00:20:43.920
+So it's, I'm not saying that it's their fault or anything, but it is a very tricky thing to balance.
+
+00:20:43.920 --> 00:20:44.600
+It is.
+
+00:20:44.700 --> 00:20:52.540
+And this is why I, as like a influential person or whatever, are trying to use my influence for good.
+
+00:20:52.980 --> 00:20:54.980
+And I'm trying to protect Canada.
+
+00:20:55.100 --> 00:21:01.320
+And here's the thing, Michael, is that if Canada creates a law that does this, that is huge momentum for every other country.
+
+00:21:01.320 --> 00:21:06.000
+And Canada was one of the first countries to have privacy laws.
+
+00:21:06.120 --> 00:21:07.300
+Like, we really led the way in that.
+
+00:21:07.400 --> 00:21:12.380
+We really have led the way in, like, laws for quantum as well.
+
+00:21:12.560 --> 00:21:15.380
+And, like, we're not really used to being that.
+
+00:21:15.700 --> 00:21:18.160
+We're just, you know, struggling along.
+
+00:21:18.980 --> 00:21:21.040
+And we could lead the way in this, right?
+
+00:21:21.120 --> 00:21:24.180
+And then that means other countries can say, well, they have one.
+
+00:21:24.260 --> 00:21:26.120
+Like, do we really want to be behind Canada?
+
+00:21:26.320 --> 00:21:27.360
+I mean, come on.
+
+00:21:29.920 --> 00:21:30.820
+We love Canada.
+
+00:21:30.820 --> 00:21:31.480
+Canada is awesome.
+
+00:21:31.840 --> 00:21:34.680
+Yeah, we're sweet and we're wonderful and we mean well all the time.
+
+00:21:35.240 --> 00:21:35.480
+Yes.
+
+00:21:36.800 --> 00:21:42.700
+You know, let's shift just a little bit to maybe people who don't necessarily mean well.
+
+00:21:43.180 --> 00:21:51.280
+The people who might exploit, you know, broken access control or other types of things.
+
+00:21:51.880 --> 00:22:00.800
+And to aid us here, going through the OWASP top 10, I've come up with a little example of, well, this is what some of the concrete examples.
+
+00:22:00.820 --> 00:22:04.080
+Maybe I'll put a link to this and I'll reference them.
+
+00:22:04.200 --> 00:22:07.480
+And I don't know how often I'll totally use this.
+
+00:22:07.480 --> 00:22:10.240
+But let's start with this one.
+
+00:22:10.280 --> 00:22:13.760
+And if I understand it correctly, you all don't like suspense.
+
+00:22:14.340 --> 00:22:17.960
+It's the worst comes first, then the second worst, and then the third worst.
+
+00:22:17.960 --> 00:22:21.960
+Yeah, we go in order of this.
+
+00:22:21.960 --> 00:22:25.860
+So this is, it causes lots and lots of damage.
+
+00:22:25.860 --> 00:22:28.980
+It's not that hard to find or exploit.
+
+00:22:28.980 --> 00:22:31.600
+And it's everywhere.
+
+00:22:31.960 --> 00:22:32.440
+It's everywhere.
+
+00:22:32.820 --> 00:22:37.700
+When I talk to people that do pen testing, they're like, yeah, I find this basically every time.
+
+00:22:38.200 --> 00:22:45.680
+Like one of my friends, Katie Paxton Fear, she does API content and pen testing and bug bounty and stuff.
+
+00:22:45.680 --> 00:22:52.500
+And she said, I have never not once found broken access control in an API.
+
+00:22:52.740 --> 00:22:54.040
+Like never once.
+
+00:22:54.920 --> 00:23:05.060
+And it's really hard to get right, Michael, because every single page, every single record, every single access, we should check that the role is allowed.
+
+00:23:05.060 --> 00:23:07.920
+And that they still are that role, right?
+
+00:23:08.000 --> 00:23:11.760
+So we continue to make sure the session's accurate and then grant access.
+
+00:23:11.980 --> 00:23:14.860
+And unfortunately, we just forget to ask a lot.
+
+00:23:15.180 --> 00:23:20.580
+Or we, you know, return the entire record set and we'll just sort it out on the front end.
+
+00:23:20.640 --> 00:23:22.760
+And the malicious actor is like, thanks for the data set.
+
+00:23:24.120 --> 00:23:26.160
+That's so sweet of you to give that to me.
+
+00:23:27.320 --> 00:23:30.460
+And we just screwed up so much, so much.
+
+00:23:30.460 --> 00:23:34.460
+I would also like to, yeah, I can imagine.
+
+00:23:34.460 --> 00:23:37.820
+I would like to point out that these are not a single vulnerability.
+
+00:23:37.960 --> 00:23:40.840
+It's not like this is the number one issue.
+
+00:23:41.060 --> 00:23:42.540
+They're like categories, right?
+
+00:23:42.660 --> 00:23:53.960
+It's like violations of these could be you didn't use least privilege or you bypass a control check or you didn't put access control on the delete part of the API.
+
+00:23:54.120 --> 00:23:56.560
+You know, like there's a bunch of things that fall into each one of these, right?
+
+00:23:56.600 --> 00:23:57.200
+It's a category.
+
+00:23:58.600 --> 00:24:00.000
+They're all a bucket.
+
+00:24:00.000 --> 00:24:06.180
+And when we looked at the data, poor code quality was a bucket.
+
+00:24:06.300 --> 00:24:08.460
+I'm like, no, because all of the things go into that bucket.
+
+00:24:09.280 --> 00:24:09.400
+Right.
+
+00:24:09.880 --> 00:24:10.560
+And then the advice.
+
+00:24:10.560 --> 00:24:11.040
+Oh, I was top one.
+
+00:24:11.460 --> 00:24:12.520
+Oh, I was top one.
+
+00:24:12.620 --> 00:24:16.200
+And then also the mitigation advice is what if you sucked less?
+
+00:24:16.960 --> 00:24:17.180
+Right?
+
+00:24:17.320 --> 00:24:20.120
+Like there's no constructive feedback to poor code quality.
+
+00:24:20.240 --> 00:24:21.320
+It's not specific enough.
+
+00:24:21.320 --> 00:24:23.580
+So we didn't want buckets like that.
+
+00:24:24.420 --> 00:24:25.640
+Keep it actionable, right?
+
+00:24:26.000 --> 00:24:26.520
+Yeah, exactly.
+
+00:24:26.660 --> 00:24:30.020
+If it's not actionable, it's not worth raising awareness about, we felt.
+
+00:24:30.680 --> 00:24:32.980
+And broken access control, Michael, it's everywhere.
+
+00:24:33.180 --> 00:24:37.040
+And I wish there was like a product that you could buy that could just do this for you.
+
+00:24:37.120 --> 00:24:43.500
+So you can buy authentication products that manage session and identity like really, really, really well.
+
+00:24:44.060 --> 00:24:44.280
+Right.
+
+00:24:44.280 --> 00:24:47.520
+And people buy the crap out of them because they work really well.
+
+00:24:47.620 --> 00:24:55.900
+I'd like to be able to buy an access control tool that was as easy to implement as I'm going to try not to name brands.
+
+00:24:56.020 --> 00:24:57.420
+But, you know, the products.
+
+00:24:57.660 --> 00:24:57.840
+Right.
+
+00:24:57.840 --> 00:25:08.180
+People pay a lot of money for Okta, you know, like Active Directory, you know, Incognito because they work.
+
+00:25:08.520 --> 00:25:08.880
+Right.
+
+00:25:08.920 --> 00:25:09.800
+And they work well.
+
+00:25:10.000 --> 00:25:15.660
+And the less painful they are to implement, the more likely, like they're willing to pay more for that.
+
+00:25:16.000 --> 00:25:16.220
+Right.
+
+00:25:16.300 --> 00:25:20.780
+And so if we could solve this issue, like I think that could be pretty huge.
+
+00:25:22.160 --> 00:25:23.400
+Yeah, totally agree.
+
+00:25:23.400 --> 00:25:23.440
+Okay.
+
+00:25:25.140 --> 00:25:25.860
+So let me see.
+
+00:25:25.900 --> 00:25:29.960
+I got a couple of examples here that were, they're not obvious.
+
+00:25:30.960 --> 00:25:35.340
+You know, some are obvious kind of like, here's a Django example.
+
+00:25:35.740 --> 00:25:36.780
+We might see this later.
+
+00:25:38.800 --> 00:25:47.220
+So you might have an admin endpoint and it has at login required, which is a decorator in Django that will do the validation before the function even runs.
+
+00:25:47.800 --> 00:25:49.280
+And so you look at it and you're like, oh yeah, this is fine.
+
+00:25:49.280 --> 00:25:51.280
+It's using authentication here.
+
+00:25:51.280 --> 00:25:51.340
+Okay.
+
+00:25:52.340 --> 00:25:54.020
+But it's not using authorization.
+
+00:25:54.180 --> 00:25:57.080
+It's not checking that the person necessarily is an admin.
+
+00:25:57.220 --> 00:25:58.340
+It's just that they're logged in.
+
+00:25:58.440 --> 00:25:58.860
+Right?
+
+00:25:59.140 --> 00:25:59.400
+Right.
+
+00:25:59.460 --> 00:26:00.840
+That's a real simple example.
+
+00:26:01.600 --> 00:26:01.960
+Mm-hmm.
+
+00:26:03.260 --> 00:26:03.760
+Yep.
+
+00:26:04.220 --> 00:26:05.560
+And I see the problem.
+
+00:26:05.560 --> 00:26:12.580
+Another one would be if you say, we're going to let people read and write files.
+
+00:26:12.760 --> 00:26:14.860
+Maybe it's like a WordPress type thing or something.
+
+00:26:14.860 --> 00:26:19.760
+But then if they can put dot, dot in their path and break out.
+
+00:26:19.760 --> 00:26:26.240
+And then let me read the file, dot, dot, slash, dot, dot, slash, et cetera, dot password and read the passwords or whatever, or usernames.
+
+00:26:27.280 --> 00:26:27.500
+Right?
+
+00:26:27.640 --> 00:26:31.900
+This is the type of stuff that falls in a broken access control or just no login checks at all.
+
+00:26:32.580 --> 00:26:34.260
+I literally did this yesterday, Michael.
+
+00:26:34.260 --> 00:26:36.720
+Because someone was like, hey, go get this file from there.
+
+00:26:36.820 --> 00:26:38.640
+And then I go in the folder and it's not there.
+
+00:26:39.700 --> 00:26:41.000
+Like the link wasn't correct.
+
+00:26:41.080 --> 00:26:44.460
+So I just went through the web directory with that.
+
+00:26:45.400 --> 00:26:48.580
+And I, like, but they wanted to send me the file.
+
+00:26:48.700 --> 00:26:52.580
+So just to be clear, like, like they sent me and told me to go get it.
+
+00:26:52.580 --> 00:26:54.300
+I wasn't stealing anything.
+
+00:26:54.620 --> 00:26:56.800
+And I didn't end up eventually finding it either.
+
+00:26:57.340 --> 00:27:00.460
+So then they had to send me another link that was correct.
+
+00:27:00.560 --> 00:27:02.340
+But I was like, oh, I'll just, like, not waste their time.
+
+00:27:02.400 --> 00:27:03.520
+I'll just go look for it myself.
+
+00:27:04.160 --> 00:27:05.080
+Because it's that easy.
+
+00:27:05.760 --> 00:27:06.420
+Yeah, yeah.
+
+00:27:06.480 --> 00:27:06.760
+Wow.
+
+00:27:06.920 --> 00:27:07.240
+Incredible.
+
+00:27:07.440 --> 00:27:10.620
+It's like, I'm going to use their tools, but not in a way that they necessarily expected.
+
+00:27:11.020 --> 00:27:12.840
+Well, I mean, they could have just sent me the right link.
+
+00:27:14.300 --> 00:27:14.660
+Exactly.
+
+00:27:14.900 --> 00:27:16.540
+They should have just sent you the right link.
+
+00:27:17.420 --> 00:27:18.760
+Yeah, I have some.
+
+00:27:18.760 --> 00:27:26.340
+I cannot recount them here, but my dad, he, I've got to, like, help take care of him and stuff now these days.
+
+00:27:26.340 --> 00:27:29.460
+And he can't do a lot of his own paperwork and things.
+
+00:27:29.540 --> 00:27:37.580
+And so I've had to do some crazy stuff to get access to or to help him fill out something that, yeah, it's insane.
+
+00:27:38.180 --> 00:27:38.660
+Okay.
+
+00:27:39.220 --> 00:27:40.840
+Let's go on to number two.
+
+00:27:42.780 --> 00:27:44.880
+This is just setting the wrong configurations.
+
+00:27:44.880 --> 00:27:48.060
+Not following the hardening guide.
+
+00:27:48.180 --> 00:27:49.040
+Not doing patching.
+
+00:27:49.900 --> 00:27:53.260
+And this is so easy for a malicious actor to find because there's scanners.
+
+00:27:54.120 --> 00:28:01.280
+I joke whenever anyone's like, oh, like, you know, we don't want to do a pen test because it might break our thing.
+
+00:28:01.340 --> 00:28:04.820
+And I'm like, well, you're actually having a penetration test done all the time if you're on the internet.
+
+00:28:05.040 --> 00:28:06.440
+You just aren't receiving the report.
+
+00:28:07.140 --> 00:28:10.020
+That is absolutely so true and so disturbing.
+
+00:28:10.020 --> 00:28:24.740
+If you're out there listening and you have something on the internet, API website, whatever, and you have not just tailed the log of it and just see slash WP slash admin slash this slash that just coming at it left and right.
+
+00:28:24.820 --> 00:28:26.720
+You're like, what is going on?
+
+00:28:26.740 --> 00:28:29.100
+Because it doesn't show up in your analytics, right?
+
+00:28:29.100 --> 00:28:30.020
+Oh, yeah.
+
+00:28:30.180 --> 00:28:44.160
+I actually had someone find something on my website that I was surprised about because I had a user from my blog from long ago and they could see my user and then it gave my email address and it was actually a personal email address.
+
+00:28:44.160 --> 00:28:50.340
+Because I had a backup admin account and I used my personal email and he was like, did you want that on there?
+
+00:28:50.400 --> 00:28:54.920
+I'm like, no, only my mom and my dad email me there because I'm bad at email.
+
+00:28:55.720 --> 00:28:58.280
+And if my parents write me, I should write back.
+
+00:28:59.120 --> 00:28:59.180
+Right?
+
+00:28:59.840 --> 00:29:00.060
+Yeah.
+
+00:29:00.260 --> 00:29:04.460
+And so I'm like, oh, that's the personal email that I'm supposed to answer on time.
+
+00:29:04.460 --> 00:29:04.860
+Right?
+
+00:29:06.160 --> 00:29:15.320
+And so he wrote me and helped me like turn off that setting that I had no idea about despite having multiple security plugins and having run an audit, I'd miss that.
+
+00:29:16.140 --> 00:29:16.300
+Yeah.
+
+00:29:17.040 --> 00:29:22.620
+So this one could evolve for like Python people like Django with debug equals true.
+
+00:29:22.760 --> 00:29:28.760
+Now, this is the most probably most used misconfiguration example for Django apps out there.
+
+00:29:28.840 --> 00:29:32.760
+You're like, well, of course, Michael, we know you don't set debug true in production.
+
+00:29:32.760 --> 00:29:36.820
+Like, yeah, but people do it.
+
+00:29:36.960 --> 00:29:37.320
+You're right.
+
+00:29:37.480 --> 00:29:43.580
+And then two, there's like 10 other settings that are should be in production that are not in production in Django.
+
+00:29:43.940 --> 00:29:45.240
+Like HSTS.
+
+00:29:45.740 --> 00:29:46.520
+Yes, please.
+
+00:29:46.720 --> 00:29:52.200
+And a bunch of other, you know, do not allow me to put it be put into an iframe and all sorts of other things.
+
+00:29:52.300 --> 00:29:53.580
+Content security policies.
+
+00:29:54.760 --> 00:29:55.660
+Yes, exactly.
+
+00:29:56.580 --> 00:29:58.900
+And this is what happened with Claude Code.
+
+00:29:58.900 --> 00:30:05.740
+And this is how they essentially allowed debug and production, like by not suppressing their map file.
+
+00:30:06.280 --> 00:30:12.080
+And then also not having it as part of their git ignore, which is essentially having debug mode in prod.
+
+00:30:12.340 --> 00:30:14.040
+And that's how they lost their source code.
+
+00:30:14.400 --> 00:30:16.860
+Just to be clear, I'm not shaming the developer that did that.
+
+00:30:16.860 --> 00:30:20.260
+They probably didn't have a checklist for that person.
+
+00:30:20.420 --> 00:30:24.540
+They probably didn't have anything that scanned to tell them that those settings were incorrect.
+
+00:30:25.140 --> 00:30:25.320
+Right.
+
+00:30:25.580 --> 00:30:28.020
+They probably don't even have a policy that clarifies.
+
+00:30:28.120 --> 00:30:29.940
+They're like, oh, they should just know not to do that.
+
+00:30:30.320 --> 00:30:30.420
+Right.
+
+00:30:30.480 --> 00:30:32.320
+And then they were rushed.
+
+00:30:32.400 --> 00:30:33.860
+Probably they're in a hurry.
+
+00:30:34.240 --> 00:30:34.420
+Yeah.
+
+00:30:34.420 --> 00:30:36.720
+They're shipping three or four times a day, which I appreciate.
+
+00:30:36.860 --> 00:30:37.680
+But at the same time.
+
+00:30:37.680 --> 00:30:38.080
+Yeah.
+
+00:30:38.080 --> 00:30:38.480
+Yeah.
+
+00:30:38.480 --> 00:30:41.520
+And then now very bad things are happening.
+
+00:30:41.880 --> 00:30:45.360
+It is going to be the most audited code that has ever happened, Michael.
+
+00:30:45.740 --> 00:30:49.200
+I've seen so many videos parsing that stuff apart.
+
+00:30:49.320 --> 00:30:49.820
+It's wild.
+
+00:30:50.240 --> 00:30:50.780
+Yeah.
+
+00:30:50.820 --> 00:30:54.620
+For people who don't know, I'm sure people heard Claude Code got leaked.
+
+00:30:54.740 --> 00:31:00.000
+But basically the map file in JavaScript says, here's the minified version.
+
+00:31:00.080 --> 00:31:04.920
+But if you want to show the full source version for helpful debugging, here it is.
+
+00:31:04.920 --> 00:31:06.100
+And there's how you get to it.
+
+00:31:06.140 --> 00:31:07.200
+And that apparently got shipped.
+
+00:31:08.600 --> 00:31:10.060
+And people were just like, you know what?
+
+00:31:10.140 --> 00:31:12.100
+Why don't we find out what those files are, actually?
+
+00:31:12.640 --> 00:31:15.000
+And it was two security misconfigurations.
+
+00:31:15.280 --> 00:31:17.820
+Because one of them would have stopped it from going.
+
+00:31:17.920 --> 00:31:21.660
+And the other one would have not had it been in the package in the first place.
+
+00:31:22.240 --> 00:31:22.360
+Right.
+
+00:31:22.460 --> 00:31:24.720
+And it's number two.
+
+00:31:24.860 --> 00:31:31.840
+And it happens even to the really, really, really, really, really high profile, high security assurance requiring places.
+
+00:31:32.520 --> 00:31:32.740
+Yeah.
+
+00:31:32.960 --> 00:31:33.360
+Absolutely.
+
+00:31:33.360 --> 00:31:33.560
+Absolutely.
+
+00:31:33.980 --> 00:31:38.800
+So I have a third one on this list that I think will really surprise people.
+
+00:31:38.940 --> 00:31:39.800
+Like, for real.
+
+00:31:40.200 --> 00:31:41.440
+So imagine this.
+
+00:31:41.440 --> 00:31:43.280
+I've got a self-hosted app.
+
+00:31:43.320 --> 00:31:47.980
+And I'm going to run it on a Docker, in Docker.
+
+00:31:48.320 --> 00:31:49.280
+You know, it could be Kubernetes.
+
+00:31:49.460 --> 00:31:50.200
+It could be whatever.
+
+00:31:50.360 --> 00:31:53.440
+But I'm going to run it in Docker on my server.
+
+00:31:53.440 --> 00:31:57.740
+And it has both a web interface and a database.
+
+00:31:58.100 --> 00:32:01.320
+And the database is running on the default port and so on.
+
+00:32:01.380 --> 00:32:02.100
+So that's all fine.
+
+00:32:02.160 --> 00:32:03.120
+But it's in Docker.
+
+00:32:03.460 --> 00:32:04.760
+And everything's locked down.
+
+00:32:04.880 --> 00:32:09.480
+And so what you could do is you can use this thing called UFW, uncomplicated firewall in Linux.
+
+00:32:10.040 --> 00:32:11.460
+Turn that on and say, block.
+
+00:32:11.680 --> 00:32:12.420
+Or don't block.
+
+00:32:12.520 --> 00:32:14.200
+Only allow my web port.
+
+00:32:14.200 --> 00:32:24.000
+And in your Docker compose file, you often, or even just Docker statements, you see map, say, Postgres, port 5432 to 5432.
+
+00:32:26.020 --> 00:32:26.720
+Guess what?
+
+00:32:26.800 --> 00:32:30.980
+That's actually open on the internet, probably with the default password on that database.
+
+00:32:31.080 --> 00:32:38.720
+Because if you look at the Docker docs and you go to the bottom, it says, uncomplicated firewall is a friend that ships with Debian and Ubuntu unless you manage firewall.
+
+00:32:38.720 --> 00:32:43.860
+So Docker and UFW use firewall rules in ways that make them incompatible.
+
+00:32:44.040 --> 00:32:48.240
+When you publish a container port on Docker traffic, it gets diverted before that.
+
+00:32:48.340 --> 00:32:48.880
+So guess what?
+
+00:32:48.920 --> 00:32:50.080
+That's open on the internet.
+
+00:32:51.080 --> 00:32:52.760
+Holy smokes.
+
+00:32:53.580 --> 00:32:58.580
+It's so common to just see this port on the container map to this port on the server.
+
+00:32:59.080 --> 00:33:04.660
+And if you're thinking that UFW on your firewall is going to save you, it's actually just open on the internet.
+
+00:33:04.660 --> 00:33:05.980
+Like, I didn't realize that.
+
+00:33:06.700 --> 00:33:08.140
+And so, for example, what do you do?
+
+00:33:08.140 --> 00:33:12.980
+Well, you say localhost colon my port on the server.
+
+00:33:13.200 --> 00:33:15.100
+So you're shipping, you're only listening locally.
+
+00:33:15.260 --> 00:33:16.620
+You don't have, or you just don't do that.
+
+00:33:16.620 --> 00:33:22.320
+But like, that's a really subtle and sneaky one that people should be aware of.
+
+00:33:22.960 --> 00:33:23.900
+Yes, absolutely.
+
+00:33:25.120 --> 00:33:30.240
+How do we, like, so here's the thing is no one can memorize all of this.
+
+00:33:30.460 --> 00:33:31.720
+And so what is the answer, Michael?
+
+00:33:32.360 --> 00:33:32.760
+Checklists?
+
+00:33:33.680 --> 00:33:34.520
+Checklists are good.
+
+00:33:35.000 --> 00:33:35.280
+Scanners?
+
+00:33:35.780 --> 00:33:36.580
+Scanners are good.
+
+00:33:36.580 --> 00:33:43.300
+Honestly, I think the modern top tier AI agentic tools are really good.
+
+00:33:44.640 --> 00:33:47.820
+They find a surprising amount of these things.
+
+00:33:47.820 --> 00:33:56.140
+They find them if you ask them to find them or they make it part of the code that they give you when you just ask for it.
+
+00:33:56.700 --> 00:33:57.940
+Yeah, yeah, yeah.
+
+00:33:59.100 --> 00:34:00.580
+Because people just say, I want the app.
+
+00:34:00.640 --> 00:34:02.280
+They don't say, I want a secure app necessarily.
+
+00:34:02.580 --> 00:34:04.800
+And well, it's more efficient to not worry about the security.
+
+00:34:04.980 --> 00:34:05.800
+We'll save you some tokens.
+
+00:34:05.800 --> 00:34:09.500
+Even if you just say, I want a secure app.
+
+00:34:09.620 --> 00:34:13.760
+So I gave a conference talk two weeks ago at RSA called Insecure Vibes.
+
+00:34:13.760 --> 00:34:23.360
+And in it, the demo that I recorded in advance that was not part of the slides when I gave my live presentation, but it's on my YouTube.
+
+00:34:23.360 --> 00:34:28.320
+I just asked Claude, I'm like, can you make a login function that's for an insulin pump?
+
+00:34:28.640 --> 00:34:31.140
+So this is a medical device that needs to be really secure.
+
+00:34:31.980 --> 00:34:33.080
+And it does it.
+
+00:34:33.140 --> 00:34:35.200
+And then after I'm like, analyze it for vulnerabilities.
+
+00:34:35.920 --> 00:34:39.580
+And multiple AIs found critical vulnerabilities in it.
+
+00:34:39.640 --> 00:34:41.040
+So I asked for it to be secure.
+
+00:34:41.200 --> 00:34:42.840
+So you can't just say, I want to be secure.
+
+00:34:43.080 --> 00:34:45.540
+You have to say, and this is what secure means.
+
+00:34:46.400 --> 00:34:46.760
+Absolutely.
+
+00:34:47.080 --> 00:34:47.760
+Oh, my gosh.
+
+00:34:48.340 --> 00:34:51.480
+I do think you can find a lot if you use the tools in the right way.
+
+00:34:51.560 --> 00:34:52.940
+But like you said, you've got to ask.
+
+00:34:53.060 --> 00:34:55.340
+And it's a proper step.
+
+00:34:56.100 --> 00:34:56.380
+Yes.
+
+00:34:56.680 --> 00:34:58.000
+And we're going to talk about that in a bit.
+
+00:34:58.380 --> 00:34:59.000
+Yes, we are.
+
+00:34:59.000 --> 00:34:59.400
+All right.
+
+00:34:59.960 --> 00:35:00.700
+Keep it going.
+
+00:35:00.820 --> 00:35:01.180
+Keep it going.
+
+00:35:01.580 --> 00:35:04.960
+So software supply chain failures.
+
+00:35:05.040 --> 00:35:05.680
+Number three.
+
+00:35:07.400 --> 00:35:08.560
+This is the expansion.
+
+00:35:08.560 --> 00:35:14.160
+So this used to be vulnerable and outdated components, which is part of your software supply chain.
+
+00:35:14.160 --> 00:35:16.740
+But Michael, I'm sure that I've told you this before.
+
+00:35:16.840 --> 00:35:24.720
+But for people that haven't heard me love about it, every single thing that you use to create and maintain your software is part of your supply chain.
+
+00:35:24.720 --> 00:35:37.540
+So that includes your browser, the plugins in the browser, the sandbox you created, your CI, all the settings in the CI, where you're getting your libraries and packages from, how you're getting them.
+
+00:35:37.620 --> 00:35:40.760
+So do they maintain integrity across the wire when you get them?
+
+00:35:41.020 --> 00:35:42.660
+Could it be that you've got something else?
+
+00:35:42.660 --> 00:35:49.680
+Like every single thing that you're using to maintain and create is part of the supply chain.
+
+00:35:49.840 --> 00:35:52.520
+And so we need to protect the whole thing.
+
+00:35:53.080 --> 00:35:58.080
+And like we were saying earlier, developers themselves are becoming targets of malicious actors.
+
+00:35:58.760 --> 00:36:05.900
+We need to find ways to defend the developer themselves, protect them, make them safer doing their jobs.
+
+00:36:05.900 --> 00:36:06.900
+Right.
+
+00:36:06.900 --> 00:36:10.920
+And help them find ways to secure the whole supply chain that's not too painful.
+
+00:36:10.920 --> 00:36:11.920
+Yeah.
+
+00:36:11.920 --> 00:36:15.180
+Because they still need flexibility in order to be creative.
+
+00:36:15.180 --> 00:36:16.180
+Absolutely.
+
+00:36:16.180 --> 00:36:17.180
+Absolutely.
+
+00:36:17.180 --> 00:36:23.200
+But so some Python things that you can do concretely here is pin your dependencies.
+
+00:36:23.200 --> 00:36:27.500
+You can use pip compile or you can use uv lock files.
+
+00:36:27.500 --> 00:36:31.800
+There's all sorts of things that are possible there.
+
+00:36:31.920 --> 00:36:38.100
+And then you can also, I think the other side that we haven't mentioned, Tanya, is like known vulnerabilities in packages.
+
+00:36:38.100 --> 00:36:52.700
+I think a lot of people, I would say over 95% of the people that install libraries from PyPI, they don't even check whether or not there's a vulnerability in that package before they install it.
+
+00:36:52.700 --> 00:36:59.700
+So a thing I would like to see, so in 2022, the first company announced this idea of reachability.
+
+00:37:00.700 --> 00:37:02.340
+So let's say you want to do math.
+
+00:37:02.420 --> 00:37:03.860
+So you install a math library.
+
+00:37:04.140 --> 00:37:06.120
+We don't actually want to do all of math.
+
+00:37:06.460 --> 00:37:06.700
+Right.
+
+00:37:06.860 --> 00:37:10.700
+We probably just want to do calculus, but maybe the vulnerabilities in the statistics function.
+
+00:37:12.020 --> 00:37:12.320
+Right.
+
+00:37:12.320 --> 00:37:17.820
+And so when your code calls all the calculus functions, you're like, woo, derivatives.
+
+00:37:19.040 --> 00:37:23.560
+You're not actually, there's no reachable path from your code to the vulnerability.
+
+00:37:24.200 --> 00:37:29.080
+Most of the time, that means it's not exploitable, except for if it's log4j, then you're just screwed.
+
+00:37:29.220 --> 00:37:30.640
+Just to be clear, you're just in trouble.
+
+00:37:31.100 --> 00:37:31.540
+Right.
+
+00:37:31.560 --> 00:37:36.860
+But for most things, like 99.9% of the time, then you're fine if there's no reachability.
+
+00:37:36.860 --> 00:37:45.180
+And so software composition analysis tools, sometimes called supply chain security tools, when the marketing teams got a little out of hand.
+
+00:37:46.080 --> 00:37:54.220
+I feel like if you do one of the 19 attack surfaces within the supply chain that you don't get to call yourself a supply chain tool, but I digress.
+
+00:37:54.780 --> 00:37:55.920
+I have strong feels.
+
+00:37:57.060 --> 00:38:06.820
+But anyway, so the software composition analysis tools, if they don't do reachability, I don't know if it's that helpful.
+
+00:38:06.860 --> 00:38:12.600
+Because what it'll do is tell you almost literally everything has a vuln in it at this point.
+
+00:38:12.600 --> 00:38:13.040
+Yeah, yeah, yeah.
+
+00:38:13.240 --> 00:38:13.500
+Right?
+
+00:38:13.640 --> 00:38:18.660
+And so I remember one of my colleagues, they had bought one of the big ones.
+
+00:38:19.300 --> 00:38:21.180
+And it is a good tool, don't get me wrong.
+
+00:38:21.220 --> 00:38:23.980
+But I remember they're like, well, now we have 34,000 vulnerabilities.
+
+00:38:24.400 --> 00:38:28.500
+And the devs were like, yeah, that's so overwhelming.
+
+00:38:28.620 --> 00:38:29.700
+I'm just not even going to look at it.
+
+00:38:29.700 --> 00:38:29.800
+Yeah.
+
+00:38:29.800 --> 00:38:30.940
+Like, okay.
+
+00:38:31.420 --> 00:38:37.180
+So, yeah, I have a known vulnerability in one of the packages that I'm shipping to production.
+
+00:38:37.440 --> 00:38:40.640
+I think it's a PDF package or something like that.
+
+00:38:40.680 --> 00:38:41.220
+I can't remember.
+
+00:38:41.800 --> 00:38:46.800
+And I scan all my builds with pip audit and it will fail the build.
+
+00:38:46.860 --> 00:38:53.620
+So I have to ignore it because it is a vulnerability when you call a path that I don't call and you're running on Windows.
+
+00:38:53.620 --> 00:38:57.980
+And I'm trying to deploy it to Docker and I'm not calling that path.
+
+00:38:58.060 --> 00:39:03.380
+I'm like, I understand it's a problem that it could be an issue under some circumstances.
+
+00:39:03.380 --> 00:39:06.020
+But it doesn't apply here and I just need to use it.
+
+00:39:06.200 --> 00:39:09.720
+And it's a Windows problem on my Docker Linux.
+
+00:39:09.860 --> 00:39:11.360
+I don't really care right now.
+
+00:39:11.660 --> 00:39:12.300
+It's fine.
+
+00:39:12.560 --> 00:39:14.300
+Until they fix it, I'll be okay, you know?
+
+00:39:14.360 --> 00:39:20.980
+Well, and especially, like, if you know what the problem is and you're not going to suddenly switch to Windows, like, why would you do that?
+
+00:39:20.980 --> 00:39:23.940
+But so, yeah.
+
+00:39:24.260 --> 00:39:28.420
+So the tools are maturing, but they're not perfect.
+
+00:39:28.820 --> 00:39:32.700
+And lots of them are going at different speeds.
+
+00:39:32.740 --> 00:39:33.400
+We'll just say that.
+
+00:39:34.040 --> 00:39:38.260
+So I look forward to the day where there's reachability done on all of those things.
+
+00:39:38.960 --> 00:39:42.120
+One of the other things I wanted to mention is, like, so you said pin dependencies.
+
+00:39:42.520 --> 00:39:44.020
+And so I teach this.
+
+00:39:44.140 --> 00:39:50.060
+And then inevitably every time someone's like, well, if I pin dependencies forever, then I just have all these really old dependencies.
+
+00:39:50.060 --> 00:39:51.460
+That's not what Michael means.
+
+00:39:51.900 --> 00:39:53.360
+He means you do development.
+
+00:39:53.660 --> 00:39:55.680
+You update your dependencies to a version.
+
+00:39:56.360 --> 00:39:57.700
+Like, ideally, you're, like, LTE.
+
+00:39:57.940 --> 00:40:01.100
+You're, like, latest, you know, stable version of whatever the thing is.
+
+00:40:02.020 --> 00:40:06.300
+You're trying to keep, like, definitely as supported version, recent.
+
+00:40:06.820 --> 00:40:10.480
+You're not picking terrible things where, you know, it hasn't been updated in two years.
+
+00:40:10.480 --> 00:40:14.380
+Or there's one maintainer and they happen to live in Russia and work for the Russian government.
+
+00:40:14.740 --> 00:40:14.900
+Right?
+
+00:40:14.920 --> 00:40:16.400
+So you're picking, like, decent ones.
+
+00:40:16.800 --> 00:40:18.040
+You're updating it in dev.
+
+00:40:18.040 --> 00:40:19.020
+You're, like, hey, this is the one.
+
+00:40:19.180 --> 00:40:19.880
+Then you pin it.
+
+00:40:20.160 --> 00:40:24.640
+So as it goes up to different environments, you don't get a surprise update and it changes.
+
+00:40:24.820 --> 00:40:30.300
+And then there's something different in prod than what you tested in UAT and approved with the security tools.
+
+00:40:30.740 --> 00:40:31.020
+That's what.
+
+00:40:31.820 --> 00:40:32.160
+Yeah.
+
+00:40:32.160 --> 00:40:32.300
+Yeah.
+
+00:40:32.460 --> 00:40:33.040
+Thank you.
+
+00:40:33.420 --> 00:40:34.320
+And 100%.
+
+00:40:34.320 --> 00:40:35.860
+Because it gets misinterpreted.
+
+00:40:35.860 --> 00:40:36.540
+Yeah.
+
+00:40:36.740 --> 00:40:44.020
+And another thing that you can do real simple is, like, with some of the tools, like, with uv, you can say, I have pin dependencies.
+
+00:40:44.360 --> 00:40:54.400
+Update them to the current ones with a very important caveat that you can say that are older than a week or older than a day or something.
+
+00:40:54.400 --> 00:40:58.560
+Because, you know, the really big example here is LLM.
+
+00:40:58.640 --> 00:40:59.740
+Light LLM.
+
+00:41:00.520 --> 00:41:00.920
+Just this.
+
+00:41:01.000 --> 00:41:02.460
+Was that just this week or was that last week?
+
+00:41:02.520 --> 00:41:03.400
+I can't keep it straight.
+
+00:41:03.400 --> 00:41:04.220
+It was very recent.
+
+00:41:05.120 --> 00:41:05.500
+Yeah.
+
+00:41:05.500 --> 00:41:12.520
+This thing has a dependency that itself became, like you talked about, the developer got taken over, I believe, and a virus got put in.
+
+00:41:14.040 --> 00:41:17.460
+And it was only out for, like, half an hour or something.
+
+00:41:17.920 --> 00:41:18.600
+But it took over.
+
+00:41:18.760 --> 00:41:19.520
+It's so popular.
+
+00:41:19.760 --> 00:41:25.340
+It took it over, like, 50,000 machines because it gets downloaded millions of times a day.
+
+00:41:25.780 --> 00:41:26.100
+Automatically.
+
+00:41:26.740 --> 00:41:27.100
+Automatically.
+
+00:41:27.180 --> 00:41:32.920
+If you say, give me the latest, he's like, obviously, waiting a week is not hardcore security.
+
+00:41:32.920 --> 00:41:39.020
+But at the same time, so many of these popular issues that people take, they only last briefly, right, for a few moments.
+
+00:41:39.140 --> 00:41:42.560
+And then somebody's like, oh, my gosh, why is this thing using 100% CPU?
+
+00:41:42.700 --> 00:41:43.180
+You know what I mean?
+
+00:41:43.820 --> 00:41:50.300
+And here's the thing, Michael, is that not all of those 50,000 got the memo that this happened and they're still vulnerable in prod.
+
+00:41:50.400 --> 00:41:51.280
+And they could be from one.
+
+00:41:51.840 --> 00:41:52.100
+Yeah.
+
+00:41:52.180 --> 00:41:53.460
+It could be for a long time.
+
+00:41:54.380 --> 00:41:55.900
+And so, yes, I agree.
+
+00:41:56.120 --> 00:41:57.480
+Like, update.
+
+00:41:57.740 --> 00:42:00.500
+But to, you know, one that's three days old or one week old.
+
+00:42:00.860 --> 00:42:01.500
+It's weird.
+
+00:42:01.500 --> 00:42:04.860
+So this advice has drastically changed over the past six months.
+
+00:42:05.040 --> 00:42:08.080
+The best practice used to be auto-update to latest version, period.
+
+00:42:09.140 --> 00:42:10.440
+That used to be the advice.
+
+00:42:10.620 --> 00:42:11.900
+And that's no longer the advice.
+
+00:42:12.040 --> 00:42:12.900
+And it's kind of heartbreaking.
+
+00:42:13.640 --> 00:42:14.960
+Especially if you use npm.
+
+00:42:15.320 --> 00:42:17.260
+NPM is just, like, under siege.
+
+00:42:17.680 --> 00:42:18.420
+It is, yeah.
+
+00:42:18.840 --> 00:42:19.940
+PyPI is as well.
+
+00:42:20.080 --> 00:42:24.080
+But it looks over at npm as thankful for its situation.
+
+00:42:24.280 --> 00:42:24.580
+I know.
+
+00:42:24.660 --> 00:42:24.960
+And it's like.
+
+00:42:24.960 --> 00:42:29.100
+I feel you there.
+
+00:42:30.100 --> 00:42:30.500
+Okay.
+
+00:42:30.880 --> 00:42:32.860
+Number four.
+
+00:42:32.960 --> 00:42:34.220
+Got to keep cruising here.
+
+00:42:35.220 --> 00:42:35.580
+All right.
+
+00:42:35.740 --> 00:42:36.140
+Number four.
+
+00:42:36.140 --> 00:42:37.320
+Cryptographic failures.
+
+00:42:37.780 --> 00:42:38.780
+Cryptographic failures.
+
+00:42:38.900 --> 00:42:39.100
+Yeah.
+
+00:42:39.820 --> 00:42:40.800
+Not encrypting.
+
+00:42:41.500 --> 00:42:43.440
+Encrypting using something really old.
+
+00:42:44.480 --> 00:42:48.240
+You start off encrypted and then briefly you're not encrypted and then you're encrypted again.
+
+00:42:48.240 --> 00:42:50.600
+You don't encrypt it when you're supposed to.
+
+00:42:51.500 --> 00:42:51.640
+Yeah.
+
+00:42:51.740 --> 00:42:51.880
+Yeah.
+
+00:42:52.600 --> 00:43:02.880
+And also in this realm, one way hashing, not just reversible encryption, right, would probably fall in here?
+
+00:43:02.880 --> 00:43:03.280
+Yeah.
+
+00:43:03.280 --> 00:43:03.640
+Yeah.
+
+00:43:03.760 --> 00:43:09.480
+So encrypting user passwords and storing them in the database along with the key.
+
+00:43:10.380 --> 00:43:15.840
+Ideally, we would hash and we would salt and then hash user passwords.
+
+00:43:16.040 --> 00:43:17.020
+That would be the best.
+
+00:43:17.760 --> 00:43:17.840
+Yeah.
+
+00:43:17.980 --> 00:43:21.380
+If you really, really, really, really are intense, you could pepper it too.
+
+00:43:21.480 --> 00:43:22.640
+And no, I did not make that up.
+
+00:43:22.920 --> 00:43:25.760
+That is a mathematical nerd joke, not an app tech joke.
+
+00:43:27.420 --> 00:43:30.700
+But a salt is unique per user.
+
+00:43:30.700 --> 00:43:32.760
+And the salt itself isn't really a secret.
+
+00:43:32.880 --> 00:43:36.100
+Where a pepper is unique per system or per organization.
+
+00:43:36.360 --> 00:43:37.680
+And it is a secret.
+
+00:43:38.440 --> 00:43:38.520
+Right.
+
+00:43:38.600 --> 00:43:42.100
+Like a secret key that you set and then it gets factored in there.
+
+00:43:42.160 --> 00:43:42.500
+That's cool.
+
+00:43:42.900 --> 00:43:43.080
+Yeah.
+
+00:43:43.300 --> 00:43:43.500
+Yeah.
+
+00:43:43.500 --> 00:43:46.720
+Also, maybe choose more modern hashing algorithms, right?
+
+00:43:46.900 --> 00:43:51.420
+Obviously, not MD5, but maybe something memory hard like Argon, maybe.
+
+00:43:51.640 --> 00:43:51.880
+I don't know.
+
+00:43:51.980 --> 00:43:52.180
+Yes.
+
+00:43:52.280 --> 00:43:52.780
+Argon2.
+
+00:43:53.300 --> 00:43:54.760
+That would be better for sure.
+
+00:43:55.320 --> 00:43:55.500
+Yeah.
+
+00:43:55.620 --> 00:43:55.860
+Yeah.
+
+00:43:56.140 --> 00:44:02.340
+And this is something where, you know, if you're going to do it, it's very easy to look up what you're supposed to do on the internet.
+
+00:44:03.340 --> 00:44:08.560
+It's this is something where you can ask the AI, like, are you using a good algorithm?
+
+00:44:08.560 --> 00:44:09.140
+Are you doing this?
+
+00:44:09.140 --> 00:44:10.080
+Like, make sure it's secure.
+
+00:44:10.220 --> 00:44:14.280
+And then it's good as long as it does it.
+
+00:44:14.660 --> 00:44:14.800
+Because.
+
+00:44:15.040 --> 00:44:15.180
+Yeah.
+
+00:44:15.180 --> 00:44:22.540
+One suggestion, if you are going to vibe code and not do the 400 other things we'll talk about later when we talk about my prompt library.
+
+00:44:23.200 --> 00:44:26.260
+But ask it to list its security assumptions.
+
+00:44:27.000 --> 00:44:29.540
+So whatever it is you prompt, you give it to make a thing.
+
+00:44:29.600 --> 00:44:31.340
+You're like, make this, then do that, blah, blah, blah.
+
+00:44:31.820 --> 00:44:33.500
+Please list all your security assumptions.
+
+00:44:33.500 --> 00:44:39.780
+And it'll be like, oh, yeah, but obviously, like, you wouldn't do, like, authentication like that because that's terrible.
+
+00:44:39.940 --> 00:44:41.780
+And, like, in production, you would do this other thing.
+
+00:44:41.820 --> 00:44:43.780
+And you're like, oh, yeah.
+
+00:44:44.400 --> 00:44:44.580
+Yeah.
+
+00:44:44.720 --> 00:44:51.500
+Because it'll assume that you're going to change a bunch of things later that it doesn't tell you unless you ask it to tell you its assumptions.
+
+00:44:51.500 --> 00:44:51.940
+Interesting.
+
+00:44:53.000 --> 00:44:53.180
+Yeah.
+
+00:44:53.280 --> 00:44:54.420
+We'll use no password here.
+
+00:44:54.480 --> 00:44:55.940
+But when you ship it, you're going to add that, right?
+
+00:44:56.060 --> 00:44:57.680
+Like, no, I wasn't going to, but.
+
+00:44:58.240 --> 00:44:58.460
+Yeah.
+
+00:44:58.820 --> 00:44:59.320
+No, I will.
+
+00:44:59.540 --> 00:44:59.940
+All right.
+
+00:45:00.160 --> 00:45:05.420
+I think one of the best known ones has got to be little Bobby tables and friends.
+
+00:45:06.260 --> 00:45:08.300
+Number five, injection.
+
+00:45:09.140 --> 00:45:09.580
+Yes.
+
+00:45:09.980 --> 00:45:18.240
+So injection, tricking an application in, like, you put your code, the malicious actor's code, into a place where it should be data.
+
+00:45:18.240 --> 00:45:20.840
+But you've tricked it into thinking it's its code.
+
+00:45:21.000 --> 00:45:23.340
+And then either it executes it or it interprets it.
+
+00:45:23.920 --> 00:45:27.960
+Like, if there's an interpreter, there's a compiler, there's the potential for injection.
+
+00:45:28.860 --> 00:45:33.640
+And it, yeah, we don't want to mix data in with commands.
+
+00:45:34.060 --> 00:45:38.520
+We don't want to mix data in with anything that's going to be executed or interpreted.
+
+00:45:38.720 --> 00:45:40.180
+And we do it a lot, Michael.
+
+00:45:40.700 --> 00:45:41.300
+I know.
+
+00:45:41.400 --> 00:45:42.640
+We make bad choices, don't we?
+
+00:45:43.540 --> 00:45:44.560
+We make bad choices.
+
+00:45:44.560 --> 00:45:50.280
+So obviously, SQL injection is the number one in this world, for sure.
+
+00:45:51.040 --> 00:45:52.900
+And still, it's popular.
+
+00:45:53.180 --> 00:45:54.140
+Still, people don't know.
+
+00:45:54.200 --> 00:45:54.840
+It's still tricky.
+
+00:45:55.140 --> 00:46:01.840
+I mean, we have certainly parametrize queries and ORMs and stuff that should be helping us or does help us if we choose to use them with this.
+
+00:46:02.360 --> 00:46:06.480
+However, I think other ones should just give them a quick shout out.
+
+00:46:06.480 --> 00:46:15.500
+Like, for example, if you're accepting JSON and converting it to a dictionary in Python, you can do MongoDB injection.
+
+00:46:15.500 --> 00:46:22.860
+Like, your password, you know, the BobbyTables one is like, quote, semicolon, drop table.
+
+00:46:23.080 --> 00:46:25.200
+You know, like, that's what that looks like in T-SQL.
+
+00:46:25.360 --> 00:46:29.360
+But in MongoDB, you can do queries that are dictionaries.
+
+00:46:29.640 --> 00:46:31.260
+That's, like, kind of how you do your filtering.
+
+00:46:31.260 --> 00:46:41.280
+So if you take something that would be a password in a JSON document, the password could be curly brace greater than, you know, one equals one.
+
+00:46:41.420 --> 00:46:46.640
+Like, a really complicated JSON dictionary that is actually the query that is equivalent.
+
+00:46:46.780 --> 00:46:48.400
+So you've got to be super careful there as well.
+
+00:46:48.480 --> 00:46:51.240
+And that's really tricky to do that.
+
+00:46:51.320 --> 00:46:54.840
+And then also, like, the pickles and, like, serialization, deserialization.
+
+00:46:55.020 --> 00:46:58.680
+There's a lot to this, not just SQL injection.
+
+00:46:58.680 --> 00:47:02.620
+Yeah, it's a lot about input validation.
+
+00:47:03.220 --> 00:47:13.920
+So using a parameterized query, so stored procedures, prepared statements, whatever you want to call them, what that does is says, this is data, only treated as data.
+
+00:47:14.220 --> 00:47:17.000
+And then the database can do that.
+
+00:47:17.680 --> 00:47:26.720
+But if we, on top of that, do input validation, so, like, we're getting the thing that looks correct, and we're rejecting, we're not trying to fix it.
+
+00:47:26.720 --> 00:47:29.140
+We're just rejecting everything that looks not correct.
+
+00:47:29.900 --> 00:47:34.940
+And then if we have to accept any special characters, we escape them or sanitize them out.
+
+00:47:35.140 --> 00:47:36.100
+I prefer escaping.
+
+00:47:36.340 --> 00:47:37.540
+I think it's weird to remove stuff.
+
+00:47:37.660 --> 00:47:38.260
+That's my data.
+
+00:47:38.360 --> 00:47:39.120
+I probably want it.
+
+00:47:40.380 --> 00:47:45.960
+So, like, if you have to accept single quotes because you know you're going to have users named O'Malley, let's say, right?
+
+00:47:45.960 --> 00:47:55.180
+So, you know, we accept the letters, we accept the numbers, we accept a single quote and some dashes, even though those are dangerous, and then we escape those characters because we know they're potentially dangerous.
+
+00:47:55.180 --> 00:48:02.360
+And then we specify, by the way, that's definitely data and not code in by making it a parameter, right?
+
+00:48:02.420 --> 00:48:04.080
+And then we're locked down.
+
+00:48:04.200 --> 00:48:05.500
+We're in really good shape.
+
+00:48:05.500 --> 00:48:19.100
+If we all did input validation on everything, and then we just rejected everything that looked weird, especially against, like, we always need to do, like, a yes list and allow, like, this is allowed list.
+
+00:48:19.280 --> 00:48:22.840
+Not, like, when I was a pen tester, Michael, I was not.
+
+00:48:22.980 --> 00:48:24.700
+I was a pen tester for a year and a half.
+
+00:48:25.480 --> 00:48:26.740
+I had basically zero training.
+
+00:48:27.600 --> 00:48:30.000
+And I could get around those in two seconds.
+
+00:48:30.000 --> 00:48:32.860
+And, like, I was not particularly superbly talented.
+
+00:48:33.560 --> 00:48:36.540
+And I was just like, pew, pew, pew, pew, ha, ha, ha, ha, ha, ha, ha, block list.
+
+00:48:36.700 --> 00:48:37.140
+You just try.
+
+00:48:37.680 --> 00:48:38.980
+If you just know to look, right?
+
+00:48:39.680 --> 00:48:40.020
+Yeah.
+
+00:48:40.180 --> 00:48:43.380
+Well, and there's cheat sheets all over the internet of how to get around them.
+
+00:48:43.600 --> 00:48:46.180
+It's so everyone knows how to get around them.
+
+00:48:46.180 --> 00:48:49.700
+But you can't get around, well, you're only allowed letters and numbers.
+
+00:48:49.900 --> 00:48:50.720
+It's like, well, crap.
+
+00:48:51.600 --> 00:48:51.800
+Yeah.
+
+00:48:53.800 --> 00:48:54.200
+Exactly.
+
+00:48:54.420 --> 00:48:55.460
+Those are not trouble.
+
+00:48:55.460 --> 00:49:01.160
+All right, let's keep moving a little bit quickly so that we know that we've got time for a little retrospective.
+
+00:49:01.620 --> 00:49:03.880
+So, insecure design, that's a fun one.
+
+00:49:04.700 --> 00:49:05.000
+Yes.
+
+00:49:05.360 --> 00:49:11.160
+So, it does not matter how perfectly you follow the plan if the plan is bad.
+
+00:49:11.740 --> 00:49:12.260
+Right?
+
+00:49:12.440 --> 00:49:12.600
+Yeah.
+
+00:49:12.980 --> 00:49:18.420
+And so, this was new on the last time we released the list.
+
+00:49:18.580 --> 00:49:20.300
+It was the first time it was on there.
+
+00:49:20.300 --> 00:49:24.540
+And I'm really glad because all the other items are implementation.
+
+00:49:24.540 --> 00:49:27.800
+And this is the only one that is designed the plan.
+
+00:49:28.460 --> 00:49:32.860
+And so, essentially, it means, you know, someone designed something and you don't talk about it.
+
+00:49:33.240 --> 00:49:35.020
+You don't analyze it for security.
+
+00:49:35.360 --> 00:49:38.740
+You don't intentionally apply secure design concepts.
+
+00:49:39.040 --> 00:49:40.220
+You don't do a threat model.
+
+00:49:40.320 --> 00:49:41.520
+There's no security review.
+
+00:49:42.160 --> 00:49:43.040
+You YOLO that.
+
+00:49:43.040 --> 00:49:47.480
+You don't even have a list of security requirements, usually, that you knew you should have added.
+
+00:49:47.640 --> 00:49:55.180
+Like, if you're going to do an API and it's, you know, visible from accessible from the internet, to me, it should be behind an API gateway.
+
+00:49:55.560 --> 00:49:55.760
+Period.
+
+00:49:56.120 --> 00:49:57.000
+That is my opinion.
+
+00:49:57.180 --> 00:49:58.040
+No, I don't sell one.
+
+00:49:58.380 --> 00:49:59.700
+But I think we all need one.
+
+00:50:00.020 --> 00:50:00.320
+Right?
+
+00:50:00.320 --> 00:50:03.820
+And to me, that should just be a requirement up front.
+
+00:50:04.020 --> 00:50:06.760
+And then when I see your design document and it's there, I'm like, thumbs up.
+
+00:50:06.820 --> 00:50:07.260
+Let's go.
+
+00:50:07.860 --> 00:50:07.960
+Right?
+
+00:50:08.320 --> 00:50:16.880
+But if you're not giving clear requirements and then you're not reviewing the design, you are getting a YOLO approach at stuff.
+
+00:50:17.000 --> 00:50:19.180
+And that doesn't mean developers don't care.
+
+00:50:19.420 --> 00:50:23.280
+But if no one's taught them this, no one's asked for this, and then no one checks this.
+
+00:50:24.400 --> 00:50:24.800
+Yeah.
+
+00:50:25.700 --> 00:50:28.060
+The problem with this one is the code looks fine.
+
+00:50:28.120 --> 00:50:29.240
+It looks like you're doing it right.
+
+00:50:29.240 --> 00:50:31.960
+It's just there's something important that's just not even there.
+
+00:50:32.040 --> 00:50:35.980
+Like, examples that I came up with were like, no rate limiting would be one.
+
+00:50:36.240 --> 00:50:37.200
+The login looks fine.
+
+00:50:37.280 --> 00:50:40.400
+You're checking the person's not a duplicate, that they're there, et cetera, et cetera.
+
+00:50:40.500 --> 00:50:40.620
+Right?
+
+00:50:41.300 --> 00:50:44.680
+Or client-side enforcement and some kind of, like, Vue.js act.
+
+00:50:44.760 --> 00:50:50.620
+You've got all the validation there, but the API actually just assumes the client is doing it, which is never the way.
+
+00:50:51.360 --> 00:50:51.560
+Yeah.
+
+00:50:51.560 --> 00:50:59.160
+And there's a lot of business logic issues that will be the way that you're solving the problem.
+
+00:50:59.160 --> 00:51:02.660
+If users do the thing you want, it's fine.
+
+00:51:02.960 --> 00:51:05.040
+But not all users do the thing you want.
+
+00:51:05.120 --> 00:51:06.140
+And some of them are Tanya.
+
+00:51:06.380 --> 00:51:08.200
+And they're like, well, I'm just going to click through your own.
+
+00:51:08.900 --> 00:51:09.600
+No, but like...
+
+00:51:09.600 --> 00:51:09.860
+Exactly.
+
+00:51:09.860 --> 00:51:13.820
+Some of us are curious and we like to click the buttons.
+
+00:51:15.740 --> 00:51:17.360
+We're like, oh, look at that.
+
+00:51:17.660 --> 00:51:20.320
+Oh, there's a next button, even though it says it's the last page.
+
+00:51:20.720 --> 00:51:20.780
+Yeah.
+
+00:51:20.920 --> 00:51:22.780
+What would happen if we clicked that?
+
+00:51:22.860 --> 00:51:23.080
+Absolutely.
+
+00:51:23.200 --> 00:51:24.460
+You've got to click that button, right?
+
+00:51:25.860 --> 00:51:27.520
+Authentication failures, number seven.
+
+00:51:27.520 --> 00:51:35.140
+So this is when an attacker can trick the app into thinking they're a different user, usually an admin user.
+
+00:51:35.140 --> 00:51:39.200
+Or if they're not a legitimate user, tricking them into being a legitimate user.
+
+00:51:39.320 --> 00:51:41.080
+But we all want to be admin, Michael.
+
+00:51:41.660 --> 00:51:42.060
+Oh, yeah.
+
+00:51:42.920 --> 00:51:45.780
+And this can be caused by lots of things.
+
+00:51:46.020 --> 00:51:56.900
+Like, we wrote our own authentication instead of buying a tried, tested, and true product that will do this for us easier, better, faster, and cheaper in the long run.
+
+00:51:56.900 --> 00:51:58.040
+When we count maintenance.
+
+00:51:59.060 --> 00:52:00.440
+That's like the biggest mistake.
+
+00:52:00.580 --> 00:52:03.240
+But like, we don't protect against credential stuffing.
+
+00:52:03.360 --> 00:52:04.840
+We don't protect against brute force.
+
+00:52:05.020 --> 00:52:06.860
+Those are the two super, super huge ones.
+
+00:52:06.860 --> 00:52:14.320
+We let people reuse passwords, use terribly insecure passwords, etc. We don't have multiple forms of authentication.
+
+00:52:14.660 --> 00:52:16.320
+So there's no second factor.
+
+00:52:17.420 --> 00:52:17.560
+Yeah.
+
+00:52:18.140 --> 00:52:18.740
+And there's...
+
+00:52:18.740 --> 00:52:25.420
+Michael, there are ways to do multi-factor that don't like have to be awful necessarily.
+
+00:52:25.420 --> 00:52:30.460
+Like, if you don't require the same level of security, like posture.
+
+00:52:30.880 --> 00:52:36.480
+So, for instance, you know, you do have multi-factor authentication for the first time.
+
+00:52:36.640 --> 00:52:40.120
+But then maybe you fingerprint their browser and their device and their network.
+
+00:52:40.260 --> 00:52:47.620
+And if they're going to log in from the same device, the same browser, and the same network, maybe you don't require an MFA challenge very often.
+
+00:52:47.620 --> 00:52:49.060
+Yeah, 100%.
+
+00:52:49.060 --> 00:52:53.680
+Like, you could say, trust this machine or this browser.
+
+00:52:53.820 --> 00:52:57.360
+And you're like, okay, we'll never ask you 2FA again.
+
+00:52:57.520 --> 00:52:58.660
+Just your username and password.
+
+00:52:59.300 --> 00:53:02.380
+Or we won't, unless you're doing something like deleting your account.
+
+00:53:02.960 --> 00:53:04.120
+Yeah, something crazy.
+
+00:53:04.520 --> 00:53:04.720
+Yeah.
+
+00:53:04.720 --> 00:53:10.040
+So I feel like there's ways to make this not necessarily always super painful.
+
+00:53:10.540 --> 00:53:14.140
+And I, you know, pass keys are so nice.
+
+00:53:14.560 --> 00:53:16.300
+Those are making things a lot nicer.
+
+00:53:16.820 --> 00:53:20.260
+But I still feel like there's a ways to go.
+
+00:53:21.500 --> 00:53:21.620
+Yeah.
+
+00:53:21.700 --> 00:53:28.380
+I dream of the day where we trust our devices so well that, like, I can just touch the thing and I know it's okay.
+
+00:53:28.380 --> 00:53:28.820
+Right?
+
+00:53:29.600 --> 00:53:37.260
+And I know that someone can't just, like, XKCD, hit me with a wrench until I put the thing in front of my face and then it unlocks.
+
+00:53:37.500 --> 00:53:37.920
+Exactly.
+
+00:53:38.020 --> 00:53:40.660
+That is one of the weakest parts of the security chain there.
+
+00:53:40.960 --> 00:53:41.380
+Mm-hmm.
+
+00:53:41.820 --> 00:53:42.580
+For sure.
+
+00:53:42.920 --> 00:53:43.380
+All right.
+
+00:53:44.020 --> 00:53:46.560
+Software or data integrity failures?
+
+00:53:46.640 --> 00:53:47.180
+Number eight.
+
+00:53:48.200 --> 00:53:49.920
+So this is one we fought a lot about.
+
+00:53:52.320 --> 00:53:53.700
+Yeah, especially me and Neil.
+
+00:53:53.700 --> 00:53:59.980
+Because Neil, I wrote this one and Neil wrote the supply chain one or vice versa.
+
+00:54:00.720 --> 00:54:02.780
+And there's lots of arguments of how to differentiate.
+
+00:54:03.760 --> 00:54:13.520
+So we need to make sure that things we download are exactly what we think they are and that the integrity, it's not been spoofed or tampered with in the meantime.
+
+00:54:13.740 --> 00:54:15.600
+So no one has changed it.
+
+00:54:16.360 --> 00:54:18.240
+And this is for data and for software.
+
+00:54:18.240 --> 00:54:23.380
+So, you know, third-party components that we're getting, are we getting the thing we thought?
+
+00:54:23.500 --> 00:54:24.460
+Is there a tapo squat?
+
+00:54:24.700 --> 00:54:28.240
+Has someone been able to intercept in between and change it out?
+
+00:54:29.040 --> 00:54:30.000
+Same with data.
+
+00:54:30.380 --> 00:54:34.260
+Like, did someone change the data on the way to us, et cetera.
+
+00:54:34.580 --> 00:54:39.540
+And this is really key, especially for things that require anything medical.
+
+00:54:40.600 --> 00:54:40.880
+Right?
+
+00:54:40.880 --> 00:54:46.080
+Like, imagine the insulin pump that gets it wrong sometimes and people have comas.
+
+00:54:46.280 --> 00:54:47.940
+Like, that would be so unbelievably bad.
+
+00:54:48.320 --> 00:54:48.980
+That's very bad.
+
+00:54:49.300 --> 00:54:49.580
+Yeah.
+
+00:54:50.060 --> 00:54:58.820
+I worked with a company that did, like, all the medical devices and instruments and ORs and ERs and security assurance high.
+
+00:54:59.620 --> 00:54:59.960
+Yeah.
+
+00:55:00.080 --> 00:55:01.440
+It was an awesome project.
+
+00:55:01.620 --> 00:55:02.360
+It was really cool.
+
+00:55:02.400 --> 00:55:04.700
+But it was also like, damn, your job hard.
+
+00:55:06.260 --> 00:55:08.300
+It's tough to sleep at night in that one, yeah.
+
+00:55:08.300 --> 00:55:08.620
+Yeah.
+
+00:55:08.620 --> 00:55:08.940
+Yeah.
+
+00:55:09.040 --> 00:55:12.960
+And the thing is, is that private industry tends to really focus on availability.
+
+00:55:13.440 --> 00:55:15.660
+Like, if their website's down, they can't sell their thing.
+
+00:55:16.320 --> 00:55:17.000
+Clients call.
+
+00:55:17.760 --> 00:55:18.860
+It costs them money.
+
+00:55:19.180 --> 00:55:19.460
+Right?
+
+00:55:19.540 --> 00:55:24.880
+But integrity is, like, a more silent hurt, if that makes sense.
+
+00:55:25.020 --> 00:55:25.220
+Yeah.
+
+00:55:25.340 --> 00:55:27.080
+So many of these are like this, honestly.
+
+00:55:27.280 --> 00:55:37.520
+Like, the whole top 10 is only in – it only slows you down and it's sand in the gears until, you know, something happens and then it's your fault for not doing it.
+
+00:55:37.520 --> 00:55:39.820
+But before that, it's like all this stuff is a hassle.
+
+00:55:40.460 --> 00:55:40.600
+Right?
+
+00:55:40.740 --> 00:55:40.980
+Yeah.
+
+00:55:41.380 --> 00:55:41.720
+Yeah.
+
+00:55:41.840 --> 00:55:50.900
+And integrity, it comes into play in so many situations because it can fail silently.
+
+00:55:51.900 --> 00:55:55.100
+Things that fail silently are more scary for security teams.
+
+00:55:55.680 --> 00:55:56.020
+Does that make sense?
+
+00:55:56.160 --> 00:55:56.640
+Yeah.
+
+00:55:56.700 --> 00:55:57.220
+100%.
+
+00:55:57.220 --> 00:55:57.420
+Yeah.
+
+00:55:57.640 --> 00:55:58.020
+Yeah.
+
+00:55:59.600 --> 00:56:02.540
+So did you want to go over your examples?
+
+00:56:04.480 --> 00:56:04.980
+Yes.
+
+00:56:05.120 --> 00:56:05.740
+Let's see.
+
+00:56:05.740 --> 00:56:06.460
+Yeah.
+
+00:56:06.460 --> 00:56:16.500
+Well, so I think the – yeah, I think this one here is this – you know, people love to use CDNs for their JavaScript and their CSS and so on.
+
+00:56:16.500 --> 00:56:16.560
+Yeah.
+
+00:56:16.560 --> 00:56:29.380
+And there have been examples where the CDN was taken over or another developer could have been compromised who published a malicious JavaScript.
+
+00:56:29.380 --> 00:56:37.020
+And the danger with this is if you make that hack go through, you don't just take over that app.
+
+00:56:37.100 --> 00:56:39.120
+You take over all the people who use that app.
+
+00:56:39.120 --> 00:56:42.360
+And everyone who uses the CDN to pull it out.
+
+00:56:42.440 --> 00:56:46.540
+Like, it can be really the knock-on effects that are mega.
+
+00:56:47.320 --> 00:56:48.020
+Oh, yeah.
+
+00:56:48.620 --> 00:56:48.840
+Yeah.
+
+00:56:48.840 --> 00:56:48.920
+Yeah.
+
+00:56:48.920 --> 00:56:57.300
+And, like, checking the sub-resource integrity, doing that check, that can help.
+
+00:56:57.300 --> 00:57:20.200
+Sometimes we can do all the right things and we still get hurt because, like, for instance, with SolarWinds, the compromise was so deep in the organization that they were able to not only, you know, push in, like, code that was malicious, have it pass all the security tests in the pipeline, then sign it, and then release it.
+
+00:57:20.200 --> 00:57:20.680
+Yeah.
+
+00:57:20.680 --> 00:57:23.080
+And then not have customers also notice the problem.
+
+00:57:23.280 --> 00:57:25.560
+Like, that situation is rare.
+
+00:57:26.060 --> 00:57:32.000
+What we want to do with this one is raise awareness that you should just be checking the integrity of your stuff, period.
+
+00:57:32.760 --> 00:57:32.860
+Yeah.
+
+00:57:32.860 --> 00:57:33.020
+Right?
+
+00:57:33.160 --> 00:57:43.260
+So the software composition analysis companies, the security researchers, they're on it finding those rare edge case zero-day situations.
+
+00:57:43.260 --> 00:57:47.680
+What we need the average developer to do is just check integrity, period.
+
+00:57:48.060 --> 00:57:49.140
+Check the basic things, yeah.
+
+00:57:49.140 --> 00:57:52.400
+So the basic thing that you've got is what you think you've got, and it's from the right place.
+
+00:57:53.320 --> 00:57:56.100
+And if we could all do that, like, life wouldn't be great.
+
+00:57:56.140 --> 00:57:58.120
+There's defaults that are not great.
+
+00:57:58.200 --> 00:57:59.080
+For example, check this out.
+
+00:57:59.140 --> 00:58:01.640
+JS deliver with an R.
+
+00:58:02.680 --> 00:58:03.160
+Tailwind.
+
+00:58:03.600 --> 00:58:08.440
+So here's a real popular CDN delivering a very, very popular library.
+
+00:58:08.960 --> 00:58:10.260
+Here's how it tells me to use it.
+
+00:58:11.720 --> 00:58:12.660
+What's missing here?
+
+00:58:13.500 --> 00:58:15.480
+Sub-resource integrity check.
+
+00:58:15.640 --> 00:58:15.980
+Yes.
+
+00:58:15.980 --> 00:58:22.160
+So if I just say, I want to use this, Tailwind, and it says, great, source equals such and such, good to go.
+
+00:58:22.440 --> 00:58:22.840
+You know what I mean?
+
+00:58:22.860 --> 00:58:23.480
+And that's it.
+
+00:58:23.780 --> 00:58:30.960
+So even the really popular CDNs and stuff are just encouraging you to fall, to scramble from the pit of success.
+
+00:58:31.320 --> 00:58:31.700
+You know, it's not that at all.
+
+00:58:31.700 --> 00:58:34.380
+Maybe we should write them and be like, I want you to change this, please.
+
+00:58:34.380 --> 00:58:37.080
+When I worked at Microsoft, I did that all the time.
+
+00:58:37.180 --> 00:58:40.520
+I'd be like, you need to change your readme page.
+
+00:58:40.640 --> 00:58:41.060
+It's wrong.
+
+00:58:41.380 --> 00:58:42.920
+You forgot the security thing.
+
+00:58:43.320 --> 00:58:45.440
+And they'd be like, Tanya, just, it's a demo.
+
+00:58:45.560 --> 00:58:46.000
+I'm like, nope.
+
+00:58:46.760 --> 00:58:47.440
+Yeah, nope.
+
+00:58:47.920 --> 00:58:48.320
+Nope.
+
+00:58:48.640 --> 00:58:50.500
+I work here and I'm annoying now.
+
+00:58:53.380 --> 00:58:54.060
+All right.
+
+00:58:54.180 --> 00:58:56.120
+Two more real quick before we run out of time.
+
+00:58:57.280 --> 00:58:58.220
+Logging and alerting.
+
+00:58:58.220 --> 00:59:01.120
+So security logging and alerting.
+
+00:59:01.760 --> 00:59:08.740
+So developers might be doing lots of logging and they might be doing some alerting for debugging, which is important and you should still do it.
+
+00:59:09.200 --> 00:59:15.680
+But this is more that we're not logging when security controls are called and especially pass or fail.
+
+00:59:15.680 --> 00:59:23.040
+So if someone tries to log in 100 times in one second, I don't want to know the 100th time that they got in.
+
+00:59:23.160 --> 00:59:26.940
+I want to know all 99 times where they failed in the logs.
+
+00:59:27.600 --> 00:59:27.760
+Right.
+
+00:59:27.760 --> 00:59:33.300
+I want to have enough information in those logs that I can do a proper investigation.
+
+00:59:34.100 --> 00:59:38.140
+Like when I worked in AppSec, my job wasn't called incident responder.
+
+00:59:38.720 --> 00:59:44.460
+But every time an app got smashed, they're like, okay, Tanya, you're saying that you do that weird thing.
+
+00:59:45.220 --> 00:59:47.120
+And I would go look at the logs.
+
+00:59:47.240 --> 00:59:53.540
+And I remember a client calling me one day and they're like, Visa called us and 27 of our customers got popped.
+
+00:59:53.540 --> 00:59:55.420
+And we need you to go investigate.
+
+00:59:55.920 --> 00:59:58.540
+And turns out they didn't have any logs.
+
+00:59:59.080 --> 01:00:00.920
+They didn't think they needed to log that.
+
+01:00:00.920 --> 01:00:01.400
+Oh, gosh.
+
+01:00:01.860 --> 01:00:06.680
+And so they had absolutely no application logs for that log, for that app, sorry.
+
+01:00:06.680 --> 01:00:09.700
+And I was like, what am I supposed to investigate?
+
+01:00:09.860 --> 01:00:13.420
+Walk around the building with like a magnifying glass and just look cool with a hat on?
+
+01:00:13.560 --> 01:00:15.000
+Like there's no evidence.
+
+01:00:15.120 --> 01:00:19.260
+There's probably somebody in the corner with a hoodie, sunglasses looking sort of hacker-ish.
+
+01:00:19.560 --> 01:00:19.900
+Right?
+
+01:00:20.540 --> 01:00:22.520
+Like I'm just like, what am I supposed to investigate?
+
+01:00:22.720 --> 01:00:25.200
+Guys, like you have no logs at all.
+
+01:00:25.200 --> 01:00:26.860
+You got to let it keep going, basically.
+
+01:00:27.340 --> 01:00:32.400
+You got to say, now we have logging and then we can figure out if there's new stuff happening or something.
+
+01:00:32.480 --> 01:00:33.220
+It's really bad.
+
+01:00:33.560 --> 01:00:34.940
+It turns out it wasn't them.
+
+01:00:35.020 --> 01:00:37.860
+It turned out that there's a sandwich shop downstairs.
+
+01:00:38.760 --> 01:00:41.280
+And an employee had swiped cards.
+
+01:00:41.660 --> 01:00:41.960
+Yeah.
+
+01:00:42.180 --> 01:00:44.840
+And everything from our end was fine.
+
+01:00:45.620 --> 01:00:49.120
+But then I was like, we are rewriting this app so that it does security logging.
+
+01:00:49.120 --> 01:00:52.680
+So essentially, you're making it so we can't investigate.
+
+01:00:52.960 --> 01:00:55.260
+You're making it so there's no evidence that a thing happened.
+
+01:00:55.440 --> 01:00:56.760
+We can't press charges in court.
+
+01:00:56.840 --> 01:00:57.800
+There's no chain of custody.
+
+01:00:58.920 --> 01:01:01.020
+We'll never know what happened.
+
+01:01:01.260 --> 01:01:04.080
+And then that means we don't know how to protect ourselves in the future.
+
+01:01:04.400 --> 01:01:06.140
+And we really need these logs.
+
+01:01:06.260 --> 01:01:13.540
+So every time a security thing happens, input validation, output encoding, like anything that is security related, just log.
+
+01:01:14.540 --> 01:01:17.440
+The attempt was made and it worked or it didn't work.
+
+01:01:17.440 --> 01:01:20.860
+And, you know, which user ID, et cetera, things like that.
+
+01:01:20.860 --> 01:01:21.660
+And the timestamp.
+
+01:01:22.380 --> 01:01:22.860
+100%.
+
+01:01:22.860 --> 01:01:23.440
+100%.
+
+01:01:24.060 --> 01:01:24.380
+All right.
+
+01:01:24.420 --> 01:01:24.920
+Last one.
+
+01:01:25.000 --> 01:01:28.080
+Let's round it out real quick with mishandling of exceptional conditions.
+
+01:01:28.580 --> 01:01:29.980
+So this is brand new.
+
+01:01:30.260 --> 01:01:33.700
+And this one is related to the other one.
+
+01:01:33.820 --> 01:01:39.960
+So number nine was basically you're not doing logging when you should or your logs suck.
+
+01:01:40.080 --> 01:01:40.500
+They're incomplete.
+
+01:01:41.100 --> 01:01:45.720
+This one is errors happen and you just don't handle them properly.
+
+01:01:45.720 --> 01:01:53.980
+So I'm sure you've reviewed code and seen this where it's like try and it does a thing and then catch and then there's nothing.
+
+01:01:54.360 --> 01:01:54.540
+Yeah.
+
+01:01:54.800 --> 01:01:55.680
+And then end.
+
+01:01:55.880 --> 01:01:56.480
+I'm like, what?
+
+01:01:56.640 --> 01:01:59.100
+You didn't handle anything.
+
+01:01:59.100 --> 01:02:07.180
+Or the handling is just I'm going to print the entire system error to the screen with the stack trace and a mess.
+
+01:02:07.260 --> 01:02:07.460
+Nope.
+
+01:02:07.520 --> 01:02:08.040
+That's gross.
+
+01:02:08.880 --> 01:02:08.980
+Yeah.
+
+01:02:08.980 --> 01:02:11.740
+I'm just going to not properly recover.
+
+01:02:12.640 --> 01:02:12.880
+Right.
+
+01:02:12.960 --> 01:02:16.360
+And so application resilience is important.
+
+01:02:16.740 --> 01:02:19.480
+But you can't have that at all if you're not doing this.
+
+01:02:19.520 --> 01:02:20.360
+You can't recover.
+
+01:02:20.360 --> 01:02:21.000
+Yeah.
+
+01:02:21.140 --> 01:02:25.520
+Or you don't use a database transaction and data is corrupted or something like that.
+
+01:02:25.720 --> 01:02:26.380
+Go back to it.
+
+01:02:26.380 --> 01:02:26.560
+Yeah.
+
+01:02:26.780 --> 01:02:40.760
+And so this is where a lot of business logic flaws, like really unique bugs happen that are harder to find because we are not handling our errors at all or we're handling them very, very poorly.
+
+01:02:40.760 --> 01:02:49.920
+And I was really excited to have this on here because lack of application resilience tied for this one for number spot number 10.
+
+01:02:50.360 --> 01:02:54.940
+But if you solve this, you almost always solve lack of application resilience.
+
+01:02:55.120 --> 01:02:58.900
+But if you solve lack of application resilience, you do not solve this.
+
+01:02:59.300 --> 01:02:59.400
+Yeah.
+
+01:02:59.520 --> 01:03:03.380
+And so I was like, and so that's how I got them to agree to put this one on.
+
+01:03:03.500 --> 01:03:04.320
+And so the other one.
+
+01:03:04.940 --> 01:03:05.340
+That's awesome.
+
+01:03:05.460 --> 01:03:05.880
+Very good.
+
+01:03:06.480 --> 01:03:09.920
+Having technical discussions with really smart people.
+
+01:03:10.760 --> 01:03:11.500
+It's pretty cool.
+
+01:03:12.300 --> 01:03:12.700
+Absolutely.
+
+01:03:13.400 --> 01:03:22.280
+So I want to take a moment and talk about AI and security and give you a chance to talk about your prompt library and how people can get it.
+
+01:03:22.600 --> 01:03:25.480
+And while you're doing that, I'm going to pull up an example I can kick off.
+
+01:03:25.620 --> 01:03:27.180
+So tell people about it and I'll pull up the example.
+
+01:03:27.760 --> 01:03:27.980
+Okay.
+
+01:03:28.300 --> 01:03:33.480
+So I give training and I do this bad, better, best thing where I give an example.
+
+01:03:33.640 --> 01:03:38.320
+So I'm like input validation or whatever the topic is, you know, like a brief lecture on it and best practices.
+
+01:03:38.600 --> 01:03:40.520
+Then I give an example of bad code.
+
+01:03:40.760 --> 01:03:42.940
+Then we fix that thing, better code.
+
+01:03:43.020 --> 01:03:44.700
+And then best codes, like layers of defenses.
+
+01:03:45.240 --> 01:03:51.160
+And when I was creating these examples with the AI, Michael, every time the example was bad code.
+
+01:03:51.160 --> 01:03:56.140
+Like no security control whatsoever or completely incorrectly done.
+
+01:03:56.140 --> 01:04:00.340
+So like you get the input, you use it, and then you validate it.
+
+01:04:01.520 --> 01:04:01.960
+Right?
+
+01:04:02.120 --> 01:04:02.280
+Yeah.
+
+01:04:02.340 --> 01:04:04.840
+So it has gotten better.
+
+01:04:04.840 --> 01:04:10.940
+So over the past two years, I've seen it go from every time bad to maybe half the time it's a bad example.
+
+01:04:11.060 --> 01:04:13.500
+Sometimes I have to dumb it down now, which is encouraging.
+
+01:04:14.460 --> 01:04:16.780
+But that's obviously not what we want.
+
+01:04:16.780 --> 01:04:22.380
+And so the AI, I think everyone knows, is not creating great code.
+
+01:04:22.380 --> 01:04:26.780
+And the reason is it was trained on not great code.
+
+01:04:27.340 --> 01:04:27.540
+Right?
+
+01:04:28.120 --> 01:04:29.660
+Most code out there is not great code.
+
+01:04:30.060 --> 01:04:30.340
+Yeah.
+
+01:04:30.340 --> 01:04:39.340
+Well, and the code specifically it used was demos, examples, things on GitHub, publicly available demos where there's no security team involved.
+
+01:04:39.980 --> 01:04:40.180
+Right?
+
+01:04:40.180 --> 01:04:48.600
+So like if you went and scanned the code inside Microsoft that makes the Microsoft products, you better believe it, that'd probably be pretty darn good code.
+
+01:04:48.660 --> 01:04:48.880
+Yeah.
+
+01:04:49.700 --> 01:04:53.480
+Versus some random crap Tanya did five years ago that's on her GitHub.
+
+01:04:54.120 --> 01:04:55.560
+That might be really crappy.
+
+01:04:55.740 --> 01:04:57.540
+Or it might even be intentionally vulnerable.
+
+01:04:58.100 --> 01:04:58.220
+Right?
+
+01:04:58.280 --> 01:04:58.440
+Yeah.
+
+01:04:58.680 --> 01:04:59.300
+And it doesn't.
+
+01:04:59.300 --> 01:04:59.580
+Yeah, not obvious.
+
+01:04:59.680 --> 01:04:59.780
+Yeah.
+
+01:04:59.980 --> 01:05:00.300
+No.
+
+01:05:00.300 --> 01:05:07.480
+And so as a result, we have this thing that's trained that security just, it's optional.
+
+01:05:07.980 --> 01:05:09.080
+It's low priority.
+
+01:05:09.080 --> 01:05:11.080
+And it's missing.
+
+01:05:11.720 --> 01:05:14.900
+And so it is doing what it was trained to do.
+
+01:05:15.440 --> 01:05:21.100
+And developers, well, and non-developers are constantly making apps now.
+
+01:05:21.720 --> 01:05:26.120
+We have CEOs making apps because they don't like what the marketing team did.
+
+01:05:26.160 --> 01:05:27.680
+And they're like, look what I did over the weekend.
+
+01:05:28.520 --> 01:05:28.960
+Boom.
+
+01:05:29.180 --> 01:05:30.500
+It's publish, please.
+
+01:05:30.620 --> 01:05:31.520
+Because I'm the boss.
+
+01:05:31.880 --> 01:05:32.620
+Oh, I've seen it.
+
+01:05:32.720 --> 01:05:33.140
+Like literally.
+
+01:05:33.700 --> 01:05:33.820
+Yeah.
+
+01:05:33.840 --> 01:05:34.740
+Who's going to say no, right?
+
+01:05:35.240 --> 01:05:35.520
+Yeah.
+
+01:05:35.860 --> 01:05:36.380
+Yeah, exactly.
+
+01:05:36.380 --> 01:05:47.420
+And so here we have very, very insecure code going onto the internet very, very quickly, often with no time for the security team to go look at it.
+
+01:05:48.120 --> 01:05:48.600
+All right.
+
+01:05:48.600 --> 01:05:54.500
+So you've got this prompt library that people can go and get from your website for free.
+
+01:05:54.860 --> 01:05:55.040
+Yeah.
+
+01:05:55.040 --> 01:05:58.440
+You gave me an example to say, go find problems in this code.
+
+01:05:58.480 --> 01:06:01.620
+I took just some random code that I know has trouble in it and threw it in here.
+
+01:06:03.300 --> 01:06:03.700
+Yeah.
+
+01:06:03.700 --> 01:06:10.420
+So the secure code prompt library, if you want to go, just go securemyvibe.ca.
+
+01:06:11.580 --> 01:06:13.800
+And you do have to join my newsletter to get it.
+
+01:06:13.840 --> 01:06:18.200
+But I feel that's a reasonable price because my newsletter is awesome and you get memes.
+
+01:06:18.440 --> 01:06:21.020
+But anyway, so this is from that.
+
+01:06:21.220 --> 01:06:26.180
+So the prompt library has many things, but one of them is to review the code for security.
+
+01:06:26.420 --> 01:06:27.980
+So this is a code review prompt.
+
+01:06:27.980 --> 01:06:30.540
+So after you've generated the code, you would put this in.
+
+01:06:31.820 --> 01:06:33.060
+We have high risk findings.
+
+01:06:33.900 --> 01:06:37.940
+That looks like an, what number was that?
+
+01:06:38.500 --> 01:06:39.620
+We got more findings.
+
+01:06:39.740 --> 01:06:40.360
+Mass assignment?
+
+01:06:41.000 --> 01:06:41.740
+Unvalid JSON?
+
+01:06:42.960 --> 01:06:43.220
+Yeah.
+
+01:06:43.360 --> 01:06:44.320
+How much did I give it?
+
+01:06:45.140 --> 01:06:47.540
+I gave it 62 lines of code here.
+
+01:06:48.340 --> 01:06:52.520
+And you are going to have more vulnerabilities than you have lines of code.
+
+01:06:55.820 --> 01:06:56.260
+Yep.
+
+01:06:56.560 --> 01:06:56.840
+Yep.
+
+01:06:57.340 --> 01:06:57.740
+Wow.
+
+01:06:58.160 --> 01:06:58.480
+Okay.
+
+01:06:58.620 --> 01:07:02.800
+So I'm not going to go into the details, but wow, I just gave it a little bit and it pulled up a whole bunch.
+
+01:07:02.900 --> 01:07:04.960
+So I think that that is.
+
+01:07:05.800 --> 01:07:10.480
+Did this find more than when you just asked it to review for vulnerability?
+
+01:07:10.840 --> 01:07:11.560
+Yeah, I think so.
+
+01:07:11.620 --> 01:07:12.500
+I think it did actually.
+
+01:07:13.400 --> 01:07:13.720
+Yeah.
+
+01:07:13.720 --> 01:07:16.340
+Because if you put the AI in the right frame of mind, right?
+
+01:07:16.460 --> 01:07:17.200
+That's incredible.
+
+01:07:17.800 --> 01:07:20.460
+Well, and I gave it specific things that I wanted it to look for.
+
+01:07:20.740 --> 01:07:22.620
+So the prompt library has three levels.
+
+01:07:22.620 --> 01:07:27.580
+So prompt level one, you would make, you would add it to your memory or make a code skill.
+
+01:07:27.580 --> 01:07:31.820
+But you would make it run 100% of the times that you generate code.
+
+01:07:31.820 --> 01:07:39.000
+And it takes most of the first two thirds of my most recent book, Alice and Bob Learns Secure Coding.
+
+01:07:39.240 --> 01:07:41.600
+And it has condensed it into a set of prompts.
+
+01:07:41.740 --> 01:07:42.400
+Oh, that's awesome.
+
+01:07:42.400 --> 01:07:46.160
+When you build the code, these are the rules for doing so.
+
+01:07:46.940 --> 01:07:49.220
+Then, so that runs just every single time.
+
+01:07:49.220 --> 01:07:55.020
+And then it tells you all of its security assumptions and it flags any potential security issues for you automatically.
+
+01:07:55.380 --> 01:07:58.560
+So every time you generate code, it's like, I need you to know these things.
+
+01:07:59.100 --> 01:08:00.600
+And so then you can address them.
+
+01:08:00.600 --> 01:08:08.060
+And then level two prompts are, well, I'm going to build an API or I'm going to build a serverless app or I'm going to do this or I'm going to do that.
+
+01:08:08.280 --> 01:08:15.080
+And then you fill in the blanks and it helps basically set security requirements before the code's generated.
+
+01:08:15.360 --> 01:08:19.240
+So it does the first prompt and then that as like a double check.
+
+01:08:19.240 --> 01:08:19.580
+Yeah.
+
+01:08:19.860 --> 01:08:20.120
+Yeah.
+
+01:08:20.240 --> 01:08:20.460
+Cool.
+
+01:08:20.660 --> 01:08:23.420
+Then after you can run the secure code review check.
+
+01:08:23.980 --> 01:08:26.340
+And then level three is like where you want to get nitty gritty.
+
+01:08:26.620 --> 01:08:32.580
+Like you're like, I'm doing a user login feature and I want to hash these passwords very securely.
+
+01:08:32.940 --> 01:08:36.720
+Like, and then it's very specific about exactly how to do that.
+
+01:08:37.340 --> 01:08:37.480
+Yeah.
+
+01:08:38.120 --> 01:08:38.560
+Awesome.
+
+01:08:39.340 --> 01:08:39.520
+Yeah.
+
+01:08:39.940 --> 01:08:40.380
+And it's free.
+
+01:08:40.420 --> 01:08:40.560
+Yeah.
+
+01:08:40.560 --> 01:08:41.700
+People should definitely check this out.
+
+01:08:41.740 --> 01:08:42.220
+That's very cool.
+
+01:08:42.300 --> 01:08:42.520
+All right.
+
+01:08:42.600 --> 01:08:43.880
+We are out of time, Tanya.
+
+01:08:43.960 --> 01:08:45.160
+Thank you so much for being here.
+
+01:08:45.520 --> 01:08:46.140
+Final thoughts.
+
+01:08:46.220 --> 01:08:49.040
+People want to get going with the new top 10.
+
+01:08:49.740 --> 01:08:50.140
+Yeah.
+
+01:08:50.580 --> 01:08:52.120
+Please go take a look at it.
+
+01:08:52.120 --> 01:08:55.180
+So just look up OWASP top 10 and that will be us.
+
+01:08:55.280 --> 01:09:02.220
+Like Google's very good at finding us and maybe give it a read and maybe think about it the next time you are building an app.
+
+01:09:02.780 --> 01:09:05.960
+Also, maybe consider visiting your local OWASP chapter.
+
+01:09:06.780 --> 01:09:16.060
+Next time you want to, you know, search the internet how to do something that is security related, look up OWASP cheat sheet and then authentication, authorization or wherever you're doing.
+
+01:09:16.140 --> 01:09:17.360
+There's over 100 cheat sheets.
+
+01:09:17.900 --> 01:09:21.940
+We are a community that lives to serve and help you secure your software.
+
+01:09:22.700 --> 01:09:25.320
+And come check out me if you look up She Acts Purple.
+
+01:09:25.460 --> 01:09:30.640
+I am all the things, the newsletter, the podcast, the blog, etc. And I'm also here to help.
+
+01:09:31.460 --> 01:09:31.680
+Awesome.
+
+01:09:31.880 --> 01:09:33.140
+Well, I know you're doing really good stuff.
+
+01:09:33.200 --> 01:09:34.300
+I really appreciate your time here.
+
+01:09:34.580 --> 01:09:35.040
+Thank you, Tanya.
+
+01:09:35.460 --> 01:09:36.160
+Thank you, Michael.

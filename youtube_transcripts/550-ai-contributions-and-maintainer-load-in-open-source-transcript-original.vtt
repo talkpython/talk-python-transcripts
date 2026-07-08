@@ -1,0 +1,1888 @@
+WEBVTT
+
+00:00:00.819 --> 00:00:03.160
+<v Michael Kennedy>Paulo, welcome to Talk Python To Me.
+
+00:00:04.700 --> 00:00:05.340
+<v Michael Kennedy>Great to have you here, man.
+
+00:00:06.520 --> 00:00:07.180
+<v Paolo Melchiorre>Hi, Michael.
+
+00:00:07.260 --> 00:00:11.220
+<v Paolo Melchiorre>Thanks for having me and meeting you again after PyCon US last week.
+
+00:00:12.139 --> 00:00:14.920
+<v Michael Kennedy>Yeah, we had a great time at PyCon.
+
+00:00:15.320 --> 00:00:19.240
+<v Michael Kennedy>I mean, I don't know how you feel about it, given all the work that you do.
+
+00:00:19.300 --> 00:00:20.640
+<v Michael Kennedy>I suspect you feel similarly.
+
+00:00:21.100 --> 00:00:23.420
+<v Michael Kennedy>But to me, PyCon is like my geek holiday.
+
+00:00:23.700 --> 00:00:24.780
+<v Michael Kennedy>It doesn't feel like work.
+
+00:00:24.920 --> 00:00:28.160
+<v Michael Kennedy>It's like the reward for all the work throughout the year.
+
+00:00:29.240 --> 00:00:36.660
+<v Paolo Melchiorre>Yeah, so for me, it's very nice to meet in person, all these people that you talk with during the year.
+
+00:00:36.930 --> 00:00:44.940
+<v Paolo Melchiorre>And then finally, for a whole week, you can chat with them, drink a beer together or meeting also new people.
+
+00:00:45.580 --> 00:00:46.260
+<v Michael Kennedy>Yeah, absolutely.
+
+00:00:46.470 --> 00:00:48.280
+<v Michael Kennedy>It was tons of fun.
+
+00:00:48.650 --> 00:00:55.060
+<v Michael Kennedy>So we're going to talk about, honestly, I think it's going to be a fad, but we're going to talk about this new fad called AI.
+
+00:00:55.780 --> 00:01:02.120
+<v Michael Kennedy>It's probably not going to last, but in the meantime, it's kind of a hot topic at the moment.
+
+00:01:03.320 --> 00:01:13.080
+<v Michael Kennedy>So we're going to talk about AI and specifically your talk from PyCon about the effect of AI on open source maintainers,
+
+00:01:13.800 --> 00:01:18.380
+<v Michael Kennedy>which I think is a perspective that many people don't consider.
+
+00:01:19.160 --> 00:01:27.620
+<v Michael Kennedy>There was this graph from GitHub saying, look, we're really sorry that GitHub is down a lot lately.
+
+00:01:28.260 --> 00:01:39.200
+<v Michael Kennedy>But here is the usage graph of GitHub, and it did something like 12 times increase in activity over a couple of months.
+
+00:01:39.290 --> 00:01:43.260
+<v Michael Kennedy>I don't know, which I'm not necessarily totally going to give GitHub a pass on that.
+
+00:01:45.100 --> 00:01:55.740
+<v Michael Kennedy>But it is a signal and an indicator of just how much more the contributions, issues, pull requests are to GitHub.
+
+00:01:56.340 --> 00:02:08.880
+<v Michael Kennedy>Some of those are going to private repos or public one-person repos, but some of that traffic is going towards Django, Flask, Postgres, Curl, whatever, right?
+
+00:02:09.000 --> 00:02:13.940
+<v Michael Kennedy>And there's still one person or a couple of people on the receiving ends of those projects.
+
+00:02:15.380 --> 00:02:16.060
+<v Paolo Melchiorre>Yeah, that's true.
+
+00:02:16.400 --> 00:02:27.320
+<v Paolo Melchiorre>As I would say during my talk, I think AI here is a tool that amplified all the contribution positive and negative effects so also
+
+00:02:28.090 --> 00:02:39.520
+<v Paolo Melchiorre>small project or one-man project now have a tons and tons of requests and issue open in a very few amount of time this is not the best thing to have if
+
+00:02:39.520 --> 00:02:44.479
+<v Paolo Melchiorre>you have a very few time as a maintainer or you have also a job in the family so
+
+00:02:44.500 --> 00:02:53.800
+<v Michael Kennedy>this is what i try to analyze in my my talk it's tricky it's very tricky now before we get into
+
+00:02:54.460 --> 00:03:00.160
+<v Michael Kennedy>a bunch of different things primarily your talk who are you quick introduction for everyone
+
+00:03:01.620 --> 00:03:15.380
+<v Paolo Melchiorre>yeah very quick one um i i'm a software engineer from italy i studied in bologna and just after my career in the university i started working with python which i never used at university but i
+
+00:03:15.560 --> 00:03:21.940
+<v Paolo Melchiorre>started using zoop which is a very old web framework from the 2000 and also i think widow
+
+00:03:22.440 --> 00:03:30.700
+<v Paolo Melchiorre>work in the corporation back in the time but i liked a lot the back-end work with database
+
+00:03:31.840 --> 00:03:46.380
+<v Paolo Melchiorre>relational database in particular so i jumped from the clone community into community in the i've been more and more involved until today that i'm a member of the jungle software foundation i'm
+
+00:03:47.080 --> 00:03:54.540
+<v Paolo Melchiorre>a software foundation fellow and i tried to involve in the body initiative like
+
+00:03:54.940 --> 00:04:09.300
+<v Paolo Melchiorre>python italia organization i founded the local python pescari in my city local meetup and i tried to talk about Python different conferences in person and remotely.
+
+00:04:11.739 --> 00:04:12.180
+<v Paolo Melchiorre>Nice.
+
+00:04:13.850 --> 00:04:14.700
+<v Michael Kennedy>Well, that will keep you busy.
+
+00:04:15.920 --> 00:04:16.720
+<v Michael Kennedy>That's a lot going on.
+
+00:04:17.359 --> 00:04:20.220
+<v Michael Kennedy>Let's actually just, let me switch over here.
+
+00:04:20.739 --> 00:04:29.560
+<v Michael Kennedy>Let's just jump right into that. I think maybe talking about some of your, some of your work, let's, you mentioned some of these in your introduction here, but
+
+00:04:30.620 --> 00:04:43.880
+<v Michael Kennedy>people are probably familiar with the python software foundation but when you switch from plone and zoep over to django you move to a place that has an incredible community
+
+00:04:44.960 --> 00:04:57.260
+<v Michael Kennedy>i it's probably the biggest community or like organized community in all of python that's not python itself maybe something in data science but i i don't think so i think django has
+
+00:04:58.520 --> 00:05:08.780
+<v Michael Kennedy>got the most gravity of all of these these different organizations so it has its own software foundation with people that work for the django software foundation and so on so you're the
+
+00:05:08.860 --> 00:05:18.380
+<v Paolo Melchiorre>director of django software foundation yes yeah um i think it's a django um last last year we had the
+
+00:05:18.540 --> 00:05:30.720
+<v Paolo Melchiorre>20th birthday so it's 20 year around now this year 21 one of the oldest community that now is organized They created the foundation from the beginning.
+
+00:05:31.060 --> 00:05:36.460
+<v Paolo Melchiorre>So now it's one of the few projects with a big foundation, also a big community.
+
+00:05:38.100 --> 00:05:45.720
+<v Paolo Melchiorre>And we organize DjangoCon since a long time now in different countries, in the US, in Europe, in Africa, in Australia.
+
+00:05:46.500 --> 00:05:49.120
+<v Paolo Melchiorre>We are starting also some initiatives like that in India.
+
+00:05:50.000 --> 00:05:57.680
+<v Paolo Melchiorre>And the foundation here, the role to preserve the community and the software.
+
+00:05:58.760 --> 00:06:09.620
+<v Paolo Melchiorre>I think the Django Software Foundation is one of the most interesting because we experiment a lot of solution also before the Python Software Foundation.
+
+00:06:09.830 --> 00:06:20.180
+<v Paolo Melchiorre>For example, we started having the Django Fellow a long time ago, and now the Python Foundation is the developer in residence, which is some the same things.
+
+00:06:20.840 --> 00:06:24.540
+<v Paolo Melchiorre>We try to be involved in various initiative.
+
+00:06:25.140 --> 00:06:30.600
+<v Paolo Melchiorre>We create, we sustain the conference, the event as a Django software foundation.
+
+00:06:30.880 --> 00:06:36.660
+<v Paolo Melchiorre>For example, we give money for the organization of Django Girls Workshop all around the world.
+
+00:06:36.780 --> 00:06:48.160
+<v Paolo Melchiorre>Now we created, we are sustaining the DjangoNode Space program, which has been the subject of the topic of the last keynote in PyCon US last week.
+
+00:06:48.600 --> 00:06:52.960
+<v Paolo Melchiorre>and other small initiatives like events or Django on the MADs.
+
+00:06:53.840 --> 00:07:02.080
+<v Paolo Melchiorre>So the goal of the foundation is to sustain the community, the various aspects of the community, and also have higher...
+
+00:07:02.979 --> 00:07:12.620
+<v Paolo Melchiorre>Now we have three Django fellows that can be full-time working in triaging, helping the community to bring the best code.
+
+00:07:12.660 --> 00:07:17.320
+<v Paolo Melchiorre>We can have released the version on Python of Django, sorry.
+
+00:07:17.500 --> 00:07:21.080
+<v Paolo Melchiorre>And yeah, this is the work we try to do every month.
+
+00:07:22.440 --> 00:07:23.600
+<v Michael Kennedy>It's amazing, really.
+
+00:07:23.930 --> 00:07:24.660
+<v Michael Kennedy>You think about it.
+
+00:07:25.700 --> 00:07:27.420
+<v Michael Kennedy>There's a lot of other Python web frameworks.
+
+00:07:28.320 --> 00:07:29.120
+<v Michael Kennedy>They don't have this.
+
+00:07:29.740 --> 00:07:30.060
+<v Michael Kennedy>You know what I mean?
+
+00:07:30.120 --> 00:07:31.980
+<v Michael Kennedy>There's a lot of data science groups.
+
+00:07:33.060 --> 00:07:33.560
+<v Michael Kennedy>And they have it.
+
+00:07:33.800 --> 00:07:34.680
+<v Michael Kennedy>You know, there's PyData.
+
+00:07:34.860 --> 00:07:36.780
+<v Michael Kennedy>So in a sense, it's somewhat.
+
+00:07:37.060 --> 00:07:38.480
+<v Michael Kennedy>But that's all the PyData.
+
+00:07:38.580 --> 00:07:40.780
+<v Michael Kennedy>It's not pandas or whatever.
+
+00:07:41.040 --> 00:07:42.280
+<v Michael Kennedy>So this is really impressive.
+
+00:07:43.160 --> 00:07:48.360
+<v Michael Kennedy>And I think it's honestly one of the bits of the secret to the success of Django.
+
+00:07:50.080 --> 00:07:50.960
+<v Paolo Melchiorre>Yeah, I agree.
+
+00:07:51.430 --> 00:07:57.700
+<v Paolo Melchiorre>The fact that we had people that can dedicate full time or volunteers in the board.
+
+00:07:58.300 --> 00:08:08.140
+<v Paolo Melchiorre>We all are volunteer and spend time during the week and then for the meeting to sustain all the working group we are creating now.
+
+00:08:08.760 --> 00:08:17.520
+<v Paolo Melchiorre>We try to defend the trademark of Django and sustain all the working group that we are now for the security department for other things.
+
+00:08:18.740 --> 00:08:28.820
+<v Paolo Melchiorre>So the goalie here is trying to be organized a little to let everyone join the community and stay inside the community of Django.
+
+00:08:29.360 --> 00:08:29.840
+<v Michael Kennedy>Right.
+
+00:08:30.020 --> 00:08:32.140
+<v Michael Kennedy>You're also a, not that one.
+
+00:08:33.080 --> 00:08:36.300
+<v Michael Kennedy>I don't think I have a link for it, but you're a Django Girls coach as well.
+
+00:08:36.520 --> 00:08:37.080
+<v Michael Kennedy>What does that mean?
+
+00:08:37.260 --> 00:08:39.039
+<v Michael Kennedy>I mean, we know what Django Girls is.
+
+00:08:39.159 --> 00:08:47.060
+<v Michael Kennedy>It's like an organization that specifically supports women in tech by helping them get good at Django and providing community there.
+
+00:08:47.360 --> 00:08:49.660
+<v Michael Kennedy>But what does it mean to be a coach for Django Girls?
+
+00:08:51.360 --> 00:08:59.580
+<v Paolo Melchiorre>Yeah, Django Girls is an initiative that started in EuroPython more than 10 years ago, if I remember correctly, or longer than that.
+
+00:08:59.980 --> 00:09:05.420
+<v Paolo Melchiorre>So they are workshop for one whole day.
+
+00:09:06.300 --> 00:09:14.040
+<v Paolo Melchiorre>And you invited girls and also low representative people in this workshop for free.
+
+00:09:14.460 --> 00:09:22.820
+<v Paolo Melchiorre>Being a coach there means only stay there with the people that join and help them through the process of completing the workshop.
+
+00:09:23.860 --> 00:09:25.220
+<v Paolo Melchiorre>There is a very good guide.
+
+00:09:25.580 --> 00:09:33.400
+<v Paolo Melchiorre>A lot of people can do at home, but being there for them, it means starting creating a human connection with people.
+
+00:09:33.880 --> 00:09:38.340
+<v Paolo Melchiorre>demonstrating them that the community is not only called, but it also a person.
+
+00:09:38.560 --> 00:09:44.080
+<v Paolo Melchiorre>And I also organized two of these, other than being coach here in Pescara.
+
+00:09:44.460 --> 00:09:46.640
+<v Paolo Melchiorre>The goal is to organize more of that.
+
+00:09:46.920 --> 00:09:57.360
+<v Paolo Melchiorre>And if you go on the website, you see that every weeks, a lot of these workshops happen everywhere in the world from Australia to US, Europe, Africa, everywhere.
+
+00:09:59.400 --> 00:10:00.120
+<v Michael Kennedy>Yeah, very nice.
+
+00:10:00.420 --> 00:10:15.360
+<v Michael Kennedy>I think that's something that's super important for people to learn earlier, that there's more than just the code and there's more than just the docs and compiler or runtime errors and warnings and stuff like that.
+
+00:10:16.940 --> 00:10:27.040
+<v Michael Kennedy>The stereotype of a software developer, someone who's kind of antisocial, just sits there and holds themselves up in a basement or whatever.
+
+00:10:27.160 --> 00:10:28.740
+<v Michael Kennedy>And really it's a team sport.
+
+00:10:28.940 --> 00:10:31.500
+<v Michael Kennedy>And I think that's coming back around to PyCon.
+
+00:10:31.700 --> 00:10:39.100
+<v Michael Kennedy>I think that's why PyCon is so interesting 'cause you make those, you put a face to the name and you realize, oh, there's all these people doing this and making this possible.
+
+00:10:39.150 --> 00:10:43.400
+<v Michael Kennedy>It's not just this, you know, pip install this package or whatever.
+
+00:10:44.960 --> 00:10:45.640
+<v Paolo Melchiorre>Totally true.
+
+00:10:47.100 --> 00:10:54.740
+<v Paolo Melchiorre>Python is a community driven language, but it means that there is a whole community that sustain everyone.
+
+00:10:55.390 --> 00:10:55.500
+<v Paolo Melchiorre>Yeah,
+
+00:10:55.860 --> 00:10:56.340
+<v Michael Kennedy>100%.
+
+00:10:59.180 --> 00:11:06.080
+<v Michael Kennedy>Now, something else that Django has pretty interesting is Djangonauts and Django at Djangonauts dot space.
+
+00:11:06.410 --> 00:11:13.600
+<v Michael Kennedy>I had Sarah Boyce and Tushar Gupta on a while ago to dive deep into this, but this is a really interesting idea as well.
+
+00:11:13.600 --> 00:11:24.000
+<v Michael Kennedy>And I think this pulling this up specifically, cause I think it relates, it starts to get into the space of where your talk actually lands.
+
+00:11:24.130 --> 00:11:24.240
+<v Michael Kennedy>Right.
+
+00:11:24.520 --> 00:11:30.340
+<v Michael Kennedy>So when I first thought I heard this, I thought, Oh, this is to help people get good at Django.
+
+00:11:31.160 --> 00:11:33.420
+<v Michael Kennedy>But really, that's not exactly what it is, is it?
+
+00:11:35.520 --> 00:11:38.300
+<v Paolo Melchiorre>Yeah, I remember seeing the first presentation of the program.
+
+00:11:38.300 --> 00:11:40.040
+<v Paolo Melchiorre>I was very impressed.
+
+00:11:41.360 --> 00:11:49.760
+<v Paolo Melchiorre>So if the Django Girls program helps people that do know anything about programming, start doing that.
+
+00:11:50.300 --> 00:11:59.019
+<v Paolo Melchiorre>This program wants to answer the question of people that already know how to program in Python or in Django, how to start being more involved
+
+00:11:59.040 --> 00:12:05.480
+<v Paolo Melchiorre>and start contributing back to the code of Django in particular or other projects.
+
+00:12:05.840 --> 00:12:13.440
+<v Paolo Melchiorre>Now we added in the footer, you can see Beware, Wiktail, other initiatives very connected with Python and Django.
+
+00:12:13.960 --> 00:12:27.379
+<v Paolo Melchiorre>So the goal is to have a small group of people with a navigator that can help them to start contributing, start reading an issue from the issue tracker, understanding how to contribute in the best effective way
+
+00:12:27.880 --> 00:12:34.260
+<v Paolo Melchiorre>and to help them do the steps with other people that already did it.
+
+00:12:34.820 --> 00:12:37.960
+<v Paolo Melchiorre>And it's an accelerator for people that want to contribute back.
+
+00:12:38.760 --> 00:12:44.240
+<v Paolo Melchiorre>I was part of that once as a navigator, and that's been a very great experience.
+
+00:12:45.280 --> 00:12:50.500
+<v Paolo Melchiorre>And they organize more than one per year, more than one session per year.
+
+00:12:50.760 --> 00:13:02.900
+<v Paolo Melchiorre>And it was great seeing all these people coming for the program and then staying to start contributing effectively you can track them on the code base or the blog of
+
+00:13:03.140 --> 00:13:11.620
+<v Paolo Melchiorre>jungle all these places that they contribute now yeah and you they go in i forgot what they're
+
+00:13:11.700 --> 00:13:25.580
+<v Michael Kennedy>called but um like cohorts or whatever right that goes for a certain period of time and then you you apply to be part of the cohort and then the cohort runs and so on.
+
+00:13:26.240 --> 00:13:27.940
+<v Michael Kennedy>So people out there can go apply.
+
+00:13:27.960 --> 00:13:28.660
+<v Michael Kennedy>It's free, right?
+
+00:13:28.660 --> 00:13:30.720
+<v Michael Kennedy>You just have to get accepted.
+
+00:13:31.660 --> 00:13:31.840
+<v Paolo Melchiorre>Yeah.
+
+00:13:32.160 --> 00:13:33.260
+<v Paolo Melchiorre>A lot of people apply.
+
+00:13:33.780 --> 00:13:37.380
+<v Paolo Melchiorre>There is a review of the application.
+
+00:13:37.880 --> 00:13:45.300
+<v Paolo Melchiorre>So the admins form a small group of four people, of three or four people with a navigator that can add them.
+
+00:13:45.660 --> 00:14:00.500
+<v Paolo Melchiorre>And then there is a period of six weeks during the one they meet once in a while, they can work to each other because they have a chat and they have a way to track all the things
+
+00:14:00.640 --> 00:14:04.300
+<v Paolo Melchiorre>they learn, the attempt to contribute.
+
+00:14:05.240 --> 00:14:13.280
+<v Paolo Melchiorre>And they are together as a team for this part of the year, helping them each other and having feedback.
+
+00:14:13.980 --> 00:14:24.940
+<v Paolo Melchiorre>without a lot of initiative during this period like talks and meeting online, way to have support also for things that happen in life.
+
+00:14:25.720 --> 00:14:29.960
+<v Paolo Melchiorre>It's a small version of what can happen for the whole community.
+
+00:14:30.240 --> 00:14:40.000
+<v Paolo Melchiorre>When you meet people and you not talk only about the code, sometimes you talk about what happens in life, job, other multiple things.
+
+00:14:40.660 --> 00:14:42.720
+<v Paolo Melchiorre>This is a small version of it.
+
+00:14:45.100 --> 00:14:45.180
+<v Michael Kennedy>Nice.
+
+00:14:45.490 --> 00:14:51.760
+<v Michael Kennedy>You know, there's at least people who are junior developers or earlier stage developers.
+
+00:14:51.990 --> 00:14:56.260
+<v Michael Kennedy>I think there's a pretty real challenge of getting a job right now.
+
+00:14:57.559 --> 00:15:03.940
+<v Michael Kennedy>And contributing to open source is certainly one of those areas that helps you stand above.
+
+00:15:04.440 --> 00:15:13.380
+<v Michael Kennedy>Certainly on a popular project like Django, if you go around and say, yeah, I'm a Django core developer, contributor or whatever, That would make a big difference, right?
+
+00:15:13.600 --> 00:15:18.540
+<v Michael Kennedy>So I think projects like this, you know, people are really super excited.
+
+00:15:19.280 --> 00:15:26.520
+<v Michael Kennedy>Maybe this is a good opportunity to put another feather in the cap or something good on the resume, you know?
+
+00:15:28.380 --> 00:15:36.860
+<v Paolo Melchiorre>Yeah, every time I met some newcomers in the community, also in my job, every time I pushed them to try to contribute back.
+
+00:15:38.120 --> 00:15:51.620
+<v Paolo Melchiorre>It's good in your resume if you can show that you contributed, but more than that, you learn so much in contributing to Django in respect of only using Django in your daily job
+
+00:15:52.200 --> 00:15:57.120
+<v Paolo Melchiorre>because you are forced to go in the internals of Django with the help of the core contributors.
+
+00:15:58.360 --> 00:16:12.100
+<v Paolo Melchiorre>You can work also in one of the biggest companies, but it's impossible that you have so many skilled Django contributors or Python contributor when you contribute directly with the code and it's the fastest way to improve as a developer.
+
+00:16:13.080 --> 00:16:17.060
+<v Paolo Melchiorre>And it's more important than having something to put into your CV.
+
+00:16:17.270 --> 00:16:20.700
+<v Paolo Melchiorre>I think it's an accelerator of your learning.
+
+00:16:21.300 --> 00:16:22.960
+<v Michael Kennedy>So I try to do that.
+
+00:16:22.960 --> 00:16:34.560
+<v Michael Kennedy>Yeah, I've seen multiple people who come out of university or other things like that, gotten onto an open source project and it's just skyrocketed their career, which is super cool.
+
+00:16:35.600 --> 00:16:35.620
+<v Paolo Melchiorre>Yeah.
+
+00:16:36.170 --> 00:16:36.320
+<v Michael Kennedy>Yeah.
+
+00:16:37.120 --> 00:16:44.020
+<v Michael Kennedy>Okay, last thing before we dive into your main topic is PyCon Italy organizer.
+
+00:16:45.280 --> 00:16:46.420
+<v Michael Kennedy>And this is coming up.
+
+00:16:46.660 --> 00:16:49.140
+<v Michael Kennedy>First of all, I love the website design.
+
+00:16:49.270 --> 00:16:50.020
+<v Michael Kennedy>It looks very fun.
+
+00:16:50.050 --> 00:16:56.540
+<v Michael Kennedy>But it's coming up really soon, basically seven, no, five days from now from recording.
+
+00:16:58.200 --> 00:17:03.180
+<v Michael Kennedy>So people, I think this episode will actually come out after that in terms of on the podcast channels.
+
+00:17:03.300 --> 00:17:10.480
+<v Michael Kennedy>but on the YouTube channel at least we can encourage people to attend if they're local, somewhat local, or want to just go to Italy for a few days.
+
+00:17:11.939 --> 00:17:12.020
+<v Paolo Melchiorre>Yeah.
+
+00:17:13.400 --> 00:17:22.260
+<v Paolo Melchiorre>So I started, Picon Italy is of course my preferred conference because it is the first one that I started attending a long time ago.
+
+00:17:22.720 --> 00:17:29.020
+<v Paolo Melchiorre>And after a while I decided to be involved and help other organizers to organize it.
+
+00:17:30.800 --> 00:17:36.100
+<v Paolo Melchiorre>It will happen next year after a long time being organized in Florence.
+
+00:17:36.400 --> 00:17:40.840
+<v Paolo Melchiorre>This year we moved, last year we moved in Bologna and now we have a wider venue.
+
+00:17:41.160 --> 00:17:43.440
+<v Paolo Melchiorre>So last year we had more than 1000 people.
+
+00:17:44.200 --> 00:17:45.080
+<v Michael Kennedy>Wow, that's insane.
+
+00:17:45.120 --> 00:17:47.120
+<v Paolo Melchiorre>90% of the talk, yeah, it's quite big.
+
+00:17:48.240 --> 00:17:49.600
+<v Paolo Melchiorre>90% of the talk are in English.
+
+00:17:50.700 --> 00:17:56.900
+<v Paolo Melchiorre>The keynote, the workshop, we have multiple tracks, I think, six tracks plus the workshop and the keynote.
+
+00:17:57.920 --> 00:18:05.560
+<v Paolo Melchiorre>We usually organize social events like drinks and dinner with local food, of course, from Italy.
+
+00:18:06.280 --> 00:18:19.060
+<v Paolo Melchiorre>And we have the same approach as other community-driven conferences like Python US or EuroPython, but we give a lot of importance to maybe the lunchtime.
+
+00:18:19.520 --> 00:18:29.140
+<v Paolo Melchiorre>We've spent two hours for having lunch because we think it's a way to network better with other people with proper food and wine and other things.
+
+00:18:29.750 --> 00:18:35.120
+<v Paolo Melchiorre>You see, we have very great keynotes, the one you are showing from different community.
+
+00:18:36.480 --> 00:18:38.600
+<v Paolo Melchiorre>Diego is on the PyCon core team.
+
+00:18:39.120 --> 00:18:45.920
+<v Paolo Melchiorre>Sarah is one Django fellow, and Dawn is involved in community in so many different things, PyLadies and other things.
+
+00:18:46.660 --> 00:18:49.600
+<v Paolo Melchiorre>And we try to attract a lot of people from Europe.
+
+00:18:49.760 --> 00:18:52.040
+<v Paolo Melchiorre>Usually a lot of people from Europe and U.S.
+
+00:18:52.380 --> 00:18:58.280
+<v Paolo Melchiorre>attend because they can then spend other days traveling around in Italy, which is not bad.
+
+00:18:59.740 --> 00:19:09.280
+<v Paolo Melchiorre>And Bologna this year and also last year is a way to be in the central part of Italy and traveling very easy to all the other parts of Italy.
+
+00:19:09.440 --> 00:19:11.820
+<v Paolo Melchiorre>Like you can go in Florence in 30 minutes by train.
+
+00:19:12.600 --> 00:19:14.060
+<v Paolo Melchiorre>The train system will work very well.
+
+00:19:14.820 --> 00:19:20.420
+<v Paolo Melchiorre>And yeah, we have the first day, which is open and free for everyone.
+
+00:19:20.800 --> 00:19:26.160
+<v Paolo Melchiorre>So if people listen in YouTube and want to join, they don't have a ticket or they cannot afford it.
+
+00:19:26.600 --> 00:19:29.060
+<v Paolo Melchiorre>The first day is day for the beginners.
+
+00:19:29.800 --> 00:19:31.680
+<v Paolo Melchiorre>There is workshop for free for everyone.
+
+00:19:32.200 --> 00:19:35.440
+<v Paolo Melchiorre>You only have to go there and show up without a ticket.
+
+00:19:35.780 --> 00:19:47.000
+<v Paolo Melchiorre>It's a way to bring people, start attending a conference like that, participate in Django Girls workshop or other workshops that can help you be more involved.
+
+00:19:47.840 --> 00:20:00.020
+<v Paolo Melchiorre>And if you understand only now that you cannot attend too late you can join us next next year because we for sure we will have the same enthusiasm the
+
+00:20:00.220 --> 00:20:06.820
+<v Michael Kennedy>same great yeah people that sounds great do you have a mailing list or something people can sign
+
+00:20:06.820 --> 00:20:18.540
+<v Paolo Melchiorre>up for uh yeah i think it's in the contact here in the in the website uh-huh yeah on the folder you can join there.
+
+00:20:18.950 --> 00:20:22.800
+<v Paolo Melchiorre>And there is a group on Telegram.
+
+00:20:22.980 --> 00:20:28.920
+<v Paolo Melchiorre>There are the mail for be contacted.
+
+00:20:29.900 --> 00:20:30.260
+<v Paolo Melchiorre>There we go.
+
+00:20:30.410 --> 00:20:35.340
+<v Paolo Melchiorre>We can share maybe the link in the description of the podcast.
+
+00:20:37.360 --> 00:20:37.560
+<v Michael Kennedy>Perfect.
+
+00:20:37.830 --> 00:20:37.940
+<v Michael Kennedy>Yeah.
+
+00:20:40.280 --> 00:20:54.740
+<v Paolo Melchiorre>And of course, if your company is interested, you can sponsor or the comfort because there are a lot of opportunities to meet people, hire developers, or connect with other communities.
+
+00:20:56.080 --> 00:20:56.640
+<v Paolo Melchiorre>Indeed.
+
+00:20:57.980 --> 00:20:58.840
+<v Michael Kennedy>Yeah, yeah, very cool.
+
+00:20:58.980 --> 00:21:03.400
+<v Michael Kennedy>All right, let's talk about your talk here.
+
+00:21:04.800 --> 00:21:05.040
+<v Michael Kennedy>Perfect.
+
+00:21:05.780 --> 00:21:06.920
+<v Michael Kennedy>Yeah, let's dive into it.
+
+00:21:06.920 --> 00:21:19.840
+<v Michael Kennedy>So your talk was AI-assisted contributions and maintainer load over here at PyCon, which there's your your selfie getting ready that's cool yeah yeah i did it at the last moment
+
+00:21:21.090 --> 00:21:29.200
+<v Paolo Melchiorre>before closing with with with simon willison that was the host of the ai track yeah yeah so this was
+
+00:21:29.360 --> 00:21:41.740
+<v Michael Kennedy>definitely in the air i thought it was cool they had an ai track right yeah yeah it was the first one in the truck there was a security track and an ai track and i'll tell you what the ai track was packed.
+
+00:21:42.100 --> 00:21:44.620
+<v Michael Kennedy>There was a lot of people in those talks.
+
+00:21:44.840 --> 00:21:45.940
+<v Michael Kennedy>So I thought that was really cool.
+
+00:21:47.640 --> 00:21:59.980
+<v Michael Kennedy>Yeah. So tell us a bit about your talk and then we can dive into, you know, you had a bunch of like pull quotes, little examples from different maintainers and luminaries and so on. So I thought
+
+00:22:00.280 --> 00:22:04.320
+<v Michael Kennedy>we could kind of talk through those as a way of covering the topic, but tell people a bit about
+
+00:22:04.380 --> 00:22:18.300
+<v Paolo Melchiorre>high level about your talk yeah so the idea for the talk came to me when i started seeing more and more contribution in the django project or python or connected projects open source project
+
+00:22:18.300 --> 00:22:26.160
+<v Paolo Melchiorre>in general um since last year i started seeing more and more contribution very strange to be go
+
+00:22:26.320 --> 00:22:38.240
+<v Paolo Melchiorre>too wide as a scope and my tenure start complaining about it and i collected the tons of them then i a few to show in the here in the talk.
+
+00:22:38.660 --> 00:22:51.160
+<v Paolo Melchiorre>The point was that using AI is a good thing, it can be a good thing, it's a tool that can improve your productivity during the day if you know how to use it, but can be
+
+00:22:51.380 --> 00:23:05.660
+<v Paolo Melchiorre>also bad things for maintainers that have to filter and review more pull requests than before, more issue or bigger Q requests without having on the other side, someone that know what they
+
+00:23:05.740 --> 00:23:18.220
+<v Paolo Melchiorre>are sending to you because they can create a lot of code very easily, but maybe if they are not careful, they cannot understand what they are proposing to merge.
+
+00:23:19.060 --> 00:23:25.060
+<v Paolo Melchiorre>And in the process of this month, the past year, I was seeing that this was accelerating.
+
+00:23:25.220 --> 00:23:29.140
+<v Paolo Melchiorre>it was accelerating a lot from very few.
+
+00:23:30.500 --> 00:23:33.940
+<v Michael Kennedy>Yeah, I found that graph on GitHub.
+
+00:23:35.800 --> 00:23:40.180
+<v Michael Kennedy>You cannot imagine a more vertical increase in usage.
+
+00:23:40.920 --> 00:23:44.800
+<v Michael Kennedy>I'll put this link in the show notes for people, but it's crazy, right?
+
+00:23:45.620 --> 00:23:46.100
+<v Michael Kennedy>Yeah, yeah.
+
+00:23:46.100 --> 00:23:48.340
+<v Michael Kennedy>And that's what the maintainers are experiencing.
+
+00:23:49.260 --> 00:23:54.360
+<v Paolo Melchiorre>Exactly, so I was collecting all this information realizing that it was accelerating.
+
+00:23:54.820 --> 00:24:03.240
+<v Paolo Melchiorre>So after collecting a lot of them, also because in the Django community, we were observing this amount of requests.
+
+00:24:04.140 --> 00:24:15.320
+<v Paolo Melchiorre>Then I started seeing in different projects, and we started reasoning on how to do, how to face this amount of requests.
+
+00:24:16.220 --> 00:24:19.360
+<v Paolo Melchiorre>We created a working group in the Django community.
+
+00:24:20.180 --> 00:24:32.960
+<v Paolo Melchiorre>the eye we started doing some work workshop and i wanted to share what was happening i don't share any solution how to face it but i was interesting to to share what was happening
+
+00:24:33.060 --> 00:24:42.180
+<v Paolo Melchiorre>and what different projects were doing to face it yeah it's it's a challenge it's definitely a
+
+00:24:42.320 --> 00:24:56.080
+<v Michael Kennedy>challenge um so let's go through i think we can you're a big fan of movies i can tell you have a a lot of movie quotes and the space odyssey and other ones.
+
+00:24:57.180 --> 00:25:08.020
+<v Michael Kennedy>I introduced my daughter to the concept of, how, and, and the space odyssey when she first learned about AI and she thought it was the most amazing thing.
+
+00:25:09.680 --> 00:25:09.840
+<v Michael Kennedy>Yeah.
+
+00:25:10.740 --> 00:25:12.040
+<v Michael Kennedy>So let's see here.
+
+00:25:12.180 --> 00:25:12.400
+<v Michael Kennedy>All right.
+
+00:25:12.740 --> 00:25:19.560
+<v Michael Kennedy>So the first quote comes from Ken, which, Which Ken is this?
+
+00:25:19.940 --> 00:25:20.380
+<v Michael Kennedy>Do you remember?
+
+00:25:21.740 --> 00:25:26.260
+<v Paolo Melchiorre>Ken Thompson was the co-creator of Unix.
+
+00:25:27.080 --> 00:25:27.820
+<v Michael Kennedy>Yeah, yeah.
+
+00:25:28.840 --> 00:25:34.020
+<v Michael Kennedy>Cool, and so the quote is, you can't trust code that you did not totally create yourself.
+
+00:25:34.740 --> 00:25:45.520
+<v Michael Kennedy>I think this is an interesting way to start this conversation because this comes from a time far before open source, right?
+
+00:25:47.860 --> 00:25:49.400
+<v Michael Kennedy>UNIX was created quite a while ago.
+
+00:25:49.960 --> 00:26:01.600
+<v Michael Kennedy>And there's something true to this, but I also think you can't necessarily trust code that you did write yourself for complicated systems.
+
+00:26:04.020 --> 00:26:11.960
+<v Michael Kennedy>And I think we've seen that you can actually trust code in the right systems with the right guardrails.
+
+00:26:11.990 --> 00:26:13.300
+<v Michael Kennedy>Like look at Django, for example.
+
+00:26:14.760 --> 00:26:20.140
+<v Michael Kennedy>Most of the code that you run when you run Django, even if you're a core developer, you yourself didn't write.
+
+00:26:21.879 --> 00:26:30.960
+<v Michael Kennedy>Simon Willison and a few other folks who created it, even they probably didn't write most of the Django code at the way it is today, right?
+
+00:26:31.780 --> 00:26:32.100
+<v Paolo Melchiorre>Yeah.
+
+00:26:33.120 --> 00:26:37.300
+<v Paolo Melchiorre>You can still find some code they wrote, but now there are so many contributors.
+
+00:26:38.280 --> 00:26:51.620
+<v Paolo Melchiorre>Yeah, I showed these quotes and also the previous one, not because I think they are totally right in general, but to show people that the fear of new technology has been something in the Howard community
+
+00:26:51.630 --> 00:26:56.020
+<v Paolo Melchiorre>that started from the beginning of open source from the late seventies.
+
+00:26:56.800 --> 00:27:09.300
+<v Paolo Melchiorre>And it is normal that when a new technology like AI show up, the first reaction can be both refusing it totally, or maybe to embrace it because it's something exciting and new.
+
+00:27:10.040 --> 00:27:14.880
+<v Paolo Melchiorre>And I wanted to show that some quotes from the past apply also.
+
+00:27:15.640 --> 00:27:19.240
+<v Paolo Melchiorre>perfectly today from some reaction we are seeing in the community.
+
+00:27:20.840 --> 00:27:24.400
+<v Michael Kennedy>Yeah, it's a good quote, and I like the idea of you putting it there.
+
+00:27:27.179 --> 00:27:31.440
+<v Michael Kennedy>It's easy to feel like this is a brand new problem in some ways.
+
+00:27:32.180 --> 00:27:35.500
+<v Michael Kennedy>And it is a brand new problem, but not entirely, right?
+
+00:27:35.800 --> 00:27:37.380
+<v Michael Kennedy>These ideas have been there before.
+
+00:27:37.820 --> 00:27:40.200
+<v Michael Kennedy>And open source was revolutionary when it came out.
+
+00:27:41.680 --> 00:27:41.860
+<v Michael Kennedy>Yeah.
+
+00:27:42.680 --> 00:27:42.860
+<v Michael Kennedy>Yeah.
+
+00:27:43.240 --> 00:27:43.920
+<v Paolo Melchiorre>I agree totally.
+
+00:27:44.840 --> 00:27:54.080
+<v Michael Kennedy>Not just in the fact that it made a big change, but as it was kind of overthrowing some of the ideas of how software should be built, sold, shared, licensed, all that kind of stuff.
+
+00:27:56.120 --> 00:28:07.860
+<v Paolo Melchiorre>Yeah, I think the open source preserved the beginning of computer science as a science discipline,
+
+00:28:08.070 --> 00:28:15.360
+<v Paolo Melchiorre>because before then the science was sharing everything with everyone in every part of the world and discussing it.
+
+00:28:15.470 --> 00:28:23.900
+<v Paolo Melchiorre>And before companies started closing part of the code, they decided to continue that track and continue to sharing as much as possible.
+
+00:28:24.920 --> 00:28:33.020
+<v Paolo Melchiorre>and this is what bring us today discussing uh open source languages or framework yeah absolutely all
+
+00:28:33.020 --> 00:28:42.960
+<v Michael Kennedy>right there's the obligatory yeah single developer in nebraska lego block or j
+
+00:28:45.360 --> 00:28:59.260
+<v Michael Kennedy>not Jinja what is that jenga thank you thank you jango Jinja tower for that game where you pull the blocks out and you try to get a minimal block but yeah so
+
+00:29:02.940 --> 00:29:10.079
+<v Paolo Melchiorre>yeah this is imagine because because talking about maintainers this is an image that can
+
+00:29:10.860 --> 00:29:25.100
+<v Paolo Melchiorre>totally represent the situation here we are also python and django are a very small amount of contributors compared to the amount of people that are used python in the world or django they are
+
+00:29:25.940 --> 00:29:40.920
+<v Paolo Melchiorre>100 times more or more and 1000 times more so i i like these two words because you you can put there instead of nebraska your home town or your project that you like the most that you contribute too and it's worth the same.
+
+00:29:44.080 --> 00:29:49.940
+<v Michael Kennedy>I think this is the majority of open source projects and it's interesting how some of them are so central.
+
+00:29:50.100 --> 00:30:04.480
+<v Michael Kennedy>We're going to come back to talk about curl a little bit later I think and that's one of them we had was it open SSL I think was one that really felt maybe inspired this diagram actually I can't exactly remember but
+
+00:30:08.620 --> 00:30:20.580
+<v Michael Kennedy>yeah Django and the DSF and stuff is, it's true there's not that many people relative to how many are using it, but it's actually quite a bit more than most projects that do look like this.
+
+00:30:20.700 --> 00:30:32.060
+<v Michael Kennedy>And so when you start swamping that little peg at the end with 15,000 line PRs, just fixes a minor problem, just optimizes.
+
+00:30:32.900 --> 00:30:33.240
+<v Michael Kennedy>Here you go.
+
+00:30:34.320 --> 00:30:35.360
+<v Michael Kennedy>It's just too much, right?
+
+00:30:36.340 --> 00:30:36.720
+<v Paolo Melchiorre>Exactly.
+
+00:30:39.820 --> 00:30:54.640
+<v Michael Kennedy>all right you had this interesting analogy with a picture of django the guitar player and there was a lot of funny and this is the ai generator one right so there's a lot of
+
+00:30:56.900 --> 00:31:00.860
+<v Michael Kennedy>interesting things that came up when you said make me such a picture right you want to talk
+
+00:31:01.000 --> 00:31:15.460
+<v Paolo Melchiorre>through this analogy real quick yeah so to show how ai can impact the project i contribute more which is django i say okay let's try to ask ai to improve the image of django reniarch which is the
+
+00:31:16.020 --> 00:31:28.900
+<v Paolo Melchiorre>chess guitarist that inspired the name of django the framework and asking the ai to improve the picture it is different things that is very a metaphor what it can do to your code too for
+
+00:31:28.920 --> 00:31:39.720
+<v Paolo Melchiorre>For example, you have to bring a very new guitar, which is something that AI usually do when you try to modernize your code or use AI in your code.
+
+00:31:39.780 --> 00:31:43.180
+<v Paolo Melchiorre>It usually brings new packages of new things.
+
+00:31:44.700 --> 00:31:49.920
+<v Paolo Melchiorre>Maybe your code is very old, but it brings new dependencies, the latest technologies.
+
+00:31:50.860 --> 00:32:01.320
+<v Paolo Melchiorre>The other things the AI changed was removing some bad parts, like for example, the smoking cigarette that was common at the time when the pictures originally were taken.
+
+00:32:01.510 --> 00:32:05.820
+<v Paolo Melchiorre>But nowadays we know that maybe it cannot be so good things.
+
+00:32:06.800 --> 00:32:14.360
+<v Paolo Melchiorre>And he did also a strange thing that took me a few times to see.
+
+00:32:15.030 --> 00:32:22.340
+<v Paolo Melchiorre>It was adding an additional finger in the hand of Django Reinhardt, which is strange.
+
+00:32:23.220 --> 00:32:30.120
+<v Paolo Melchiorre>is the metaphor of the code you can have generated from the AI that at first look, it seems normal.
+
+00:32:30.900 --> 00:32:38.580
+<v Paolo Melchiorre>And, but when you deep dive a bit, you understand that it is something that was not possible having this case, an additional finger.
+
+00:32:39.320 --> 00:32:40.420
+<v Michael Kennedy>That's a really good analogy.
+
+00:32:40.740 --> 00:32:44.020
+<v Michael Kennedy>Yeah, you're like, oh, look, this is a great, I can't believe how perfect it looks.
+
+00:32:44.400 --> 00:32:46.300
+<v Michael Kennedy>Everything looks, wait a minute.
+
+00:32:47.660 --> 00:32:51.820
+<v Michael Kennedy>But that's also true for AI contributions as well, is it looks fine.
+
+00:32:52.600 --> 00:32:56.020
+<v Michael Kennedy>I found that's also true actually for speech to text.
+
+00:32:57.620 --> 00:33:12.260
+<v Michael Kennedy>It's really, I broke my hand really badly, like in three places up and down my, my hand and I don't know, quite a while ago, but seven or eight years, but I was still running talk Python and the business I had, I still get,
+
+00:33:12.380 --> 00:33:15.340
+<v Michael Kennedy>but I had an insane amount of email and stuff I had to do to keep things going.
+
+00:33:16.260 --> 00:33:17.980
+<v Michael Kennedy>And so I had to use speech to text.
+
+00:33:18.520 --> 00:33:30.340
+<v Michael Kennedy>And I think the reason I bring this up is I I think it's a bit of an interesting analogy for AI as well as I would use speech to text, it would transcribe it, and then I would go to send it.
+
+00:33:31.000 --> 00:33:35.020
+<v Michael Kennedy>And I had the hardest time actually finding the grammar errors.
+
+00:33:35.660 --> 00:33:44.440
+<v Michael Kennedy>But I would say stuff like, we're going to look at their project and figure something, you know, and it would use the different kind of there, right?
+
+00:33:44.640 --> 00:33:47.220
+<v Michael Kennedy>Not the belonging to the person, but the location there.
+
+00:33:47.820 --> 00:33:52.840
+<v Michael Kennedy>But because it was phonetically correct, I would read it back and it would sound okay.
+
+00:33:52.980 --> 00:33:56.240
+<v Michael Kennedy>And there was just something about my brain couldn't find the problem.
+
+00:33:56.300 --> 00:34:01.660
+<v Michael Kennedy>So I had to put a footer in my email like, sorry, hurt my hand, have to do voice detects.
+
+00:34:01.860 --> 00:34:03.500
+<v Michael Kennedy>Please just forgive the mistakes.
+
+00:34:03.600 --> 00:34:06.880
+<v Michael Kennedy>I couldn't find a point where I could get it done to zero mistakes.
+
+00:34:07.000 --> 00:34:10.679
+<v Michael Kennedy>And nowadays probably the transcription would be quite a bit better.
+
+00:34:11.960 --> 00:34:17.020
+<v Michael Kennedy>But there's something about looking at it and it looks right and it sounds right, but it's not right.
+
+00:34:17.120 --> 00:34:21.560
+<v Michael Kennedy>That just makes it very hard to internalize the mistake.
+
+00:34:21.740 --> 00:34:21.980
+<v Michael Kennedy>You know?
+
+00:34:22.899 --> 00:34:33.080
+<v Paolo Melchiorre>Totally true is AI is very great in generating content that look like perfect when you see at first glance, but when you deep dive a bit, especially for code,
+
+00:34:33.520 --> 00:34:40.940
+<v Paolo Melchiorre>you can find that one small characters can change the meaning of the things.
+
+00:34:41.100 --> 00:34:55.620
+<v Paolo Melchiorre>And a lot of people, when I show this picture, didn't realize at the first glance that this is an additional finger on the picture because it seems very very nice at the beginning yeah the most subtle thing for me is the amplifier
+
+00:34:56.260 --> 00:35:05.460
+<v Paolo Melchiorre>honestly yeah yeah yeah that was interesting i use it as a metaphor because i say that
+
+00:35:05.720 --> 00:35:20.440
+<v Paolo Melchiorre>beginning yeah i can amplify the effect of so many things i use it then in the rest of talk to to say a lot of project already is recognized ai as a tool it can amplify a lot
+
+00:35:20.600 --> 00:35:26.500
+<v Paolo Melchiorre>of effects you have to be aware that it can amplify positive and negative effect you know
+
+00:35:26.610 --> 00:35:41.420
+<v Michael Kennedy>your code yeah it's an amplifier but what is it amplifying right this is an amazing analogy now people who know me know that i i certainly am on the positive side of working with ai especially the newer agentic ones.
+
+00:35:41.420 --> 00:35:50.860
+<v Michael Kennedy>I think you can do really incredible stuff, not necessarily discussing the environmental and copyright aspects, but just as a tool, I think it's absolutely incredible.
+
+00:35:51.390 --> 00:35:57.460
+<v Michael Kennedy>But I think it's also really important to acknowledge its weaknesses, where you have to put in guardrails, how you should use it, right?
+
+00:35:57.780 --> 00:36:00.100
+<v Michael Kennedy>And I think this is a good analogy for it.
+
+00:36:01.640 --> 00:36:01.760
+<v Michael Kennedy>Okay.
+
+00:36:02.850 --> 00:36:03.420
+<v Michael Kennedy>Yeah, amplifier.
+
+00:36:04.020 --> 00:36:10.020
+<v Michael Kennedy>So if you've got low-quality code, Maybe it just really like makes way more of that, right?
+
+00:36:10.900 --> 00:36:11.240
+<v Paolo Melchiorre>Yeah, yeah.
+
+00:36:11.880 --> 00:36:12.680
+<v Michael Kennedy>Yeah, or bad decisions.
+
+00:36:13.600 --> 00:36:21.580
+<v Paolo Melchiorre>Recognizing the fact that AI is a very good tool that can amplify positive and negative things is something real thing.
+
+00:36:21.710 --> 00:36:34.780
+<v Paolo Melchiorre>I use AI every day for my daily job, but I can recognize the fact that people can use it in a bad way and so open tons of poor requests that are bad for your project.
+
+00:36:35.140 --> 00:36:40.940
+<v Paolo Melchiorre>So we have to be realistic here and to see that maybe it can be used correctly.
+
+00:36:41.760 --> 00:36:46.780
+<v Paolo Melchiorre>Everyone won't do that, but it's not every time the case.
+
+00:36:47.500 --> 00:36:52.720
+<v Michael Kennedy>Yeah, we're going to get into the different projects that do and some of their policies or whatever.
+
+00:36:53.320 --> 00:36:54.740
+<v Michael Kennedy>And some of them are just no.
+
+00:36:56.360 --> 00:36:59.240
+<v Michael Kennedy>I think that's a little bit short-sighted, but we're going to get to that.
+
+00:36:59.260 --> 00:36:59.700
+<v Michael Kennedy>We'll get to that.
+
+00:37:01.560 --> 00:37:06.440
+<v Michael Kennedy>So you put out there that AI does not change the nature of open source, it changes the scale.
+
+00:37:08.720 --> 00:37:15.840
+<v Paolo Melchiorre>Yeah, this was my thought when I, for the first time, worked on the slides for what I was observing.
+
+00:37:17.170 --> 00:37:25.140
+<v Paolo Melchiorre>Then I changed a bit this idea because when I spoke with people, I realized it was a slightly different.
+
+00:37:25.260 --> 00:37:39.140
+<v Paolo Melchiorre>Because I presented this talk, DjangoCon Europe in Athens in April, one month ago, and I received this very interesting feedback.
+
+00:37:40.160 --> 00:37:53.140
+<v Paolo Melchiorre>One of them was the fact that maybe changing the scale of the contribution of the amplifying things, AI was a tool that was able to change the nature of open source.
+
+00:37:53.260 --> 00:38:01.760
+<v Paolo Melchiorre>source because if you cannot trust people that open up requests if you lose your trust in other
+
+00:38:02.060 --> 00:38:08.440
+<v Paolo Melchiorre>members that are involved because they have too much so they contribute in a bad way open source
+
+00:38:08.740 --> 00:38:17.520
+<v Paolo Melchiorre>will change so when you have to be aware of that I think yeah one of my I don't know rule of
+
+00:38:17.540 --> 00:38:29.940
+<v Michael Kennedy>or whatever, like sort of AI ethics, I guess, is it shouldn't take you less time to create a thing than it takes someone else to review that thing.
+
+00:38:30.740 --> 00:38:36.020
+<v Michael Kennedy>It shouldn't take you less time to create a thing than it takes someone else to just read a thing, right?
+
+00:38:36.320 --> 00:38:42.780
+<v Michael Kennedy>But I imagine there's a lot of people out there who are just, oh, I've got this great idea for Django or whatever, you know, open source project.
+
+00:38:44.860 --> 00:38:46.820
+<v Michael Kennedy>Make it for me, and then I'll submit it as a PR.
+
+00:38:46.940 --> 00:38:49.100
+<v Michael Kennedy>And did they test it?
+
+00:38:49.260 --> 00:38:55.100
+<v Michael Kennedy>Did they verify it? Did they work on dry principles of refactoring everything just right?
+
+00:38:56.060 --> 00:38:57.120
+<v Michael Kennedy>Some people, absolutely.
+
+00:38:57.500 --> 00:38:59.860
+<v Michael Kennedy>And that's the challenge.
+
+00:39:00.180 --> 00:39:01.620
+<v Michael Kennedy>You don't want to throw that away necessarily.
+
+00:39:02.040 --> 00:39:08.020
+<v Michael Kennedy>But a lot of times I think they just see it works and test pass maybe and send it.
+
+00:39:09.680 --> 00:39:15.540
+<v Paolo Melchiorre>One of the projects I showed later in the talk stated in the guideline exactly what you just said.
+
+00:39:16.160 --> 00:39:27.260
+<v Paolo Melchiorre>But if your pull request requires less effort than has reviewing it, so we throw away the contribution because it can be a waste of time.
+
+00:39:27.400 --> 00:39:39.800
+<v Paolo Melchiorre>It's good that we can use this tool to vibe code things, so to create demo locally for ourselves, but contributing and deploying it in production is a different thing.
+
+00:39:43.920 --> 00:39:55.660
+<v Michael Kennedy>Now, you put out an example from OCaml that says there was somebody did a PR with 13,323 lines added, 30 or changed, and 36 lines removed.
+
+00:39:57.100 --> 00:40:00.600
+<v Michael Kennedy>No issue, just drop the pull request, right?
+
+00:40:00.630 --> 00:40:02.760
+<v Michael Kennedy>Like, that's problematic.
+
+00:40:04.380 --> 00:40:10.620
+<v Paolo Melchiorre>I think this is, I tried to show some examples starting from the beginning to show how it escalated.
+
+00:40:10.720 --> 00:40:21.120
+<v Paolo Melchiorre>So this is one of the first I saw in November, a few months ago, was one of the first with appropriate discussion that people talked about.
+
+00:40:21.740 --> 00:40:31.880
+<v Paolo Melchiorre>So this pull request was created without any discussion from someone that was involved in the project and they closed it, of course, because it was impossible to review.
+
+00:40:34.119 --> 00:40:35.800
+<v Michael Kennedy>It doesn't have to be this way.
+
+00:40:37.880 --> 00:40:52.560
+<v Michael Kennedy>could go to your AI and say I want to add this feature your job is to minimally add the absolute minimum amount of changes to the code such that this feature works or whatever right like just
+
+00:40:52.580 --> 00:41:06.560
+<v Michael Kennedy>as if you were a developer you know I'm gonna reformat the entire project in your your different formatter and then just change a bunch of other things right it's it's but again I think it's the
+
+00:41:07.500 --> 00:41:10.180
+<v Michael Kennedy>amplification, the amplifier that you talked about.
+
+00:41:10.720 --> 00:41:13.600
+<v Michael Kennedy>The person who did this PR doesn't understand contributing to open source.
+
+00:41:14.700 --> 00:41:20.640
+<v Michael Kennedy>They may understand software, but not working on a team sort of thing, right?
+
+00:41:22.040 --> 00:41:22.520
+<v Paolo Melchiorre>Exactly.
+
+00:41:23.940 --> 00:41:29.520
+<v Paolo Melchiorre>In fact, they were forced to close the discussion of this because it was... That's right.
+
+00:41:29.960 --> 00:41:36.140
+<v Michael Kennedy>It says something like, I have the impression that this conversation is becoming less productive, so I'll move ahead and lock the topic.
+
+00:41:37.240 --> 00:41:38.800
+<v Michael Kennedy>It's because it's just out of control, right?
+
+00:41:39.430 --> 00:41:40.020
+<v Michael Kennedy>Yeah, absolutely.
+
+00:41:40.859 --> 00:41:42.420
+<v Michael Kennedy>Go. was another-
+
+00:41:43.080 --> 00:41:48.820
+<v Paolo Melchiorre>Yeah, these things escalated from one single request to a lot of them.
+
+00:41:49.100 --> 00:41:58.900
+<v Paolo Melchiorre>So in only three months from the previous example to this one, I saw in the months that it was escalated.
+
+00:41:59.280 --> 00:42:05.520
+<v Paolo Melchiorre>in this case they create so many sloppy requests for this project that they were
+
+00:42:06.460 --> 00:42:15.380
+<v Paolo Melchiorre>exhausted and they put out in the social this emergency yeah i'll throw out another example
+
+00:42:15.540 --> 00:42:29.240
+<v Michael Kennedy>because i want to come back to it as a counter example but this is does not dis disprove or devalue it um the maintainer of curl i think daniel stenberg i believe he's become sort of a poster
+
+00:42:29.260 --> 00:42:43.260
+<v Michael Kennedy>for maintainer abuse I think because he's written a lot about it and curl is so popular but they had a bug bounty program which is slightly different than accepting PRS but it's still accepting contributions from people and this bug
+
+00:42:43.300 --> 00:42:53.440
+<v Michael Kennedy>bounty program was out there to help find bugs in curl which is really important and you get paid for it and the motivation to a come contribute to go dot
+
+00:42:53.760 --> 00:43:04.680
+<v Michael Kennedy>or OCaml is like hey I get my name listed as a contributor that's great or I just get a feature i want but for the bug bounty you got money so that thing just got absolutely
+
+00:43:05.700 --> 00:43:17.180
+<v Michael Kennedy>swamped to the point where they canceled i don't know if they canceled the bug bounty but they certainly took away the financial reward for it right that's pretty bad yeah i i thought that
+
+00:43:17.520 --> 00:43:24.099
+<v Paolo Melchiorre>the project was fitting this problem i i can say that also django is this type of program and we
+
+00:43:24.700 --> 00:43:35.640
+<v Paolo Melchiorre>starting seeing more and more issue when they tried to modify things or the environment of some
+
+00:43:36.540 --> 00:43:45.480
+<v Paolo Melchiorre>very old bug trying to find edge cases for the main goal to have a rewarding from that but
+
+00:43:46.120 --> 00:43:53.400
+<v Paolo Melchiorre>the issue were not real we're only trying to force some strange cases when they could be able to like that.
+
+00:43:54.320 --> 00:44:07.860
+<v Paolo Melchiorre>And we saw something like that also when there was some initiative like, Oh, October first or similar where people in the past tried to open us very small requests with a typo only
+
+00:44:07.980 --> 00:44:10.700
+<v Paolo Melchiorre>to have some rewards from, from that.
+
+00:44:10.730 --> 00:44:13.880
+<v Michael Kennedy>I, I really disliked October fest.
+
+00:44:15.250 --> 00:44:18.540
+<v Michael Kennedy>I mean, I run, I have a bunch of GitHub repositories.
+
+00:44:18.720 --> 00:44:33.200
+<v Michael Kennedy>I'd looked the other day, I have some like 390 getup repositories but a much smaller much much smaller portion are actual projects that people can use mostly web stuff but even for these little tiny projects that have you know a
+
+00:44:33.340 --> 00:44:46.740
+<v Michael Kennedy>couple hundred stars i would get prs like i've there was a problem with your readme i fixed it and they'll like change an adjective from like quickly to fastly or something i'm like No, I am not playing your,
+
+00:44:47.020 --> 00:44:49.700
+<v Michael Kennedy>oh, I contributed and got a PR accepted game.
+
+00:44:50.540 --> 00:44:52.780
+<v Michael Kennedy>And I was just like, why do, why do we need this?
+
+00:44:52.900 --> 00:44:58.920
+<v Michael Kennedy>This is, this is not in the spirit of it and it's not, it's just not right.
+
+00:44:59.160 --> 00:45:02.000
+<v Michael Kennedy>So I can only imagine with AI now what it's like.
+
+00:45:02.780 --> 00:45:03.220
+<v Paolo Melchiorre>Yeah.
+
+00:45:03.470 --> 00:45:17.380
+<v Paolo Melchiorre>And this is the main motivation because we, as I said before, we started a project like jungle, not space to help people to properly contribute to a project, not only fix a type or to have a reward, it can be a t-shirt or money.
+
+00:45:18.080 --> 00:45:19.920
+<v Paolo Melchiorre>It's not how OpenSource works.
+
+00:45:20.200 --> 00:45:21.340
+<v Michael Kennedy>Yeah, for sure.
+
+00:45:24.020 --> 00:45:33.220
+<v Michael Kennedy>Jazz Band, this is another project that, I don't know if this is what directly caused such a problem, but it might've been the final straw.
+
+00:45:33.380 --> 00:45:34.500
+<v Michael Kennedy>So tell us about Jazz Band.
+
+00:45:36.120 --> 00:45:45.560
+<v Paolo Melchiorre>Yeah, so Janice was the creator of Jazz Band, was also now in the board of PSF, contributed in the Django ecosystem for so long time.
+
+00:45:45.920 --> 00:45:57.360
+<v Paolo Melchiorre>And they created this very good project where people can go and self-maintain projects in a direct and democratic way and was very effective.
+
+00:45:58.140 --> 00:46:10.580
+<v Paolo Melchiorre>There is a lot of projects that are very well used, like the Django debug toolbar, but also not specific for Django, like pip-tools that I personally use for long times
+
+00:46:10.960 --> 00:46:13.520
+<v Paolo Melchiorre>was very effective to generate your log file.
+
+00:46:14.220 --> 00:46:16.940
+<v Paolo Melchiorre>You can do today with uv log, for example.
+
+00:46:16.980 --> 00:46:17.160
+<v Paolo Melchiorre>Yeah,
+
+00:46:17.540 --> 00:46:19.820
+<v Michael Kennedy>I'm on team pip-tools as well.
+
+00:46:19.840 --> 00:46:20.580
+<v Michael Kennedy>I love that thing.
+
+00:46:21.220 --> 00:46:23.540
+<v Paolo Melchiorre>Perfect, I used for so many times.
+
+00:46:23.880 --> 00:46:33.540
+<v Paolo Melchiorre>I liked the fact that you were able to create the log file locally and don't have any additional dependencies on production, only installing it with PIPs.
+
+00:46:33.980 --> 00:46:44.580
+<v Paolo Melchiorre>So in this context, JetSband was the containers that hosted all these projects that maintained.
+
+00:46:45.500 --> 00:46:55.220
+<v Paolo Melchiorre>But more and more, he has issues with the lack of maintainers, lack of time, of people, having more and more contribution open.
+
+00:46:55.820 --> 00:47:01.280
+<v Paolo Melchiorre>So in this case, some issues were already there in the project.
+
+00:47:02.300 --> 00:47:16.800
+<v Paolo Melchiorre>And maybe move to other things in the meantime, but the AI accelerated, amplified the process suddenly having the slope of pull requests, you know, this project accelerated the process to sunset.
+
+00:47:17.320 --> 00:47:29.840
+<v Paolo Melchiorre>And in fact, then it's wrote directly here in the article, I extracted only that part that was useful for the slide, but at a certain point he writes clearly that there was this apocalypse
+
+00:47:31.200 --> 00:47:37.940
+<v Paolo Melchiorre>as he wrote here and then decided to set the project.
+
+00:47:38.820 --> 00:47:39.820
+<v Michael Kennedy>Yeah, that's too bad.
+
+00:47:40.400 --> 00:47:48.360
+<v Michael Kennedy>You know, I think it's really, it's really interesting the timing of this because you said you use AI at work.
+
+00:47:48.420 --> 00:47:49.520
+<v Michael Kennedy>I definitely do as well.
+
+00:47:49.720 --> 00:47:54.180
+<v Michael Kennedy>And I think recently it has gotten so incredibly good.
+
+00:47:55.660 --> 00:48:05.240
+<v Michael Kennedy>I would encourage people to absolutely use the very best model that you can afford to do your work.
+
+00:48:05.410 --> 00:48:07.240
+<v Michael Kennedy>And especially if you're going to do a PR or something.
+
+00:48:07.840 --> 00:48:10.660
+<v Michael Kennedy>I think a lot of the challenges is the AIs were not as good.
+
+00:48:11.240 --> 00:48:16.680
+<v Michael Kennedy>And I think people would say, oh, I'll just use, I don't want to wait.
+
+00:48:16.900 --> 00:48:19.340
+<v Michael Kennedy>So I'll use this fast one or I don't want to spend that much money on it.
+
+00:48:19.340 --> 00:48:23.100
+<v Michael Kennedy>So I'll use Haiku rather than Opus or something like that.
+
+00:48:23.890 --> 00:48:34.460
+<v Michael Kennedy>And coming back around to Curl, Daniel Stenberg recently wrote a new post called High Quality Chaos, saying there's not really much more AI slop.
+
+00:48:34.690 --> 00:48:40.440
+<v Michael Kennedy>Actually, he said, I complained and complained about the high-frequency junk submissions to the Curl Bug Bounty Program.
+
+00:48:42.560 --> 00:48:50.280
+<v Michael Kennedy>In March, once again, something like said, the slop situation is not a problem anymore.
+
+00:48:50.920 --> 00:48:55.900
+<v Michael Kennedy>actually has graphs of like percent of slop, which is a really interesting thing.
+
+00:48:56.820 --> 00:49:02.840
+<v Michael Kennedy>But it's just the amount of contributions, even though they're finding real issues, is like out of control.
+
+00:49:03.680 --> 00:49:12.960
+<v Michael Kennedy>So even if you have all of this stuff coming in, how are you going to deal with it?
+
+00:49:13.000 --> 00:49:16.320
+<v Michael Kennedy>So I think partly this is just speculation on my part.
+
+00:49:16.380 --> 00:49:17.680
+<v Michael Kennedy>I'd love to hear what you think as well.
+
+00:49:18.100 --> 00:49:30.420
+<v Michael Kennedy>I think this sloppocalypse is a little bit fading, but it's just left such a sour taste in the mouth of so many maintainers that now they see AI, they're just like, no.
+
+00:49:31.960 --> 00:49:36.060
+<v Michael Kennedy>That puts aside the thing of like 13,000 lines of PR, which is just also no.
+
+00:49:36.500 --> 00:49:42.980
+<v Michael Kennedy>But what is your thought on the kind of legacy of older AI versus newer AI?
+
+00:49:43.170 --> 00:49:44.220
+<v Michael Kennedy>Do you agree?
+
+00:49:44.270 --> 00:49:44.780
+<v Michael Kennedy>Do you disagree?
+
+00:49:45.200 --> 00:49:48.260
+<v Michael Kennedy>I thought it was interesting that Daniel Stenberg kind of like was so against it.
+
+00:49:48.260 --> 00:49:50.060
+<v Michael Kennedy>And I was like, I'm against it, but for a new reason now.
+
+00:49:51.220 --> 00:49:51.700
+<v Paolo Melchiorre>Yeah.
+
+00:49:52.820 --> 00:50:07.760
+<v Paolo Melchiorre>It, it remembers me reading the Hackers for Steven Levy, the book from the Hades, when he wrote about the beginning of, in the original meaning and the open source context,
+
+00:50:08.220 --> 00:50:21.240
+<v Paolo Melchiorre>the story was that at the beginning at the initial, teams or university, they started creating code and sharing with each other
+
+00:50:21.430 --> 00:50:23.940
+<v Paolo Melchiorre>without any license at all or very freely.
+
+00:50:24.620 --> 00:50:30.080
+<v Paolo Melchiorre>And then someone showed up and started applying some license on it and started to save this code.
+
+00:50:30.490 --> 00:50:39.160
+<v Paolo Melchiorre>So they faced in that moment, they realized that some type of new things was needed, like open source license, and started using it.
+
+00:50:39.800 --> 00:50:48.500
+<v Paolo Melchiorre>we are now in a similar situation when until yesterday was enough to have the process of
+
+00:50:48.760 --> 00:50:56.860
+<v Paolo Melchiorre>having pull requests and trust each other now with this amount of pull requests it's not enough
+
+00:50:59.280 --> 00:51:13.560
+<v Paolo Melchiorre>this mechanism we have to find something new to try to filter better the amount of contribution the tool is not bad per se is the way people are using it and maybe it's changing
+
+00:51:13.760 --> 00:51:28.160
+<v Paolo Melchiorre>because uh when you have your new toys you want to try with everything you start creating things after a while you realize the best way to use it so maybe now people are more aware of or to use properly, the I or the lamb.
+
+00:51:28.360 --> 00:51:36.720
+<v Paolo Melchiorre>So people are improving, but still we need some way to collect or to handle better.
+
+00:51:37.600 --> 00:51:37.800
+<v Michael Kennedy>Yeah.
+
+00:51:39.260 --> 00:51:40.520
+<v Michael Kennedy>Yeah, I agree.
+
+00:51:40.840 --> 00:51:41.220
+<v Michael Kennedy>I agree.
+
+00:51:41.940 --> 00:51:54.160
+<v Michael Kennedy>In your research, did you find something I haven't seen a lot from, and I'm wondering if you found it is, did you find people using AI as a first level
+
+00:51:55.220 --> 00:51:57.260
+<v Michael Kennedy>analysis before they even looked at it.
+
+00:51:58.100 --> 00:52:12.860
+<v Michael Kennedy>So were people setting up AI bots on like the GitHub or other other work and say a CI flow to analyze the PR for certain criteria before they even have to look at it?
+
+00:52:13.780 --> 00:52:16.860
+<v Michael Kennedy>I feel like I mean, there's like CodeRabbit and some other things.
+
+00:52:18.200 --> 00:52:21.420
+<v Paolo Melchiorre>I saw many different ways to use it.
+
+00:52:21.790 --> 00:52:23.800
+<v Michael Kennedy>I don't I'm not this is not a recommendation, by the way.
+
+00:52:25.060 --> 00:52:31.360
+<v Michael Kennedy>I just, it's just something that I've heard of that is sort of in that space, you know.
+
+00:52:33.000 --> 00:52:33.160
+<v Paolo Melchiorre>Yeah.
+
+00:52:33.300 --> 00:52:37.060
+<v Paolo Melchiorre>I remember seeing multiple ways to use AI.
+
+00:52:37.540 --> 00:52:41.940
+<v Paolo Melchiorre>Someone, of course, proposed to use AI to analyze AI contribution.
+
+00:52:43.840 --> 00:52:45.020
+<v Michael Kennedy>Like turn it against themselves.
+
+00:52:45.380 --> 00:52:49.500
+<v Michael Kennedy>If there's AI slop coming in, get an AI guardian that just battles it back, you know?
+
+00:52:50.720 --> 00:52:51.180
+<v Paolo Melchiorre>Yeah, yeah.
+
+00:52:51.320 --> 00:52:52.260
+<v Paolo Melchiorre>It can work.
+
+00:52:52.460 --> 00:53:00.800
+<v Paolo Melchiorre>can also work very bad for us if it is not working properly and more and more are seeing
+
+00:53:01.780 --> 00:53:14.580
+<v Paolo Melchiorre>project experimenting trying to have different approach of this problem for example i remember seeing a project from armin ronacher the creator of original creator flask don't remember
+
+00:53:14.700 --> 00:53:23.840
+<v Paolo Melchiorre>exactly the project was uh experimenting hit but the thing was to close every pull request That's the first thing.
+
+00:53:24.060 --> 00:53:25.400
+<v Paolo Melchiorre>They close every pull request.
+
+00:53:25.840 --> 00:53:34.400
+<v Paolo Melchiorre>And they ask the creator to open and try to explain in some way why it's worth it to reopening hits.
+
+00:53:35.120 --> 00:53:37.840
+<v Paolo Melchiorre>For some reason, the AI was not good at doing this stuff.
+
+00:53:38.200 --> 00:53:43.520
+<v Paolo Melchiorre>And so in this way, they recognized that people were effectively interacting, not a bot, for example.
+
+00:53:43.880 --> 00:53:46.380
+<v Michael Kennedy>Yeah, like a GitHub reCAPTCHA.
+
+00:53:48.500 --> 00:53:50.880
+<v Paolo Melchiorre>Exactly. It was an experiment.
+
+00:53:51.540 --> 00:53:56.240
+<v Paolo Melchiorre>Another interesting one is, do you know Granian, the server?
+
+00:53:56.640 --> 00:53:58.740
+<v Paolo Melchiorre>They're writing in Rust for Whiskey.
+
+00:53:58.840 --> 00:53:59.520
+<v Michael Kennedy>Yeah, yeah, absolutely.
+
+00:53:59.740 --> 00:54:01.600
+<v Michael Kennedy>I've had Giovanni on the show to talk about it.
+
+00:54:01.720 --> 00:54:04.560
+<v Michael Kennedy>And it's also PowerStock Python and the courses and stuff.
+
+00:54:04.600 --> 00:54:05.620
+<v Michael Kennedy>So yeah, I definitely know it.
+
+00:54:06.760 --> 00:54:17.180
+<v Paolo Melchiorre>And the maintainer was listening in some interview, and he said that he was using AI after they merged the commit.
+
+00:54:17.440 --> 00:54:27.060
+<v Paolo Melchiorre>he went back in time to the previous point of the code and asked AI to create the same feature for them.
+
+00:54:27.270 --> 00:54:33.480
+<v Paolo Melchiorre>And they analyzed the difference between what was the quality of code created by AI and what was merged
+
+00:54:34.050 --> 00:54:42.580
+<v Paolo Melchiorre>to have some sort of comparison to see how good was the work of a core contributor that know very well the code.
+
+00:54:43.720 --> 00:54:53.580
+<v Paolo Melchiorre>So, so I had so many different experiments and I'm not sure one of these is the best of the others, but it's interesting that people are experimenting with it.
+
+00:54:53.800 --> 00:54:53.900
+<v Michael Kennedy>Yeah.
+
+00:54:54.680 --> 00:54:55.960
+<v Michael Kennedy>I think we're still finding our way.
+
+00:54:56.680 --> 00:54:56.760
+<v Michael Kennedy>Yeah.
+
+00:54:56.760 --> 00:54:57.700
+<v Michael Kennedy>I think we're still finding our way.
+
+00:54:57.840 --> 00:55:01.980
+<v Michael Kennedy>Speaking of finding our way, let's, I want to talk about this next.
+
+00:55:02.520 --> 00:55:09.580
+<v Michael Kennedy>So Mariota just announced a new guidelines for using AI tools when contributing to CPython.
+
+00:55:10.440 --> 00:55:12.900
+<v Michael Kennedy>Thank you, Paulo, for pointing me at this morning.
+
+00:55:13.860 --> 00:55:16.200
+<v Michael Kennedy>So this came out, I don't know, what was the time on this?
+
+00:55:18.060 --> 00:55:19.760
+<v Michael Kennedy>Day and a half ago, something like that, yeah.
+
+00:55:21.760 --> 00:55:23.060
+<v Michael Kennedy>And it's interesting.
+
+00:55:23.170 --> 00:55:23.840
+<v Michael Kennedy>Is this the link?
+
+00:55:23.940 --> 00:55:24.060
+<v Michael Kennedy>No.
+
+00:55:25.900 --> 00:55:35.220
+<v Michael Kennedy>This says, the person submitting an issue or PR is responsible for its content, regardless of whether AI tools were used in its creation.
+
+00:55:35.600 --> 00:55:44.500
+<v Michael Kennedy>Generative AI tools can produce output quickly, but discretion, good judgment, critical thinking are the foundation of all good contributions we value good code concise accurate
+
+00:55:44.660 --> 00:55:58.040
+<v Michael Kennedy>documentation and well-scoped prs without the unneeded code churn it goes on with details about acceptable use and other things what's i think noteworthy here is that it's not just no we will
+
+00:55:58.160 --> 00:56:08.300
+<v Michael Kennedy>not we will not accept ai generated prs it's it's you have to use good engineering regardless of the tools, right?
+
+00:56:09.200 --> 00:56:19.940
+<v Paolo Melchiorre>I showed multiple example of guidelines or API and AI policy in different projects and the Python one was the first one, the first level.
+
+00:56:20.590 --> 00:56:26.800
+<v Paolo Melchiorre>when I used it, they was slightly different, but the meaning is exactly the same.
+
+00:56:27.010 --> 00:56:29.660
+<v Paolo Melchiorre>You are responsible for what you contribute.
+
+00:56:30.510 --> 00:56:34.080
+<v Paolo Melchiorre>you can use different tools and AI is a tool as another one.
+
+00:56:34.190 --> 00:56:37.360
+<v Paolo Melchiorre>So, but still the responsibility is yours when you contribute.
+
+00:56:38.280 --> 00:56:42.960
+<v Paolo Melchiorre>And this is one of the first level of strictness or guidelines I found.
+
+00:56:43.780 --> 00:56:49.960
+<v Paolo Melchiorre>It's important that they state the fact that they consider AI as another tool and not a person.
+
+00:56:52.100 --> 00:56:55.440
+<v Paolo Melchiorre>And you can use it, but you have to do it consciously.
+
+00:56:58.160 --> 00:56:59.560
+<v Michael Kennedy>Yeah, I think it's reasonable.
+
+00:57:03.300 --> 00:57:04.600
+<v Michael Kennedy>Another one is over here.
+
+00:57:04.680 --> 00:57:10.880
+<v Michael Kennedy>there's this article on RedMonk by Kate Holterhoff called The Generative AI Policy Landscape in Open Source.
+
+00:57:10.970 --> 00:57:13.420
+<v Michael Kennedy>And this is much, much broader.
+
+00:57:14.560 --> 00:57:29.280
+<v Michael Kennedy>It says she compiled and analyzed the generative AI policies of 86 open source foundations, including organizations, including foundations like the Linux Foundation, Apache Eclipse, Kernel, Curl, Matplotlib, and so on.
+
+00:57:29.400 --> 00:57:32.540
+<v Michael Kennedy>And then there's this bunch of graphs and stuff.
+
+00:57:34.080 --> 00:57:34.200
+<v Michael Kennedy>Yeah.
+
+00:57:35.660 --> 00:57:39.540
+<v Michael Kennedy>About 60, 55% said permissive, we allow it.
+
+00:57:41.260 --> 00:57:44.160
+<v Michael Kennedy>25% said banned instantly.
+
+00:57:45.520 --> 00:57:46.340
+<v Michael Kennedy>Some were undecided.
+
+00:57:48.260 --> 00:57:49.400
+<v Michael Kennedy>You've seen this too, right?
+
+00:57:49.780 --> 00:57:50.700
+<v Michael Kennedy>What are your thoughts on this?
+
+00:57:51.140 --> 00:57:51.680
+<v Michael Kennedy>It's pretty interesting.
+
+00:57:51.820 --> 00:57:52.540
+<v Michael Kennedy>Yeah, I saw it.
+
+00:57:52.700 --> 00:57:57.760
+<v Paolo Melchiorre>The article is from four, five months ago.
+
+00:57:58.360 --> 00:58:03.460
+<v Paolo Melchiorre>So I was observing was the fact that it was changing every week.
+
+00:58:04.020 --> 00:58:17.020
+<v Paolo Melchiorre>this is every week there are new project or like we just saw the python project changed a bit the guidelines about the eye and so are doing all the other um yeah extra created from this some of
+
+00:58:17.770 --> 00:58:24.820
+<v Paolo Melchiorre>uh project analyze uh other than that here you see there are a majority of projects that are
+
+00:58:25.020 --> 00:58:33.440
+<v Paolo Melchiorre>permissive what i did is to analyze how permissive they were in the same context so from python to
+
+00:58:33.940 --> 00:58:48.480
+<v Paolo Melchiorre>arts or fast api or multiple of lib they are uh different shades of permission level they guaranteed to the contributor only one project that i found was no contribution no ai contribution
+
+00:58:48.640 --> 00:59:01.380
+<v Paolo Melchiorre>at all and yeah the other one were slightly different each other and i tried to to show how can be slightly different between every every small every different project
+
+00:59:02.060 --> 00:59:07.100
+<v Michael Kennedy>I think a really interesting part of this report is there's a different reason.
+
+00:59:07.270 --> 00:59:08.380
+<v Michael Kennedy>They asked the different projects.
+
+00:59:08.570 --> 00:59:13.440
+<v Michael Kennedy>What reasons do you have for either having a policy or having a ban?
+
+00:59:14.200 --> 00:59:17.200
+<v Michael Kennedy>And they broke it down by quality, copyright, and ethics.
+
+00:59:19.839 --> 00:59:23.500
+<v Michael Kennedy>And certainly it looks like the biggest area is just quality.
+
+00:59:23.590 --> 00:59:29.820
+<v Michael Kennedy>Like there is ethics is some of them are high and some of them are low, right?
+
+00:59:29.980 --> 00:59:30.780
+<v Michael Kennedy>There's some debate there.
+
+00:59:31.060 --> 00:59:42.560
+<v Michael Kennedy>copyright is maybe in the middle but certainly quality is where people seem to like well you know ethics aside just the period just like it doesn't give me good stuff is what people said
+
+00:59:42.560 --> 00:59:52.160
+<v Paolo Melchiorre>they were worried about yeah I also think they are connected a lot of time what we do here
+
+00:59:53.320 --> 01:00:04.760
+<v Paolo Melchiorre>is to have high qualities in maintaining good connection between projects so I think some is also a way to maintain high quality.
+
+01:00:05.440 --> 01:00:15.740
+<v Paolo Melchiorre>It's only not only how fast can be your code in executing, it is also how fast can exchange with other projects we are using.
+
+01:00:16.040 --> 01:00:22.040
+<v Paolo Melchiorre>You usually use a stack of layers in your project when you deploy it.
+
+01:00:22.600 --> 01:00:26.520
+<v Paolo Melchiorre>If you can interact better with others, it's the better.
+
+01:00:30.040 --> 01:00:34.460
+<v Michael Kennedy>I do wonder how much of this is old opinion versus new opinion.
+
+01:00:34.580 --> 01:00:37.180
+<v Michael Kennedy>The report's, how long does the report publish?
+
+01:00:37.360 --> 01:00:39.580
+<v Michael Kennedy>Although it's been updated, like published and updated.
+
+01:00:41.120 --> 01:00:43.920
+<v Michael Kennedy>It's February 26th, 2026.
+
+01:00:44.220 --> 01:00:58.820
+<v Michael Kennedy>That's not super old, but the report was written now, but the people's opinion from, say, Asahi Linux may have been formed two years ago, right?
+
+01:00:59.020 --> 01:01:00.620
+<v Michael Kennedy>like in terms of the quality bar.
+
+01:01:00.700 --> 01:01:05.500
+<v Michael Kennedy>Like I don't think ethics or copyright really changes meaningfully over that time period.
+
+01:01:05.520 --> 01:01:07.300
+<v Michael Kennedy>But I think the quality may.
+
+01:01:07.900 --> 01:01:09.740
+<v Michael Kennedy>So it's going to be interesting to see how this evolves.
+
+01:01:11.480 --> 01:01:12.420
+<v Paolo Melchiorre>Yeah, yeah, for sure.
+
+01:01:14.960 --> 01:01:17.000
+<v Michael Kennedy>All right, we're getting short on time.
+
+01:01:17.080 --> 01:01:19.180
+<v Michael Kennedy>I think maybe let's wrap this up with two things.
+
+01:01:19.300 --> 01:01:26.140
+<v Michael Kennedy>I'm going to include some levity, a joke at the end for people that they can appreciate because I think it's good.
+
+01:01:26.260 --> 01:01:36.160
+<v Michael Kennedy>But let's sort of have you close things out Just give what advice you have for maintainers and, you know, all this research, you've, you've studied a lot of it.
+
+01:01:36.240 --> 01:01:37.940
+<v Michael Kennedy>You've lived in the space a lot.
+
+01:01:38.140 --> 01:01:38.940
+<v Michael Kennedy>So what do you think?
+
+01:01:39.200 --> 01:01:40.300
+<v Michael Kennedy>What do you say to folks out there?
+
+01:01:41.720 --> 01:01:41.880
+<v Paolo Melchiorre>Yeah.
+
+01:01:42.280 --> 01:01:55.200
+<v Paolo Melchiorre>Well, let's say that exactly at the, at the end of the, my talk is that, we have to consider this AI, as a tools, new tools, maybe very powerful that we can use.
+
+01:01:55.280 --> 01:01:58.820
+<v Paolo Melchiorre>and we have to use properly, it can change the scale of your project.
+
+01:01:59.760 --> 01:02:12.120
+<v Paolo Melchiorre>And the things we need more is having more human in the loop to face all these things, like be connected more and more in community, like with PyCon US.
+
+01:02:12.570 --> 01:02:19.240
+<v Paolo Melchiorre>More and more when I met people in PyCon US, people asked to be in a channel together to discuss these type of things.
+
+01:02:19.940 --> 01:02:28.760
+<v Paolo Melchiorre>Another example I showed was to start collaborating more closely between person of the community.
+
+01:02:29.720 --> 01:02:35.520
+<v Paolo Melchiorre>And for example, we are just starting now with cartoon leaves on the experiment to have small Django Sprint.
+
+01:02:36.140 --> 01:02:41.140
+<v Paolo Melchiorre>We named it Django on the Mad, that we had an experiment additional last year in Spain.
+
+01:02:41.640 --> 01:02:47.260
+<v Paolo Melchiorre>In September, we will have another one here where I live in Pescara, on the Arctic Arctic sea.
+
+01:02:48.100 --> 01:02:52.860
+<v Paolo Melchiorre>And we want to create a format that people can replicate elsewhere.
+
+01:02:53.820 --> 01:03:03.520
+<v Paolo Melchiorre>to meet in person, to share their personal thoughts and idea about how to use properly these new tools and how to manage it.
+
+01:03:03.660 --> 01:03:14.960
+<v Paolo Melchiorre>So I think the secret here is to be more connected with your community, which is the most important value of your project.
+
+01:03:15.760 --> 01:03:16.940
+<v Paolo Melchiorre>AI can produce code.
+
+01:03:17.360 --> 01:03:21.140
+<v Paolo Melchiorre>The things that AI cannot produce is connection between people.
+
+01:03:21.560 --> 01:03:22.900
+<v Paolo Melchiorre>It's impossible to generate that.
+
+01:03:23.860 --> 01:03:32.920
+<v Paolo Melchiorre>You only have to create in person or directly, also online, but directly with other people, like we are doing now here, speaking to each other.
+
+01:03:33.580 --> 01:03:48.060
+<v Paolo Melchiorre>And this is the best thing we can continue doing, creating connection, speaking, because it's the only way to find a solution, a better solution, experimenting together and evolving as a community, as a project.
+
+01:03:48.680 --> 01:03:49.640
+<v Paolo Melchiorre>This is the point, I think.
+
+01:03:50.540 --> 01:03:51.360
+<v Michael Kennedy>Yeah, very nice.
+
+01:03:52.040 --> 01:03:58.840
+<v Michael Kennedy>I certainly want to encourage people out there to think before they just fire off an AI-based PR.
+
+01:04:01.420 --> 01:04:04.560
+<v Michael Kennedy>Maybe open an issue and have a conversation about it.
+
+01:04:04.820 --> 01:04:05.660
+<v Michael Kennedy>Is this what you want?
+
+01:04:05.720 --> 01:04:06.960
+<v Michael Kennedy>What exactly you want with it?
+
+01:04:07.320 --> 01:04:11.560
+<v Michael Kennedy>And then kind of like the CPython guidelines recommended.
+
+01:04:13.060 --> 01:04:20.620
+<v Michael Kennedy>I want to leave the audience with something fun here for this conversation.
+
+01:04:21.300 --> 01:04:30.020
+<v Michael Kennedy>Just as a bit of a joke, if you're feeling a bit overwhelmed, too much AI, I believe Glyph turned me on to this.
+
+01:04:31.180 --> 01:04:33.860
+<v Michael Kennedy>This German guy does incredible videos.
+
+01:04:34.300 --> 01:04:37.440
+<v Michael Kennedy>And this one is called Senior Engineer Tries Vibe Coding.
+
+01:04:37.580 --> 01:04:38.400
+<v Michael Kennedy>Have you seen this, Paolo?
+
+01:04:39.180 --> 01:04:40.240
+<v Paolo Melchiorre>No, it's the first time.
+
+01:04:40.610 --> 01:04:41.440
+<v Michael Kennedy>Oh, you have to watch.
+
+01:04:42.820 --> 01:04:45.320
+<v Michael Kennedy>You know, it's absolutely golden.
+
+01:04:45.560 --> 01:04:50.060
+<v Michael Kennedy>It's this guy who's just like got a towel.
+
+01:04:50.140 --> 01:04:51.240
+<v Michael Kennedy>He's not working out too much.
+
+01:04:51.280 --> 01:04:53.600
+<v Michael Kennedy>And we've tried this for four and a half days now.
+
+01:04:53.760 --> 01:04:54.700
+<v Michael Kennedy>I'm not even getting paid.
+
+01:04:55.120 --> 01:04:56.860
+<v Michael Kennedy>We're going to do the UI over again.
+
+01:04:58.360 --> 01:05:02.740
+<v Michael Kennedy>But it's just, you'll really appreciate it if you've worked with AI and it's been.
+
+01:05:03.960 --> 01:05:05.280
+<v Paolo Melchiorre>Yeah, I need to check it.
+
+01:05:06.380 --> 01:05:12.040
+<v Michael Kennedy>Yeah, so I'll leave that in the show notes for everyone as a bit of a way to lighten.
+
+01:05:12.260 --> 01:05:26.960
+<v Michael Kennedy>lighten the mood and enjoy it but i don't know let's also let's get your final thoughts on ai going forward in the world of open source which is how do you see it shaping up yeah my final
+
+01:05:26.970 --> 01:05:35.220
+<v Paolo Melchiorre>thought is uh you have to track it as a as a tool and be more connected with other people to exchange
+
+01:05:35.460 --> 01:05:43.100
+<v Paolo Melchiorre>as many interesting things you can do with this tool without leaving high at other people.
+
+01:05:43.830 --> 01:05:57.100
+<v Paolo Melchiorre>The only way you can improve this field is together with other people. So experiment it, share your thoughts the more you can,
+
+01:05:57.510 --> 01:05:59.600
+<v Paolo Melchiorre>and it is the best way you can improve.
+
+01:06:00.640 --> 01:06:12.080
+<v Michael Kennedy>yeah 100 i feel like this is there is an engineering skill that is different than the engineering skills we had before and a lot of people just see it as a chat box and without
+
+01:06:13.760 --> 01:06:26.140
+<v Michael Kennedy>looking at it and applying it as a a practice of engineering you end up with a lot of the junk and you end up with this like joke video we got here so i just encourage people to look into treat this as a serious skill,
+
+01:06:26.880 --> 01:06:32.560
+<v Michael Kennedy>not just a chat box that's supposed to understand every nuanced thing you ask for.
+
+01:06:33.300 --> 01:06:33.860
+<v Paolo Melchiorre>Yeah.
+
+01:06:34.120 --> 01:06:39.620
+<v Paolo Melchiorre>And don't trust something or someone that say that you're absolutely right every time.
+
+01:06:41.000 --> 01:06:42.060
+<v Michael Kennedy>Oh my gosh.
+
+01:06:42.620 --> 01:06:44.960
+<v Michael Kennedy>You're absolutely right. This has absolutely been a great episode.
+
+01:06:45.420 --> 01:06:45.860
+<v Michael Kennedy>Thank you, Paolo.
+
+01:06:46.540 --> 01:06:49.040
+<v Paolo Melchiorre>Thank you for having me and goodbye for everyone.
+
+01:06:49.360 --> 01:06:49.840
+<v Michael Kennedy>Yeah.
+
+01:06:50.000 --> 01:06:50.160
+<v Michael Kennedy>Bye.
+
+01:06:51.320 --> 01:06:51.400
+<v Paolo Melchiorre>Bye.

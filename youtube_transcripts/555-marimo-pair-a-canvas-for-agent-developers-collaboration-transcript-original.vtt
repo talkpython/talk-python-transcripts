@@ -1,0 +1,1882 @@
+WEBVTT
+
+00:00:01.780 --> 00:00:03.940
+<v Michael Kennedy>Trevor, welcome back to Talk Python.
+
+00:00:04.150 --> 00:00:04.780
+<v Michael Kennedy>Great to have you back.
+
+00:00:05.330 --> 00:00:06.360
+<v Trevor Manz>Yeah, thanks for having me again.
+
+00:00:08.380 --> 00:00:15.400
+<v Michael Kennedy>Yeah. We'll probably talk about notebooks, data science, maybe a little bit of AI in the mix.
+
+00:00:17.020 --> 00:00:22.240
+<v Trevor Manz>Yeah, definitely. We've been doing a lot at Marimo and thinking about how agents can play nice with notebooks.
+
+00:00:24.080 --> 00:00:29.480
+<v Michael Kennedy>I think it's a little bit of an extra challenge, So it's going to be fun to see what you all have in mind.
+
+00:00:31.160 --> 00:00:35.420
+<v Michael Kennedy>Now, before we get into that, it's been a year since you've been on the show to talk about AnyWidget.
+
+00:00:35.620 --> 00:00:39.320
+<v Michael Kennedy>Just give us a quick introduction for folks who maybe didn't listen to that episode.
+
+00:00:41.199 --> 00:00:52.820
+<v Trevor Manz>Yeah, AnyWidget is both a specification and a toolkit for making interactive UI elements that deeply integrate into your interactive programming environments and specifically Python environments.
+
+00:00:54.780 --> 00:01:01.120
+<v Trevor Manz>It has deep integration into Marimo, which is the company that I work at now, where we build a new kind of reactive Python notebook.
+
+00:01:02.460 --> 00:01:03.460
+<v Michael Kennedy>I'm a fan of Marimo.
+
+00:01:03.750 --> 00:01:10.140
+<v Michael Kennedy>I don't do that much stuff in notebooks, but if I did, I would be using Marimo most of the time.
+
+00:01:10.340 --> 00:01:11.640
+<v Michael Kennedy>It's kind of like that Dos Equis.
+
+00:01:13.060 --> 00:01:13.200
+<v Michael Kennedy>Yeah.
+
+00:01:14.700 --> 00:01:27.920
+<v Trevor Manz>I like to, depending on the ilk of user that we have, I like to make the joke that there are often in a certain group of folks that have plenty of notebook friends, but don't really use notebooks themselves.
+
+00:01:28.420 --> 00:01:38.860
+<v Trevor Manz>And I'd like to at least pitch why I think Marimo scratches the itch of many more software developers and represents more traditional software than traditional computational notebooks.
+
+00:01:41.420 --> 00:01:55.400
+<v Michael Kennedy>I think it also kind of is special for people who are more on the software development side, 'cause it's a little more Python focused instead of special tool focused in that, we'll talk about Marimo in a second,
+
+00:01:55.600 --> 00:02:00.120
+<v Michael Kennedy>but like, for example, instead of having IPY and B files, it has just Python files.
+
+00:02:02.080 --> 00:02:04.260
+<v Trevor Manz>Yeah, we are hyper focused on Python.
+
+00:02:04.620 --> 00:02:14.880
+<v Trevor Manz>So we're from all the way from the, you know, our file format down to the way that we understand the relationships between yourselves, it's all oriented around the Python ecosystem.
+
+00:02:16.320 --> 00:02:27.620
+<v Michael Kennedy>that's probably going to pay off a little bit when we talk about this project here huh yeah yep definitely definitely all right well actually let's let's do a quick refresher on just what
+
+00:02:28.380 --> 00:02:42.140
+<v Michael Kennedy>marimo is am i saying that right marimo sorry i should be saying marimo right yep it's marimo yeah okay give us a quick refresher for people who don't know you know it's sort of in the realm of JupyterLab, but also different?
+
+00:02:43.740 --> 00:02:44.220
+<v Trevor Manz>Yeah.
+
+00:02:45.080 --> 00:02:51.380
+<v Trevor Manz>Marimo is spiritually a computational notebook, much similar to something like Jupyter or Google Colab, if folks have used that before.
+
+00:02:52.240 --> 00:02:56.180
+<v Trevor Manz>But as we just mentioned earlier in the show, we're hyper-focused on the Python ecosystem.
+
+00:02:56.900 --> 00:03:02.620
+<v Trevor Manz>And we are also a special kind of notebook in that we are a reactive Python notebook.
+
+00:03:03.240 --> 00:03:12.460
+<v Trevor Manz>So what that means is that the order in which Marimo understands your notebook is not in the order that you wrote the cells, but the actual data flow between the cells.
+
+00:03:12.800 --> 00:03:18.720
+<v Trevor Manz>And so we understand the relationships between your cells based off of the variables they declare and where those variables are used.
+
+00:03:19.160 --> 00:03:25.800
+<v Trevor Manz>And then we know how to automatically re-execute the notebook to ensure that you don't get to some sort of inconsistent state in your notebook.
+
+00:03:26.460 --> 00:03:34.040
+<v Trevor Manz>So you can really think of Marimo as you are incrementally building a Python program rather than sort of a scratch pad or set of logs of like some code that ran.
+
+00:03:37.220 --> 00:03:42.500
+<v Michael Kennedy>It sounds like a minor feature, this reactive bit, but it's not so minor.
+
+00:03:42.820 --> 00:03:56.960
+<v Michael Kennedy>I'll tell you what, like, I'm sure people who have done a lot of work with notebooks have had the experience where they're iterating, iterating, going back, editing, making changes, and, you know, maybe go back three cells, edit something, rerun that cell,
+
+00:03:58.100 --> 00:03:59.920
+<v Michael Kennedy>go down back to where they were and continue.
+
+00:04:00.090 --> 00:04:00.980
+<v Michael Kennedy>Like, why is this?
+
+00:04:01.230 --> 00:04:05.560
+<v Michael Kennedy>It doesn't seem to do anything or this is not what I expected or whatever.
+
+00:04:06.320 --> 00:04:15.420
+<v Michael Kennedy>And then you realize, oh, because I didn't run the two cells or the one cell in the middle that actually used that value, which then flowed on to the next, right?
+
+00:04:15.780 --> 00:04:24.060
+<v Michael Kennedy>And basically what you're saying with this reactive notebooks is unless you overwrite it or something, that can't happen with Marimo.
+
+00:04:24.980 --> 00:04:25.080
+<v Trevor Manz>Yeah.
+
+00:04:25.880 --> 00:04:37.420
+<v Trevor Manz>Essentially when you're working in something like a Jupyter notebook, you, the user, have to do a form of bookkeeping to make sure that whatever is uh state exists in the kernel is representative of like whatever cells you have
+
+00:04:37.540 --> 00:04:43.140
+<v Trevor Manz>on the screen and um discipline doesn't really scale necessarily or it becomes hard to do that
+
+00:04:43.300 --> 00:04:54.720
+<v Michael Kennedy>come on i i don't buy it because look when you go into jupiter it says like 27 34 57 58 and then 90
+
+00:04:55.040 --> 00:05:01.740
+<v Michael Kennedy>and if you see one of those if you're not doing your bubble sorting that's out of order you know you've got to go back and run it. I mean, we all keep track of this.
+
+00:05:02.840 --> 00:05:17.540
+<v Trevor Manz>Yeah, but essentially the moment that you get to some sort of like complex notebook and state, like that becomes a lot of cognitive overhead that you as the user sort of have to keep in mind in order to ensure that like what you're doing is representative such that when you hand off your
+
+00:05:17.640 --> 00:05:21.800
+<v Trevor Manz>notebook to someone else, they're able to confidently reproduce that execution that you had in front of
+
+00:05:21.830 --> 00:05:25.440
+<v Michael Kennedy>you and get back to that state. And so with Maremo, we offload that.
+
+00:05:25.480 --> 00:05:27.660
+<v Michael Kennedy>That's just about that, right? That's obviously a problem.
+
+00:05:28.390 --> 00:05:37.880
+<v Trevor Manz>Yeah. And so at Marimo, you essentially offload that bookkeeping to a system, which we do this dependency tracking of your variables and where they're declared and where they're used.
+
+00:05:39.060 --> 00:05:46.300
+<v Trevor Manz>And essentially, we can provide guarantees that if you try to do something like rerun a cell, we will rerun all descendant cells of that cell.
+
+00:05:46.430 --> 00:05:53.200
+<v Trevor Manz>Or if you try to redeclare a variable, we'll tell you, hey, you already declared this variable, and eliminate this problem of hidden state.
+
+00:05:53.740 --> 00:06:06.420
+<v Trevor Manz>such that when you do end up working on a team with more than one individual and you want to hand off that artifact to someone, they can confidently run the notebook and reproduce the execution results that you were looking at when you ran that notebook earlier.
+
+00:06:07.600 --> 00:06:09.720
+<v Michael Kennedy>Yeah, it pretty much guarantees ordering.
+
+00:06:11.240 --> 00:06:11.640
+<v Michael Kennedy>Yep.
+
+00:06:13.420 --> 00:06:13.820
+<v Michael Kennedy>OK.
+
+00:06:14.860 --> 00:06:19.400
+<v Michael Kennedy>Also, it's got a really nice modern UI feel, I think.
+
+00:06:19.760 --> 00:06:23.420
+<v Michael Kennedy>You know, it's got, it looks good.
+
+00:06:23.620 --> 00:06:24.280
+<v Michael Kennedy>It feels fresh.
+
+00:06:24.720 --> 00:06:27.900
+<v Michael Kennedy>And I don't know, for some people, maybe that doesn't matter.
+
+00:06:28.500 --> 00:06:37.220
+<v Michael Kennedy>But to me, when I'm working on stuff, I just feel better if it's like a nice UI and it looks polished instead of old school, you know?
+
+00:06:37.860 --> 00:06:50.400
+<v Trevor Manz>Yeah, and because we are hyper-focused on the Python ecosystem, we've been able to think about common data structures and objects that are in the Python ecosystem and then really have polished user experiences for inspecting and understanding those objects.
+
+00:06:50.930 --> 00:07:02.120
+<v Trevor Manz>So inside of a Marimo notebook, if you load a data frame, whether that's a Polars data frame or a Pandas data frame or an IBIS table or anything that implements this data frame protocol, which is a standard in the Python ecosystem,
+
+00:07:03.500 --> 00:07:06.340
+<v Trevor Manz>we can represent and render in a really nice interactive table.
+
+00:07:07.010 --> 00:07:10.800
+<v Trevor Manz>And so we're able to do that because we're tailored around this Python ecosystem.
+
+00:07:11.180 --> 00:07:17.019
+<v Trevor Manz>And we're able to polish both the user experience on the front end side as well as all the way down
+
+00:07:17.040 --> 00:07:29.940
+<v Michael Kennedy>the kernel in terms of being able to share these reproducible notebook documents okay yeah i love it all right so that's marimo and what we're talking about today is not exactly marimo
+
+00:07:31.350 --> 00:07:44.060
+<v Michael Kennedy>but more ai plus notebooks in a particular tool agent skill i don't know we're gonna we're going to get into that what it is but before we do let's just talk about
+
+00:07:45.400 --> 00:07:54.200
+<v Michael Kennedy>how do how do people like what do people do with say either marima or jupiter jupiter lab today
+
+00:07:55.360 --> 00:08:02.420
+<v Trevor Manz>without a tool like marimo pair yeah i'd say that you know so the software as i've known it over
+
+00:08:02.420 --> 00:08:13.900
+<v Trevor Manz>the past year has changed like quite a bit for traditional software development and um you know agents to perform more of our traditional software development.
+
+00:08:14.270 --> 00:08:18.720
+<v Trevor Manz>And many of our users were asking, you know, what's the best way to use Marimo with agents?
+
+00:08:18.850 --> 00:08:19.960
+<v Trevor Manz>Because they've been using Marimo.
+
+00:08:20.680 --> 00:08:34.260
+<v Trevor Manz>And I think that many different, if you'd ever tried out of the box to use one of these coding agents with notebooks, whether it be Marimo or JupyterLab or Jupyter or Google Colab,
+
+00:08:35.240 --> 00:08:49.400
+<v Trevor Manz>there kind of felt like this difference or like awkwardness in that user experience in terms of being able to drive that interactive environment in a way that I think was very sort of unsettling or unfulfilling compared to traditional software development
+
+00:08:49.610 --> 00:09:04.120
+<v Trevor Manz>because you're able to sort of like put off your agent on these long-lived software tasks and then come back and have it run the tests and let it get in these type loops to be able to autocorrect and do this sort of like traditional programming and software development.
+
+00:09:04.760 --> 00:09:17.440
+<v Trevor Manz>But when you tried to apply it to a data problem, things would happen where you edit the file, and then you could get to some inconsistent state inside the notebook, or the agent couldn't actually see the actions that it performed inside that notebook.
+
+00:09:18.120 --> 00:09:20.980
+<v Trevor Manz>And it wasn't really able to get inside those tight loops.
+
+00:09:21.120 --> 00:09:30.180
+<v Trevor Manz>And so we really started thinking from the bottom up, how can we open up Marimo in such a way that's actually useful to an agent rather than just this data source that it can query?
+
+00:09:31.360 --> 00:09:39.720
+<v Trevor Manz>And really try to extend that agent's working environment with notebooks the same way that humans have used notebooks for working on data tasks.
+
+00:09:40.380 --> 00:09:47.180
+<v Michael Kennedy>I think notebooks are particularly tricky for AI to work with.
+
+00:09:48.959 --> 00:09:51.600
+<v Michael Kennedy>Because many people know, but probably not everyone.
+
+00:09:52.500 --> 00:10:02.480
+<v Michael Kennedy>When you look at a Jupyter notebook, the IPY in B file, you've got your cell definition with code or markdown or whatever's in there.
+
+00:10:03.520 --> 00:10:09.540
+<v Michael Kennedy>But also, and this is the part that makes it tricky, part of the part, is that all the output.
+
+00:10:10.080 --> 00:10:21.280
+<v Michael Kennedy>So if you've got something that lists out 1,000 rows, that's just embedded in the JSON that defines that notebook file, right?
+
+00:10:21.860 --> 00:10:32.660
+<v Michael Kennedy>And so as a, a quad code or a codex or whatever that's going to go through and try to understand it, it's got to skim through all of that output, determine most of it is irrelevant to me.
+
+00:10:33.500 --> 00:10:34.240
+<v Michael Kennedy>Some of it is relevant.
+
+00:10:34.960 --> 00:10:36.380
+<v Michael Kennedy>Maybe it was run in the wrong order.
+
+00:10:36.610 --> 00:10:39.680
+<v Michael Kennedy>So if it does try to look at the output, it's actually right.
+
+00:10:39.800 --> 00:10:40.840
+<v Michael Kennedy>There's no enforcement of an order.
+
+00:10:40.930 --> 00:10:44.580
+<v Michael Kennedy>And so if it's running the wrong order, the output might be present.
+
+00:10:46.420 --> 00:10:49.800
+<v Michael Kennedy>And they might want to use it, but it's actually wrong because it was run.
+
+00:10:50.340 --> 00:10:52.060
+<v Michael Kennedy>it's stale from what's actually in there.
+
+00:10:52.160 --> 00:10:56.020
+<v Michael Kennedy>There's a lot of issues, right, to just work directly on the file format.
+
+00:10:57.060 --> 00:11:11.660
+<v Trevor Manz>Yeah, I think, you know, as we started thinking about this problem, I think that we, you know, even ourselves at Marimo started to realize that for notebooks, these file formats are more the artifact of the work rather than like the source necessarily of the code.
+
+00:11:12.000 --> 00:11:19.920
+<v Trevor Manz>And really like it's the editor combined with the state, which is like how you are authoring these notebooks in this sort of like live interactive environment.
+
+00:11:20.580 --> 00:11:31.260
+<v Trevor Manz>and that by just allowing agents to use their tools out of the box and sort of edit those artifacts on disk, they're missing a lot of the context in which those files are actually authored.
+
+00:11:31.560 --> 00:11:39.740
+<v Trevor Manz>And they're also, in what you just mentioned, they sort of are polluted with additional context that's not necessarily useful to performing a coding task on behalf of the user.
+
+00:11:40.820 --> 00:11:42.580
+<v Michael Kennedy>Yeah, it's like, hey, Claude, work on this.
+
+00:11:42.600 --> 00:11:47.880
+<v Michael Kennedy>And by the way, here's 10,000 lines of stuff that may either help you or harm you depending on stuff you can't determine really.
+
+00:11:49.180 --> 00:12:16.520
+<v Trevor Manz>Yeah, exactly. So I think we started to think about this as more, you know, humans, like, you know, out of the box, these coding agents are equipped with sort of like the ability to read and write files and run bash scripts. And those tools really fit like the tasks of traditional software development, because that type of like the way that our command line tools and work that we do for traditional software development work, or that the file system is really the source of truth.
+
+00:12:16.940 --> 00:12:27.420
+<v Trevor Manz>and then you make changes to those files and then you run sort of these stateless commands that run your tests or basically take those changes and apply them and see what effect that those have had.
+
+00:12:28.340 --> 00:12:43.219
+<v Trevor Manz>And humans, for data tasks, have sort of gone beyond the tools of reading and writing and editing files and running bash scripts and instead we use these really interactive repls or sort of live programming environments for working with data because they give us this ability
+
+00:12:43.240 --> 00:12:46.760
+<v Trevor Manz>to iterate on intermediate results and values.
+
+00:12:46.960 --> 00:12:51.160
+<v Trevor Manz>So it's not like you run a script, maybe you made an error, you have to run that script again from scratch.
+
+00:12:51.440 --> 00:12:57.280
+<v Trevor Manz>Instead, we can load a data set into memory and then sort of inspect those values and sort of iterate on them in memory.
+
+00:12:57.900 --> 00:13:08.760
+<v Trevor Manz>And so the usefulness of those sort of interactive environments like Excel or Jupyter or Marimo or even something like RStudio is that they're stateful.
+
+00:13:09.520 --> 00:13:23.940
+<v Trevor Manz>And one problem is that these agents weren't really good at accessing capable environments. And so that's exactly what made it hard for us to open up those environments to agents. And I think there are many different approaches that folks have taken. And even we took
+
+00:13:24.080 --> 00:13:35.380
+<v Trevor Manz>originally to try to make Marimo a useful tool. And it took us a little while to figure out what were the ergonomics that work well for agents. Sure. So what you're saying is that basically
+
+00:13:36.640 --> 00:13:47.460
+<v Michael Kennedy>instead of running on the file system like the coding agents do now for, say, my code, I guess, what instead they need is they need to run in the kernel
+
+00:13:48.720 --> 00:13:56.340
+<v Michael Kennedy>kind of looking at the state of things in the kernel as it's working more than, say, regular programming code.
+
+00:13:56.860 --> 00:14:06.680
+<v Trevor Manz>Exactly, yeah, because, you know, when we as humans have adopted these tools, the reason we adopt them is because it's not just the code, it's the values and the in-memory representations of those data.
+
+00:14:07.150 --> 00:14:13.140
+<v Trevor Manz>So it's not just that I have this data frame on disk or this file on disk that has my data.
+
+00:14:13.420 --> 00:14:16.240
+<v Trevor Manz>It's that I want to look at the table and I want to see what those values are.
+
+00:14:16.350 --> 00:14:24.620
+<v Trevor Manz>And that may determine the next step that I'm going to take with that data, what plots I'm going to do or what validations I'm going to run on these data.
+
+00:14:25.260 --> 00:14:36.860
+<v Trevor Manz>And so really we had to sort of invert that thinking and think more about how do we extend these agents with a useful tool, which is a notebook for doing this sort of data work and iterating on those intermediate values.
+
+00:14:37.880 --> 00:14:38.400
+<v Michael Kennedy>Okay.
+
+00:14:40.279 --> 00:14:44.360
+<v Michael Kennedy>So maybe a good time to introduce Marimo pair.
+
+00:14:44.450 --> 00:14:44.980
+<v Michael Kennedy>What is this?
+
+00:14:46.080 --> 00:14:52.720
+<v Trevor Manz>Yeah, so Marimo pair is an agent skill that drops an agent inside of an active Marimo kernel.
+
+00:14:54.660 --> 00:15:09.320
+<v Trevor Manz>And basically it's a single tool that allows the agent to run Python code inside of that kernel to inspect and perform any sort of understanding what sort of intermediate values you have inside of your kernel environment, but then also drive the authorship of the notebook itself
+
+00:15:09.490 --> 00:15:10.820
+<v Trevor Manz>and run and execute cells.
+
+00:15:11.770 --> 00:15:24.560
+<v Trevor Manz>So basically it allows the agent to do anything you could do in a Marimo notebook and extend sort of your analysis with an agent by giving the agent the ability to drive the exploration of a Marimo notebook.
+
+00:15:26.300 --> 00:15:26.660
+<v Michael Kennedy>Interesting.
+
+00:15:27.120 --> 00:15:30.280
+<v Michael Kennedy>Okay, so how does it get inside the notebook?
+
+00:15:31.060 --> 00:15:31.500
+<v Michael Kennedy>You know what I mean?
+
+00:15:31.620 --> 00:15:34.320
+<v Michael Kennedy>Do you have to change your code or something like that?
+
+00:15:35.280 --> 00:15:36.220
+<v Michael Kennedy>Do you have to include something?
+
+00:15:37.040 --> 00:15:44.760
+<v Trevor Manz>Yeah, so the setup is essentially an agent skill that you can install either from, if you're using something like Claude Code, you can install it from the Cloud Marketplace.
+
+00:15:44.960 --> 00:15:47.720
+<v Trevor Manz>You can install from Codex from a Marketplace as well.
+
+00:15:48.040 --> 00:15:53.120
+<v Trevor Manz>Or you can use an NPX command to install a skill from GitHub.
+
+00:15:53.760 --> 00:15:58.420
+<v Trevor Manz>And that skill teaches the agent how to use a single tool, which is essentially just run Python.
+
+00:15:59.400 --> 00:16:04.960
+<v Trevor Manz>And that single tool call allows the agent to run any kind of Python it wants to in the running Marimo kernel.
+
+00:16:05.760 --> 00:16:09.700
+<v Trevor Manz>So inside that kernel environment, it can do things like list variables that are in the notebook.
+
+00:16:10.100 --> 00:16:12.020
+<v Trevor Manz>It can inspect the cells of the notebook.
+
+00:16:12.240 --> 00:16:13.720
+<v Trevor Manz>It can look at the outputs of the notebook.
+
+00:16:14.250 --> 00:16:21.900
+<v Trevor Manz>But then it can also perform user tasks in the notebook as well, like installing packages inside of Marimo or creating cells or running cells.
+
+00:16:23.080 --> 00:16:34.060
+<v Trevor Manz>But as it's performing those tasks using that tool, the agent gets instant feedback of what went wrong or what went right inside of that kernel and is able to get back into these agentic loops for doing these tasks.
+
+00:16:34.280 --> 00:16:40.900
+<v Trevor Manz>But using Marimo as sort of the workspace for performing your data tasks rather than editing the file system.
+
+00:16:42.580 --> 00:16:43.840
+<v Michael Kennedy>Yeah, okay. That makes sense.
+
+00:16:45.220 --> 00:16:51.080
+<v Michael Kennedy>And I guess there's some kind of API or something that the agent can use to talk to the running notebook.
+
+00:16:52.560 --> 00:16:58.100
+<v Trevor Manz>Yeah, so we sort of hide an API within Marimo that's called code mode.
+
+00:16:58.390 --> 00:17:05.180
+<v Trevor Manz>And what code mode is essentially is this like semi-private API that's just meant for agents that are running Python inside of that kernel.
+
+00:17:06.199 --> 00:17:11.980
+<v Trevor Manz>And with that API, the agent can grab the current notebook state and talk to Marimo directly.
+
+00:17:12.089 --> 00:17:17.760
+<v Trevor Manz>So it can do things like toast notifications in the UI that say like, hey, I'm connected to your notebook session.
+
+00:17:18.680 --> 00:17:25.500
+<v Trevor Manz>It can do things like I mentioned before, like list out variables or inspect what cells declare different variables.
+
+00:17:26.089 --> 00:17:31.920
+<v Trevor Manz>But then also it has these sort of mutation APIs where I want to say, like, create cell, edit cell, run cell.
+
+00:17:32.380 --> 00:17:43.820
+<v Trevor Manz>And because it's all Python and not, like, individual, you know, something like MCP tools, the agent has the ability to write Python code that really does, like, complex composition of those primitives as well.
+
+00:17:44.000 --> 00:17:50.160
+<v Trevor Manz>So it can create multiple cells at the same time just by calling create cell, like, five times inside of, like, some sort of loop.
+
+00:17:51.160 --> 00:17:54.740
+<v Trevor Manz>because we're giving it Python as the tool rather than sort of a JSON API.
+
+00:17:58.820 --> 00:18:07.600
+<v Michael Kennedy>I'll say it boggles, for me, it kind of boggles the mind, like how much Claude Code just relies on grep to understand projects.
+
+00:18:07.810 --> 00:18:10.640
+<v Michael Kennedy>And it seems super inefficient to me.
+
+00:18:12.130 --> 00:18:15.860
+<v Michael Kennedy>I mean, Claude Code was created in two weeks, something like that.
+
+00:18:15.870 --> 00:18:19.100
+<v Michael Kennedy>It feels very much a JavaScripty in that regard.
+
+00:18:19.280 --> 00:18:20.240
+<v Michael Kennedy>Like, look what you built.
+
+00:18:21.120 --> 00:18:24.520
+<v Michael Kennedy>But also look at the missing pieces a little bit.
+
+00:18:25.980 --> 00:18:36.500
+<v Michael Kennedy>And as impressive as it is, it seems like if it could ask the question, where is this symbol used throughout my project?
+
+00:18:37.400 --> 00:18:38.880
+<v Michael Kennedy>What is the value of this variable?
+
+00:18:40.740 --> 00:18:42.280
+<v Michael Kennedy>Things like that. What is the type of it?
+
+00:18:43.960 --> 00:18:51.100
+<v Michael Kennedy>Without reading and jumping around a 100,000, a million lines of code all the time, it would be way more efficient.
+
+00:18:51.210 --> 00:18:55.320
+<v Michael Kennedy>And it sounds a little bit like that's how it interacts with your notebook through Marimo pair.
+
+00:18:56.500 --> 00:19:07.560
+<v Trevor Manz>Yeah, so within that code execution point where it can run Python code, the agent has the ability to look at the source of those cells, but then also can look at the in-memory values of those cells as well.
+
+00:19:08.220 --> 00:19:12.800
+<v Trevor Manz>And therefore, it can, like you were just saying, it can look at the type, it can look at the values.
+
+00:19:14.400 --> 00:19:27.320
+<v Trevor Manz>And this type of runtime inspection of values really does change model behavior in terms of, like I mentioned before, allowing them to get into sort of these loops and efficiently get to some sort of problem,
+
+00:19:28.120 --> 00:19:35.200
+<v Trevor Manz>resolution to some task or problem inside the notebook because it's able to sort of course correct and ask a lot richer information about your values.
+
+00:19:36.220 --> 00:19:47.360
+<v Trevor Manz>Because, you know, if you're looking at a source code on disk, maybe for a file that loads a data frame, you just have a single line that says, like, you know, load, Polars read CSV or pandas read CSV.
+
+00:19:48.020 --> 00:19:54.340
+<v Trevor Manz>And then the agent would actually have to go look at that CSV to understand what's in that CSV and combining that with the source code.
+
+00:19:54.730 --> 00:20:02.340
+<v Trevor Manz>But if you pair that with a live REPL like we have inside of Marimo, the agent can just say, you know, the agent now has a data frame that it can look at.
+
+00:20:02.550 --> 00:20:05.720
+<v Trevor Manz>And that's a much richer representation of that static file on disk.
+
+00:20:06.200 --> 00:20:07.540
+<v Trevor Manz>And then the agent can ask about the schema.
+
+00:20:07.730 --> 00:20:11.840
+<v Trevor Manz>It could ask about, yeah, the different columns, the data types of the columns.
+
+00:20:11.950 --> 00:20:13.500
+<v Trevor Manz>It could figure out the number of rows.
+
+00:20:14.360 --> 00:20:27.840
+<v Trevor Manz>So essentially, when you ask a question of, you know, I want to plot the quantitative axes of these data in a pair plot, you no longer have to specify what those axes are because the agent can just go off and look at the schema to figure that out.
+
+00:20:27.980 --> 00:20:42.820
+<v Trevor Manz>And I think that that provides this really rich experience when you're trying to get something done with your data because you can be a little bit more declarative about, like, I want to look at these subsets or these things without having to actually go down and figure out the APIs to plot those things out.
+
+00:20:44.380 --> 00:20:47.560
+<v Michael Kennedy>What's the token economics of this?
+
+00:20:48.920 --> 00:20:53.680
+<v Michael Kennedy>Is it more efficient on tokens because it doesn't have to search around so much or have you noticed a difference?
+
+00:20:54.820 --> 00:20:56.360
+<v Trevor Manz>Yeah, that's a great question.
+
+00:20:56.570 --> 00:21:08.800
+<v Trevor Manz>I think from the skill itself is a pretty slim markdown file that just teaches the agent what this tool is and how to use this tool, which is run Python in the running kernel.
+
+00:21:09.760 --> 00:21:20.660
+<v Trevor Manz>And then the agent is able to, you know, maybe before the agent would read the entire notebook file to figure out what you want to do, but instead, like off of disk, because it had
+
+00:21:20.720 --> 00:21:33.300
+<v Trevor Manz>to sort of orient itself where you are inside the notebook, versus if I asked the agent, you know, we're focusing on this cell right now inside the notebook, the agent doesn't have to print off all the other cells into context, it can just focus on that one cell
+
+00:21:33.310 --> 00:21:36.100
+<v Trevor Manz>or that one variable that we're talking about in the kernel.
+
+00:21:36.320 --> 00:21:39.060
+<v Trevor Manz>So we haven't done anything formal to compare those things.
+
+00:21:39.280 --> 00:21:53.260
+<v Trevor Manz>But essentially, when you're able to extend the environment with variables and values, then you give the agent the ability to offload context into Python rather than bringing that as extra context that fills up your context buffer.
+
+00:21:53.680 --> 00:21:59.660
+<v Michael Kennedy>Yeah, my impression is that just first estimate is it would be way more efficient, honestly.
+
+00:22:01.560 --> 00:22:12.300
+<v Michael Kennedy>A lot of times I'll see Claude Code or something and go like, okay, I need to understand what this does. Let me write a little Python script and execute it with a dash C or what,
+
+00:22:12.440 --> 00:22:22.040
+<v Michael Kennedy>you know, or I can just pass it as a string effectively. And it's, it's recreating all these things instead of just like print X or just give me the value of X, right?
+
+00:22:23.780 --> 00:22:35.280
+<v Trevor Manz>Yeah, exactly. And actually you can think of each invocation of the tool that we provide to the agent as essentially running Python dash C, except picking up wherever you're off, you left off inside of your notebook.
+
+00:22:36.880 --> 00:22:42.700
+<v Trevor Manz>So it has the ability in that string that it passes to Python to just reference variables that you currently have in memory.
+
+00:22:43.340 --> 00:22:52.960
+<v Trevor Manz>And it doesn't have to perform something high up in that script that might be costly to reload a data set or mangle it to get to some later state to print it out.
+
+00:22:53.130 --> 00:22:58.200
+<v Trevor Manz>Instead, it can pick up where you are currently in your notebook session and tell me about my data frame.
+
+00:22:58.290 --> 00:23:01.920
+<v Trevor Manz>And it can run a bunch of queries on the thing that you currently have in memory to tell you about it.
+
+00:23:02.920 --> 00:23:05.480
+<v Michael Kennedy>Sure, okay, super interesting.
+
+00:23:09.320 --> 00:23:13.840
+<v Michael Kennedy>And let's talk just really quickly about this distributing as a skill.
+
+00:23:14.030 --> 00:23:25.700
+<v Michael Kennedy>I mean, there have been other attempts for notebooks that I've seen that are kind of like we're going to embed an LLM, or at least an LLM integration in the notebook.
+
+00:23:27.060 --> 00:23:35.320
+<v Michael Kennedy>And it's interesting to see you shipping this as a skill plus that's just in Maremo.
+
+00:23:36.660 --> 00:23:42.120
+<v Michael Kennedy>So on one hand, it's easy to think, well, that doesn't seem very useful.
+
+00:23:42.780 --> 00:23:56.160
+<v Michael Kennedy>But then again, there's always the what is now well-known Sasspocalypse because Claude shipped 13 Markdown files which wiped $285 billion off of the stock market, right?
+
+00:23:56.860 --> 00:23:58.600
+<v Michael Kennedy>So there's something to these Markdown files.
+
+00:23:58.660 --> 00:24:01.420
+<v Michael Kennedy>I really think it's quite powerful.
+
+00:24:01.660 --> 00:24:05.960
+<v Michael Kennedy>But how did you come around to this distribution model?
+
+00:24:07.420 --> 00:24:17.700
+<v Trevor Manz>Yeah, so Marimo, and I should be clear, Marimo today still has a chat integration that you can bring your own LLM and actually drive sort of an agent interface from there.
+
+00:24:18.080 --> 00:24:24.380
+<v Trevor Manz>And even you can actually use the Marimo pair tools inside of that chat interface as well.
+
+00:24:24.900 --> 00:24:29.120
+<v Trevor Manz>But increasingly we had users that were asking about, how do I use Claude Code with Marimo?
+
+00:24:29.200 --> 00:24:30.780
+<v Trevor Manz>Or how do I use Codex with Marimo?
+
+00:24:31.460 --> 00:24:43.520
+<v Trevor Manz>And what we started to realize is that these coding agents, we're building a tool that we'd like our users to spend a lot of time in, but these coding agents outside of Marimo have a lot of access
+
+00:24:43.590 --> 00:24:54.640
+<v Trevor Manz>to things that aren't ever going to be inside of the Marimo user interface, such as the different skills or MCPs or things that they've enabled for their main driver of doing development on their machine.
+
+00:24:55.480 --> 00:24:59.020
+<v Trevor Manz>And we want to make sure that Marimo is a useful tool in that context as well.
+
+00:24:59.400 --> 00:25:04.660
+<v Trevor Manz>And so increasingly, many of the folks on our team were using Claude Code for the actual development of Marimo.
+
+00:25:05.070 --> 00:25:14.160
+<v Trevor Manz>And we started to feel this friction of when we wanted to work on a notebook that we couldn't just start up the notebook and get it running from Cloud and then edit it.
+
+00:25:14.450 --> 00:25:17.120
+<v Trevor Manz>And instead, it felt like we were sort of jumping between tools.
+
+00:25:17.900 --> 00:25:25.140
+<v Trevor Manz>So at least initially, we were thinking, how do we make Marimo notebooks a useful tool for agents?
+
+00:25:25.920 --> 00:25:29.040
+<v Trevor Manz>And then we started to look at best practices for doing that.
+
+00:25:29.220 --> 00:25:34.340
+<v Trevor Manz>and there was sort of simply like a bare bones MCP was one approach that you could go with.
+
+00:25:35.080 --> 00:25:43.580
+<v Trevor Manz>And when we started to look at skills was I think around the fall slash December last year when these models started to get quite good.
+
+00:25:45.620 --> 00:25:58.660
+<v Trevor Manz>The skills started to become a very useful vector, I think, for packaging up reusable instructions for how to effectively use a particular command line tool or skill.
+
+00:25:59.320 --> 00:26:08.300
+<v Trevor Manz>And so if you actually look at our skill today, it doesn't really tell you much about how the internals of Maremo works or how that tool works.
+
+00:26:08.410 --> 00:26:13.580
+<v Trevor Manz>And instead it just teaches the agent about where that tool exists and how to use that tool.
+
+00:26:14.120 --> 00:26:21.580
+<v Trevor Manz>But then if it wants to learn about how to invoke that tool and the different capabilities that it has within that active kernel, it actually uses the help command.
+
+00:26:21.660 --> 00:26:28.580
+<v Trevor Manz>We instruct it to use the help command to print off the doc strings for itself and then learn in that session how to effectively drive Maremo.
+
+00:26:29.120 --> 00:26:38.820
+<v Trevor Manz>And so this actually has a sort of decoupling between our skill and Marimo's internals, because we don't actually publish anything in the skill that talks about the API that it will be using.
+
+00:26:38.980 --> 00:26:45.100
+<v Trevor Manz>And instead we'd say, hey, go find that when you load the skill to figure out what capabilities that you actually have inside the active kernel.
+
+00:26:46.740 --> 00:26:51.720
+<v Michael Kennedy>That's interesting. That way, if you want to change it, you don't have to get people to update the skill, which is always tricky.
+
+00:26:52.740 --> 00:27:00.300
+<v Trevor Manz>Exactly. This was the thing that we became very conscious of quite early, is that updating Marimo and updating the skill could get out of sync.
+
+00:27:00.370 --> 00:27:10.960
+<v Trevor Manz>And we just wanted to make sure that our users didn't get into the state where they're having a really poor experience using their agents because they upgraded Marimo and they hadn't upgraded their skill.
+
+00:27:11.400 --> 00:27:21.200
+<v Trevor Manz>And so the skill isn't so prescriptive about exactly what the agent should do, just more, hey, these are tools, and this is sort of the mental model of how you could drive Marimo.
+
+00:27:21.570 --> 00:27:28.520
+<v Trevor Manz>And then should you want to drive Marimo, Here's where you go find how to do that inside of the active Marimo that you have in your session.
+
+00:27:37.580 --> 00:27:38.260
+<v Trevor Manz>Michael, I can't.
+
+00:27:38.350 --> 00:27:38.800
+<v Trevor Manz>I might have lost.
+
+00:27:38.840 --> 00:27:39.060
+<v Michael Kennedy>Sorry.
+
+00:27:39.310 --> 00:27:42.880
+<v Michael Kennedy>So skills have been changing over time about how they're structured.
+
+00:27:44.170 --> 00:27:45.440
+<v Michael Kennedy>And they used to be commands.
+
+00:27:45.750 --> 00:27:51.380
+<v Michael Kennedy>And then, I don't know, just the layout of these things is a little bit funky.
+
+00:27:53.860 --> 00:28:01.960
+<v Michael Kennedy>I mean, I guess you could manage it from Marimo, like have it say like, hey, skill update available, push this button to reinstall it or something.
+
+00:28:02.200 --> 00:28:10.160
+<v Michael Kennedy>But it sounds pretty bare bones in terms of like, just go talk here and then you'll figure it out when you get there.
+
+00:28:12.220 --> 00:28:13.100
+<v Michael Kennedy>Sounds good.
+
+00:28:14.220 --> 00:28:15.100
+<v Trevor Manz>Yeah, exactly.
+
+00:28:15.350 --> 00:28:28.240
+<v Trevor Manz>And some of these agents have the ability, for instance, in Claude Code and Codex, If you have this marketplace.json file where you have your skill, you can subscribe for auto-updates of that skill
+
+00:28:28.360 --> 00:28:30.640
+<v Trevor Manz>so you don't have to re-sync that file.
+
+00:28:30.780 --> 00:28:34.440
+<v Trevor Manz>Or if you use one of these command line tools for installing from GitHub, you can install the latest.
+
+00:28:34.980 --> 00:28:42.140
+<v Trevor Manz>It's just, if our users got out of sync, it's quite hard to figure out what version they have, and maybe we'd need to do some runtime inspection.
+
+00:28:42.300 --> 00:28:51.780
+<v Trevor Manz>So by really trying to have this decoupling of the skill from the capabilities that we have inside of Marimo, we can ensure that there's sort of a baseline of user experience.
+
+00:28:52.020 --> 00:28:59.420
+<v Trevor Manz>And then should folks want to upgrade to latest skill or upgrade Marimo, hopefully both those things should improve that experience over time.
+
+00:29:00.100 --> 00:29:00.860
+<v Michael Kennedy>Yeah, for sure.
+
+00:29:02.100 --> 00:29:02.340
+<v Michael Kennedy>All right.
+
+00:29:02.660 --> 00:29:08.280
+<v Michael Kennedy>Let's talk about, just kind of walk through installing this and maybe a quick start story.
+
+00:29:08.340 --> 00:29:11.380
+<v Michael Kennedy>So first, installing it, how do we do?
+
+00:29:12.240 --> 00:29:12.420
+<v Trevor Manz>Yeah.
+
+00:29:12.520 --> 00:29:21.400
+<v Trevor Manz>So whether or not you have a tool called, So first of all, a skill is a folder of some files, and there's a file called skill.md.
+
+00:29:21.580 --> 00:29:26.920
+<v Trevor Manz>This is like an official specification that you put somewhere on your file system for your agent to find.
+
+00:29:27.540 --> 00:29:31.220
+<v Trevor Manz>And then there are a handful of tools that exist in open source for adding those files.
+
+00:29:31.890 --> 00:29:42.120
+<v Trevor Manz>And like I mentioned just a moment ago, being able to sort of upgrade those files easily, either based off of Git syncing or by installing with one of these marketplaces.
+
+00:29:42.340 --> 00:29:45.120
+<v Trevor Manz>So the way that we publish our skills, we have this repo.
+
+00:29:45.170 --> 00:29:46.880
+<v Trevor Manz>It's called Marimo Team, Marimo Pair.
+
+00:29:48.260 --> 00:29:51.320
+<v Trevor Manz>The code that we publish there, we version over time.
+
+00:29:51.920 --> 00:29:59.020
+<v Trevor Manz>And you can either use, if you have the npm package manager, you can use npx skills add Marimo Team slash Marimo Pair.
+
+00:29:59.680 --> 00:30:03.220
+<v Trevor Manz>That will start up a command line tool to add those files to your file system.
+
+00:30:03.310 --> 00:30:06.540
+<v Trevor Manz>You can either install them locally in a folder, globally on your system.
+
+00:30:07.680 --> 00:30:13.540
+<v Trevor Manz>If you don't have npm installed, you can actually use uv and do uvx Dino A npm skills.
+
+00:30:13.700 --> 00:30:19.320
+<v Trevor Manz>And this will sort of shell out to Dino to actually install those for you, but you can drive it through uv.
+
+00:30:20.840 --> 00:30:21.500
+<v Michael Kennedy>If you have pod code.
+
+00:30:21.640 --> 00:30:21.960
+<v Michael Kennedy>This is new.
+
+00:30:22.180 --> 00:30:23.100
+<v Michael Kennedy>I've seen this so much.
+
+00:30:23.220 --> 00:30:25.320
+<v Michael Kennedy>I'm like, oh man, why are we stuck on NPM?
+
+00:30:25.380 --> 00:30:27.520
+<v Michael Kennedy>Like I do have two of these things.
+
+00:30:27.960 --> 00:30:31.360
+<v Michael Kennedy>So I'll put the uvx Dino dash A npm colon.
+
+00:30:32.660 --> 00:30:39.660
+<v Michael Kennedy>I feel like that could be like a sweet new alias, just uv npm space skill.
+
+00:30:40.440 --> 00:30:40.840
+<v Michael Kennedy>You know what I mean?
+
+00:30:40.910 --> 00:30:43.020
+<v Michael Kennedy>Just kind of like, I think that'd be nice.
+
+00:30:43.160 --> 00:30:44.140
+<v Michael Kennedy>I'm going to find a way to do that.
+
+00:30:44.580 --> 00:30:45.340
+<v Trevor Manz>Yeah, definitely.
+
+00:30:46.000 --> 00:30:52.720
+<v Trevor Manz>I think, short tangent, I actually got the Dino name for the Dino folks so we could transfer over that package.
+
+00:30:53.350 --> 00:31:01.000
+<v Trevor Manz>Because this was, you know, being able to share packages between ecosystems without having to reinstall a new package manager, I think is like really, really important.
+
+00:31:01.170 --> 00:31:14.540
+<v Trevor Manz>Because both, you know, the Python ecosystem and the npm ecosystem are growing so much that, but it's a lot to ask of users to make sure that they have both these things installed, especially if someone considers themselves a node person versus like a Python person.
+
+00:31:15.060 --> 00:31:16.400
+<v Michael Kennedy>Let's just make sure that everyone has access.
+
+00:31:17.320 --> 00:31:19.780
+<v Michael Kennedy>It could be an offense to have to install npm.
+
+00:31:19.880 --> 00:31:20.320
+<v Michael Kennedy>I'm not just kidding.
+
+00:31:22.700 --> 00:31:26.460
+<v Michael Kennedy>So you're responsible for getting Dino as a PyPI package?
+
+00:31:27.540 --> 00:31:28.040
+<v Trevor Manz>Yes, yeah.
+
+00:31:28.320 --> 00:31:35.980
+<v Trevor Manz>I've collaborated a little bit with the Dino folks over the years, and I went through a very formal process with PyPI to request that name and then turn it over to them.
+
+00:31:37.280 --> 00:31:38.040
+<v Michael Kennedy>Oh, that's super cool.
+
+00:31:38.280 --> 00:31:44.860
+<v Michael Kennedy>So tell people real quick about Dino because they're like, well, what does that have to do with Node?
+
+00:31:45.080 --> 00:31:45.800
+<v Michael Kennedy>Why are we...
+
+00:31:46.780 --> 00:31:50.760
+<v Trevor Manz>Yeah, so the creator of Dino was the same creator of Node.
+
+00:31:51.140 --> 00:32:01.740
+<v Trevor Manz>And sort of the basis of Dino was, at least from the perspective of the Dino creators, was to fix some of the things that had happened in the Node ecosystem.
+
+00:32:01.920 --> 00:32:13.580
+<v Trevor Manz>And so Dino is a similar type of server-side JavaScript runtime, but brings over a lot of functions a lot more similarly to how the way that the browser has.
+
+00:32:13.640 --> 00:32:27.320
+<v Trevor Manz>So it has a lot more fine-grained permissions baked into when you're trying to do something like read the file system or read variables, you have to actually explicitly opt into those capabilities in order while you're executing the script
+
+00:32:28.120 --> 00:32:31.580
+<v Trevor Manz>to allow that runtime to access those things.
+
+00:32:33.400 --> 00:32:34.640
+<v Michael Kennedy>Okay, yeah, very nice.
+
+00:32:35.180 --> 00:32:46.260
+<v Michael Kennedy>Now, do you have a preference here identify npx it or uv exit or is it better to do the marketplace type of thing yeah so this this
+
+00:32:46.420 --> 00:32:58.600
+<v Trevor Manz>this starts to come down to the your agent of choice you know so the npx skills uh is a command line tool that's published to seals is a package that's on the npm registry that installs skills
+
+00:32:59.340 --> 00:33:12.560
+<v Trevor Manz>on your system and sort of has a little cli walkthrough where you can pick multiple agents like if you use Codex or use Claude Code or maybe OpenCode, where it will install them to sort of universal directories for those things.
+
+00:33:14.280 --> 00:33:21.560
+<v Trevor Manz>So if you are someone that likes to play with a lot of different agent harnesses, like I'd probably recommend using NPX or uvx Dino.
+
+00:33:23.040 --> 00:33:28.580
+<v Trevor Manz>Those are semantically equivalent or they just eventually will trigger the same CLI.
+
+00:33:28.700 --> 00:33:32.100
+<v Trevor Manz>It's just like the package manager that's doing it is different.
+
+00:33:32.880 --> 00:33:35.460
+<v Michael Kennedy>Right, it's more npm versus plugin, exactly.
+
+00:33:36.160 --> 00:33:40.840
+<v Trevor Manz>Yeah, and then the plugin is more, that's a specific install instruction to Claude Code.
+
+00:33:41.700 --> 00:33:44.260
+<v Trevor Manz>And also I believe that Codex has something quite similar.
+
+00:33:44.880 --> 00:33:57.100
+<v Trevor Manz>And there you can register what's called a marketplace for our Marimo team, such that when we publish updates, when you boot up Claude Code one day, maybe it'll ask you if you'd like to upgrade our plugin.
+
+00:33:57.440 --> 00:33:59.260
+<v Trevor Manz>So that will sort of keep it in sync.
+
+00:34:00.300 --> 00:34:11.960
+<v Trevor Manz>So if you are a Claude Code user, I think I generally recommend, and mostly a Claude Code user, I generally recommend installing from the marketplace versus if you're someone that's flipping around between a lot of tools, the MPX skills does a good job.
+
+00:34:12.070 --> 00:34:15.980
+<v Trevor Manz>And you can MPX skills upgrade the Marimo pair skill as well.
+
+00:34:18.380 --> 00:34:18.820
+<v Michael Kennedy>Okay.
+
+00:34:19.470 --> 00:34:20.960
+<v Michael Kennedy>That sounds really good.
+
+00:34:20.970 --> 00:34:23.820
+<v Michael Kennedy>I guess, yeah, the one is general, right?
+
+00:34:23.899 --> 00:34:30.060
+<v Michael Kennedy>And the one, the other, the plugin one is really Claude Code.
+
+00:34:30.280 --> 00:34:35.300
+<v Michael Kennedy>Although I suspect if you put it into codex, it might just give you a little bit of snark and install it.
+
+00:34:36.700 --> 00:34:37.659
+<v Michael Kennedy>Yeah, yeah, definitely.
+
+00:34:37.960 --> 00:34:41.399
+<v Trevor Manz>I've accidentally invoked the skill with the four.
+
+00:34:41.520 --> 00:34:47.399
+<v Trevor Manz>I think in codex, it's the dollar sign to invoke skills versus in Claude, it's like this forward slash and it figures it out.
+
+00:34:48.300 --> 00:34:49.280
+<v Michael Kennedy>Yeah, yeah, exactly.
+
+00:34:49.940 --> 00:34:51.200
+<v Michael Kennedy>You must be confused.
+
+00:34:52.179 --> 00:34:53.639
+<v Michael Kennedy>I don't even, this doesn't even make sense.
+
+00:34:53.760 --> 00:34:57.100
+<v Michael Kennedy>What you meant to type was such and such.
+
+00:34:57.800 --> 00:34:59.060
+<v Michael Kennedy>Yeah, okay.
+
+00:34:59.900 --> 00:35:08.300
+<v Michael Kennedy>So is there like a getting started example or something like that on one of your pages I can sort of point at?
+
+00:35:08.900 --> 00:35:09.380
+<v Trevor Manz>Yeah.
+
+00:35:10.040 --> 00:35:15.940
+<v Trevor Manz>So if you have the skill installed, the best thing you can do is just spin up a Marimo session.
+
+00:35:16.440 --> 00:35:22.860
+<v Trevor Manz>So you could even prompt, starting from your agent of choice, say start a Marimo notebook using the Marimo pair skill.
+
+00:35:23.800 --> 00:35:33.280
+<v Trevor Manz>And then everything needed to actually start you pairing with Marimo is baked into that skill.
+
+00:35:33.350 --> 00:35:43.500
+<v Trevor Manz>So after you've run that uvx command, you should be able to spin up a notebook and then connect to it with your agent and just start talking about some data or talking about a notebook that you already have.
+
+00:35:44.460 --> 00:35:44.900
+<v Michael Kennedy>Okay.
+
+00:35:47.460 --> 00:35:51.880
+<v Michael Kennedy>I guess what are some of the use cases or whatever that you might go through with this?
+
+00:35:52.920 --> 00:35:54.960
+<v Michael Kennedy>How do you find it to be useful?
+
+00:35:54.990 --> 00:35:56.020
+<v Michael Kennedy>What are you all doing with it?
+
+00:35:57.240 --> 00:36:07.740
+<v Trevor Manz>Yeah, I'd say Marimo pair is increasingly the main way that our users that prefer to author code with agents are starting to create and share Marimo notebooks.
+
+00:36:08.700 --> 00:36:18.080
+<v Trevor Manz>And so I think there are a lot of different use cases, but the way I like to think of it is that it really ranges from a more hands-on versus hands-off approach to like authoring notebooks.
+
+00:36:18.400 --> 00:36:26.620
+<v Trevor Manz>So a more hands-on approach would be the workflow described where you spin up a notebook session maybe you have a data set and you want to be
+
+00:36:26.760 --> 00:36:38.920
+<v Trevor Manz>hands-on looking at that data making plots more exploratory data analysis or more iterative where you're hands-on working with the agent but rather than writing the code you're sort of prompting
+
+00:36:39.000 --> 00:36:52.780
+<v Trevor Manz>the code with the agent and looking at the outputs and deciding where to go next so that's more on like the head the interactive or hands-on approach and then we also have a set of users that are driving Marimo using Marimo pair in a more headless version as well,
+
+00:36:53.020 --> 00:36:57.860
+<v Trevor Manz>where basically they might spin off many different Marimo pair sessions to work on a similar problem.
+
+00:36:58.620 --> 00:37:05.160
+<v Trevor Manz>And at the end, they'll have these notebooks that are running that then they can connect to and sort of check and see what the agent was working on inside of that session.
+
+00:37:07.180 --> 00:37:15.740
+<v Trevor Manz>So essentially, when you want to start a task with data, you can open up your agent and spin up Marimo and then start prompting towards working on that problem.
+
+00:37:16.360 --> 00:37:17.000
+<v Michael Kennedy>I see.
+
+00:37:17.140 --> 00:37:28.020
+<v Michael Kennedy>So maybe this headless story, like I have this data and I know I want some kind of description exploration summary of it
+
+00:37:28.440 --> 00:37:40.640
+<v Michael Kennedy>so hey Claude just create a notebook and just from scratch just do what you want to do to build it up and then I'll go look at it right yeah and the other ones may be more like a coding
+
+00:37:41.080 --> 00:37:47.000
+<v Michael Kennedy>like a data coding sort of story yeah exactly yeah and the I think the nuance there of like
+
+00:37:46.980 --> 00:38:00.700
+<v Trevor Manz>why the more headless approach works quite well with Maremo Pair is that if you've had any experience with trying to one-shot a program or one-shot a notebook in the past, the agent doesn't really have a way of verifying what it's doing
+
+00:38:00.870 --> 00:38:08.440
+<v Trevor Manz>or that whole notebook that it created works well or maybe just at the end can try to run the notebook and then we'll have to go back and fix cell by cell.
+
+00:38:09.000 --> 00:38:16.640
+<v Trevor Manz>Versus driving for Maremo Pair sort of forces the agent to build up the notebooks a similar way that you would where you would actually go cell by cell.
+
+00:38:16.860 --> 00:38:18.720
+<v Trevor Manz>So the first thing I have to do is load my data.
+
+00:38:18.900 --> 00:38:21.960
+<v Trevor Manz>The second thing I have to do is inspect, look at my nulls.
+
+00:38:22.360 --> 00:38:28.760
+<v Trevor Manz>And if there are errors in any of those steps, the agent will correct them there rather than sort of generating the whole notebook and then running it from scratch.
+
+00:38:29.480 --> 00:38:44.380
+<v Trevor Manz>And so we found that you get much higher quality outputs when you are actually at the time of looking at the notebook because the process in which the agent had to go to create the notebook sort of guarantees that it has to run because it adheres to the Marimo's constraints
+
+00:38:44.400 --> 00:38:49.260
+<v Trevor Manz>versus just generating the artifact and then saying like, hey, I'm done and didn't really check the outputs at all.
+
+00:38:50.820 --> 00:38:51.420
+<v Michael Kennedy>Right, exactly.
+
+00:38:51.490 --> 00:38:56.420
+<v Michael Kennedy>It just could be some well-formed but meaningless notebook, right?
+
+00:38:57.200 --> 00:38:57.400
+<v Michael Kennedy>Yeah.
+
+00:38:59.300 --> 00:39:11.040
+<v Michael Kennedy>What if I'm, now we're pushing up to the limits of my Marimo knowledge because I've not tried this, but what if I got a Marimo notebook and I say open up that project in VS Code?
+
+00:39:11.280 --> 00:39:22.400
+<v Michael Kennedy>Like, for example, maybe I have a regular programming project that's VS Code that has the Claude code installed in it, like the extension or whatever.
+
+00:39:23.560 --> 00:39:26.560
+<v Michael Kennedy>And inside there, part of it is a Marimo notebook.
+
+00:39:29.060 --> 00:39:40.660
+<v Michael Kennedy>Can I have, can I say open up that notebook in Marimo, but then also have Marimo pair, but from within the VS Code, Claude code, or do I have got to go to the terminal?
+
+00:39:41.220 --> 00:39:43.120
+<v Michael Kennedy>Like what is this interoperability story?
+
+00:39:43.580 --> 00:39:44.020
+<v Michael Kennedy>Sure.
+
+00:39:44.580 --> 00:39:45.600
+<v Trevor Manz>Yeah, so I'm also at Marimo.
+
+00:39:45.760 --> 00:39:49.300
+<v Trevor Manz>I'm responsible for our VS Code extension, which is integrated.
+
+00:39:50.180 --> 00:39:57.000
+<v Trevor Manz>So if you've ever tried to open up a Jupyter notebook inside of VS Code, VS Code or Cursor have a built-in UI for notebooks.
+
+00:39:57.410 --> 00:40:06.000
+<v Trevor Manz>And so we have a built-in UI for notebooks that reuses that sort of the VS Code native view, except replacing with Marimo outputs.
+
+00:40:07.060 --> 00:40:15.900
+<v Trevor Manz>And the latest thing I've been working on is getting the ability to have your agent of vs code um drive that those notebook outputs as well so that's something we should ship in
+
+00:40:16.000 --> 00:40:24.740
+<v Michael Kennedy>probably the next week or so and there's of course i guess because of economics or lock-in or and i
+
+00:40:24.740 --> 00:40:36.160
+<v Michael Kennedy>don't know whatever there's always in all these editors i guess yes even in cursor there there are like first class built in ways to do agents.
+
+00:40:37.180 --> 00:40:42.120
+<v Michael Kennedy>Say in VS Code, there's like the chat thing on the right.
+
+00:40:42.260 --> 00:40:45.320
+<v Michael Kennedy>Those I think is probably what they intend you to do.
+
+00:40:46.460 --> 00:40:55.940
+<v Michael Kennedy>But then you can get the VS Code Claude or Codex extension, which is a totally different UI, but still in VS Code.
+
+00:40:56.620 --> 00:41:02.540
+<v Michael Kennedy>Or you could go to the terminal and you could type Claude or Codex.
+
+00:41:03.080 --> 00:41:07.860
+<v Michael Kennedy>And that's a third sort of thing, which can sort of have links back in there.
+
+00:41:09.740 --> 00:41:11.240
+<v Michael Kennedy>Does some of these work and some of them don't?
+
+00:41:11.240 --> 00:41:12.020
+<v Michael Kennedy>Are they all the same?
+
+00:41:13.120 --> 00:41:13.640
+<v Michael Kennedy>What's the story?
+
+00:41:14.020 --> 00:41:24.920
+<v Trevor Manz>Yeah, so if you're launching from the terminal or the integrated VS Code, sorry, the Claude Code extension from VS Code today,
+
+00:41:26.140 --> 00:41:33.580
+<v Trevor Manz>that will likely start Marimo's command line tool and then open up a web view inside of VS Code, which is like our Marimo editor.
+
+00:41:34.300 --> 00:41:43.580
+<v Trevor Manz>If you use the chat, which is sort of the built-in agents panel inside of VS Code, that would drive the usage of the more integrated view inside of VS Code.
+
+00:41:45.460 --> 00:41:46.320
+<v Michael Kennedy>I think we would...
+
+00:41:46.340 --> 00:41:49.100
+<v Michael Kennedy>But all three are possible, I guess, yeah?
+
+00:41:49.820 --> 00:41:50.520
+<v Trevor Manz>Yep, yeah, exactly.
+
+00:41:50.800 --> 00:41:54.800
+<v Trevor Manz>You can start a Marimo pair session from any of those panels.
+
+00:41:55.340 --> 00:42:09.860
+<v Trevor Manz>It's just a matter of what the visual that you're looking at is, if that's going to be the native VS Code editor for the notebook versus a web view of the Maremo notebook UI.
+
+00:42:11.100 --> 00:42:23.680
+<v Michael Kennedy>Yeah, and my sort of huff at this before was like, this is only here because Claude Code won't allow you to use
+
+00:42:24.880 --> 00:42:27.640
+<v Michael Kennedy>your subscription in the other one.
+
+00:42:27.680 --> 00:42:30.960
+<v Michael Kennedy>and it's got to be in certain circumstances, right?
+
+00:42:31.280 --> 00:42:34.920
+<v Michael Kennedy>Like, oh, if you use the official extension, you can use your subscription.
+
+00:42:35.630 --> 00:42:43.420
+<v Michael Kennedy>But if you use this other way, then you've, like, say in Cursor, you use your Cursor credits, not your Claude code subscription.
+
+00:42:43.720 --> 00:42:56.320
+<v Michael Kennedy>And in PyCharm, you've got the sort of duality as well, where if you use the AI chat section that uses your JetBrains AI credits, whereas, like, if you use the terminal, it's Claude,
+
+00:42:56.440 --> 00:42:58.940
+<v Michael Kennedy>And just, it's kind of a mess, honestly.
+
+00:43:00.360 --> 00:43:11.340
+<v Trevor Manz>Yeah, I think there's a lot of fragmentation in the ability to, and who owns that interface for where you're typing into that box and driving these tools.
+
+00:43:12.000 --> 00:43:20.860
+<v Trevor Manz>And so from our perspective, we think there will likely be a continued amount of drift between these different tools.
+
+00:43:21.280 --> 00:43:35.820
+<v Trevor Manz>And we don't necessarily want Maremo to be a tool that people are kind of deciding whether or not to use our chat bar, but we do think Marimo as an environment for working with your data should be accessible from whatever tool that you choose. And so on our side, we just want to make
+
+00:43:35.920 --> 00:43:40.940
+<v Trevor Manz>sure that you're able to connect to and drive a Marimo notebook from your agent harness and tool
+
+00:43:40.940 --> 00:43:53.819
+<v Michael Kennedy>of choice. I think in maybe some kind of idealistic, non-realistic world where all the frontier
+
+00:43:53.840 --> 00:44:06.300
+<v Michael Kennedy>your foundation coding models, you could just tell it your subscription or tell it whatever, and it's the same billing everywhere. It might be better to have some kind of built in panel
+
+00:44:06.450 --> 00:44:20.840
+<v Michael Kennedy>into Marimo or little pop ups or something. But given all the weird restrictions and stuff, it seems like a really good plan to just have Marimo good at talking to any agent through this way.
+
+00:44:21.820 --> 00:44:24.820
+<v Michael Kennedy>And however people want to run it, they can just talk to it, right?
+
+00:44:25.440 --> 00:44:25.800
+<v Trevor Manz>Yeah.
+
+00:44:28.300 --> 00:44:36.320
+<v Trevor Manz>It's been challenging because we spend a lot of time on that UI and thinking about that UI that we own inside of Maremo for how this should work with these agents.
+
+00:44:37.300 --> 00:44:39.060
+<v Trevor Manz>But the reality is that there's a lot of friction.
+
+00:44:39.700 --> 00:44:47.660
+<v Trevor Manz>And if we would have tried to build around CloudMax a year ago, that would have been a lot of wasted effort because of the way that these platforms are changing.
+
+00:44:48.520 --> 00:45:02.740
+<v Trevor Manz>So as these tools become increasingly sticky and folks get entrenched into their agents of choice, I think from our perspective, making sure Marimo remains a useful tool to any agent is really our priority.
+
+00:45:03.170 --> 00:45:11.400
+<v Trevor Manz>And if there is some sort of future day where we can own that UI again, then I think we will certainly have a story there.
+
+00:45:12.200 --> 00:45:12.680
+<v Michael Kennedy>Yeah.
+
+00:45:13.320 --> 00:45:15.340
+<v Michael Kennedy>I think I totally agree with you.
+
+00:45:15.700 --> 00:45:20.600
+<v Michael Kennedy>But I want to share a little graph with you from the Pragmatic Engineer newsletter.
+
+00:45:20.710 --> 00:45:21.600
+<v Michael Kennedy>Yeah, I guess newsletter.
+
+00:45:23.340 --> 00:45:28.680
+<v Michael Kennedy>So there's this one that was AI tooling for software engineers in 2026.
+
+00:45:29.130 --> 00:45:32.080
+<v Michael Kennedy>So you scroll down until we see a graph.
+
+00:45:32.090 --> 00:45:32.500
+<v Michael Kennedy>There we go.
+
+00:45:33.680 --> 00:45:40.120
+<v Michael Kennedy>If you look at what people are using, it's Claude Code.
+
+00:45:41.320 --> 00:45:51.440
+<v Michael Kennedy>And then quite a ways back, we get Google Copilot, which I think is really, I don't know, maybe I live in some kind of sheltered world.
+
+00:45:51.460 --> 00:45:58.740
+<v Michael Kennedy>But I feel like this is primarily used because companies have Microsoft 365 subscriptions.
+
+00:46:00.080 --> 00:46:01.500
+<v Michael Kennedy>And they've got 10,000 employees.
+
+00:46:01.580 --> 00:46:03.760
+<v Michael Kennedy>And they're like, oh, you can use Copilot because it's approved.
+
+00:46:04.100 --> 00:46:08.340
+<v Michael Kennedy>I don't know that that's necessarily what people are seeking out as their top choice.
+
+00:46:08.940 --> 00:46:09.160
+<v Michael Kennedy>I don't know.
+
+00:46:09.160 --> 00:46:09.640
+<v Michael Kennedy>I could be wrong.
+
+00:46:09.780 --> 00:46:11.780
+<v Michael Kennedy>Sorry if I got that wrong, Copilot folks.
+
+00:46:12.660 --> 00:46:15.120
+<v Michael Kennedy>And then maybe about half is cursor.
+
+00:46:16.580 --> 00:46:17.580
+<v Michael Kennedy>And that's kind of its own world.
+
+00:46:17.600 --> 00:46:18.440
+<v Michael Kennedy>And then it goes codex.
+
+00:46:18.520 --> 00:46:25.620
+<v Michael Kennedy>So I feel like if you're trying to- this is like Claude Code was way behind a year ago.
+
+00:46:25.960 --> 00:46:27.460
+<v Michael Kennedy>It's crazy.
+
+00:46:27.780 --> 00:46:37.080
+<v Michael Kennedy>So I feel like if you're building a tool, especially for developers, that says, let's pretend you don't want this.
+
+00:46:37.540 --> 00:46:40.440
+<v Michael Kennedy>let us give you our version of something that's like it.
+
+00:46:41.940 --> 00:46:43.640
+<v Michael Kennedy>I just don't think that that's a road for success.
+
+00:46:44.000 --> 00:46:46.900
+<v Michael Kennedy>I think you're fighting against like, well, everyone's like, you know what?
+
+00:46:46.940 --> 00:46:48.940
+<v Michael Kennedy>We're in Claude Code and it works really well.
+
+00:46:50.060 --> 00:46:52.100
+<v Michael Kennedy>Why am I gonna go put that away and use your thing?
+
+00:46:52.960 --> 00:47:01.020
+<v Michael Kennedy>As opposed to what you guys built, which is like, well, here's how you use like the top three of those things to talk to what you're already doing.
+
+00:47:01.040 --> 00:47:02.000
+<v Michael Kennedy>I think that's a good choice.
+
+00:47:03.060 --> 00:47:16.720
+<v Trevor Manz>Yeah, I think for us, it was the realization that, the effectiveness of agents on a particular task is a combination of like, I think an agent by definition is like a model, the tools that you equip that model with,
+
+00:47:16.930 --> 00:47:21.380
+<v Trevor Manz>and then its environment or the loop that it runs in to perform that task.
+
+00:47:21.830 --> 00:47:25.720
+<v Trevor Manz>And so its effectiveness is going to be limited by whatever tools you give that agent.
+
+00:47:26.210 --> 00:47:35.720
+<v Trevor Manz>And so if we didn't make Marimo a useful tool for the agent, then if you give a data problem to the agents, it's going to use the tools that it has at hand, which are reading and writing files and running bash scripts.
+
+00:47:36.240 --> 00:47:43.380
+<v Trevor Manz>if you run that script a bunch of times, or you ask the same data question using those tools, you might get a folder with a lot of different scripts and things and maybe a result.
+
+00:47:43.980 --> 00:47:55.540
+<v Trevor Manz>And so by giving agents, or really thinking of Marimo as a tool for agents, then we don't have to think so much about the interface for the agent, but rather just how to expose our environment to agents.
+
+00:47:56.320 --> 00:48:05.680
+<v Trevor Manz>And then when you ask for those data tasks, the thing that you generate at the end is this reproducible Python program that is a Marimo notebook, But you can drive that for many of these UIs of choice.
+
+00:48:05.980 --> 00:48:14.480
+<v Trevor Manz>And I look at these bars here, there's going to be jumping back and forth between these depending on what the providers dictate in terms of their models.
+
+00:48:15.280 --> 00:48:16.560
+<v Michael Kennedy>And from us at Marimo...
+
+00:48:16.560 --> 00:48:18.560
+<v Michael Kennedy>Who gets blocked by the US government, who doesn't?
+
+00:48:19.480 --> 00:48:19.880
+<v Trevor Manz>Exactly.
+
+00:48:20.120 --> 00:48:27.140
+<v Trevor Manz>So for us at Marimo, as long as we can make sure that regardless of what agent you use, you will have notebooks as a useful tool.
+
+00:48:28.560 --> 00:48:31.260
+<v Trevor Manz>And then at the end of the day, you're still just generating Marimo notebooks.
+
+00:48:31.520 --> 00:48:40.340
+<v Trevor Manz>So even if you turn off your agent, like you have this reproducible artifact that is useful for communicating your data results or something about what happened in that session while you're working with data.
+
+00:48:42.220 --> 00:48:53.140
+<v Trevor Manz>That's our goal at Marimo, is to make sure that whether you knew how to write Python code or you don't know how to write Python code, you're able to produce this reproducible artifact for your data analysis.
+
+00:48:54.260 --> 00:48:54.700
+<v Michael Kennedy>Okay.
+
+00:48:56.320 --> 00:48:58.780
+<v Michael Kennedy>You also talked about open code.
+
+00:48:59.560 --> 00:49:00.040
+<v Michael Kennedy>Is it AI?
+
+00:49:00.590 --> 00:49:00.720
+<v Michael Kennedy>Yeah.
+
+00:49:01.500 --> 00:49:03.640
+<v Michael Kennedy>This is somewhat new to me.
+
+00:49:03.660 --> 00:49:05.180
+<v Michael Kennedy>What is this open code thing?
+
+00:49:06.220 --> 00:49:07.460
+<v Trevor Manz>Yeah, so open code is similar.
+
+00:49:08.160 --> 00:49:17.520
+<v Trevor Manz>I think Claude Code had the first form factor of being one of these terminal CLIs that you spin up, but just with the Anthropic models.
+
+00:49:18.180 --> 00:49:29.680
+<v Trevor Manz>And then open code is a similar, it feels very similar to using Claude Code, but it allows you to configure a lot of different models that have the ability to configure API endpoints.
+
+00:49:30.540 --> 00:49:35.600
+<v Trevor Manz>So for a while, I believe you can still configure all the different providers.
+
+00:49:35.960 --> 00:49:45.740
+<v Trevor Manz>It's just like the type of subscription models that you can use with open code change quite a bit, similar to what you were just mentioning inside of VS Code.
+
+00:49:46.640 --> 00:49:52.100
+<v Michael Kennedy>Yeah, for example, it looks like you can use your Codex subscription, but not your Claude subscription.
+
+00:49:54.360 --> 00:49:54.980
+<v Trevor Manz>Yeah, exactly.
+
+00:49:55.190 --> 00:50:01.460
+<v Trevor Manz>So it should have a very similar form factor to when you type in Claude and you pop up that thing inside of your terminal.
+
+00:50:02.120 --> 00:50:03.820
+<v Trevor Manz>If you type in open code, you'll get a window.
+
+00:50:03.980 --> 00:50:04.820
+<v Trevor Manz>You can start prompting.
+
+00:50:05.780 --> 00:50:11.820
+<v Trevor Manz>You can also install skills for open code as well, the same way that you install for any of these harnesses.
+
+00:50:12.980 --> 00:50:17.460
+<v Trevor Manz>But it's just, you know, we had some users that use open code because of the open models.
+
+00:50:17.620 --> 00:50:19.040
+<v Trevor Manz>We have some users that are using Claude Code.
+
+00:50:19.080 --> 00:50:21.440
+<v Trevor Manz>We have some users that are using Codex or VS Code.
+
+00:50:21.840 --> 00:50:24.960
+<v Trevor Manz>And like I mentioned, we just want to make sure that anyone can drive a Marima notebook.
+
+00:50:26.560 --> 00:50:33.100
+<v Michael Kennedy>It must be tough to be supporting AI stuff in this space, given how much flux it's under.
+
+00:50:34.140 --> 00:50:47.280
+<v Trevor Manz>Yeah, I think by inverting the problem insofar is that we are no longer, like, you know, by moving some of this ability to drive Marimo outside of the Marimo UI, we don't have to keep up as much
+
+00:50:47.500 --> 00:50:49.300
+<v Trevor Manz>with all the fluctuation in the new models.
+
+00:50:49.500 --> 00:51:02.280
+<v Trevor Manz>And instead, the thing that we can focus on is this skill and making sure that that interface for controlling Marimo is really good from any agent of choice. And then as these different UIs
+
+00:51:02.440 --> 00:51:13.160
+<v Trevor Manz>compete for sort of where the users are going to be in terms of driving their agents, again, we can just sort of sit there with Marimo and just make sure Marimo is a really good tool for any of
+
+00:51:13.260 --> 00:51:22.040
+<v Michael Kennedy>these agents. Sure, sure, sure. So having this, how does this change how people use notebooks?
+
+00:51:23.860 --> 00:51:24.900
+<v Michael Kennedy>I know how it's changed coding.
+
+00:51:25.200 --> 00:51:29.120
+<v Michael Kennedy>It's changed it quite a bit in some ways and not at all in others, but how about for data?
+
+00:51:30.100 --> 00:51:31.060
+<v Trevor Manz>That's a really good question.
+
+00:51:31.380 --> 00:51:42.540
+<v Trevor Manz>So I mentioned earlier that part of the value of these environments like a Marimo notebook or like a Jupyter or Excel is the statefulness of those environments.
+
+00:51:42.730 --> 00:51:56.460
+<v Trevor Manz>And so it's really like, there's a lot of, when you're using an agent, it's able to gather things and put it from your file system to bring that into context or from the web to be able to, when you ask a prompt,
+
+00:51:57.280 --> 00:52:01.140
+<v Trevor Manz>perform a task that hopefully fulfills that to some sufficient level.
+
+00:52:02.380 --> 00:52:16.180
+<v Trevor Manz>And prior to having an integration like Marimo pair, that statefulness could be, basically the values that are in memory could be extra context to helping the agent answer some question.
+
+00:52:16.720 --> 00:52:21.060
+<v Trevor Manz>But you'd sort of have to babysit the model or tell it something like, oh, I copied this output, here's the output.
+
+00:52:21.560 --> 00:52:25.900
+<v Trevor Manz>And now when you say, what's in this data frame, it can look at those columns for you.
+
+00:52:26.350 --> 00:52:34.340
+<v Trevor Manz>Or inside, for example, if I'm doing something like EDA type of analysis inside of Marimo, I can circle on a plot and make a selection.
+
+00:52:34.640 --> 00:52:36.540
+<v Trevor Manz>And I can say, what did I just select here?
+
+00:52:37.040 --> 00:52:42.820
+<v Trevor Manz>And the agent can go take that indice selection that I made compared against the data frame and come back to me with some answer.
+
+00:52:43.160 --> 00:52:55.520
+<v Trevor Manz>So I think these types of questions that maybe felt tedious to ask before, because you'd have to type out a lot of code to do that, now you can really either use the agent to help you write code
+
+00:52:55.600 --> 00:52:58.160
+<v Trevor Manz>or actually ask you questions about the state inside that notebook.
+
+00:52:58.720 --> 00:53:05.360
+<v Trevor Manz>And you're really extending the agent's environment with the intermediate values that as a human might find interesting.
+
+00:53:06.000 --> 00:53:08.400
+<v Trevor Manz>But now the agent can also use that as potential context.
+
+00:53:10.060 --> 00:53:16.640
+<v Michael Kennedy>One of the things I think is super useful, a lot of times I feel like people maybe miss this.
+
+00:53:17.180 --> 00:53:28.160
+<v Michael Kennedy>Maybe more people than I realize know about it, but in VS Code or PyCharm or Cursor, I think Cursor might be best as I'm not entirely sure these days.
+
+00:53:28.760 --> 00:53:41.480
+<v Michael Kennedy>But anyway, if I've got a file, maybe I got hundreds of files in my project, but a particular file I'm interested in, if I have that file open and I ask questions, it's automatically included as context,
+
+00:53:41.960 --> 00:53:44.600
+<v Michael Kennedy>just by virtue of having it be the last focused file.
+
+00:53:46.160 --> 00:54:01.020
+<v Michael Kennedy>but even better is you can highlight parts of a line or three lines or whatever and go, what's wrong with this? It's all you got to say. And it goes, oh yeah, I see the function that you're talking about, the part that you've highlighted, like boom, off it goes. Is there
+
+00:54:01.200 --> 00:54:09.720
+<v Michael Kennedy>some mechanism? It sounds a little bit like there is, but is there a mechanism in Marimo that it communicates back what's active, what you're working with?
+
+00:54:10.300 --> 00:54:23.320
+<v Trevor Manz>Yeah, so we have, as the agent is running things, we can communicate what cells have changed or if there are values that have changed in the notebook, and then the agent can go and ask questions about those things that have changed.
+
+00:54:23.840 --> 00:54:34.500
+<v Trevor Manz>We have some folks in our team that are working on creating these sort of, I think to what you're mentioning, imagine you highlight a line of code and you want to feed that back as potential context of here's where I'm focusing.
+
+00:54:35.600 --> 00:54:47.480
+<v Trevor Manz>Inside of a notebook, if you're using actually the integrated browser inside a VS Code or cursor, you can actually click on a plot and it'll take that screenshot and it'll add it as context to what you're going to ask.
+
+00:54:47.920 --> 00:54:55.020
+<v Trevor Manz>And so now you're having this interaction where it's not just like the values, but also like the outputs and like the visual outputs that you can say like, hey, this is a little bit weird.
+
+00:54:55.220 --> 00:54:56.400
+<v Trevor Manz>I see this, this, and this.
+
+00:54:56.830 --> 00:55:08.960
+<v Trevor Manz>And so we're definitely thinking that direction where, yeah, it's not just the line of code, but the value of the code and the representation of the code that could actually feed back to these multimodal models and help you sort of come to better understanding quickly with your data.
+
+00:55:10.220 --> 00:55:11.120
+<v Michael Kennedy>Yeah, awesome.
+
+00:55:11.350 --> 00:55:11.700
+<v Michael Kennedy>I love it.
+
+00:55:12.300 --> 00:55:21.540
+<v Michael Kennedy>It's so nice because instead of trying to just like describe, okay, and the third function called this, there's a part where there's an if, and you're just like highlighting, go this, right?
+
+00:55:21.700 --> 00:55:22.100
+<v Michael Kennedy>It's great.
+
+00:55:22.180 --> 00:55:22.560
+<v Trevor Manz>Exactly.
+
+00:55:23.020 --> 00:55:36.920
+<v Trevor Manz>There's a certain level of interactions or, you know, feeding back of, like I think when I started to realize that these agents could be very powerful was when coding tasks started to feel a lot cheaper, Like maybe these what-if ideas of something I wanted to try with software,
+
+00:55:37.450 --> 00:55:43.700
+<v Trevor Manz>I could, you know, rather than that taking up a whole weekend or like several weeks to try out, it's like maybe an afternoon I could try that out.
+
+00:55:43.840 --> 00:55:51.760
+<v Trevor Manz>And I think the experience that we want to provide for our users inside of Marimo Notebooks is that these kind of what-if questions with your data also feel very cheap.
+
+00:55:51.980 --> 00:55:52.740
+<v Trevor Manz>So you say, what is that?
+
+00:55:53.000 --> 00:55:54.640
+<v Michael Kennedy>And now that like starts a conversation
+
+00:55:55.100 --> 00:56:00.100
+<v Trevor Manz>or starts a new part of your analysis that, you know, you maybe would have had to be very convinced to go down that route before.
+
+00:56:00.310 --> 00:56:04.280
+<v Trevor Manz>And now you can just like start to ask those questions and hopefully get to insight more quickly.
+
+00:56:05.540 --> 00:56:12.900
+<v Michael Kennedy>I think another thing that that's really nice for is, you know, hat tip to the name here is like pair, like pair programming, right?
+
+00:56:14.980 --> 00:56:20.420
+<v Michael Kennedy>If you were actually paired programming, you could just highlight something on the screen and go, what do you think about this, right?
+
+00:56:20.540 --> 00:56:29.880
+<v Michael Kennedy>Whereas sort of the traditional, I don't know, Claude Code just in the terminal, you've got to describe it a lot, talk about the file, right?
+
+00:56:30.100 --> 00:56:33.660
+<v Michael Kennedy>Like you can't just have it sort of ambiently there.
+
+00:56:35.960 --> 00:56:49.940
+<v Michael Kennedy>And if you're sitting there working with these tools, these agentic tools all day, especially if you're not doing a lot of programming with other people, like it's primarily your sort of coding partner, you know, your paired programmer or whatever,
+
+00:56:50.860 --> 00:57:04.680
+<v Michael Kennedy>the more you've kind of got to artificially step out and say, yeah, over on this file, try to find the file, and then you're talking about this, it breaks this flow and this idea of this thing is here to help me.
+
+00:57:04.720 --> 00:57:10.720
+<v Michael Kennedy>It's like, I'm just sending stuff to this dumb machine that can't really figure out what's going on.
+
+00:57:11.300 --> 00:57:12.160
+<v Michael Kennedy>So I really like it.
+
+00:57:13.920 --> 00:57:15.020
+<v Michael Kennedy>This concept you're talking about.
+
+00:57:15.440 --> 00:57:20.380
+<v Trevor Manz>I had this experience where I was actually trying to help my dad look at some data that he had in Excel.
+
+00:57:20.920 --> 00:57:28.720
+<v Trevor Manz>And notoriously, that's very annoying to load an Excel file in Python because you end up writing your own little parser to figure out the different subsets of the tables.
+
+00:57:28.950 --> 00:57:33.900
+<v Trevor Manz>And at the end of the day, what I really wanted were a couple data frames that I could plot inside of the notebook.
+
+00:57:34.410 --> 00:57:46.640
+<v Trevor Manz>And being able to just drag from my UI the Excel file over into Marimo Pair and saying, hey, can you just load these three tables inside the notebook and let the agent chug away in the notebook at trying to figure out how to create those plots for me?
+
+00:57:47.700 --> 00:57:50.140
+<v Trevor Manz>Maybe that would have taken me an hour to do on my hand from before.
+
+00:57:50.410 --> 00:57:54.100
+<v Trevor Manz>And it took a couple minutes for the agent or maybe even a minute for the agent.
+
+00:57:54.430 --> 00:58:07.660
+<v Trevor Manz>And then I got to focus on the exciting part to make these plots and communicate something with the data. So automating those pieces that are very bespoke and kind of annoying of like, how do you get data formats into the notebook is now something you can sort of task the agent on for a little bit.
+
+00:58:08.350 --> 00:58:20.300
+<v Michael Kennedy>Right. I'm not a fan of vibe coding really, but I do think this provides really interesting onboard, like on ramps for people to get into notebooks and programming and so on. Because
+
+00:58:21.420 --> 00:58:30.480
+<v Michael Kennedy>maybe they can ask decent questions about data, but they can't necessarily go, okay, I'm going to get the PyX, the XML, XLS writer or whatever it is, right?
+
+00:58:31.560 --> 00:58:33.480
+<v Michael Kennedy>As you can tell, I don't remember exactly the name of it.
+
+00:58:33.620 --> 00:58:34.260
+<v Michael Kennedy>So there you go.
+
+00:58:34.580 --> 00:58:35.360
+<v Michael Kennedy>All right, that kind of thing.
+
+00:58:35.420 --> 00:58:37.440
+<v Michael Kennedy>And just like load this up and then let's talk about it.
+
+00:58:37.520 --> 00:58:43.840
+<v Michael Kennedy>Like I know what a data frame is, but do I really need to know how to like select the third sheet in Excel?
+
+00:58:45.260 --> 00:58:46.020
+<v Michael Kennedy>Yes, exactly.
+
+00:58:46.180 --> 00:58:50.100
+<v Trevor Manz>Do I need to know that API to like get my tasks done with these data inside the notebook?
+
+00:58:50.500 --> 00:59:06.780
+<v Trevor Manz>And I think in this context as well, because Marimo has this deterministic execution order, you can sort of collaborate on building this reproducible workflow of how you got to that notebook.
+
+00:59:06.960 --> 00:59:13.600
+<v Trevor Manz>So you can, instead of vibe coding, like the whole thing, you can maybe allow someone to kind of vibe code the first bit of how do we get the data into memory.
+
+00:59:14.080 --> 00:59:22.000
+<v Trevor Manz>And then the things that really require attention about like cleaning up the data and plotting the data and running some modeling on that data.
+
+00:59:22.880 --> 00:59:25.440
+<v Trevor Manz>Now you've sort of freed up your time to focus on those bits as well.
+
+00:59:26.420 --> 00:59:27.220
+<v Michael Kennedy>Yeah, 100%.
+
+00:59:27.380 --> 00:59:32.600
+<v Michael Kennedy>Let's you focus on the parts that actually matter, not just silly file formats and stuff like that, right?
+
+00:59:33.200 --> 00:59:33.340
+<v Trevor Manz>Yeah.
+
+00:59:34.400 --> 00:59:49.700
+<v Trevor Manz>And we're lucky because Python is such a Swiss army knife to all that, you know, has such a rich ecosystem of ingesting data and working with data that, you know, you can lean on that ecosystem plus the agent inside of the notebook to get your data into a format that is useful.
+
+00:59:50.210 --> 00:59:55.420
+<v Trevor Manz>But then, you know, that's the point that you step in and start to direct more about what direction you want to take that analysis.
+
+00:59:57.520 --> 00:59:57.820
+<v Michael Kennedy>Totally.
+
+00:59:58.290 --> 01:00:01.760
+<v Michael Kennedy>So a couple of final questions to wrap up our conversation here.
+
+01:00:02.100 --> 01:00:03.640
+<v Michael Kennedy>Tips and tricks for people?
+
+01:00:05.000 --> 01:00:06.700
+<v Michael Kennedy>Okay, you've got the skill, you've got Marimo.
+
+01:00:07.420 --> 01:00:12.860
+<v Michael Kennedy>Are there interesting things you've all discovered you can do that maybe are not obvious?
+
+01:00:14.540 --> 01:00:15.100
+<v Michael Kennedy>Tips and tricks.
+
+01:00:15.950 --> 01:00:30.660
+<v Trevor Manz>Honestly, my recommendation would be to, if there is some data set that you have in mind, like the example I mentioned with an Excel file, it's a very fun task to just drag in a data set and say, please load this for me inside the notebook and let's start making some plots or something.
+
+01:00:31.360 --> 01:00:42.560
+<v Trevor Manz>And I think very quickly you will realize how quickly this runtime inspection really shapes this user experience where I think I went from being very hands-on with working in notebooks
+
+01:00:42.760 --> 01:00:47.640
+<v Trevor Manz>to being able to sit back a little bit more and think cell by cell about what I want to do.
+
+01:00:48.280 --> 01:00:54.300
+<v Trevor Manz>So I just encourage folks to try it out with their data and let us know what they run into.
+
+01:00:55.800 --> 01:00:57.020
+<v Michael Kennedy>Okay, yeah, that makes a lot of sense.
+
+01:00:57.160 --> 01:01:06.480
+<v Michael Kennedy>One thing that I've done before, just playing around with data, is I've asked Claude, like, hey, here's the data.
+
+01:01:06.920 --> 01:01:07.600
+<v Michael Kennedy>Here's the scenario.
+
+01:01:09.060 --> 01:01:13.100
+<v Michael Kennedy>What are some interesting questions we should be asking about it?
+
+01:01:13.570 --> 01:01:16.960
+<v Michael Kennedy>You know, here's what I think is interesting, but what am I missing?
+
+01:01:18.040 --> 01:01:21.120
+<v Michael Kennedy>Are there trends in the data that I don't see that maybe you can pull out?
+
+01:01:21.120 --> 01:01:26.560
+<v Michael Kennedy>And just kind of have it just cruise around and just think about it a little bit.
+
+01:01:26.680 --> 01:01:27.780
+<v Michael Kennedy>And it was really good.
+
+01:01:28.340 --> 01:01:31.780
+<v Trevor Manz>Yeah, and I think you can imagine extending that.
+
+01:01:33.200 --> 01:01:40.280
+<v Trevor Manz>Typically when you're maybe asking those questions back and forth with Claude, it's giving you some tables and numbers and distributions in the data.
+
+01:01:40.940 --> 01:01:48.620
+<v Trevor Manz>But because when you're connected to a Marimo kernel, now you can ask for plots or different visual representations that might be able to show those trends.
+
+01:01:48.760 --> 01:01:56.300
+<v Trevor Manz>So if the agent is telling you that there is this difference, you could say, hey, make a bar chart or a box plot for me to understand that information.
+
+01:01:56.960 --> 01:02:00.780
+<v Trevor Manz>because you do just have this much richer canvas for talking about your data
+
+01:02:01.040 --> 01:02:03.160
+<v Michael Kennedy>rather than just like the ASCII output in your terminal.
+
+01:02:04.180 --> 01:02:10.860
+<v Michael Kennedy>Right, the first thing that I got was a bunch of data frames and like heads or like, you know, stats or something like that.
+
+01:02:10.860 --> 01:02:15.060
+<v Michael Kennedy>And I'm like, this is great, but describe, you know, describe this in pictures.
+
+01:02:15.200 --> 01:02:18.140
+<v Michael Kennedy>And then I had a bunch of graphs and I'm like, okay, that was cool.
+
+01:02:18.560 --> 01:02:19.120
+<v Michael Kennedy>That was really cool.
+
+01:02:19.360 --> 01:02:20.940
+<v Michael Kennedy>So maybe people could try that, right?
+
+01:02:21.620 --> 01:02:21.780
+<v Michael Kennedy>Definitely.
+
+01:02:24.940 --> 01:02:26.080
+<v Michael Kennedy>All right, roadmap.
+
+01:02:26.600 --> 01:02:27.220
+<v Michael Kennedy>Where are things going?
+
+01:02:29.200 --> 01:02:34.820
+<v Trevor Manz>Yeah, so as I mentioned, we are currently building a tighter integration with our native editor inside of VS Code.
+
+01:02:35.260 --> 01:02:50.080
+<v Trevor Manz>So essentially our direction with Marimo Pair is to try to think of all the places in which folks are trying to drive agents that maybe we could have the ability to spin up a Marimo notebook and allow folks to collaborate on these reproducible artifacts.
+
+01:02:50.920 --> 01:02:54.640
+<v Trevor Manz>So right now that looks a lot like more terminal-oriented workflows.
+
+01:02:54.780 --> 01:03:00.420
+<v Trevor Manz>We have some integration now inside the Marimo editor itself, like I mentioned, where you can open up the chat and start using Marimo pair.
+
+01:03:01.140 --> 01:03:03.460
+<v Trevor Manz>We'll have a further integration into VS Code.
+
+01:03:04.220 --> 01:03:11.460
+<v Trevor Manz>And I think down the line, we'll have eventually, if you're using Cloud Desktop or Codex Desktop, that maybe you can start your little chat there.
+
+01:03:11.620 --> 01:03:13.780
+<v Trevor Manz>And that could also drive a Marimo notebook as well.
+
+01:03:16.680 --> 01:03:25.760
+<v Michael Kennedy>I feel like that's an entirely missing piece of this whole agentic AI world, the Google Docs collab equivalent, right?
+
+01:03:25.780 --> 01:03:30.220
+<v Michael Kennedy>Like I've started up Claude Code or something like that.
+
+01:03:30.240 --> 01:03:32.840
+<v Michael Kennedy>And now why don't you join my session?
+
+01:03:32.960 --> 01:03:36.780
+<v Michael Kennedy>We'll all talk to Claude and, you know, have it go.
+
+01:03:37.100 --> 01:03:37.460
+<v Michael Kennedy>I don't know.
+
+01:03:38.300 --> 01:03:38.760
+<v Michael Kennedy>Maybe someday.
+
+01:03:39.620 --> 01:03:39.800
+<v Michael Kennedy>Yeah.
+
+01:03:40.100 --> 01:03:41.320
+<v Michael Kennedy>Or maybe Marimo can serve.
+
+01:03:41.640 --> 01:03:46.640
+<v Trevor Manz>Like, you know, we will have, we are currently working on some real-time collaboration features inside of Marimo.
+
+01:03:47.300 --> 01:03:52.180
+<v Trevor Manz>And maybe there's some way that, you know, multiple people have multiple agents that are talking to the same Marimo kernel.
+
+01:03:52.380 --> 01:03:55.860
+<v Michael Kennedy>Each person with their agent buddy are all in there.
+
+01:03:55.860 --> 01:03:58.720
+<v Michael Kennedy>That seems totally reasonable as long as it's aware.
+
+01:04:02.100 --> 01:04:03.300
+<v Michael Kennedy>What about remote?
+
+01:04:04.700 --> 01:04:14.760
+<v Michael Kennedy>So I'm running a Remo, I'm not on my machine, but on some server or some cloud service or whatever, but I've got my cloud local and I want to have those things work together.
+
+01:04:15.960 --> 01:04:23.020
+<v Trevor Manz>Yeah, so the way that the, under the, behind the scenes, like how the tool call works inside of Marimo.
+
+01:04:23.260 --> 01:04:25.180
+<v Trevor Manz>It's a bash script that's called execute code.
+
+01:04:25.740 --> 01:04:30.620
+<v Trevor Manz>That allows you to swap in a URL, whether that's on local host or something remotely, with some authentication.
+
+01:04:31.560 --> 01:04:35.880
+<v Trevor Manz>And therefore, you can connect your local cloud to some remote Marimo kernel as well.
+
+01:04:36.100 --> 01:04:39.340
+<v Trevor Manz>And then you have a sandbox that's not running on your machine at all, but somewhere in the cloud.
+
+01:04:40.240 --> 01:04:41.940
+<v Trevor Manz>But you're driving that from your local machine.
+
+01:04:43.220 --> 01:04:47.860
+<v Michael Kennedy>Some big machine with GPUs or whatever is a better place to run your code.
+
+01:04:48.420 --> 01:04:49.120
+<v Trevor Manz>Yeah, exactly.
+
+01:04:49.340 --> 01:04:59.720
+<v Trevor Manz>And so actually, at Marimo, we have a cloud-hosted version of Marimo Notebooks that's called Molab that we recently released on CoreWeave Infrastructure where we have some GPUs for our community.
+
+01:05:00.170 --> 01:05:08.160
+<v Trevor Manz>And you can actually today go inside that UI and click pair with an agent and you can copy a little cloud command and connect that to your Claude Code
+
+01:05:08.230 --> 01:05:08.900
+<v Michael Kennedy>or your codex.
+
+01:05:09.780 --> 01:05:14.320
+<v Trevor Manz>And then you can start pair programming locally with that remote sandbox in the cloud.
+
+01:05:16.560 --> 01:05:17.660
+<v Michael Kennedy>I love it. That's awesome.
+
+01:05:19.119 --> 01:05:20.280
+<v Michael Kennedy>All right, final call to action.
+
+01:05:21.040 --> 01:05:24.100
+<v Michael Kennedy>People are like, Marimo pair sounds cool.
+
+01:05:24.610 --> 01:05:25.100
+<v Michael Kennedy>What do you tell them?
+
+01:05:25.130 --> 01:05:25.700
+<v Michael Kennedy>How do they get started?
+
+01:05:26.160 --> 01:05:36.040
+<v Trevor Manz>Yeah, so I'd recommend going to marimo.io slash pair, grabbing the skill and spinning up a notebook of your own and just trying to do tasks that you do with data.
+
+01:05:36.960 --> 01:05:40.500
+<v Trevor Manz>Traditionally, maybe in a notebook or maybe if things haven't been going well inside that notebook.
+
+01:05:42.460 --> 01:05:43.360
+<v Trevor Manz>We haven't put up the site yet.
+
+01:05:43.380 --> 01:05:43.660
+<v Michael Kennedy>Oh, that's right.
+
+01:05:43.670 --> 01:05:44.000
+<v Trevor Manz>We will.
+
+01:05:44.340 --> 01:05:44.860
+<v Michael Kennedy>That's right, that's right.
+
+01:05:44.940 --> 01:05:45.660
+<v Michael Kennedy>It's coming soon.
+
+01:05:45.860 --> 01:05:47.400
+<v Michael Kennedy>So I totally forgot you said that.
+
+01:05:47.460 --> 01:05:51.040
+<v Michael Kennedy>So by the time this episode comes out, that will be there.
+
+01:05:51.680 --> 01:05:51.820
+<v Michael Kennedy>Yes.
+
+01:05:52.020 --> 01:05:53.800
+<v Michael Kennedy>If you're watching the live stream, maybe give it a few days.
+
+01:05:54.400 --> 01:05:54.540
+<v Trevor Manz>Yeah.
+
+01:05:54.820 --> 01:06:06.320
+<v Trevor Manz>By the time this episode comes out, check out marimo.io slash pair or go to our GitHub for marimo pair, install the skill, and yeah, show us what you build with marimo, regardless of if you're driving it with agents.
+
+01:06:06.480 --> 01:06:14.200
+<v Trevor Manz>But we'd love to hear if you start using out agents where the skill falls short and how we can really improve that user experience.
+
+01:06:17.160 --> 01:06:23.420
+<v Michael Kennedy>Cool. Well, it seems like a really neat idea. I think you're going to have a lot of success with it. So thanks for coming on the show and sharing it with everyone.
+
+01:06:24.320 --> 01:06:25.500
+<v Trevor Manz>Yeah. Thanks so much for having me, Michael.
+
+01:06:26.700 --> 01:06:27.640
+<v Michael Kennedy>Yeah, you bet. Bye.
+
+01:06:55.860 --> 01:06:56.500
+<v Michael Kennedy>Bye.
