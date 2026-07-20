@@ -1,0 +1,1974 @@
+00:00:00 <v Michael Kennedy>Coding agents have gotten really good at one kind of work.
+
+00:00:03 <v Michael Kennedy>You scope a feature, edit some files, run the test, ship it.
+
+00:00:07 <v Michael Kennedy>It all happens on disk.
+
+00:00:08 <v Michael Kennedy>But that is not how data work feels.
+
+00:00:11 <v Michael Kennedy>You load something, you look at it, you run a cell, you watch how it responds,
+
+00:00:14 <v Michael Kennedy>you decide the next move from whatever is sitting in memory.
+
+00:00:18 <v Michael Kennedy>And until now, your agent couldn't see any of that.
+
+00:00:20 <v Michael Kennedy>They only saw files, never the live state.
+
+00:00:24 <v Michael Kennedy>On this episode, that wall comes down.
+
+00:00:26 <v Michael Kennedy>Marimo pair drops a coding agent right inside a running notebook with full access to every variable Python is holding in memory.
+
+00:00:33 <v Michael Kennedy>The notebook becomes a shared canvas.
+
+00:00:35 <v Michael Kennedy>You point, it runs the code.
+
+00:00:38 <v Michael Kennedy>You tell it to zoom in on a graphic and the chart just updates.
+
+00:00:41 <v Michael Kennedy>No MCP tools to wire up, no schema to describe, just Python and an agent that can finally see what you see.
+
+00:00:49 <v Michael Kennedy>Trevor Mance from Marimo is back to walk us through it.
+
+00:00:53 <v Michael Kennedy>This is Talk Python To Me, episode 555, recorded June 30th, 2026.
+
+00:01:17 <v Michael Kennedy>Welcome to Talk Python To Me, the number one Python podcast for developers and data scientists.
+
+00:01:22 <v Michael Kennedy>This is your host, Michael Kennedy.
+
+00:01:24 <v Michael Kennedy>I'm a PSF fellow who's been coding for over 25 years.
+
+00:01:28 <v Michael Kennedy>Let's connect on social media.
+
+00:01:30 <v Michael Kennedy>You'll find me and Talk Python on Mastodon, BlueSky, and X.
+
+00:01:33 <v Michael Kennedy>The social links are all in your show notes.
+
+00:01:36 <v Michael Kennedy>You can find over 10 years of past episodes at talkpython.fm.
+
+00:01:39 <v Michael Kennedy>And if you want to be part of the show, you can join our recording live streams.
+
+00:01:43 <v Michael Kennedy>That's right.
+
+00:01:43 <v Michael Kennedy>We live stream the raw uncut version of each episode on YouTube.
+
+00:01:47 <v Michael Kennedy>Just visit talkpython.fm/youtube to see the schedule of upcoming events.
+
+00:01:52 <v Michael Kennedy>Be sure to subscribe there and press the bell so you'll get notified anytime we're recording.
+
+00:01:56 <v Michael Kennedy>This episode is brought to you by Sentry.
+
+00:01:59 <v Michael Kennedy>You know Sentry for the error monitoring, but they now have logs too.
+
+00:02:02 <v Michael Kennedy>And with Sentry, your logs become way more usable, <v Michael Kennedy>interleaving into your error reports to enhance debugging and understanding.
+
+00:02:10 <v Michael Kennedy>Get started today at talkpython.fm/sentry.
+
+00:02:14 <v Michael Kennedy>Trevor, welcome back to Talk Python.
+
+00:02:16 <v Michael Kennedy>Great to have you back.
+
+00:02:17 <v Michael Kennedy>Yeah, thanks for having me again.
+
+00:02:19 <v Michael Kennedy>We'll probably talk about notebooks, data science, maybe a little bit of AI in the mix.
+
+00:02:24 <v Trevor Manz>Yeah, definitely. We've been doing a lot at Marimo and thinking about how agents can play nice with notebooks.
+
+00:02:30 <v Michael Kennedy>I think it's a little bit of an extra challenge, so it's going to be fun to see what you all have in mind.
+
+00:02:35 <v Michael Kennedy>Now, before we get into that, it's been a year since you've been on the show to talk about AnyWidget.
+
+00:02:40 <v Michael Kennedy>Just give us a quick introduction for folks who maybe didn't listen to that episode.
+
+00:02:43 <v Trevor Manz>Yeah, AnyWidget is both a specification and a toolkit for making interactive UI elements
+
+00:02:50 <v Trevor Manz>that deeply integrate into your interactive programming environments,
+
+00:02:54 <v Trevor Manz>and specifically Python environments.
+
+00:02:56 <v Trevor Manz>It has deep integration into Marimo, which is the company that I work at now,
+
+00:03:00 <v Trevor Manz>where we build a new kind of reactive Python notebook.
+
+00:03:03 <v Michael Kennedy>I'm a fan of Marimo. I don't do that much stuff in notebooks,
+
+00:03:06 <v Michael Kennedy>but if I did, I would be using Marimo most of the time.
+
+00:03:09 <v Michael Kennedy>It's kind of like that Dos Equis.
+
+00:03:11 <v Michael Kennedy>Yeah, yeah.
+
+00:03:13 <v Trevor Manz>I like to, depending on the ilk of user that we have, <v Trevor Manz>I like to make the joke that there are often
+
+00:03:19 <v Trevor Manz>a certain group of folks that have plenty of notebook friends
+
+00:03:24 <v Trevor Manz>but don't really use notebooks themselves.
+
+00:03:26 <v Trevor Manz>And I'd like to at least pitch why I think Marimo <v Trevor Manz>scratches the itch of many more software developers
+
+00:03:31 <v Trevor Manz>and represents more traditional software <v Trevor Manz>than traditional computational notebooks.
+
+00:03:37 <v Michael Kennedy>I think it also kind of is special for people <v Michael Kennedy>We were more on the software development side because it's a little more Python focused instead of special tool focused in that.
+
+00:03:47 <v Michael Kennedy>We'll talk about Marimo in a second.
+
+00:03:49 <v Michael Kennedy>But like, for example, instead of having IPY and B files, it has just Python files.
+
+00:03:54 <v Trevor Manz>Yeah, we are hyper focused on Python.
+
+00:03:56 <v Trevor Manz>So we're from all the way from the, you know, our file format down to the way that we understand the relationships between yourselves.
+
+00:04:04 <v Trevor Manz>It's all oriented around the Python ecosystem.
+
+00:04:07 <v Michael Kennedy>Yeah, that's probably going to pay off a little bit when we talk about this project here.
+
+00:04:10 <v Trevor Manz>Yeah, definitely.
+
+00:04:12 <v Trevor Manz>Definitely.
+
+00:04:13 <v Michael Kennedy>All right, well, actually, let's do a quick refresher on just what Marimo is.
+
+00:04:19 <v Michael Kennedy>Am I saying that right?
+
+00:04:19 <v Michael Kennedy>Marimo?
+
+00:04:20 <v Michael Kennedy>Sorry, I should be saying Marimo, right?
+
+00:04:21 <v Trevor Manz>Yep, it's Marimo.
+
+00:04:22 <v Trevor Manz>Yep.
+
+00:04:23 <v Michael Kennedy>Okay.
+
+00:04:24 <v Michael Kennedy>Give us a quick refresher for people who don't know.
+
+00:04:26 <v Michael Kennedy>You know, it's sort of in the realm of JupyterLab, but also different.
+
+00:04:30 <v Trevor Manz>Yeah.
+
+00:04:31 <v Trevor Manz>Marimo is spiritually a computational notebook, much similar to something like Jupyter or Google
+
+00:04:36 <v Trevor Manz>Colab, if folks have used that before.
+
+00:04:38 <v Trevor Manz>But as we just mentioned earlier in the show, we're hyper-focused on the Python ecosystem.
+
+00:04:43 <v Trevor Manz>And we are also a special kind of notebook in that we are a reactive Python notebook.
+
+00:04:49 <v Trevor Manz>So what that means is that the order in which Marimo understands your notebook is not in the
+
+00:04:55 <v Trevor Manz>order that you wrote the cells, but the actual data flow between the cells.
+
+00:04:58 <v Trevor Manz>And so we understand the relationships between your cells based off of the variables they
+
+00:05:03 <v Trevor Manz>declare and where those variables are used.
+
+00:05:05 <v Trevor Manz>And then we know how to automatically re-execute the notebook to ensure that you don't get to some sort of inconsistent state in your notebook.
+
+00:05:11 <v Trevor Manz>So you can really think of Marimo as you are incrementally building a Python program rather than sort of a scratch pad or a set of logs of like some code that ran.
+
+00:05:19 <v Michael Kennedy>It sounds like a minor feature, this reactive bit, but it's not so minor.
+
+00:05:24 <v Michael Kennedy>I'll tell you what, like I'm sure people who've done a lot of work with notebooks have had the experience where they're iterating, iterating, going back, editing, making changes.
+
+00:05:33 <v Michael Kennedy>and maybe go back three cells, edit something, rerun that cell,
+
+00:05:37 <v Michael Kennedy>go down back to where they were and continue.
+
+00:05:39 <v Michael Kennedy>Like, why is this?
+
+00:05:40 <v Michael Kennedy>It doesn't seem to do anything.
+
+00:05:43 <v Michael Kennedy>Or this is not what I expected or whatever.
+
+00:05:45 <v Michael Kennedy>And then you realize, oh, because I didn't run the two cells
+
+00:05:49 <v Michael Kennedy>or the one cell in the middle that actually used that value,
+
+00:05:52 <v Michael Kennedy>which then flowed on to the next, right?
+
+00:05:54 <v Michael Kennedy>And basically what you're saying with this Reactive Notebooks
+
+00:05:57 <v Michael Kennedy>is unless you overwrite it or something, <v Michael Kennedy>that can't happen with Marimo.
+
+00:06:01 <v Trevor Manz>Yeah, it's essentially when you're working <v Trevor Manz>something like a Jupyter notebook,
+
+00:06:05 <v Trevor Manz>you, the user, have to do a form of bookkeeping <v Trevor Manz>to make sure that whatever state exists in the kernel
+
+00:06:11 <v Trevor Manz>is representative of whatever cells you have on the screen.
+
+00:06:14 <v Trevor Manz>And discipline doesn't really scale necessarily, <v Trevor Manz>or it becomes hard to do that bookkeeping yourself.
+
+00:06:20 <v Michael Kennedy>Come on, I don't buy it because look, <v Michael Kennedy>when you go into Jupyter, it says like 27, 34, 57, 58, and then 90.
+
+00:06:30 <v Michael Kennedy>And if you see one of those, <v Michael Kennedy>if you're not doing your bubble sorting,
+
+00:06:32 <v Michael Kennedy>that's out of order. You know you've got to go back and run it. I mean, we all keep track of this.
+
+00:06:37 <v Trevor Manz>Yeah, but essentially the moment that you get to some sort of complex notebook and state,
+
+00:06:43 <v Trevor Manz>that becomes a lot of cognitive overhead that you as the user sort of have to keep in mind in order
+
+00:06:48 <v Trevor Manz>to ensure that what you're doing is representative, such that when you hand off your notebook to
+
+00:06:52 <v Trevor Manz>someone else, they're able to confidently reproduce that execution that you had in front of you and get
+
+00:06:57 <v Michael Kennedy>back to that state. And so with Maremo, we offload that.
+
+00:06:59 <v Michael Kennedy>It's just about that, right?
+
+00:07:00 <v Michael Kennedy>Like that's obviously a problem.
+
+00:07:02 <v Trevor Manz>Yeah.
+
+00:07:03 <v Trevor Manz>And so at Marimo, you essentially offload that bookkeeping to a system,
+
+00:07:07 <v Trevor Manz>which we do this dependency tracking of your variables <v Trevor Manz>and where they're declared and where they're used.
+
+00:07:13 <v Trevor Manz>And essentially we can provide guarantees that if you try to do something like
+
+00:07:16 <v Trevor Manz>rerun a cell, we will rerun all descendant cells of that cell.
+
+00:07:20 <v Trevor Manz>Or if you try to redeclare a variable, we'll tell you, <v Trevor Manz>hey, you already declared this variable and eliminate this problem of hidden state.
+
+00:07:27 <v Trevor Manz>such that when you do end up working on a team <v Trevor Manz>with more than one individual
+
+00:07:30 <v Trevor Manz>and you want to hand off that artifact to someone, <v Trevor Manz>they can confidently run the notebook
+
+00:07:34 <v Trevor Manz>and reproduce the execution results <v Trevor Manz>that you were looking at
+
+00:07:38 <v Trevor Manz>when you ran that notebook earlier.
+
+00:07:40 <v Michael Kennedy>Yeah, it pretty much guarantees ordering.
+
+00:07:42 <v Michael Kennedy>Yep.
+
+00:07:42 <v Michael Kennedy>Okay.
+
+00:07:43 <v Michael Kennedy>Also, it's got a really nice modern UI feel, I think.
+
+00:07:49 <v Michael Kennedy>It looks good.
+
+00:07:50 <v Michael Kennedy>It feels fresh.
+
+00:07:51 <v Michael Kennedy>And I don't know, for some people, <v Michael Kennedy>maybe that doesn't matter.
+
+00:07:54 <v Michael Kennedy>But to me, I'm working on stuff.
+
+00:07:56 <v Michael Kennedy>I just feel better if it's a nice UI and it looks polished instead of old school.
+
+00:08:01 <v Trevor Manz>Yeah, and because we are hyper-focused on the Python ecosystem,
+
+00:08:05 <v Trevor Manz>we've been able to think about common data structures and objects that are in the Python ecosystem
+
+00:08:10 <v Trevor Manz>and then really have polished user experiences for inspecting and understanding those objects.
+
+00:08:14 <v Trevor Manz>So inside of a Marimo notebook, if you load a data frame, whether that's a Polars data frame
+
+00:08:18 <v Trevor Manz>or a Pandas data frame or an IBIS table or anything that implements this data frame protocol,
+
+00:08:24 <v Trevor Manz>which is a standard in the Python ecosystem, <v Trevor Manz>we can represent and render
+
+00:08:28 <v Trevor Manz>in a really nice interactive table.
+
+00:08:30 <v Trevor Manz>And so we're able to do that <v Trevor Manz>because we're tailored around this Python ecosystem
+
+00:08:34 <v Trevor Manz>and we're able to polish both the user experience <v Trevor Manz>on the front end side
+
+00:08:38 <v Trevor Manz>as well as all the way down to the kernel <v Trevor Manz>in terms of being able to share
+
+00:08:42 <v Trevor Manz>these reproducible notebook documents.
+
+00:08:44 <v Michael Kennedy>Okay, yeah, I love it.
+
+00:08:46 <v Michael Kennedy>All right, so that's Marimo.
+
+00:08:47 <v Michael Kennedy>And what we're talking about today <v Michael Kennedy>is not exactly Marimo,
+
+00:08:51 <v Michael Kennedy>but more AI plus notebooks in a particular tool, agent skill.
+
+00:08:56 <v Michael Kennedy>I don't know.
+
+00:08:57 <v Michael Kennedy>We're going to get into that, what it is.
+
+00:08:59 <v Michael Kennedy>But before we do, let's just talk about how do people,
+
+00:09:03 <v Michael Kennedy>like what do people do with, say, either Marima or Jupyter or JupyterLab today
+
+00:09:10 <v Michael Kennedy>without a tool like Marima pair?
+
+00:09:12 <v Trevor Manz>Yeah, I'd say that the software as I've known it over the past year
+
+00:09:16 <v Trevor Manz>has changed quite a bit for traditional software development.
+
+00:09:19 <v Trevor Manz>And as we started working more and more on Marimo, <v Trevor Manz>we were using agents to perform more of our traditional software development.
+
+00:09:27 <v Trevor Manz>And many of our users were asking, <v Trevor Manz>what's the best way to use Marimo with agents?
+
+00:09:31 <v Trevor Manz>Because they've been using Marimo.
+
+00:09:33 <v Trevor Manz>And I think that many different, <v Trevor Manz>if you'd ever tried out of the box to use one of these coding agents with notebooks,
+
+00:09:40 <v Trevor Manz>whether it be Marimo or JupyterLab or Jupyter or Google Colab,
+
+00:09:46 <v Trevor Manz>there kind of felt like this difference or like awkwardness in that user experience in terms of
+
+00:09:51 <v Trevor Manz>being able to drive that interactive environment in a way that I think was very sort of unsettling
+
+00:09:57 <v Trevor Manz>or unfulfilling compared to traditional software development because you're able to sort of like
+
+00:10:02 <v Trevor Manz>put off your agent on these long-lived software tasks and then come back and have it run the test
+
+00:10:07 <v Trevor Manz>and let it get in these type loops to be able to autocorrect and do this sort of like traditional
+
+00:10:13 <v Trevor Manz>programming and software development.
+
+00:10:15 <v Trevor Manz>But when you tried to apply it to a data problem, <v Trevor Manz>things would happen where you edit the file
+
+00:10:20 <v Trevor Manz>and then you could get to some inconsistent state <v Trevor Manz>inside the notebook,
+
+00:10:24 <v Trevor Manz>or the agent couldn't actually see the actions <v Trevor Manz>that it performed inside that notebook.
+
+00:10:27 <v Trevor Manz>And it wasn't really able to get inside those tight loops.
+
+00:10:30 <v Trevor Manz>And so we really started thinking from the bottom up, <v Trevor Manz>how can we open up Marimo in such a way
+
+00:10:35 <v Trevor Manz>that it's actually useful to an agent <v Trevor Manz>rather than just this data source that it can query
+
+00:10:39 <v Trevor Manz>and really try to extend that agent's working environment with notebooks the same way that,
+
+00:10:45 <v Trevor Manz>you know, humans have used notebooks for working on data tasks.
+
+00:10:49 <v Michael Kennedy>I think notebooks are particularly tricky for AI to work with because many people know,
+
+00:10:55 <v Michael Kennedy>but probably not everyone.
+
+00:10:57 <v Michael Kennedy>When you look at a Jupyter notebook, the IPY in B file, you've got your cell definition
+
+00:11:03 <v Michael Kennedy>with code or markdown or whatever's in there.
+
+00:11:06 <v Michael Kennedy>But also, and this is the part that makes it tricky part of the part, is that all the output.
+
+00:11:11 <v Michael Kennedy>So if you've got something that lists out a thousand rows, that's just embedded in the JSON that defines that notebook file, right?
+
+00:11:21 <v Michael Kennedy>And so as a Claude Code or a codex or whatever that's going to go through and try to understand it,
+
+00:11:26 <v Michael Kennedy>it's got to skim through all of that output, determine most of it is irrelevant to me.
+
+00:11:31 <v Michael Kennedy>Some of it is relevant.
+
+00:11:32 <v Michael Kennedy>Maybe it was run in the wrong order.
+
+00:11:34 <v Michael Kennedy>So if it does try to look at the output, it's actually, right, there's no enforcement of an order.
+
+00:11:37 <v Michael Kennedy>And so if it's run in the wrong order, the output might be present and they might want to use it,
+
+00:11:43 <v Michael Kennedy>but it's actually wrong because it was run, it's stale from what's actually in there.
+
+00:11:47 <v Michael Kennedy>There's a lot of issues, right, to just work directly on the file format.
+
+00:11:51 <v Trevor Manz>Yeah, I think, you know, as we started thinking about this problem, I think that we, you know,
+
+00:11:56 <v Trevor Manz>even ourselves at Marimo started to realize that for notebooks, these file formats are more the
+
+00:12:00 <v Trevor Manz>artifact of the work rather than the source necessarily of the code. And really, it's the
+
+00:12:07 <v Trevor Manz>editor combined with the state, which is how you are authoring these notebooks in this live,
+
+00:12:12 <v Trevor Manz>interactive environment. And that by just allowing agents to use their tools out of the box and edit
+
+00:12:17 <v Trevor Manz>those artifacts on disk, they're missing a lot of the context in which those files are actually
+
+00:12:24 <v Trevor Manz>authored. And they're also, in what you just mentioned, they are polluted with additional
+
+00:12:28 <v Trevor Manz>context that's not necessarily useful to like performing a coding task on behalf of the user.
+
+00:12:33 <v Michael Kennedy>Yeah, it's like, hey, Claude, work on this. And by the way, here's 10,000 lines of stuff that may
+
+00:12:37 <v Michael Kennedy>either help you or harm you depending on stuff you can't determine really.
+
+00:12:41 <v Trevor Manz>Yeah, exactly. So I think we started to think about this as more, you know, humans, like,
+
+00:12:48 <v Trevor Manz>you know, out of the box, these coding agents are equipped with sort of like the ability to read
+
+00:12:52 <v Trevor Manz>and write files and run bash scripts. And those tools really fit like the tasks of traditional
+
+00:12:57 <v Trevor Manz>software development because that type of like the way that our command line tools and work that we
+
+00:13:01 <v Trevor Manz>do for traditional software development work or that the file system is really the source of truth
+
+00:13:07 <v Trevor Manz>and then you like make changes to those files and then you run sort of these like stateless commands
+
+00:13:11 <v Trevor Manz>that like run your tests or basically take those changes and apply them and see if like what effect
+
+00:13:16 <v Trevor Manz>that those have had and humans you know for data tasks have have sort of gone beyond the tools of
+
+00:13:22 <v Trevor Manz>reading and writing and editing files and running batch scripts and instead we use these really like
+
+00:13:27 <v Trevor Manz>interactive repls or sort of live programming environments for working with data because they
+
+00:13:31 <v Trevor Manz>give us this ability to like iterate on intermediate results and values. So it's not like you run a
+
+00:13:37 <v Trevor Manz>script, maybe you made an error, you have to run that script again from scratch. Instead, we can
+
+00:13:40 <v Trevor Manz>like load a data set into memory and then sort of inspect those values and sort of iterate on them
+
+00:13:45 <v Trevor Manz>in memory. And so like the usefulness of those sort of interactive environments like Excel or
+
+00:13:51 <v Trevor Manz>Jupyter or Marimo or even something like RStudio is that they're stateful. And one problem is that
+
+00:13:58 <v Trevor Manz>these agents weren't really good at accessing those stateful environments. And so that's exactly what
+
+00:14:05 <v Trevor Manz>made it hard for us to open up those environments to agents. And I think there are many different
+
+00:14:09 <v Trevor Manz>approaches that folks have taken. And even we took originally to try to make Marimo a useful tool.
+
+00:14:14 <v Trevor Manz>And it took us a little while to figure out what were the ergonomics that work well for agents.
+
+00:14:19 <v Michael Kennedy>Sure. So what you're saying is basically, instead of running on the file system,
+
+00:14:25 <v Michael Kennedy>like the coding agents do now for, say, my code, I guess,
+
+00:14:29 <v Michael Kennedy>what instead they need is they need to run in the kernel,
+
+00:14:32 <v Michael Kennedy>kind of looking at the state of things in the kernel as it's working
+
+00:14:36 <v Michael Kennedy>more than, say, regular programming code.
+
+00:14:39 <v Trevor Manz>Exactly. Yeah. Because, you know, when we, as humans have adopted these tools,
+
+00:14:43 <v Trevor Manz>the reason we adopt them is because it's not just the code,
+
+00:14:45 <v Trevor Manz>it's the values and the in-memory representations of those data
+
+00:14:49 <v Trevor Manz>So it's not just that I have this data frame on disk or this file on disk that has my data,
+
+00:14:55 <v Trevor Manz>it's that I want to look at the table and I want to see what those values are. And that may determine
+
+00:14:59 <v Trevor Manz>the next step that I'm going to take with that data of what plots I'm going to do or what validations
+
+00:15:04 <v Trevor Manz>I'm going to run on these data. And so really we had to sort of invert that thinking and think more
+
+00:15:09 <v Trevor Manz>about how do we extend these agents with a useful tool, which is a notebook for doing this sort of
+
+00:15:15 <v Trevor Manz>data work and iterating on those intermediate values.
+
+00:15:20 <v Michael Kennedy>This portion of Talk Python To Me is brought to you by Sentry.
+
+00:15:22 <v Michael Kennedy>You know Sentry for their great error monitoring, but let's talk about logs.
+
+00:15:27 <v Michael Kennedy>Logs are messy.
+
+00:15:28 <v Michael Kennedy>Trying to grep through them and line them up with traces and dashboards just to understand
+
+00:15:32 <v Michael Kennedy>one issue isn't easy.
+
+00:15:34 <v Michael Kennedy>Did you know that Sentry has logs too?
+
+00:15:37 <v Michael Kennedy>And your logs just became way more usable.
+
+00:15:39 <v Michael Kennedy>Sentry's logs are trace connected and structured, so you can follow the request flow and filter
+
+00:15:44 <v Michael Kennedy>by what matters. And because Sentry surfaces the context right where you're debugging, the trace,
+
+00:15:50 <v Michael Kennedy>relevant logs, the error, and even the session replay all land in one timeline. No timestamp
+
+00:15:55 <v Michael Kennedy>matching, no tool hopping. From front end to mobile to back end, whatever you're debugging,
+
+00:15:59 <v Michael Kennedy>Sentry gives you the context you need so you can fix the problem and move on. More than 4.5 million
+
+00:16:05 <v Michael Kennedy>developers use Sentry, including teams at Anthropic and Disney+. Get started with Sentry
+
+00:16:10 <v Michael Kennedy>logs and error monitoring today at talkpython.fm/sentry. Be sure to use our code talkpython26.
+
+00:16:17 <v Michael Kennedy>The link is in your podcast player show notes. Thank you to Sentry for supporting the show.
+
+00:16:22 <v Michael Kennedy>Maybe good time to introduce Marimo pair. What is this? Yeah, so Marimo pair is an agent skill
+
+00:16:30 <v Trevor Manz>that drops an agent inside of an active Marimo kernel. And it allows basically it's a single tool
+
+00:16:36 <v Trevor Manz>that allows the agent to run Python code inside of that kernel
+
+00:16:39 <v Trevor Manz>to inspect and perform any sort of understanding <v Trevor Manz>what sort of intermediate values you have
+
+00:16:44 <v Trevor Manz>inside of your kernel environment, <v Trevor Manz>but then also drive the authorship of the notebook itself
+
+00:16:48 <v Trevor Manz>and run and execute cells.
+
+00:16:50 <v Trevor Manz>So basically it allows the agent to do anything <v Trevor Manz>you could do in a Marimo notebook
+
+00:16:55 <v Trevor Manz>and extend your analysis with an agent <v Trevor Manz>by giving the agent the ability to drive the exploration
+
+00:17:02 <v Trevor Manz>of a Marimo notebook.
+
+00:17:03 <v Michael Kennedy>Interesting.
+
+00:17:04 <v Michael Kennedy>Okay, so how does it get inside the notebook?
+
+00:17:07 <v Michael Kennedy>You know what I mean?
+
+00:17:07 <v Michael Kennedy>Do you have to change your code or something like that?
+
+00:17:11 <v Michael Kennedy>Do you have to include something?
+
+00:17:13 <v Trevor Manz>Yeah, so the setup is essentially an agent skill <v Trevor Manz>that you can install either from,
+
+00:17:17 <v Trevor Manz>if you're using something like Claude Code, <v Trevor Manz>you can install it from the Cloud Marketplace.
+
+00:17:20 <v Trevor Manz>You can install from Codex from a Marketplace as well.
+
+00:17:23 <v Trevor Manz>Or you can use an NPX command to install a skill from GitHub.
+
+00:17:28 <v Trevor Manz>And that skill teaches the agent how to use a single tool,
+
+00:17:31 <v Trevor Manz>which is essentially just run Python.
+
+00:17:34 <v Trevor Manz>And that single tool call allows the agent to run any kind of Python it wants to in the running Marimo kernel.
+
+00:17:40 <v Trevor Manz>So inside that kernel environment, it can do things like list variables that are in the notebook.
+
+00:17:44 <v Trevor Manz>It can inspect the cells of the notebook and look at the outputs of the notebook.
+
+00:17:48 <v Trevor Manz>But then it can also perform sort of user tasks in the notebook as well, like installing packages inside of Marimo or creating cells or running cells.
+
+00:17:57 <v Trevor Manz>But as it's performing those tasks using that tool, the agent gets instant feedback of what went wrong or what went right inside of that kernel.
+
+00:18:04 <v Trevor Manz>and is able to get back into these agentic loops for doing these tasks.
+
+00:18:08 <v Trevor Manz>But using Marimo as sort of the workspace for performing your data tasks
+
+00:18:11 <v Trevor Manz>rather than editing the file system.
+
+00:18:14 <v Michael Kennedy>Yeah, okay, that makes sense.
+
+00:18:15 <v Michael Kennedy>And I guess there's some kind of API or something that the agent can use to talk to the running notebook.
+
+00:18:21 <v Trevor Manz>Yeah, so we sort of hide an API within Marimo that's called code mode.
+
+00:18:27 <v Trevor Manz>And what code mode is essentially is this semi-private API
+
+00:18:30 <v Trevor Manz>that's just meant for agents that are running Python inside of that kernel.
+
+00:18:34 <v Trevor Manz>And with that API, the agent can grab the current notebook state
+
+00:18:38 <v Trevor Manz>and talk to Marimo directly.
+
+00:18:40 <v Trevor Manz>So it can do things like toast notifications in the UI that say,
+
+00:18:43 <v Trevor Manz>hey, I'm connected to your notebook session.
+
+00:18:46 <v Trevor Manz>It can do things like I mentioned before, <v Trevor Manz>like list out variables or inspect what cells declare different variables.
+
+00:18:53 <v Trevor Manz>But then also it has these sort of mutation APIs <v Trevor Manz>where I want to say create cell, edit cell, run cell.
+
+00:19:00 <v Trevor Manz>And because it's all Python and not individual something like MCP tools,
+
+00:19:05 <v Trevor Manz>the agent has the ability to write Python code <v Trevor Manz>that really does complex composition of those primitives as well.
+
+00:19:11 <v Trevor Manz>So it can create multiple cells at the same time <v Trevor Manz>just by calling create cell five times inside of some sort of loop.
+
+00:19:18 <v Trevor Manz>Because we're giving it Python as the tool <v Trevor Manz>rather than sort of a JSON API.
+
+00:19:22 <v Michael Kennedy>I'll say, for me, it kind of boggles the mind <v Michael Kennedy>how much Claude Code just relies on grep to understand projects.
+
+00:19:30 <v Michael Kennedy>And it seems super inefficient to me.
+
+00:19:33 <v Michael Kennedy>I mean, Claude Code was created in two weeks, something like that.
+
+00:19:37 <v Michael Kennedy>It feels very much JavaScript-y in that regard.
+
+00:19:40 <v Michael Kennedy>Like, look what you built.
+
+00:19:42 <v Michael Kennedy>Also, look at the missing pieces a little bit.
+
+00:19:44 <v Michael Kennedy>And as impressive as it is, it seems like if it could ask the question,
+
+00:19:50 <v Michael Kennedy>where is this symbol used throughout my project?
+
+00:19:53 <v Michael Kennedy>What is the value of this variable?
+
+00:19:55 <v Michael Kennedy>Things like that.
+
+00:19:55 <v Michael Kennedy>What is the type of it?
+
+00:19:57 <v Michael Kennedy>Without reading and jumping around 100,000, a million lines of code all the time, it would
+
+00:20:03 <v Michael Kennedy>be way more efficient.
+
+00:20:04 <v Michael Kennedy>And it sounds a little bit like that's how it interacts with your notebook through Marimo
+
+00:20:07 <v Michael Kennedy>Pair.
+
+00:20:08 <v Trevor Manz>Yeah.
+
+00:20:08 <v Trevor Manz>So within that code execution point where it can run Python code, the agent has the ability
+
+00:20:13 <v Trevor Manz>to look at the source of those cells, but then also can look at the in-memory values
+
+00:20:18 <v Trevor Manz>of those cells as well.
+
+00:20:19 <v Trevor Manz>And therefore, it can, like you were just saying, it can look at the type, it can look at the
+
+00:20:24 <v Trevor Manz>values.
+
+00:20:25 <v Trevor Manz>and this type of runtime inspection of values <v Trevor Manz>really does change model behavior
+
+00:20:31 <v Trevor Manz>in terms of, like I mentioned before, <v Trevor Manz>allowing them to get into these loops
+
+00:20:36 <v Trevor Manz>and efficiently get to some sort of problem, <v Trevor Manz>resolution to some task or problem inside the notebook
+
+00:20:41 <v Trevor Manz>because it's able to course correct <v Trevor Manz>and ask a lot richer information about your values.
+
+00:20:46 <v Trevor Manz>Because if you're looking at a source code on disk, <v Trevor Manz>maybe for a file that loads a data frame,
+
+00:20:51 <v Trevor Manz>you just have a single line that says, <v Trevor Manz>you know, load, Polars read CSV or pandas read CSV.
+
+00:20:57 <v Trevor Manz>And then the agent would actually have to go look at that CSV to understand what's in that CSV
+
+00:21:02 <v Trevor Manz>and combining that with the source code.
+
+00:21:04 <v Trevor Manz>But if you pair that with a live REPL like we have inside of Marimo,
+
+00:21:07 <v Trevor Manz>the agent could just say, you know, the agent now has a data frame that it can look at.
+
+00:21:11 <v Trevor Manz>And that's a much richer representation of that static file on disk.
+
+00:21:15 <v Trevor Manz>And then the agent can ask about the schema.
+
+00:21:17 <v Trevor Manz>It could ask about, yeah, the different columns, the data types of the columns.
+
+00:21:20 <v Trevor Manz>It could figure out the number of rows.
+
+00:21:23 <v Trevor Manz>So essentially when you ask a question of, you know, I want to plot the quantitative axes of these data in a pair plot, you no longer have to specify what those axes are because the agent can just go off and look at the schema to figure that out.
+
+00:21:35 <v Trevor Manz>And I think that that provides this really rich experience when you're trying to get something done with your data because you can be a little bit more declarative about like, I want to look at these subsets or these things without having to actually go down and figure out the APIs to plot those things out.
+
+00:21:50 <v Michael Kennedy>What's the token economics of this?
+
+00:21:54 <v Michael Kennedy>Is it more efficient on tokens because it doesn't have to search around so much?
+
+00:21:57 <v Michael Kennedy>Or have you noticed a difference?
+
+00:21:59 <v Trevor Manz>Yeah, that's a great question.
+
+00:22:00 <v Trevor Manz>I think from the skill itself is a pretty slim markdown file that just teaches the agent
+
+00:22:08 <v Trevor Manz>what this tool is and how to use this tool, which is run Python in the running kernel.
+
+00:22:13 <v Trevor Manz>And then the agent is able to, maybe before the agent would read the entire notebook file
+
+00:22:19 <v Trevor Manz>to figure out what you want to do.
+
+00:22:20 <v Trevor Manz>but instead off of disk because it had to orient itself <v Trevor Manz>where you are inside the notebook.
+
+00:22:26 <v Trevor Manz>Versus if I asked the agent, <v Trevor Manz>we're focusing on this cell right now inside the notebook.
+
+00:22:31 <v Trevor Manz>The agent doesn't have to print off all the other cells into context.
+
+00:22:34 <v Trevor Manz>It can just focus on that one cell or that one variable <v Trevor Manz>that we're talking about in the kernel.
+
+00:22:38 <v Trevor Manz>So we haven't done anything formal to compare those things.
+
+00:22:41 <v Trevor Manz>But essentially when you're able to extend the environment
+
+00:22:45 <v Trevor Manz>with variables and values, <v Trevor Manz>then you give the agent the ability to offload context
+
+00:22:50 <v Trevor Manz>into Python rather than bringing that as extra context <v Trevor Manz>that fills up your context buffer.
+
+00:22:55 <v Michael Kennedy>Yeah, my impression is that first estimate <v Michael Kennedy>is it would be way more efficient, honestly.
+
+00:23:00 <v Michael Kennedy>Like a lot of times I'll see Claude Code or something
+
+00:23:03 <v Michael Kennedy>and go like, okay, I need to understand what this does.
+
+00:23:06 <v Michael Kennedy>Let me write a little Python script <v Michael Kennedy>and execute it with a dash C or what,
+
+00:23:10 <v Michael Kennedy>you know, or I can just pass it as a string effectively.
+
+00:23:13 <v Michael Kennedy>And it's recreating all these things <v Michael Kennedy>instead of just like print X
+
+00:23:17 <v Michael Kennedy>or just give me the value of X, right?
+
+00:23:19 <v Trevor Manz>Yeah, exactly.
+
+00:23:20 <v Trevor Manz>And actually you can think of each invocation of the tool
+
+00:23:23 <v Trevor Manz>that we provide to the agent <v Trevor Manz>as essentially running Python-C,
+
+00:23:27 <v Trevor Manz>except picking up wherever you left off inside of your notebook.
+
+00:23:31 <v Trevor Manz>So it has the ability in that string that it passes to Python
+
+00:23:35 <v Trevor Manz>to just reference variables that you currently have in memory.
+
+00:23:38 <v Trevor Manz>And it doesn't have to perform something high up in that script
+
+00:23:41 <v Trevor Manz>that might be costly to reload a data set or mangle it <v Trevor Manz>to get to some later state to print it out.
+
+00:23:47 <v Trevor Manz>Instead, it can kind of pick up where you are currently in your notebook session, you
+
+00:23:51 <v Trevor Manz>know, and tell me about my data frame.
+
+00:23:52 <v Trevor Manz>And it can run a bunch of queries on the thing that you currently have in memory to tell
+
+00:23:56 <v Trevor Manz>you about it.
+
+00:23:56 <v Michael Kennedy>Sure.
+
+00:23:57 <v Michael Kennedy>Okay.
+
+00:23:57 <v Michael Kennedy>Super interesting.
+
+00:24:00 <v Michael Kennedy>And let's talk just really quickly about this distributing as a skill.
+
+00:24:05 <v Michael Kennedy>I mean, there've been other attempts for notebooks that I've seen that are kind of like, we're
+
+00:24:10 <v Michael Kennedy>going to embed an LLM or at least an LLM integration in the notebook.
+
+00:24:16 <v Michael Kennedy>And it's interesting to see you shipping this as a skill plus a capability that's just in Maremo.
+
+00:24:23 <v Michael Kennedy>So on one hand, it's easy to think, well, that doesn't seem very useful.
+
+00:24:27 <v Michael Kennedy>But then again, there's always the what is now well-known SaaSpocalypse because Claude shipped 13 markdown files, which wiped $285 billion off of the stock market, right?
+
+00:24:40 <v Michael Kennedy>So there's something to these markdown files.
+
+00:24:41 <v Michael Kennedy>I really think it's quite powerful.
+
+00:24:44 <v Michael Kennedy>but how'd you come around to this distribution model?
+
+00:24:48 <v Trevor Manz>Yeah, so Marimo, and I should be clear, <v Trevor Manz>Marimo today still has a chat integration
+
+00:24:53 <v Trevor Manz>that you can bring your own LLM <v Trevor Manz>and actually drive an agent interface from there.
+
+00:24:59 <v Trevor Manz>And even you can actually use the Marimo pair tools <v Trevor Manz>inside of that chat interface as well.
+
+00:25:06 <v Trevor Manz>But increasingly we had users that were asking about, <v Trevor Manz>how do I use Claude Code with Marimo?
+
+00:25:10 <v Trevor Manz>Or how do I use Codex with Marimo?
+
+00:25:12 <v Trevor Manz>And what we started to realize is that <v Trevor Manz>These coding agents, we're building a tool that we'd like our users to spend a lot of time in.
+
+00:25:20 <v Trevor Manz>But these coding agents outside of Marimo have a lot of access to things that aren't ever going to be inside of the Marimo user interface,
+
+00:25:26 <v Trevor Manz>such as the different skills or MCPs or things that they've enabled for their main driver of doing development on their machine.
+
+00:25:35 <v Trevor Manz>And we want to make sure that Marimo is a useful tool in that context as well.
+
+00:25:38 <v Trevor Manz>And so increasingly, many of the folks on our team are using Claude Code for the actual development of Marimo.
+
+00:25:44 <v Trevor Manz>and we started to feel this friction <v Trevor Manz>of when we wanted to work on a notebook
+
+00:25:48 <v Trevor Manz>that we couldn't just start up the notebook <v Trevor Manz>and get it running from Claude
+
+00:25:52 <v Trevor Manz>and then edit it.
+
+00:25:53 <v Trevor Manz>Instead, it felt like we were jumping between tools.
+
+00:25:56 <v Trevor Manz>At least initially, we were thinking <v Trevor Manz>how do we make Maremo notebooks
+
+00:26:01 <v Trevor Manz>a useful tool for agents?
+
+00:26:03 <v Trevor Manz>Then we started to look at best practices <v Trevor Manz>for doing that.
+
+00:26:08 <v Trevor Manz>Simply a bare bones MCP <v Trevor Manz>was one approach that you could go with.
+
+00:26:12 <v Trevor Manz>When we started to look at skills <v Trevor Manz>was I think around the fall slash December last year
+
+00:26:18 <v Trevor Manz>when these models started to get quite good, <v Trevor Manz>the skills started to become a very useful vector
+
+00:26:25 <v Trevor Manz>I think for packaging up reusable instructions <v Trevor Manz>for how to effectively use a particular command line tool or skill.
+
+00:26:35 <v Trevor Manz>And so if you actually look at our skill today, <v Trevor Manz>it doesn't really tell you much about how the internals of Maremo works
+
+00:26:41 <v Trevor Manz>or how that tool works.
+
+00:26:43 <v Trevor Manz>And instead it just teaches the agent <v Trevor Manz>about where that tool exists
+
+00:26:47 <v Trevor Manz>and how to use that tool.
+
+00:26:49 <v Trevor Manz>But then if it wants to learn <v Trevor Manz>about how to invoke that tool
+
+00:26:51 <v Trevor Manz>and the different capabilities that it has <v Trevor Manz>within that active kernel,
+
+00:26:54 <v Trevor Manz>it actually uses the help command.
+
+00:26:56 <v Trevor Manz>We instruct it to use the help command <v Trevor Manz>to print off the doc strings for itself
+
+00:27:00 <v Trevor Manz>and then learn in that session <v Trevor Manz>how to effectively drive Marimo.
+
+00:27:03 <v Trevor Manz>And so this actually has a sort of decoupling <v Trevor Manz>between our skill and Marimo's internals
+
+00:27:08 <v Trevor Manz>because we don't actually publish anything <v Trevor Manz>in the skill that talks about the API that it will be using.
+
+00:27:13 <v Trevor Manz>And instead we'd say, hey, go find that when you load the skill to figure out what capabilities
+
+00:27:17 <v Trevor Manz>that you actually have inside the active kernel.
+
+00:27:19 <v Michael Kennedy>That's interesting.
+
+00:27:20 <v Michael Kennedy>That way, if you want to change it, you don't have to get people to update the skill, which
+
+00:27:23 <v Michael Kennedy>is always tricky.
+
+00:27:24 <v Trevor Manz>Exactly.
+
+00:27:25 <v Trevor Manz>This was the thing that we became very conscious of quite early is that updating Marimo and
+
+00:27:30 <v Trevor Manz>updating the skill could get out of sync.
+
+00:27:32 <v Trevor Manz>And we just wanted to make sure that our users didn't get into the state where they're having
+
+00:27:37 <v Trevor Manz>a really poor experience using their agents because they upgraded Marimo and they hadn't
+
+00:27:41 <v Trevor Manz>upgraded their skill. And so the skill isn't so prescriptive about exactly what the agent should
+
+00:27:45 <v Trevor Manz>do, just more, hey, these are tools. And this is sort of the mental model of how you could drive
+
+00:27:51 <v Trevor Manz>Marimo. And then should you want to drive Marimo, here's where you go find how to do that inside of
+
+00:27:56 <v Trevor Manz>the active Marimo that you have in your session. Michael, I can't, I might have lost.
+
+00:28:01 <v Michael Kennedy>Sorry. So skills have been changing over time about how they're structured and they used to be
+
+00:28:06 <v Michael Kennedy>commands and then i don't know just the layout of these things is a little bit a little bit funky
+
+00:28:12 <v Michael Kennedy>um i mean i guess you could manage it from marimo like have it say like hey skill update available
+
+00:28:18 <v Michael Kennedy>push this button to reinstall it or something but it sounds pretty bare bones in terms of like just
+
+00:28:24 <v Michael Kennedy>go talk here and then you'll figure it out when you get there sounds sounds good yeah exactly and
+
+00:28:29 <v Trevor Manz>you know some of these like agents have the ability like for instance in Claude Code and codex
+
+00:28:35 <v Trevor Manz>If you have this marketplace.json file where you have your skill,
+
+00:28:39 <v Trevor Manz>you can subscribe for auto-updates of that skill <v Trevor Manz>so you don't have to re-sync that file.
+
+00:28:44 <v Trevor Manz>Or if you use one of these command-line tools for installing from GitHub,
+
+00:28:47 <v Trevor Manz>you can install the latest.
+
+00:28:50 <v Trevor Manz>If our users got out of sync, it's quite hard to figure out what version they have,
+
+00:28:53 <v Trevor Manz>and maybe we'd need to do some runtime inspection.
+
+00:28:55 <v Trevor Manz>So by really trying to have this decoupling of the skill <v Trevor Manz>from the capabilities that we have inside of Marimo,
+
+00:29:01 <v Trevor Manz>we can ensure that there's sort of a baseline of user experience.
+
+00:29:05 <v Trevor Manz>And then should folks want to upgrade to latest skill or upgrade Marimo,
+
+00:29:09 <v Trevor Manz>hopefully both those things should, should, <v Trevor Manz>should improve that experience over time.
+
+00:29:12 <v Michael Kennedy>Yeah, for sure.
+
+00:29:15 <v Michael Kennedy>This portion of Talk Python is brought to you by us.
+
+00:29:18 <v Michael Kennedy>I want to give you a quick bit of news about the courses side of Talk Python.
+
+00:29:23 <v Michael Kennedy>Now, <v Michael Kennedy>every single course at Talk Python training has full subtitles in German,
+
+00:29:28 <v Michael Kennedy>Spanish, and Portuguese.
+
+00:29:30 <v Michael Kennedy>That's all 283 hours completely translated, not just a couple of flagship courses.
+
+00:29:36 <v Michael Kennedy>Just click the CC button in your player, pick your language, and you can even resize and
+
+00:29:42 <v Michael Kennedy>reposition the captions so they don't cover the code.
+
+00:29:44 <v Michael Kennedy>If Deutsch, Espanol, or Portuguese is your first language, this one's for you.
+
+00:29:50 <v Michael Kennedy>Check it out at talkpython.fm.
+
+00:29:52 <v Michael Kennedy>Just click courses in the nav bar, log in, or create an account.
+
+00:29:56 <v Michael Kennedy>Even the free courses now come with subtitles in four different languages.
+
+00:30:01 <v Michael Kennedy>Let's walk through installing this and maybe a quick start story.
+
+00:30:05 <v Michael Kennedy>So first, installing it, how do we do?
+
+00:30:08 <v Trevor Manz>Yeah, so whether or not you have a tool called...
+
+00:30:11 <v Trevor Manz>So first of all, a skill is a folder of some files, <v Trevor Manz>and there's a file called skill.md.
+
+00:30:17 <v Trevor Manz>This is like an official specification <v Trevor Manz>that you put somewhere on your file system for your agent to find.
+
+00:30:23 <v Trevor Manz>And then there are a handful of tools that exist in open source
+
+00:30:26 <v Trevor Manz>adding those files. And like I mentioned just a moment ago, being able to sort of upgrade those
+
+00:30:30 <v Trevor Manz>files easily, either based off of Git syncing or by installing with one of these marketplaces. So
+
+00:30:38 <v Trevor Manz>the way that we publish our skills, we have this repo, it's called marimoteam, marimopair.
+
+00:30:42 <v Trevor Manz>The code that we publish there, we version over time. And you can either use, if you have the
+
+00:30:48 <v Trevor Manz>npm package manager, you can use npxskillsadd marimoteam slash marimopair. That will start up
+
+00:30:54 <v Trevor Manz>the command line tool to add those files to your file system. You can either install them locally
+
+00:30:58 <v Trevor Manz>in a folder, globally on your system. If you don't have npm installed, you can actually use UV
+
+00:31:04 <v Trevor Manz>and do uvx Dino A npm skills. And this will sort of shell out to Dino to actually install those for
+
+00:31:11 <v Michael Kennedy>you, but you can drive it through uv. If you have pod code. I've seen this so much. I'm like,
+
+00:31:16 <v Michael Kennedy>oh man, why are we stuck on NPM? I do have these things. So I'll put the uvx Dino dash A NPM
+
+00:31:24 <v Michael Kennedy>I feel like that could be a sweet new alias, <v Michael Kennedy>just UVNPM.
+
+00:31:33 <v Michael Kennedy>I think that'd be nice.
+
+00:31:34 <v Michael Kennedy>I'm going to find a way to do that.
+
+00:31:36 <v Trevor Manz>Yeah, definitely.
+
+00:31:38 <v Trevor Manz>Short tangent, I actually got the Dino name for the Dino folks
+
+00:31:42 <v Trevor Manz>so we could transfer over that package.
+
+00:31:45 <v Trevor Manz>Being able to share packages between ecosystems <v Trevor Manz>without having to reinstall a new package manager
+
+00:31:50 <v Trevor Manz>I think is really important <v Trevor Manz>because both the Python ecosystem and the npm ecosystem
+
+00:31:55 <v Trevor Manz>are growing so much.
+
+00:31:57 <v Trevor Manz>But it's a lot to ask of users to make sure <v Trevor Manz>that they have both these things installed,
+
+00:32:00 <v Trevor Manz>especially if someone considers themselves <v Trevor Manz>a node person versus a Python person.
+
+00:32:05 <v Trevor Manz>Let's just make sure that everyone has access.
+
+00:32:06 <v Michael Kennedy>It could be an offense to have to install npm.
+
+00:32:09 <v Michael Kennedy>I'm not just kidding.
+
+00:32:11 <v Michael Kennedy>So you're responsible for getting Dino as a PyPI package?
+
+00:32:15 <v Trevor Manz>Yes, yeah.
+
+00:32:16 <v Trevor Manz>I've collaborated a little bit with the Dino folks over the years.
+
+00:32:19 <v Trevor Manz>I went through a very formal process with PyPy to request that name and then turn it over to them.
+
+00:32:24 <v Michael Kennedy>Oh, that's super cool.
+
+00:32:25 <v Michael Kennedy>So tell people real quick about Dino because they're like, well, what does that have to do with Node?
+
+00:32:31 <v Trevor Manz>Yeah, so the creator of Dino was the same creator of Node.
+
+00:32:35 <v Trevor Manz>And sort of the basis of Dino was, at least from the perspective of the Dino creators,
+
+00:32:42 <v Trevor Manz>was to fix some of the things that had happened in the Node ecosystem.
+
+00:32:45 <v Trevor Manz>And so Dino is a similar type of server-side JavaScript runtime,
+
+00:32:50 <v Trevor Manz>but brings over a lot of functions a lot more similarly <v Trevor Manz>to the way that the browser has.
+
+00:32:56 <v Trevor Manz>So it has a lot more fine-grained permissions <v Trevor Manz>baked into when you're trying to do something
+
+00:33:00 <v Trevor Manz>like read the file system or read variables, <v Trevor Manz>you have to actually explicitly opt into those capabilities
+
+00:33:07 <v Trevor Manz>while you're executing the script <v Trevor Manz>to allow that runtime to access those things.
+
+00:33:13 <v Michael Kennedy>Okay, yeah, very nice.
+
+00:33:15 <v Michael Kennedy>Now, do you have a preference here if I npx it or uvx it,
+
+00:33:20 <v Michael Kennedy>or is it better to do the marketplace type of thing?
+
+00:33:24 <v Trevor Manz>Yeah, so this starts to come down to your agent of choice.
+
+00:33:28 <v Trevor Manz>So the npx skills is a command line tool that's published.
+
+00:33:32 <v Trevor Manz>Skills is a package that's on the npm registry <v Trevor Manz>that installs skills on your system
+
+00:33:38 <v Trevor Manz>and sort of has a little CLI walkthrough <v Trevor Manz>where you can pick multiple agents,
+
+00:33:43 <v Trevor Manz>like if you use Codex or use Claude Code or maybe OpenCode,
+
+00:33:46 <v Trevor Manz>where it will install them to universal directories for those things.
+
+00:33:51 <v Trevor Manz>So if you are someone that likes to play with a lot of different agent harnesses,
+
+00:33:54 <v Trevor Manz>I'd probably recommend using NPX or uvx Dino.
+
+00:33:59 <v Trevor Manz>Those are semantically equivalent.
+
+00:34:02 <v Trevor Manz>They just eventually will trigger the same CLI.
+
+00:34:05 <v Trevor Manz>It's just the package manager that's doing it is different.
+
+00:34:08 <v Michael Kennedy>Right, it's more npm versus plugin, exactly.
+
+00:34:11 <v Trevor Manz>Yeah, and then the plugin is more, <v Trevor Manz>that's a specific install instruction to Claude Code.
+
+00:34:17 <v Trevor Manz>And also I believe that Codex has something quite similar.
+
+00:34:20 <v Trevor Manz>And there you can register what's called a marketplace <v Trevor Manz>for our Marimo team,
+
+00:34:25 <v Trevor Manz>such that when we publish updates, <v Trevor Manz>when you boot up Claude Code one day,
+
+00:34:30 <v Trevor Manz>maybe it'll ask you if you'd like to upgrade our plugin.
+
+00:34:32 <v Trevor Manz>So that will sort of keep it in sync.
+
+00:34:35 <v Trevor Manz>So if you are a Claude Code user, <v Trevor Manz>I think I'd generally recommend,
+
+00:34:38 <v Trevor Manz>and mostly a Claude Code user, <v Trevor Manz>I'd generally recommend installing from the marketplace
+
+00:34:42 <v Trevor Manz>versus if you're someone that's flipping around <v Trevor Manz>between a lot of tools,
+
+00:34:45 <v Trevor Manz>the MPX skills does a good job <v Trevor Manz>and you can MPX skills upgrade
+
+00:34:49 <v Trevor Manz>the Marimo pair skill as well.
+
+00:34:50 <v Michael Kennedy>Okay, that sounds really good.
+
+00:34:53 <v Michael Kennedy>I guess, yeah, the one is general, right?
+
+00:34:55 <v Michael Kennedy>And the one, the other, <v Michael Kennedy>the plugin one is really Claude Code.
+
+00:34:58 <v Michael Kennedy>Although I suspect if you put it into Codex, <v Michael Kennedy>it might just give you a little bit of snark
+
+00:35:02 <v Michael Kennedy>and install it.
+
+00:35:04 <v Trevor Manz>Yeah, yeah, definitely.
+
+00:35:05 <v Trevor Manz>I've accidentally invoked the skill with the four, <v Trevor Manz>I think in Codex,
+
+00:35:09 <v Trevor Manz>it's the dollar sign to invoke skills <v Trevor Manz>and it's Claude, it's like this forward slash
+
+00:35:13 <v Trevor Manz>and it figures it out.
+
+00:35:15 <v Michael Kennedy>Yeah, yeah, exactly.
+
+00:35:17 <v Michael Kennedy>You must be confused.
+
+00:35:20 <v Michael Kennedy>This doesn't even make sense.
+
+00:35:21 <v Michael Kennedy>What you meant to type was such and such.
+
+00:35:24 <v Michael Kennedy>Yeah, okay.
+
+00:35:25 <v Michael Kennedy>So is there like a getting started example <v Michael Kennedy>or something like that on one of your pages
+
+00:35:31 <v Michael Kennedy>I can sort of point at?
+
+00:35:33 <v Trevor Manz>Yeah, so if you have the skill installed, <v Trevor Manz>the best thing you can do is just spin up a Marimo session.
+
+00:35:40 <v Trevor Manz>So you could even prompt, starting from your agent of choice,
+
+00:35:43 <v Trevor Manz>say, start a Marimo notebook using the Marimo pair skill.
+
+00:35:47 <v Trevor Manz>And then everything needed to actually start you pairing with Marimo
+
+00:35:53 <v Trevor Manz>is baked into that skill.
+
+00:35:55 <v Trevor Manz>So after you've run that uvx command, <v Trevor Manz>you should be able to spin up a notebook
+
+00:36:00 <v Trevor Manz>and then connect to it with your agent <v Trevor Manz>and just start talking about some data
+
+00:36:03 <v Trevor Manz>or talking about a notebook that you already have.
+
+00:36:05 <v Michael Kennedy>I guess, what are some of the use cases or whatever <v Michael Kennedy>that you might go through with this.
+
+00:36:11 <v Michael Kennedy>How do you find it to be useful?
+
+00:36:13 <v Michael Kennedy>What are you all doing with it?
+
+00:36:14 <v Trevor Manz>Yeah, I'd say Marimo pair is increasingly the main way <v Trevor Manz>that our users that prefer to author code with agents
+
+00:36:20 <v Trevor Manz>are starting to create and share Marimo notebooks.
+
+00:36:24 <v Trevor Manz>And so I think there are a lot of different use cases, <v Trevor Manz>but the way I like to think of it
+
+00:36:28 <v Trevor Manz>is that it really ranges from a more hands-on <v Trevor Manz>versus hands-off approach to authoring notebooks.
+
+00:36:33 <v Trevor Manz>So a more hands-on approach would be the workflow <v Trevor Manz>that I just described where you spin up a notebook session, maybe you have a data set and you want to
+
+00:36:41 <v Trevor Manz>be hands-on looking at that data, making plots, more exploratory data analysis or more iterative
+
+00:36:49 <v Trevor Manz>where you're hands-on working with the agent. But rather than writing the code, you're sort of
+
+00:36:53 <v Trevor Manz>prompting the code with the agent and looking at the outputs and deciding where to go next.
+
+00:36:56 <v Trevor Manz>So that's more on the head, the interactive or hands-on approach. And then we also have a set
+
+00:37:01 <v Trevor Manz>of users that are driving Marimo, using Marimo pair and a more headless version as well, where
+
+00:37:07 <v Trevor Manz>they might spin off many different Marimo pair sessions <v Trevor Manz>to work on a similar problem.
+
+00:37:12 <v Trevor Manz>And at the end, they'll have these notebooks that are running
+
+00:37:14 <v Trevor Manz>that then they can connect to and sort of check and see <v Trevor Manz>what the agent was working on inside of that session.
+
+00:37:19 <v Trevor Manz>So essentially, when you want to start a task with data, <v Trevor Manz>you can open up your agent and spin up Marimo
+
+00:37:24 <v Trevor Manz>and then start prompting towards working on that problem.
+
+00:37:28 <v Michael Kennedy>I see.
+
+00:37:29 <v Michael Kennedy>So maybe this headless story, like I have this data <v Michael Kennedy>and I know I want some kind of description,
+
+00:37:36 <v Michael Kennedy>exploration summary of it. So, Hey, Claude, just create a notebook and just from scratch,
+
+00:37:41 <v Michael Kennedy>just do what you want to do to build it up. And then I'll go look at it. Right.
+
+00:37:45 <v Michael Kennedy>Yeah. And the other ones may be more like a coding, like a data coding sort of story. Yeah,
+
+00:37:50 <v Trevor Manz>exactly. Yeah. And the, I think the nuance there of like why the more headless approach
+
+00:37:55 <v Trevor Manz>like works quite well with Mareem L'Apair is that if, if you've had any experience with trying to
+
+00:38:00 <v Trevor Manz>like one shot a program or one shot a notebook in the past, the agent doesn't really have a way of
+
+00:38:05 <v Trevor Manz>verifying what it's doing or that like that whole notebook that it created works well or maybe just
+
+00:38:10 <v Trevor Manz>at the end can like try to run the notebook and then we'll have to go back and fix cell by cell
+
+00:38:14 <v Trevor Manz>versus marimo pair driving from marimo pair sort of forces the agent to build up the notebooks a
+
+00:38:20 <v Trevor Manz>similar way that you would where you would actually go cell by cell so the first thing i have to do is
+
+00:38:23 <v Trevor Manz>like load my data the second thing i have to do is you know inspect look at my nulls and if there
+
+00:38:28 <v Trevor Manz>are errors in any of those steps the agent will correct them there rather than sort of generating
+
+00:38:32 <v Trevor Manz>the whole notebook and then running it from scratch. And so we found that you get much
+
+00:38:36 <v Trevor Manz>higher quality outputs when you are actually at the time of looking at the notebook, because
+
+00:38:41 <v Trevor Manz>the process in which the agent had to go to create the notebook sort of guarantees that it has to run
+
+00:38:46 <v Trevor Manz>because it adheres to the Marimo's constraints versus just generating the artifact and then
+
+00:38:51 <v Trevor Manz>saying like, hey, I'm done and didn't really check the outputs at all. Right, exactly. It just could
+
+00:38:56 <v Michael Kennedy>be some well-formed but meaningless notebook, right?
+
+00:38:59 <v Michael Kennedy>Yeah.
+
+00:39:00 <v Michael Kennedy>What if I'm now we're, we're pushing up to the limits of my Marimo knowledge.
+
+00:39:05 <v Michael Kennedy>Cause I've not tried this, but what if I got a Marimo notebook and I say, open
+
+00:39:09 <v Michael Kennedy>up that project and VS Code, like for example, maybe I have a regular
+
+00:39:14 <v Michael Kennedy>programming project that's VS Code that has the Claude Code installed in it, like
+
+00:39:20 <v Michael Kennedy>the extension or whatever.
+
+00:39:21 <v Michael Kennedy>And inside there, part of it is a Marimo notebook.
+
+00:39:25 <v Michael Kennedy>Can I say open up that notebook in Marimo, <v Michael Kennedy>but then also have Marimo pair,
+
+00:39:31 <v Michael Kennedy>but from within the VS Code, <v Michael Kennedy>Claude Code,
+
+00:39:34 <v Michael Kennedy>or do I have got to go to the terminal?
+
+00:39:36 <v Michael Kennedy>What is this interoperability story?
+
+00:39:38 <v Trevor Manz>Sure.
+
+00:39:39 <v Trevor Manz>At Marimo, I'm responsible for our VS Code extension, <v Trevor Manz>which is integrated.
+
+00:39:44 <v Trevor Manz>If you've ever tried to open up a Jupyter notebook <v Trevor Manz>inside of VS Code,
+
+00:39:48 <v Trevor Manz>VS Code or Cursor have a built-in UI for notebooks.
+
+00:39:52 <v Trevor Manz>We have a built-in UI for notebooks <v Trevor Manz>that reuses that sort of the VS Code native view,
+
+00:39:58 <v Trevor Manz>except replacing with Maremo outputs.
+
+00:40:00 <v Trevor Manz>And the latest thing I've been working on <v Trevor Manz>is getting the ability to have your agent inside of VS Code
+
+00:40:06 <v Trevor Manz>drive those notebook outputs as well.
+
+00:40:08 <v Trevor Manz>So that's something we should ship <v Trevor Manz>in probably the next week or so.
+
+00:40:11 <v Michael Kennedy>And there's, of course, I guess because of economics <v Michael Kennedy>or lock-in or I don't know, whatever,
+
+00:40:17 <v Michael Kennedy>there's always, in all these editors, <v Michael Kennedy>yes, even in Cursor,
+
+00:40:21 <v Michael Kennedy>There are like first class built-in ways to do agents.
+
+00:40:26 <v Michael Kennedy>Say in VS Code, there's like the chat thing on the right.
+
+00:40:29 <v Michael Kennedy>Those I think is probably what they intend you to do.
+
+00:40:32 <v Michael Kennedy>But then you can get the VS Code Claude or Codex extension,
+
+00:40:37 <v Michael Kennedy>which is a totally different UI, but still in VS Code.
+
+00:40:40 <v Michael Kennedy>Or you could go to the terminal and you could type Claude or Codex.
+
+00:40:45 <v Michael Kennedy>And that's a third sort of thing, which can sort of have links back in there.
+
+00:40:50 <v Michael Kennedy>Do some of these work and some of them don't?
+
+00:40:51 <v Michael Kennedy>Are they all the same?
+
+00:40:53 <v Michael Kennedy>What's the story?
+
+00:40:54 <v Trevor Manz>Yeah, so if you're launching from the terminal <v Trevor Manz>or the integrated VS Code,
+
+00:40:59 <v Trevor Manz>sorry, the Claude Code extension from VS Code today, <v Trevor Manz>that will likely start Marimo's command line tool
+
+00:41:07 <v Trevor Manz>and then open up a web view inside of VS Code, <v Trevor Manz>which is like our Marimo editor.
+
+00:41:11 <v Trevor Manz>If you use the chat, <v Trevor Manz>which is sort of the built-in agents panel inside of VS Code,
+
+00:41:16 <v Trevor Manz>that would drive the usage of the more integrated view <v Trevor Manz>inside of VS Code.
+
+00:41:22 <v Michael Kennedy>But all three are possible, I guess, yeah?
+
+00:41:25 <v Trevor Manz>Yeah, exactly.
+
+00:41:26 <v Trevor Manz>You can start a Marimo pair session <v Trevor Manz>from any of those panels.
+
+00:41:30 <v Trevor Manz>It's just a matter of what the visual <v Trevor Manz>that you're looking at is,
+
+00:41:34 <v Trevor Manz>if that's going to be the native VS Code editor <v Trevor Manz>for the notebook versus a web view
+
+00:41:42 <v Trevor Manz>of the Marimo notebook UI.
+
+00:41:44 <v Michael Kennedy>Yeah, and my sort of huff at this before was like, <v Michael Kennedy>This is only here because Claude Code won't allow you to use your subscription in the other one.
+
+00:41:56 <v Michael Kennedy>It's got to be, you know, in certain circumstances, right?
+
+00:41:59 <v Michael Kennedy>Like, oh, if you use the official extension, you can use your subscription.
+
+00:42:03 <v Michael Kennedy>But if you use this other way, then you've like, say in Cursor, you use your Cursor credits, not your Claude Code subscription.
+
+00:42:10 <v Michael Kennedy>And then PyCharm, you've got the sort of duality as well, where if you use the AI chat section that uses your JetBrains AI credits, whereas like if you use the terminal, it's clawed and just it's kind of a mess, honestly.
+
+00:42:24 <v Trevor Manz>Yeah, I think there's a lot of fragmentation in the ability to, and who owns that interface for where you're typing into that box and driving these tools.
+
+00:42:34 <v Trevor Manz>And so from our perspective, we think there will likely be a continued amount of drift between these different tools.
+
+00:42:43 <v Trevor Manz>And we don't necessarily want Marimo to be a tool that people are kind of deciding whether or not they're going to use our chat bar.
+
+00:42:48 <v Trevor Manz>but we do think Marimo as an environment for working with your data should be accessible from
+
+00:42:53 <v Trevor Manz>whatever tool that you choose. And so on our side, we just want to make sure that you're able to
+
+00:42:58 <v Trevor Manz>connect to and drive a Marimo notebook from your agent harness and tool of choice.
+
+00:43:03 <v Michael Kennedy>I think in maybe some kind of idealistic, non-realistic world where all the frontier
+
+00:43:12 <v Michael Kennedy>foundation coding models, you could just tell it your subscription or tell it whatever,
+
+00:43:16 <v Michael Kennedy>and it's the same billing everywhere, <v Michael Kennedy>it might be better to have some kind of built-in panel
+
+00:43:22 <v Michael Kennedy>into Marimo or little pop-ups or something.
+
+00:43:25 <v Michael Kennedy>But given all the weird restrictions and stuff, <v Michael Kennedy>it seems like a really good plan
+
+00:43:29 <v Michael Kennedy>to just have Marimo good at talking to any agent <v Michael Kennedy>through this way and however people want to run it,
+
+00:43:36 <v Michael Kennedy>they can just talk to it, right?
+
+00:43:37 <v Trevor Manz>Yeah.
+
+00:43:39 <v Trevor Manz>It's been challenging because we spend a lot of time <v Trevor Manz>on that UI and thinking about that UI
+
+00:43:44 <v Trevor Manz>that we own inside of Marimo <v Trevor Manz>how this should work with these agents.
+
+00:43:48 <v Trevor Manz>But the reality is that there's a lot of friction.
+
+00:43:51 <v Trevor Manz>And if we would have tried to build around <v Trevor Manz>Claude Max like a year ago,
+
+00:43:55 <v Trevor Manz>that would have been a lot of wasted effort <v Trevor Manz>because of the way that these platforms are changing.
+
+00:43:59 <v Trevor Manz>So as these tools become increasingly sticky <v Trevor Manz>and folks get entrenched into their agents of choice,
+
+00:44:05 <v Trevor Manz>I think from our perspective, <v Trevor Manz>making sure Marimo remains a useful tool
+
+00:44:11 <v Trevor Manz>to any agent is really our priority.
+
+00:44:13 <v Trevor Manz>And if there is some sort of...
+
+00:44:15 <v Trevor Manz>yeah, future day where we can own that UI again, then I think we will certainly have a story there.
+
+00:44:21 <v Michael Kennedy>Yeah, I think I totally agree with you, but I want to share a little graph with you from the
+
+00:44:26 <v Michael Kennedy>Pragmatic Engineer newsletter. Yeah, I guess newsletter. So if you, there's this one that was
+
+00:44:32 <v Michael Kennedy>AI tooling for software engineers in 2026. So you scroll down till we see a graph. There we go.
+
+00:44:38 <v Michael Kennedy>If you look at what people are using, it's Claude Code.
+
+00:44:44 <v Michael Kennedy>And then quite a ways back, we get Google Copilot, which I think is really, I don't know, maybe I live in some kind of sheltered world.
+
+00:44:52 <v Michael Kennedy>But I feel like this is primarily used because companies have Microsoft 365 subscriptions and they've got 10,000 employees.
+
+00:45:01 <v Michael Kennedy>And they're like, you can use Copilot because it's approved.
+
+00:45:04 <v Michael Kennedy>I don't know that that's necessarily what people are seeking out as their top choice.
+
+00:45:08 <v Michael Kennedy>I don't know, I could be wrong.
+
+00:45:09 <v Michael Kennedy>Sorry if I got that wrong, Copilot folks.
+
+00:45:11 <v Michael Kennedy>But, and then maybe about half is Cursor <v Michael Kennedy>and that's kind of its own world and then it goes Codex.
+
+00:45:16 <v Michael Kennedy>So like, I feel like if you're trying to, <v Michael Kennedy>this is like Claude Code was way behind a year ago.
+
+00:45:22 <v Michael Kennedy>It's crazy.
+
+00:45:23 <v Michael Kennedy>So I feel like if you're building a tool, <v Michael Kennedy>especially for developers that says,
+
+00:45:28 <v Michael Kennedy>let's pretend you don't want this.
+
+00:45:30 <v Michael Kennedy>Let us give you our version of something that's like it.
+
+00:45:34 <v Michael Kennedy>I just don't think that that's a road for success.
+
+00:45:36 <v Michael Kennedy>I think you're fighting against like, <v Michael Kennedy>everyone's like, you know what, we're in Claude Code and it works really well. Why am I going to
+
+00:45:42 <v Michael Kennedy>go put that away and use your thing? As opposed to what you guys built, which is like, well, here's
+
+00:45:46 <v Michael Kennedy>how you use the top three of those things to talk to what you're already doing. I think that's a good
+
+00:45:52 <v Trevor Manz>choice. Yeah, I think for us, it was the realization that the effectiveness of agents on a particular
+
+00:45:58 <v Trevor Manz>task is a combination of like, I think an agent is by definition is like a model, the tools that you
+
+00:46:03 <v Trevor Manz>equip that model with and then its environment or the loop that it runs in to perform that task.
+
+00:46:09 <v Trevor Manz>And so its effectiveness is going to be limited by whatever tools you give that agent.
+
+00:46:13 <v Trevor Manz>And so if we didn't make Marimo a useful tool for the agent, then if you give a data problem
+
+00:46:18 <v Trevor Manz>to the agents, it's going to use the tools that it has at hand, which are reading and writing files
+
+00:46:22 <v Trevor Manz>and running bash scripts. If you run that script a bunch of times or you ask the same data question
+
+00:46:26 <v Trevor Manz>using those tools, you might get a folder with a lot of different scripts and things and maybe a
+
+00:46:30 <v Trevor Manz>result. And so by giving agents, or really thinking of Marimo as a tool for agents,
+
+00:46:36 <v Trevor Manz>then we don't have to think so much about the interface for the agent, but rather just how to
+
+00:46:40 <v Trevor Manz>expose our environment to agents. And then when you ask for those data tasks, the thing that you
+
+00:46:44 <v Trevor Manz>generate at the end is this reproducible Python program that is a Marimo notebook, but you can
+
+00:46:49 <v Trevor Manz>drive that for many of these UIs of choice. And I look at these bars here, there's going to be
+
+00:46:55 <v Trevor Manz>jumping back and forth between these, depending on what the providers dictate in terms of their
+
+00:47:01 <v Michael Kennedy>Who gets blocked by the US government, who doesn't?
+
+00:47:04 <v Trevor Manz>Exactly.
+
+00:47:05 <v Trevor Manz>For us at Marimo, as long as we can make sure that regardless of what agent you use,
+
+00:47:09 <v Trevor Manz>you will have notebooks as a useful tool.
+
+00:47:13 <v Trevor Manz>Then at the end of the day, you're still just generating Marimo notebooks.
+
+00:47:16 <v Trevor Manz>Even if you turn off your agent, you have this reproducible artifact
+
+00:47:19 <v Trevor Manz>that is useful for communicating your data results <v Trevor Manz>or something about what happened in that session while you're working with data.
+
+00:47:26 <v Trevor Manz>That's our goal at Marimo, <v Trevor Manz>to make sure that whether you knew how to write Python code
+
+00:47:30 <v Trevor Manz>or you don't know how to write Python code, <v Trevor Manz>you're able to produce this reproducible artifact
+
+00:47:35 <v Trevor Manz>for your data analysis.
+
+00:47:37 <v Michael Kennedy>Okay.
+
+00:47:38 <v Michael Kennedy>You also talked about open code AI.
+
+00:47:42 <v Michael Kennedy>This is somewhat new to me.
+
+00:47:44 <v Michael Kennedy>What is this open code thing?
+
+00:47:46 <v Trevor Manz>Yeah, so open code is similar.
+
+00:47:48 <v Trevor Manz>I think Claude Code had the first form factor <v Trevor Manz>of being one of these terminal CLIs that you spin up.
+
+00:47:54 <v Trevor Manz>but just with the Anthropic models.
+
+00:47:58 <v Trevor Manz>And then OpenCode is a similar, <v Trevor Manz>like it feels very similar to using Claude Code,
+
+00:48:03 <v Trevor Manz>but it allows you to configure a lot of different models <v Trevor Manz>that have the ability to configure API endpoints.
+
+00:48:09 <v Trevor Manz>So for a while, <v Trevor Manz>I believe you can still configure all the different providers.
+
+00:48:15 <v Trevor Manz>It's just like the type of subscription models <v Trevor Manz>that you can use with OpenCode change quite a bit,
+
+00:48:20 <v Trevor Manz>similar to what you were just mentioning inside of VS Code.
+
+00:48:24 <v Michael Kennedy>Yeah, for example, it looks like you can use your Codex subscription, but not your Claude subscription.
+
+00:48:31 <v Trevor Manz>Yeah, exactly.
+
+00:48:32 <v Trevor Manz>So it should have a very similar form factor to when you type in Claude and you pop up that thing inside of your terminal.
+
+00:48:39 <v Trevor Manz>If you type in OpenCode, you'll get a window.
+
+00:48:41 <v Trevor Manz>You can start prompting.
+
+00:48:43 <v Trevor Manz>You can also install skills for OpenCode as well, the same way that you install for any of these harnesses.
+
+00:48:50 <v Trevor Manz>But we had some users that use OpenCode because of the open models.
+
+00:48:53 <v Trevor Manz>We have some users that are using Claude Code.
+
+00:48:55 <v Trevor Manz>We have some users that are using codex or VS Code.
+
+00:48:58 <v Trevor Manz>And like I mentioned, we just want to make sure that anyone can drive a Marimo notebook.
+
+00:49:02 <v Michael Kennedy>So it must be tough to be supporting AI stuff in this space, given how much flux it's under.
+
+00:49:08 <v Trevor Manz>Yeah, I think by inverting the problem in so far is that we are no longer like, you know,
+
+00:49:14 <v Trevor Manz>by moving some of this ability to drive Marimo outside of the Marimo UI, we don't have to
+
+00:49:19 <v Trevor Manz>keep up as much with all the fluctuation in the new models.
+
+00:49:22 <v Trevor Manz>And instead, the thing that we can focus on is the skill and making sure that that interface for controlling Marimo is really good from any agent of choice.
+
+00:49:31 <v Trevor Manz>And then as these different UIs compete for sort of where the users are going to be in terms of driving their agents, again, we can just sort of sit there with Marimo and just make sure Marimo is a really good tool for any of these agents.
+
+00:49:46 <v Michael Kennedy>Sure, sure, sure.
+
+00:49:48 <v Michael Kennedy>So having this, how does this change how people use notebooks?
+
+00:49:53 <v Michael Kennedy>I know how it's changed coding.
+
+00:49:55 <v Michael Kennedy>It's changed it quite a bit in some ways and not at all in others.
+
+00:49:58 <v Michael Kennedy>But how about for data?
+
+00:49:59 <v Trevor Manz>That's a really good question.
+
+00:50:00 <v Trevor Manz>So I mentioned earlier that part of the value of these environments
+
+00:50:05 <v Trevor Manz>like a Marimo notebook or like a Jupyter or Excel <v Trevor Manz>is the statefulness of those environments.
+
+00:50:10 <v Trevor Manz>And so it's really like there's a lot of, you know, <v Trevor Manz>when you're using an agent,
+
+00:50:15 <v Trevor Manz>it's able to gather things and put it from your file system
+
+00:50:19 <v Trevor Manz>to bring that into context or from the web <v Trevor Manz>to be able to, when you ask a prompt,
+
+00:50:24 <v Trevor Manz>perform a task that hopefully fulfills that <v Trevor Manz>to some sufficient level.
+
+00:50:28 <v Trevor Manz>And prior to having an integration like Marimo pair, <v Trevor Manz>that statefulness could be,
+
+00:50:34 <v Trevor Manz>basically the values that are in memory <v Trevor Manz>could be extra context to helping the agent
+
+00:50:40 <v Trevor Manz>answer some question, <v Trevor Manz>but you'd sort of have to babysit the model
+
+00:50:43 <v Trevor Manz>or tell it something like, oh, I copied this output, <v Trevor Manz>here's the output.
+
+00:50:46 <v Trevor Manz>And now when you say, what's in this data frame, <v Trevor Manz>it can look at those columns for you.
+
+00:50:51 <v Trevor Manz>Or for example, if I'm doing something like EDA type of analysis
+
+00:50:56 <v Trevor Manz>inside of Marimo, I can circle on a plot and make a selection.
+
+00:50:59 <v Trevor Manz>And I can say, what did I just select here?
+
+00:51:01 <v Trevor Manz>And the agent can go take that indice selection that I made,
+
+00:51:05 <v Trevor Manz>compare it against the data frame, <v Trevor Manz>and come back to me with some answer.
+
+00:51:07 <v Trevor Manz>So I think these types of questions that maybe felt tedious
+
+00:51:11 <v Trevor Manz>to ask before, like, because you'd have to type out a lot of code to do that.
+
+00:51:16 <v Trevor Manz>Now you can really either use the agent to help you write code or actually ask you questions
+
+00:51:20 <v Trevor Manz>about the state inside that notebook.
+
+00:51:22 <v Trevor Manz>And you're really extending the agent's, you know, environment with the intermediate values
+
+00:51:27 <v Trevor Manz>that, you know, as a human might find interesting.
+
+00:51:29 <v Trevor Manz>But now the agent can also use that as potential context.
+
+00:51:32 <v Michael Kennedy>One of the things I think is super useful.
+
+00:51:35 <v Michael Kennedy>A lot of times I feel like people maybe miss this and maybe, maybe more people than I realize
+
+00:51:40 <v Michael Kennedy>know about it, but in VS Code or PyCharm or cursor, I think cursor might be best as I'm not
+
+00:51:46 <v Michael Kennedy>entirely sure these days, but anyway, if I've got a file, maybe I've got hundreds of files in my
+
+00:51:52 <v Michael Kennedy>project, but a particular file I'm interested in, if I have that file open and I ask questions,
+
+00:51:57 <v Michael Kennedy>it's automatically included as context, just by virtue of having it be the last focused file.
+
+00:52:03 <v Michael Kennedy>But even better is you can highlight parts of a line or three lines or whatever and go,
+
+00:52:08 <v Michael Kennedy>what's wrong with this?
+
+00:52:10 <v Michael Kennedy>It's all you got to say.
+
+00:52:11 <v Michael Kennedy>And it goes, oh yeah, I see the function <v Michael Kennedy>that you're talking about,
+
+00:52:13 <v Michael Kennedy>the part that you've highlighted, <v Michael Kennedy>like boom, off it goes.
+
+00:52:16 <v Michael Kennedy>Is there some mechanism?
+
+00:52:17 <v Michael Kennedy>It sounds a little bit like there is, <v Michael Kennedy>but is there a mechanism in Marimo
+
+00:52:21 <v Michael Kennedy>that it communicates back what's active, <v Michael Kennedy>what you're working with?
+
+00:52:25 <v Trevor Manz>Yeah, so we have, you know, <v Trevor Manz>as the agent is running things,
+
+00:52:28 <v Trevor Manz>we can communicate, you know, <v Trevor Manz>what cells have changed
+
+00:52:31 <v Trevor Manz>or like if there are values <v Trevor Manz>that have changed in the notebook
+
+00:52:34 <v Trevor Manz>and then the agent can go and ask questions <v Trevor Manz>about those things that have changed.
+
+00:52:38 <v Trevor Manz>We have some folks in our team that are working on creating these sort of,
+
+00:52:41 <v Trevor Manz>like I think to what you're mentioning, <v Trevor Manz>imagine you highlight a line of code and you want to feed that back
+
+00:52:46 <v Trevor Manz>as potential context of here's where I'm focusing.
+
+00:52:49 <v Trevor Manz>Inside of a notebook, if you're using actually the integrated browser
+
+00:52:53 <v Trevor Manz>inside a VS Code or cursor, you can actually click on a plot
+
+00:52:57 <v Trevor Manz>and it'll take that screenshot and it'll add it as context
+
+00:53:00 <v Trevor Manz>to what you're going to ask.
+
+00:53:01 <v Trevor Manz>And so now you're having this interaction where it's not just the values
+
+00:53:04 <v Trevor Manz>but also the outputs and the visual outputs that you can say,
+
+00:53:07 <v Trevor Manz>hey, this is a little bit weird.
+
+00:53:08 <v Trevor Manz>I see this, this, and this.
+
+00:53:10 <v Trevor Manz>So we're definitely thinking that direction <v Trevor Manz>where, yeah, it's not just the line of code,
+
+00:53:13 <v Trevor Manz>but the value of the code <v Trevor Manz>and the representation of the code
+
+00:53:16 <v Trevor Manz>that could actually feed back <v Trevor Manz>to these multimodal models
+
+00:53:18 <v Trevor Manz>and help you sort of come to better understanding <v Trevor Manz>quickly with your data.
+
+00:53:22 <v Michael Kennedy>Yeah, awesome.
+
+00:53:23 <v Michael Kennedy>I love it.
+
+00:53:24 <v Michael Kennedy>It's so nice because instead of trying <v Michael Kennedy>to just like describe,
+
+00:53:26 <v Michael Kennedy>okay, and the third function called this, <v Michael Kennedy>there's a part where there's an if,
+
+00:53:31 <v Michael Kennedy>you know, just like highlight and go this, right?
+
+00:53:33 <v Michael Kennedy>It's great.
+
+00:53:34 <v Trevor Manz>Exactly.
+
+00:53:35 <v Trevor Manz>There's a certain level of interactions <v Trevor Manz>or feeding back of...
+
+00:53:38 <v Trevor Manz>I think when I started to realize <v Trevor Manz>that these agents could be very powerful
+
+00:53:42 <v Trevor Manz>was when coding tasks started to feel a lot cheaper.
+
+00:53:45 <v Trevor Manz>Like maybe these what-if ideas <v Trevor Manz>of something I wanted to try with software,
+
+00:53:48 <v Trevor Manz>I could, rather than that taking up a whole weekend <v Trevor Manz>or several weeks to try out,
+
+00:53:53 <v Trevor Manz>it's like maybe an afternoon I could try that out.
+
+00:53:55 <v Trevor Manz>And I think the experience that we want to provide <v Trevor Manz>for our users inside of Marimo Notebooks
+
+00:53:58 <v Trevor Manz>is that these kind of what-if questions with your data <v Trevor Manz>also feel very cheap.
+
+00:54:03 <v Trevor Manz>So you say, what is that?
+
+00:54:04 <v Trevor Manz>And now that like starts a conversation or starts a new part of your analysis that, you know, you maybe would have had to be very convinced to go down that route before.
+
+00:54:11 <v Trevor Manz>And now you can just like start to ask those questions and hopefully get to insight more quickly.
+
+00:54:15 <v Michael Kennedy>I think another thing that that's really nice for is, you know, hat tip to the name here is like pair, like pair programming, right?
+
+00:54:23 <v Michael Kennedy>If you were actually paired programming, you could just highlight something on the screen and go, what do you think about this?
+
+00:54:28 <v Michael Kennedy>Right. Where's sort of the traditional, I don't know, Claude code just in the terminal.
+
+00:54:33 <v Michael Kennedy>You've got to describe it a lot, talk about the file, right?
+
+00:54:36 <v Michael Kennedy>Like you can't just have it sort of ambiently there.
+
+00:54:40 <v Michael Kennedy>And if you're sitting there working with these tools, these agentic tools all day,
+
+00:54:45 <v Michael Kennedy>especially if you're not doing a lot of programming with other people, like it's
+
+00:54:47 <v Michael Kennedy>primarily the, you're sort of coding partner, you know, your paired programmer or
+
+00:54:52 <v Michael Kennedy>whatever, the more you've kind of got to artificially step out and say, yeah,
+
+00:54:56 <v Michael Kennedy>over on this file at dah, dah, dah, dah, try to find the file.
+
+00:54:59 <v Michael Kennedy>And then you're talking about this, right?
+
+00:55:01 <v Michael Kennedy>It breaks this flow and this idea of this thing is here to help me.
+
+00:55:06 <v Michael Kennedy>It's like, I'm just sending stuff to this dumb machine
+
+00:55:09 <v Michael Kennedy>that can't really figure out what's going on.
+
+00:55:11 <v Michael Kennedy>So I really like it.
+
+00:55:13 <v Michael Kennedy>This concept you're talking about.
+
+00:55:14 <v Trevor Manz>I had this experience where I was actually trying to help my dad
+
+00:55:18 <v Trevor Manz>look at some data that he had in Excel.
+
+00:55:20 <v Trevor Manz>Notoriously, that's very annoying to load an Excel file in Python
+
+00:55:24 <v Trevor Manz>because you end up writing your own little parser <v Trevor Manz>to figure out the different subsets of the tables.
+
+00:55:28 <v Trevor Manz>At the end of the day, what I really wanted were a couple data frames
+
+00:55:31 <v Trevor Manz>plot inside of the notebook. And being able to just drag from my UI the Excel file over into
+
+00:55:37 <v Trevor Manz>Marimo pair and saying, hey, can you just load these three tables inside the notebook and let
+
+00:55:41 <v Trevor Manz>the agent chug away in the notebook at trying to figure out how to create those plots for me?
+
+00:55:46 <v Trevor Manz>Maybe that would have taken me an hour to do on my hand from before. And it took a couple minutes
+
+00:55:50 <v Trevor Manz>for the agent or maybe even a minute for the agent. And then I got to focus on the exciting
+
+00:55:54 <v Trevor Manz>part was how to make these plots and communicate something with the data. So automating those pieces
+
+00:55:58 <v Trevor Manz>that are very bespoke and kind of annoying of like, how do you get data formats into the notebook is
+
+00:56:02 <v Trevor Manz>now something you can sort of, you know, task the agent on for a little bit. Right. I'm not a fan of
+
+00:56:07 <v Michael Kennedy>vibe coding really, but I do think this provides really interesting onboard, like on ramps for
+
+00:56:12 <v Michael Kennedy>people to get into notebooks and programming and so on. Cause maybe they can ask decent questions
+
+00:56:19 <v Michael Kennedy>about data, but they can't necessarily go, okay, I'm going to get the pie X amount, the XML,
+
+00:56:24 <v Michael Kennedy>XLS writer or whatever it is. Right. As you can tell, I don't remember exactly the name of it.
+
+00:56:28 <v Michael Kennedy>So there you go.
+
+00:56:29 <v Michael Kennedy>All right, that kind of thing.
+
+00:56:30 <v Michael Kennedy>And just like load this up and then let's talk about it.
+
+00:56:32 <v Michael Kennedy>Like I know what a data frame is, <v Michael Kennedy>but I really need to know how to like select the third sheet in Excel.
+
+00:56:38 <v Michael Kennedy>Yes, exactly.
+
+00:56:39 <v Trevor Manz>Do I need to know that API to like get my tasks done <v Trevor Manz>with these data inside the notebook?
+
+00:56:43 <v Trevor Manz>And I think, you know, for in this context as well, <v Trevor Manz>because Marimo has this, you know,
+
+00:56:49 <v Trevor Manz>this deterministic execution order, <v Trevor Manz>you can sort of collaborate on building, you know,
+
+00:56:54 <v Trevor Manz>this like this reproducible like workflow <v Trevor Manz>of how you got to that notebook.
+
+00:56:59 <v Trevor Manz>So you can, instead of vibe coding the whole thing, <v Trevor Manz>you can maybe allow someone to kind of vibe code
+
+00:57:03 <v Trevor Manz>the first bit of how do we get the data into memory?
+
+00:57:06 <v Trevor Manz>And then the things that really require attention <v Trevor Manz>about cleaning up the data and plotting the data
+
+00:57:11 <v Trevor Manz>and running some modeling on that data, <v Trevor Manz>now you've sort of freed up your time
+
+00:57:15 <v Trevor Manz>to focus on those bits as well.
+
+00:57:17 <v Michael Kennedy>Yeah, 100%.
+
+00:57:18 <v Michael Kennedy>It lets you focus on the parts that actually matter, <v Michael Kennedy>not just silly file formats and stuff like that, right?
+
+00:57:23 <v Trevor Manz>Yeah.
+
+00:57:24 <v Trevor Manz>And we're lucky because Python's such a Swiss army knife <v Trevor Manz>to all that has such a rich ecosystem
+
+00:57:28 <v Trevor Manz>of ingesting data and working with data <v Trevor Manz>that you can lean on that ecosystem
+
+00:57:35 <v Trevor Manz>plus the agent inside of the notebook <v Trevor Manz>to get your data into a format that is useful.
+
+00:57:39 <v Trevor Manz>But then that's the point that you step in <v Trevor Manz>and start to direct more about what direction
+
+00:57:43 <v Trevor Manz>you want to take that analysis.
+
+00:57:45 <v Michael Kennedy>Totally.
+
+00:57:45 <v Michael Kennedy>So a couple of final questions <v Michael Kennedy>to wrap up our conversation here.
+
+00:57:49 <v Michael Kennedy>Tips and tricks for people like, <v Michael Kennedy>okay, you've got the skill, you've got Marimo.
+
+00:57:54 <v Michael Kennedy>Are there interesting things you've all discovered you can do
+
+00:57:58 <v Michael Kennedy>that maybe are non-obvious?
+
+00:57:59 <v Michael Kennedy>Tips and tricks.
+
+00:58:00 <v Trevor Manz>Honestly, my recommendation would be to, <v Trevor Manz>if there is some data set that you have in mind,
+
+00:58:05 <v Trevor Manz>like the example I mentioned with an Excel file, <v Trevor Manz>it's a very fun task to just drag in a data set and say,
+
+00:58:11 <v Trevor Manz>please load this for me inside the notebook <v Trevor Manz>and let's start making some plots or something.
+
+00:58:15 <v Trevor Manz>And I think very quickly you'll realize <v Trevor Manz>how quickly this runtime inspection
+
+00:58:20 <v Trevor Manz>really shapes this user experience <v Trevor Manz>where I think I went from being very hands-on
+
+00:58:25 <v Trevor Manz>with working in notebooks <v Trevor Manz>to being able to sit back a little bit more
+
+00:58:29 <v Trevor Manz>and think cell-by-cell about what I want to do.
+
+00:58:31 <v Trevor Manz>So I just encourage folks to try it out with their data <v Trevor Manz>and let us know what they run into.
+
+00:58:37 <v Michael Kennedy>Okay, yeah, that makes a lot of sense.
+
+00:58:39 <v Michael Kennedy>One thing that I've done before, <v Michael Kennedy>just playing around with data,
+
+00:58:42 <v Michael Kennedy>is I've asked Claude, <v Michael Kennedy>like, hey, here's the data, here's the scenario.
+
+00:58:47 <v Michael Kennedy>What are some interesting questions <v Michael Kennedy>we should be asking about it?
+
+00:58:51 <v Michael Kennedy>here's what I think is interesting, but what am I missing?
+
+00:58:55 <v Michael Kennedy>Are there trends in the data that I don't see that maybe you can pull out
+
+00:58:58 <v Michael Kennedy>and just kind of have it just cruise around and just think about it a little bit?
+
+00:59:01 <v Michael Kennedy>And it was really good.
+
+00:59:03 <v Trevor Manz>Yeah, and I think you can imagine extending that.
+
+00:59:07 <v Trevor Manz>Typically when you're maybe asking those questions back and forth with Claude,
+
+00:59:10 <v Trevor Manz>it's giving you some tables and numbers and distributions in the data.
+
+00:59:14 <v Trevor Manz>But because when you're connected to a Marimo kernel, <v Trevor Manz>now you can ask for plots or different visual representations
+
+00:59:20 <v Trevor Manz>that might be able to show those trends.
+
+00:59:22 <v Trevor Manz>So if the agent is telling you <v Trevor Manz>that there is this difference,
+
+00:59:25 <v Trevor Manz>you could say, hey, make a bar chart <v Trevor Manz>or a box plot for me to understand that information.
+
+00:59:30 <v Trevor Manz>Because you do just have this much richer canvas <v Trevor Manz>for talking about your data
+
+00:59:34 <v Trevor Manz>rather than just the ASCII output in your terminal.
+
+00:59:37 <v Michael Kennedy>Right, the first thing that I got <v Michael Kennedy>was a bunch of data frames and heads
+
+00:59:40 <v Michael Kennedy>or stats or something like that.
+
+00:59:43 <v Michael Kennedy>And I'm like, this is great, <v Michael Kennedy>but describe this in pictures.
+
+00:59:47 <v Michael Kennedy>And then I had a bunch of graphs.
+
+00:59:48 <v Michael Kennedy>And I'm like, okay, that was cool.
+
+00:59:50 <v Michael Kennedy>That was really cool.
+
+00:59:51 <v Michael Kennedy>Maybe people could try that, right?
+
+00:59:53 <v Michael Kennedy>Definitely.
+
+00:59:53 <v Michael Kennedy>All right, roadmap.
+
+00:59:55 <v Michael Kennedy>Where are things going?
+
+00:59:56 <v Trevor Manz>Yeah, so as I mentioned, <v Trevor Manz>we are currently building a tighter integration
+
+01:00:00 <v Trevor Manz>with our native editor inside of VS Code.
+
+01:00:02 <v Trevor Manz>So essentially our direction with Marimo Pair <v Trevor Manz>is to try to think of all the places
+
+01:00:06 <v Trevor Manz>in which folks are trying to drive agents <v Trevor Manz>that maybe we could have the ability
+
+01:00:11 <v Trevor Manz>to spin up a Marimo notebook <v Trevor Manz>and allow folks to collaborate
+
+01:00:13 <v Trevor Manz>on these reproducible artifacts.
+
+01:00:17 <v Trevor Manz>So right now that looks a lot like <v Trevor Manz>more terminal oriented workflows.
+
+01:00:21 <v Trevor Manz>We have some integration now <v Trevor Manz>inside the Marimo editor itself,
+
+01:00:23 <v Trevor Manz>like I mentioned, <v Trevor Manz>where you can open up the chat
+
+01:00:25 <v Trevor Manz>and start using Marimo pair.
+
+01:00:27 <v Trevor Manz>We'll have a further integration into VS Code.
+
+01:00:30 <v Trevor Manz>And I think down the line, <v Trevor Manz>we'll have eventually,
+
+01:00:32 <v Trevor Manz>you know, if you're using Cloud Desktop <v Trevor Manz>or Codex Desktop,
+
+01:00:35 <v Trevor Manz>that maybe you can start your little chat there.
+
+01:00:37 <v Trevor Manz>And that could also drive a Marimo notebook as well.
+
+01:00:39 <v Michael Kennedy>I feel like that's an entirely missing piece <v Michael Kennedy>of this whole agentic AI world,
+
+01:00:44 <v Michael Kennedy>like the Google Docs CoLab equivalent, right?
+
+01:00:47 <v Michael Kennedy>Like I've started up Claude Code <v Michael Kennedy>or something like that.
+
+01:00:50 <v Michael Kennedy>And now, why don't you join my session?
+
+01:00:52 <v Michael Kennedy>We'll all talk to Claude and, you know, have it go.
+
+01:00:55 <v Michael Kennedy>I don't know, maybe someday.
+
+01:00:56 <v Trevor Manz>Yeah, or maybe Maremo can serve.
+
+01:00:58 <v Trevor Manz>Like, you know, we will have, <v Trevor Manz>we are currently working on some real-time collaboration features
+
+01:01:03 <v Trevor Manz>inside of Maremo.
+
+01:01:04 <v Trevor Manz>And maybe there's some way that, you know, <v Trevor Manz>multiple people have multiple agents that are talking to the same
+
+01:01:08 <v Michael Kennedy>Maremo kernel.
+
+01:01:09 <v Michael Kennedy>Each person with their agent buddy are all in there.
+
+01:01:12 <v Michael Kennedy>That seems totally reasonable as long as it's, you know, aware.
+
+01:01:16 <v Michael Kennedy>What about remote?
+
+01:01:18 <v Michael Kennedy>So I'm running Marimo, I'm not on my machine, <v Michael Kennedy>but on some server or some cloud service or whatever,
+
+01:01:24 <v Michael Kennedy>but I've got my cloud local and I want to have those things work together.
+
+01:01:28 <v Trevor Manz>Yeah, so the way that behind the scenes, <v Trevor Manz>like how the tool call works inside of Marimo,
+
+01:01:34 <v Trevor Manz>it's a bash script that's called execute code.
+
+01:01:37 <v Trevor Manz>That allows you to swap in a URL, whether that's on local host
+
+01:01:40 <v Trevor Manz>or something remotely with some authentication.
+
+01:01:42 <v Trevor Manz>And therefore you can connect your local cloud <v Trevor Manz>to some remote Marimo kernel as well.
+
+01:01:47 <v Trevor Manz>And then you have a sandbox that's not running on your machine at all, but somewhere in the cloud.
+
+01:01:51 <v Trevor Manz>But you're driving that from your local machine.
+
+01:01:53 <v Michael Kennedy>Some big machine with GPUs or whatever, that's a better place to run your code.
+
+01:01:58 <v Trevor Manz>Yeah, exactly.
+
+01:02:00 <v Trevor Manz>At Marimo, we have a cloud-hosted version of Marimo Notebooks that's called Molab
+
+01:02:04 <v Trevor Manz>that we recently released on CoreWeave Infrastructure, where we have some GPUs for our community.
+
+01:02:10 <v Trevor Manz>And you can actually today go inside that UI and click pair with an agent,
+
+01:02:14 <v Trevor Manz>And you can copy a little cloud command <v Trevor Manz>and connect that to your Claude Code or your codex.
+
+01:02:19 <v Trevor Manz>And then you can start pair programming locally <v Trevor Manz>with that remote sandbox in the cloud.
+
+01:02:24 <v Michael Kennedy>I love it. That's awesome.
+
+01:02:25 <v Michael Kennedy>All right, final call to action.
+
+01:02:27 <v Michael Kennedy>People are like, Marimo pair sounds cool.
+
+01:02:29 <v Michael Kennedy>What do you tell them? How do they get started?
+
+01:02:30 <v Trevor Manz>Yeah, so I'd recommend going to marimo.io slash pair, <v Trevor Manz>grabbing the skill and spinning up a notebook of your own
+
+01:02:38 <v Trevor Manz>and just trying to do tasks that you do with data.
+
+01:02:41 <v Trevor Manz>Traditionally, maybe in a notebook <v Trevor Manz>or maybe if things haven't been going well inside that notebook.
+
+01:02:46 <v Trevor Manz>We haven't put up the site yet.
+
+01:02:47 <v Michael Kennedy>That's right, it's coming soon.
+
+01:02:49 <v Michael Kennedy>I totally forgot you said that.
+
+01:02:51 <v Michael Kennedy>By the time this episode comes out, that will be there.
+
+01:02:53 <v Trevor Manz>If you're watching the live stream, maybe give it a few days.
+
+01:02:56 <v Trevor Manz>By the time this episode comes out, check out marimo.io.
+
+01:03:00 <v Trevor Manz>Or go to our GitHub for marimo pair, install the skill, <v Trevor Manz>and show us what you build with Marimo,
+
+01:03:06 <v Trevor Manz>regardless of if you're driving it with agents.
+
+01:03:08 <v Trevor Manz>But we'd love to hear if you start using out agents <v Trevor Manz>where the skill falls short
+
+01:03:13 <v Trevor Manz>and how we can really improve that user experience.
+
+01:03:16 <v Michael Kennedy>Cool.
+
+01:03:16 <v Michael Kennedy>Well, it seems like a really neat idea.
+
+01:03:18 <v Michael Kennedy>I think you're going to have a lot of success with it.
+
+01:03:20 <v Michael Kennedy>So thanks for coming on the show <v Michael Kennedy>and sharing it with everyone.
+
+01:03:23 <v Trevor Manz>Yeah, thanks so much for having me, Michael.
+
+01:03:24 <v Michael Kennedy>Yeah, you bet.
+
+01:03:25 <v Michael Kennedy>Bye.
+
+01:03:27 <v Michael Kennedy>This has been another episode of Talk Python To Me.
+
+01:03:30 <v Michael Kennedy>Thank you to our sponsors.
+
+01:03:30 <v Michael Kennedy>Be sure to check out what they're offering.
+
+01:03:32 <v Michael Kennedy>It really helps support the show.
+
+01:03:34 <v Michael Kennedy>This episode is brought to you by Sentry.
+
+01:03:37 <v Michael Kennedy>You know Sentry for the air monitoring, <v Michael Kennedy>but they now have logs too.
+
+01:03:40 <v Michael Kennedy>And with Sentry, your logs become way more usable, <v Michael Kennedy>interleaving into your error reports to enhance debugging and understanding.
+
+01:03:48 <v Michael Kennedy>Get started today at talkpython.fm/sentry.
+
+01:03:51 <v Michael Kennedy>If you or your team needs to learn Python, <v Michael Kennedy>we have over 270 hours of beginner and advanced courses
+
+01:03:57 <v Michael Kennedy>on topics ranging from complete beginners to async code,
+
+01:04:01 <v Michael Kennedy>Flask, Django, HTML, and even LLMs.
+
+01:04:04 <v Michael Kennedy>Best of all, there's no subscription in sight.
+
+01:04:07 <v Michael Kennedy>Browse the catalog at talkpython.fm.
+
+01:04:09 <v Michael Kennedy>And if you're not already subscribed to the show on your favorite podcast player,
+
+01:04:13 <v Michael Kennedy>what are you waiting for?
+
+01:04:15 <v Michael Kennedy>Just search for Python in your podcast player.
+
+01:04:16 <v Michael Kennedy>We should be right at the top.
+
+01:04:18 <v Michael Kennedy>If you enjoy that geeky rap song, you can download the full track.
+
+01:04:21 <v Michael Kennedy>The link is actually in your podcast player show notes.
+
+01:04:23 <v Michael Kennedy>This is your host, Michael Kennedy.
+
+01:04:25 <v Michael Kennedy>Thank you so much for listening.
+
+01:04:26 <v Michael Kennedy>I really appreciate it.
+
+01:04:28 <v Michael Kennedy>I'll see you next time.
+
+01:04:41 Thank you.
+
