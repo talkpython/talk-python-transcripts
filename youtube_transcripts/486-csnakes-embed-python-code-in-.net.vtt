@@ -1,0 +1,3503 @@
+WEBVTT
+
+00:00:00.919 --> 00:00:03.960
+Hello, Anthony. Hello, Aaron. Welcome to Talk Python.
+
+00:00:05.250 --> 00:00:05.560
+Hi, Michael.
+
+00:00:06.680 --> 00:00:07.320
+Hi, thanks for having us.
+
+00:00:08.079 --> 00:00:12.960
+It's great to have you here. Anthony, always, always good to have you back on the show.
+
+00:00:13.800 --> 00:00:21.420
+You're one of the most popular guests and we'll see where it lands, where this puts you in the list.
+
+00:00:21.620 --> 00:00:25.280
+But you're right near the top of the guest page out of all of them. I love having you on the show.
+
+00:00:26.060 --> 00:00:28.760
+Thank you. And Aaron, welcome. It's great to have you here.
+
+00:00:30.920 --> 00:00:34.640
+So even though you've been on a bunch of times, Anthony, maybe a real quick introduction,
+
+00:00:34.820 --> 00:00:38.700
+just who you are for those who have not met you yet.
+
+00:00:39.750 --> 00:00:40.580
+Yeah, I'm Anthony Shaw.
+
+00:00:40.770 --> 00:00:41.520
+I work at Microsoft.
+
+00:00:41.810 --> 00:00:46.460
+I'm the lead Python advocate, and I do a whole bunch of open source projects.
+
+00:00:47.520 --> 00:00:52.800
+And I wrote a book called CPython Internals, which is how most people know me these days.
+
+00:00:54.480 --> 00:00:55.280
+Yeah, that's me.
+
+00:00:57.140 --> 00:00:57.340
+Awesome.
+
+00:00:58.180 --> 00:01:01.200
+Yeah, so we're going to talk about more CPython internals,
+
+00:01:01.230 --> 00:01:04.059
+or maybe putting Python inside of.NET.
+
+00:01:04.269 --> 00:01:04.559
+I don't know.
+
+00:01:05.120 --> 00:01:07.240
+Something's going into the internals of the something else.
+
+00:01:07.310 --> 00:01:08.460
+We'll figure out which way that goes.
+
+00:01:09.540 --> 00:01:10.640
+It's a very cool project.
+
+00:01:11.980 --> 00:01:12.340
+Hello, Aaron.
+
+00:01:12.770 --> 00:01:13.960
+Tell me a bit about yourself.
+
+00:01:14.880 --> 00:01:15.100
+Sure.
+
+00:01:16.260 --> 00:01:18.200
+Well, I'm definitely the odd one out here.
+
+00:01:18.360 --> 00:01:21.840
+I am someone who has pretty much never written Python in my life.
+
+00:01:23.420 --> 00:01:25.060
+I now know a bit more about it,
+
+00:01:25.170 --> 00:01:26.380
+having worked on this project with Anthony.
+
+00:01:26.640 --> 00:01:28.880
+But I'm a.NET developer by trade.
+
+00:01:29.770 --> 00:01:34.960
+I've been doing that for longer than I'll admit on a recorded audio.
+
+00:01:36.720 --> 00:01:38.000
+At least 10 years.
+
+00:01:38.470 --> 00:01:39.000
+Okay, I got it.
+
+00:01:40.680 --> 00:01:42.500
+Yes, we'll go with at least 10 years.
+
+00:01:43.160 --> 00:01:45.560
+Yeah, I'm setting a lower bound for us.
+
+00:01:45.920 --> 00:01:46.380
+That's a good one.
+
+00:01:47.160 --> 00:01:48.860
+Yeah, but I also work at Microsoft.
+
+00:01:49.370 --> 00:01:54.340
+I mean, a team adjacent to Anthony's doing advocacy around.NET.
+
+00:01:55.400 --> 00:01:58.760
+And yeah, but otherwise, I also write JavaScript.
+
+00:01:59.280 --> 00:02:01.620
+So I do everything I can to avoid having
+
+00:02:01.800 --> 00:02:04.320
+to get into the Python space in my time.
+
+00:02:05.100 --> 00:02:06.460
+And yet here you are.
+
+00:02:07.000 --> 00:02:08.200
+And here I am, yes.
+
+00:02:09.780 --> 00:02:10.259
+Amazing.
+
+00:02:11.720 --> 00:02:13.940
+Yeah, so it's a different world, right?
+
+00:02:14.140 --> 00:02:17.340
+Coming from.NET that's guaranteed static typing,
+
+00:02:18.100 --> 00:02:20.960
+a lot of semicolons, a lot of ceremony around the types,
+
+00:02:21.260 --> 00:02:24.300
+and then Python kind of says, hold on now.
+
+00:02:25.420 --> 00:02:29.140
+- And white space, Python loves its white space.
+
+00:02:29.220 --> 00:02:32.000
+But then again, I have a very soft spot for F sharp.
+
+00:02:32.100 --> 00:02:34.560
+So I'm not, I kind of get the white space
+
+00:02:34.820 --> 00:02:37.500
+significant aspect of a Python language,
+
+00:02:37.760 --> 00:02:40.660
+but at the same time, I do miss McCurley brackets.
+
+00:02:41.739 --> 00:02:42.140
+- Yeah.
+
+00:02:43.680 --> 00:02:45.060
+The trick is if you use a good editor,
+
+00:02:45.500 --> 00:02:46.480
+you don't really notice it.
+
+00:02:46.740 --> 00:02:48.700
+If you don't, it's pretty bad.
+
+00:02:49.580 --> 00:02:49.620
+Yeah.
+
+00:02:50.510 --> 00:02:51.340
+So he's a good editor.
+
+00:02:51.410 --> 00:02:52.720
+I mean, that's all there is to it.
+
+00:02:54.520 --> 00:02:55.440
+Anthony, what have you been up to?
+
+00:02:56.540 --> 00:02:57.780
+What's new in your world?
+
+00:02:59.680 --> 00:03:04.420
+I've been up to this project for a few months now.
+
+00:03:04.580 --> 00:03:06.140
+Is this primarily what you're focused on?
+
+00:03:07.100 --> 00:03:08.280
+It was for a few months, yeah.
+
+00:03:09.340 --> 00:03:11.800
+I'm trying to get ready for, we've got a massive conference,
+
+00:03:12.070 --> 00:03:15.080
+one of our two big conferences of the year coming up in a couple of weeks.
+
+00:03:15.130 --> 00:03:18.400
+So I'm working hard on demos to try and get ready for that.
+
+00:03:19.280 --> 00:03:20.960
+Is that.NET Conf? What is that?
+
+00:03:22.220 --> 00:03:24.600
+No, this is for Ignite. It's the partner conference.
+
+00:03:25.090 --> 00:03:27.020
+Oh, yeah, yeah. Ignite is so big.
+
+00:03:28.120 --> 00:03:29.400
+15,000 people or something.
+
+00:03:29.650 --> 00:03:33.900
+Yes, exactly. I went to a pre-pandemic, and I think it was 30,000 people.
+
+00:03:34.240 --> 00:03:34.580
+Oh, wow.
+
+00:03:35.400 --> 00:03:38.740
+It was in Florida, and there was a whole podcast row.
+
+00:03:38.870 --> 00:03:42.220
+So Microsoft had me out as one of 10 podcasts or something.
+
+00:03:42.800 --> 00:03:44.920
+I thought, oh, what is this? I've hardly ever heard of this.
+
+00:03:44.970 --> 00:03:47.680
+I've heard of Build and some others, and I show up.
+
+00:03:48.300 --> 00:03:49.720
+This is something else.
+
+00:03:49.830 --> 00:03:50.880
+Where did all these people come from?
+
+00:03:51.140 --> 00:03:51.780
+It's a big conference.
+
+00:03:51.910 --> 00:03:52.300
+It's crazy.
+
+00:03:53.400 --> 00:03:54.820
+So, yeah, I'm getting ready for that at the moment.
+
+00:03:55.020 --> 00:03:57.780
+But, yeah, I've been working on this project for a few months.
+
+00:03:58.500 --> 00:04:00.180
+We kind of kicked it off in May.
+
+00:04:01.100 --> 00:04:04.980
+The idea kind of floated around in May at the Build Conference,
+
+00:04:05.270 --> 00:04:06.780
+which is Microsoft's developer conference.
+
+00:04:08.500 --> 00:04:12.140
+After talking to a lot of different developers and people in Microsoft,
+
+00:04:12.390 --> 00:04:16.840
+we were kind of kicking around the idea of if we looked at this again.
+
+00:04:18.400 --> 00:04:20.799
+So like running Python code from.NET,
+
+00:04:20.920 --> 00:04:22.180
+like how would you approach it?
+
+00:04:23.500 --> 00:04:26.320
+I kind of had some ideas, put some ideas together
+
+00:04:26.520 --> 00:04:30.440
+and then started working with Aaron on a really early prototype
+
+00:04:31.200 --> 00:04:33.780
+just to see like if it was even possible.
+
+00:04:34.080 --> 00:04:36.740
+And then we kind of got something working,
+
+00:04:37.960 --> 00:04:39.680
+chucked it in the bin, pretty much started again
+
+00:04:41.420 --> 00:04:42.640
+and then redesigned it.
+
+00:04:42.700 --> 00:04:46.480
+And then, yeah, we've been sort of fiddling with it ever since.
+
+00:04:51.380 --> 00:04:57.960
+from my perspective i said before i am i'm not a python person but as someone in the.net
+
+00:04:58.360 --> 00:05:05.900
+ecosystem looking at the breadth of libraries that exist for python um like there's there's a lot
+
+00:05:05.900 --> 00:05:10.840
+of things that you know i would have loved to have used particularly doing um some of the ai stuff
+
+00:05:10.940 --> 00:05:13.260
+that we've been doing in projects recently,
+
+00:05:13.820 --> 00:05:17.300
+there's just not as many packages or options in the.NET space.
+
+00:05:17.540 --> 00:05:18.920
+So it's always been that like,
+
+00:05:19.680 --> 00:05:21.860
+okay, well, if I want to learn this,
+
+00:05:21.940 --> 00:05:23.320
+the tutorial is in Python
+
+00:05:23.560 --> 00:05:26.000
+or the package it recommends using is in Python.
+
+00:05:26.060 --> 00:05:28.040
+So it was always kind of like,
+
+00:05:28.380 --> 00:05:30.880
+how do we bridge that gap?
+
+00:05:32.200 --> 00:05:36.039
+And that was kind of one of the early thinkings
+
+00:05:36.720 --> 00:05:39.340
+of just that's a clear problem space, right?
+
+00:05:39.560 --> 00:05:47.200
+A lot of people are learning that, but then going into industry and maybe Python isn't the language that the organization they're working with is using.
+
+00:05:47.210 --> 00:05:55.760
+So how do we still have that fundamental knowledge that they've gained or the tooling they want to use available to us?
+
+00:05:57.500 --> 00:06:03.720
+Well, just think about me. I'm sure you have thought about how much of an explosion in possibility it is.
+
+00:06:03.980 --> 00:06:20.900
+If you can say, and by the way, there's almost 600,000 other libraries, including the biggest community of AI-based resources that are now, as far as you're concerned, native to.NET, right?
+
+00:06:21.940 --> 00:06:22.060
+Yeah.
+
+00:06:22.580 --> 00:06:25.060
+From the way you consume it, not the way it runs, is what I mean.
+
+00:06:25.560 --> 00:06:26.120
+Exactly, yeah.
+
+00:06:27.000 --> 00:06:31.320
+Like you mentioned there, nearly 600,000 Python packages.
+
+00:06:31.330 --> 00:06:36.380
+And you add that to, there's like 400,000 packages on NuGet for.NET.
+
+00:06:36.780 --> 00:06:39.940
+Like you got quite literally a million possibilities.
+
+00:06:40.740 --> 00:06:41.040
+Yeah.
+
+00:06:41.550 --> 00:06:42.040
+Yeah, it's amazing.
+
+00:06:42.410 --> 00:06:45.680
+And just for people listening, primarily Python audience,
+
+00:06:46.380 --> 00:06:49.360
+NuGet is.NET's equivalent of our PyPI.
+
+00:06:50.640 --> 00:06:50.820
+Yep.
+
+00:06:52.560 --> 00:06:52.960
+Yep, yep.
+
+00:06:54.000 --> 00:06:54.140
+Okay.
+
+00:06:54.660 --> 00:06:56.420
+So Anthony, you had this idea.
+
+00:06:56.600 --> 00:06:58.940
+Somebody said, hey, how would you go about doing this?
+
+00:07:00.740 --> 00:07:01.600
+And then you were sucked in.
+
+00:07:03.200 --> 00:07:05.860
+Yeah, it was actually one of the sort of lead
+
+00:07:06.220 --> 00:07:10.060
+designers on.NET asked me at Build.
+
+00:07:10.300 --> 00:07:15.520
+They said, oh, we've been looking at how you might integrate Python
+
+00:07:15.680 --> 00:07:16.600
+into.NET for a while.
+
+00:07:16.800 --> 00:07:18.940
+Like, if you were to approach it, how would you do it?
+
+00:07:20.640 --> 00:07:23.459
+And I kind of went through all the projects that have tried this
+
+00:07:23.480 --> 00:07:29.880
+in the past or there are different ways of doing it and pros and cons of each and kind
+
+00:07:29.880 --> 00:07:33.300
+of the pros and cons of a really low level integration and a high level one.
+
+00:07:33.530 --> 00:07:39.600
+So like a high level one would be stick a FastAPI on top of your Python app and just call
+
+00:07:39.600 --> 00:07:41.180
+it via HTTP rest.
+
+00:07:41.680 --> 00:07:46.180
+Somehow auto generate some rest endpoints and then make those.
+
+00:07:46.370 --> 00:07:52.080
+And you could use it like an open API spec on top of it and auto generate a client and
+
+00:07:52.090 --> 00:07:52.540
+stuff like that.
+
+00:07:52.660 --> 00:07:54.960
+Like that's like the high level option.
+
+00:07:56.200 --> 00:07:58.540
+And then like the lowest level option is like,
+
+00:07:59.120 --> 00:08:01.800
+you know, you could get into the bytecode level,
+
+00:08:01.960 --> 00:08:04.340
+which I've explored years ago with Pigeon.
+
+00:08:06.380 --> 00:08:09.040
+And yeah, that's a very deep, dark tunnel.
+
+00:08:11.600 --> 00:08:15.280
+It's full of terrible edge cases and corners and sharp edges.
+
+00:08:15.480 --> 00:08:15.640
+Yeah.
+
+00:08:16.300 --> 00:08:18.020
+And one of the challenges there is that the,
+
+00:08:19.479 --> 00:08:23.960
+like Python's implementation is changing so rapidly right now.
+
+00:08:25.400 --> 00:08:30.300
+Like, but just in Python 3.13 and looking at 3.14 now
+
+00:08:30.520 --> 00:08:31.860
+and like all the changes and stuff in there,
+
+00:08:31.960 --> 00:08:33.840
+like it's just continuously changing.
+
+00:08:34.200 --> 00:08:36.659
+So it needs to be a happy medium
+
+00:08:36.860 --> 00:08:40.060
+in terms of how we blend the two together.
+
+00:08:40.659 --> 00:08:44.560
+So there has to be some level of disconnectedness,
+
+00:08:44.560 --> 00:08:45.300
+a little bit, right?
+
+00:08:45.420 --> 00:08:48.040
+so that Python can have its changes
+
+00:08:48.400 --> 00:08:50.360
+without you constantly chasing it, right?
+
+00:08:50.700 --> 00:08:51.400
+Yeah, exactly.
+
+00:08:52.520 --> 00:08:54.880
+So yeah, kind of what we kind of came up with
+
+00:08:55.080 --> 00:09:01.140
+was we would do the integration at the C level using Python C
+
+00:09:01.260 --> 00:09:04.920
+API as a way of consuming Python through sort of like
+
+00:09:04.960 --> 00:09:05.940
+an embedded mode.
+
+00:09:06.680 --> 00:09:09.620
+Not many projects do this, but it is definitely possible.
+
+00:09:09.780 --> 00:09:12.419
+So you can spin up a Python interpreter
+
+00:09:12.440 --> 00:09:16.140
+inside another process, which in our case is the net process.
+
+00:09:16.640 --> 00:09:18.260
+Yeah, and I think Blender does that.
+
+00:09:19.180 --> 00:09:23.740
+I'm pretty sure that there's a bunch in the film and movie industry
+
+00:09:24.060 --> 00:09:25.960
+that do that for their automation pipelines.
+
+00:09:27.540 --> 00:09:28.820
+I don't think it's that great.
+
+00:09:30.660 --> 00:09:36.160
+I talked to some of the people from the movie and video space,
+
+00:09:38.420 --> 00:09:40.640
+and most of them are still running on Python, too,
+
+00:09:40.840 --> 00:09:42.660
+because when they wrote the implementation
+
+00:09:42.880 --> 00:09:45.300
+to integrate the thing, integrate CPython,
+
+00:09:45.460 --> 00:09:47.020
+they're like, well, it's done.
+
+00:09:47.280 --> 00:09:49.860
+And like you kind of said, Python moved on.
+
+00:09:50.020 --> 00:09:51.100
+And they're like, well, that's a lot of work.
+
+00:09:51.280 --> 00:09:53.560
+And then we got to-- we'll just leave it on Python 2.
+
+00:09:53.620 --> 00:09:54.700
+And that's not great.
+
+00:09:55.920 --> 00:09:56.740
+Yeah, exactly.
+
+00:09:56.980 --> 00:09:59.220
+So we looked at this and said, we want to be--
+
+00:09:59.340 --> 00:10:00.940
+we want to support the newest version of Python.
+
+00:10:01.900 --> 00:10:05.340
+We want to support the sort of practically old version,
+
+00:10:06.300 --> 00:10:08.500
+which I think you settled around 3.8,
+
+00:10:08.620 --> 00:10:11.500
+was like as old as I was willing to go.
+
+00:10:11.580 --> 00:10:14.480
+And I think we maybe pushed that forward to 3.9
+
+00:10:14.700 --> 00:10:16.340
+because there were some specific features we need.
+
+00:10:17.860 --> 00:10:20.100
+And on the.NET side,
+
+00:10:21.520 --> 00:10:23.600
+again, there's a lot of changes happening in.NET.
+
+00:10:23.760 --> 00:10:25.520
+Sharon, maybe you can share a bit more,
+
+00:10:25.680 --> 00:10:29.560
+but like, you know,.NET's going through just as many changes.
+
+00:10:29.780 --> 00:10:33.400
+So we've got like two moving, constantly moving platforms
+
+00:10:34.200 --> 00:10:36.440
+and we want to make an integration between the two of them.
+
+00:10:36.680 --> 00:10:39.720
+So let's think about how can we do this in a way which is
+
+00:10:39.720 --> 00:10:40.560
+actually maintainable.
+
+00:10:42.020 --> 00:10:45.560
+And we can test it, and we can make it stable as well.
+
+00:10:46.040 --> 00:10:48.880
+Yeah, one thing maybe you could speak to as part of this.
+
+00:10:51.040 --> 00:10:55.160
+People might know.NET as this Windows programming library
+
+00:10:56.020 --> 00:10:57.560
+that you use Visual Studio with.
+
+00:10:59.060 --> 00:11:01.280
+But it's changed a lot since then.
+
+00:11:01.820 --> 00:11:02.760
+There's.NET Core.
+
+00:11:03.000 --> 00:11:03.620
+There's open source.
+
+00:11:03.700 --> 00:11:04.420
+It runs on Linux.
+
+00:11:04.680 --> 00:11:07.820
+there's a lot of different things that have been changed about it, right?
+
+00:11:08.540 --> 00:11:11.800
+Yeah, and it's a fairly common misconception that we've got is that
+
+00:11:12.420 --> 00:11:13.620
+people equate.NET with Windows.
+
+00:11:14.080 --> 00:11:15.820
+And historically, that's true.
+
+00:11:16.020 --> 00:11:19.160
+That's where I got started is developing on Windows.
+
+00:11:19.440 --> 00:11:21.920
+And I'll be honest, I'm still a Windows developer.
+
+00:11:22.400 --> 00:11:24.880
+It's what my primary OS has been.
+
+00:11:25.680 --> 00:11:28.840
+I've flirted with macOS and Linux over the years,
+
+00:11:29.000 --> 00:11:31.460
+but Windows is just where I'm more comfortable with.
+
+00:11:32.160 --> 00:11:36.400
+But I think it's been a bit over a decade now
+
+00:11:37.420 --> 00:11:40.700
+since they essentially relaunched.NET.
+
+00:11:41.200 --> 00:11:42.900
+It was originally called.NET Core.
+
+00:11:43.940 --> 00:11:46.140
+So now we kind of have these two streams concurrently.
+
+00:11:46.220 --> 00:11:47.340
+You've got.NET Framework,
+
+00:11:47.420 --> 00:11:52.180
+which is the one that is what we traditionally thought of as.NET.
+
+00:11:52.280 --> 00:11:55.320
+It ships kind of with Windows and stuff like that.
+
+00:11:55.320 --> 00:12:02.120
+So it's very much designed around that longer tail support lifecycle
+
+00:12:02.140 --> 00:12:07.200
+and whatnot it is fairly stable but also getting minimalistic investment just because
+
+00:12:08.320 --> 00:12:17.980
+it has that kind of need to be stable and consistent um year in year out so then we have .NET core or
+
+00:12:20.420 --> 00:12:26.440
+now now we just kind of refer to it as .NET just naming things is hard let's let's be honest um
+
+00:12:27.180 --> 00:12:30.820
+So we have.NET and every year a new release comes out
+
+00:12:31.080 --> 00:12:33.720
+and this is like a major framework,
+
+00:12:34.650 --> 00:12:36.160
+like a major revision to the runtime.
+
+00:12:36.940 --> 00:12:39.700
+So.NET 9 is actually coming out next week,
+
+00:12:39.920 --> 00:12:42.380
+at least at the time of recording, it's next week.
+
+00:12:43.100 --> 00:12:46.000
+And this is considered like a short-term support lifecycle.
+
+00:12:46.380 --> 00:12:48.600
+So if you're familiar with support life cycles
+
+00:12:48.840 --> 00:12:51.260
+of a lot of runtimes out there now,
+
+00:12:51.480 --> 00:12:53.920
+so like Node popularized this quite a lot now.
+
+00:12:54.800 --> 00:12:56.420
+Python is starting to adopt it a bit more
+
+00:12:56.440 --> 00:13:01.320
+that kind of you have this yearly rolling life cycle and um and you'll have long-term supports
+
+00:13:01.460 --> 00:13:07.120
+and short-term support so the long term is every even number so .NET eight being the most recent
+
+00:13:07.500 --> 00:13:12.320
+long-term support um uh .NET six was the previous one which is actually going out of support
+
+00:13:13.210 --> 00:13:17.880
+uh next week and time of recording uh and then we'll so we'll have .NET eight and .NET nine
+
+00:13:18.040 --> 00:13:22.580
+and to anthony's point then you've got two versions of .NET that we're trying to target
+
+00:13:25.060 --> 00:13:34.140
+So we originally, very early on, it was just going to result in too many variants in terms
+
+00:13:34.310 --> 00:13:43.020
+of.9 is about to land here, bringing more features that we want to adopt.
+
+00:13:43.360 --> 00:13:48.180
+So we need to start looking at all the other things inside of.9, we want to make it playable.
+
+00:13:49.320 --> 00:13:54.680
+So hopefully those of you listening can understand something
+
+00:13:54.860 --> 00:14:00.460
+like digitalization in what was working out where we land
+
+00:14:00.560 --> 00:14:01.840
+from versioning standpoints.
+
+00:14:02.480 --> 00:14:04.780
+But also being realistic of where people are
+
+00:14:04.940 --> 00:14:05.880
+and developing their applications.
+
+00:14:06.020 --> 00:14:10.600
+We couldn't just target Python 3.13 and.NET 9
+
+00:14:10.720 --> 00:14:13.440
+as the only supportive versions because, to be honest,
+
+00:14:13.560 --> 00:14:15.140
+that's not where most packages are.
+
+00:14:15.260 --> 00:14:17.320
+That's not where most projects are going to be.
+
+00:14:18.020 --> 00:14:20.260
+So we have to make some calls there.
+
+00:14:20.620 --> 00:14:24.620
+Yeah, you do have to have a little bit of slack in there.
+
+00:14:25.270 --> 00:14:27.820
+Even for me and some of my web apps and stuff,
+
+00:14:27.910 --> 00:14:29.700
+I had to wait a few weeks to upgrade to 3.13
+
+00:14:31.020 --> 00:14:33.460
+because some dependency of a dependency
+
+00:14:35.020 --> 00:14:36.140
+had something that had been removed,
+
+00:14:37.080 --> 00:14:38.680
+been deprecated for a while and was removed
+
+00:14:38.710 --> 00:14:39.240
+and it didn't work.
+
+00:14:39.360 --> 00:14:41.680
+Well, try that again in a few weeks and see how it works.
+
+00:14:41.860 --> 00:14:43.660
+Eventually they caught up.
+
+00:14:44.320 --> 00:14:46.560
+But yeah, it's definitely a challenge.
+
+00:14:48.140 --> 00:14:54.320
+All right, Anthony, when we opened this, you mentioned there had been other attempts, other ways.
+
+00:14:54.560 --> 00:14:59.020
+The one that comes to mind for me is IronPython, right?
+
+00:14:59.960 --> 00:15:08.560
+IronPython is a CLR implementation of Python, and that's a pretty big difference right there than what you're trying.
+
+00:15:08.860 --> 00:15:12.640
+So maybe contrast it with some of the things that people have done previously.
+
+00:15:14.160 --> 00:15:23.880
+Yes, there's probably three projects I think that have been done previously that kind of sit in the same space, but they have different goals.
+
+00:15:25.380 --> 00:15:33.660
+So, I mean, the main goal for our project is that there are loads of.NET developers that have existing applications.
+
+00:15:34.340 --> 00:15:39.860
+They are typically quite, it like sits in the enterprise space, a lot of it.
+
+00:15:39.880 --> 00:15:41.860
+So, they're like quite big applications.
+
+00:15:42.380 --> 00:15:43.660
+They've got teams working on them.
+
+00:15:44.460 --> 00:15:47.260
+and there's a technology in Python they want to use.
+
+00:15:47.780 --> 00:15:51.660
+And that technology is often a package or a library or an example,
+
+00:15:52.600 --> 00:15:54.020
+especially in data science now,
+
+00:15:55.220 --> 00:15:58.300
+and a lot of the ML and AI libraries that are floating around.
+
+00:15:58.480 --> 00:16:01.880
+So a lot of the idea for this and the demand from developers
+
+00:16:02.180 --> 00:16:06.980
+was from, you know, we want to use these libraries
+
+00:16:07.240 --> 00:16:09.400
+or we want to use this particular package in Python.
+
+00:16:11.360 --> 00:16:14.480
+and how do we import that into our.NET application?
+
+00:16:14.980 --> 00:16:17.140
+So that's kind of the angle that we've come at this from,
+
+00:16:17.240 --> 00:16:20.760
+which is how can we make the best of both worlds?
+
+00:16:22.220 --> 00:16:26.720
+You've got a fast, mature enterprise application in.NET,
+
+00:16:27.220 --> 00:16:30.060
+and then it's a piece of technology that's in Python that you want to use.
+
+00:16:31.820 --> 00:16:35.240
+Iron Python is an implementation of Python written in.NET
+
+00:16:35.960 --> 00:16:38.400
+that was done quite a while ago, I think.
+
+00:16:40.960 --> 00:16:49.140
+yeah like older versions of dot net older versions of python and it's kind of similar to json as well
+
+00:16:49.300 --> 00:16:56.020
+like i think i think put it in the same bucket as json which is well yeah it would like and at that
+
+00:16:56.200 --> 00:17:00.520
+time a lot of people were making different implementations of python the language in other
+
+00:17:00.740 --> 00:17:06.880
+frameworks um and so yes you can write python syntax and run it in the clr but you couldn't do
+
+00:17:06.839 --> 00:17:08.300
+something like import NumPy.
+
+00:17:09.069 --> 00:17:10.500
+And that's the difference is that
+
+00:17:12.220 --> 00:17:12.420
+most
+
+00:17:12.819 --> 00:17:14.680
+packages in the ecosystem these days
+
+00:17:14.939 --> 00:17:16.920
+are designed and tested for CPython.
+
+00:17:17.900 --> 00:17:18.300
+And this is
+
+00:17:18.900 --> 00:17:20.360
+or at least
+
+00:17:20.819 --> 00:17:21.959
+they're tested for PyPy.
+
+00:17:23.280 --> 00:17:24.579
+But all the other implementations
+
+00:17:24.689 --> 00:17:25.980
+are pretty much a no.
+
+00:17:26.290 --> 00:17:26.420
+Like
+
+00:17:28.700 --> 00:17:29.740
+Pandas, NumPy,
+
+00:17:30.280 --> 00:17:31.820
+all the data science ML
+
+00:17:32.120 --> 00:17:33.900
+tools. Especially the C
+
+00:17:34.120 --> 00:17:35.400
+interop type of stuff.
+
+00:17:36.100 --> 00:17:39.680
+Yeah, I've sort of written about this in the past,
+
+00:17:39.750 --> 00:17:43.540
+how one of the solutions to Python's performance problem
+
+00:17:43.720 --> 00:17:46.100
+is that you implement extension modules in C,
+
+00:17:47.660 --> 00:17:49.900
+which is a great solution, or you use Cython,
+
+00:17:50.040 --> 00:17:53.540
+which is the same kind of thing, which is a great solution,
+
+00:17:53.650 --> 00:17:56.220
+but it just means that the ecosystem is more and more tied
+
+00:17:56.340 --> 00:17:58.860
+to CPython as the interpreter of choice.
+
+00:18:00.040 --> 00:18:02.600
+So what I didn't want to do is write a whole new interpreter.
+
+00:18:05.380 --> 00:18:07.660
+that goes back to the compatibility problem
+
+00:18:07.860 --> 00:18:09.100
+and the maintainability issue.
+
+00:18:09.320 --> 00:18:11.700
+Like by the time we published it,
+
+00:18:11.700 --> 00:18:12.620
+it would be out of date.
+
+00:18:14.000 --> 00:18:15.260
+And we'd just be opening ourselves up
+
+00:18:15.380 --> 00:18:16.240
+for a whole lot of work.
+
+00:18:17.220 --> 00:18:19.000
+Well, it's not even about,
+
+00:18:19.740 --> 00:18:21.480
+it's not even a matter whether you can do it
+
+00:18:21.560 --> 00:18:22.840
+and you can keep up with the language.
+
+00:18:24.420 --> 00:18:25.620
+As we talked about, you know,
+
+00:18:26.720 --> 00:18:27.820
+as Aaron mentioned, right?
+
+00:18:28.020 --> 00:18:30.100
+There's a million libraries you can use.
+
+00:18:30.780 --> 00:18:33.000
+But if you did this, you wouldn't be able to.
+
+00:18:34.440 --> 00:18:34.940
+Yeah, exactly.
+
+00:18:35.780 --> 00:18:37.380
+So that's, yeah, iron python is one.
+
+00:18:39.679 --> 00:18:41.820
+Pigeon, we've covered in a past episode.
+
+00:18:45.340 --> 00:18:48.900
+Pigeon is a P-Y-G.
+
+00:18:49.180 --> 00:18:49.700
+There we go.
+
+00:18:50.700 --> 00:18:51.440
+Not that one.
+
+00:18:51.760 --> 00:18:52.860
+It's a weird spelling.
+
+00:18:53.380 --> 00:18:55.460
+P-Y-J-I-O-N.
+
+00:18:56.360 --> 00:18:56.920
+No, that's right.
+
+00:18:56.920 --> 00:18:57.360
+I remember now.
+
+00:18:57.540 --> 00:18:58.700
+P-Y-J-I-O-N.
+
+00:18:59.420 --> 00:18:59.600
+Yeah.
+
+00:19:00.800 --> 00:19:04.780
+This is a JIT for CPython.
+
+00:19:05.500 --> 00:19:09.080
+that happens to use the.NET Core JIT engine
+
+00:19:10.080 --> 00:19:15.080
+because that was one of the most pluggable JITs at the time.
+
+00:19:16.560 --> 00:19:17.700
+There are other JITs available.
+
+00:19:17.800 --> 00:19:19.140
+It could have been written in ASM JIT.
+
+00:19:19.140 --> 00:19:21.680
+It could have been written in LLVM JIT.
+
+00:19:23.280 --> 00:19:25.360
+But Dino, who actually worked on Iron Python,
+
+00:19:25.580 --> 00:19:27.260
+so he knows this space really well,
+
+00:19:27.680 --> 00:19:29.920
+and Brett Cannon worked on Pigeon originally.
+
+00:19:30.900 --> 00:19:33.600
+And then I rewrote it a few years later.
+
+00:19:34.899 --> 00:19:36.080
+that's a different problem.
+
+00:19:36.580 --> 00:19:39.560
+That doesn't help you integrate.NET and Python together.
+
+00:19:40.740 --> 00:19:42.700
+It just happens to use components from.NET
+
+00:19:42.940 --> 00:19:44.420
+to implement a JIT.
+
+00:19:45.620 --> 00:19:47.240
+That project is effectively dead.
+
+00:19:49.159 --> 00:19:52.140
+Some of the benefits of it have been rolled into CPython
+
+00:19:52.300 --> 00:19:55.680
+in versions 3.10 and 3.11.
+
+00:19:56.900 --> 00:19:58.500
+Like the things that made it faster.
+
+00:19:59.120 --> 00:20:01.160
+Most of those were sort of picked up anyway.
+
+00:20:02.020 --> 00:20:08.520
+And then the third one is Python.net, which is probably the closest to the project that we've started.
+
+00:20:10.740 --> 00:20:12.260
+This one has been around for a while.
+
+00:20:15.620 --> 00:20:16.600
+This one's been around for a while.
+
+00:20:16.600 --> 00:20:20.260
+It's a similar thing, but they mostly focus on the integration and the other way around.
+
+00:20:20.800 --> 00:20:25.820
+So like how you call.net libraries and things from Python.
+
+00:20:26.310 --> 00:20:29.020
+You can call Python from.net.
+
+00:20:30.820 --> 00:20:32.900
+Yeah, a lot of the focus is actually the other way around.
+
+00:20:33.420 --> 00:20:33.700
+Got it.
+
+00:20:33.780 --> 00:20:37.880
+So if there was a popular.NET library that you wanted to use in your Python app,
+
+00:20:38.580 --> 00:20:40.980
+you might Python.NET your way to that.
+
+00:20:42.320 --> 00:20:42.520
+Yeah.
+
+00:20:43.160 --> 00:20:45.100
+And this project has been around for a while.
+
+00:20:46.960 --> 00:20:49.340
+And so the API is pretty stable.
+
+00:20:50.740 --> 00:20:53.400
+We originally looked at this one actually as a potential solution,
+
+00:20:53.720 --> 00:20:57.880
+but found a number of things that they'd kind of tied themselves to in the design,
+
+00:20:58.080 --> 00:20:59.880
+which are going to go away in.NET 9.
+
+00:21:01.400 --> 00:21:04.760
+So it wasn't really an option for us.
+
+00:21:06.000 --> 00:21:08.360
+And also, a lot of the way the C API was used
+
+00:21:08.400 --> 00:21:10.120
+was different to how we wanted to do it.
+
+00:21:10.320 --> 00:21:12.900
+So yeah, that's kind of the alternatives.
+
+00:21:13.720 --> 00:21:14.120
+Yeah.
+
+00:21:15.600 --> 00:21:19.860
+And so you ended up writing your own because just none of these
+
+00:21:20.000 --> 00:21:20.620
+really matched, right?
+
+00:21:20.860 --> 00:21:25.080
+The Iron Python was just never going to keep up.
+
+00:21:25.240 --> 00:21:28.820
+And it didn't have this package support for data science, mostly.
+
+00:21:29.940 --> 00:21:31.700
+And then the other one was the other way around.
+
+00:21:31.980 --> 00:21:38.180
+And yeah, so well, I guess a good thing to think about is,
+
+00:21:38.220 --> 00:21:40.620
+well, why did you think you could do that?
+
+00:21:40.660 --> 00:21:42.680
+Like a lot of people, a lot of smart people
+
+00:21:42.770 --> 00:21:43.820
+put a lot of time into this.
+
+00:21:44.520 --> 00:21:47.500
+Why did you think, oh, this is going to work well?
+
+00:21:48.520 --> 00:21:50.640
+Did you have a fresh take on it, or what were you thinking?
+
+00:21:52.940 --> 00:21:55.720
+I really wanted to use some of the modern benefits
+
+00:21:56.240 --> 00:22:00.020
+of both Python and.NET to do this, to design it.
+
+00:22:01.040 --> 00:22:02.560
+And one of the biggest changes in,
+
+00:22:03.700 --> 00:22:05.440
+actually, as we've been implementing this,
+
+00:22:05.480 --> 00:22:09.520
+we're learning 80% of the challenges are related to typing.
+
+00:22:12.039 --> 00:22:14.780
+And Aaron's smiling because he's agreeing with me.
+
+00:22:15.500 --> 00:22:19.000
+Like, integrating two different ecosystems together,
+
+00:22:19.680 --> 00:22:23.480
+like this is about calling functions, methods, whatever.
+
+00:22:24.740 --> 00:22:27.540
+But calling things is about calling them with arguments, really.
+
+00:22:28.000 --> 00:22:29.640
+And it's passing data backwards and forwards,
+
+00:22:30.040 --> 00:22:30.620
+marshalling information,
+
+00:22:30.980 --> 00:22:32.500
+and getting things backwards and forwards
+
+00:22:32.640 --> 00:22:33.480
+between different types.
+
+00:22:34.960 --> 00:22:37.220
+Like that's, if you integrated, I don't know,
+
+00:22:38.000 --> 00:22:40.900
+some function that you wrote in Python into.NET,
+
+00:22:41.100 --> 00:22:42.720
+you're going to be calling it with something.
+
+00:22:43.240 --> 00:22:44.600
+Like you're going to be sending it some data
+
+00:22:44.660 --> 00:22:46.140
+and expecting some data back.
+
+00:22:46.880 --> 00:22:48.580
+Now in Python, there are types.
+
+00:22:50.679 --> 00:22:52.160
+it is dynamically typed
+
+00:22:52.360 --> 00:22:53.980
+but the types do exist
+
+00:22:54.280 --> 00:22:56.460
+even if you don't put it in your
+
+00:22:56.800 --> 00:22:57.440
+function signature
+
+00:22:58.080 --> 00:23:00.480
+there's still instant strings and stuff being sent all over the place
+
+00:23:00.900 --> 00:23:01.340
+behind the scenes
+
+00:23:02.090 --> 00:23:04.180
+yeah exactly and when we look to python.net
+
+00:23:06.000 --> 00:23:07.840
+you could call a function
+
+00:23:08.390 --> 00:23:09.420
+from.net in python
+
+00:23:09.860 --> 00:23:11.580
+but you'd have to write a load of code that said
+
+00:23:11.880 --> 00:23:14.300
+oh I think this parameter is probably this type
+
+00:23:14.310 --> 00:23:15.620
+so convert that to this
+
+00:23:15.670 --> 00:23:18.039
+and then when it comes back then it's probably this one
+
+00:23:18.060 --> 00:23:19.000
+to try that one first.
+
+00:23:19.500 --> 00:23:20.860
+And so we sort of said, like,
+
+00:23:22.740 --> 00:23:25.940
+now typing type annotations are more popular in Python.
+
+00:23:27.600 --> 00:23:29.380
+What we wanted to do was basically
+
+00:23:31.040 --> 00:23:32.980
+you give it some Python code
+
+00:23:34.020 --> 00:23:35.080
+and you write like a function,
+
+00:23:35.340 --> 00:23:36.960
+which is the one that you want to call
+
+00:23:37.680 --> 00:23:38.820
+and you annotate the function.
+
+00:23:39.280 --> 00:23:41.620
+So you say it has these arguments
+
+00:23:42.060 --> 00:23:43.080
+and they are these types
+
+00:23:43.620 --> 00:23:45.220
+and it returns back this type.
+
+00:23:46.160 --> 00:23:49.300
+And then what we did is wrote a code generator,
+
+00:23:49.500 --> 00:23:51.440
+it's called a source generator for.NET,
+
+00:23:52.020 --> 00:23:53.760
+that would, in your project,
+
+00:23:53.940 --> 00:23:56.000
+it would look at the Python file that you wanted to embed.
+
+00:23:56.800 --> 00:23:58.400
+It would see what functions are defined,
+
+00:23:58.720 --> 00:24:01.040
+what their signatures are, and what types they take.
+
+00:24:01.700 --> 00:24:03.240
+And then it would generate a function
+
+00:24:03.940 --> 00:24:06.760
+that can call that for you with.NET equivalents.
+
+00:24:08.400 --> 00:24:10.860
+And then it handles the marshalling,
+
+00:24:10.920 --> 00:24:14.679
+like the transfer of the types backwards and forwards
+
+00:24:14.700 --> 00:24:16.360
+between.NET and Python.
+
+00:24:16.610 --> 00:24:18.260
+And that's most of the project
+
+00:24:18.390 --> 00:24:20.760
+is really about that particular problem.
+
+00:24:21.180 --> 00:24:24.720
+Okay, so it's leveraging the C API of Python
+
+00:24:25.520 --> 00:24:27.680
+to kind of talk directly to the runtime?
+
+00:24:29.000 --> 00:24:29.140
+Yep.
+
+00:24:31.320 --> 00:24:31.420
+Yep.
+
+00:24:31.630 --> 00:24:33.280
+So you can write a function in Python
+
+00:24:35.280 --> 00:24:37.760
+that takes a string, a list, and a tuple
+
+00:24:37.950 --> 00:24:39.280
+and returns back a dictionary.
+
+00:24:39.920 --> 00:24:41.620
+It's a fairly common thing to do.
+
+00:24:43.500 --> 00:24:49.320
+And you would give it type annotations in Python and you drop that Python file into your.NET project.
+
+00:24:51.159 --> 00:25:02.020
+And you run build again and you would see a type in.NET with the same name with a function that is the one you just defined and with arguments which are.NET equivalents to that.
+
+00:25:02.020 --> 00:25:04.920
+And you just call the function and it just runs in Python.
+
+00:25:05.880 --> 00:25:07.720
+How complicated can this data exchange be?
+
+00:25:08.180 --> 00:25:10.660
+could I come up for my own types and exchange them?
+
+00:25:10.710 --> 00:25:13.600
+Or do they have to be six or seven core types?
+
+00:25:14.640 --> 00:25:16.060
+I think the data exchange is actually
+
+00:25:16.200 --> 00:25:19.060
+one of the really tricky bits, right?
+
+00:25:19.620 --> 00:25:21.640
+Here's a list of a million items.
+
+00:25:22.680 --> 00:25:25.000
+Why don't you copy them all over to a.NET type,
+
+00:25:26.200 --> 00:25:28.720
+run it, or copy it over to a Python list,
+
+00:25:29.320 --> 00:25:31.740
+run the thing, and then copy it back to a.NET list
+
+00:25:31.900 --> 00:25:34.480
+with one more item in it or something crazy like that, right?
+
+00:25:35.020 --> 00:25:36.739
+Yeah, if you jump to the documentation
+
+00:25:37.220 --> 00:25:39.180
+and then in the reference page,
+
+00:25:41.840 --> 00:25:44.560
+there's a list of the ones that we support at the moment.
+
+00:25:47.080 --> 00:25:49.680
+So if you go on reference on the docs.
+
+00:25:50.180 --> 00:25:50.840
+Stay still.
+
+00:25:50.950 --> 00:25:51.320
+There we go.
+
+00:25:52.500 --> 00:25:54.400
+And there's a list of the core ones that we support
+
+00:25:55.280 --> 00:25:57.200
+and then anything beyond that.
+
+00:25:58.360 --> 00:25:59.560
+So we do generics, for example.
+
+00:25:59.630 --> 00:26:01.440
+So if you say it's a list of strings,
+
+00:26:02.340 --> 00:26:05.840
+we will give you back a read-only list of string in.NET.
+
+00:26:06.800 --> 00:26:11.940
+if it's a dictionary and you type the key and the value we will give you back a.NET key and value
+
+00:26:12.500 --> 00:26:19.080
+now in Python often it could be an any or it could be a union or it could be something complicated
+
+00:26:20.140 --> 00:26:26.440
+so you've got the option to say it could be a dynamically defined type you know that's still
+
+00:26:26.540 --> 00:26:31.240
+supported and then at runtime you can look at the type to see what it is and then convert it into
+
+00:26:31.240 --> 00:26:31.980
+something that you need.
+
+00:26:33.640 --> 00:26:36.940
+I see a lot of read only on the .NET side,
+
+00:26:37.060 --> 00:26:39.380
+and this is the thing receiving the data from Python.
+
+00:26:42.060 --> 00:26:44.240
+I'm glad that you picked up on that because that was
+
+00:26:44.340 --> 00:26:47.300
+something that I made a decision when we're doing
+
+00:26:47.300 --> 00:26:51.140
+the .NET surface area for this,
+
+00:26:51.380 --> 00:26:53.580
+that anytime we're receiving data back,
+
+00:26:53.860 --> 00:26:55.960
+or when we're sending data to,
+
+00:26:56.140 --> 00:26:58.879
+it should be represented as read only just to indicate
+
+00:26:58.900 --> 00:27:06.180
+that if you're calling a function that's been exposed from Python from.net and it's returning
+
+00:27:06.520 --> 00:27:11.500
+a collection like a dictionary or a list or anything like that, it should be returned
+
+00:27:11.540 --> 00:27:16.820
+as read only just to make it very clear to you as the consumer that you don't own this
+
+00:27:16.980 --> 00:27:17.120
+data.
+
+00:27:17.420 --> 00:27:18.980
+You weren't the one that created it.
+
+00:27:18.980 --> 00:27:24.700
+There's nothing inside of your application technically that created that data that you've
+
+00:27:24.700 --> 00:27:26.580
+then got responsibility for.
+
+00:27:27.240 --> 00:27:30.000
+You can then transfer that into some kind of immutable data
+
+00:27:30.200 --> 00:27:31.880
+structure if you do need to mutate it.
+
+00:27:32.020 --> 00:27:35.800
+But then you're making a clear code choice
+
+00:27:36.250 --> 00:27:40.240
+to transform that from the original source of the data
+
+00:27:40.330 --> 00:27:42.520
+into something that is then immutable
+
+00:27:42.680 --> 00:27:44.960
+with inside of your new runtime space.
+
+00:27:45.680 --> 00:27:46.120
+OK.
+
+00:27:46.460 --> 00:27:49.340
+So if you had an I read only list of int,
+
+00:27:49.630 --> 00:27:51.340
+you could create a list of int, and then you'd
+
+00:27:51.340 --> 00:27:54.160
+have to pass that to the constructor or something,
+
+00:27:54.320 --> 00:27:56.920
+and it would do a copy sort of thing.
+
+00:27:57.300 --> 00:28:02.620
+- Yeah, there's some syntax that would be very familiar
+
+00:28:02.660 --> 00:28:04.840
+from.NET developers for doing,
+
+00:28:05.440 --> 00:28:09.360
+like creating an array from an existing collection of data
+
+00:28:09.360 --> 00:28:12.580
+and then that becomes obviously a more mutable data structure
+
+00:28:13.720 --> 00:28:17.560
+or like a list, like the read-only list, for example,
+
+00:28:17.740 --> 00:28:19.980
+that then plugs straight into links
+
+00:28:20.180 --> 00:28:22.679
+so that you can do the query syntax
+
+00:28:22.700 --> 00:28:24.840
+or the expression methods and syntax
+
+00:28:25.080 --> 00:28:28.740
+to perform operations on those collections of data
+
+00:28:29.280 --> 00:28:30.300
+inside of.NET space,
+
+00:28:31.180 --> 00:28:34.000
+kind of once it's being hydrated back out of Python.
+
+00:28:36.840 --> 00:28:38.140
+- So I guess you get a lot of these
+
+00:28:38.340 --> 00:28:40.180
+read only innumerable type of things.
+
+00:28:40.350 --> 00:28:42.300
+You could do link on them, L-I-N-Q.
+
+00:28:43.200 --> 00:28:43.300
+- Yep.
+
+00:28:43.840 --> 00:28:44.740
+- That's pretty glorious.
+
+00:28:45.500 --> 00:28:45.760
+- Yeah.
+
+00:28:46.480 --> 00:28:47.640
+- I wish we had this in Python.
+
+00:28:47.810 --> 00:28:49.320
+I know we have something kind of like
+
+00:28:49.500 --> 00:28:51.440
+with list comprehensions, but it's not the same.
+
+00:28:52.640 --> 00:28:55.020
+Yeah, one thing that I really wanted to make sure
+
+00:28:55.030 --> 00:28:56.020
+that we were tackling with this,
+
+00:28:56.400 --> 00:28:57.420
+and to Anthony's point before,
+
+00:28:58.240 --> 00:29:00.980
+that you've got two very different type systems
+
+00:29:01.110 --> 00:29:01.940
+that you're working with,
+
+00:29:02.260 --> 00:29:04.820
+and structurally the way that you write code in Python
+
+00:29:04.890 --> 00:29:07.340
+is going to look different to the way that you write in.NET.
+
+00:29:07.840 --> 00:29:11.140
+So we didn't want to feel like the code gen that we do for you
+
+00:29:11.320 --> 00:29:13.620
+is that we've just made this,
+
+00:29:14.260 --> 00:29:19.040
+it's just.NET casing of Python code.
+
+00:29:19.160 --> 00:29:21.000
+We wanted to feel like as a.NET developer,
+
+00:29:21.280 --> 00:29:23.640
+I'm working against a.NET interface.
+
+00:29:24.180 --> 00:29:32.640
+So when you work with the types and the modules that you expose out to.NET
+
+00:29:32.640 --> 00:29:36.880
+and we do code gen against, we then generate you a class behind the scenes.
+
+00:29:37.040 --> 00:29:39.720
+That is then, we then generate an interface for you.
+
+00:29:40.200 --> 00:29:44.040
+And then that's registered into the dependency injection container.
+
+00:29:44.500 --> 00:29:47.860
+So you then can just resolve that elsewhere with inside of your application.
+
+00:29:47.900 --> 00:29:58.620
+So now as a.NET developer, I'm getting an interface injected into a class that I'm using elsewhere with inside of my code base.
+
+00:29:58.710 --> 00:30:10.020
+I haven't had to go, okay, well, no, I'm calling some kind of like an import or I'm doing some kind of resolve or something that might be unfamiliar to me as a.NET developer.
+
+00:30:10.800 --> 00:30:16.980
+What I'm doing is just, it just feels like I'm writing, I shouldn't say necessarily.NET developer, I'm running C#.
+
+00:30:17.400 --> 00:30:19.440
+We've optimized this to C#.
+
+00:30:20.260 --> 00:30:23.500
+I said earlier on, I have soft swap for F#,
+
+00:30:24.380 --> 00:30:25.780
+and it kind of works in F#.
+
+00:30:26.380 --> 00:30:28.400
+And similarly, if you're a VBA.net developer,
+
+00:30:28.560 --> 00:30:31.660
+we optimized this to the kind of development experience
+
+00:30:31.740 --> 00:30:34.500
+you would expect when you're writing C# code.
+
+00:30:35.020 --> 00:30:36.480
+We just so happen to have,
+
+00:30:36.960 --> 00:30:39.440
+you haven't written some of this C# code,
+
+00:30:39.540 --> 00:30:41.540
+we've just automatically generated it for you
+
+00:30:41.980 --> 00:30:44.640
+and injected it into a dependency injection container.
+
+00:30:45.140 --> 00:30:46.280
+Yeah, amazing.
+
+00:30:48.000 --> 00:30:54.980
+so when you when we're talking about exchanging this data this is c python in the same process
+
+00:30:55.080 --> 00:31:07.960
+is that right anthony yeah how's that work um so python's c api um normally if you call so c python
+
+00:31:08.040 --> 00:31:14.879
+is the interpreter that you would use to run your python code um it is implemented in c mostly um
+
+00:31:14.900 --> 00:31:18.600
+The standard library modules are written, some of them are in Python, some of them are in C.
+
+00:31:19.200 --> 00:31:22.040
+You can write modules for Python in C.
+
+00:31:23.240 --> 00:31:29.160
+And the way that you would do things like create numbers and dictionaries and lists is use this API.
+
+00:31:29.640 --> 00:31:30.380
+It's a C API.
+
+00:31:31.700 --> 00:31:39.180
+And part of that C API is the ability to spin up a Python interpreter inside another process.
+
+00:31:40.980 --> 00:31:42.900
+And that's embedded Python.
+
+00:31:43.660 --> 00:31:45.920
+There's different APIs for doing it.
+
+00:31:46.000 --> 00:31:47.800
+There's a lot of different ways of approaching it.
+
+00:31:49.030 --> 00:31:52.720
+But really what we do is that when you spin up.NET
+
+00:31:52.720 --> 00:31:53.700
+and you use CSnakes,
+
+00:31:55.040 --> 00:31:58.900
+you inject a Python interpreter into the environment.
+
+00:32:00.100 --> 00:32:02.460
+It's not like a separate process.
+
+00:32:02.800 --> 00:32:06.700
+It hasn't got a command line window running in the background.
+
+00:32:07.900 --> 00:32:09.720
+It's embedded into the process.
+
+00:32:10.000 --> 00:32:11.000
+It's like loading the library.
+
+00:32:11.860 --> 00:32:13.280
+It's running inside the process.
+
+00:32:13.980 --> 00:32:16.800
+And then we have full control over everything in CPython.
+
+00:32:17.060 --> 00:32:19.880
+So we can then import modules.
+
+00:32:20.100 --> 00:32:24.500
+We can convert things, types backwards and forwards.
+
+00:32:24.980 --> 00:32:27.440
+So we're kind of doing a lot of the work that often gets done
+
+00:32:27.620 --> 00:32:30.120
+either in a C extension module or inside the interpreter.
+
+00:32:30.800 --> 00:32:33.620
+So if we want to create a Python number, for example,
+
+00:32:33.740 --> 00:32:38.260
+like an integer from a.NET integer, we do that at the C level.
+
+00:32:38.380 --> 00:32:41.020
+So we can do that like a really high performance API.
+
+00:32:41.840 --> 00:32:47.220
+If we want to look at the size of dictionaries or the types and stuff like that, we do that at the C level.
+
+00:32:47.420 --> 00:32:49.320
+So again, it's super high performance.
+
+00:32:51.120 --> 00:32:55.160
+And then really importantly, well, the typing stuff is really important.
+
+00:32:55.320 --> 00:33:05.440
+The other major challenge with this is, you know,.NET freely uses threading and thread pools and coroutines and stuff like that.
+
+00:33:06.680 --> 00:33:09.240
+Python can use threading, but there is a lock.
+
+00:33:10.160 --> 00:33:12.460
+So you have to be really, really careful.
+
+00:33:12.620 --> 00:33:16.080
+And this is something I didn't see like a novel solution
+
+00:33:16.260 --> 00:33:19.520
+from the other projects that are looking at this kind of space
+
+00:33:19.720 --> 00:33:20.620
+about how they would tackle it.
+
+00:33:22.300 --> 00:33:25.400
+Or it was kind of based around like older styles of Python
+
+00:33:25.560 --> 00:33:27.120
+and things have changed so much recently.
+
+00:33:27.480 --> 00:33:30.440
+So we kind of wanted to make sure that you could run this
+
+00:33:30.520 --> 00:33:32.960
+in a multi-threaded environment, whether that's like a UI,
+
+00:33:33.140 --> 00:33:36.260
+for example, like a desktop interface, or it's a web app.
+
+00:33:36.360 --> 00:33:38.360
+So like one of our demos is like,
+
+00:33:39.260 --> 00:33:41.680
+is a.net web app like API
+
+00:33:43.260 --> 00:33:46.220
+that each request can run a Python function if it wants to.
+
+00:33:46.250 --> 00:33:47.600
+And they're all running in separate threads
+
+00:33:47.800 --> 00:33:49.060
+in a thread pool in.net.
+
+00:33:49.680 --> 00:33:51.700
+And you shouldn't have to worry about the GIL.
+
+00:33:53.480 --> 00:33:54.780
+Like you didn't have to know too much
+
+00:33:54.990 --> 00:33:56.620
+in terms of what it is and how it works.
+
+00:33:56.730 --> 00:33:58.220
+So we've done quite a lot of work
+
+00:33:58.310 --> 00:34:00.060
+to make sure that that can happen.
+
+00:34:00.580 --> 00:34:01.340
+- Yeah, that's amazing.
+
+00:34:02.400 --> 00:34:03.980
+Python has async and await.
+
+00:34:04.260 --> 00:34:05.720
+C# has async and await.
+
+00:34:06.100 --> 00:34:07.520
+They're similar, but not the same.
+
+00:34:09.260 --> 00:34:09.580
+Yeah.
+
+00:34:11.200 --> 00:34:16.260
+Can I have an async function in Python that is called by C#?
+
+00:34:17.159 --> 00:34:18.240
+No, not yet.
+
+00:34:20.580 --> 00:34:21.220
+There is a pet.
+
+00:34:21.260 --> 00:34:23.240
+Just a task.run.
+
+00:34:24.020 --> 00:34:28.040
+Async.io.run to completion sort of thing, and then keep going for now.
+
+00:34:28.200 --> 00:34:32.559
+Yeah, I would love to do this, but there is no API for it on the Python side
+
+00:34:34.760 --> 00:34:37.780
+to like manage event loops
+
+00:34:38.220 --> 00:34:41.159
+and embed an event loop into another process
+
+00:34:41.679 --> 00:34:43.200
+or to write a custom event loop.
+
+00:34:43.580 --> 00:34:48.659
+It's all kind of built into the standard library
+
+00:34:48.800 --> 00:34:49.700
+or it's built into another module.
+
+00:34:50.980 --> 00:34:53.020
+There's been a couple of proposals in draft peps,
+
+00:34:53.139 --> 00:34:54.300
+but none of them have been accepted.
+
+00:34:54.419 --> 00:34:56.840
+And if they were, then it might be in 3.14 anyway,
+
+00:34:57.060 --> 00:34:59.900
+which we can't backward compatible support.
+
+00:35:00.200 --> 00:35:02.400
+Yeah, you're not quite there time-wise yet.
+
+00:35:02.960 --> 00:35:05.600
+Do you find that the asyncIO event loops in Python
+
+00:35:05.720 --> 00:35:07.380
+are hard to juggle, right?
+
+00:35:07.660 --> 00:35:11.740
+Like, you have to create one if it doesn't exist.
+
+00:35:11.800 --> 00:35:13.980
+But if it does exist, then it doesn't want you to create a new one.
+
+00:35:14.140 --> 00:35:15.900
+But there's not a great way to see if it exists.
+
+00:35:16.300 --> 00:35:18.720
+And if you don't have direct access to it, how do you get?
+
+00:35:20.460 --> 00:35:22.360
+It always feels to me a little bit out of touch
+
+00:35:22.480 --> 00:35:24.980
+to fully take control over that and work with it.
+
+00:35:25.400 --> 00:35:27.780
+And it changes between Python versions.
+
+00:35:29.100 --> 00:35:30.720
+It's gotten easier recently.
+
+00:35:31.620 --> 00:35:34.760
+Like there's like a.run function now.
+
+00:35:37.060 --> 00:35:39.120
+Whereas previously you had to like get the event loop
+
+00:35:39.280 --> 00:35:40.660
+and create one and stuff like that.
+
+00:35:40.660 --> 00:35:42.640
+But now you can just kind of run the coroutine.
+
+00:35:44.660 --> 00:35:45.960
+But yeah, it's still tricky.
+
+00:35:46.560 --> 00:35:51.300
+And the idea of basically writing a custom event loop
+
+00:35:51.840 --> 00:35:54.760
+and then giving it coroutine objects
+
+00:35:54.970 --> 00:35:56.560
+and like polling them and looping them
+
+00:35:56.840 --> 00:35:57.580
+from another runtime.
+
+00:35:58.480 --> 00:36:00.340
+I just couldn't figure out the APIs.
+
+00:36:00.550 --> 00:36:01.280
+I'd love to do it.
+
+00:36:01.360 --> 00:36:03.000
+If anyone knows, then please ping me.
+
+00:36:04.740 --> 00:36:07.840
+Well, uvloop does it, right?
+
+00:36:07.960 --> 00:36:08.120
+Yeah.
+
+00:36:08.620 --> 00:36:09.060
+Somehow.
+
+00:36:09.580 --> 00:36:13.000
+But maybe they just swap out some pieces of it, not all of it.
+
+00:36:13.660 --> 00:36:14.600
+Yeah, I'm not sure how.
+
+00:36:14.880 --> 00:36:16.980
+But you can set the event loop from uvloop.
+
+00:36:17.180 --> 00:36:18.080
+So maybe-- I don't know.
+
+00:36:18.120 --> 00:36:19.900
+Maybe there's a breadcrumb there to chase.
+
+00:36:22.320 --> 00:36:25.860
+All right, so I see in the steps, install Python,
+
+00:36:27.040 --> 00:36:34.460
+your projects in a C# file, use annotations on your Python functions, right? That's a really
+
+00:36:34.560 --> 00:36:41.740
+important step that you talked about. Install the CSnakes runtime package. So maybe from this point
+
+00:36:41.900 --> 00:36:46.700
+on, let's talk a little bit about some of the steps. So this CSnakes runtime, this is a NuGet
+
+00:36:46.840 --> 00:36:54.059
+package that you put into your.NET project. Is that what I'm reading here? Yeah. So we essentially
+
+00:36:54.080 --> 00:36:58.840
+have two binaries that we ship one which is going to do all the code generation for you so
+
+00:36:59.300 --> 00:37:04.660
+from a.net perspective you'd be it wouldn't be uncommon to have multiple different projects with
+
+00:37:04.680 --> 00:37:11.680
+inside of your solution which is then like one might just be a bunch of services which are then
+
+00:37:11.740 --> 00:37:17.080
+going to then talk to you know a database or whatever the case may be so you might have that
+
+00:37:17.260 --> 00:37:23.419
+as just a like that would be where you would have the code gen um that you want to do so where the
+
+00:37:23.440 --> 00:37:27.820
+the Python files are actually getting their C# interop generated for you.
+
+00:37:28.420 --> 00:37:29.500
+You have one project with that.
+
+00:37:29.670 --> 00:37:31.080
+Then we have a second binary,
+
+00:37:31.680 --> 00:37:36.920
+which is then the runtime to actually make that work when your application is running.
+
+00:37:37.280 --> 00:37:40.980
+Now, we do ship this as a single consolidated package just for ease of use,
+
+00:37:42.180 --> 00:37:46.260
+but that's why we differentiate some of it in terms of
+
+00:37:46.620 --> 00:37:50.320
+code gen versus runtime because they're different concepts and
+
+00:37:50.320 --> 00:37:53.680
+One is a compilation step versus obviously a runtime step.
+
+00:37:55.560 --> 00:37:56.280
+Yeah. Okay.
+
+00:37:57.660 --> 00:37:59.920
+Yeah. So with our runtime package,
+
+00:38:01.760 --> 00:38:04.480
+and the documentation talks a little bit more about this,
+
+00:38:04.600 --> 00:38:06.900
+there's just a few steps you've got to do to make sure
+
+00:38:07.300 --> 00:38:10.560
+that the C# compiler is capable of finding the Python files.
+
+00:38:10.940 --> 00:38:15.740
+So we actually do stuff with inside of the C# compiler pipeline
+
+00:38:16.400 --> 00:38:18.780
+to generate code that is then added to it.
+
+00:38:18.860 --> 00:38:23.580
+So this also means that we can very early on find out
+
+00:38:23.800 --> 00:38:25.500
+if you're going to have compatibility issues.
+
+00:38:25.740 --> 00:38:29.400
+So if something is type of the type that we don't understand
+
+00:38:29.820 --> 00:38:35.300
+or the Python code is syntactically obscure,
+
+00:38:35.600 --> 00:38:37.460
+because what I've learned is that there are ways
+
+00:38:37.600 --> 00:38:41.960
+that you can write valid Python code that is very obscure.
+
+00:38:44.020 --> 00:38:46.660
+And then you showed me some things that you can do,
+
+00:38:46.670 --> 00:38:47.540
+but please don't do it.
+
+00:38:48.720 --> 00:38:51.280
+And yeah, so you'll actually fail a compilation step
+
+00:38:51.370 --> 00:38:53.240
+rather than fail a runtime process.
+
+00:38:53.450 --> 00:38:56.120
+And I think, again, from a.NET developer's perspective,
+
+00:38:57.060 --> 00:38:59.840
+we're used to that static typing, that compilation step,
+
+00:39:01.390 --> 00:39:04.540
+that belief that the compiler has done a whole bunch of checks for us
+
+00:39:04.540 --> 00:39:06.480
+to give us code that should just work
+
+00:39:07.480 --> 00:39:11.380
+rather than just that more dynamic typing system
+
+00:39:11.520 --> 00:39:13.880
+that you get out of Python or, in my experience,
+
+00:39:14.080 --> 00:39:15.720
+the JavaScript side of things.
+
+00:39:16.420 --> 00:39:20.440
+Yeah, that's definitely the expectation if you're doing C#, C++.
+
+00:39:21.040 --> 00:39:26.320
+If it compiles, at least it's clicked together in a coherent way, right?
+
+00:39:27.040 --> 00:39:29.060
+Whereas Python, we're pretty sure.
+
+00:39:29.260 --> 00:39:30.880
+We don't know for sure, but we're pretty sure.
+
+00:39:31.800 --> 00:39:35.060
+So in Python typing, you can lie, right?
+
+00:39:35.240 --> 00:39:38.940
+I could say it takes a list of integers, and really what it took was strings,
+
+00:39:39.060 --> 00:39:40.240
+which had numbers as characters.
+
+00:39:40.340 --> 00:39:41.040
+Who knows, right?
+
+00:39:42.220 --> 00:39:45.440
+What happens if I lie to the C# code gen thing?
+
+00:39:47.060 --> 00:39:47.700
+second time
+
+00:39:48.660 --> 00:39:49.720
+that's what I was thinking
+
+00:39:51.020 --> 00:39:51.840
+that's what I was thinking
+
+00:39:53.530 --> 00:39:54.200
+oh my gosh
+
+00:39:55.760 --> 00:39:56.780
+so it just crashes
+
+00:39:57.480 --> 00:39:57.840
+don't do it
+
+00:39:59.900 --> 00:40:00.040
+yeah
+
+00:40:00.800 --> 00:40:02.960
+yeah essentially you just crash when it calls
+
+00:40:02.990 --> 00:40:03.300
+because it
+
+00:40:04.560 --> 00:40:06.780
+it has to make the
+
+00:40:07.420 --> 00:40:09.020
+assumption that what you've
+
+00:40:09.120 --> 00:40:09.800
+told it is correct
+
+00:40:10.920 --> 00:40:13.160
+in.net if I've got a
+
+00:40:13.740 --> 00:40:14.799
+tuple of ints
+
+00:40:14.860 --> 00:40:17.560
+and I give it across and it's like, I actually wanted strings.
+
+00:40:18.460 --> 00:40:20.060
+Well, no, it's not going to happen.
+
+00:40:20.060 --> 00:40:24.640
+It will raise a yeah, because to get, for example, if it returns a list of strings,
+
+00:40:24.980 --> 00:40:31.020
+but you actually return a list of integers, you know, in order to give you back a list of strings in C#,
+
+00:40:31.540 --> 00:40:33.280
+we first check that it's a list.
+
+00:40:34.320 --> 00:40:39.600
+If it isn't or if it's not a sequence type, like it could be a, I don't know,
+
+00:40:39.700 --> 00:40:43.480
+you could have inherited from this and made your own custom list or you could make something which is a sequence.
+
+00:40:45.120 --> 00:40:49.540
+like if it's not that then we will raise an exception it doesn't just crash I was joking
+
+00:40:50.620 --> 00:40:56.380
+and we've got a lot of testing to make there's a whole like a test environment that's around like
+
+00:40:56.800 --> 00:41:04.340
+lying code and type hints and stuff which are completely invalid and then for the strings you
+
+00:41:04.340 --> 00:41:13.139
+know we need to look at the python string and then python mostly uses utf-8 and.NET mostly uses utf-16
+
+00:41:13.980 --> 00:41:16.300
+we need to convert from one to the other
+
+00:41:16.510 --> 00:41:18.320
+and if it's an integer not a string
+
+00:41:18.320 --> 00:41:19.900
+in the first place then that's never going to work
+
+00:41:20.120 --> 00:41:21.980
+so we would raise an exception there and say
+
+00:41:22.400 --> 00:41:23.880
+you told us it was a string and you lied
+
+00:41:25.680 --> 00:41:25.980
+yeah
+
+00:41:26.860 --> 00:41:29.800
+so you lied exception
+
+00:41:29.870 --> 00:41:30.280
+is thrown
+
+00:41:31.160 --> 00:41:31.600
+yeah
+
+00:41:32.330 --> 00:41:34.200
+I think it's like an invalid cast
+
+00:41:34.420 --> 00:41:35.600
+exception or something like that
+
+00:41:36.880 --> 00:41:37.500
+with the description
+
+00:41:38.600 --> 00:41:39.600
+we've tried to raise
+
+00:41:39.840 --> 00:41:41.919
+the exceptions we raise are.NET
+
+00:41:41.940 --> 00:41:49.280
+exceptions which are relevant to the concept of the problem that we've uncovered but at the same time
+
+00:41:50.250 --> 00:41:55.080
+um it actually will give you imagine like if something failed in the python code as well like
+
+00:41:55.480 --> 00:42:00.960
+you know you you type annotated that it was like a bunch of strings and we and um
+
+00:42:01.850 --> 00:42:08.700
+oh no a bunch of ints and we gave you a bunch of strings well okay um the python code is going
+
+00:42:08.500 --> 00:42:14.860
+to fail there so um where we then surface out the python exceptions as well as like embedded with
+
+00:42:14.940 --> 00:42:20.540
+inside of the dot net exception so you can you can actually get down to like the lines of code
+
+00:42:20.570 --> 00:42:29.220
+with inside of python that failed which the stack trace actually includes C# C# C# python
+
+00:42:29.400 --> 00:42:37.039
+python python potentially yeah yeah and if you do awesome in python if you didn't it raise from um
+
+00:42:37.960 --> 00:42:41.000
+that will show up as an inner exception in.NET as well.
+
+00:42:41.740 --> 00:42:42.960
+So we did a lot of work on exceptions,
+
+00:42:43.620 --> 00:42:45.320
+mostly because we had to debug this stuff
+
+00:42:45.440 --> 00:42:46.180
+when we're developing it.
+
+00:42:47.440 --> 00:42:48.200
+It was really helpful.
+
+00:42:48.420 --> 00:42:50.760
+We felt the pain that someone else was going to build.
+
+00:42:52.520 --> 00:42:54.600
+So yeah, you can see the stack trace.
+
+00:42:55.580 --> 00:42:57.460
+You get all the frame variables and stuff like that.
+
+00:42:57.480 --> 00:42:59.960
+So things that you would probably want from a PDB,
+
+00:43:00.580 --> 00:43:02.240
+you can see on the.NET side.
+
+00:43:02.400 --> 00:43:04.900
+So if you're running the debugger in.NET
+
+00:43:05.320 --> 00:43:07.000
+and it crashes in Python,
+
+00:43:07.340 --> 00:43:09.160
+or raises an exception or something.
+
+00:43:09.610 --> 00:43:11.400
+You see the Python exception with all the details.
+
+00:43:13.420 --> 00:43:15.860
+And then you see inner exceptions and stuff like that as well,
+
+00:43:16.500 --> 00:43:18.280
+as well as the locals and the globals
+
+00:43:18.460 --> 00:43:20.420
+and any other frame information.
+
+00:43:21.240 --> 00:43:23.020
+Yeah, I was pretty impressed when I saw that,
+
+00:43:24.320 --> 00:43:27.420
+how integrated, how much I felt from both directions,
+
+00:43:27.800 --> 00:43:30.680
+kind of natural and not just bolted on.
+
+00:43:32.140 --> 00:43:32.300
+Yeah.
+
+00:43:33.260 --> 00:43:33.380
+Yeah.
+
+00:43:34.820 --> 00:43:38.180
+So another step is mark these for code for source generation.
+
+00:43:39.220 --> 00:43:42.560
+This feels like a visual studio 20,
+
+00:43:43.020 --> 00:43:45.800
+whatever year the last release of visual studio was.
+
+00:43:47.340 --> 00:43:48.340
+Aaron, what's the number?
+
+00:43:49.460 --> 00:43:50.320
+2022.
+
+00:43:51.480 --> 00:43:51.640
+Okay.
+
+00:43:52.000 --> 00:43:55.620
+So the reason I bring this up is a lot of people hear visual studio,
+
+00:43:56.100 --> 00:43:58.840
+especially in the Python space and think Visual Studio Code.
+
+00:43:59.380 --> 00:44:04.560
+Does this work in Visual Studio Code or is it just a visual studio?
+
+00:44:04.700 --> 00:44:06.980
+No, it definitely works in VS Code.
+
+00:44:08.460 --> 00:44:10.680
+I sometimes open it in VS Code.
+
+00:44:11.400 --> 00:44:14.140
+Obviously, you're likely to install the C# extension
+
+00:44:14.290 --> 00:44:16.960
+to get a better developer experience on that.
+
+00:44:18.480 --> 00:44:20.560
+So what we have to do is,
+
+00:44:21.440 --> 00:44:23.620
+because the source generator is actually running
+
+00:44:23.940 --> 00:44:26.060
+as they step with inside of the C# compiler pipeline,
+
+00:44:26.740 --> 00:44:28.880
+we need it to know how to find these files.
+
+00:44:29.660 --> 00:44:33.420
+And we kind of toyed with the idea of just do a directory scan.
+
+00:44:34.200 --> 00:44:36.780
+Everything that ends in.py, we're going after.
+
+00:44:37.180 --> 00:44:39.280
+Yeah, that's not particularly efficient.
+
+00:44:39.640 --> 00:44:43.100
+And also, if you've just got modules that are using other modules,
+
+00:44:45.140 --> 00:44:48.220
+how do you craft a surface error in Python that you actually want to expose
+
+00:44:48.480 --> 00:44:50.340
+rather than just expose everything?
+
+00:44:51.900 --> 00:44:55.880
+So we're inside of the CSproj file.
+
+00:44:56.100 --> 00:45:00.859
+So this is the file that is the instructions on how to compile
+
+00:45:00.880 --> 00:45:03.560
+a more complex.NET application,
+
+00:45:05.140 --> 00:45:09.000
+we can then add nodes to that XML structure
+
+00:45:09.370 --> 00:45:11.460
+to say, like, here's a Python file.
+
+00:45:12.580 --> 00:45:16.340
+It's an annotate that for the C# compiler to pick up
+
+00:45:16.540 --> 00:45:18.040
+so that when the source generator hits it,
+
+00:45:18.440 --> 00:45:21.040
+it hits our steps.
+
+00:45:21.460 --> 00:45:24.420
+It goes, okay, I'm going to find all of these additional files
+
+00:45:24.470 --> 00:45:26.360
+that you've said I need to be aware of,
+
+00:45:27.140 --> 00:45:28.180
+and then I can read them in.
+
+00:45:28.210 --> 00:45:29.799
+And it's actually got some optimizations
+
+00:45:29.820 --> 00:45:35.980
+for how internally it will read that file in rather than us then having to do file.io or anything like
+
+00:45:36.060 --> 00:45:42.960
+that. So it's more intrinsically aware of them and that it will make those available so that it can
+
+00:45:42.960 --> 00:45:49.480
+then generate out the code rather than, like I said, us having to try and guess what Python files
+
+00:45:49.480 --> 00:45:54.519
+you want available. They have to be in a special folder or they had to be named a certain way or
+
+00:45:54.540 --> 00:45:56.580
+or we just directory scanned everything
+
+00:45:56.760 --> 00:45:57.800
+and then ended with.py.
+
+00:45:58.880 --> 00:46:00.460
+Yeah, you want to be really careful
+
+00:46:00.740 --> 00:46:02.860
+about which ones you're trying to do this to
+
+00:46:02.920 --> 00:46:04.280
+because they require type annotation
+
+00:46:04.700 --> 00:46:06.140
+and you don't want to just expose
+
+00:46:06.940 --> 00:46:09.100
+all the guts of some bit of code.
+
+00:46:09.200 --> 00:46:11.540
+You want to maybe talk about the surface area, right?
+
+00:46:12.100 --> 00:46:12.340
+Yeah.
+
+00:46:13.920 --> 00:46:15.540
+As.NET people, you have these protected,
+
+00:46:15.920 --> 00:46:18.240
+private, internal, protected, internal, etc.
+
+00:46:19.100 --> 00:46:20.520
+Things, we don't talk about them in Python.
+
+00:46:21.800 --> 00:46:23.060
+You want to be consistent with that, right?
+
+00:46:24.020 --> 00:46:24.160
+Yeah.
+
+00:46:24.380 --> 00:46:31.240
+So Anthony, it says last step to instantiate the Python environment.
+
+00:46:33.300 --> 00:46:35.920
+This feels almost like an import statement.
+
+00:46:37.290 --> 00:46:40.220
+Then you use it namespace style later.
+
+00:46:40.220 --> 00:46:41.320
+Do you want to talk about that real quick?
+
+00:46:42.520 --> 00:46:42.640
+Yeah.
+
+00:46:42.770 --> 00:46:49.740
+So Python, so in order to start like to embed Python into the.NET process,
+
+00:46:50.760 --> 00:46:52.080
+you need to create a Python environment.
+
+00:46:53.340 --> 00:46:56.560
+And there's a few things we have to know, like where is Python installed?
+
+00:46:57.620 --> 00:46:58.480
+What version is it?
+
+00:46:59.770 --> 00:47:00.940
+Do you have a virtual environment?
+
+00:47:01.130 --> 00:47:02.780
+Is it just like the global environment?
+
+00:47:03.140 --> 00:47:04.400
+Do you have like packages?
+
+00:47:04.720 --> 00:47:08.380
+There's like additional things that we need to know that you would have,
+
+00:47:08.550 --> 00:47:11.080
+in Python, you would have kind of set those elsewhere.
+
+00:47:11.380 --> 00:47:13.600
+Like if there was a virtual environment, you would have activated it.
+
+00:47:14.540 --> 00:47:15.560
+You know, if you were running Python,
+
+00:47:16.040 --> 00:47:18.580
+then you would have set which version it was and where it's installed.
+
+00:47:20.160 --> 00:47:24.180
+So in.NET, you haven't done those steps.
+
+00:47:25.080 --> 00:47:26.740
+So we need you to tell us, like,
+
+00:47:27.500 --> 00:47:30.340
+which version of Python do you want to create?
+
+00:47:31.300 --> 00:47:31.920
+And where is it?
+
+00:47:33.220 --> 00:47:35.700
+And we've created a whole bunch of code to help you find it.
+
+00:47:35.740 --> 00:47:40.540
+And the uv team actually have been solving a similar problem
+
+00:47:40.920 --> 00:47:43.380
+with, like, spitting up Python and running Python.
+
+00:47:44.640 --> 00:47:47.040
+So I'm kind of curious to see, like, how they've tackled it.
+
+00:47:47.120 --> 00:47:52.320
+And we might even try and look at bringing uv in as one of the mechanisms for finding Python for you.
+
+00:47:52.990 --> 00:47:54.680
+Because it's such a complicated problem.
+
+00:47:54.820 --> 00:48:00.920
+Yeah, it's something I wanted to talk to you about is you've got to have Python installed and you've got to get the dependencies.
+
+00:48:02.840 --> 00:48:05.320
+Yeah, we're not going to install Python for you.
+
+00:48:06.700 --> 00:48:11.600
+Yeah, but with uv, V and V, give it a Python version.
+
+00:48:12.440 --> 00:48:16.560
+It can fetch it and just run it and it's cached.
+
+00:48:16.620 --> 00:48:20.000
+and maybe you could embed that as a resource at compile time.
+
+00:48:20.340 --> 00:48:22.820
+There's interesting possibilities there.
+
+00:48:23.240 --> 00:48:25.640
+Yeah, so our virtual environment support
+
+00:48:26.660 --> 00:48:29.020
+uses either condor or pip as the package manager,
+
+00:48:29.300 --> 00:48:30.060
+depending on what you want.
+
+00:48:31.060 --> 00:48:33.580
+And you can say, here's my requirements file,
+
+00:48:33.680 --> 00:48:36.340
+and it will go in and pip install them as well.
+
+00:48:36.440 --> 00:48:38.060
+It can do all of those things for you
+
+00:48:38.260 --> 00:48:40.380
+because we're kind of assuming that, yeah,
+
+00:48:40.600 --> 00:48:42.540
+you're developing this locally and you're running it locally,
+
+00:48:42.620 --> 00:48:44.540
+but it's going to be deployed somewhere else.
+
+00:48:45.180 --> 00:48:49.240
+So you don't want to have to log into the production servers
+
+00:48:49.420 --> 00:48:51.660
+and create virtual environments on the command line
+
+00:48:51.760 --> 00:48:52.160
+and stuff like that.
+
+00:48:52.220 --> 00:48:56.780
+That's like with hopefully 15, 20 years past people doing that.
+
+00:48:58.560 --> 00:49:00.740
+So you should be able to programmatically say
+
+00:49:01.360 --> 00:49:04.140
+this project needs a virtual environment
+
+00:49:04.380 --> 00:49:05.760
+and it needs these packages installed
+
+00:49:05.920 --> 00:49:07.100
+and it needs this version of Python.
+
+00:49:07.860 --> 00:49:10.780
+And then you can either use the version of Python
+
+00:49:11.000 --> 00:49:13.560
+that comes with your Linux container, for example,
+
+00:49:13.880 --> 00:49:17.580
+or you can pull in one from somewhere else.
+
+00:49:19.000 --> 00:49:21.460
+For Windows, you can actually download it from NuGet.
+
+00:49:22.210 --> 00:49:23.980
+You can actually add it as a dependency in.NET.
+
+00:49:24.840 --> 00:49:26.960
+And that's a really simple solution for Windows development.
+
+00:49:27.440 --> 00:49:29.940
+For macOS, if you've installed it from python.org,
+
+00:49:30.080 --> 00:49:31.320
+like using the official installer,
+
+00:49:31.430 --> 00:49:33.480
+you just tell it that you just say,
+
+00:49:34.160 --> 00:49:37.960
+use the macOS Python and give it the version number.
+
+00:49:38.600 --> 00:49:40.639
+And then for Linux, it's a lot more complicated
+
+00:49:42.480 --> 00:49:43.680
+because there's no standards.
+
+00:49:44.800 --> 00:49:47.160
+So yeah, we've kind of support every which way
+
+00:49:47.260 --> 00:49:49.640
+of finding it on Linux.
+
+00:49:50.360 --> 00:49:52.740
+And then once you've kind of put the Python environment
+
+00:49:53.060 --> 00:49:54.880
+into the process, there should only be one of them.
+
+00:49:55.980 --> 00:49:58.620
+Python itself does not want you to ever spin up
+
+00:49:58.780 --> 00:50:00.020
+more than one Python environment
+
+00:50:00.140 --> 00:50:02.300
+in the same operating process.
+
+00:50:03.980 --> 00:50:06.040
+It will have all sorts of problems if you do that.
+
+00:50:06.200 --> 00:50:08.859
+So it's basically put in as a singleton
+
+00:50:08.860 --> 00:50:16.160
+and then you import a module by creating an instance of it and then on that module you can
+
+00:50:16.160 --> 00:50:22.260
+then call methods which are the functions in the module so like if you had a module called demo.py
+
+00:50:23.140 --> 00:50:29.440
+and then in your environment you'd see like a factory for like effectively like import demo and
+
+00:50:29.500 --> 00:50:34.619
+giving back an instance of it and then on that instance you'd have methods which are the functions
+
+00:50:35.020 --> 00:50:39.200
+and the example you've got on your screen you know there's a function called hello world
+
+00:50:39.400 --> 00:50:45.280
+takes some arguments in a in a file called demo.py so you just say environment.demo like make a demo
+
+00:50:45.480 --> 00:50:50.180
+instance and then on that instance you can call dot hello world with the arguments and it gives
+
+00:50:50.180 --> 00:50:56.720
+you back the results so there's no really like in a few lines of code like four or five you can spin
+
+00:50:56.720 --> 00:51:01.499
+up a python environment import a module run a function um so we'd really try to minimize the
+
+00:51:01.520 --> 00:51:07.300
+border plate code um by and then following the patterns that are best for both platforms
+
+00:51:09.600 --> 00:51:14.220
+there's a lot of places you could go with this is really cool uh for example if you if you
+
+00:51:14.280 --> 00:51:17.840
+got a singleton which is great i mean that's kind of how python typically is one environment but
+
+00:51:18.280 --> 00:51:24.999
+with the sub interpreters you could theoretically create these in parallel one thing that stands
+
+00:51:25.020 --> 00:51:32.820
+out as maybe a little non-expected in this is like you have var module equals env a demo right where
+
+00:51:32.920 --> 00:51:40.640
+you're creating this but in python the this thing is called demo like would it be uh would it be a
+
+00:51:41.000 --> 00:51:48.480
+pattern to maybe name the variable the same as the module name maybe yeah yeah i i think that um
+
+00:51:49.420 --> 00:51:54.320
+that's probably just more from laziness in the way we're in our docs but yeah oh yeah no worries
+
+00:51:54.300 --> 00:52:10.160
+And what we're probably lacking from, because this is obviously docs and just markdown code is that, so when you were, so we would get back our IPython environment from our dependency injection container.
+
+00:52:10.300 --> 00:52:18.280
+And then things like the demo method that's exposed there would then return an iDemo, I think it is.
+
+00:52:20.340 --> 00:52:27.100
+And that is then the representation of that demo.py file that you've imported.
+
+00:52:27.240 --> 00:52:27.400
+So yeah.
+
+00:52:28.320 --> 00:52:28.820
+Yeah, yeah.
+
+00:52:29.640 --> 00:52:32.460
+So then all those methods are then exposed on that.
+
+00:52:32.560 --> 00:52:38.120
+So yeah, module from it, like conceptually, if I'm thinking about this as a.NET developer looking at it from Python,
+
+00:52:38.200 --> 00:52:41.340
+I'm like, okay, the module is that Python file.
+
+00:52:42.880 --> 00:52:44.480
+And that's what I get back when I say,
+
+00:52:44.640 --> 00:52:48.740
+I want an instance of the interface into that file.
+
+00:52:49.960 --> 00:52:52.840
+Yeah, and honestly, it doesn't matter how I feel about this
+
+00:52:52.940 --> 00:52:53.900
+as a Python person.
+
+00:52:54.060 --> 00:52:57.720
+It matters how.NET people feel about this when they look.
+
+00:52:57.720 --> 00:52:59.100
+Because this is C# code.
+
+00:52:59.180 --> 00:52:59.760
+That's their code.
+
+00:53:01.280 --> 00:53:01.960
+That's their world.
+
+00:53:02.740 --> 00:53:05.839
+It just so happens that Csnake makes it really nice
+
+00:53:05.860 --> 00:53:11.300
+impossible to talk to the python world yeah yeah
+
+00:53:14.220 --> 00:53:19.760
+so one thing i wanted maybe you could spend a couple minutes talking about this anthony is
+
+00:53:20.240 --> 00:53:29.180
+i saw an example where you you showed integrating open telemetry and asp.net and postgres and all
+
+00:53:29.340 --> 00:53:34.780
+sorts of stuff together not just a you know hello world sort of example which shows some really cool
+
+00:53:34.660 --> 00:53:40.120
+stuff but maybe doesn't convince people that they could do cool stuff with it you want to just maybe
+
+00:53:40.280 --> 00:53:45.340
+talk us through some of the moving parts of that to give people a sense of a more realistic example
+
+00:53:47.000 --> 00:53:53.480
+yeah so we have a another demo which is a web app um it's in in the project it's um
+
+00:53:55.300 --> 00:54:00.280
+this is kind of what we thought was a more realistic integration example so you've got a
+
+00:54:01.160 --> 00:54:05.180
+A web app written in, well, the front end written in HTML and JavaScript.
+
+00:54:05.520 --> 00:54:07.300
+The API is written in.NET.
+
+00:54:08.800 --> 00:54:10.680
+You're using Postgres as the database.
+
+00:54:14.020 --> 00:54:17.780
+And you've got like a feature that you want to add to your app
+
+00:54:18.380 --> 00:54:21.060
+where you want to use some Python libraries and some Python code.
+
+00:54:22.660 --> 00:54:24.340
+And we were looking at weather.
+
+00:54:24.560 --> 00:54:25.400
+Everyone loves the weather demo.
+
+00:54:27.520 --> 00:54:28.560
+Just real enough.
+
+00:54:28.590 --> 00:54:29.800
+Come on, it's just real enough.
+
+00:54:30.100 --> 00:54:33.300
+The weather demo is like the canonical.NET demo
+
+00:54:33.840 --> 00:54:35.880
+of when you do file new API projects.
+
+00:54:36.000 --> 00:54:37.340
+Like, here is a weather app.
+
+00:54:37.500 --> 00:54:40.240
+So from a.NET developer, I feel very much at home.
+
+00:54:42.280 --> 00:54:43.040
+You're already on board.
+
+00:54:43.220 --> 00:54:43.720
+Okay, got it.
+
+00:54:43.900 --> 00:54:45.520
+Yeah, we're creating the one that people would expect.
+
+00:54:46.980 --> 00:54:48.780
+Now, on the.NET side, we also said, right,
+
+00:54:49.300 --> 00:54:51.640
+let's be realistic about what people would want to do
+
+00:54:52.100 --> 00:54:55.760
+because, like, modern applications,
+
+00:54:56.280 --> 00:54:59.020
+you would write the API in ASP.NET
+
+00:54:59.040 --> 00:55:03.860
+and you would have API endpoints and routes and configure those.
+
+00:55:04.920 --> 00:55:07.540
+And you would have probably a relational database
+
+00:55:07.630 --> 00:55:09.580
+like Postgres or SQL Server or something
+
+00:55:10.580 --> 00:55:11.780
+as the storage environment.
+
+00:55:12.600 --> 00:55:15.700
+And then now we support OpenTelemetry
+
+00:55:17.580 --> 00:55:19.120
+in a platform called Aspire,
+
+00:55:19.220 --> 00:55:21.560
+which Aaron can probably explain in a second.
+
+00:55:22.880 --> 00:55:25.280
+So OpenTelemetry is a new standard
+
+00:55:25.300 --> 00:55:27.860
+for like tracing and instrumentation
+
+00:55:28.460 --> 00:55:29.500
+and observability generally
+
+00:55:29.920 --> 00:55:32.640
+of applications written in any language.
+
+00:55:33.700 --> 00:55:35.220
+And in.NET you can have,
+
+00:55:36.400 --> 00:55:37.440
+so for this app, for example,
+
+00:55:37.740 --> 00:55:39.900
+like somebody makes a request to the web app
+
+00:55:40.080 --> 00:55:41.300
+and you see the request come in
+
+00:55:41.400 --> 00:55:42.040
+and all the timing
+
+00:55:42.300 --> 00:55:44.600
+and it doesn't need log records in.NET
+
+00:55:44.760 --> 00:55:45.640
+or if anything crashes
+
+00:55:46.070 --> 00:55:48.700
+or like it's all associated with the same request.
+
+00:55:50.280 --> 00:55:51.640
+Now, if we're going to spin up
+
+00:55:51.720 --> 00:55:52.980
+and run a Python function
+
+00:55:53.580 --> 00:55:59.740
+and in python you do import logging you know logger logging dot info or logging dot error
+
+00:56:00.180 --> 00:56:06.680
+like where does that go um because you just logged something in python does it just disappear into
+
+00:56:06.680 --> 00:56:12.320
+the ether is it like it goes into the uh the terminal output of the container it runs in who
+
+00:56:12.320 --> 00:56:18.560
+knows right yeah exactly like it would be kind of useless and and not easy to manage and we're
+
+00:56:18.480 --> 00:56:23.280
+coming at this at the angle like people write big enterprise apps in dot net so like they would
+
+00:56:23.620 --> 00:56:29.480
+expect that they do logging and it's all in the same system so this demo basically says okay one
+
+00:56:29.500 --> 00:56:38.960
+of the api endpoints in on dot net um it runs a function in python which you know spins up it uses
+
+00:56:39.220 --> 00:56:44.400
+pandas and as a data frame to look at the weather or and it like calculates some averages and shifting
+
+00:56:44.420 --> 00:56:48.420
+means and stuff like that to give you back like a prediction for what the weather's going to be
+
+00:56:48.500 --> 00:56:53.420
+like this week um and we just use seattle was the data set because it's easy because it's always
+
+00:56:53.480 --> 00:57:00.160
+going to rain but um and then it's not actually most of the time it doesn't it's not fair um
+
+00:57:00.680 --> 00:57:07.280
+so it runs that in python and in the python code we use open telemetry to show the trace of it
+
+00:57:07.600 --> 00:57:13.680
+talking to the database and we make we use python logging um and that log information and
+
+00:57:13.700 --> 00:57:19.340
+the trace information all gets put into the same trace so from.net from start to finish you see
+
+00:57:19.830 --> 00:57:24.880
+the request come in on the front end you see the.net code executing you see the python code
+
+00:57:25.270 --> 00:57:30.100
+and then if python crashes or if the logger entries go in they're all in the same environment
+
+00:57:31.000 --> 00:57:38.960
+so in like an open telemetry dashboard you see the whole trace across both.net and python all in
+
+00:57:38.880 --> 00:57:45.460
+the same environment and you can just use logging as you would normally um yeah and dot net aspire
+
+00:57:46.360 --> 00:57:51.660
+comes with a like a free open telemetry dashboard that you can run locally it's like a docker
+
+00:57:51.920 --> 00:57:57.220
+container this is really nice um to save you kind of spinning up uh jaeger or something
+
+00:57:59.120 --> 00:58:05.860
+yeah this is really cool because you've got an asp.net api but then when it's called
+
+00:58:06.500 --> 00:58:12.780
+it uses one of these code gen c snakes python integrations but a lot of stuff just flows through
+
+00:58:13.000 --> 00:58:20.940
+like the postgres connection string flows through the open telemetry context flows through the logging
+
+00:58:21.760 --> 00:58:27.300
+kind of goes tangentially off then it talks to the database in python and then it returns back
+
+00:58:27.460 --> 00:58:36.040
+Your example uses just pure SQL connections and stuff, but, you know, PsychoPG too.
+
+00:58:36.100 --> 00:58:39.780
+But you could use pretty much any ORM or anything, right?
+
+00:58:39.960 --> 00:58:41.200
+There's no real constraint there.
+
+00:58:42.140 --> 00:58:49.720
+Yeah, and it uses a few modules which are tricky, like Pandas and PsychoPG.
+
+00:58:50.860 --> 00:58:57.100
+Anyone who's deployed that to production in containers or in different environments knows it's hard.
+
+00:58:57.380 --> 00:59:00.160
+because it's like, which binary do you use?
+
+00:59:00.260 --> 00:59:01.900
+And importing it is hard.
+
+00:59:02.040 --> 00:59:05.880
+And you need libpq, and it's a bit of a nightmare.
+
+00:59:07.020 --> 00:59:10.620
+So it's just demonstrate that this is a real thing you can do.
+
+00:59:11.160 --> 00:59:14.740
+And it shows something which is practical in Python
+
+00:59:14.880 --> 00:59:16.480
+and something which is practical in.NET,
+
+00:59:16.640 --> 00:59:19.180
+which is a proper app with tracing and logging
+
+00:59:19.520 --> 00:59:21.580
+and all those kind of features.
+
+00:59:22.000 --> 00:59:24.260
+And on the Python side, we're using pandas,
+
+00:59:24.420 --> 00:59:27.320
+which, you know, and we're using NumPy,
+
+00:59:27.520 --> 00:59:28.440
+which is the C extension.
+
+00:59:29.800 --> 00:59:31.300
+We're using PsychoPG,
+
+00:59:31.600 --> 00:59:33.720
+which is like depends on a whole bunch
+
+00:59:33.810 --> 00:59:35.540
+of like third-party libraries as well
+
+00:59:37.320 --> 00:59:38.580
+and stringing it all together
+
+00:59:38.860 --> 00:59:40.680
+and it just looks and feels seamless.
+
+00:59:40.950 --> 00:59:42.700
+Like you see the demo working
+
+00:59:43.020 --> 00:59:44.140
+and you would never know
+
+00:59:44.360 --> 00:59:47.380
+that the weather prediction comes from Python
+
+00:59:47.960 --> 00:59:49.880
+or even that it's running in this way.
+
+00:59:49.990 --> 00:59:51.060
+Like it just looks like
+
+00:59:51.120 --> 00:59:53.640
+and it's implemented like it's part of the same API.
+
+00:59:53.700 --> 00:59:57.620
+I just call a function in one of the libraries and off it goes.
+
+00:59:57.880 --> 00:59:59.700
+But yeah, it's all connected together like this.
+
+01:00:00.410 --> 01:00:00.540
+All right.
+
+01:00:00.560 --> 01:00:04.240
+I'll let either, we're about out of time, but I'll let either of you take this.
+
+01:00:05.280 --> 01:00:07.720
+That was a web example.
+
+01:00:09.680 --> 01:00:17.060
+What about something like WPF or Maui or any other desktop app?
+
+01:00:17.800 --> 01:00:18.140
+Possible?
+
+01:00:20.220 --> 01:00:20.400
+Yeah.
+
+01:00:21.320 --> 01:00:28.280
+So because I'll talk about Maui because obviously that's the more modern UI framework.
+
+01:00:28.880 --> 01:00:32.760
+Give a really, really quick definition to listeners who probably think of that as part of Hawaii.
+
+01:00:36.100 --> 01:00:41.560
+It's kind of the next evolution of Xamarin, which people may be familiar with,
+
+01:00:41.560 --> 01:00:44.420
+the way that you do cross-platform UIs.
+
+01:00:45.760 --> 01:00:48.040
+I'm definitely not the expert on Maui,
+
+01:00:48.060 --> 01:00:54.480
+But the idea is that you can have something that is a bit more portable from an application experience,
+
+01:00:54.630 --> 01:00:58.500
+whether you want to target like a mobile application like an Android or an iOS
+
+01:00:58.880 --> 01:01:02.700
+or run as a desktop application on Windows or something like that.
+
+01:01:02.840 --> 01:01:06.500
+So just like a level of portability and some abstraction between UI concepts.
+
+01:01:07.900 --> 01:01:11.560
+But fundamentally, that's just running.NET behind the scenes.
+
+01:01:11.880 --> 01:01:22.700
+So there's no reason why we couldn't also drop in a bit of CSnakes in there and have that, yeah, work with some kind of backend service.
+
+01:01:22.860 --> 01:01:30.380
+You could use this, and this is something that Anthony and I have talked about, trying to get a demo of doing a local model running with,
+
+01:01:30.840 --> 01:01:40.800
+so you pull a model off of Hugging Face or something like that, just runs it locally to do some kind of AI inference or whatever the case may be for the scenario you want to tackle.
+
+01:01:41.680 --> 01:01:45.060
+But that way you don't have to be calling out to an external service.
+
+01:01:45.900 --> 01:01:49.440
+Now, while sure running like a local model, it's doable with.NET.
+
+01:01:49.640 --> 01:01:52.560
+It is just way easier to do that with Python.
+
+01:01:53.300 --> 01:01:58.200
+And all the examples you would find are going to be written in Python, first and foremost.
+
+01:01:58.740 --> 01:02:01.920
+So trying to then go, okay, well, so this is doable in Python.
+
+01:02:02.000 --> 01:02:03.460
+So what's the C# equivalent?
+
+01:02:03.620 --> 01:02:04.780
+How do I find the equivalent?
+
+01:02:05.860 --> 01:02:09.020
+.NET libraries on NuGet and so on and so forth.
+
+01:02:09.800 --> 01:02:13.480
+Now, with CSnakes, you could expose that model,
+
+01:02:13.740 --> 01:02:16.980
+create some surface areas in just Python APIs
+
+01:02:18.060 --> 01:02:22.400
+that is then going to be consumable by a.NET application.
+
+01:02:24.280 --> 01:02:26.400
+So, yeah, it's something you can definitely do.
+
+01:02:27.660 --> 01:02:29.440
+Not 100% sure whether you can do it on mobile.
+
+01:02:30.720 --> 01:02:31.340
+I don't...
+
+01:02:31.780 --> 01:02:33.740
+I think that's probably stretching it a bit far
+
+01:02:33.880 --> 01:02:36.640
+just because of the way that we have to bootstrap Python
+
+01:02:37.000 --> 01:02:37.740
+with inside of it.
+
+01:02:37.800 --> 01:02:41.340
+and you'd probably be limited from a mobile OS runtime
+
+01:02:41.530 --> 01:02:43.880
+to be able to do that kind of bootstrapping,
+
+01:02:44.120 --> 01:02:45.700
+but at the very least, like a desktop application,
+
+01:02:45.930 --> 01:02:49.240
+or if you wanted to tackle with like a cross-platform UI framework,
+
+01:02:49.480 --> 01:02:50.460
+like Avalonia.
+
+01:02:50.810 --> 01:02:54.900
+So Avalonia is a cross-platform.NET UI framework
+
+01:02:55.900 --> 01:02:58.260
+that means you could build for Linux and Windows
+
+01:02:58.620 --> 01:03:00.600
+and macOS at the same time.
+
+01:03:01.000 --> 01:03:03.420
+You could then run CSnakes under the hood of that
+
+01:03:03.840 --> 01:03:06.400
+to then have that desktop experience
+
+01:03:06.860 --> 01:03:09.000
+that is leveraging Python for where Python
+
+01:03:09.050 --> 01:03:10.900
+is going to be better suited to tackle a problem,
+
+01:03:11.520 --> 01:03:13.360
+.NET for a different set of problems
+
+01:03:13.560 --> 01:03:14.500
+that's better suited for,
+
+01:03:15.020 --> 01:03:16.360
+but just inside this application
+
+01:03:16.500 --> 01:03:18.540
+where you would have no idea as the end user
+
+01:03:19.160 --> 01:03:20.760
+that that's what's actually happening.
+
+01:03:23.100 --> 01:03:23.640
+Very compelling.
+
+01:03:24.390 --> 01:03:24.900
+Very compelling.
+
+01:03:26.600 --> 01:03:27.760
+All right, Anthony, let's close this out
+
+01:03:27.880 --> 01:03:28.900
+with one final thing.
+
+01:03:28.900 --> 01:03:29.680
+I think this is important
+
+01:03:29.690 --> 01:03:31.040
+and we haven't really touched on it yet.
+
+01:03:33.440 --> 01:03:35.200
+You guys started the conversation by saying
+
+01:03:35.220 --> 01:03:39.900
+it's really important for data science right data science use cases and i made the joke about
+
+01:03:40.280 --> 01:03:46.700
+copying a million items to add one to the list but what about sharing data like numpy across
+
+01:03:48.740 --> 01:03:57.600
+different in you know the.net side and the python side and so on um yeah so we have tackled that
+
+01:03:57.760 --> 01:04:04.160
+specifically so um there's something called the buffer protocol it's it's a PEP from a few years
+
+01:04:04.220 --> 01:04:18.460
+ago it's a kind of an API for the internals of something like an ND array in NumPy and the buffer
+
+01:04:18.660 --> 01:04:24.680
+protocol with it we support that so if your function returns a buffer which is a type
+
+01:04:26.430 --> 01:04:33.300
+then we can access the internals of that buffer directly without having to convert the data what
+
+01:04:33.320 --> 01:04:39.860
+this means in reality is that if your function returns a uh like a numpy array like an nd array
+
+01:04:40.660 --> 01:04:46.820
+and the internal uh values in the nd array are a specific type like a 32-bit integer
+
+01:04:47.800 --> 01:04:55.340
+um you can access them as 32-bit integers in.net without having to marshal copy data
+
+01:04:56.280 --> 01:05:02.720
+so that's awesome you like reach inside of the nd array just grab its actual memory and just say
+
+01:05:03.120 --> 01:05:09.120
+got it let's go yeah that's exactly what we do and so that's a it's in.net it's called a read-only
+
+01:05:09.420 --> 01:05:15.980
+span um uh which is the you can write to the data as well so you can do a span and you can actually
+
+01:05:16.160 --> 01:05:21.500
+just modify the values inside the numpy array directly from.net without having to copy backwards
+
+01:05:21.500 --> 01:05:29.020
+and forwards and we support pretty much every like low level type that numpy supports and that means
+
+01:05:29.020 --> 01:05:31.940
+you don't have to do a.2 list on the NumPy array
+
+01:05:32.600 --> 01:05:34.380
+because that is really expensive.
+
+01:05:35.360 --> 01:05:40.340
+And also.NET works in a similar low-level numeric types
+
+01:05:40.660 --> 01:05:41.440
+that NumPy does.
+
+01:05:42.180 --> 01:05:47.220
+It will work with 32-bit ints and 32 or 64-bit floats, for example.
+
+01:05:47.340 --> 01:05:54.240
+So if you're storing 2D matrices in 32-bit floats in NumPy
+
+01:05:55.260 --> 01:05:58.540
+and then you want to send that to.NET to, I don't know,
+
+01:05:58.760 --> 01:06:00.520
+like pick out some specific values
+
+01:06:00.980 --> 01:06:03.680
+or like do some calculations in.NET,
+
+01:06:04.040 --> 01:06:05.720
+then you can just chuck that back as a buffer.
+
+01:06:06.800 --> 01:06:09.100
+And there's information in the docs about how to do this.
+
+01:06:09.360 --> 01:06:11.900
+And then you can just access the values directly out of memory.
+
+01:06:12.320 --> 01:06:14.180
+So it's super fast.
+
+01:06:15.220 --> 01:06:18.280
+And if you even want to like fill a buffer
+
+01:06:18.640 --> 01:06:19.980
+with values from.NET,
+
+01:06:20.680 --> 01:06:22.580
+then you can do that using the writable spam.
+
+01:06:25.300 --> 01:06:25.840
+That's pretty awesome.
+
+01:06:26.580 --> 01:06:30.460
+So yeah, that really is leaning into the data science benefits here as well, isn't it?
+
+01:06:31.539 --> 01:06:36.700
+And nothing ever goes wrong if you're sharing memory across runtimes for different programming languages.
+
+01:06:37.110 --> 01:06:38.540
+No, I don't see how this could go wrong.
+
+01:06:38.940 --> 01:06:40.540
+Yeah, yeah, perfectly fine.
+
+01:06:41.520 --> 01:06:44.180
+And that's why I pushed to make sure we supported read-only span.
+
+01:06:46.140 --> 01:06:46.500
+Yeah, right.
+
+01:06:46.790 --> 01:06:46.900
+Okay.
+
+01:06:47.480 --> 01:06:48.200
+No, I think it's great.
+
+01:06:48.290 --> 01:06:48.820
+I think it's great.
+
+01:06:49.220 --> 01:06:54.080
+And the UI stuff with Avalonia is something I'm going to look at.
+
+01:06:54.080 --> 01:06:55.280
+That sounds really cool to play with.
+
+01:06:55.460 --> 01:06:56.200
+So, all right.
+
+01:06:56.800 --> 01:07:03.040
+final thoughts you guys people out there going oh my gosh i cannot believe we can finally do this
+
+01:07:03.260 --> 01:07:07.200
+with our dot net app and plug in some of the other things we're already doing in python
+
+01:07:08.200 --> 01:07:12.480
+should they is it ready if somebody were to take this and build a thing is that a good idea or
+
+01:07:12.580 --> 01:07:20.460
+should they wait yep they should download it give it a go um the only thing we're possibly changing
+
+01:07:20.620 --> 01:07:26.240
+at the moment is the api based on feedback um we're trying to keep that as stable as possible
+
+01:07:26.280 --> 01:07:28.580
+so we're only making changes that are backward compatible.
+
+01:07:30.760 --> 01:07:33.620
+And yeah, we just want to see more use cases
+
+01:07:33.720 --> 01:07:34.580
+and people can get more feedback.
+
+01:07:34.980 --> 01:07:37.680
+So yeah, please pull it, grab the samples,
+
+01:07:38.100 --> 01:07:39.360
+spin them up, build something,
+
+01:07:40.200 --> 01:07:42.460
+tell us what you made and give us any feedback.
+
+01:07:43.420 --> 01:07:44.560
+Yeah, well, congrats.
+
+01:07:44.560 --> 01:07:45.620
+It looks really, really nice.
+
+01:07:48.160 --> 01:07:49.540
+Definitely, definitely looks promising
+
+01:07:49.780 --> 01:07:51.640
+and I think it solves a lot of the problems
+
+01:07:51.800 --> 01:07:53.360
+that the other attempts had.
+
+01:07:53.520 --> 01:07:54.140
+So nice work.
+
+01:07:55.720 --> 01:07:56.160
+Thanks, Mike.
+
+01:07:56.890 --> 01:07:56.960
+Thanks.
+
+01:07:57.220 --> 01:07:57.280
+Yep.
+
+01:07:58.220 --> 01:07:58.400
+Bye, guys.
+

@@ -1,0 +1,3230 @@
+WEBVTT
+
+00:00:00.920 --> 00:00:02.740
+JOHN MUELLER: Hey, everyone.
+
+00:00:03.680 --> 00:00:06.000
+JANUK JAKUB, Cody, welcome to Talk Python.
+
+00:00:06.750 --> 00:00:07.420
+YANUK JAKUB: Hey.
+
+00:00:08.310 --> 00:00:08.420
+Hi.
+
+00:00:08.620 --> 00:00:09.340
+JANUK JAKUB: Thank you for having us.
+
+00:00:09.980 --> 00:00:10.620
+Good to be here.
+
+00:00:11.030 --> 00:00:12.900
+JOHN MUELLER: Yeah, it's great to have you all here.
+
+00:00:14.000 --> 00:00:17.040
+Really excited to talk about one of my favorite topics--
+
+00:00:17.740 --> 00:00:21.660
+Web frameworks, APIs, async, performance, design patterns.
+
+00:00:21.860 --> 00:00:22.840
+Like, let's do this.
+
+00:00:23.550 --> 00:00:24.560
+JANUK JAKUB: Let's do it.
+
+00:00:24.790 --> 00:00:26.220
+JOHN MUELLER: Cool.
+
+00:00:26.670 --> 00:00:28.360
+So we're going to talk about Litestar,
+
+00:00:28.900 --> 00:00:31.300
+which is somewhat new to me.
+
+00:00:31.500 --> 00:00:32.759
+I haven't known about it that long,
+
+00:00:33.000 --> 00:00:36.560
+but looking at the GitHub stars being several thousand GitHub
+
+00:00:36.800 --> 00:00:39.180
+stars and release two, it's definitely
+
+00:00:39.280 --> 00:00:40.120
+been going for a while.
+
+00:00:40.300 --> 00:00:43.920
+So it's a really cool framework that I think people will
+
+00:00:44.680 --> 00:00:45.720
+definitely be excited to learn about.
+
+00:00:45.880 --> 00:00:48.080
+But before we get to that, let's start with you all.
+
+00:00:48.780 --> 00:00:50.600
+Just a quick introduction for each of you.
+
+00:00:50.940 --> 00:00:55.200
+Go around the pretty bunch squares of our video here.
+
+00:00:55.760 --> 00:00:56.600
+Yannick, do you want to go first?
+
+00:00:57.040 --> 00:00:57.180
+Yeah.
+
+00:00:58.380 --> 00:01:00.800
+Yeah, sure. So my name is Yannick, obviously.
+
+00:01:01.820 --> 00:01:05.320
+I'm a Python developer from Germany, currently living in Cologne.
+
+00:01:06.260 --> 00:01:11.900
+So I'm a bit behind the rest of the other guys when it comes to the time zones.
+
+00:01:12.740 --> 00:01:14.300
+I would put it a different way, Yannick.
+
+00:01:14.360 --> 00:01:15.620
+I'd say you're living in the future.
+
+00:01:16.040 --> 00:01:17.520
+You're living hours ahead of time.
+
+00:01:17.560 --> 00:01:18.460
+You know what's already happened.
+
+00:01:18.900 --> 00:01:20.500
+Oh, yeah, that sounds much nicer.
+
+00:01:24.040 --> 00:01:27.220
+Yeah, well, I currently work as a Python developer.
+
+00:01:28.259 --> 00:01:32.480
+Before I got into Python, I worked as a carpenter.
+
+00:01:33.170 --> 00:01:36.440
+So I built furniture and other cool stuff.
+
+00:01:39.060 --> 00:01:41.500
+Yeah, I think that's all we need to know right now.
+
+00:01:41.860 --> 00:01:44.760
+So Cody, why don't you continue?
+
+00:01:45.620 --> 00:01:46.340
+Yeah, I'll be happy to.
+
+00:01:46.540 --> 00:01:47.560
+So hey, Michael.
+
+00:01:47.700 --> 00:01:48.000
+Hey, guys.
+
+00:01:48.260 --> 00:01:48.580
+I'm Cody.
+
+00:01:50.340 --> 00:01:53.720
+Well, really, I've kind of had an interesting journey into the Python space.
+
+00:01:54.020 --> 00:01:58.260
+And so I kind of probably atypical from the rest of the team here.
+
+00:01:58.320 --> 00:02:03.260
+And so I've actually been a long time database guy, specifically in Oracle.
+
+00:02:03.500 --> 00:02:14.140
+And so lots of big, nasty data warehouses, large transaction systems, and building all the glue that you've got to do to make that stuff run.
+
+00:02:14.260 --> 00:02:25.620
+And so I guess really my intro to Python was really around DevOps doing, you know, how do you make the whole environment, you know, stay running, how do you keep it efficient?
+
+00:02:26.580 --> 00:02:28.700
+And it's really focused on the database side of things.
+
+00:02:28.780 --> 00:02:36.800
+And so about 10 years ago, moved to Dallas from Alabama, originally where I'm from, and joined a small team of Oracle developers.
+
+00:02:36.920 --> 00:02:40.800
+And so we got acquired by one of the big four consulting firms.
+
+00:02:40.860 --> 00:02:46.300
+And so at that point, I shifted into development from development and into cloud migrations.
+
+00:02:46.540 --> 00:02:50.900
+So did quite a bit of just Oracle database migrations into the various cloud providers.
+
+00:02:51.700 --> 00:02:59.360
+And now just long, about six years later, I've now wound up at Google as part of the database black belt team there.
+
+00:02:59.940 --> 00:03:03.100
+And I still try to figure out exactly what a database black belt is.
+
+00:03:03.200 --> 00:03:12.800
+But a year in, really what I can tell you is that what I do is talk to all of our biggest customers and figure out what are the features and things that they need to make their enterprises run on Google Cloud.
+
+00:03:13.080 --> 00:03:15.560
+And we work with the engineers to make that happen.
+
+00:03:16.840 --> 00:03:18.240
+What an interesting background.
+
+00:03:18.480 --> 00:03:28.380
+I would say having a really good background in databases and especially the DevOps side of databases is a pretty unique view for building a web framework, right?
+
+00:03:28.460 --> 00:03:35.800
+Right. A lot of people are all about, oh, I got to have something from my front end code, my JavaScript I'm writing. Right. And that's really not the same.
+
+00:03:36.700 --> 00:03:55.660
+Yeah. And, you know, my career actually originally started using, well, I guess now they're called low code tools, but we used to call them rapid application development. And so there's just lots of database builders where there really wasn't any actual, you know, Python or any Java or those types of code involved. It was all PLSQL.
+
+00:03:55.700 --> 00:04:00.860
+So I was actually happy to get involved in the Python world and move out of that space.
+
+00:04:01.040 --> 00:04:01.840
+So, yeah.
+
+00:04:02.120 --> 00:04:02.840
+Yeah, excellent.
+
+00:04:04.000 --> 00:04:04.200
+Awesome.
+
+00:04:04.520 --> 00:04:04.620
+Jacob.
+
+00:04:05.620 --> 00:04:08.060
+Hey, I'm pretty new to being a developer.
+
+00:04:08.340 --> 00:04:15.280
+I spent the last four or five years in the system space, more on like the IT side of things,
+
+00:04:16.060 --> 00:04:18.920
+building systems and helping users.
+
+00:04:19.299 --> 00:04:26.040
+The last year, though, I've gotten to dive into DevOps on my team at O'Reilly.
+
+00:04:27.040 --> 00:04:28.300
+Auto Parts, not the book people.
+
+00:04:29.720 --> 00:04:31.520
+And it's been really interesting.
+
+00:04:32.380 --> 00:04:35.740
+But recently, I got to join this team, and I'm learning a lot.
+
+00:04:36.000 --> 00:04:40.380
+So this is really exciting for me to be here.
+
+00:04:41.540 --> 00:04:43.340
+Yeah, well, it's awesome to have you here.
+
+00:04:44.160 --> 00:04:48.200
+And like I said, a really exciting web project that I think people will appreciate.
+
+00:04:48.900 --> 00:04:52.920
+So let's go ahead and jump into it.
+
+00:04:53.580 --> 00:04:59.300
+So Litestar at Litestar.dev, effortlessly build performant APIs.
+
+00:05:01.220 --> 00:05:04.380
+So who wants to give us the elevator pitch here?
+
+00:05:05.220 --> 00:05:07.580
+The 30-second view of Litestar.
+
+00:05:08.620 --> 00:05:10.360
+Yannick, I think Cody should do that.
+
+00:05:10.640 --> 00:05:10.840
+Oh.
+
+00:05:12.620 --> 00:05:14.240
+Yannick, I'd like to hear what you think,
+
+00:05:14.240 --> 00:05:18.040
+and then I can give you about my perspective of how I kind of joined the team
+
+00:05:18.000 --> 00:05:19.680
+and why and what it means to me.
+
+00:05:19.840 --> 00:05:22.860
+But I think it would be helpful to hear how you think about it.
+
+00:05:23.700 --> 00:05:23.940
+All right.
+
+00:05:24.800 --> 00:05:26.280
+So what is Litestar?
+
+00:05:26.750 --> 00:05:31.540
+Well, I think our tagline puts it pretty well.
+
+00:05:32.600 --> 00:05:35.680
+We definitely have a focus on building APIs,
+
+00:05:36.210 --> 00:05:44.600
+so not the typical HTML applications monolith.
+
+00:05:45.760 --> 00:05:55.220
+It's often compared to FastAPI, and it has similarities, definitely, which FastAPI is already in the name.
+
+00:05:55.420 --> 00:05:56.940
+It's also focused on building APIs.
+
+00:06:00.100 --> 00:06:04.700
+But for us, really important is the effortless part.
+
+00:06:04.950 --> 00:06:15.440
+So what we strive to do is to take away all the, well, not all, but as much as we can take away the boilerplate for developers.
+
+00:06:15.520 --> 00:06:22.560
+that you usually have to do anyway when you're building any project of size,
+
+00:06:24.240 --> 00:06:30.080
+which includes lots of stuff like authorization, caching, ORM integration,
+
+00:06:31.820 --> 00:06:37.020
+and all these kind of things that you usually have to do.
+
+00:06:37.060 --> 00:06:42.899
+And with micro frameworks like Flask or Past API or StartIt
+
+00:06:42.920 --> 00:06:45.300
+or any of the other ones out there
+
+00:06:45.350 --> 00:06:46.460
+because there are a lot of them.
+
+00:06:47.260 --> 00:06:49.740
+And they're all really great at what they're doing,
+
+00:06:50.460 --> 00:06:55.300
+but they do require to build a lot of boilerplates,
+
+00:06:55.640 --> 00:06:56.620
+which can be good
+
+00:06:57.090 --> 00:06:59.020
+because it gives you a lot of control
+
+00:06:59.270 --> 00:07:00.000
+over what you're doing
+
+00:07:00.280 --> 00:07:03.540
+and you can build it exactly how you want to.
+
+00:07:04.720 --> 00:07:06.360
+But it's also not,
+
+00:07:07.220 --> 00:07:08.900
+well, it's not completely effortless,
+
+00:07:09.400 --> 00:07:11.700
+which is what we are trying to achieve.
+
+00:07:12.560 --> 00:07:14.100
+Yeah, when I think about the web frameworks,
+
+00:07:14.640 --> 00:07:18.860
+I have this sort of bimodal distribution at like two ends.
+
+00:07:19.020 --> 00:07:20.140
+On one end, you have Django,
+
+00:07:21.220 --> 00:07:24.080
+where it comes with all of these helpers and all of these things.
+
+00:07:24.340 --> 00:07:27.320
+Like you just say, yes, I want to hold back in
+
+00:07:27.340 --> 00:07:30.300
+to manage my database with a UI, for example, right?
+
+00:07:30.920 --> 00:07:32.180
+But there's a bunch of those kinds of things,
+
+00:07:32.960 --> 00:07:37.040
+form creation and the ORM migrations.
+
+00:07:37.240 --> 00:07:39.220
+All that stuff is kind of just, you get it all.
+
+00:07:40.160 --> 00:07:42.880
+And the other end, you have Flask and you have FastAPI
+
+00:07:43.160 --> 00:07:46.680
+and a whole bunch of others, Sanic, you name it.
+
+00:07:47.960 --> 00:07:48.800
+And go ahead.
+
+00:07:50.500 --> 00:07:52.400
+Fort, I was just adding to that.
+
+00:07:52.940 --> 00:07:53.260
+Yeah, yeah.
+
+00:07:53.380 --> 00:07:53.860
+There's a lot.
+
+00:07:54.480 --> 00:07:55.080
+There's a lot.
+
+00:07:55.130 --> 00:07:58.940
+And they're all about, we're going to go and handle the request.
+
+00:07:59.960 --> 00:08:00.780
+And then it's up to you.
+
+00:08:01.780 --> 00:08:02.320
+Do you want a database?
+
+00:08:02.540 --> 00:08:03.160
+You can have a database.
+
+00:08:03.290 --> 00:08:04.820
+If you don't want one, don't have one.
+
+00:08:05.640 --> 00:08:09.379
+In that regard, FastAPI itself is kind of almost prescriptive
+
+00:08:09.400 --> 00:08:13.860
+in that it talks about having like model exchange
+
+00:08:14.380 --> 00:08:15.920
+and defining models that create your,
+
+00:08:17.100 --> 00:08:18.840
+how the website works.
+
+00:08:19.170 --> 00:08:21.140
+Whereas Flask doesn't even have that, right?
+
+00:08:23.040 --> 00:08:23.940
+You just kind of nailed it.
+
+00:08:23.940 --> 00:08:26.180
+And this is actually how I kind of came into,
+
+00:08:26.500 --> 00:08:27.800
+it was actually Starlette at the time,
+
+00:08:28.020 --> 00:08:31.360
+but I guess about four years ago,
+
+00:08:31.490 --> 00:08:34.099
+I built a pretty large scale Django app
+
+00:08:35.440 --> 00:08:36.820
+for some consulting work.
+
+00:08:37.240 --> 00:08:40.960
+And it was really around data quality and data migration.
+
+00:08:41.050 --> 00:08:41.940
+And it worked really well.
+
+00:08:42.200 --> 00:08:46.280
+But, you know, I was seeing all this stuff about FastAPI.
+
+00:08:46.330 --> 00:08:48.720
+And I really, you know, liked what I was seeing.
+
+00:08:48.960 --> 00:08:51.340
+And the developer experience of that was really incredible.
+
+00:08:51.520 --> 00:08:55.060
+And, you know, the tools that those guys put together was just kind of second to none.
+
+00:08:55.130 --> 00:09:00.120
+It was really refreshing to see that kind of build in over what you see in Django.
+
+00:09:00.820 --> 00:09:04.660
+And so I started working with FastAPI and really liked it.
+
+00:09:04.820 --> 00:09:10.200
+But I got to where I felt like I had a lot of boilerplate that I added on top of that to get to that working app.
+
+00:09:10.310 --> 00:09:19.460
+And so when we joined up with Google, one of the things that I did was was say, OK, I've got a lot of like boilerplate for things that I need to run this app.
+
+00:09:19.640 --> 00:09:25.460
+And maybe there's somewhere that I can contribute. And so at that point, I started looking around at all the web frameworks.
+
+00:09:25.650 --> 00:09:31.480
+And that's when I got introduced to Starlette at the time. And just kind of to give a little bit of a history.
+
+00:09:32.180 --> 00:09:38.420
+It was originally called Starlette because it was based on Starlette, just like all the other ASCII frameworks out there.
+
+00:09:38.680 --> 00:09:41.280
+And, you know, obviously Starlette is an awesome tool.
+
+00:09:41.660 --> 00:09:45.760
+And we were kind of, you know, paying respect to that by naming it Starlette.
+
+00:09:46.260 --> 00:09:50.620
+But obviously there's very few letters in between that and Starlette.
+
+00:09:50.700 --> 00:09:54.400
+And so what we found is that many of the posts that we made, people were confusing.
+
+00:09:54.860 --> 00:09:57.360
+Hey, did you mean Starlette? Because I don't know what a Starlette is.
+
+00:09:57.480 --> 00:10:01.400
+And so long story short, we said, OK, it's time for us to rename.
+
+00:10:01.620 --> 00:10:05.800
+And, you know, I guess we're all not too original because we just flipped the wording around.
+
+00:10:05.930 --> 00:10:07.080
+And that's how we came up with Litestar.
+
+00:10:08.540 --> 00:10:09.240
+It's a cool name.
+
+00:10:09.370 --> 00:10:09.840
+I like it.
+
+00:10:10.900 --> 00:10:11.060
+Yeah.
+
+00:10:11.300 --> 00:10:17.820
+And just for people who don't necessarily know, much of FastAPI's magic is that it's built on Starlet.
+
+00:10:18.440 --> 00:10:23.280
+And so, in a sense, you're running on the same foundation as FastAPI in that regard, right?
+
+00:10:24.200 --> 00:10:25.540
+No, we're actually not anymore.
+
+00:10:25.880 --> 00:10:27.980
+So, that's where it started out.
+
+00:10:28.010 --> 00:10:28.920
+That was the original.
+
+00:10:29.140 --> 00:10:29.420
+All right.
+
+00:10:29.660 --> 00:10:29.820
+Yeah.
+
+00:10:29.880 --> 00:10:40.180
+So I think we have dropped Starlette as a dependency about like six, seven months ago, before version two.
+
+00:10:43.040 --> 00:10:47.400
+So in the beginning, Starlette is built very, very modular.
+
+00:10:47.870 --> 00:10:54.800
+You can use like FastAPI, use the whole thing, and you can just extend the router and don't care about anything.
+
+00:10:54.940 --> 00:11:00.900
+but it's also designed in such a way that you can just take certain things of it. So you can say,
+
+00:11:00.970 --> 00:11:09.420
+okay, I just like the routing and the rest I'll do myself. And what we originally did was we
+
+00:11:10.180 --> 00:11:17.860
+had our own router, our own routing system, and plugged that into Starlette and built our
+
+00:11:17.880 --> 00:11:26.480
+own application on top of that. But with over time we have diverged quite a lot from the way Starlet
+
+00:11:27.060 --> 00:11:33.400
+wanted to do things or well not wanted to do things but Starlette became a bit restrictive
+
+00:11:33.680 --> 00:11:40.720
+because we wanted to do things very differently at very deep parts of the Starlette stack and so
+
+00:11:40.880 --> 00:11:49.440
+it kind of made sense to us that we just wrote our own basically and filled in the gaps that
+
+00:11:49.600 --> 00:11:58.880
+started left behind, which wasn't an easy decision because Starlette is a very great piece of technology
+
+00:11:59.180 --> 00:12:05.140
+and it's very well done. And it's got a lot of credibility to it, right? There's a lot of people
+
+00:12:05.140 --> 00:12:10.280
+that run it in production and that means something when you have a tool that is known to work well.
+
+00:12:11.600 --> 00:12:18.740
+yeah so yeah it was a bit of a challenge um to get to get that going but yeah um at the moment we
+
+00:12:19.610 --> 00:12:26.980
+are from the asgi side our very own thing um we don't depend on anything else in that regard
+
+00:12:27.740 --> 00:12:35.260
+anymore okay and is that all python or is that got some other technology making it go in there
+
+00:12:35.280 --> 00:12:43.960
+um so that part the asgi part is all python we have some other non-python parts um but they are
+
+00:12:44.100 --> 00:12:52.720
+not at the web serving um site that's got it yeah yeah and we've we've rustified i guess that's the
+
+00:12:52.800 --> 00:12:59.419
+term uh if you will uh at least one one place that's the url parsers right yeah the query parsers
+
+00:13:02.360 --> 00:13:02.500
+okay
+
+00:13:03.640 --> 00:13:05.340
+it certainly is a strong trend these days
+
+00:13:05.510 --> 00:13:07.380
+although I'm surprised for a framework that hasn't been
+
+00:13:07.450 --> 00:13:09.380
+around that long that it's already got rust
+
+00:13:09.570 --> 00:13:10.020
+no just kidding
+
+00:13:12.480 --> 00:13:13.520
+we experimented
+
+00:13:14.580 --> 00:13:15.460
+about a year ago
+
+00:13:16.540 --> 00:13:17.580
+we experimented
+
+00:13:17.650 --> 00:13:19.100
+actually with more rust
+
+00:13:19.250 --> 00:13:21.380
+and that was to do the routing in rust
+
+00:13:21.880 --> 00:13:23.180
+so we use
+
+00:13:23.880 --> 00:13:24.960
+a radix based router
+
+00:13:25.680 --> 00:13:26.580
+that's something
+
+00:13:27.120 --> 00:13:28.260
+Sanic does that as well
+
+00:13:28.500 --> 00:13:48.900
+I think. And we experimented with a Rust implementation, but it was decided that the speed up that we got from using Rust wasn't really worth the trade-off between it being harder to maintain and being less accessible for other contributors.
+
+00:13:49.100 --> 00:13:57.140
+Because most of the people who are using a Python web framework, they will know Python, but they're not necessarily that fluent in Rust.
+
+00:13:59.680 --> 00:14:00.560
+and well
+
+00:14:01.750 --> 00:14:03.320
+basically the router wasn't really
+
+00:14:03.540 --> 00:14:04.920
+that big of a bottleneck for
+
+00:14:05.580 --> 00:14:06.400
+Starlette at the time
+
+00:14:07.540 --> 00:14:09.000
+so it didn't make a lot of sense
+
+00:14:10.000 --> 00:14:11.440
+to write that part
+
+00:14:11.440 --> 00:14:11.820
+in Rust
+
+00:14:14.680 --> 00:14:15.540
+Yeah, it's a big
+
+00:14:15.660 --> 00:14:17.620
+trade-off isn't it? Even things like
+
+00:14:17.840 --> 00:14:18.920
+shipping wheels and just
+
+00:14:19.480 --> 00:14:21.400
+pushing out a version once you start
+
+00:14:21.400 --> 00:14:23.200
+to go into a, well there's a per
+
+00:14:23.660 --> 00:14:25.119
+platform compilation step
+
+00:14:26.700 --> 00:14:32.440
+that i'm sure you could do a whole um podcast just on packaging but python packaging in and of
+
+00:14:32.560 --> 00:14:38.100
+itself is not always the easiest or in most intuitive process and so yeah it definitely
+
+00:14:38.130 --> 00:14:44.380
+gets complicated when you add in another language yeah yeah i can imagine and in a lot of cases there
+
+00:14:44.500 --> 00:14:51.180
+are you know more low-hanging fruits that you can grab and just optimize things there before you say
+
+00:14:51.160 --> 00:14:53.460
+okay, now we have optimized everything so well,
+
+00:14:53.490 --> 00:14:54.960
+the only way we can get faster
+
+00:14:55.180 --> 00:14:57.060
+if we now use a language like Rust.
+
+00:14:57.860 --> 00:15:01.180
+And I don't think we're at that part yet.
+
+00:15:02.100 --> 00:15:04.040
+So we have things to do.
+
+00:15:04.800 --> 00:15:05.320
+Yeah, for sure.
+
+00:15:05.460 --> 00:15:06.040
+That's excellent.
+
+00:15:06.200 --> 00:15:07.600
+It's a really good philosophy too, I think.
+
+00:15:08.920 --> 00:15:10.960
+There's an interesting new way
+
+00:15:11.010 --> 00:15:12.380
+to make your Python code faster
+
+00:15:12.560 --> 00:15:14.280
+that used to be the case
+
+00:15:14.840 --> 00:15:16.680
+when Moore's law was really in effect.
+
+00:15:16.830 --> 00:15:19.099
+You went from a 486 to a Pentium
+
+00:15:19.120 --> 00:15:21.040
+to whatever gigahertz
+
+00:15:22.620 --> 00:15:24.180
+and from megahertz to gigahertz
+
+00:15:24.180 --> 00:15:24.700
+and all those things.
+
+00:15:24.700 --> 00:15:26.420
+You just wait and the hardware got faster.
+
+00:15:26.460 --> 00:15:27.440
+So your code went faster.
+
+00:15:27.920 --> 00:15:30.160
+But with the faster CPython initiative
+
+00:15:30.480 --> 00:15:32.640
+and Quito and Mark Shannon
+
+00:15:32.860 --> 00:15:33.700
+and team over there,
+
+00:15:34.180 --> 00:15:35.720
+they're making Python quite a bit faster
+
+00:15:37.320 --> 00:15:38.420
+constantly with every release.
+
+00:15:39.680 --> 00:15:41.160
+It's really impressive what they've done.
+
+00:15:41.660 --> 00:15:43.720
+It was a noticeable for my,
+
+00:15:44.000 --> 00:15:45.860
+the projects that I'm currently using LightSore on,
+
+00:15:45.860 --> 00:15:47.839
+it was a noticeable increase in performance
+
+00:15:47.860 --> 00:15:49.240
+when I went to 3.11.
+
+00:15:49.580 --> 00:15:51.340
+And yeah, looking forward to seeing
+
+00:15:51.460 --> 00:15:52.920
+what all they do over the next couple of releases.
+
+00:15:54.140 --> 00:15:56.860
+Yeah, we just last week, I think,
+
+00:15:57.180 --> 00:15:57.920
+no, this week perhaps,
+
+00:15:58.740 --> 00:16:01.300
+had the release candidate for 3.12.
+
+00:16:01.680 --> 00:16:05.040
+So it's kind of final beside the bugs,
+
+00:16:05.640 --> 00:16:07.720
+which is, you know, people can start testing it
+
+00:16:07.720 --> 00:16:09.240
+and see what's to come out of there as well.
+
+00:16:10.760 --> 00:16:13.460
+Yeah, we haven't actually tested yet with 3.12
+
+00:16:13.690 --> 00:16:16.939
+because we're still waiting on some of our dependencies
+
+00:16:16.960 --> 00:16:19.300
+to be compatible with that.
+
+00:16:20.000 --> 00:16:21.560
+Jacob, do you want to say something?
+
+00:16:22.340 --> 00:16:23.940
+We just have two more.
+
+00:16:24.140 --> 00:16:27.200
+I think it's GRPC and Greenlit.
+
+00:16:27.900 --> 00:16:30.740
+Greenlit actually, I think, is ready,
+
+00:16:30.800 --> 00:16:33.700
+but they need to do a release to PyPI.
+
+00:16:34.560 --> 00:16:38.780
+But the GRPC is, I think, one of our stragglers.
+
+00:16:39.780 --> 00:16:39.940
+Okay.
+
+00:16:40.580 --> 00:16:41.980
+I've been eager to test that and see
+
+00:16:42.340 --> 00:16:43.620
+what kind of performance we can get.
+
+00:16:43.620 --> 00:16:45.840
+I guess we could do the RC one now,
+
+00:16:47.420 --> 00:16:49.100
+but we should probably wait.
+
+00:16:49.510 --> 00:16:50.660
+Test at some point.
+
+00:16:51.330 --> 00:16:51.420
+Yeah.
+
+00:16:51.860 --> 00:16:52.040
+Okay.
+
+00:16:52.540 --> 00:16:52.780
+Interesting.
+
+00:16:53.100 --> 00:16:53.160
+Yeah.
+
+00:16:53.210 --> 00:16:55.040
+I mean, that's always the constant struggle, right?
+
+00:16:55.200 --> 00:16:58.640
+Is you've got a lot of dependencies here.
+
+00:16:59.000 --> 00:16:59.240
+I don't know.
+
+00:17:00.480 --> 00:17:01.740
+A huge number of them are optional,
+
+00:17:01.920 --> 00:17:02.800
+but yes, it's a,
+
+00:17:02.960 --> 00:17:04.140
+but it can get a little crazy.
+
+00:17:05.260 --> 00:17:07.560
+And that's actually a good point to make.
+
+00:17:07.560 --> 00:17:07.720
+You know,
+
+00:17:07.939 --> 00:17:10.199
+one of the things you'll see is that there are quite a lot of dependencies,
+
+00:17:10.520 --> 00:17:14.000
+but you'll see that a lot of them are tied to optional groups.
+
+00:17:14.160 --> 00:17:22.560
+And so one of the things that we wanted to do was make it quick for a user to kind of pip install one thing and have all the pieces they need to get started.
+
+00:17:22.640 --> 00:17:36.440
+And so you can say pip install Litestar and you can add the CLI or the standard group and it will automatically install the JS beautifier and the command line utilities and rich and a couple of other libraries.
+
+00:17:36.500 --> 00:17:41.780
+And so there's a lot of helpers to kind of make that a little bit more easy to just jump right in.
+
+00:17:42.700 --> 00:17:57.380
+Right. And it looks like you've got, say, like Oracle or DuckDB or other things that maybe not everyone are, you know, async, PG, all those types of things that you probably only need one of those, right? You're probably not doing MySQL, Postgres and Oracle.
+
+00:17:58.270 --> 00:18:12.300
+We actually do all of them. And so with the same, and this is one of the things that I think is probably good to point out is that with a repository contrib module that we've created, you actually can use the same.
+
+00:18:12.740 --> 00:18:18.340
+repository, the same model is the same JSON type, and it will automatically select the best data
+
+00:18:18.420 --> 00:18:22.700
+type for whatever engine you're running. So for instance, if you're on, let's just say that today
+
+00:18:22.920 --> 00:18:29.400
+you're running on asyncpg with Postgres and you've got a JSON B data type using the built-in custom
+
+00:18:29.720 --> 00:18:35.420
+Litestar JSON type, and tomorrow you convert to Oracle. All you need to do is change your connect
+
+00:18:35.580 --> 00:18:40.060
+string and it'll automatically deploy that to Oracle with the correct JSON type. And so you
+
+00:18:39.980 --> 00:18:42.080
+you really don't have to do anything additional
+
+00:18:42.420 --> 00:18:45.180
+to make your code work between that.
+
+00:18:45.320 --> 00:18:48.320
+So honestly, a lot of that came from my time with Django
+
+00:18:48.540 --> 00:18:51.520
+where you got the set of utilities worked
+
+00:18:51.660 --> 00:18:52.520
+with quite a few databases.
+
+00:18:52.810 --> 00:18:54.620
+And so I spent quite a bit of time
+
+00:18:54.900 --> 00:18:56.940
+kind of making sure that that worked.
+
+00:18:57.780 --> 00:19:01.840
+And so you'll see that including with the Olympic migrations
+
+00:19:02.000 --> 00:19:04.120
+that are coming out in 2.1 in a couple of weeks.
+
+00:19:04.170 --> 00:19:05.840
+And so through the CLI,
+
+00:19:05.960 --> 00:19:07.880
+you'll be able to actually manage your entire database,
+
+00:19:08.300 --> 00:19:13.460
+call and configure configurations and generate them,
+
+00:19:14.660 --> 00:19:19.640
+as well as launch and use your app through the same single CLI.
+
+00:19:20.160 --> 00:19:22.640
+I don't think I'd ever want to migrate to Oracle.
+
+00:19:25.580 --> 00:19:27.360
+Well, when you need Oracle, you do need Oracle.
+
+00:19:27.440 --> 00:19:31.380
+And so I know I'm aware of the stigma.
+
+00:19:32.740 --> 00:19:35.680
+But yeah, there's some times and places for all of them.
+
+00:19:36.280 --> 00:19:41.560
+I think for those who are unaware what you're talking about, you're talking about the SQL
+
+00:19:41.840 --> 00:19:44.320
+Alchemy repository patterns that we offer.
+
+00:19:46.160 --> 00:19:51.120
+So the things you mentioned, they are built on top of SQLAlchemy, which in itself is
+
+00:19:51.320 --> 00:19:54.420
+already really flexible and makes it easy to change databases.
+
+00:19:54.670 --> 00:19:59.720
+But there are still a few gaps that you need to bridge yourself, like the ones you've mentioned.
+
+00:20:00.040 --> 00:20:06.040
+And this is an example of the things that we try to take care of.
+
+00:20:07.840 --> 00:20:09.700
+And one last note on that.
+
+00:20:09.720 --> 00:20:19.960
+So, you know, a lot of the repositories that you might see for cookie cutter apps or the other existing templates out there usually stop at the basic CRUD operations.
+
+00:20:20.100 --> 00:20:29.060
+But what we've done here is actually implemented all the basic CRUD operations and efficient bulk operations based on whatever database you're using.
+
+00:20:29.340 --> 00:20:31.280
+and we choose the most optimal method for that.
+
+00:20:32.290 --> 00:20:37.340
+So that includes bulk add, bulk update, a merge statement,
+
+00:20:39.000 --> 00:20:41.560
+bulk delete, as well as all of the standard CRUD operations.
+
+00:20:41.670 --> 00:20:45.460
+And so one of the things that we really have focused on
+
+00:20:45.460 --> 00:20:48.200
+is making sure that this is an incredibly feature-complete repository
+
+00:20:48.480 --> 00:20:51.940
+that has all of the functionality that you might want to use
+
+00:20:52.050 --> 00:20:52.960
+just right out of the box.
+
+00:20:55.020 --> 00:20:56.880
+That's really excellent that you all are handling that for people,
+
+00:20:57.000 --> 00:21:03.760
+And it gives me a sense of what you mean by the helping people do this stuff effortlessly,
+
+00:21:04.260 --> 00:21:10.460
+bringing a little bit of those batteries included feel of Django without the...
+
+00:21:10.500 --> 00:21:11.160
+Putting in the batteries?
+
+00:21:12.420 --> 00:21:13.380
+Yeah, yeah, exactly.
+
+00:21:13.540 --> 00:21:18.140
+Without the very prescriptive way that, say, Django does.
+
+00:21:18.380 --> 00:21:25.280
+I guess keeping the micro framework feel, but bringing along a lot of the stuff that people would otherwise have to choose and configure like,
+
+00:21:25.420 --> 00:21:27.420
+oh, okay, we're going to use, I guess we'll use SQLAlchemy.
+
+00:21:28.100 --> 00:21:29.440
+Oh, did you call an async function?
+
+00:21:29.620 --> 00:21:33.900
+Oh, well, then you're going to also need the async SQLite library installed.
+
+00:21:34.100 --> 00:21:34.780
+How do I find that?
+
+00:21:34.880 --> 00:21:38.300
+And, you know, like those series of steps you've kind of got to go through.
+
+00:21:38.460 --> 00:21:41.900
+And it sounds like you've taken care of some of that for people.
+
+00:21:43.440 --> 00:21:44.040
+We try to.
+
+00:21:44.280 --> 00:21:46.940
+You know, obviously we'll continue to evolve it over time.
+
+00:21:47.100 --> 00:21:50.900
+But, you know, I've now used it a year at my work at Google,
+
+00:21:50.980 --> 00:21:52.720
+and it's really kind of satisfied.
+
+00:21:52.880 --> 00:21:55.500
+I'd say 95% of the use cases I need.
+
+00:21:55.590 --> 00:21:58.840
+And so I typically don't have to drop back into raw SQL anymore,
+
+00:21:58.950 --> 00:22:00.000
+which I think is a huge thing.
+
+00:22:00.290 --> 00:22:04.800
+And that's what I would like to propose and get everybody else to.
+
+00:22:04.800 --> 00:22:06.720
+And so that's where the focus there.
+
+00:22:07.680 --> 00:22:10.140
+And the one thing I'll add about it is that we,
+
+00:22:10.420 --> 00:22:14.020
+we still kind of maintain that micro framework philosophy because all this
+
+00:22:14.290 --> 00:22:16.520
+work is actually packaged up in something called a plugin.
+
+00:22:17.240 --> 00:22:21.400
+And so you can configure this one class and it automatically registers the,
+
+00:22:22.360 --> 00:22:27.880
+the route handlers, the on startup, on shutdown handlers that need to happen.
+
+00:22:28.200 --> 00:22:32.380
+It'll register the ASCII lifespan things that you need.
+
+00:22:32.400 --> 00:22:35.380
+And so basically you get this one piece where you can, you know,
+
+00:22:35.480 --> 00:22:37.600
+just set up your entire app and you don't have to, you know,
+
+00:22:37.840 --> 00:22:41.780
+do or add the piece in several parts of your application.
+
+00:22:44.080 --> 00:22:44.480
+Yeah, excellent.
+
+00:22:45.700 --> 00:22:47.100
+So before we dive into the features,
+
+00:22:47.620 --> 00:22:49.000
+which we have been doing a little bit already,
+
+00:22:49.200 --> 00:22:50.060
+at least some of the philosophy.
+
+00:22:51.520 --> 00:22:52.500
+I want to talk about benchmarks.
+
+00:22:52.810 --> 00:22:55.340
+And I know benchmarks are, you know,
+
+00:22:57.520 --> 00:22:59.220
+a little controversial in the sense that,
+
+00:22:59.340 --> 00:23:00.880
+well, the way I'm using the framework
+
+00:23:01.010 --> 00:23:02.460
+is different than the way you use it.
+
+00:23:02.500 --> 00:23:03.760
+The way you use it is really fast.
+
+00:23:03.840 --> 00:23:05.140
+The way I, you know, whatever, right?
+
+00:23:05.260 --> 00:23:07.600
+Like putting that out there
+
+00:23:07.700 --> 00:23:10.700
+and just giving a sense that this is a really fast framework.
+
+00:23:11.480 --> 00:23:14.320
+You know, how does it compare to things like FastAPI or Quart,
+
+00:23:14.380 --> 00:23:18.220
+which is the async version of Flask-ish, right?
+
+00:23:18.320 --> 00:23:22.480
+They're working on unifying those more, but basically the async version of Flask for now.
+
+00:23:23.820 --> 00:23:30.820
+Zanik and then Starlet, who wants to give us a quick summary of this graph you got here in the benchmarks page?
+
+00:23:31.380 --> 00:23:31.720
+All right.
+
+00:23:31.980 --> 00:23:38.560
+So before we get into the benchmarks, you said it already, but I want to add another disclaimer.
+
+00:23:39.260 --> 00:23:45.380
+As you said, benchmarks are a really, really controversial topic, and they're insanely hard to get right.
+
+00:23:45.800 --> 00:23:52.360
+And it's even harder to get actually benchmarks that are useful for your use case.
+
+00:23:52.450 --> 00:23:59.700
+And they show you what you actually want to measure because most of the time they don't.
+
+00:24:00.010 --> 00:24:10.840
+They measure something, but they often don't translate one-to-one or even somewhere close to that to real-world performance.
+
+00:24:11.460 --> 00:24:14.660
+And I have spent a lot of time on these benchmarks.
+
+00:24:15.380 --> 00:24:22.040
+And I want to say that the benchmarks didn't came about as us trying to compare to other frameworks,
+
+00:24:22.440 --> 00:24:29.720
+but we were experiencing some performance regression internally after a major change somewhere.
+
+00:24:30.440 --> 00:24:31.820
+And we were trying to track that down.
+
+00:24:31.900 --> 00:24:39.919
+And for that, I developed a quite comprehensive benchmark suit that tried to get us close to a real world usage
+
+00:24:39.940 --> 00:24:43.780
+of how we expected the framework to be used.
+
+00:24:44.900 --> 00:24:48.900
+And then that grew to compare other frameworks as well.
+
+00:24:52.480 --> 00:24:54.780
+And when I added the other frameworks,
+
+00:24:55.190 --> 00:24:59.900
+I tried to follow a very, very simple philosophy,
+
+00:25:00.280 --> 00:25:03.000
+which is not necessarily,
+
+00:25:03.960 --> 00:25:05.440
+well, some might say it's unfair.
+
+00:25:05.860 --> 00:25:09.640
+I think it's one way to get a comparable result.
+
+00:25:12.000 --> 00:25:16.780
+So what I tried to do is to not optimize anything.
+
+00:25:17.290 --> 00:25:28.820
+I just used every, I built the same app in every framework with the framework as it comes out of the box, just took the straight up approach that's shown in the documentation.
+
+00:25:29.820 --> 00:25:40.740
+And I did that because from almost all of the frameworks, there is for every case some way to make it a little bit more performant in this special case and in that special case.
+
+00:25:41.160 --> 00:25:43.420
+And I'm not an expert in all of these frameworks.
+
+00:25:44.220 --> 00:25:52.420
+And I'm sure if you start optimizing, there's no point where you can say, okay, now it's completely optimized.
+
+00:25:53.480 --> 00:25:57.600
+So I just took the completely opposite approach and didn't optimize anything at all.
+
+00:25:57.840 --> 00:25:58.900
+And that includes Litestar.
+
+00:25:59.060 --> 00:26:04.200
+We also do things that could be made more performant in Litestar, but we don't do them in the benchmarks.
+
+00:26:05.040 --> 00:26:10.180
+And, well, that's just our bench line of what we are comparing to.
+
+00:26:10.600 --> 00:26:13.320
+And I just think it's an important context to have.
+
+00:26:13.480 --> 00:26:14.520
+Yeah, yeah, that seems fair.
+
+00:26:15.940 --> 00:26:17.800
+So we know what we are comparing.
+
+00:26:19.200 --> 00:26:19.380
+Right.
+
+00:26:19.420 --> 00:26:26.820
+Okay, so if we look at the benchmarks, one thing we can see there, so we have the synchronous and
+
+00:26:26.940 --> 00:26:31.040
+asynchronous performance, and one thing that we can see there is that for Litestar it's almost
+
+00:26:31.340 --> 00:26:40.540
+identical compared to, for example, Starlette where it's not. The reason for that is our
+
+00:26:41.370 --> 00:26:48.840
+model of execution for synchronous operations. What Starlette does and what you could argue is the
+
+00:26:48.860 --> 00:26:55.840
+safe way is to run these in a thread pool by default. Which is good because if you have a
+
+00:26:55.980 --> 00:27:00.540
+synchronous function and asynchronous framework and it's blocking you might potentially block your
+
+00:27:00.620 --> 00:27:05.040
+main thread and all other requests that are coming in at the same time. You don't want that.
+
+00:27:05.640 --> 00:27:12.760
+So definitely the safest option is to just put that in a thread pool, let it run and you're good.
+
+00:27:14.620 --> 00:27:19.220
+The thing is, threads are slower than asyncIO.
+
+00:27:21.480 --> 00:27:26.780
+And so what we do is we force our users
+
+00:27:26.910 --> 00:27:28.140
+to make a deliberate choice
+
+00:27:28.740 --> 00:27:30.100
+when they have a synchronous function.
+
+00:27:31.120 --> 00:27:33.920
+So we say, do you want to run that synchronous function
+
+00:27:34.340 --> 00:27:36.300
+in a thread pool or not?
+
+00:27:37.160 --> 00:27:39.460
+And if not, we just don't do that.
+
+00:27:40.680 --> 00:27:43.860
+Is that done by a parameter to the,
+
+00:27:44.160 --> 00:27:45.720
+you know, like at get or something,
+
+00:27:45.880 --> 00:27:48.140
+and then you say thread pool, yes or no, something like that.
+
+00:27:48.500 --> 00:27:49.860
+You can set that as a parameter,
+
+00:27:50.030 --> 00:27:52.520
+and if you don't and you use a synchronous function,
+
+00:27:52.670 --> 00:27:56.480
+you get a very nasty warning, warning you about that.
+
+00:27:57.880 --> 00:28:02.340
+You can shut that off globally because some, yeah, that.
+
+00:28:03.700 --> 00:28:05.100
+Sync to thread equals false, okay.
+
+00:28:05.710 --> 00:28:05.820
+Cool.
+
+00:28:06.040 --> 00:28:06.180
+Yeah.
+
+00:28:06.460 --> 00:28:06.800
+I like it.
+
+00:28:06.800 --> 00:28:07.520
+You can shut that off globally
+
+00:28:07.590 --> 00:28:09.760
+if you don't want to be warned about it.
+
+00:28:10.720 --> 00:28:15.000
+But so we made the decision that it should be a deliberate choice
+
+00:28:15.220 --> 00:28:17.500
+if you want that behavior or not.
+
+00:28:18.120 --> 00:28:20.760
+Because in many cases, you don't actually need that behavior
+
+00:28:21.020 --> 00:28:23.580
+because you're not doing any blocking IO operations
+
+00:28:23.880 --> 00:28:27.060
+or any other blocking or CPU-bound operations or whatever.
+
+00:28:29.559 --> 00:28:33.400
+So in fact, the synchronous functions are as blocking
+
+00:28:33.720 --> 00:28:35.620
+as the other async functions.
+
+00:28:37.060 --> 00:28:39.520
+So there's no benefit to be had from running.
+
+00:28:39.540 --> 00:28:42.280
+Yeah, and also a lot of times in production,
+
+00:28:43.800 --> 00:28:46.940
+the production server like Gunicorn or whatever
+
+00:28:47.680 --> 00:28:49.160
+is already using multiple threads
+
+00:28:50.020 --> 00:28:52.080
+or things to deal with that
+
+00:28:53.940 --> 00:28:55.380
+or at least multiple processes.
+
+00:28:56.200 --> 00:28:58.140
+And then when you're talking to things
+
+00:28:58.340 --> 00:28:59.480
+like a database or something,
+
+00:28:59.540 --> 00:29:00.680
+you're doing a network call,
+
+00:29:00.780 --> 00:29:02.980
+which deep down is probably releasing the gil
+
+00:29:03.100 --> 00:29:03.900
+while it's waiting anyway.
+
+00:29:04.580 --> 00:29:09.420
+There's a lot of subtleties that are happening.
+
+00:29:09.460 --> 00:29:11.160
+down there that maybe you don't want to juggle, right?
+
+00:29:11.940 --> 00:29:18.060
+And one point to add to that is that the sync to thread option applies to the dependency injection as well.
+
+00:29:18.200 --> 00:29:21.460
+And so it's not just the routes that you can add that flag to.
+
+00:29:21.500 --> 00:29:27.740
+And so to your point about databases, all those pieces can have that same kind of behavior.
+
+00:29:28.660 --> 00:29:35.160
+There's a benchmark for that as well somewhere that shows the same difference for the dependency stuff, I think.
+
+00:29:36.480 --> 00:29:37.880
+Yeah, so that's one difference.
+
+00:29:39.120 --> 00:29:42.400
+And another difference, and so just to add,
+
+00:29:42.520 --> 00:29:45.040
+this is one choice that Starlette makes for you
+
+00:29:45.280 --> 00:29:47.700
+and by extension FastAPI as well makes for you
+
+00:29:48.720 --> 00:29:51.200
+that you can't easily turn off.
+
+00:29:52.340 --> 00:29:55.720
+But if you look, for example, at the Sanic example,
+
+00:29:56.100 --> 00:29:58.980
+you see that it doesn't suffer from the same problem.
+
+00:29:59.080 --> 00:30:03.700
+So you can attribute that to this decision.
+
+00:30:05.120 --> 00:30:09.080
+The other big difference is because what we're looking at here
+
+00:30:09.100 --> 00:30:15.960
+serializing a dictionary into a list of dictionaries into JSON. And one of the reasons why
+
+00:30:16.860 --> 00:30:23.960
+Litestar is so much faster in this than FastAPI, for example, is because we use
+
+00:30:25.019 --> 00:30:33.480
+msgspec, which is a JSON validation and parsing library. Well, not just JSON, it's also for
+
+00:30:33.980 --> 00:30:45.600
+message pack, which is an insane thing. It's an insanely great piece of technology,
+
+00:30:48.580 --> 00:30:54.580
+which we have been using, I think, for almost a year now when we started to introduce it. Yeah,
+
+00:30:54.900 --> 00:31:05.400
+that one. And it's super fast. It's written in C. The code can be a bit hard to get into because
+
+00:31:05.540 --> 00:31:12.680
+it's like one massive 12,000 line C file. So if you're not very familiar with C and the Python
+
+00:31:13.040 --> 00:31:20.600
+C API, it's not going to be an easy read. Yeah, but it's insanely fast and it supports
+
+00:31:20.660 --> 00:31:26.940
+a lot of things out of the box. So for example, well, JSON, so all built-in Python data types,
+
+00:31:27.200 --> 00:31:33.080
+but it also supports data classes and type dicks, which helps us a lot. And
+
+00:31:34.920 --> 00:31:41.980
+FastAPI on the other hand, by default, well, it uses for one, it uses a standard library
+
+00:31:42.500 --> 00:31:50.420
+JSON module which isn't as fast as any of the other external, well not external, third-party
+
+00:31:50.760 --> 00:31:58.760
+JSON libraries that you can have and it also uses Pydantic to validate the data which I have to
+
+00:31:58.820 --> 00:32:05.240
+point out is something that we do not by default so that's the reason why there's such a big
+
+00:32:05.260 --> 00:32:14.760
+difference and even after part entity has been released um which has been rewritten in rust
+
+00:32:15.340 --> 00:32:22.460
+and has had a significant gain in performance yes samuel colvin says something like 22 times
+
+00:32:23.000 --> 00:32:28.940
+faster which is remarkable yeah but still if you just don't do that step at all
+
+00:32:29.820 --> 00:32:31.320
+it's obviously going to be faster.
+
+00:32:32.240 --> 00:32:32.780
+Yeah, that's true.
+
+00:32:33.500 --> 00:32:35.720
+Do you remember this graph here,
+
+00:32:35.930 --> 00:32:38.940
+whether this is FastAPI based on Pydantic 1 or 2?
+
+00:32:39.800 --> 00:32:40.800
+This is Pydantic 2.
+
+00:32:41.630 --> 00:32:41.760
+Okay.
+
+00:32:42.700 --> 00:32:47.560
+You could see that it's noticeably faster now with Pydantic 2,
+
+00:32:47.630 --> 00:32:49.400
+so there has been a huge gain.
+
+00:32:49.560 --> 00:32:53.700
+And to be fair to Pydantic and FastAPI,
+
+00:32:54.160 --> 00:32:55.220
+mostly FastAPI,
+
+00:32:55.760 --> 00:32:59.980
+You could also use FastAPIs or JSON response,
+
+00:33:00.540 --> 00:33:02.600
+which uses or JSON to serialize that,
+
+00:33:02.670 --> 00:33:04.540
+and it would be a lot faster.
+
+00:33:04.630 --> 00:33:07.120
+But as I said earlier,
+
+00:33:08.440 --> 00:33:11.660
+that would, to me, fall into the category of optimization.
+
+00:33:12.800 --> 00:33:15.820
+You could do similar things for Litestar,
+
+00:33:15.890 --> 00:33:18.880
+and what we wanted to compare is performance out of the box,
+
+00:33:19.760 --> 00:33:21.420
+and this is what you get.
+
+00:33:22.480 --> 00:33:24.120
+That's some of the stuff you were talking about, right?
+
+00:33:24.240 --> 00:33:26.360
+You could include new JSON parsers.
+
+00:33:26.370 --> 00:33:28.620
+You could include uvloop, for example,
+
+00:33:29.060 --> 00:33:30.600
+and sorts of optimizations, right?
+
+00:33:31.160 --> 00:33:33.380
+The benchmarks are on uvloop.
+
+00:33:33.570 --> 00:33:36.360
+I think that's one optimization we did across the board
+
+00:33:36.390 --> 00:33:36.920
+for everybody.
+
+00:33:37.200 --> 00:33:39.740
+Everyone uses a single uvicorn worker.
+
+00:33:40.020 --> 00:33:43.620
+Yes, so the environment is the same for all frameworks
+
+00:33:43.820 --> 00:33:44.340
+that we test.
+
+00:33:44.740 --> 00:33:49.460
+It's uvicorn with uvloop, the siphon dependencies,
+
+00:33:50.220 --> 00:33:54.340
+And one worker pinned to one CPU core that's shielded.
+
+00:33:55.040 --> 00:33:59.460
+So just sort of get like, I don't know, something.
+
+00:33:59.580 --> 00:34:00.440
+And that's awesome, actually.
+
+00:34:00.660 --> 00:34:01.060
+That's really cool.
+
+00:34:01.210 --> 00:34:01.580
+I like it.
+
+00:34:02.560 --> 00:34:08.340
+And I guess I'd just like to point out, though, that, you know, often there's other things that are your bottleneck in your application, right?
+
+00:34:08.460 --> 00:34:12.560
+And so, you know, obviously benchmarks take them with a grain of salt.
+
+00:34:12.580 --> 00:34:23.139
+And, you know, the other thing is that message pack or msgspec, excuse me, is awesome, but it's not as feature complete as something like Pedantic, which is really great.
+
+00:34:23.200 --> 00:34:25.480
+And so I think there's some, you know, there's some differences there.
+
+00:34:25.500 --> 00:34:28.280
+And so we wanted to make sure that you have the ability to use both.
+
+00:34:28.340 --> 00:34:36.159
+But in the context of benchmarks, you know, sometimes I guess it's worth noting that Pedantic is probably doing more or can do more than msgspec.
+
+00:34:36.260 --> 00:34:43.520
+But, you know, I don't think it's necessarily always going to be what you see here, the serialization piece that's going to be your slowest part.
+
+00:34:43.720 --> 00:34:49.419
+I agree. As a database guy, you might have database indexes and the lack thereof coming to mind or something, right?
+
+00:34:50.659 --> 00:34:51.960
+Well, that's one of the things, right?
+
+00:34:52.220 --> 00:34:53.940
+You know, it's and you kind of touched on it.
+
+00:34:54.040 --> 00:34:59.700
+It's the network latency and those kind of things between that's really going to consume quite a bit of the time.
+
+00:35:00.760 --> 00:35:00.900
+Yeah.
+
+00:35:01.760 --> 00:35:22.060
+And I think we do have a benchmark, which is serialization of complex objects like Pydantic models or data classes or something like that, which actually I think is very interesting because it shows that if you're using Pydantic with Litestar, it's actually not faster than FastAPI.
+
+00:35:22.670 --> 00:35:28.480
+Because then what you're measuring is the speed of Pydantic, which in both cases is the same.
+
+00:35:29.580 --> 00:35:31.760
+And you can, it sounds like, which is interesting.
+
+00:35:31.850 --> 00:35:34.500
+Okay, so quick takeaway.
+
+00:35:36.280 --> 00:35:37.600
+Litestar is quite fast.
+
+00:35:39.920 --> 00:35:42.020
+One of the reasons you might choose it is the speed,
+
+00:35:42.120 --> 00:35:44.280
+and it sounds like there's a lot of good options there.
+
+00:35:44.480 --> 00:35:44.660
+All right.
+
+00:35:45.280 --> 00:35:46.120
+But not the only one.
+
+00:35:46.170 --> 00:35:47.280
+I want you to point out on that note,
+
+00:35:47.340 --> 00:35:49.020
+if you allow me to point out one more thing.
+
+00:35:50.200 --> 00:35:51.500
+We are quite fast,
+
+00:35:51.650 --> 00:35:55.000
+and I think for the feature set that we have,
+
+00:35:55.640 --> 00:35:57.400
+we are probably among the fastest,
+
+00:35:57.660 --> 00:36:02.620
+but we are not by far the fastest ASGI framework out there.
+
+00:36:02.630 --> 00:36:04.820
+That would be, to my knowledge, black sheep,
+
+00:36:06.280 --> 00:36:08.660
+which is insanely fast.
+
+00:36:09.570 --> 00:36:11.920
+And we actually don't include that in the benchmarks
+
+00:36:12.190 --> 00:36:14.680
+because it makes the benchmarks absolutely useless
+
+00:36:15.390 --> 00:36:19.560
+because then you just have one gigantic bar that's black sheep
+
+00:36:19.630 --> 00:36:22.440
+and then you have two very, very teeny tiny bars,
+
+00:36:22.530 --> 00:36:23.360
+which is everything else.
+
+00:36:25.260 --> 00:36:30.380
+So, which is another micro framework that's written in Cython.
+
+00:36:32.140 --> 00:36:32.420
+Interesting.
+
+00:36:32.630 --> 00:36:34.940
+Okay, I've not heard of Blacksheep.
+
+00:36:34.950 --> 00:36:36.000
+It's something I have to look into.
+
+00:36:36.520 --> 00:36:37.000
+Okay, cool.
+
+00:36:38.880 --> 00:36:41.060
+But obviously, speed is interesting.
+
+00:36:41.300 --> 00:36:41.860
+Speed is important.
+
+00:36:43.860 --> 00:36:46.160
+It's certainly something that if it was really poor,
+
+00:36:46.360 --> 00:36:47.760
+people might choose like, well, it's interesting,
+
+00:36:48.020 --> 00:36:48.880
+but it's not that fast.
+
+00:36:52.580 --> 00:36:58.420
+given given the speed it's certainly an advantage not a drawback but i think a lot of the advantages
+
+00:36:58.720 --> 00:37:02.800
+come from a bunch of the features so maybe we could talk through some of these and whoever
+
+00:37:02.940 --> 00:37:10.760
+wants to just jump in on them as we go feel free to so i i think it probably came through already
+
+00:37:10.810 --> 00:37:17.740
+from the conversation but the programming api is very micro framework flask fast api like right
+
+00:37:17.760 --> 00:37:25.300
+You create a function, you do an at get, give it a URL decorator on the front, and you've
+
+00:37:25.380 --> 00:37:28.960
+got an endpoint on the web that you can do things with.
+
+00:37:29.980 --> 00:37:30.920
+So that's-
+
+00:37:30.920 --> 00:37:32.440
+At its core, exactly.
+
+00:37:32.440 --> 00:37:34.320
+And we take it one step further.
+
+00:37:34.320 --> 00:37:40.280
+So all of the patterns you know and love from Django, so some of the things that you see
+
+00:37:40.280 --> 00:37:41.540
+from Django REST framework.
+
+00:37:41.540 --> 00:37:45.300
+So we have controllers that are very similar to that, where you can define a class and
+
+00:37:45.300 --> 00:37:46.500
+have multiple methods in it.
+
+00:37:46.560 --> 00:37:50.360
+And so, you know, that's really kind of where things start to differentiate.
+
+00:37:50.740 --> 00:37:56.040
+But at its core, we definitely wanted to make sure you had that exact micro framework experience that you see everywhere.
+
+00:37:57.120 --> 00:37:57.660
+Yep. Okay.
+
+00:37:59.400 --> 00:37:59.740
+Let's see.
+
+00:37:59.800 --> 00:38:03.000
+So the first one, let's just touch on some of the main features here.
+
+00:38:03.000 --> 00:38:05.660
+The first one is data validation and parsing.
+
+00:38:06.280 --> 00:38:09.440
+So leveraging the power of type-ins, which is very, very nice.
+
+00:38:10.040 --> 00:38:11.640
+Who wants to highlight that feature?
+
+00:38:16.220 --> 00:38:17.320
+I think you're on mute.
+
+00:38:19.540 --> 00:38:25.420
+Good that you pointed that out. So that's definitely one of the areas that was directly
+
+00:38:26.180 --> 00:38:34.600
+inspired by FastAPI because FastAPI a few years ago came up with this brilliant idea of the
+
+00:38:34.640 --> 00:38:41.000
+combination of just levering the type pins and emerging Pydantic stuff and whatever and build
+
+00:38:41.020 --> 00:38:53.140
+your APIs on that based around that as your core. And it's been very increasingly popular to build
+
+00:38:53.140 --> 00:39:01.860
+your APIs like that. So it's definitely directly inspired and influenced by this. And so what we
+
+00:39:01.980 --> 00:39:07.840
+we are approaching things a bit differently though. So for example, you are not tied to
+
+00:39:07.740 --> 00:39:15.400
+Pydantic. You can use any data modeling like not any but a lot of data modeling libraries that you
+
+00:39:15.620 --> 00:39:21.320
+might want to choose are supported out of the box. Pydantic is supported. You can also use
+
+00:39:21.480 --> 00:39:29.520
+msgspec which supports some data modeling like Pydantic not as featureful but very very fast.
+
+00:39:29.980 --> 00:39:39.700
+you can use attrs, you can use plain data classes or type dicts to validate your data and to
+
+00:39:39.900 --> 00:39:48.300
+transform your data which is what you are currently looking at which are our DTOs which have been
+
+00:39:48.900 --> 00:39:57.480
+written by the brilliant Peter Schutt who isn't here with us today which are well data transfer
+
+00:39:57.500 --> 00:40:04.440
+objects so they are a way for you to define how your data should be transformed on the way in
+
+00:40:04.660 --> 00:40:12.020
+or on the way out so you have incoming data that's unstructured like json data and you have a target
+
+00:40:12.240 --> 00:40:18.600
+model and you might want to apply certain transformations to that say rename fields
+
+00:40:18.840 --> 00:40:26.280
+from snake case to camel case very common thing to do right while you are validating it on the fly
+
+00:40:26.280 --> 00:40:33.240
+that it confirms to a certain schema, for example, a pydentic model or a data class.
+
+00:40:34.430 --> 00:40:41.140
+And so DDOs are basically an abstraction layer between that, where you can say, okay, this is my
+
+00:40:41.500 --> 00:40:47.920
+source model, this is my pydentic model, and it has a user ID that's an integer and it has a name
+
+00:40:48.080 --> 00:40:55.320
+that's a string. And by default, Litestar, if you give it that, will validate that the incoming
+
+00:40:55.340 --> 00:41:03.540
+data confirms to that schema will have Pydantic run all the validation and parsing on it like you
+
+00:41:03.640 --> 00:41:10.820
+would normally which is quite similar to how FastAPI does it or how you might also want would do it
+
+00:41:11.250 --> 00:41:21.880
+by hand. The DTOs come in where you have one data model that has different representations.
+
+00:41:22.980 --> 00:41:39.280
+So for example, you might have a database model that's a SQLAlchemy model, but on the way out, you don't want to include the password field because of course reasons, but you want it on the way in when you create the user to sign up.
+
+00:41:40.200 --> 00:41:56.420
+So one way to do that manually would be, if you're using Pydantic, to create two models, one for the way in, one for the way out, or to create one base model with all the properties that are the same and then two additional models, whatever.
+
+00:41:58.160 --> 00:42:01.880
+DTOs basically do that, but they do it for you.
+
+00:42:02.380 --> 00:42:05.480
+So you don't have to actually write out those two models.
+
+00:42:05.800 --> 00:42:10.200
+They can take in one of the models, one of the supported model types.
+
+00:42:10.350 --> 00:42:18.140
+I think at the moment we support Pydantics, SQLAlchemy, msgspec, Adders, and DataClasses.
+
+00:42:18.930 --> 00:42:19.740
+Correct me, Vanvong?
+
+00:42:20.280 --> 00:42:21.200
+No, I think you got all of them.
+
+00:42:22.120 --> 00:42:27.560
+So if you have a class of that type, you can create a DTO from it.
+
+00:42:27.940 --> 00:42:31.020
+And then you have a DTO config where you can say,
+
+00:42:31.110 --> 00:42:32.900
+okay, so please exclude these fields
+
+00:42:33.700 --> 00:42:36.320
+or only include these fields and rename these fields.
+
+00:42:37.340 --> 00:42:40.420
+And all you have to do is create a type annotation
+
+00:42:42.260 --> 00:42:45.380
+with that DTO and Litestar will take it,
+
+00:42:45.660 --> 00:42:46.700
+use it to transform your data
+
+00:42:46.830 --> 00:42:49.740
+and then give your back your original model
+
+00:42:50.080 --> 00:42:53.020
+in the form you specified.
+
+00:42:54.200 --> 00:42:54.600
+I see.
+
+00:42:55.240 --> 00:42:56.520
+And you say in the decorator,
+
+00:42:56.640 --> 00:43:00.860
+You said the DTO model that does that conversion for you.
+
+00:43:01.450 --> 00:43:01.720
+Got it.
+
+00:43:01.870 --> 00:43:04.560
+So, yeah, that's a good point.
+
+00:43:04.560 --> 00:43:08.740
+You said it in the decorator and not at the point where you receive or return the data.
+
+00:43:08.870 --> 00:43:14.740
+So the data you receive and return will always be the actual model that you're dealing with,
+
+00:43:15.400 --> 00:43:19.600
+which has the great benefit that your type annotations are always correct.
+
+00:43:20.560 --> 00:43:24.659
+And you don't have to worry about that, about, you know, casting something to something else
+
+00:43:24.700 --> 00:43:27.660
+or doing the serialization in your route handle directly
+
+00:43:28.010 --> 00:43:29.480
+because otherwise the type annotations
+
+00:43:29.800 --> 00:43:31.020
+for the return type won't match
+
+00:43:31.070 --> 00:43:33.780
+because you have excluded the field or whatever.
+
+00:43:34.360 --> 00:43:37.820
+So you just set it completely separately from that
+
+00:43:39.040 --> 00:43:41.240
+just as information for Litestar to say,
+
+00:43:41.240 --> 00:43:43.820
+okay, use this to do the transformations,
+
+00:43:44.780 --> 00:43:47.800
+but the end result is my original model,
+
+00:43:48.360 --> 00:43:49.960
+whatever you want it to be.
+
+00:43:51.280 --> 00:43:51.800
+Cool.
+
+00:43:52.820 --> 00:43:54.020
+Okay, so this is kind of
+
+00:43:53.920 --> 00:43:58.340
+the model equivalent of FastAPI, the DTO.
+
+00:43:58.500 --> 00:43:59.340
+That's really neat.
+
+00:44:00.740 --> 00:44:03.540
+And there's a lot of, maybe a little bit of overlap
+
+00:44:03.640 --> 00:44:05.200
+in something like SQL model, right?
+
+00:44:05.200 --> 00:44:08.440
+Where you can declare your SQLAlchemy model
+
+00:44:08.760 --> 00:44:09.860
+as a Pydantic model.
+
+00:44:09.940 --> 00:44:11.500
+And in this case, we,
+
+00:44:12.080 --> 00:44:14.360
+and you're welcome to use SQL model with Litestar,
+
+00:44:14.500 --> 00:44:16.080
+but in this case, you can now just use
+
+00:44:16.120 --> 00:44:18.840
+the normal SQLAlchemy model and declare a DTO
+
+00:44:19.000 --> 00:44:20.940
+and it'll automatically convert that to,
+
+00:44:22.180 --> 00:44:26.820
+you know, a msgspec struck on the way out and serialize it that way.
+
+00:44:28.120 --> 00:44:28.580
+Very cool.
+
+00:44:29.420 --> 00:44:30.340
+That's a good point.
+
+00:44:30.340 --> 00:44:32.100
+You bring up the msgspec struct.
+
+00:44:32.150 --> 00:44:39.000
+So that's one other area where we use msgspec for, to create these models,
+
+00:44:39.270 --> 00:44:43.640
+because msgspec is extremely fast and has this struct type,
+
+00:44:43.670 --> 00:44:47.380
+which is sort of like an address class or a Pydantic model.
+
+00:44:50.240 --> 00:45:00.240
+But it has the benefit of being, as far as I know, the fastest library for that type of stuff for Python that exists at the moment.
+
+00:45:01.300 --> 00:45:07.280
+So what we are building there, the transformation layer is as performant as it can be.
+
+00:45:09.340 --> 00:45:17.720
+In fact, I think, and I have to go look up the actual quote, but I think the struct is actually faster than the data class in a lot of scenarios.
+
+00:45:18.120 --> 00:45:20.440
+And so they've done an incredible job with that library.
+
+00:45:21.320 --> 00:45:22.640
+That is incredible, actually.
+
+00:45:23.620 --> 00:45:25.280
+And you're beating the building stuff, right?
+
+00:45:25.640 --> 00:45:25.900
+That's cool.
+
+00:45:26.820 --> 00:45:26.980
+All right.
+
+00:45:27.020 --> 00:45:29.940
+We talked a little bit about the open ecosystem, right?
+
+00:45:30.160 --> 00:45:34.860
+The ability to pedantic versus other custom DTOs, other libraries.
+
+00:45:36.860 --> 00:45:42.080
+Open API, Swagger, the whole generate your documentation for you.
+
+00:45:43.500 --> 00:45:44.300
+That sounds pretty excellent.
+
+00:45:44.360 --> 00:45:48.480
+And I'm guessing it's based a little bit on the DTOs as well to describe the schema.
+
+00:45:49.900 --> 00:45:55.280
+So every class has the ability to export what that output looks like.
+
+00:45:55.280 --> 00:46:02.160
+And so the DTO knows how to output its signature so that it can generate the correct open API schema.
+
+00:46:03.520 --> 00:46:08.860
+And I guess really the main thing to point out, and we obviously do the typical swagger schemas,
+
+00:46:09.000 --> 00:46:13.940
+but one other thing that we add in is redock and stoplight elements as well.
+
+00:46:14.300 --> 00:46:18.520
+So you've got a couple of options for your documentation host.
+
+00:46:20.020 --> 00:46:20.620
+Cool.
+
+00:46:22.820 --> 00:46:23.120
+Middleware.
+
+00:46:23.510 --> 00:46:26.640
+So middleware is things that can see the request
+
+00:46:26.880 --> 00:46:28.860
+before your view function runs
+
+00:46:29.160 --> 00:46:35.000
+or make changes after it runs for cores or logging or other things.
+
+00:46:35.600 --> 00:46:36.300
+Do you want to talk about that?
+
+00:46:39.140 --> 00:46:39.300
+Yeah.
+
+00:46:40.140 --> 00:46:43.640
+Cody, do you want to talk about the compression stuff, for example?
+
+00:46:43.960 --> 00:46:59.900
+Yeah, happily to, I'll happily do that. So, you know, you kind of nailed what the core of the middleware is, but really it's all those pieces that you need to add in to maybe add in security or add in some type of additional functionality, compression, for instance.
+
+00:47:00.140 --> 00:47:06.660
+And so a lot of, you know, outside of the plugin system, a lot of that functionality is included in the middleware.
+
+00:47:06.920 --> 00:47:13.880
+And so you'll see built-in stuff for most of the things that you're going to want to do out of a normal application.
+
+00:47:14.160 --> 00:47:19.920
+There's probably a few things that you may need to roll on your own, but, you know, we've got all the core things.
+
+00:47:20.080 --> 00:47:22.840
+And so you've got compression, both Brotley and GZIP.
+
+00:47:23.940 --> 00:47:27.440
+You've got open telemetry and Prometheus integration.
+
+00:47:28.400 --> 00:47:45.280
+You've got several different types of authentication backends that would get integrated here, including a session-based backend that, well, one, there's a cookie-based backend and a session-based backend where it stores on the actual server itself.
+
+00:47:45.870 --> 00:47:50.060
+And we also have a JWT auth configuration that you can use here.
+
+00:47:50.140 --> 00:47:56.600
+And so, you know, I encourage all of the listeners to just check out what we have as part of the default middleware.
+
+00:47:56.760 --> 00:48:02.480
+But, you know, most of the things that they're going to want to do from a web app are going to be built right in.
+
+00:48:03.680 --> 00:48:09.880
+Yeah. We also have the logging, the cores, all the basic stuff.
+
+00:48:10.000 --> 00:48:12.000
+See it like cross-site reference.
+
+00:48:14.200 --> 00:48:17.420
+Cross-site, yeah, request forgery for forums.
+
+00:48:17.560 --> 00:48:17.660
+Yeah.
+
+00:48:18.000 --> 00:48:18.120
+Yeah.
+
+00:48:19.900 --> 00:48:21.160
+And then you can add your own,
+
+00:48:21.190 --> 00:48:23.180
+and they're all just little ASGI apps
+
+00:48:23.420 --> 00:48:26.020
+that you can plug in as you need them.
+
+00:48:26.780 --> 00:48:28.980
+Yeah, on before and on after request,
+
+00:48:29.190 --> 00:48:29.740
+something like that, right?
+
+00:48:30.480 --> 00:48:32.060
+This is really cool here where you could say
+
+00:48:32.260 --> 00:48:35.440
+in a particular view decorator,
+
+00:48:35.470 --> 00:48:36.900
+you can say, for example,
+
+00:48:37.360 --> 00:48:41.620
+exclude from CSRF for just this form, for example.
+
+00:48:43.360 --> 00:48:44.840
+And actually, this is something that you'll see
+
+00:48:45.440 --> 00:48:46.320
+as a feature.
+
+00:48:46.380 --> 00:48:50.480
+you're going to see this all throughout the code and it's layered permissions.
+
+00:48:50.660 --> 00:48:55.500
+And so this is excluded from CRS, CSRF, and several other things.
+
+00:48:55.500 --> 00:48:56.680
+It's hard to say. I don't know why.
+
+00:48:56.760 --> 00:48:57.780
+It is a mouthful.
+
+00:48:58.460 --> 00:49:00.620
+You're going to see that in several different places, right?
+
+00:49:00.840 --> 00:49:02.860
+And so you can apply that at the controller
+
+00:49:03.120 --> 00:49:06.500
+or you can apply that at the route level that you see here.
+
+00:49:06.800 --> 00:49:10.580
+And so that's one of the helpful features that you'll see
+
+00:49:10.700 --> 00:49:13.140
+where you can put it in one spot and it'll cascade down.
+
+00:49:14.220 --> 00:49:15.500
+I saw that for the DTOs.
+
+00:49:15.700 --> 00:49:16.220
+Yeah. Sorry.
+
+00:49:16.280 --> 00:49:17.260
+Go ahead, Jake.
+
+00:49:17.880 --> 00:49:21.220
+We have a lot of that layered dependency stuff,
+
+00:49:21.890 --> 00:49:23.700
+well, dependency injection,
+
+00:49:24.050 --> 00:49:25.660
+like you could also do at the app level
+
+00:49:25.920 --> 00:49:27.660
+or just at the controller level.
+
+00:49:28.210 --> 00:49:29.700
+And there's so much other...
+
+00:49:29.740 --> 00:49:31.960
+On applications, controllers, routers,
+
+00:49:32.260 --> 00:49:33.280
+and the route handlers,
+
+00:49:34.080 --> 00:49:35.580
+these are our basic layers.
+
+00:49:36.780 --> 00:49:39.780
+And most of these types of configurations,
+
+00:49:41.090 --> 00:49:42.240
+so middleware's dependencies,
+
+00:49:42.940 --> 00:49:43.960
+header configurations,
+
+00:49:44.780 --> 00:49:45.640
+middleware configurations,
+
+00:49:45.720 --> 00:49:49.640
+they're all layers, so you can apply them on every layer you want,
+
+00:49:49.740 --> 00:49:52.060
+and they will affect the layers below that.
+
+00:49:52.900 --> 00:49:56.460
+So it's quite flexible how you want to,
+
+00:49:57.020 --> 00:49:59.680
+or where you want to configure your stuff.
+
+00:50:01.720 --> 00:50:02.180
+Yeah, great.
+
+00:50:04.260 --> 00:50:05.340
+Well, the ORM integration,
+
+00:50:05.680 --> 00:50:08.320
+we talked a little bit about SQLAlchemy as well,
+
+00:50:08.580 --> 00:50:09.980
+so that's pretty cool.
+
+00:50:11.860 --> 00:50:14.580
+Yeah, and I'll be happy to elaborate on that,
+
+00:50:14.760 --> 00:50:17.780
+But, you know, we've covered quite a bit of what you'll see here.
+
+00:50:17.810 --> 00:50:26.380
+I think the only thing that I haven't mentioned that we've integrated in and that will be coming in 2.1 is the use of Lambda statement.
+
+00:50:26.870 --> 00:50:37.280
+And I'm not sure if you're even seen that or if your listeners have, but it's a relatively new function that's in SQLAlchemy to help with statement caching.
+
+00:50:37.350 --> 00:50:40.200
+And so the repository has been converted over that.
+
+00:50:41.520 --> 00:50:43.660
+Yeah, actually, I see some great, great things in the chat.
+
+00:50:43.700 --> 00:50:45.240
+There's HTMX integration.
+
+00:50:45.630 --> 00:50:46.960
+Obviously, you want to make sure we touch on that.
+
+00:50:47.100 --> 00:50:53.840
+And I really want to let somebody talk about the WebSockets and the channels integration, too.
+
+00:50:53.950 --> 00:50:58.460
+So there's some really cool stuff that I'd love for your listeners to hear.
+
+00:51:00.640 --> 00:51:04.940
+Yeah, before we move on to the WebSockets, which I also want to talk about,
+
+00:51:05.070 --> 00:51:08.800
+I do want to give, since we're on the ORM mission,
+
+00:51:09.940 --> 00:51:12.800
+I see some comments out there from, for example, Roman.
+
+00:51:13.740 --> 00:51:19.040
+behind Beanie, which is a MongoDB ORM or ODM.
+
+00:51:19.880 --> 00:51:21.480
+It says, I like the DTO concept.
+
+00:51:21.720 --> 00:51:23.340
+Having such tools separately would be great.
+
+00:51:23.860 --> 00:51:27.760
+Having things such as SQLAlchemy objects when needed,
+
+00:51:28.020 --> 00:51:29.380
+Pandas data frames, dynamic model,
+
+00:51:29.600 --> 00:51:31.080
+depending on the context is really cool.
+
+00:51:33.320 --> 00:51:36.120
+We actually have talked about that.
+
+00:51:36.460 --> 00:51:38.640
+Well, not we, the people present here,
+
+00:51:38.820 --> 00:51:44.420
+but Peter Schutt, the person who created the DTO implementation,
+
+00:51:44.840 --> 00:51:46.480
+we have actually talked about that,
+
+00:51:47.320 --> 00:51:48.900
+making the DTO a separate library
+
+00:51:49.500 --> 00:51:52.480
+because it's a very useful concept.
+
+00:51:53.910 --> 00:51:56.900
+So it's not something we have planned,
+
+00:51:57.450 --> 00:52:00.080
+but it's something that has crossed our minds as well.
+
+00:52:01.340 --> 00:52:01.940
+Yeah, okay.
+
+00:52:02.700 --> 00:52:03.880
+So that's very cool.
+
+00:52:04.360 --> 00:52:08.279
+The question was, what about the MongoDB people
+
+00:52:08.360 --> 00:52:15.960
+or the other NoSQL folks for whom SQLAlchemy doesn't necessarily want to talk to because it's relational.
+
+00:52:17.860 --> 00:52:18.660
+What's the story there?
+
+00:52:19.220 --> 00:52:21.280
+Is it still pretty easy to use Litestar?
+
+00:52:21.940 --> 00:52:27.260
+It is, and I think that there's actually a native integration that's maybe not totally finished,
+
+00:52:27.260 --> 00:52:31.580
+but there is an open PR for a Mongo-based repository.
+
+00:52:31.710 --> 00:52:36.900
+So there's going to be that much tighter coupling coming soon for those that want to use it.
+
+00:52:36.980 --> 00:52:40.300
+But there's nothing that would limit compatibility now.
+
+00:52:40.400 --> 00:52:44.040
+So if they want to go ahead and configure that with your application, you're certainly free to do so.
+
+00:52:44.060 --> 00:52:49.200
+But there will be a first-party kind of clean integration for those things coming soon.
+
+00:52:49.460 --> 00:52:50.260
+Oh, that's excellent.
+
+00:52:50.960 --> 00:52:53.900
+So for right now, you know, B&E is based on Pydantic.
+
+00:52:54.440 --> 00:52:55.400
+You all work with Pydantic.
+
+00:52:55.580 --> 00:53:00.120
+It sounds like kind of just use that as the go-between maybe.
+
+00:53:00.980 --> 00:53:01.240
+Absolutely.
+
+00:53:01.640 --> 00:53:08.060
+And you're free to use Pedantic with Litestar just as you can with FastAPI, and it'll just work.
+
+00:53:08.060 --> 00:53:14.540
+And so there's no reason to change everything to msgspec if you want to.
+
+00:53:14.540 --> 00:53:18.420
+You can mix and match and leave everything in Pedantic if that's what you prefer as well.
+
+00:53:19.420 --> 00:53:19.640
+Cool.
+
+00:53:19.920 --> 00:53:20.940
+That's a good point.
+
+00:53:21.000 --> 00:53:33.040
+So the thing we do, all these integrations with Pardentic and others and whatever, so they are not baked in somewhere deep into the application.
+
+00:53:33.920 --> 00:53:42.840
+They are all plugins, plugins that you could write yourself if you wanted to and write for every library that you desire.
+
+00:53:43.360 --> 00:53:55.820
+That's one of the larger things that we tackled with the 2.0 release, where we tried to decouple us from Pydantic because we were based on Pydantic before and we wanted to be more open.
+
+00:53:56.000 --> 00:54:10.620
+So we basically ripped out everything Pydantic in Litestar's core and put it into a plugin and at the same time made sure that the plugin API was so versatile that it could support all the features that we had supported before.
+
+00:54:11.360 --> 00:54:31.840
+And now we're at the point where it's very trivial actually to add support for a library like Pydantic with everything from DTOs to open API to serialization, validation, parsing, fully supported by a fairly trivial plugin that you have to add.
+
+00:54:32.860 --> 00:54:33.200
+Awesome.
+
+00:54:33.200 --> 00:54:39.940
+So even if it's not provided out of the box, it's fairly easy to just do it yourself.
+
+00:54:41.599 --> 00:54:46.480
+that's really cool all right web sockets let's talk about web sockets uh here's a little bit
+
+00:54:48.700 --> 00:54:52.420
+yannick was the mastermind behind this all right yannick first tell people what
+
+00:54:52.860 --> 00:54:57.880
+what web sockets are uh and why they care about them why is this not just another acdp request
+
+00:55:00.580 --> 00:55:06.279
+web sockets explaining web sockets in in a few sentences yeah you have three sentences go
+
+00:55:08.180 --> 00:55:15.660
+So for people who are around, have been around longer in the web development space, they might remember long polling.
+
+00:55:16.380 --> 00:55:27.360
+So where you had, where you faked, well, back and forth communication between the server and the client by having a request that never terminates.
+
+00:55:27.880 --> 00:55:34.160
+And you can always send back more data from the server because the request wasn't actually done yet.
+
+00:55:36.500 --> 00:55:41.040
+And, well, I would say WebSockets is kind of like that concept but evolved.
+
+00:55:42.220 --> 00:55:50.840
+So you can easily send bidirectional data from the server to the client with a very, very minimal overhead.
+
+00:55:52.660 --> 00:55:56.300
+And WebSockets are a core functionality of ASGI.
+
+00:55:57.100 --> 00:56:04.220
+you could there were several ways you could do web sockets with wsgi but they were all not very
+
+00:56:05.300 --> 00:56:11.440
+easy and straightforward because they are asynchronous by nature this is what they are
+
+00:56:11.460 --> 00:56:16.000
+they are an asynchronous communication channel so baking that into a synchronous
+
+00:56:18.180 --> 00:56:25.580
+protocol is always a bit tricky and i think there's no sgi framework that i know of that
+
+00:56:25.500 --> 00:56:32.220
+does not support WebSockets in some way. So it is a core functionality of that
+
+00:56:34.280 --> 00:56:43.880
+type of Python framework, I would say. And so our WebSocket implementation has kind of like two
+
+00:56:44.080 --> 00:56:53.479
+layers. You have the low layer where it's basically you receive the socket object, which is just the
+
+00:56:53.500 --> 00:56:58.060
+connection and then you can act on that connection and you have to accept it and you can terminate it
+
+00:56:58.160 --> 00:57:04.960
+and you can send data or whatever. And then you have what we call WebSocket listeners,
+
+00:57:06.320 --> 00:57:15.060
+which are an abstraction over WebSockets. And they basically work like you would normally define
+
+00:57:15.210 --> 00:57:23.460
+a route handle in Flask or FastAPI or Litestar, where you receive some data and then you return
+
+00:57:23.480 --> 00:57:28.000
+and that is your function and the rest will be handled by the listener.
+
+00:57:28.200 --> 00:57:32.700
+So you define a handler function for an event that might occur.
+
+00:57:33.580 --> 00:57:37.000
+I look like you had a question.
+
+00:57:38.920 --> 00:57:39.500
+No, no, keep going.
+
+00:57:40.240 --> 00:57:40.960
+I just had a thought.
+
+00:57:41.200 --> 00:57:41.580
+Keep going.
+
+00:57:45.000 --> 00:57:50.120
+And one of the cool aspects of this is that these support all the features
+
+00:57:50.460 --> 00:57:53.060
+that Litestar supports in other layers of the application.
+
+00:57:53.420 --> 00:57:54.960
+So you can use DTOs with them.
+
+00:57:55.000 --> 00:57:56.780
+You can use validation with them.
+
+00:57:57.020 --> 00:58:02.180
+So if you define a DTO and you say, okay, so this is my model and this is what I want to receive,
+
+00:58:04.360 --> 00:58:07.820
+the incoming data from the WebSocket will be parsed as this model.
+
+00:58:07.920 --> 00:58:11.320
+It will be validated and then it will be presented to your function.
+
+00:58:12.420 --> 00:58:21.880
+So functionally, these WebSocket listeners, they look and work exactly the same as a regular HTTP route.
+
+00:58:22.660 --> 00:58:23.060
+That's cool.
+
+00:58:23.520 --> 00:58:24.260
+Yeah, that's really cool.
+
+00:58:25.080 --> 00:58:29.580
+Enables another thing that a lot of ACI frameworks don't have,
+
+00:58:29.640 --> 00:58:33.060
+which is handling of WebSockets synchronously,
+
+00:58:34.300 --> 00:58:36.480
+because we do the async stuff in the background.
+
+00:58:36.940 --> 00:58:39.380
+And so you can use an asynchronous function,
+
+00:58:39.980 --> 00:58:41.680
+but you can also just use a synchronous function
+
+00:58:42.040 --> 00:58:45.940
+because all the dealing with the actual WebSocket itself
+
+00:58:46.520 --> 00:58:47.820
+is handled somewhere else.
+
+00:58:48.420 --> 00:58:49.120
+Yeah, yeah.
+
+00:58:49.820 --> 00:58:52.680
+So my thought was probably this is what I want to write
+
+00:58:52.700 --> 00:58:58.520
+in a standard, like I want to receive a message from the client back to the server
+
+00:59:00.300 --> 00:59:02.220
+or, yeah, and process that there.
+
+00:59:02.580 --> 00:59:06.260
+But if you want to do like all the weird multicast stuff,
+
+00:59:07.020 --> 00:59:09.840
+different listeners or groups of listeners you can do with WebSockets,
+
+00:59:10.020 --> 00:59:12.620
+that's probably the lower level version you're talking about, right?
+
+00:59:13.580 --> 00:59:14.140
+Did I get that right?
+
+00:59:15.600 --> 00:59:16.340
+Perhaps not.
+
+00:59:17.200 --> 00:59:19.180
+It depends how weird you want to get.
+
+00:59:19.540 --> 00:59:36.940
+So a fairly standard use case would be for something like, let's say, a chat room where you have some sort of predefined channels and then you have multiple clients that want to send data over the same channel and then fan it out to all the other clients.
+
+00:59:37.720 --> 00:59:43.660
+And for stuff like that, we actually have a full integration, which we call channels.
+
+00:59:44.400 --> 00:59:44.840
+Okay.
+
+00:59:46.980 --> 00:59:50.440
+which themselves aren't necessarily tied to WebSockets.
+
+00:59:50.780 --> 00:59:56.480
+They are basically distributed message bus sort of thing.
+
+00:59:57.220 --> 01:00:00.700
+I have yet to come up with a good short description
+
+01:00:01.080 --> 01:00:02.840
+of what channels actually are.
+
+01:00:04.460 --> 01:00:06.320
+It changes a bit from-
+
+01:00:06.320 --> 01:00:10.200
+- I think message bus is the way to think about it, right?
+
+01:00:10.200 --> 01:00:12.980
+And it keeps the history of the events.
+
+01:00:12.980 --> 01:00:14.700
+And so a message bus is perfectly fine.
+
+01:00:15.340 --> 01:00:20.400
+Yeah, so they are backed by, at the moment, by Redis via different methods.
+
+01:00:20.550 --> 01:00:26.840
+So you can use PubSub or other methods that are quite a bit more involved.
+
+01:00:28.100 --> 01:00:28.320
+Yeah.
+
+01:00:29.360 --> 01:00:32.620
+And they can also handle WebSockets for you.
+
+01:00:32.750 --> 01:00:39.820
+So you can say, okay, so I have, I want to create, I know, a channel named Chat.
+
+01:00:40.240 --> 01:00:50.540
+And every time someone signs up to that, please accept the WebSocket request and then add the client to this subscriber list.
+
+01:00:50.650 --> 01:00:55.020
+And then every time a message comes in, I want to do this.
+
+01:00:55.270 --> 01:01:01.560
+And then I also want to distribute the message they send to all these other clients in those channels.
+
+01:01:02.860 --> 01:01:07.020
+And I know if they send a special message, then I want to unsubscribe them.
+
+01:01:08.000 --> 01:01:13.000
+So for this kind of standard use case, we have that built in.
+
+01:01:14.920 --> 01:01:18.260
+You can, of course, build your own logic on top of that.
+
+01:01:19.320 --> 01:01:23.660
+And as you said, if you want to go into really weird stuff,
+
+01:01:23.890 --> 01:01:29.360
+you will have to use the low-level interface, which is also there,
+
+01:01:29.880 --> 01:01:32.820
+which you can also access from the WebSocket listener.
+
+01:01:32.930 --> 01:01:36.920
+So you can, by a dependency injection, just receive the raw socket object
+
+01:01:36.940 --> 01:01:40.880
+if you want to deal with that for some reason.
+
+01:01:41.779 --> 01:01:43.160
+So it's available if you need it,
+
+01:01:43.300 --> 01:01:45.080
+but you can do the easy thing by default.
+
+01:01:45.500 --> 01:01:45.880
+Oh, awesome.
+
+01:01:46.160 --> 01:01:47.600
+That sounds really cool, and the channels sound great.
+
+01:01:49.039 --> 01:01:50.860
+Also, Chris out in the audience said,
+
+01:01:50.860 --> 01:01:53.280
+does that also mean server-side events are...
+
+01:01:53.440 --> 01:01:53.820
+Yes.
+
+01:01:54.160 --> 01:01:56.340
+Server-sent events, rather, excuse me, are available.
+
+01:01:56.430 --> 01:02:00.160
+And I saw that you have a dependency on HTTPX SSE,
+
+01:02:00.400 --> 01:02:04.940
+which is like a lightweight WebSocket type of thing.
+
+01:02:05.020 --> 01:02:05.460
+That's very cool.
+
+01:02:05.980 --> 01:02:07.740
+That's a development dependency for testing.
+
+01:02:08.440 --> 01:02:08.720
+Yep.
+
+01:02:09.280 --> 01:02:09.980
+Ah, for testing.
+
+01:02:10.260 --> 01:02:10.400
+Okay.
+
+01:02:10.520 --> 01:02:10.680
+Yeah.
+
+01:02:11.060 --> 01:02:15.000
+So we do have servers and events support built in.
+
+01:02:15.080 --> 01:02:15.900
+You can do that.
+
+01:02:16.060 --> 01:02:20.420
+And you can, for example, use that in combination with channels.
+
+01:02:20.700 --> 01:02:24.340
+So instead of fanning out the messages via WebSockets,
+
+01:02:24.400 --> 01:02:27.100
+you could do that with a server sent event as well.
+
+01:02:28.600 --> 01:02:28.820
+Excellent.
+
+01:02:29.280 --> 01:02:29.460
+All right.
+
+01:02:29.460 --> 01:02:31.420
+We're getting quite short on time.
+
+01:02:31.860 --> 01:02:38.660
+I want to close this out with maybe what would be the last thing in a process of building out an app in Litestar.
+
+01:02:39.200 --> 01:02:40.520
+And that would be deployment.
+
+01:02:41.020 --> 01:02:46.180
+And I didn't see a lot of conversation about how I should be deploying this stuff on the website.
+
+01:02:46.290 --> 01:02:51.860
+But I saw in the benchmarks that you said we use Gunicorn with the uvicorn worker and so on.
+
+01:02:51.870 --> 01:02:56.440
+And it sounds like maybe using Gunicorn is a good option.
+
+01:02:56.660 --> 01:02:57.640
+What's the deployment story?
+
+01:02:57.760 --> 01:03:02.040
+What do you tell people that want to put this in some real scaled out production story?
+
+01:03:03.600 --> 01:03:04.680
+The same guidance?
+
+01:03:05.220 --> 01:03:06.060
+Sorry, go ahead, Jake.
+
+01:03:07.640 --> 01:03:09.880
+Well, that's still a good option.
+
+01:03:10.600 --> 01:03:12.700
+But personally, I think Cody as well.
+
+01:03:13.460 --> 01:03:19.560
+We've just been using Uvicorn, not as a worker, just by itself.
+
+01:03:20.960 --> 01:03:22.840
+And that has worked really well.
+
+01:03:23.780 --> 01:03:25.680
+It really just depends on how you're going to run it, right?
+
+01:03:25.840 --> 01:03:31.380
+So if you're using Docker or Kubernetes or something else that's managing that process,
+
+01:03:32.220 --> 01:03:39.560
+then it's possible that Gunicorn may not be something that really is needed in your environment, right?
+
+01:03:39.780 --> 01:03:41.840
+And in fact, it might actually just add overhead.
+
+01:03:41.970 --> 01:03:47.180
+And so if you've got something like Cloud Run or Docker or Kubernetes or anything like that,
+
+01:03:47.230 --> 01:03:51.000
+what we've realized is that sometimes it's quite a bit faster to just run it with Uvicorn.
+
+01:03:51.160 --> 01:03:54.140
+And if the process dies, then your container management,
+
+01:03:55.740 --> 01:03:58.020
+whatever you're using to manage those things,
+
+01:03:58.060 --> 01:04:00.660
+will automatically start and scale those processes up.
+
+01:04:00.660 --> 01:04:02.480
+It notices that the container exited anyway,
+
+01:04:02.680 --> 01:04:04.020
+and so it's going to create a new one, right?
+
+01:04:04.200 --> 01:04:04.800
+Okay, got it.
+
+01:04:04.860 --> 01:04:05.280
+Correct, yeah.
+
+01:04:06.200 --> 01:04:09.620
+But if I'm going to a Linux machine directly?
+
+01:04:10.460 --> 01:04:10.940
+Correct, yeah.
+
+01:04:11.380 --> 01:04:13.560
+Then I think there's more of a decision to make
+
+01:04:13.660 --> 01:04:16.380
+on whether or not you want to host it through something like Gunicorn.
+
+01:04:16.920 --> 01:04:21.120
+And I guess the other thing I'd like to add is that really there's any of the
+
+01:04:21.160 --> 01:04:31.660
+ASGI servers can run Litestar. So you've got Daphne, Hypercorn, there's work that we're doing
+
+01:04:31.710 --> 01:04:37.580
+right now with Socketify. It's a mouthful as well. But they've got some cool stuff going on there.
+
+01:04:37.840 --> 01:04:43.580
+And so hopefully we'll have compatibility with that soon. And so yeah, the idea is that, you know,
+
+01:04:44.170 --> 01:04:49.040
+the same way that you would host any other ASGI app would apply to how you would manage a Litestar
+
+01:04:49.060 --> 01:04:50.940
+app. Okay. Excellent.
+
+01:04:51.670 --> 01:04:53.080
+And maybe Nginx or something
+
+01:04:53.240 --> 01:04:54.060
+like that in front for
+
+01:04:55.220 --> 01:04:57.100
+SSL and Let's Encrypt and all those
+
+01:04:57.160 --> 01:04:58.320
+things. Absolutely.
+
+01:05:00.320 --> 01:05:00.720
+All right.
+
+01:05:02.180 --> 01:05:02.360
+Well,
+
+01:05:02.990 --> 01:05:05.020
+I think that's probably about it
+
+01:05:05.020 --> 01:05:06.920
+for time. Final thing here. So
+
+01:05:07.100 --> 01:05:08.360
+you all said you just released
+
+01:05:08.960 --> 01:05:10.060
+a week ago or so,
+
+01:05:11.040 --> 01:05:12.780
+last week, release version 2.
+
+01:05:13.500 --> 01:05:14.720
+Want to give a quick shout out to
+
+01:05:14.950 --> 01:05:16.760
+the changes for people maybe already using it?
+
+01:05:18.920 --> 01:05:25.100
+Well, I don't know if that's even possible.
+
+01:05:26.120 --> 01:05:29.140
+This has been in development for over seven months now.
+
+01:05:29.790 --> 01:05:29.980
+Okay.
+
+01:05:31.300 --> 01:05:38.820
+And there have been substantial changes to basically every part of the application that you could think of.
+
+01:05:40.620 --> 01:05:45.140
+A lot of the features that we have talked about today, they are new in version 2.0.
+
+01:05:46.480 --> 01:05:48.700
+The DTOs, they are new in 2.0.
+
+01:05:48.880 --> 01:05:50.720
+The SQLAlchemy integration is new.
+
+01:05:50.900 --> 01:05:51.520
+Channels are new.
+
+01:05:51.860 --> 01:05:53.480
+The WebSocket listeners are new.
+
+01:05:55.020 --> 01:05:56.580
+Message spec integration is new.
+
+01:05:56.740 --> 01:05:58.540
+Pedantic being optional is new.
+
+01:05:58.740 --> 01:06:00.620
+So I think it doesn't make a lot of sense
+
+01:06:00.670 --> 01:06:03.300
+to compare it to version 1.0.
+
+01:06:03.820 --> 01:06:06.680
+So just strongly encourage people to use 2.0.
+
+01:06:07.360 --> 01:06:07.960
+Yeah, definitely.
+
+01:06:08.740 --> 01:06:09.620
+Please use version 2.
+
+01:06:10.340 --> 01:06:13.200
+We also have the new stores interface.
+
+01:06:14.500 --> 01:06:15.020
+That as well.
+
+01:06:15.780 --> 01:06:19.580
+so many other features that I forgot about.
+
+01:06:21.579 --> 01:06:24.240
+Yeah, HTMX requests, all sorts of good stuff.
+
+01:06:24.340 --> 01:06:24.480
+Okay.
+
+01:06:25.560 --> 01:06:28.100
+Yeah, there have been so many people,
+
+01:06:28.800 --> 01:06:32.340
+amazing contributors over the last several months
+
+01:06:33.800 --> 01:06:34.760
+spending time on this
+
+01:06:34.920 --> 01:06:39.320
+and delivering awesome features for us, for the community.
+
+01:06:40.160 --> 01:06:42.100
+There's been so much work going into this.
+
+01:06:42.280 --> 01:06:51.280
+And, well, I was relieved when I finally was able to hit the publish button on GitHub.
+
+01:06:52.140 --> 01:06:54.460
+And we could find it out.
+
+01:06:54.580 --> 01:06:56.300
+That's a big, big project.
+
+01:06:56.560 --> 01:06:56.860
+That's right.
+
+01:06:57.440 --> 01:06:57.540
+Yeah.
+
+01:06:58.380 --> 01:07:02.560
+But a lot of people have already been using version 2 in production.
+
+01:07:02.860 --> 01:07:03.740
+Cody, you have.
+
+01:07:04.020 --> 01:07:04.940
+Jacob, you have as well.
+
+01:07:05.160 --> 01:07:10.600
+Basically, since we started development, I actually haven't.
+
+01:07:12.560 --> 01:07:14.720
+I'm stuck on 1.5.
+
+01:07:17.800 --> 01:07:18.300
+Now it's out.
+
+01:07:18.920 --> 01:07:23.580
+One of the things I'll add is that the velocity of the project is, it seems to be really high.
+
+01:07:23.860 --> 01:07:28.780
+And, you know, it's encouraging to see all the contributions and all the edits that everybody's making.
+
+01:07:29.040 --> 01:07:34.440
+And so, you know, I, for one, am really excited about what it's going to look like in a year.
+
+01:07:34.600 --> 01:07:36.660
+You know, I think we've got a lot of opportunity ahead of us.
+
+01:07:36.900 --> 01:07:43.720
+looking forward to seeing everybody jump in and try things out. And if something doesn't work the
+
+01:07:43.720 --> 01:07:48.340
+way that you want it to, feel free to open up an issue or hop on Discord. We're all very responsive
+
+01:07:48.560 --> 01:07:53.800
+and would love to kind of hear what our users are thinking about as they build their applications.
+
+01:07:55.020 --> 01:08:00.720
+Awesome. Well, it seems like a great framework. I really like the balance you're striking between
+
+01:08:00.740 --> 01:08:07.220
+the micro frameworks and some of the batteries included. So congrats to all of you. Now, before
+
+01:08:07.260 --> 01:08:11.840
+we get out of here, just I'll ask one quick question, you know, for I usually ask at the end,
+
+01:08:11.840 --> 01:08:17.859
+and that is a quick shout out to some package or library out there that you like and want to
+
+01:08:18.180 --> 01:08:26.239
+spread the word about. I guess I'll start. DuckDB for me. So I have used a massive amount of
+
+01:08:26.680 --> 01:08:40.420
+DuckDB. And you can kind of think about it as like an analytical SQLite. And so it's in process. And so you can start it up and just run SQL directly from, you know, your Python process.
+
+01:08:40.560 --> 01:08:51.940
+And so the project that I'm working on at Google actually has quite a bit of DuckDB as kind of this like middle ETL piece where data gets ingested.
+
+01:08:52.049 --> 01:08:59.200
+We do things in DuckDB and then that actually gets exported to BigQuery or other database engines.
+
+01:08:59.330 --> 01:09:10.180
+And so this really has kind of opened up the flexibility of us to be able to do quite a bit of transformations just in RAM without having to write to disk.
+
+01:09:10.759 --> 01:09:15.380
+That's cool. An in-process SQL app database management system. Cool.
+
+01:09:15.759 --> 01:09:21.240
+He has been recruiting us to use DuckDB for quite a while now. He's succeeded.
+
+01:09:22.180 --> 01:09:26.580
+That's cool. All right. Jacob. Oh, no. Yannick, go ahead.
+
+01:09:26.859 --> 01:09:27.560
+Jacob, please go first.
+
+01:09:28.180 --> 01:09:35.700
+Oh, well, I love what the standard library has, but Click is one of my favorite CLI building tools.
+
+01:09:36.859 --> 01:09:41.900
+Rich is the thing that makes your terminal beautiful.
+
+01:09:42.310 --> 01:09:43.600
+But there's this really cool package.
+
+01:09:44.930 --> 01:09:46.120
+I mean, you can use them both separately.
+
+01:09:46.720 --> 01:09:52.920
+But rich-click, it's what we use for our CLI.
+
+01:09:53.940 --> 01:09:56.800
+You have the great CLI building stuff,
+
+01:09:56.940 --> 01:10:00.620
+but then rich on top of it automatically makes everything pretty.
+
+01:10:01.880 --> 01:10:02.500
+That's cool.
+
+01:10:02.690 --> 01:10:05.900
+So it's like all the magic and niceness of rich,
+
+01:10:06.120 --> 01:10:09.800
+but available for a click, like colors in your help.
+
+01:10:10.100 --> 01:10:13.400
+I haven't gotten to check out Sebastian's typer yet,
+
+01:10:13.760 --> 01:10:17.360
+but I've seen some screenshots, and it's sort of similar.
+
+01:10:17.580 --> 01:10:22.080
+I don't know a lot about that, but I like the pretty terminal.
+
+01:10:24.330 --> 01:10:24.760
+I think so.
+
+01:10:27.440 --> 01:10:27.640
+Nice.
+
+01:10:27.980 --> 01:10:28.520
+All right, Yannick.
+
+01:10:29.320 --> 01:10:31.540
+Well, for me, it's got to be msgspec.
+
+01:10:32.600 --> 01:10:32.740
+Okay.
+
+01:10:33.540 --> 01:10:56.200
+So if you do any kind of JSON parsing or serialization or message pack parsing or serialization or data modeling that you might usually want to do with a data class and want to add a bit of validation on top or, you know, just if you're curious, you should absolutely check this library out because it's super amazing.
+
+01:10:57.140 --> 01:11:00.280
+The author is really, really great.
+
+01:11:01.240 --> 01:11:04.400
+I can just give him, I don't know, just huge shout out
+
+01:11:04.550 --> 01:11:07.400
+because he's done such a great job
+
+01:11:07.560 --> 01:11:09.560
+at supporting our integration with it.
+
+01:11:09.850 --> 01:11:13.940
+It has been quite a tight collaboration at some points
+
+01:11:14.300 --> 01:11:16.280
+because when we started integrating it,
+
+01:11:16.570 --> 01:11:20.220
+there were a lot of things where we felt like,
+
+01:11:20.290 --> 01:11:23.900
+okay, so, well, we kind of can't use it right now
+
+01:11:24.100 --> 01:11:25.440
+because of this reason or that reason.
+
+01:11:26.290 --> 01:11:28.780
+And he's been so responsive and helpful
+
+01:11:28.800 --> 01:11:31.640
+and finding ways for us to work around that
+
+01:11:31.820 --> 01:11:33.480
+or just straight up implementing features
+
+01:11:33.720 --> 01:11:34.660
+that were missing for us.
+
+01:11:35.880 --> 01:11:36.440
+- That's pretty awesome.
+
+01:11:37.620 --> 01:11:39.180
+- I can't thank him enough.
+
+01:11:39.440 --> 01:11:40.800
+It's really great.
+
+01:11:40.880 --> 01:11:42.240
+It's a pleasure to work with him.
+
+01:11:42.800 --> 01:11:44.440
+And it's an awesome library
+
+01:11:44.640 --> 01:11:47.000
+that everyone should check out, I think.
+
+01:11:47.540 --> 01:11:48.880
+- Cool, that's news to me,
+
+01:11:48.980 --> 01:11:50.080
+so I will definitely check it out.
+
+01:11:51.340 --> 01:11:53.180
+All right, well, thank you all for being here.
+
+01:11:53.780 --> 01:11:54.480
+Final call to action.
+
+01:11:54.760 --> 01:11:56.260
+People wanna get started with Litestar.
+
+01:11:56.480 --> 01:11:56.960
+What do you tell them?
+
+01:11:58.420 --> 01:12:00.140
+Go to lightstar.dev.
+
+01:12:00.240 --> 01:12:01.020
+You can read the docs.
+
+01:12:02.720 --> 01:12:04.440
+Use it 15 minutes, 30 minutes.
+
+01:12:04.720 --> 01:12:05.780
+You'll know if you like it or not.
+
+01:12:08.320 --> 01:12:09.600
+Join us on Discord if you have questions.
+
+01:12:09.800 --> 01:12:12.960
+We're happy to help answer anything that may come up.
+
+01:12:15.120 --> 01:12:15.300
+Cool.
+
+01:12:15.560 --> 01:12:18.120
+I don't think I can add anything valuable to that anymore.
+
+01:12:19.300 --> 01:12:19.740
+All right.
+
+01:12:19.940 --> 01:12:20.800
+Well, yeah.
+
+01:12:21.360 --> 01:12:21.880
+Sounds good, guys.
+
+01:12:22.140 --> 01:12:22.860
+Thank you for being here.
+
+01:12:23.340 --> 01:12:23.960
+Congrats on the project.
+
+01:12:25.760 --> 01:12:26.220
+Thank you, Michael.
+

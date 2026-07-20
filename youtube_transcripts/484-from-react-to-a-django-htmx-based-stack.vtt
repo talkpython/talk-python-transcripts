@@ -1,0 +1,3047 @@
+WEBVTT
+
+00:00:00.879 --> 00:00:01.580
+Hey, Sheena.
+
+00:00:02.899 --> 00:00:03.900
+Hey, how's it going?
+
+00:00:04.320 --> 00:00:06.720
+It's going really well. Looking forward to doing a show together.
+
+00:00:07.040 --> 00:00:10.160
+Thanks for everyone who's here on the live stream or watching that later.
+
+00:00:11.240 --> 00:00:14.580
+And with that, Sheena, welcome to Talk Python To Me.
+
+00:00:15.559 --> 00:00:17.240
+Thanks so much. Happy to be here.
+
+00:00:18.100 --> 00:00:19.520
+Yeah, I'm happy to have you here.
+
+00:00:20.380 --> 00:00:22.420
+We've got an awesome topic queued up.
+
+00:00:22.860 --> 00:00:27.080
+One that I just, I don't know if I'll ever get tired of coming back to this
+
+00:00:27.100 --> 00:00:32.520
+because I'm just such a fan of simplicity and getting stuff done and not like,
+
+00:00:34.180 --> 00:00:36.680
+let's see how many layers of things we can pile on.
+
+00:00:36.840 --> 00:00:41.160
+And by that, I mean, HTMX as a success story
+
+00:00:42.200 --> 00:00:44.900
+for going from a whole bunch of front end stuff,
+
+00:00:45.590 --> 00:00:49.780
+a bunch of different multiple apps, you know, JavaScript front end,
+
+00:00:50.500 --> 00:00:53.980
+Django back end talking to each other, but kind of being separate as well.
+
+00:00:54.860 --> 00:00:56.000
+And just switching to HTMX.
+
+00:00:56.220 --> 00:01:01.680
+You wrote up a really cool essay on this that we're going to dive into and share your experience.
+
+00:01:02.800 --> 00:01:06.480
+Yeah, it was a pretty fantastic experience overall.
+
+00:01:06.800 --> 00:01:15.080
+I was really surprised by HTMX when I came across it the first time because there are so many fashionable front-end libraries and frameworks.
+
+00:01:15.360 --> 00:01:18.060
+So when I heard about it, I was like, oh, it's another one of those, whatever.
+
+00:01:18.920 --> 00:01:30.160
+And then I went to a DjangoCon, I think it was 2022, and I saw a talk from Chris May, who's in the audience, and that got me excited about it.
+
+00:01:30.460 --> 00:01:34.440
+And yeah, that's kind of when my whole story started.
+
+00:01:36.600 --> 00:01:47.280
+So yeah, so what I had been doing before was working with, so I had this team and we were building a thing and we had a React front end.
+
+00:01:47.300 --> 00:01:49.860
+So on the front, and that's a normal thing.
+
+00:01:49.960 --> 00:01:53.140
+Like if you wanted like a modern front-end application,
+
+00:01:54.280 --> 00:01:57.600
+you'd use something like React or Vue or one of the many competitors.
+
+00:01:58.400 --> 00:01:59.760
+And then on the back end, we had Django.
+
+00:02:00.440 --> 00:02:05.480
+And I think that's like a fairly normal, fairly accepted way to do things,
+
+00:02:05.780 --> 00:02:07.140
+or it has been for a long time.
+
+00:02:07.820 --> 00:02:11.480
+But I think it's like, I think it's a little faulty.
+
+00:02:11.620 --> 00:02:16.680
+I think that front-end web development has been in a little bit of a complexity
+
+00:02:16.700 --> 00:02:18.500
+death spiral for the last little while.
+
+00:02:19.160 --> 00:02:22.380
+And sometimes it's useful, sometimes it's really helpful,
+
+00:02:22.640 --> 00:02:26.640
+but for some things you need certain tools
+
+00:02:26.680 --> 00:02:27.780
+in the front end, I think.
+
+00:02:28.040 --> 00:02:32.800
+But yeah, I think things have been going
+
+00:02:33.260 --> 00:02:35.500
+in the complexity direction for a long time
+
+00:02:35.680 --> 00:02:37.620
+and HTML solves a lot of problems.
+
+00:02:40.040 --> 00:02:43.560
+All right, well, you think back to the jQuery days.
+
+00:02:44.220 --> 00:02:45.340
+How did you use jQuery?
+
+00:02:45.620 --> 00:02:51.580
+You included a CDN or if you're wild, you might download it and include it in your own static content.
+
+00:02:52.390 --> 00:02:53.880
+And then you started using it, right?
+
+00:02:54.500 --> 00:02:58.140
+And just layers and layers have just been building.
+
+00:02:58.270 --> 00:03:06.080
+And JavaScript of 2024 era looks nothing like 10 years ago, 15 years ago, JavaScript.
+
+00:03:07.480 --> 00:03:13.560
+I would say it's one of the more complicated programming environments, you know, compared to something like C++, right?
+
+00:03:13.700 --> 00:03:15.160
+because there's so many steps in there,
+
+00:03:15.200 --> 00:03:17.220
+so many implicit linkings and stuff.
+
+00:03:17.860 --> 00:03:19.780
+Yeah, there's a lot of dark magic under the hood.
+
+00:03:20.060 --> 00:03:21.340
+It's very hard to know what's going on.
+
+00:03:21.580 --> 00:03:25.540
+And I think one of the challenges is that a lot of people
+
+00:03:25.580 --> 00:03:29.320
+used to get into web dev as their gateway drug to programming.
+
+00:03:29.700 --> 00:03:30.900
+Like they'd start off with web dev
+
+00:03:30.960 --> 00:03:32.000
+and then branch out from there.
+
+00:03:32.080 --> 00:03:34.700
+But now web dev is like this magic weird box
+
+00:03:34.920 --> 00:03:35.580
+with so many layers.
+
+00:03:36.820 --> 00:03:40.720
+And I think it's sort of messed a lot of people up.
+
+00:03:42.220 --> 00:03:45.640
+it's a challenge to get started in the way that people used to get started.
+
+00:03:45.880 --> 00:03:50.760
+And it's like the barrier to entry level programmers used to need to be here.
+
+00:03:50.900 --> 00:03:51.860
+And now it's here.
+
+00:03:52.430 --> 00:03:56.640
+And yeah, there's a lot of tricky things to the ecosystem as a whole.
+
+00:03:57.160 --> 00:04:01.020
+But yeah, like all the bold steps, all the magic things that happen under the hood.
+
+00:04:01.110 --> 00:04:05.120
+And the fact that you have to like tasks switch between completely different
+
+00:04:05.400 --> 00:04:08.940
+applications and completely different like ways of thinking.
+
+00:04:10.180 --> 00:04:12.760
+Like, so for me, I've always loved Django.
+
+00:04:12.920 --> 00:04:13.500
+It's so good.
+
+00:04:14.720 --> 00:04:16.440
+So with the thing that I was building,
+
+00:04:17.200 --> 00:04:21.579
+I went to Django because I needed to build the thing really, really fast.
+
+00:04:22.820 --> 00:04:24.620
+And so my efficiency was important.
+
+00:04:24.860 --> 00:04:26.560
+And then it was like, I need a good front end.
+
+00:04:26.740 --> 00:04:29.640
+And React was a clear choice at the time.
+
+00:04:29.720 --> 00:04:33.100
+But it means like switching, like for me to work on this thing,
+
+00:04:33.100 --> 00:04:36.000
+I need to keep holding the Django application
+
+00:04:36.220 --> 00:04:38.380
+and the React application in my head and how they talk.
+
+00:04:38.480 --> 00:04:39.420
+And it's not just React.
+
+00:04:39.600 --> 00:04:42.980
+It's like Redux and Saga and side effects and asynchronous goodies.
+
+00:04:44.030 --> 00:04:46.720
+And then on the Django side, it's all of that.
+
+00:04:46.980 --> 00:04:51.260
+And Django is, I think, much simpler to get your head around than React, actually.
+
+00:04:52.320 --> 00:04:52.440
+Yeah.
+
+00:04:54.100 --> 00:04:55.380
+Yeah, it's a tricky thing.
+
+00:04:56.200 --> 00:04:57.880
+Yeah, it definitely is a tricky thing.
+
+00:04:57.990 --> 00:05:07.320
+And one thing I would just like to put out early before we get too much mail is this is not necessarily a hate on JavaScript sort of thing.
+
+00:05:07.380 --> 00:05:13.800
+There are people in the node space that are super fans of HTMX.
+
+00:05:13.980 --> 00:05:20.920
+And I think what is not obvious about the benefits of HTMX, as we get into it, we'll talk about some of these things.
+
+00:05:20.960 --> 00:05:22.140
+But you were just touching on that.
+
+00:05:22.700 --> 00:05:23.980
+You've got this React front end.
+
+00:05:24.040 --> 00:05:25.160
+It has its own state.
+
+00:05:26.040 --> 00:05:27.620
+It also has its own capability.
+
+00:05:27.780 --> 00:05:30.840
+So it's running on the client side, so it can't talk to file systems or the database.
+
+00:05:31.060 --> 00:05:32.300
+It can only talk to APIs.
+
+00:05:33.220 --> 00:05:41.100
+On the other hand, you've got the Django app, which probably is not talking to APIs, but talks to the database, talks to the server levels things.
+
+00:05:41.880 --> 00:05:45.280
+And you've got to, as you're working on this app, think, OK, I'm in this context.
+
+00:05:45.420 --> 00:05:46.320
+That means no database.
+
+00:05:46.540 --> 00:05:47.220
+I'm in this context.
+
+00:05:47.320 --> 00:05:48.780
+That means primarily just database.
+
+00:05:49.420 --> 00:05:51.760
+And it's just you have these two worlds.
+
+00:05:51.880 --> 00:05:54.800
+And if you could say, could I just write in one of them?
+
+00:05:56.200 --> 00:06:00.160
+In the JavaScript, people might even pick like, I just want to stay in JavaScript, but always node.
+
+00:06:00.820 --> 00:06:04.120
+or always at least pick one of the styles of programming
+
+00:06:04.700 --> 00:06:06.720
+and not just constantly switch back and forth
+
+00:06:06.890 --> 00:06:09.060
+between these, you have browser capabilities,
+
+00:06:09.110 --> 00:06:11.100
+you have server capabilities, you have browser information.
+
+00:06:11.440 --> 00:06:14.720
+Like just, that is just not productive.
+
+00:06:15.140 --> 00:06:16.840
+It's not the best, right?
+
+00:06:16.890 --> 00:06:19.220
+And so as much as you can avoid that,
+
+00:06:19.390 --> 00:06:22.800
+and as we'll see, HTMX is super easy
+
+00:06:23.040 --> 00:06:25.360
+about keeping it in one place, right?
+
+00:06:25.450 --> 00:06:28.079
+So I think that's one of the big things
+
+00:06:28.100 --> 00:06:31.340
+that people should be honing in on as we talk about this?
+
+00:06:31.340 --> 00:06:31.680
+What do you think?
+
+00:06:32.580 --> 00:06:33.260
+- Oh yeah, definitely.
+
+00:06:34.040 --> 00:06:36.240
+Yeah, if I came across as hating on JavaScript,
+
+00:06:36.680 --> 00:06:40.400
+I dig JavaScript and I use it a lot where it's needed.
+
+00:06:41.120 --> 00:06:43.800
+I think it is a fantastic tool in the toolbox
+
+00:06:45.160 --> 00:06:46.180
+that I'm on sides with you,
+
+00:06:46.220 --> 00:06:48.720
+that it's just the complexity of switching contexts
+
+00:06:48.820 --> 00:06:50.060
+all the time, it slows you down
+
+00:06:50.760 --> 00:06:52.340
+and it's a lot to keep in your head.
+
+00:06:53.720 --> 00:06:54.840
+And so it's like, for me,
+
+00:06:55.600 --> 00:06:57.419
+when I was working on this application
+
+00:06:57.440 --> 00:06:59.000
+and needing to switch contexts all the time.
+
+00:06:59.180 --> 00:07:02.020
+It's like, you can't just make a thing.
+
+00:07:02.420 --> 00:07:04.640
+Like you have to like do the dance to make the thing.
+
+00:07:04.980 --> 00:07:07.060
+And it's like-
+
+00:07:07.060 --> 00:07:10.080
+- Set up four different chained file watchers
+
+00:07:10.080 --> 00:07:12.320
+to do their things and stuff, right?
+
+00:07:12.320 --> 00:07:14.760
+- So it just like adds a little bit of a,
+
+00:07:14.760 --> 00:07:17.400
+like you're slower than you would like to be.
+
+00:07:17.400 --> 00:07:19.720
+There's like more tedium than there should be.
+
+00:07:19.720 --> 00:07:21.420
+It would be nice if you could just like
+
+00:07:21.420 --> 00:07:23.140
+build the thing quickly in a simple way
+
+00:07:23.140 --> 00:07:24.020
+and it just works and is beautiful.
+
+00:07:25.260 --> 00:07:28.920
+And HTMX kind of allows that along with other tools.
+
+00:07:30.300 --> 00:07:31.480
+Yeah, so for me, that context switching
+
+00:07:31.620 --> 00:07:33.380
+was like a painful, painful thing.
+
+00:07:33.930 --> 00:07:35.680
+And for the team I was working with as well,
+
+00:07:35.880 --> 00:07:37.380
+I had a bunch of juniors on my team.
+
+00:07:37.690 --> 00:07:40.900
+And it was so hard to get them productive because it was like,
+
+00:07:41.010 --> 00:07:42.600
+OK, do you want to be productive on the back end?
+
+00:07:42.700 --> 00:07:44.280
+Or do you want to be productive on the front end?
+
+00:07:44.780 --> 00:07:47.980
+And then on the front end, that was complicated because of the,
+
+00:07:48.350 --> 00:07:50.440
+again, React, Redux, Redux saga.
+
+00:07:50.680 --> 00:07:53.460
+So they were all just like suffering.
+
+00:07:55.319 --> 00:07:57.580
+- And to put real features into place,
+
+00:07:58.400 --> 00:07:59.800
+you've gotta do a vertical slice, right?
+
+00:07:59.800 --> 00:08:01.840
+Which hits most, if not all, you know,
+
+00:08:01.880 --> 00:08:04.720
+you probably have to touch the React front end.
+
+00:08:05.420 --> 00:08:05.760
+- Yeah.
+
+00:08:05.760 --> 00:08:10.020
+- You probably need some new tiny bits of UI designs,
+
+00:08:10.120 --> 00:08:14.120
+you know, CSS and maybe some SAS build stuff there.
+
+00:08:14.280 --> 00:08:17.740
+And you know, like then you're doing the server side bits
+
+00:08:17.740 --> 00:08:19.579
+and then you're doing a database migration
+
+00:08:19.600 --> 00:08:21.100
+And it's just like it's end to end, right?
+
+00:08:21.920 --> 00:08:22.020
+Yeah.
+
+00:08:22.340 --> 00:08:27.640
+And for some people, it's not even reasonable to expect them to have all of those skills, those end to end skills.
+
+00:08:27.820 --> 00:08:30.880
+And then it's like you have to make your team complicated.
+
+00:08:30.940 --> 00:08:32.820
+You have to have a back end team and a front end team.
+
+00:08:32.940 --> 00:08:35.300
+And they need to now integrate with each other.
+
+00:08:35.520 --> 00:08:39.140
+And so it resembles the team stack.
+
+00:08:41.639 --> 00:08:42.700
+Yeah, that's interesting.
+
+00:08:42.919 --> 00:08:45.260
+Yeah, we have a group for this later, a group for that later.
+
+00:08:45.380 --> 00:08:48.760
+And, you know, look, if you're a huge company, maybe that actually makes tons of sense.
+
+00:08:49.220 --> 00:08:49.360
+Maybe.
+
+00:08:49.500 --> 00:08:51.180
+I'm not saying it does, but it may.
+
+00:08:51.740 --> 00:08:54.720
+But when you were a small company, it just doesn't, right?
+
+00:08:55.080 --> 00:08:55.800
+No, no.
+
+00:08:56.899 --> 00:09:00.700
+And yeah, like I think when you're building something,
+
+00:09:00.800 --> 00:09:03.220
+you do need to think about the team that's going to be building it.
+
+00:09:03.540 --> 00:09:06.300
+Their skills right now, the skills that they're going to have in the future,
+
+00:09:06.460 --> 00:09:09.000
+the skills that you're going to need to pull into the team in the future.
+
+00:09:09.420 --> 00:09:16.400
+And so it's, I don't know if it makes sense to, well, in my context,
+
+00:09:16.620 --> 00:09:19.680
+it didn't make sense to split up the team.
+
+00:09:20.920 --> 00:09:22.340
+If I had the tools to allow everybody
+
+00:09:22.500 --> 00:09:24.520
+to be in the same place from the beginning,
+
+00:09:24.660 --> 00:09:26.180
+that would have been freaking fantastic.
+
+00:09:26.960 --> 00:09:27.160
+Yeah.
+
+00:09:28.660 --> 00:09:29.420
+Yeah, absolutely.
+
+00:09:29.720 --> 00:09:30.140
+That would be awesome.
+
+00:09:31.540 --> 00:09:32.480
+So let's talk about,
+
+00:09:34.319 --> 00:09:36.280
+let's talk a bit about HTML.
+
+00:09:36.420 --> 00:09:38.580
+So we said, hey, we've been talking about this
+
+00:09:39.440 --> 00:09:41.120
+in sort of broad terms,
+
+00:09:41.520 --> 00:09:43.060
+but let's be a little bit specific
+
+00:09:43.320 --> 00:09:44.340
+and maybe you could tell us,
+
+00:09:45.360 --> 00:09:52.040
+What is this HTMX and why is it not just a different flavor of
+
+00:09:52.320 --> 00:09:53.340
+reactor view or something?
+
+00:09:53.780 --> 00:09:55.320
+Then maybe we could talk through a few examples.
+
+00:09:56.300 --> 00:10:01.880
+Okay, cool. The way I explain HTMX to myself is that,
+
+00:10:03.860 --> 00:10:05.480
+imagine looking at HTML.
+
+00:10:05.780 --> 00:10:08.260
+HTML is with us, it's going to be with us forever,
+
+00:10:09.580 --> 00:10:11.580
+maybe not forever, but for a very long time.
+
+00:10:12.190 --> 00:10:12.780
+What if we like?
+
+00:10:12.840 --> 00:10:19.380
+many attempts to replace it and they were all bad. Yeah. Yeah. So it's probably going to stick
+
+00:10:19.600 --> 00:10:24.100
+around for the foreseeable future and it's everywhere. And what if we could just augment
+
+00:10:24.160 --> 00:10:31.300
+it slightly so that it could do what we needed it to do in the modern web? Like since HTML got
+
+00:10:31.520 --> 00:10:36.859
+invented, like it's quite a simple tool, but now we need to do all this extra stuff because people
+
+00:10:36.860 --> 00:10:43.280
+expect all sorts of interactivity in the user interfaces. They expect asynchronous workloads
+
+00:10:43.690 --> 00:10:50.420
+and things like that. And what if HTML could do that? And it can do that. And it's not actually
+
+00:10:50.490 --> 00:10:57.600
+that hard to make it do that. You just need to add a few extra attributes. And so what HTMX is,
+
+00:10:57.740 --> 00:11:05.560
+is a really, really small JavaScript library. And you just include it as a script tag in your page,
+
+00:11:05.800 --> 00:11:11.380
+and then it's there and it's available and it's installed just like the old, the good old days
+
+00:11:12.240 --> 00:11:16.660
+of jQuery. Yeah, you could just go back and throw it in a CD if you wanted, couldn't you?
+
+00:11:16.960 --> 00:11:22.500
+That's right. I hadn't really thought about it. And then from there, you just have these extra
+
+00:11:22.720 --> 00:11:30.280
+attributes on your HTML tags that do different things. So for example, like, so HTML has a lot
+
+00:11:30.280 --> 00:11:35.620
+of different stuff, but if you were to like 80, 20 years and look at the parts that are the most
+
+00:11:35.640 --> 00:11:40.060
+used, then basically the stuff you'll use the most
+
+00:11:40.220 --> 00:11:45.080
+are like tying into events, like click event handlers
+
+00:11:45.100 --> 00:11:45.500
+or whatnot.
+
+00:11:46.660 --> 00:11:49.620
+And then when you click on the thing or whatever,
+
+00:11:49.780 --> 00:11:52.380
+it'll send a request to a back end.
+
+00:11:52.760 --> 00:11:56.640
+And the back end responds with an HTML fragment.
+
+00:11:57.740 --> 00:12:02.220
+And then you swap that fragment into your page somewhere.
+
+00:12:02.820 --> 00:12:08.760
+So if you were to look at the HTMX documentation,
+
+00:12:09.320 --> 00:12:11.400
+the hello world of HTMX is a button.
+
+00:12:12.620 --> 00:12:16.520
+And the button says, has the attributes HX post clicked.
+
+00:12:17.660 --> 00:12:19.900
+So it's saying, when you click on the button,
+
+00:12:20.560 --> 00:12:24.760
+then send a post request to a URL that's like forward slash clicked.
+
+00:12:24.820 --> 00:12:27.980
+So you can decide what HTTP method you're using,
+
+00:12:28.540 --> 00:12:32.000
+and where it's going, and what event you're tying into.
+
+00:12:32.460 --> 00:12:36.560
+And then when the response arrives, then you do something with it.
+
+00:12:36.560 --> 00:12:37.720
+And the response is HTML.
+
+00:12:38.040 --> 00:12:42.800
+It's not a JSON response that you then need to turn into HTML.
+
+00:12:43.380 --> 00:12:46.040
+It's plain old normal HTML.
+
+00:12:46.190 --> 00:12:47.280
+So it's super simple to write.
+
+00:12:47.510 --> 00:12:51.240
+And then you take that HTML and you put it somewhere on the page.
+
+00:12:51.380 --> 00:12:54.600
+So maybe you swap the current button
+
+00:12:54.760 --> 00:12:57.160
+that you just clicked with the HTML that was returned.
+
+00:12:57.210 --> 00:13:01.640
+Or maybe you take it and you put it at the end of another element.
+
+00:13:01.920 --> 00:13:05.400
+You can append stuff, you can pre-pend stuff,
+
+00:13:05.860 --> 00:13:07.220
+you can replace entire elements,
+
+00:13:07.480 --> 00:13:08.920
+you can replace the internals of elements.
+
+00:13:09.700 --> 00:13:13.000
+And that little pattern is actually really, really powerful.
+
+00:13:14.820 --> 00:13:17.780
+So, and you can tie into all sorts of different events.
+
+00:13:17.990 --> 00:13:20.460
+So there's like interacting with individual elements
+
+00:13:20.660 --> 00:13:22.040
+like a click or a form submission.
+
+00:13:22.950 --> 00:13:24.880
+You can say like on load or like on scroll
+
+00:13:25.500 --> 00:13:26.860
+or all sorts of different things.
+
+00:13:27.040 --> 00:13:29.100
+So events, yeah.
+
+00:13:29.240 --> 00:13:29.800
+- Yeah, absolutely.
+
+00:13:30.140 --> 00:13:36.660
+So one of the motivations that Carl, Carson Gross puts there is why should a
+
+00:13:36.760 --> 00:13:38.880
+and forum only be able to make HTTP requests?
+
+00:13:39.150 --> 00:13:44.260
+Why should you only be able to click and have click and submit events,
+
+00:13:44.480 --> 00:13:45.100
+trigger them, right.
+
+00:13:45.220 --> 00:13:50.680
+And all these things, you know, so it's kind of like just extending some of
+
+00:13:50.690 --> 00:13:51.700
+these niche features.
+
+00:13:52.300 --> 00:13:58.160
+Like you can click a button, but not an image in HTML to, to all the pieces.
+
+00:13:59.420 --> 00:14:02.400
+And then like you said, exchanging fragments of HTML, right?
+
+00:14:02.600 --> 00:14:04.980
+Like just instead of sending JSON back
+
+00:14:05.260 --> 00:14:07.380
+and then having the client side turn that into HTML,
+
+00:14:07.490 --> 00:14:10.400
+just do it on the server and stick it where it goes, right?
+
+00:14:10.860 --> 00:14:11.600
+Basically that's it.
+
+00:14:12.280 --> 00:14:15.420
+- Yeah, so it's dead simple to code as well,
+
+00:14:15.490 --> 00:14:16.780
+which is fantastic.
+
+00:14:17.090 --> 00:14:17.640
+So it's a simple,
+
+00:14:18.800 --> 00:14:21.900
+you're just server side rendering some HTML
+
+00:14:23.660 --> 00:14:25.140
+like we used to a long time ago.
+
+00:14:25.330 --> 00:14:27.540
+So it feels very familiar to people
+
+00:14:27.560 --> 00:14:29.040
+who got into web dev a long time ago.
+
+00:14:30.559 --> 00:14:33.360
+And the code itself is very, very easy to write.
+
+00:14:33.580 --> 00:14:35.580
+Like initially you might like scratch your head,
+
+00:14:35.680 --> 00:14:39.480
+unfamiliar, but give yourself a couple of hours
+
+00:14:39.780 --> 00:14:41.080
+and it'll start to feel familiar.
+
+00:14:42.240 --> 00:14:44.340
+It's, yeah, it's lovely to work in.
+
+00:14:45.579 --> 00:14:47.560
+- Yeah, I would also encourage people
+
+00:14:47.620 --> 00:14:49.600
+that want to get started with this and play with this.
+
+00:14:50.500 --> 00:14:52.760
+The examples that they have on the website
+
+00:14:52.840 --> 00:14:54.360
+are pretty comprehensive, right?
+
+00:14:54.360 --> 00:14:55.800
+If you scroll through, I don't know how many there are,
+
+00:14:55.880 --> 00:14:57.660
+maybe 20 or so.
+
+00:14:58.360 --> 00:14:59.480
+Yeah, more than that.
+
+00:14:59.940 --> 00:15:00.380
+Yeah, perhaps.
+
+00:15:00.600 --> 00:15:01.580
+Yeah, there's a lot of them here.
+
+00:15:02.560 --> 00:15:03.920
+So if you go into each one of them,
+
+00:15:04.760 --> 00:15:07.520
+it'll show you basically some interesting things.
+
+00:15:07.680 --> 00:15:09.860
+So if you go to the first one, the click to edit,
+
+00:15:09.920 --> 00:15:14.560
+it says here's a bit of static HTML, like a label and a div,
+
+00:15:15.140 --> 00:15:16.820
+and then a button that says click to edit.
+
+00:15:17.460 --> 00:15:21.520
+And all it has is HX get, and it says edit this thing, right?
+
+00:15:23.060 --> 00:15:27.620
+And when you go and click it, there's a little example at the bottom.
+
+00:15:27.650 --> 00:15:28.280
+You click it.
+
+00:15:28.700 --> 00:15:29.240
+That's all fun.
+
+00:15:30.820 --> 00:15:33.120
+But if you open up the bottom, there's
+
+00:15:33.130 --> 00:15:35.320
+like a little history of interactions.
+
+00:15:37.079 --> 00:15:39.920
+And like-- I don't know what you call it--
+
+00:15:39.920 --> 00:15:43.740
+but like a web history that shows what's transferred.
+
+00:15:44.000 --> 00:15:46.980
+So when you click Edit, here's what the response was.
+
+00:15:47.030 --> 00:15:49.959
+And it shows the HTML fragment, which in itself
+
+00:15:49.980 --> 00:15:54.280
+has a new HX, has HX events.
+
+00:15:54.410 --> 00:15:55.360
+And then when it saves it,
+
+00:15:55.370 --> 00:15:57.200
+it goes back to the static and so on.
+
+00:15:57.250 --> 00:15:59.300
+And I think it's a really pretty easy way
+
+00:15:59.460 --> 00:16:01.280
+to get a sense of what it is.
+
+00:16:01.510 --> 00:16:01.860
+What do you think?
+
+00:16:02.260 --> 00:16:03.780
+- Yeah, I think so.
+
+00:16:03.830 --> 00:16:04.280
+I think so.
+
+00:16:04.310 --> 00:16:05.180
+Those examples are great.
+
+00:16:06.680 --> 00:16:11.060
+I think like one thing that I like to do is use HTMX
+
+00:16:11.260 --> 00:16:12.860
+and the thing called Alpine JS together.
+
+00:16:16.720 --> 00:16:22.000
+Yeah, so for me, HTMX is great for when the data needs to be passed back and forth, but
+
+00:16:22.150 --> 00:16:25.400
+like for something like this, I'd probably use something like Alpine just to say like
+
+00:16:25.800 --> 00:16:27.660
+show and hide the form.
+
+00:16:29.160 --> 00:16:30.360
+Yeah, it's also fantastic.
+
+00:16:30.660 --> 00:16:37.700
+So you don't like strictly need it, I suppose, but it does save on like some back and forth
+
+00:16:37.930 --> 00:16:44.600
+and it does make things a little bit more like in one place, a little bit more like locality
+
+00:16:44.620 --> 00:16:54.040
+of behaviors. So now we're looking at the Alpine JS, and this is cool because it also it's like
+
+00:16:54.240 --> 00:17:01.560
+HTMX in that it just adds a couple of extra attributes to your HTML tags. And the 80/20 of
+
+00:17:01.700 --> 00:17:11.240
+this is that you can define variables and those variables are like a state and they are defined
+
+00:17:11.240 --> 00:17:17.900
+within the scope of the place where you defined it. So if you have like div x data equals open
+
+00:17:18.040 --> 00:17:22.540
+false as a JSON object, then within the scope of this div, we have this thing called open,
+
+00:17:22.939 --> 00:17:29.540
+and its initial value is false. And then you can do things like click on a button to change open
+
+00:17:29.680 --> 00:17:36.160
+to true or to toggle open. So you can have it like show form true or false. And then you can say,
+
+00:17:36.660 --> 00:17:39.900
+then you can say, here it says span extra equals open.
+
+00:17:40.060 --> 00:17:42.760
+So we only show that under certain circumstances.
+
+00:17:43.040 --> 00:17:45.500
+And you can also have not open, or you can have
+
+00:17:46.419 --> 00:17:47.580
+like it speaks JavaScript.
+
+00:17:47.940 --> 00:17:50.300
+So you can do some interesting things in there as well.
+
+00:17:52.120 --> 00:17:53.480
+Yeah, this is pretty interesting.
+
+00:17:53.580 --> 00:17:55.720
+This is something I have not really used.
+
+00:17:56.060 --> 00:17:59.620
+But I do hear Alpine and HTMX mentioned together frequently.
+
+00:17:59.920 --> 00:18:00.840
+They do have a similar vibe.
+
+00:18:01.500 --> 00:18:02.380
+Yeah, they do.
+
+00:18:02.640 --> 00:18:02.980
+They do.
+
+00:18:05.060 --> 00:18:06.260
+Yeah, I've enjoyed it a lot.
+
+00:18:06.440 --> 00:18:08.500
+I tend to just use it for small, simple things,
+
+00:18:08.760 --> 00:18:10.860
+but those small, simple things add up.
+
+00:18:11.780 --> 00:18:14.380
+So for example, if you have menus that open and close
+
+00:18:15.020 --> 00:18:16.680
+and things like that, you might want
+
+00:18:16.680 --> 00:18:17.580
+to use something like this.
+
+00:18:18.300 --> 00:18:18.520
+Yeah.
+
+00:18:21.480 --> 00:18:23.360
+Or event handling.
+
+00:18:23.880 --> 00:18:26.520
+Like if you click this button, change the state to this,
+
+00:18:26.540 --> 00:18:29.600
+and then it triggers the binding to open and close sections
+
+00:18:29.940 --> 00:18:30.320
+and so on.
+
+00:18:30.320 --> 00:18:30.420
+Yeah.
+
+00:18:30.660 --> 00:18:30.820
+Yeah.
+
+00:18:31.340 --> 00:18:31.480
+Yeah.
+
+00:18:31.620 --> 00:18:31.720
+Yeah.
+
+00:18:31.900 --> 00:18:32.060
+OK.
+
+00:18:33.480 --> 00:18:33.640
+Interesting.
+
+00:18:34.180 --> 00:18:34.320
+Yeah.
+
+00:18:34.700 --> 00:18:39.040
+You know, one example that I can give from over that stuff
+
+00:18:39.080 --> 00:18:41.040
+that I'm working on is I'm definitely using HTMX over
+
+00:18:41.060 --> 00:18:42.660
+at Talk Python Training, right, with our courses.
+
+00:18:43.560 --> 00:18:47.420
+And I added this little tag cloud.
+
+00:18:47.520 --> 00:18:49.100
+It's not quite a cloud, but a bunch of different things
+
+00:18:49.180 --> 00:18:49.740
+you can explore.
+
+00:18:50.480 --> 00:18:51.760
+So when you load this page, actually,
+
+00:18:52.700 --> 00:18:53.960
+one of the things that's really challenging
+
+00:18:54.200 --> 00:18:57.360
+is it has the price in your local currency.
+
+00:18:57.640 --> 00:18:59.280
+So it figures out where is your IP, where do you live.
+
+00:18:59.960 --> 00:19:02.500
+And that currency, the prices of those things,
+
+00:19:02.880 --> 00:19:05.080
+outside of the US change a lot.
+
+00:19:05.980 --> 00:19:08.500
+Sometimes it can be really slow to figure out
+
+00:19:08.530 --> 00:19:10.580
+what the price of every course is, if there's sales,
+
+00:19:10.800 --> 00:19:12.720
+and you're in this country, and that applies in this way.
+
+00:19:13.240 --> 00:19:17.380
+So all these little prices are all calculated with HTMX.
+
+00:19:17.520 --> 00:19:19.400
+So it loads normally without the prices.
+
+00:19:19.660 --> 00:19:21.340
+Then probably by the time you get to it,
+
+00:19:21.340 --> 00:19:23.460
+the prices are already there automatically.
+
+00:19:23.750 --> 00:19:26.800
+And then as you click around, you get--
+
+00:19:26.800 --> 00:19:29.200
+this is all-- as you click these little tags up here,
+
+00:19:29.580 --> 00:19:31.460
+you can even click on the HTMX tag
+
+00:19:31.480 --> 00:19:33.820
+and see you have three HTMX courses, right?
+
+00:19:34.340 --> 00:19:36.400
+With last Django and one that just kind of uses it.
+
+00:19:36.830 --> 00:19:39.980
+But all of this stuff, there's no JavaScript on this page,
+
+00:19:40.560 --> 00:19:41.660
+at least not doing any of it.
+
+00:19:41.710 --> 00:19:43.120
+It's all just HTMX, right?
+
+00:19:44.240 --> 00:19:44.860
+Yeah, that's great.
+
+00:19:45.140 --> 00:19:45.880
+Beautifully good.
+
+00:19:46.000 --> 00:19:46.520
+It's so good.
+
+00:19:48.480 --> 00:19:50.940
+Yeah, I've certainly enjoyed working with it.
+
+00:19:52.540 --> 00:19:55.060
+But let's talk a bit about your writer.
+
+00:19:55.180 --> 00:19:57.240
+Like, let's talk about, spend the rest of time
+
+00:19:57.400 --> 00:20:00.560
+on your story, how you started using HTMX.
+
+00:20:00.680 --> 00:20:06.840
+you've given us some of the sense but let's talk about the app that you were building right
+
+00:20:06.840 --> 00:20:14.660
+you had this team of fairly junior developers what's the story um at the time i was working for
+
+00:20:14.860 --> 00:20:21.760
+a non-profit training provider in south africa and um we used to have everybody on premises
+
+00:20:22.100 --> 00:20:27.340
+in this place called jeffies town which is really a dodgy place and it was great it was it was a lot
+
+00:20:27.160 --> 00:20:32.200
+of fun. But then COVID happened. And so we had to figure out how to support everybody remotely.
+
+00:20:32.780 --> 00:20:39.760
+And so it built an LMS. So initially, we like looked around that LMS means learner management
+
+00:20:39.960 --> 00:20:45.840
+system. We had a whole lot of learners we had, I think there were about 150 at the time. And we
+
+00:20:45.900 --> 00:20:50.360
+needed to figure out like how to support them from home, we couldn't just be like come back next year
+
+00:20:50.600 --> 00:20:56.100
+because the like, partially, we couldn't let them down partially the funding model wouldn't work and
+
+00:20:56.180 --> 00:21:01.700
+all sorts of things yeah it was an insane time i it's it's kind of normalized in our history because
+
+00:21:01.800 --> 00:21:07.780
+it's we've moved past it but yeah we gotta remember that's an ins that was a disturbing time yeah yeah
+
+00:21:08.080 --> 00:21:13.860
+like so many people have horror stories from from then i was like this was hard it was like super
+
+00:21:14.020 --> 00:21:22.900
+super stressful um but in the end we ended up with this cool thing um so yeah so like a lot of lmss
+
+00:21:22.900 --> 00:21:27.740
+exist, you can get one off the shelf. And they're a lot like very clever textbooks that track learners
+
+00:21:28.280 --> 00:21:34.380
+over time. But for us, we're training, we are training software developers. And so we wanted
+
+00:21:34.560 --> 00:21:37.940
+something more than a textbook. We wanted to train professionals. And so we ended up building this
+
+00:21:38.100 --> 00:21:45.420
+thing from the learner's perspective. It was a Kanban board, and then they could move cards around
+
+00:21:45.530 --> 00:21:49.380
+on the board to do different things. They could like start a project and then we'd create a repo
+
+00:21:49.400 --> 00:21:54.900
+for them and make um add them as a collaborator and protect the main branch and all of that good
+
+00:21:55.020 --> 00:21:58.560
+stuff and then we could get them to review each other and we could track all that and display it
+
+00:21:58.560 --> 00:22:04.520
+in the front right try to teach them get and GitHub and prs and all that yeah yeah it was so cool
+
+00:22:04.760 --> 00:22:09.500
+like by the time they got to work um like they're always very nervous getting into their first job
+
+00:22:09.680 --> 00:22:15.140
+and then they'd say like this is familiar like we know how this works i'm teaching people stuff here
+
+00:22:15.160 --> 00:22:24.020
+actually that's weird yeah yeah exactly that's cool yeah so built this thing out and managed to
+
+00:22:24.080 --> 00:22:29.180
+keep training the people and it worked and then it was like okay this thing is pretty rough around
+
+00:22:29.200 --> 00:22:37.040
+the edges because we built it um in self-defense and like oh you should i hope this works um
+
+00:22:38.120 --> 00:22:45.120
+so we needed to to build more on it and we were hiring a lot of junior developers because we were
+
+00:22:45.120 --> 00:22:51.100
+like very, very beginner stuff. So if you want to teach a person what a return statement is,
+
+00:22:51.200 --> 00:22:55.380
+or what a loop is, or anything like that, then you do not need a senior developer or like a senior
+
+00:22:55.580 --> 00:23:00.460
+lecturer. You need somebody who understands what a loop is and what a return statement is. So we had
+
+00:23:01.200 --> 00:23:06.780
+all these juniors running around, like helping out, and they needed to build stuff with their own
+
+00:23:06.980 --> 00:23:13.100
+growth as well, and their own, like if they do not build stuff, then they will, and it is sad.
+
+00:23:13.100 --> 00:23:20.160
+So, yeah, so we're trying to get them productive on the stack, but it was very, very difficult.
+
+00:23:20.570 --> 00:23:24.140
+So for me, I'd been working on React applications and I've been working on Django.
+
+00:23:24.310 --> 00:23:25.720
+And so for me, it was fine.
+
+00:23:25.790 --> 00:23:29.940
+I could just like, like, I could keep the whole thing in my head.
+
+00:23:31.300 --> 00:23:33.540
+But yeah, it was just, it was just really tough for them.
+
+00:23:35.540 --> 00:23:39.240
+So I think there is a little bit of an art to making a junior developer productive,
+
+00:23:39.580 --> 00:23:41.220
+but like, I just was not figuring it out.
+
+00:23:41.840 --> 00:23:49.020
+So I tried this for a while and then one day went to a DjangoCon US and I saw Chris May's talk that
+
+00:23:49.240 --> 00:23:56.760
+spoke about HTMX and I was just like, maybe this is worth a try. So I was like, okay, I'm just going
+
+00:23:56.760 --> 00:24:01.740
+to proof of concept it and see if I can build the weirdest parts of our application in HTMX.
+
+00:24:03.040 --> 00:24:09.880
+Yeah. That's awesome. Yeah. Because I guess the question is, if you're asking,
+
+00:24:10.160 --> 00:24:15.460
+will it work you're like this is the most crazy interactive bit and if it can do this the other
+
+00:24:15.660 --> 00:24:21.000
+stuff is easy like switching from logged in to just log out or whatever it's like yeah okay that's
+
+00:24:21.080 --> 00:24:28.620
+that's nothing right yeah yeah yeah so um most of our functionality was around this kanban board so
+
+00:24:28.700 --> 00:24:33.000
+it's like all right let me just make some cards and make some columns and and see if i can shift
+
+00:24:33.110 --> 00:24:39.140
+stuff around and um it all worked out really well and wasn't it wasn't super hard like i think one
+
+00:24:39.020 --> 00:24:46.820
+One of the challenges with HTMX is that it's very easy to build spaghetti templates because
+
+00:24:46.910 --> 00:24:52.800
+you have the main template and all these partials and then all these URLs that are pointing to
+
+00:24:52.800 --> 00:24:56.620
+the partial. So it is possible to get yourself in a bit of a tangle there. So you need to
+
+00:24:56.940 --> 00:25:02.300
+arrange things nicely. But yeah, the process was so smooth that I was like, let me try this.
+
+00:25:04.000 --> 00:25:09.260
+So our application was this Django app on the back, exposing a bunch of APIs with Django REST
+
+00:25:09.360 --> 00:25:16.020
+framework. And so the idea was to just instead of like we'd leave the React app as is and would
+
+00:25:16.040 --> 00:25:21.240
+keep on working. Meanwhile, we'd just build out some like perfectly normal Django views to do the
+
+00:25:21.420 --> 00:25:27.400
+HTML stuff. And then we could move everybody over to the new application. So the new front end was
+
+00:25:27.500 --> 00:25:32.780
+part of the original Django app. So we didn't rebuild absolutely everything. We just rebuilt that
+
+00:25:32.800 --> 00:25:41.420
+part um and generally speaking if somebody suggests rebuilding a thing i worry like usually it's a bad
+
+00:25:41.450 --> 00:25:52.680
+idea usually it's like yeah or something yes i've had to stop myself many times do you know that david
+
+00:25:55.880 --> 00:25:57.400
+not Beasley, Beattie.
+
+00:25:59.080 --> 00:26:01.520
+If you look for, there's a great song.
+
+00:26:01.570 --> 00:26:08.380
+It says, we're going to do the big rewrite on YouTube.
+
+00:26:08.880 --> 00:26:09.180
+Let's see.
+
+00:26:09.960 --> 00:26:10.580
+Yeah, there we go.
+
+00:26:13.780 --> 00:26:15.300
+This is so good.
+
+00:26:15.520 --> 00:26:18.920
+So I think it's got some ad.
+
+00:26:19.720 --> 00:26:20.620
+Dylan Beattie it is.
+
+00:26:20.690 --> 00:26:22.100
+Yeah, I'll put a link in here.
+
+00:26:22.180 --> 00:26:24.840
+He's got some amazing parodies.
+
+00:26:25.180 --> 00:26:29.720
+one's it's a six and a half minute parody of american pie we're gonna do the big rewrite
+
+00:26:30.320 --> 00:26:36.480
+and it's it's glorious so i'll link it but you should be afraid right this is something that like
+
+00:26:36.620 --> 00:26:40.200
+we're gonna rewrite it and basically the song is here's the eight version the eight different
+
+00:26:40.400 --> 00:26:45.660
+languages this thing's previously been written in you know yeah it's with something's working
+
+00:26:45.880 --> 00:26:54.020
+sometimes even if it's not perfect yeah and it was also like rewriting it in order to optimize
+
+00:26:54.020 --> 00:26:59.020
+for this team that was mostly juniors. And so I was like, is this me being crazy? Like,
+
+00:26:59.400 --> 00:27:08.160
+there was a lot of, yeah, I was very unsure. But then, so I tried everything out, and it worked,
+
+00:27:08.220 --> 00:27:14.040
+and it was fun, and it was, like, straightforward to write for this, like, small thing. And then I
+
+00:27:14.140 --> 00:27:20.880
+was like, let me see how the team works on this. So I gave them a bunch of little tasks to do. I was
+
+00:27:20.820 --> 00:27:22.920
+like implement this, try that, da, da, da.
+
+00:27:23.240 --> 00:27:24.900
+And everybody was productive.
+
+00:27:25.480 --> 00:27:26.260
+So I felt like-
+
+00:27:26.260 --> 00:27:29.000
+- How did they receive it when you introduced this idea
+
+00:27:29.000 --> 00:27:31.840
+to them after they'd been living in React
+
+00:27:33.040 --> 00:27:35.120
+and Redux and all these things?
+
+00:27:35.120 --> 00:27:38.300
+- I think for them, they were happy with it.
+
+00:27:38.300 --> 00:27:40.320
+I think at first a little bit skeptical,
+
+00:27:40.320 --> 00:27:44.020
+but then once they started going,
+
+00:27:44.020 --> 00:27:45.860
+like I did get feedback from them.
+
+00:27:45.860 --> 00:27:47.700
+I make a point of getting feedback from them.
+
+00:27:47.700 --> 00:27:49.300
+And they were like, this HTMX thing is way better.
+
+00:27:50.140 --> 00:27:51.560
+So that's great.
+
+00:27:52.040 --> 00:27:53.220
+Wait, what's the trick?
+
+00:27:53.260 --> 00:27:54.080
+Why does this work?
+
+00:27:55.000 --> 00:27:55.600
+Yeah, yeah.
+
+00:27:56.440 --> 00:28:00.160
+So they went with it, and then they succeeded,
+
+00:28:00.500 --> 00:28:02.900
+and they were happy and productive, which is great.
+
+00:28:03.060 --> 00:28:06.100
+And even people who needed way too much of my support,
+
+00:28:06.240 --> 00:28:10.480
+people who I had to really sit with and pair with just to do anything,
+
+00:28:11.040 --> 00:28:13.200
+they were suddenly able to do stuff that was meaningful.
+
+00:28:13.580 --> 00:28:18.000
+So I think for me, that's one of the things that's so exciting about HTMX.
+
+00:28:18.240 --> 00:28:25.760
+like been working and training for so long and I've been like fighting the fight of like
+
+00:28:25.830 --> 00:28:32.140
+getting junior developers job ready for so long that like I'm aware of many problems in
+
+00:28:32.350 --> 00:28:38.220
+the tech education ecosystem and the junior hiring ecosystem and like the fact that entry
+
+00:28:38.360 --> 00:28:42.740
+level positions are like too hard for people like it's a problem.
+
+00:28:43.440 --> 00:28:47.360
+And now we have tools that make web developments approachable again.
+
+00:28:47.700 --> 00:28:53.980
+So I'm singing this HTMX song because I think it's going to change the industry in some pretty big ways.
+
+00:28:54.300 --> 00:28:58.240
+I think it's already making waves, but I'd like them to happen faster and bigger.
+
+00:28:58.940 --> 00:28:59.360
+Yeah.
+
+00:29:00.440 --> 00:29:01.720
+I think it will as well.
+
+00:29:03.720 --> 00:29:09.940
+And, you know, I think the current web frameworks are really good and work really well with it.
+
+00:29:10.100 --> 00:29:12.560
+But I wonder if, I wouldn't be surprised to see
+
+00:29:13.380 --> 00:29:15.900
+kind of like FastAPI came along and just said,
+
+00:29:16.300 --> 00:29:18.140
+Pydantic is the essence of this thing.
+
+00:29:18.280 --> 00:29:20.320
+And Pydantic changed a lot of data exchange,
+
+00:29:20.540 --> 00:29:21.180
+a lot of data validation.
+
+00:29:21.520 --> 00:29:23.240
+I'd wonder if some framework comes along
+
+00:29:23.800 --> 00:29:28.780
+and just says, HTMX is just ground up part of this thing.
+
+00:29:29.120 --> 00:29:30.840
+All right, that'd be interesting to see what that looks like.
+
+00:29:31.600 --> 00:29:32.340
+- It would be interesting.
+
+00:29:32.630 --> 00:29:35.760
+I think there are definitely useful patterns
+
+00:29:36.040 --> 00:29:37.620
+and how to do different things.
+
+00:29:37.840 --> 00:29:42.800
+People are building tools around it or tools that complements it in useful ways.
+
+00:29:42.870 --> 00:29:44.260
+So we spoke about AlpineJS.
+
+00:29:45.280 --> 00:29:50.360
+There's another thing called template partials from the other Carlton, Carlton Gibson.
+
+00:29:51.860 --> 00:29:53.380
+And that's really, really great.
+
+00:29:54.860 --> 00:29:55.140
+Yeah.
+
+00:29:55.630 --> 00:29:56.080
+Yeah, absolutely.
+
+00:29:57.500 --> 00:30:02.140
+Something like this is super needed to make the code go from like, all right, we can do this too.
+
+00:30:02.780 --> 00:30:03.420
+Oh, that's nice.
+
+00:30:03.900 --> 00:30:04.300
+Yeah, yeah, yeah.
+
+00:30:04.420 --> 00:30:05.160
+That's super nice.
+
+00:30:05.960 --> 00:30:06.400
+Yeah, yeah.
+
+00:30:06.880 --> 00:30:09.540
+Yeah, this really unspaghetti-fies it, which is fantastic.
+
+00:30:09.900 --> 00:30:12.160
+This is one of my favorites at the moment.
+
+00:30:12.980 --> 00:30:13.900
+Yeah, this is awesome.
+
+00:30:13.920 --> 00:30:14.920
+And then you can use it.
+
+00:30:15.360 --> 00:30:15.520
+Yeah.
+
+00:30:15.940 --> 00:30:21.400
+I have one that I created for Jinja card, Jinja partials,
+
+00:30:21.580 --> 00:30:22.660
+and also a chameleon one.
+
+00:30:22.720 --> 00:30:28.640
+So since I wasn't using for that course example,
+
+00:30:28.820 --> 00:30:29.860
+this is actually chameleon.
+
+00:30:29.880 --> 00:30:31.120
+So I use the chameleon partials.
+
+00:30:31.280 --> 00:30:34.780
+But something like this is required.
+
+00:30:35.160 --> 00:30:37.260
+you know, Carlton does great work, right?
+
+00:30:38.000 --> 00:30:39.680
+- Yeah, yeah, yeah, known for it.
+
+00:30:40.600 --> 00:30:43.560
+- So you're using this as part of your site?
+
+00:30:44.659 --> 00:30:45.940
+- So not that original site,
+
+00:30:45.950 --> 00:30:47.680
+I only heard about this later on,
+
+00:30:48.680 --> 00:30:51.060
+but now I use it on everything.
+
+00:30:52.020 --> 00:30:55.360
+Yeah, on all of my HTMX things, I use this.
+
+00:30:55.899 --> 00:30:58.220
+- Right, tell the Django people, what does this do?
+
+00:30:58.250 --> 00:31:01.800
+Like why do you need Django template partials
+
+00:31:01.990 --> 00:31:03.520
+instead of just Django templates?
+
+00:31:04.880 --> 00:31:08.080
+So it's just about organizing your code in a way that's a bit cleaner.
+
+00:31:08.320 --> 00:31:12.260
+So if you think about how you would render templates from your different views, if you
+
+00:31:12.380 --> 00:31:19.160
+had like a main page and then that page had a bunch of HTML things happening that made
+
+00:31:19.280 --> 00:31:24.220
+calls to the back end to different views and those different views use different templates,
+
+00:31:25.040 --> 00:31:29.560
+then even though all those templates are associated with the same page, it kind of ends up being
+
+00:31:29.700 --> 00:31:30.380
+a bit of a mess.
+
+00:31:30.400 --> 00:31:33.300
+You've got like a lot of different like partial templates.
+
+00:31:33.440 --> 00:31:35.860
+Now you need a cool naming convention for that.
+
+00:31:35.960 --> 00:31:36.700
+Like is this a page?
+
+00:31:36.860 --> 00:31:37.480
+Is this a template?
+
+00:31:38.360 --> 00:31:41.860
+And it gets just a little bit messy.
+
+00:31:43.600 --> 00:31:49.320
+And you need to switch between files all the time to see what things are associated with each other.
+
+00:31:50.360 --> 00:31:55.360
+Let's say you've got like five pages and each of them have like five different partials associated with them.
+
+00:31:55.440 --> 00:31:59.700
+Suddenly it's a lot of files and you need to organize things somehow.
+
+00:31:59.780 --> 00:32:06.940
+So what Django template partials does is it allows you to like say you've got like a main page file
+
+00:32:07.900 --> 00:32:15.080
+to-do list, right? You could define a partial template for a to-do item within that same file
+
+00:32:15.410 --> 00:32:21.040
+and it won't get rendered until you say render this thing. So you can like when you render your
+
+00:32:21.500 --> 00:32:27.060
+template for the first time, you can just say okay, loop over the to-do items and use this partial
+
+00:32:27.060 --> 00:32:32.080
+in place and render the things and that's great but then the other thing that you can do is that
+
+00:32:32.900 --> 00:32:40.740
+you can like in a view you can you can choose to render a template but you can choose to render a
+
+00:32:40.780 --> 00:32:47.660
+partial within that template as well and so let's say you've got a like a little form that says add
+
+00:32:47.660 --> 00:32:55.780
+a new to-do list item then you'd submit that form and then the view would look for the partial
+
+00:32:55.840 --> 00:33:02.020
+within the page that you care about and it'll render that and so it just ends up being that
+
+00:33:02.530 --> 00:33:06.740
+like everything is tidy and together and it makes sense because like the to-do list items are only
+
+00:33:06.920 --> 00:33:13.540
+used in this page and those items are only used in that page yeah yeah yeah one of the big challenges
+
+00:33:14.120 --> 00:33:21.620
+that you'll quickly run into with this style this htmx partial exchange style is when you show the
+
+00:33:21.480 --> 00:33:25.680
+the page originally, you want just the server rendered version, which includes, let's say,
+
+00:33:25.860 --> 00:33:31.920
+your to-do items. So you need the HTML for the to-do items in the main page. But then when you
+
+00:33:31.940 --> 00:33:38.300
+make changes to it, you need a little fragment of that same HTML to put a new to-do item in there
+
+00:33:38.460 --> 00:33:43.340
+or to edit one or something. And if you're not careful, well, then you have multiple copies
+
+00:33:44.360 --> 00:33:49.040
+of those laying around and somebody updates the design for one, and then it doesn't update the
+
+00:33:49.260 --> 00:33:53.160
+the partial one that you wrote, which is a copy, it's not pretty.
+
+00:33:53.290 --> 00:33:56.680
+So finding a way for reuse like this Django templates partials,
+
+00:33:57.420 --> 00:34:00.460
+it's pretty required, I think, if you're going to stay sane.
+
+00:34:00.780 --> 00:34:03.580
+It's like functions are required to write code.
+
+00:34:04.040 --> 00:34:05.460
+It's pretty much like that, right?
+
+00:34:06.380 --> 00:34:06.880
+Yeah, yeah.
+
+00:34:08.419 --> 00:34:09.020
+Yeah, I think so.
+
+00:34:09.050 --> 00:34:09.520
+I think so.
+
+00:34:09.720 --> 00:34:12.000
+Like you can get away with just using like lots of files
+
+00:34:12.490 --> 00:34:15.100
+and you could keep things dry with lots of files,
+
+00:34:15.340 --> 00:34:17.659
+but it gets like, it's very spaghetti
+
+00:34:18.159 --> 00:34:21.100
+unless you put a lot of effort into organizing it
+
+00:34:21.159 --> 00:34:22.760
+and then keeping it organized
+
+00:34:23.110 --> 00:34:24.179
+because people will make PRs
+
+00:34:24.200 --> 00:34:25.860
+that do like all sorts of weird things.
+
+00:34:26.879 --> 00:34:33.360
+So yeah, it's like, it's not good to have to like monitor
+
+00:34:33.639 --> 00:34:34.520
+that everything's organized.
+
+00:34:34.710 --> 00:34:36.800
+It would be better if it was just done by default.
+
+00:34:37.550 --> 00:34:38.080
+- Yeah, exactly.
+
+00:34:38.310 --> 00:34:39.540
+- Like the default behavior is correct.
+
+00:34:40.100 --> 00:34:40.159
+Yeah.
+
+00:34:40.600 --> 00:34:43.840
+- Yeah, so grab a file, a library for that.
+
+00:34:44.919 --> 00:34:45.580
+All right.
+
+00:34:46.040 --> 00:34:51.480
+So let's talk about the before and after stack.
+
+00:34:52.760 --> 00:34:54.879
+So before you talked about React,
+
+00:34:55.070 --> 00:34:58.240
+but tell us all the pieces involved and then what does it look like today?
+
+00:34:59.080 --> 00:34:59.860
+Okay, cool.
+
+00:35:00.100 --> 00:35:02.320
+So React Redux.
+
+00:35:02.730 --> 00:35:04.700
+So Redux was for just state management.
+
+00:35:05.070 --> 00:35:08.940
+And then I used Redux Saga for mostly for data fetching stuff
+
+00:35:09.100 --> 00:35:11.140
+so that I could handle like loading spinners
+
+00:35:11.500 --> 00:35:16.940
+and I could see like the status of different requests over time
+
+00:35:16.940 --> 00:35:17.680
+and that kind of thing.
+
+00:35:18.280 --> 00:35:22.900
+Then I used Material UI because my front end make pretty skills
+
+00:35:23.620 --> 00:35:24.280
+aren't the strongest.
+
+00:35:24.560 --> 00:35:27.840
+So I wanted a component library that would just work
+
+00:35:27.960 --> 00:35:31.440
+and that was the chosen one.
+
+00:35:33.040 --> 00:35:35.140
+Then on the back end, it was Django.
+
+00:35:35.620 --> 00:35:37.980
+Django REST framework is fairly well known.
+
+00:35:38.500 --> 00:35:40.160
+Then I used a thing called Django Guardian
+
+00:35:40.160 --> 00:35:44.620
+in because I needed object level permissions on the different model instances.
+
+00:35:45.360 --> 00:35:50.700
+So, for example, we had this Kanban board and there were cards on this board that people
+
+00:35:50.740 --> 00:35:54.660
+could move around and different people would have different permission to different cards.
+
+00:35:55.300 --> 00:36:00.460
+So we had things like one learner would be working on a card and then they'd ask for
+
+00:36:00.460 --> 00:36:03.580
+a review and then another learner should be able to review that.
+
+00:36:04.900 --> 00:36:11.380
+But we wouldn't want to let just any learner look at their code, because then it would cause all
+
+00:36:11.480 --> 00:36:15.500
+sorts of problems. So it's like, OK, this person has finished this project, so we can add them as
+
+00:36:15.920 --> 00:36:22.480
+a reviewer on this card. And so we needed to be pretty particular about which of our users could
+
+00:36:22.490 --> 00:36:28.060
+see different things. It wasn't super straightforward in that this person can see this. It was like,
+
+00:36:28.080 --> 00:36:34.860
+this person can for these reasons. Yeah. So Django Guardian is really, really cool. And then
+
+00:36:34.880 --> 00:36:35.180
+Postgres.
+
+00:36:35.260 --> 00:36:35.980
+That's a cool library.
+
+00:36:36.580 --> 00:36:39.480
+Maybe people could find a nice use for that one.
+
+00:36:40.020 --> 00:36:41.260
+That's the one that's new to me.
+
+00:36:42.840 --> 00:36:44.240
+Yeah, that's really nice.
+
+00:36:44.310 --> 00:36:50.040
+And you can even do things like when you query a database and you say, fetch me all the cards.
+
+00:36:50.310 --> 00:36:53.700
+You can do something like, fetch me all the cards that Bob can see.
+
+00:36:54.360 --> 00:37:01.780
+And so long as it's configured well, then it can do that sort of thing, which is very, very helpful.
+
+00:37:03.080 --> 00:37:04.080
+Wow, that's really cool.
+
+00:37:04.300 --> 00:37:08.420
+So you don't have to go get all the cards and then, yeah.
+
+00:37:08.820 --> 00:37:09.220
+Yeah.
+
+00:37:09.460 --> 00:37:13.240
+Who have all these different permissions and then like construct some query
+
+00:37:13.480 --> 00:37:14.420
+that comes up with it.
+
+00:37:14.560 --> 00:37:14.660
+Yeah.
+
+00:37:14.840 --> 00:37:15.200
+Very nice.
+
+00:37:15.420 --> 00:37:15.920
+I love it.
+
+00:37:16.240 --> 00:37:16.440
+Okay.
+
+00:37:17.180 --> 00:37:17.240
+Yeah.
+
+00:37:17.380 --> 00:37:17.780
+Super cool.
+
+00:37:18.280 --> 00:37:20.280
+And that plugs into DRF as well.
+
+00:37:20.560 --> 00:37:26.140
+So your, like your, your serializer or your view set.
+
+00:37:26.260 --> 00:37:33.280
+So I haven't worked in it in a while, but the query that gets, gets used when
+
+00:37:33.300 --> 00:37:39.360
+you access like a list API endpoint, you could just apply that automatically as well.
+
+00:37:39.480 --> 00:37:43.900
+So if you, so you don't need to, yeah, you don't need to build it in that, in that case
+
+00:37:44.080 --> 00:37:44.200
+either.
+
+00:37:44.340 --> 00:37:45.840
+So it plugs into all of the things.
+
+00:37:45.960 --> 00:37:48.780
+It's a little bit weird at first to get used to, and then, and then it's just fantastic.
+
+00:37:49.480 --> 00:37:50.020
+Very cool.
+
+00:37:50.400 --> 00:37:50.460
+Yeah.
+
+00:37:51.080 --> 00:37:51.400
+Yeah.
+
+00:37:52.460 --> 00:37:57.560
+And now I'm guessing much of the front end stuff is probably not there.
+
+00:37:58.400 --> 00:37:58.500
+Yeah.
+
+00:37:58.640 --> 00:37:58.780
+Yeah.
+
+00:37:58.920 --> 00:38:02.520
+So the old application still exists, but it's not--
+
+00:38:03.650 --> 00:38:07.140
+but it's like the HTMX-based version would just
+
+00:38:07.170 --> 00:38:08.400
+be a drop-in replacement.
+
+00:38:08.740 --> 00:38:11.100
+It's like go to this URL instead kind of thing.
+
+00:38:11.640 --> 00:38:11.840
+Yeah.
+
+00:38:12.800 --> 00:38:13.720
+Yeah, awesome.
+
+00:38:18.340 --> 00:38:18.780
+Hold on.
+
+00:38:18.820 --> 00:38:19.640
+Let's see.
+
+00:38:20.300 --> 00:38:26.760
+So I guess now that it's done--
+
+00:38:26.790 --> 00:38:28.880
+you said you used to work there, but you don't work there
+
+00:38:28.900 --> 00:38:36.360
+is that right? Oh yeah, not anymore as of a few months ago. Right. So maybe I guess that's recent
+
+00:38:36.600 --> 00:38:41.560
+enough to say sort of how is it going now? Right? How, how is it being used? How are people, you
+
+00:38:41.560 --> 00:38:49.380
+know, is it still going strong as the technology? Yeah, the tech is the tech is solid. yeah,
+
+00:38:49.680 --> 00:38:55.920
+so I hope that they're still building on it. there was some, some weird things happening at
+
+00:38:55.940 --> 00:38:57.420
+at the organization before I left.
+
+00:38:57.640 --> 00:39:02.940
+So yeah, I hope that everything is still going smoothly,
+
+00:39:03.150 --> 00:39:04.480
+but I haven't been plugged in for a while.
+
+00:39:06.010 --> 00:39:06.140
+Yeah.
+
+00:39:09.939 --> 00:39:13.240
+Yeah, let's give maybe a quick shout out to--
+
+00:39:13.560 --> 00:39:14.900
+gosh, let me try to grab it.
+
+00:39:14.900 --> 00:39:15.260
+Give it a second.
+
+00:39:15.530 --> 00:39:19.240
+I want to give a quick shout out to this video,
+
+00:39:20.410 --> 00:39:22.700
+this other DjangoCon talk.
+
+00:39:22.840 --> 00:39:23.940
+Gosh, why is--
+
+00:39:23.960 --> 00:39:26.280
+I need to sign in my YouTube premium on this, Roger.
+
+00:39:26.820 --> 00:39:35.760
+But this real-world SaaS product example from this guy in France, David Gilead.
+
+00:39:36.260 --> 00:39:42.420
+Yeah, that one you said was a pretty good example if you need like a walkthrough case.
+
+00:39:43.840 --> 00:39:45.560
+Yeah, so that one I didn't see it live.
+
+00:39:46.580 --> 00:39:51.060
+I saw a video of it after the fact, but it is like the ultimate HTMX demo.
+
+00:39:51.480 --> 00:39:53.840
+chose this guy really makes it dance.
+
+00:39:54.060 --> 00:39:55.740
+It's quite an amazing thing to see.
+
+00:39:56.640 --> 00:39:58.360
+So highly recommend that.
+
+00:39:59.000 --> 00:40:01.180
+Yeah, this guy, David goes through and says,
+
+00:40:01.380 --> 00:40:04.520
+here's our complex SaaS product.
+
+00:40:05.100 --> 00:40:07.420
+And let me walk you through all the features.
+
+00:40:07.980 --> 00:40:09.520
+I feel like this would be a pretty good one.
+
+00:40:10.080 --> 00:40:11.380
+Your article as well.
+
+00:40:11.960 --> 00:40:14.100
+And then this video, if you want to say,
+
+00:40:14.300 --> 00:40:17.160
+make a case to your team like, hey, everyone,
+
+00:40:17.780 --> 00:40:18.900
+could we consider doing this?
+
+00:40:19.440 --> 00:40:24.440
+And I'm sure right off the bat, you'll get some folks say, well, no, we have to use React because it's interactive.
+
+00:40:24.800 --> 00:40:26.960
+You interact with that part and it changes that part.
+
+00:40:27.150 --> 00:40:28.520
+How are we going to possibly pull that off?
+
+00:40:28.620 --> 00:40:30.600
+It's like, yeah, no, that's totally possible.
+
+00:40:31.540 --> 00:40:34.860
+Yeah, I think the main arguments people have against it are like scale.
+
+00:40:35.280 --> 00:40:37.900
+But that argument doesn't make super a lot of sense to me.
+
+00:40:37.910 --> 00:40:40.400
+I think it might be complexity scale that they're concerned about.
+
+00:40:40.590 --> 00:40:43.680
+But I think things like template partials solve a lot of that problem.
+
+00:40:45.200 --> 00:40:48.280
+And then there's can it do the things?
+
+00:40:48.720 --> 00:40:59.180
+And this solves that problem. And then is it really so much better for the team is the
+
+00:40:59.220 --> 00:41:02.620
+other question. Is it just another fashion? Is it just another fad? And that's something
+
+00:41:02.820 --> 00:41:09.380
+that's sometimes hard to get across. And I think that my article will do a good job of
+
+00:41:09.540 --> 00:41:14.260
+explaining why it's a good idea. Because I had to explain this to non-technical stakeholders.
+
+00:41:14.320 --> 00:41:17.040
+So I was like, okay, I'm making this crazy decision
+
+00:41:17.270 --> 00:41:18.080
+and this is why.
+
+00:41:18.640 --> 00:41:20.140
+And so I think I've got the argument down.
+
+00:41:20.840 --> 00:41:23.260
+Go read that article if you need to convince someone.
+
+00:41:24.800 --> 00:41:25.020
+Yeah.
+
+00:41:27.040 --> 00:41:28.240
+But I think the other thing to mention
+
+00:41:28.720 --> 00:41:31.460
+is the full stack that I moved to in the end.
+
+00:41:33.140 --> 00:41:34.640
+Yeah, so HTMX we spoke about,
+
+00:41:34.760 --> 00:41:36.700
+Django we spoke about, and Alpine we spoke about.
+
+00:41:38.240 --> 00:41:42.720
+Now, if you are running a React front end or whatever,
+
+00:41:42.860 --> 00:41:44.080
+you would test the front end.
+
+00:41:44.320 --> 00:41:47.880
+in a React-y way, like you would use tools that are appropriate for that.
+
+00:41:48.380 --> 00:41:51.080
+And so you need to think about different ways to test things.
+
+00:41:52.120 --> 00:41:53.460
+And unit tests--
+
+00:41:53.460 --> 00:41:55.460
+Would that be like Selenium or something?
+
+00:41:55.670 --> 00:41:56.400
+Or what are we talking?
+
+00:41:57.180 --> 00:41:59.120
+So I like Playwright quite a lot.
+
+00:41:59.230 --> 00:42:00.400
+So you could do it with Selenium.
+
+00:42:00.610 --> 00:42:02.120
+But that would be like--
+
+00:42:02.870 --> 00:42:03.880
+it would include some pain.
+
+00:42:04.860 --> 00:42:07.420
+Playwright is very, very lovely to work with.
+
+00:42:07.970 --> 00:42:14.280
+So it's like Selenium only with all sorts of useful test goodies
+
+00:42:14.280 --> 00:42:19.800
+So you can get it to take videos of your failed tests
+
+00:42:20.180 --> 00:42:24.620
+and it's got useful flags for running your tests
+
+00:42:24.640 --> 00:42:30.260
+on different browsers and you can keep a trace of things.
+
+00:42:30.420 --> 00:42:32.520
+It's got interesting debugging stuff built in
+
+00:42:33.040 --> 00:42:34.780
+and you can just run it with pytest.
+
+00:42:36.839 --> 00:42:39.000
+So yeah, Playwright is a big part of it as well.
+
+00:42:41.300 --> 00:42:42.780
+Yeah, Playwright is really nice.
+
+00:42:42.820 --> 00:42:57.140
+You know, one thing that just occurred to me around the testing, if you've got a rich JavaScript front end sort of thing, you have to use something like Playwright or Selenium where it does a full browser request render of the page to interact with it.
+
+00:42:57.580 --> 00:42:57.720
+Right.
+
+00:42:58.020 --> 00:42:58.080
+Yeah.
+
+00:42:58.300 --> 00:42:59.780
+And you can also do that with HTMX.
+
+00:43:00.320 --> 00:43:10.480
+But a lot of these web frameworks, you can just in your web test code, you can say, create like a testing instance of my server.
+
+00:43:11.440 --> 00:43:11.660
+Right.
+
+00:43:11.800 --> 00:43:17.180
+and then make it do this request and then see what the response came back without nearly the
+
+00:43:17.180 --> 00:43:22.500
+same overhead. And because this stuff all happens on the server, I guess you could just write a
+
+00:43:23.760 --> 00:43:27.620
+unit test, like a web test against a fragment response, right?
+
+00:43:28.880 --> 00:43:33.140
+Yeah. Yeah, you can. So you can, you can write, little unit tests that check different things
+
+00:43:33.440 --> 00:43:39.620
+like that. But since a lot of the interactivity is defined within the HTML tags, your unit tests
+
+00:43:39.640 --> 00:43:44.780
+won't they won't be able to cover like yeah so you fix this and that happens and so that's where
+
+00:43:45.300 --> 00:43:49.480
+that's where something like playwright will come in yeah you'll still need that to but maybe less
+
+00:43:49.760 --> 00:43:54.860
+playwright is needed oh yeah otherwise is what i was thinking yeah yeah definitely definitely i think
+
+00:43:54.920 --> 00:43:59.080
+one of the anti-patterns i've seen is um too much playwright where they're just like why don't
+
+00:43:59.080 --> 00:44:03.220
+use playwright for everything and then your tests are ridiculously slow and it's like you could have
+
+00:44:04.660 --> 00:44:07.900
+just you need to test the view there's this function that you wanted to test
+
+00:44:08.000 --> 00:44:08.520
+Exactly.
+
+00:44:09.680 --> 00:44:10.180
+You're not Shakespeare.
+
+00:44:10.240 --> 00:44:11.240
+You don't need that much Playwright.
+
+00:44:11.380 --> 00:44:11.980
+Come on, get focused.
+
+00:44:12.240 --> 00:44:12.400
+Yeah.
+
+00:44:13.140 --> 00:44:13.260
+Yeah.
+
+00:44:14.580 --> 00:44:15.400
+Playwright is a call.
+
+00:44:15.460 --> 00:44:16.720
+I definitely recommend it.
+
+00:44:17.260 --> 00:44:17.660
+Yeah.
+
+00:44:17.700 --> 00:44:17.800
+Yeah.
+
+00:44:18.420 --> 00:44:20.400
+And it plugs into Django really smoothly as well.
+
+00:44:20.520 --> 00:44:24.920
+So you don't actually, the Playwright, it spins up a browser and points it at a running instance
+
+00:44:25.060 --> 00:44:29.140
+of an application in order to test the things.
+
+00:44:29.920 --> 00:44:39.240
+But with Django and pytest, you can use a fixture to spin up a test version of your application.
+
+00:44:39.360 --> 00:44:41.760
+It's kind of like run servers running there in your tests anyway.
+
+00:44:42.100 --> 00:44:46.100
+So, yeah, it integrates very, very smoothly.
+
+00:44:47.020 --> 00:44:48.080
+Yeah, makes it very convenient.
+
+00:44:48.820 --> 00:44:49.460
+Yeah, absolutely.
+
+00:44:50.000 --> 00:44:56.500
+You know, one of the things you wrote a lot about, and you mentioned this, but you kind of flew past it a little bit,
+
+00:44:57.140 --> 00:45:03.280
+was you said, am I crazy for optimizing for junior developers, right?
+
+00:45:04.540 --> 00:45:15.640
+On the other hand, optimizing for simplicity, even if you're an expert, right?
+
+00:45:16.340 --> 00:45:22.400
+Just because you can do all the steps and all the complexity doesn't mean you should constantly be doing those steps, right?
+
+00:45:23.300 --> 00:45:27.820
+And so I think there's a case for optimizing for simplicity here.
+
+00:45:27.840 --> 00:45:28.300
+What do you think?
+
+00:45:29.100 --> 00:45:30.580
+I completely agree.
+
+00:45:31.320 --> 00:45:36.340
+I mean, if you can just, like, take the cognitive load of developing your app
+
+00:45:36.360 --> 00:45:39.440
+and then make it, like, simple so you can focus on actually solving problems
+
+00:45:39.720 --> 00:45:44.260
+instead of, like, wiring, I suppose.
+
+00:45:45.620 --> 00:45:47.380
+And life gets a lot easier.
+
+00:45:47.500 --> 00:45:49.160
+So, yeah, simplicity rocks.
+
+00:45:52.040 --> 00:45:59.720
+It's fast to develop, but things like HTMX make your code way, way smaller than it would otherwise be.
+
+00:46:00.100 --> 00:46:01.060
+So it's not just simple.
+
+00:46:01.180 --> 00:46:02.720
+It's not just that it's less convoluted.
+
+00:46:02.760 --> 00:46:03.760
+There's also less of it.
+
+00:46:03.760 --> 00:46:05.440
+And so there's less to test.
+
+00:46:05.680 --> 00:46:07.860
+There's less stuff that can cause bugs.
+
+00:46:08.560 --> 00:46:14.400
+And most of the front-end interactivity is handled by another library that's really well tested.
+
+00:46:14.720 --> 00:46:18.000
+And you're just doing these tiny little things that are easy to reason about.
+
+00:46:18.740 --> 00:46:21.040
+And so it's robust.
+
+00:46:21.900 --> 00:46:30.180
+and clean um yeah so yeah i do think it's worth optimizing for simplicity i mean it made it made
+
+00:46:30.340 --> 00:46:38.140
+everybody more productive the juniors and me as well so top notch yeah yeah i i'm constantly in
+
+00:46:38.270 --> 00:46:45.440
+pursuit of yeah i'm trying to keep things uh simple you know if you go over to the htmx site
+
+00:46:45.440 --> 00:46:49.740
+i don't know if you've looked at this section but they've got a you know kirsten has this essay
+
+00:46:49.760 --> 00:46:58.020
+section, which, you know, it's not quite a blog, but it's kind of a blog. You know, it's not in
+
+00:46:58.260 --> 00:47:02.120
+order, it's in sort of category. Whatever. And these are all nice. One thing that's nice is he
+
+00:47:02.240 --> 00:47:07.820
+has a, on the other hand, here's a couple of examples why people didn't pick it, right? But
+
+00:47:07.820 --> 00:47:15.180
+he's got a whole section on complexity, very, very bad. But if you keep going, there's a bunch of
+
+00:47:15.180 --> 00:47:16.940
+The memes are so good, aren't they?
+
+00:47:17.140 --> 00:47:18.060
+They are fantastic.
+
+00:47:19.020 --> 00:47:21.420
+And one of these super definitely applies.
+
+00:47:23.900 --> 00:47:26.480
+There's one that says HTML plus a backend.
+
+00:47:27.340 --> 00:47:28.260
+It's got this bell curve.
+
+00:47:28.380 --> 00:47:30.780
+For the beginners, like, oh, this is what I want.
+
+00:47:30.920 --> 00:47:35.780
+As you get a little bit better, you're like, oh, I need all this complexity and all these layers.
+
+00:47:35.950 --> 00:47:40.400
+And then sort of the Jedi Knight at the end is, yeah, HTML in the backend.
+
+00:47:41.720 --> 00:47:42.700
+Going through this path.
+
+00:47:44.020 --> 00:47:46.580
+I think these two ends,
+
+00:47:47.180 --> 00:47:48.820
+I don't necessarily want to characterize beginners
+
+00:47:48.960 --> 00:47:50.720
+to look like this character in this meme,
+
+00:47:50.760 --> 00:47:56.440
+but, you know, I think the meme still speaks of it somewhat, right?
+
+00:47:57.180 --> 00:47:58.360
+Yeah, yeah, definitely, definitely.
+
+00:48:00.900 --> 00:48:04.840
+Yeah, I think it's about, like, when I teach people to code,
+
+00:48:04.980 --> 00:48:06.900
+when I teach people, like, the very basics of code,
+
+00:48:08.060 --> 00:48:11.020
+and, like, something I see with very junior developers
+
+00:48:11.160 --> 00:48:13.040
+is they try to show off and be like,
+
+00:48:13.160 --> 00:48:14.720
+look how fancy I can make my code.
+
+00:48:14.770 --> 00:48:16.680
+I can do all of these complicated things.
+
+00:48:16.930 --> 00:48:18.860
+And then you get them to think more like Jedi's
+
+00:48:18.860 --> 00:48:20.760
+and say like, don't waste any moves.
+
+00:48:21.180 --> 00:48:24.760
+Like how you wouldn't be flailing about
+
+00:48:25.020 --> 00:48:26.500
+like this is kind of like flailing.
+
+00:48:29.220 --> 00:48:30.800
+HTML, HTMX does that for you.
+
+00:48:30.800 --> 00:48:33.540
+It just lets you like move directly towards your goal
+
+00:48:34.010 --> 00:48:36.220
+instead of having to like move around it.
+
+00:48:36.860 --> 00:48:36.980
+Yeah.
+
+00:48:38.040 --> 00:48:38.860
+- Yeah, it's pretty glorious.
+
+00:48:39.600 --> 00:48:43.500
+- So I know that you do a lot of teaching.
+
+00:48:45.460 --> 00:48:48.660
+Maybe you said you work for this local company
+
+00:48:48.940 --> 00:48:51.460
+that you did the Kanban board app for and so on.
+
+00:48:52.020 --> 00:48:54.480
+And now what are you up to?
+
+00:48:55.260 --> 00:48:57.020
+- So still teaching, just differently.
+
+00:48:58.900 --> 00:49:01.720
+So yeah, it was really cool working there.
+
+00:49:02.940 --> 00:49:05.380
+I was there for a long time, like five years in total,
+
+00:49:05.620 --> 00:49:07.460
+which is really long.
+
+00:49:08.080 --> 00:49:09.600
+And it was super successful.
+
+00:49:09.800 --> 00:49:16.760
+So like since 2020, basically everybody who passed our courses ended up getting good jobs,
+
+00:49:17.200 --> 00:49:20.640
+like very, very close to 100% of the people who passed.
+
+00:49:20.700 --> 00:49:24.300
+And the people who didn't pass is like actually kind of small, like 7%.
+
+00:49:24.680 --> 00:49:26.640
+And there's lots of reasons for that.
+
+00:49:28.080 --> 00:49:31.300
+But yeah, I learned a ton from being there.
+
+00:49:32.560 --> 00:49:33.260
+Was that a person?
+
+00:49:33.640 --> 00:49:35.280
+That was a person pre-COVID, right?
+
+00:49:35.980 --> 00:49:41.660
+Yeah, so post-COVID, we actually got way, way better because we had better monitoring of
+
+00:49:41.980 --> 00:49:46.320
+individuals and we could do things like track people's cards on their board moving around.
+
+00:49:46.540 --> 00:49:51.220
+And then from that, you can say like, oh, this piece of content is dodgy. Like it would give us
+
+00:49:51.680 --> 00:49:57.300
+as educators a lot of feedback about what we were doing. Because if a person was stuck and you're
+
+00:49:57.360 --> 00:50:00.980
+like, I explained this thing great. And then they're still stuck. You're like, I didn't explain this
+
+00:50:00.860 --> 00:50:06.140
+this thing great. And so, like, the way that the teaching mechanism was built was, like, really good
+
+00:50:06.140 --> 00:50:12.060
+for the students. But, like, if we as educators did not do a good job on something, we would know
+
+00:50:12.220 --> 00:50:18.160
+about it and we would have to fix it. And I think that honed the craft quite a lot. So, I learned a
+
+00:50:18.240 --> 00:50:24.040
+bunch there. Now what I am doing is I want to spread those skills in different ways. So, there is a
+
+00:50:23.960 --> 00:50:31.000
+whole lot to what I am doing. One thing I want to do is help educators themselves. So, I have
+
+00:50:31.060 --> 00:50:36.040
+got this thing called the Guild of Educators, because I always wanted to Guild, and it has
+
+00:50:36.180 --> 00:50:40.840
+got a whole lot of people in there who are, like, it is a free community, come and join.
+
+00:50:42.210 --> 00:50:46.940
+It is a bunch of education nerds who talk about education with each other. It is a support
+
+00:50:47.340 --> 00:50:52.740
+structure, because I think educators need support structures, and it is a place to share
+
+00:50:54.520 --> 00:51:00.020
+share learnings and share resources and opportunities and things like that.
+
+00:51:00.080 --> 00:51:02.280
+So it's still very new, but that's one part of it.
+
+00:51:03.560 --> 00:51:05.500
+I want to offer teacher training and things like that.
+
+00:51:06.500 --> 00:51:08.500
+Just like we have junior developers,
+
+00:51:09.660 --> 00:51:12.820
+people got to start somewhere with teaching and teaching online is different,
+
+00:51:13.060 --> 00:51:13.580
+all that, yeah?
+
+00:51:14.360 --> 00:51:14.820
+Yeah, yeah.
+
+00:51:15.020 --> 00:51:18.640
+And it's hard because there aren't really good resources for tech educators.
+
+00:51:20.180 --> 00:51:28.320
+Like if you dig into the literature on how learning works and how teaching works, it's like it's all either very academic.
+
+00:51:28.700 --> 00:51:30.280
+And so it's a little bit hard to pass.
+
+00:51:30.360 --> 00:51:39.260
+And it's not like it's just not packaged well for the people who need it or it's packaged in the wrong way.
+
+00:51:39.340 --> 00:51:43.540
+So I came across a code school recently who I was like, how do you handle your teacher training?
+
+00:51:43.660 --> 00:51:45.660
+And they're like, we outsource it to these guys.
+
+00:51:45.980 --> 00:51:49.300
+And they showed me this other organization that does teacher training.
+
+00:51:49.740 --> 00:52:00.420
+And it's like I dug through their courses and one of their selling points was like our teacher training courses are so versatile that they can be used for florists and personal trainers.
+
+00:52:00.540 --> 00:52:06.600
+I was like, yeah, maybe not appropriate for what we're up to here.
+
+00:52:08.060 --> 00:52:09.480
+But that's what people are relying on.
+
+00:52:09.700 --> 00:52:11.520
+That's like the best that the industry has to offer.
+
+00:52:11.780 --> 00:52:17.480
+So I think there's a big hole in the education space.
+
+00:52:17.640 --> 00:52:24.800
+and I want to work to fill that. So that is part of what I am doing, and the other part
+
+00:52:24.800 --> 00:52:32.060
+is offering technical training. And this is partially because you have got to practice
+
+00:52:32.140 --> 00:52:40.220
+the craft, partially because I want to create opportunities for educators to get good, partially
+
+00:52:40.420 --> 00:52:47.600
+because I really like teaching this stuff. So there are all different reasons why I am
+
+00:52:47.940 --> 00:52:54.420
+So right now I'm building out a bunch of small workshops that cover different skills and are fairly standalone.
+
+00:52:56.180 --> 00:53:00.500
+And those are Lego blocks that will combine into something much bigger in the future.
+
+00:53:01.380 --> 00:53:07.740
+But for now, the first workshop that I have on offer is all about Django and HTMX.
+
+00:53:08.320 --> 00:53:09.000
+Oh, yeah. Okay.
+
+00:53:09.960 --> 00:53:12.440
+Yeah. So it's pretty exciting.
+
+00:53:13.120 --> 00:53:15.860
+So it talks about the stack that we just spoke about.
+
+00:53:16.000 --> 00:53:18.560
+We didn't mention Tailwind, but Tailwind is great as well.
+
+00:53:18.740 --> 00:53:21.380
+It means that I can make front ends that look reasonable.
+
+00:53:22.880 --> 00:53:23.100
+That's right.
+
+00:53:23.220 --> 00:53:26.420
+You said you had used Material UI previously to make it great.
+
+00:53:27.080 --> 00:53:29.580
+And Tailwind is what used in the new version?
+
+00:53:30.440 --> 00:53:31.220
+Yeah, yeah, yeah.
+
+00:53:31.440 --> 00:53:31.860
+Excellent.
+
+00:53:32.600 --> 00:53:33.800
+Yeah, I'm really enjoying Tailwind.
+
+00:53:34.320 --> 00:53:36.420
+Yeah, so the idea with this little workshop,
+
+00:53:37.620 --> 00:53:40.740
+I ran it as part of DjangoCon US recently.
+
+00:53:40.870 --> 00:53:41.780
+It was super cool.
+
+00:53:42.960 --> 00:53:45.940
+I got, I don't know, there were way too many people there
+
+00:53:45.960 --> 00:53:47.220
+which was great.
+
+00:53:47.860 --> 00:53:48.420
+That's a good problem.
+
+00:53:48.860 --> 00:53:49.540
+It's a very good problem.
+
+00:53:49.540 --> 00:53:50.300
+It's a good problem to solve.
+
+00:53:50.420 --> 00:53:51.940
+It's like, whoa, all of you.
+
+00:53:53.040 --> 00:53:55.060
+So that was super cool and went really well.
+
+00:53:55.920 --> 00:54:02.080
+The basic idea is that I want to show how to build a CRUD application
+
+00:54:02.470 --> 00:54:06.860
+using the stack of tools in a way that sets people up
+
+00:54:06.970 --> 00:54:08.240
+to be able to build their own stuff.
+
+00:54:08.310 --> 00:54:11.360
+And part of the workshop is, in fact, taking these tools
+
+00:54:11.410 --> 00:54:12.440
+and building your own thing.
+
+00:54:13.060 --> 00:54:16.480
+And so for people who are kind of early on their career,
+
+00:54:17.800 --> 00:54:19.160
+in their career, they can get some,
+
+00:54:19.670 --> 00:54:22.300
+like the starts of decent portfolio projects out of it.
+
+00:54:22.740 --> 00:54:24.200
+People built all sorts of interesting things.
+
+00:54:24.290 --> 00:54:28.600
+So like the one person built their own personal learner management system
+
+00:54:28.800 --> 00:54:30.560
+for like their own learning, which was really lovely.
+
+00:54:31.820 --> 00:54:33.560
+Somebody built a music store.
+
+00:54:34.160 --> 00:54:36.920
+Somebody else built a, what was it?
+
+00:54:37.440 --> 00:54:41.680
+Like a chore manager for their family so that they don't fight so much.
+
+00:54:42.150 --> 00:54:42.560
+It was great.
+
+00:54:42.840 --> 00:54:50.100
+interesting yeah yeah and always django htmx and alpinejs um and the others and the other thing
+
+00:54:50.220 --> 00:54:55.280
+that's cool about this is it's it's a crud application like i'm teaching people the the
+
+00:54:55.380 --> 00:55:01.060
+bits and pieces that's the older crud app and like most of the internet is crowd applications because
+
+00:55:01.220 --> 00:55:06.120
+it's um for the audience like if anybody hasn't heard of crud it's create read update delete like
+
+00:55:06.180 --> 00:55:10.180
+that's most of what you need to do on the internet and so if you get the patterns down
+
+00:55:11.580 --> 00:55:15.620
+for like a simple crud app, then you can do some pretty hardcore things with it.
+
+00:55:16.170 --> 00:55:23.280
+So yeah, this is, so it's covering that. The workshop is small, so it's like I'm keeping things
+
+00:55:23.500 --> 00:55:30.080
+very, very small intentionally, because I believe in the power of teachers, and I want to make sure
+
+00:55:30.200 --> 00:55:35.740
+that everybody gets attention and gets the support that they need. And also because of the people who
+
+00:55:36.040 --> 00:55:39.740
+tend to come to these kinds of things have different backgrounds. So some people need help
+
+00:55:39.720 --> 00:55:44.420
+here some people need help there and so you need to keep like a good ratio of teachers to students
+
+00:55:45.100 --> 00:55:53.420
+so yeah expert led high support small group um all of that good stuff that's very cool i'll link to
+
+00:55:53.460 --> 00:55:59.300
+this workshop from in the show notes people want to check it out and it's out of time but
+
+00:56:00.340 --> 00:56:05.500
+uh it's remote so people can attend from wherever right you don't have to be yeah yeah near you
+
+00:56:06.440 --> 00:56:11.320
+Yeah, so you do not need to be in South Africa. In fact, I made it in U.S. Eastern time because,
+
+00:56:12.400 --> 00:56:16.920
+strangely enough, most of the people who read my blog are in the U.S.
+
+00:56:18.100 --> 00:56:25.800
+So it is U.S. and South Africa, and it shifts and changes around. But part of the reason I am
+
+00:56:25.880 --> 00:56:33.940
+marketing it to the U.S. is because I want to be able to fund training Africans. And like there
+
+00:56:33.960 --> 00:56:36.600
+there just isn't as much money on the side of the world.
+
+00:56:37.140 --> 00:56:38.220
+So yeah,
+
+00:56:38.220 --> 00:56:43.400
+I want to be able to make doing good in the tech education space into
+
+00:56:43.560 --> 00:56:44.820
+something that's financially sustainable.
+
+00:56:44.930 --> 00:56:48.320
+So that's why the U S and that is why it's,
+
+00:56:48.460 --> 00:56:49.400
+it's priced in dollars.
+
+00:56:51.400 --> 00:56:51.520
+Yeah.
+
+00:56:51.900 --> 00:56:57.600
+So you guys can have a discount code talk Python,
+
+00:56:58.160 --> 00:56:58.980
+talk underscore Python.
+
+00:56:59.070 --> 00:56:59.600
+I think that was.
+
+00:57:00.240 --> 00:57:00.680
+Yeah.
+
+00:57:00.680 --> 00:57:01.460
+I'll put it in show notes.
+
+00:57:01.580 --> 00:57:02.420
+People can find it there.
+
+00:57:03.320 --> 00:57:03.480
+Awesome.
+
+00:57:03.800 --> 00:57:13.680
+So you'll get 10% off. And then I also want to give like another 10% to something. So Foxly wanted
+
+00:57:13.720 --> 00:57:20.580
+me to give 10% from their discount code to the DSF. So that's another code that's out there. So
+
+00:57:20.640 --> 00:57:25.800
+that's fantastic. I've definitely benefited a lot from the DSF. So that's really, really cool. So
+
+00:57:27.000 --> 00:57:33.780
+since this is your podcast, should the further 10% go to the DSF or the PSF or the Django
+
+00:57:34.080 --> 00:57:36.160
+Africa event.
+
+00:57:36.600 --> 00:57:37.080
+Oh my goodness.
+
+00:57:37.980 --> 00:57:40.740
+I vote DjangoCon Africa.
+
+00:57:41.760 --> 00:57:42.240
+Fantastic.
+
+00:57:42.340 --> 00:57:43.580
+I was hoping that you'd say that.
+
+00:57:44.140 --> 00:57:45.200
+I love DjangoCon Africa.
+
+00:57:45.440 --> 00:57:46.100
+It's so freaking cool.
+
+00:57:47.420 --> 00:57:49.560
+Speaking of conference and talks and stuff,
+
+00:57:50.040 --> 00:57:51.480
+Kim out in the audience says,
+
+00:57:51.620 --> 00:57:53.200
+in a few weeks, a really good talk
+
+00:57:53.340 --> 00:57:55.480
+Sina gave at South
+
+00:57:55.680 --> 00:57:56.800
+Africa PyCon.
+
+00:57:58.600 --> 00:57:59.500
+A few weeks ago, it should be
+
+00:57:59.540 --> 00:58:01.500
+online. Power to the people who teach
+
+00:58:01.920 --> 00:58:02.780
+the people to code.
+
+00:58:03.500 --> 00:58:09.900
+Yes, that's the longest title I've had for a talk ever. Thanks, Kim. Yeah, so I did that
+
+00:58:10.080 --> 00:58:16.420
+talk at PyCon South Africa, and I also did it, I did a longer version of it at DjangoCon
+
+00:58:16.520 --> 00:58:21.880
+US as a keynote. So I was super, super happy that I got that opportunity. It was so cool.
+
+00:58:23.220 --> 00:58:30.900
+But yeah, it just talks about kind of how I think about teaching and how I, so it's how
+
+00:58:30.780 --> 00:58:37.200
+think about teaching and the mechanisms that we set up. So, like, how does mastery-based learning
+
+00:58:37.300 --> 00:58:44.860
+work, and how do you actually get, how do you engineer an education system so that it sets
+
+00:58:45.000 --> 00:58:51.780
+people up for success and not like either frustration or boredom. Like, because there is a lot of things
+
+00:58:51.900 --> 00:58:58.200
+that are weird about the traditional systems. Yeah, so it talks about that, but then it also shares
+
+00:58:58.260 --> 00:59:03.580
+a bunch of lessons for individual educators on the ground. So that thing that I was talking about
+
+00:59:03.720 --> 00:59:10.800
+earlier about how we as educators in the system were getting like a ton of feedback about our own,
+
+00:59:11.500 --> 00:59:18.360
+the quality of our work, that gave us space to figure out a lot of like hard-hitting things. So
+
+00:59:18.480 --> 00:59:26.520
+it's kind of the 80/20 of what teachers or would-be teachers should focus on. And I think it's
+
+00:59:26.380 --> 00:59:31.220
+it's powerful because a lot of like everybody teaches. I mean, you teach, people teach
+
+00:59:31.260 --> 00:59:38.100
+new team members. Like there's a lot of volunteer teachers as well. which, which is great.
+
+00:59:38.620 --> 00:59:42.620
+I mean, there's stuff. I think doing this kind of, these presentations, this, this kind of
+
+00:59:42.740 --> 00:59:48.780
+teaching is a super cheat code for leveling up your own skills. Yeah, definitely. There's this
+
+00:59:48.840 --> 00:59:55.000
+thing called protege effect, which is a well-studied thing. So when people say teaching
+
+00:59:55.000 --> 01:00:00.120
+is a great way to learn. They are not just being squishy, like it is legit, it is really, really
+
+01:00:00.220 --> 01:00:08.820
+legit, and there are a lot of mechanisms behind it. It is like one of the simple ones is that
+
+01:00:09.140 --> 01:00:13.500
+teaching is spaced repetition and recall, and that helps you remember your stuff.
+
+01:00:13.820 --> 01:00:13.880
+Yeah.
+
+01:00:14.250 --> 01:00:14.360
+Yeah.
+
+01:00:14.500 --> 01:00:18.700
+Another one is like people will ask you weird questions that you would not expect,
+
+01:00:18.810 --> 01:00:22.520
+and so you look at your own knowledge from a different direction, and you build better mental
+
+01:00:22.540 --> 01:00:29.520
+frameworks or more robust mental frameworks. Like some people are good at building mental frameworks
+
+01:00:29.760 --> 01:00:35.580
+and some people aren't as good. And a good way to like get a person to build good mental frameworks
+
+01:00:35.670 --> 01:00:40.300
+is to ask them weird like left side questions about the stuff they know and get them to look
+
+01:00:40.310 --> 01:00:43.980
+at things from different angles. So you get that from the people you're teaching. It's,
+
+01:00:44.260 --> 01:00:47.920
+yeah, it's really, it's a beautiful thing. Yeah, it really is. It definitely rounds out
+
+01:00:47.900 --> 01:00:53.180
+out your knowledge and makes you think deeply about some of these ideas that you just maybe
+
+01:00:53.380 --> 01:00:53.680
+glossed over.
+
+01:00:53.720 --> 01:00:53.820
+Yeah.
+
+01:00:54.820 --> 01:00:58.320
+Well, I think this is probably a good place to leave it.
+
+01:00:58.610 --> 01:01:00.900
+I want to give out one more resource real quick for people.
+
+01:01:02.220 --> 01:01:04.940
+It is just awesome HTMX over on GitHub.
+
+01:01:05.090 --> 01:01:11.560
+I don't know if you've poked around this, but it's got many, many examples of tools and
+
+01:01:11.580 --> 01:01:17.860
+libraries for HTML in Python, but also in a ton of other languages.
+
+01:01:18.120 --> 01:01:27.300
+So, like, apparently there's a Flask HTML tailwind one and one for sockets.
+
+01:01:27.500 --> 01:01:29.100
+So maybe HTML over WebSockets.
+
+01:01:29.100 --> 01:01:29.480
+I don't know.
+
+01:01:29.720 --> 01:01:30.460
+These are all look pretty cool.
+
+01:01:31.800 --> 01:01:33.180
+So people can check them out.
+
+01:01:33.380 --> 01:01:34.240
+But yeah.
+
+01:01:34.620 --> 01:01:34.840
+Yeah.
+
+01:01:35.500 --> 01:01:35.580
+Yeah.
+
+01:01:35.860 --> 01:01:36.080
+Fantastic.
+
+01:01:36.420 --> 01:01:39.520
+And I definitely want to recommend people check out your essay.
+
+01:01:40.340 --> 01:01:43.760
+And, yeah, they could take these ideas and run with them.
+
+01:01:43.860 --> 01:01:44.020
+Yeah.
+
+01:01:46.000 --> 01:01:46.100
+Cool.
+
+01:01:46.450 --> 01:01:48.280
+Well, Gina, thanks for being on the show.
+
+01:01:48.440 --> 01:01:49.240
+It's been great to talk to you.
+
+01:01:50.060 --> 01:01:51.280
+Yeah, it's been great to talk to you, too.
+
+01:01:51.420 --> 01:01:52.100
+This was a lot of fun.
+
+01:01:52.640 --> 01:01:52.820
+It was.
+
+01:01:53.120 --> 01:01:53.300
+Bye, all.
+
+01:01:53.980 --> 01:01:54.240
+Cheers.
+

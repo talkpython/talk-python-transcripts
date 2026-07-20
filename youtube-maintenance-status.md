@@ -13,7 +13,7 @@ This is the living tracker for Talk Python episode metadata and transcript maint
 - [ ] 446 — no mapped YouTube video
 - [x] 447 — title updated; description updated; existing manual English subtitles preserved; verified
 - [x] 448 — title updated; description updated; existing manual English subtitles preserved; verified
-- [x] 449 — title unchanged; description unchanged; existing manual English subtitles preserved; verified
+- [x] 449 — title updated; description updated; existing manual English subtitles preserved; verified; later no-op observer reconciled
 
 ## Episodes 450–459 work log
 
@@ -56,8 +56,7 @@ This is the living tracker for Talk Python episode metadata and transcript maint
 
 - [x] Episodes 440–449 processed where valid
   - Completed and verified: 440–442, 447–449
-  - Titles and descriptions updated: 440–442, 447–448
-  - Already canonical with no metadata write: 449
+  - Titles and descriptions updated: all 6 completed episodes
   - Existing manual English subtitles preserved: 440–441, 447–449
   - Metadata-only because no managed transcript exists: 442
   - Blocked or unmapped: 443–446

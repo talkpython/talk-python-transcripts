@@ -1,0 +1,2858 @@
+WEBVTT
+
+00:00:01.279 --> 00:00:05.980
+Dave, Jim and Paul, welcome to all three of you to Talk Python To Me.
+
+00:00:06.400 --> 00:00:07.160
+Paul, welcome back.
+
+00:00:07.580 --> 00:00:09.340
+Dave and Jim, welcome for the first time.
+
+00:00:09.460 --> 00:00:10.040
+Awesome to have you here.
+
+00:00:11.300 --> 00:00:11.380
+Thanks.
+
+00:00:12.220 --> 00:00:12.400
+Thanks.
+
+00:00:14.620 --> 00:00:14.700
+Indeed.
+
+00:00:15.420 --> 00:00:21.620
+We are going to carry on an amazing tradition of Python string formatting.
+
+00:00:22.740 --> 00:00:26.780
+We've had the percent, we've had the plus,
+
+00:00:27.540 --> 00:00:29.360
+We've had the.format.
+
+00:00:29.920 --> 00:00:31.020
+We've had the.join.
+
+00:00:32.460 --> 00:00:36.240
+Everyone was very excited about Fstrings back in 3.6 when they came out.
+
+00:00:36.290 --> 00:00:41.820
+And now, after quite a bit of work from the three of you and others,
+
+00:00:42.800 --> 00:00:46.540
+we're going to be talking about PEP 750 t-strings.
+
+00:00:49.400 --> 00:00:49.660
+Amazing.
+
+00:00:49.890 --> 00:00:51.900
+So congratulations on all of that.
+
+00:00:52.300 --> 00:00:53.500
+I think it's going to be a lot of fun.
+
+00:00:54.300 --> 00:01:01.180
+People may be surprised to think that, oh, there's an entire episode with three whole people on string formatting.
+
+00:01:01.760 --> 00:01:03.760
+Yes. Yes, that's right. There's actually a lot to it.
+
+00:01:04.400 --> 00:01:07.460
+This is a pretty rich API and a pretty big advancement.
+
+00:01:08.300 --> 00:01:10.300
+So we're going to dive into that.
+
+00:01:10.460 --> 00:01:13.700
+But before we do, how about a round of introductions? Dave?
+
+00:01:15.180 --> 00:01:16.420
+Hey, I'm Dave Peck.
+
+00:01:16.720 --> 00:01:21.040
+I'm a freelance software developer based in sunny Seattle, Washington.
+
+00:01:22.080 --> 00:01:32.380
+freelance software developer is a polite way of saying I'm a computer weirdo and I get to get into hopefully all kinds of good computer mischief like working with Jim and Paul on new peps for Python.
+
+00:01:34.960 --> 00:01:42.060
+Awesome. Great to have you here and always good to have another person from the Pacific Northwest. Jim, welcome.
+
+00:01:42.800 --> 00:01:58.260
+Hi. So yeah, I'm a long-time Python user. I used to be very actively involved in the Jython project, which let me really learn the internals of both Jython and CPython, since we have to maintain a compatible implementation.
+
+00:02:00.220 --> 00:02:04.880
+So, you know, got deep into things like compilers and the standard library.
+
+00:02:05.899 --> 00:02:12.260
+And, yeah, it's great to talk about template strings or t-strings with you today.
+
+00:02:15.140 --> 00:02:16.320
+Paul, welcome back.
+
+00:02:16.590 --> 00:02:17.820
+How many episodes have you been on?
+
+00:02:18.020 --> 00:02:18.140
+Many.
+
+00:02:18.340 --> 00:02:18.920
+I don't know.
+
+00:02:19.540 --> 00:02:21.560
+Not enough because Brett's ahead of me.
+
+00:02:23.080 --> 00:02:26.880
+Brett Cannon, you're not allowed to be on Talk Python for five years until I catch up.
+
+00:02:26.910 --> 00:02:27.900
+And then you can come back.
+
+00:02:29.460 --> 00:02:34.760
+Well, you should also send your message to Anthony Shaw, who I think is currently on the leaderboard.
+
+00:02:35.300 --> 00:02:35.660
+Number one.
+
+00:02:35.800 --> 00:02:36.000
+Yeah.
+
+00:02:36.000 --> 00:02:41.140
+And then you're talking with Chris McDonough, who was like episode three or something like that.
+
+00:02:41.600 --> 00:02:42.060
+Exactly.
+
+00:02:43.480 --> 00:02:44.420
+Briefly, I'm Paul.
+
+00:02:44.580 --> 00:02:45.160
+Hi, I'm Paul.
+
+00:02:46.400 --> 00:02:49.980
+I am now head of developer advocacy at JetBrains, the PyCharm people.
+
+00:02:50.260 --> 00:02:53.400
+I make coffee for Jim and Dave on this project.
+
+00:02:55.480 --> 00:03:00.440
+I let Jim do all the big thinking and I let Dave go out and explain to
+
+00:03:00.780 --> 00:03:05.400
+complainers that we heard the same complaints for f-strings back in the day.
+
+00:03:06.800 --> 00:03:09.600
+So this has been a super fun project to be on.
+
+00:03:10.500 --> 00:03:13.520
+Yeah, it's, it's very exciting. I'm, I'm super,
+
+00:03:14.240 --> 00:03:17.960
+super interested to dive into something I didn't really know a lot about.
+
+00:03:18.420 --> 00:03:21.540
+So yeah, it'll be neat. Hey Jim,
+
+00:03:21.740 --> 00:03:24.360
+before we carry on just a logistical thing real quick,
+
+00:03:24.780 --> 00:03:26.560
+Could you do me a favor and just turn down the volume a little bit?
+
+00:03:26.570 --> 00:03:28.920
+I think there's a bit of an echo back on your side.
+
+00:03:29.040 --> 00:03:29.240
+Okay.
+
+00:03:29.840 --> 00:03:30.700
+We'll go and do that.
+
+00:03:31.580 --> 00:03:33.280
+Not so much you can't hear us, but a little bit less.
+
+00:03:34.360 --> 00:03:35.360
+Hopefully that's good now.
+
+00:03:36.500 --> 00:03:37.520
+Yeah, I'm sure it is.
+
+00:03:37.520 --> 00:03:39.940
+Well, I'll let you know for some reason it's not.
+
+00:03:41.460 --> 00:03:41.620
+Okay.
+
+00:03:42.210 --> 00:03:45.140
+Well, let's dive into it, right?
+
+00:03:48.560 --> 00:03:52.840
+What are t-strings and why do they exist?
+
+00:03:52.900 --> 00:03:59.820
+you know weren't f-strings good enough i mean they look kind of like f-strings when we use them
+
+00:04:00.360 --> 00:04:05.480
+yeah that's a great part about them right they look like f-strings they behave a lot like
+
+00:04:05.500 --> 00:04:12.360
+f-strings in terms of technical issues like um the scoping of the um interpolation expressions
+
+00:04:13.560 --> 00:04:20.000
+but they're not f-strings in a very profound way um you know one of the things that we wanted to
+
+00:04:19.859 --> 00:04:29.020
+to prevent was stuff like, you know, the classic xkcd comic about the Bobby tables sequel injection,
+
+00:04:29.980 --> 00:04:36.940
+okay, where becomes a drop tables inadvertently. And we can get Yeah, exactly.
+
+00:04:37.340 --> 00:04:42.800
+The traditional exploits of a mom. This is your mom is your son's scroll calling. Did he break
+
+00:04:42.860 --> 00:04:49.940
+something well in a way. Yeah. And so this is, you know, the original language of the PEP actually
+
+00:04:50.400 --> 00:04:57.700
+referenced directly Bobby Tables in this comic. For whatever reason, we removed that. But we don't
+
+00:04:57.800 --> 00:05:04.320
+have to do that today in this conversation. It was a big driver for this work. And the reason is
+
+00:05:04.560 --> 00:05:12.000
+that S-strings are great. They're great for formatting. But they're also sort of a trap,
+
+00:05:12.500 --> 00:05:16.540
+I think for people to use because it's your formatting things,
+
+00:05:16.980 --> 00:05:18.820
+everything is working and oh, by the way,
+
+00:05:18.820 --> 00:05:22.680
+you just introduced the HTML injection or SQL injection,
+
+00:05:23.440 --> 00:05:27.980
+or you just happen to have something that doesn't format properly because you
+
+00:05:28.060 --> 00:05:29.980
+didn't consider a particular corner case.
+
+00:05:30.700 --> 00:05:36.200
+What we really wanted to do was move a lot of that out of like the usual user
+
+00:05:36.320 --> 00:05:40.420
+experience and into a library that could go, you know, some library,
+
+00:05:40.620 --> 00:05:42.280
+something for HTML, something for SQL,
+
+00:05:42.460 --> 00:05:45.200
+something for some other domain-specific language
+
+00:05:45.970 --> 00:05:48.440
+that would allow it to go and handle that appropriately.
+
+00:05:49.300 --> 00:05:51.660
+We'll get into more about what that means, I guess,
+
+00:05:52.020 --> 00:05:53.400
+throughout this conversation.
+
+00:05:53.670 --> 00:05:55.220
+But that's really where we started.
+
+00:05:55.380 --> 00:06:00.040
+We wanted the simplicity of using f-strings.
+
+00:06:00.760 --> 00:06:02.680
+We can get into more about what that means,
+
+00:06:03.390 --> 00:06:04.840
+but without some of the hazards.
+
+00:06:07.260 --> 00:06:08.960
+Excellent, excellent introduction.
+
+00:06:09.900 --> 00:06:12.060
+And it's important that this is part of the language.
+
+00:06:12.620 --> 00:06:15.900
+It's officially accepted in Python 3.14.
+
+00:06:16.960 --> 00:06:19.160
+Oh, will the jokes overflow about Py,
+
+00:06:19.920 --> 00:06:22.620
+this version of Python, when it comes out in the fall.
+
+00:06:22.620 --> 00:06:24.080
+- It's a special commemorative edition of Python.
+
+00:06:24.600 --> 00:06:25.720
+We're so glad to get into it.
+
+00:06:26.200 --> 00:06:27.740
+- That's right, it's super cool.
+
+00:06:29.040 --> 00:06:30.880
+So it's going to be part of the language.
+
+00:06:31.400 --> 00:06:34.760
+And the reason I bring this up is it seems like it needs
+
+00:06:34.760 --> 00:06:38.799
+to be part of the language, not just an external library
+
+00:06:38.820 --> 00:06:43.540
+to really take advantage of it and not be just some API,
+
+00:06:43.690 --> 00:06:46.960
+you construct strings in some weird string builder way,
+
+00:06:47.140 --> 00:06:50.540
+but through literally just quote, start typing stuff,
+
+00:06:50.800 --> 00:06:52.140
+that has to be part of the language, right?
+
+00:06:53.180 --> 00:06:54.520
+- Yeah, that's exactly right.
+
+00:06:54.670 --> 00:06:57.560
+I mean, as Jim mentioned, f-strings are wonderful.
+
+00:06:57.800 --> 00:06:59.100
+The syntax is powerful, it's robust.
+
+00:06:59.970 --> 00:07:02.280
+It became very popular because of that.
+
+00:07:03.320 --> 00:07:06.020
+But of course there are these foot guns of using them for,
+
+00:07:06.680 --> 00:07:10.260
+you know, SQL and HTML, where you might run into some injection problems.
+
+00:07:11.460 --> 00:07:17.100
+With t-strings, the key difference is that while f-strings evaluate to the standard string type,
+
+00:07:17.660 --> 00:07:22.620
+t-strings evaluate to a new type that should be in Python 3.14 later this year called template.
+
+00:07:23.440 --> 00:07:29.620
+And so while they look like the literal form looks like any other string,
+
+00:07:30.130 --> 00:07:31.400
+they're quite different in that respect.
+
+00:07:31.740 --> 00:07:43.320
+And the key thing about the template type is it lets you, as a programmer, decide what parts of the string were statically authored and what parts of the string were dynamically substituted or interpolated.
+
+00:07:43.860 --> 00:07:47.520
+And so just being able to do that as a language feature is a really big deal.
+
+00:07:47.680 --> 00:07:49.780
+It's not something you can do with fstrings directly.
+
+00:07:50.900 --> 00:07:55.300
+And once you know those things, you can start to say, okay, this is a SQL statement.
+
+00:07:55.600 --> 00:07:57.400
+maybe I need to do something with the interpolation,
+
+00:07:57.580 --> 00:08:00.260
+like escape its value before I construct the final string
+
+00:08:00.280 --> 00:08:02.360
+then I'm going to send it over to my database.
+
+00:08:05.140 --> 00:08:07.680
+Yeah, if somebody were to work with an fstring,
+
+00:08:08.240 --> 00:08:11.060
+it does the cool interpolation at runtime.
+
+00:08:13.960 --> 00:08:18.920
+However, the thing that your API or any sort of code gets access to
+
+00:08:19.420 --> 00:08:22.160
+is just the resulting string that comes out.
+
+00:08:22.240 --> 00:08:27.900
+And I think this is probably the biggest piece of understanding that people need to wrap their heads around.
+
+00:08:28.840 --> 00:08:32.039
+And we'll dive into some of the things people do need to wrap their heads around and how it's different.
+
+00:08:33.039 --> 00:08:39.360
+But instead of getting just, here's the string result, which who knows why it says --drop table there.
+
+00:08:39.820 --> 00:08:41.200
+Maybe that's what they want.
+
+00:08:41.800 --> 00:08:42.340
+You don't know.
+
+00:08:43.020 --> 00:08:43.120
+Right?
+
+00:08:43.260 --> 00:08:45.480
+But here you would have, here's part of the string.
+
+00:08:45.980 --> 00:08:48.900
+And then here's a place where a value goes with a name.
+
+00:08:49.040 --> 00:08:54.380
+And that thing, if you look it up by name, its value is --drop tables.
+
+00:08:54.660 --> 00:08:57.100
+Well, maybe we'll escape that or whatever.
+
+00:08:57.250 --> 00:08:57.820
+You know what I mean?
+
+00:09:00.280 --> 00:09:00.440
+Right.
+
+00:09:00.490 --> 00:09:04.820
+You and Brian covered it twice in Python bytes.
+
+00:09:05.060 --> 00:09:13.460
+And the first time, I'm going to exaggerate a little bit, but Brian was like, what is this for?
+
+00:09:13.750 --> 00:09:14.360
+I don't get it.
+
+00:09:14.450 --> 00:09:15.040
+Why do we need it?
+
+00:09:15.480 --> 00:09:16.160
+We have enough, right?
+
+00:09:16.210 --> 00:09:18.620
+The second time, Brian was like, oh, I get it now.
+
+00:09:19.619 --> 00:09:21.280
+and there's going to be a lot of that Paul
+
+00:09:21.320 --> 00:09:22.780
+we certainly have some explaining to do
+
+00:09:23.120 --> 00:09:25.680
+but yeah there's going to be a lot of this like why are we doing this
+
+00:09:26.080 --> 00:09:26.620
+what's that
+
+00:09:26.920 --> 00:09:28.820
+sorry there's going to be a lot of that
+
+00:09:28.980 --> 00:09:30.540
+there's going to be a lot of like we already have f strings
+
+00:09:30.720 --> 00:09:31.260
+what is this
+
+00:09:32.720 --> 00:09:34.420
+an f string gives you a string
+
+00:09:35.240 --> 00:09:36.700
+a template string gives you a template
+
+00:09:37.080 --> 00:09:38.580
+and then later you will get a string
+
+00:09:39.439 --> 00:09:40.900
+later means going through
+
+00:09:41.400 --> 00:09:43.040
+a function they can go and do
+
+00:09:43.260 --> 00:09:45.160
+cool things for you like escape values
+
+00:09:45.699 --> 00:09:46.860
+or if you're doing an
+
+00:09:47.000 --> 00:09:48.680
+HTML templating system
+
+00:09:49.620 --> 00:09:57.120
+pass it a dictionary and it will generate a style attribute with some policies along the way,
+
+00:09:57.120 --> 00:10:03.880
+or pass it a false for a Boolean and it will elide the entire thing or do all kinds of other things.
+
+00:10:04.460 --> 00:10:12.180
+Having the template structure that Dave described gives business value DSLs a chance to step in
+
+00:10:12.300 --> 00:10:15.020
+and operate on structure rather than strings.
+
+00:10:17.140 --> 00:10:21.620
+So when I write this code, I say value equals T,
+
+00:10:21.920 --> 00:10:24.000
+some interpolated string sort of thing.
+
+00:10:25.120 --> 00:10:29.540
+Is it interoperable with a string in the sense that if I have a function
+
+00:10:29.610 --> 00:10:32.600
+that expects a string, could I pass it?
+
+00:10:33.100 --> 00:10:38.040
+Much like path from pathlib kind of goes where string file names go,
+
+00:10:38.450 --> 00:10:41.280
+or does the thing working with it need to know,
+
+00:10:42.580 --> 00:10:44.460
+no, it needs to be transformed like you say,
+
+00:10:45.010 --> 00:10:46.840
+like process this to a SQL statement.
+
+00:10:46.980 --> 00:10:50.820
+or process this to an HTML fragment, and then you get a string?
+
+00:10:52.220 --> 00:10:56.440
+Yeah, and for templates, the answer is very intentionally.
+
+00:10:56.680 --> 00:10:58.020
+They are not the same as strings.
+
+00:10:58.620 --> 00:11:01.700
+And so library authors are going to have to update their SQL libraries
+
+00:11:01.780 --> 00:11:05.380
+and their HTML libraries to expect this new template type.
+
+00:11:07.040 --> 00:11:08.520
+And that's very intentional.
+
+00:11:09.060 --> 00:11:12.600
+The other thing I would say is that templates don't have a direct route to strings.
+
+00:11:12.700 --> 00:11:23.760
+So if you call str of template, you just get the default repper back, right, which is probably not something you want to be showing your users or, you know, it's not HTML that you're trying to render.
+
+00:11:24.860 --> 00:11:27.480
+And that's, again, very intentional.
+
+00:11:27.540 --> 00:11:32.020
+It's also unlikely to cause injection attacks and whatnot as well when you're getting that repper.
+
+00:11:32.620 --> 00:11:38.240
+So much, you know, all those parentheses and braces and whatnot, not likely to happen.
+
+00:11:39.140 --> 00:11:40.320
+Yeah, absolutely.
+
+00:11:40.820 --> 00:11:46.380
+And so library authors will have to update their libraries to add new methods that expect this template type.
+
+00:11:46.620 --> 00:11:49.560
+And presumably those methods won't also take a string.
+
+00:11:50.200 --> 00:12:01.340
+You know, if you're concerned about injection vulnerabilities, presumably you want to take this new dynamic template type that tracks what parts of the string are interpolated and what parts came from the developer themselves.
+
+00:12:03.200 --> 00:12:03.300
+Right.
+
+00:12:03.420 --> 00:12:04.100
+And treat them differently.
+
+00:12:05.340 --> 00:12:05.540
+Yeah.
+
+00:12:06.420 --> 00:12:06.540
+Yeah.
+
+00:12:06.720 --> 00:12:07.180
+Very interesting.
+
+00:12:08.380 --> 00:12:10.580
+So let's just talk about that a little bit.
+
+00:12:10.580 --> 00:12:17.800
+I see some use cases in the chat, but maybe we could list out some more.
+
+00:12:18.640 --> 00:12:25.640
+So, for example, Nym4 says structured logging, preventing cross-site scripting, SQL injection.
+
+00:12:26.380 --> 00:12:28.320
+What are some of the motivations here?
+
+00:12:31.860 --> 00:12:33.440
+Yeah, those are all great use cases.
+
+00:12:34.250 --> 00:12:35.840
+Any type of injection vulnerability.
+
+00:12:36.100 --> 00:12:38.880
+So SQL and HTML were obviously at the top of our minds.
+
+00:12:38.980 --> 00:12:50.000
+But another one that, in fact, there's potentially a new PEP coming around for that's being discussed right now on the Python discussion boards has to do with command injection.
+
+00:12:50.180 --> 00:12:55.780
+So when you shell out, you're worried about the user-provided values there as well.
+
+00:12:57.600 --> 00:12:58.140
+Give me a sec.
+
+00:12:58.140 --> 00:13:00.180
+I'll try and remember what the actual PEP is.
+
+00:13:00.440 --> 00:13:01.680
+There's os.system.
+
+00:13:02.360 --> 00:13:05.640
+And then you can give it a command like echo some string from the user.
+
+00:13:06.080 --> 00:13:14.780
+But it could, of course, be some string, quote, ampersand, ampersand, rm-rf, or something like that, right?
+
+00:13:16.520 --> 00:13:34.260
+And of course, as Paul mentioned, once you have the tools to help you prevent injection vulnerabilities in sort of a more general way in this general purpose fashion, you also have the ability to do all kinds of other fun and powerful things like what Paul mentioned with HTML, which is, hey, I don't just want to write a single attribute.
+
+00:13:34.420 --> 00:13:38.740
+I want to give you a dictionary and you write 20 attributes based on the contents of my Python
+
+00:13:39.060 --> 00:13:42.980
+dictionary. And there's no reason you can't do that now, which is exciting.
+
+00:13:44.579 --> 00:13:51.820
+Yeah, I would add to that if you wanted to, for example, do some interesting complex analytical
+
+00:13:52.120 --> 00:13:58.419
+SQL, you know, where you're using common table expressions, or even you just want to go and
+
+00:13:59.520 --> 00:14:04.880
+have a um you know your analytical sql i want to be able to do it on this column name versus some
+
+00:14:05.000 --> 00:14:11.140
+other column name we want to make it possible to do that in a safe fashion these are things that
+
+00:14:11.140 --> 00:14:17.300
+are difficult to express with um some of the typical wrappers that we might use with sql
+
+00:14:18.680 --> 00:14:25.139
+like sql alchemy maybe like i don't think you can really do like ctes and django query sets
+
+00:14:25.160 --> 00:14:30.040
+and whatnot, but what I'm trying to say is that both of those tools do allow you to access
+
+00:14:30.320 --> 00:14:37.880
+raw SQL, but now you need to be able to compose that raw SQL in a way that's safe and uses
+
+00:14:38.040 --> 00:14:45.660
+the information about where this interpolation is happening in order to properly put it in
+
+00:14:45.690 --> 00:14:45.800
+place.
+
+00:14:46.040 --> 00:14:51.879
+So if you are in a situation where maybe that CTE is something you can access, you can go
+
+00:14:51.940 --> 00:14:59.400
+and say, okay, I can insert it into the SQL, or maybe a little more common usage here for a lot
+
+00:14:59.400 --> 00:15:05.360
+of people. I don't know how many people use common table expressions. I do. Is to go and,
+
+00:15:06.680 --> 00:15:10.580
+you know, I just want to, again, select from this particular table name or this particular column
+
+00:15:10.760 --> 00:15:16.539
+name in a safe fashion. Or I want to go and use values that can't be properly expressed with
+
+00:15:16.560 --> 00:15:23.440
+placeholders, but maybe if I use like a, you know, a temporary table to insert it in.
+
+00:15:24.000 --> 00:15:28.300
+These are all techniques that we use when we do this sort of work, but now we have this
+
+00:15:28.520 --> 00:15:34.400
+opportunity to bring it into directly in the library and then make it possible for users to
+
+00:15:34.940 --> 00:15:39.459
+use it without really having to think, where did this come from? How do I go and make this such
+
+00:15:39.480 --> 00:15:45.040
+that it can be used in a where in clause, for example, that sort of thing.
+
+00:15:47.740 --> 00:15:53.080
+If I may real quick, I got to give Jim a lot of credit on this as we've gone through the years on this.
+
+00:15:53.320 --> 00:15:58.340
+And Jim taught programming languages at University of Colorado Boulder.
+
+00:15:58.430 --> 00:16:06.160
+And so he knows all these patterns and all these languages and the implementations from his Jython years and stuff.
+
+00:16:07.040 --> 00:16:17.620
+And even now he's still talking in chat about, hey, you know, last year he was talking about how domain specific languages could apply to pandas and other data science stuff.
+
+00:16:17.640 --> 00:16:26.040
+And now he's talking about LLM interactions and chat and stuff like that, where you've got a little language, but it's got a little bit of structure.
+
+00:16:26.680 --> 00:16:36.340
+And what if you could, and then 500, you know, discourse, discord messages later, Jim has invented something new and interesting.
+
+00:16:37.460 --> 00:16:38.100
+Incredible.
+
+00:16:41.120 --> 00:16:44.580
+So it seems to me like there's also some interesting possibilities
+
+00:16:45.020 --> 00:16:48.580
+for lazy evaluation,
+
+00:16:52.060 --> 00:16:55.500
+also some possibilities for query optimization.
+
+00:16:56.080 --> 00:16:57.080
+Jim was talking about databases,
+
+00:16:57.510 --> 00:16:59.020
+but there's a lot of different things,
+
+00:17:00.760 --> 00:17:02.320
+both from a performance perspective,
+
+00:17:02.450 --> 00:17:04.979
+but also potentially just from a tightly
+
+00:17:05.000 --> 00:17:06.560
+versus loosely coupled systems.
+
+00:17:07.480 --> 00:17:09.760
+Like maybe you could say something to the effect of like,
+
+00:17:10.240 --> 00:17:11.480
+and the username goes here,
+
+00:17:11.640 --> 00:17:12.920
+but that part of the system logging
+
+00:17:13.220 --> 00:17:14.280
+doesn't know what the username is.
+
+00:17:14.760 --> 00:17:17.339
+But somehow as the template gets rendered,
+
+00:17:17.959 --> 00:17:19.760
+the additional pieces could get filled in
+
+00:17:20.400 --> 00:17:22.459
+with real details like the IP and the username
+
+00:17:22.620 --> 00:17:24.260
+is actually this because over here we know,
+
+00:17:24.380 --> 00:17:25.800
+but when the logging happened,
+
+00:17:26.199 --> 00:17:27.939
+we got a template that just said,
+
+00:17:28.020 --> 00:17:29.740
+well, whatever you figure out, it goes here.
+
+00:17:31.000 --> 00:17:32.400
+How much of those things are possible now?
+
+00:17:32.480 --> 00:17:36.800
+Like, could you look at the structured bit of SQL and say, well, if we reorder this,
+
+00:17:37.340 --> 00:17:43.380
+or if we put something about, you know, some kind of SQL hint or something about indexes
+
+00:17:43.380 --> 00:17:47.860
+or other things in there, could you maybe get more from it?
+
+00:17:53.760 --> 00:17:57.420
+I was thinking someone might else answer this, but I will go for this.
+
+00:17:57.720 --> 00:17:59.120
+I mean, I think that's possible to do.
+
+00:18:01.200 --> 00:18:12.980
+In terms, you know, often we, you know, again, if we're thinking about SQL, we would, you know, dispatch this to, you know, some sort of, you know, the internal optimizer and, you know, whatever database you're working with.
+
+00:18:13.580 --> 00:18:39.820
+But, you know, again, using the SQL example, you know, there are multiple ways that you could potentially interface some more interesting, complicated ways of interacting with SQL that are kind of hard to, you know, either you can't express easily with placeholders, you know, the standard name placeholders or positional placeholders in SQL.
+
+00:18:40.800 --> 00:18:48.620
+Or just, you know, basically you find people going and composing SQL and, you know, doing it in a bad way.
+
+00:18:49.240 --> 00:19:01.100
+But if you were to go and, you know, there's like a popular tool called SQL Glot, for example, that allows you to take SQL, re-express it as an abstract syntax tree.
+
+00:19:01.340 --> 00:19:03.120
+And then what can you do with that?
+
+00:19:03.740 --> 00:19:07.660
+Well, the interesting thing about what we do with t-strings
+
+00:19:08.080 --> 00:19:11.680
+is it can be a front end to such tools.
+
+00:19:12.780 --> 00:19:17.160
+So t-strings themselves are intentionally designed
+
+00:19:17.220 --> 00:19:20.440
+to have just this very limited,
+
+00:19:21.080 --> 00:19:22.420
+but at the same time,
+
+00:19:24.520 --> 00:19:29.200
+very powerful integration with Python, right?
+
+00:19:29.480 --> 00:19:33.700
+You have effectively an F-String specification
+
+00:19:33.720 --> 00:19:38.180
+you know what's going to describe that template you describe the interpolations
+
+00:19:38.910 --> 00:19:43.080
+they can be nested and everything but fundamentally at the end of the day you
+
+00:19:43.160 --> 00:19:47.340
+get this template object out of it which could be nested and whatnot but it's
+
+00:19:47.480 --> 00:19:52.540
+still this simple straightforward thing and then you pass it to a function that
+
+00:19:52.580 --> 00:19:57.660
+can do interesting things with that from a performance perspective that's also
+
+00:19:57.780 --> 00:20:00.919
+something that we intentionally put together I don't know Dave if you want to
+
+00:20:00.840 --> 00:20:04.240
+talk about that, what we did specifically for that?
+
+00:20:05.140 --> 00:20:07.220
+Because I think that might be something you want to speak to.
+
+00:20:07.560 --> 00:20:08.240
+Yeah, absolutely.
+
+00:20:09.040 --> 00:20:12.300
+Well, if you take a look at what's inside the template type,
+
+00:20:12.740 --> 00:20:14.920
+there are basically two tuples that sit there.
+
+00:20:15.320 --> 00:20:17.480
+There's a tuple called strings and a tuple called values
+
+00:20:18.660 --> 00:20:19.440
+or interpolation.
+
+00:20:19.590 --> 00:20:20.820
+So you can kind of work both ways.
+
+00:20:21.920 --> 00:20:23.740
+And so as you might expect, the strings
+
+00:20:23.810 --> 00:20:26.560
+are the static parts that are part of the literal string
+
+00:20:26.650 --> 00:20:27.300
+that you specify.
+
+00:20:28.080 --> 00:20:31.460
+And the values or interpolations are the dynamic parts.
+
+00:20:32.540 --> 00:20:36.700
+And we kind of made it so that no matter how you write your literal,
+
+00:20:37.780 --> 00:20:40.640
+it's always the case that there is at least one string
+
+00:20:40.810 --> 00:20:43.220
+in that string's tuple, even if it's the empty string.
+
+00:20:43.520 --> 00:20:48.380
+So t quote, quote, gives you a template with no interpolations,
+
+00:20:48.450 --> 00:20:50.380
+with an empty tuple for interpolations,
+
+00:20:50.680 --> 00:20:52.460
+and with just a single quote for strings.
+
+00:20:54.180 --> 00:20:56.380
+And we ensure that there's always one more string
+
+00:20:56.400 --> 00:20:58.740
+than there are values or interpolations.
+
+00:20:59.340 --> 00:21:01.760
+And the reason we do that is that allows you to,
+
+00:21:02.420 --> 00:21:05.380
+basically, the strings tuple becomes a useful cache key
+
+00:21:05.630 --> 00:21:07.700
+in many cases for memorizing.
+
+00:21:08.300 --> 00:21:11.500
+So if you process a template once with your HTML function,
+
+00:21:12.060 --> 00:21:13.100
+you might sit back and say,
+
+00:21:13.190 --> 00:21:15.700
+okay, I've seen this structure of HTML before,
+
+00:21:15.920 --> 00:21:16.800
+and the next time I do it,
+
+00:21:17.070 --> 00:21:18.560
+all I need to do is fill in the gaps.
+
+00:21:19.820 --> 00:21:23.760
+And so that we think is just like a really basic optimization
+
+00:21:24.100 --> 00:21:25.160
+that you can use,
+
+00:21:25.240 --> 00:21:33.660
+And we're seeing that use, Paul, you might want to mention the TDOM library that I know you and others have been working on in the last little while.
+
+00:21:34.320 --> 00:21:37.280
+But it's just a basic optimization that we can offer.
+
+00:21:38.920 --> 00:21:49.280
+I think it is worth calling out, though, that, and I know we mentioned this earlier, but probably worth calling out once more just to make it explicit, that t-strings like f-strings are eagerly evaluated.
+
+00:21:49.960 --> 00:21:59.200
+So if you have hello, curly braces name, and name isn't in scope, you will get a name error, just like with an F string.
+
+00:22:00.560 --> 00:22:05.400
+And so you might say, well, that feels a little weird to me, because don't I want to reuse these things multiple times?
+
+00:22:05.960 --> 00:22:11.860
+And this is one of those cases where the word template is just an overloaded term in the computing world.
+
+00:22:12.820 --> 00:22:21.260
+And so if you're coming from the Jinja world or the Django templates world, you're probably used to the idea that I have this structure and I'm going to keep substituting values into it.
+
+00:22:22.320 --> 00:22:28.200
+And that's a little bit different than the other use of the word template, which comes from, say, the JavaScript side of the world.
+
+00:22:28.380 --> 00:22:30.660
+So JavaScript has tag template literals.
+
+00:22:30.800 --> 00:22:34.200
+If you've written any JavaScript code, you've probably run across them before.
+
+00:22:35.240 --> 00:22:38.480
+And there, like with t-strings, they're eagerly evaluated.
+
+00:22:39.140 --> 00:22:42.380
+So, you know, of course, you have the full generality of Python available to you.
+
+00:22:42.780 --> 00:22:52.560
+So you can just write a function that takes the parameters that you want to substitute and returns a T string, call it multiple times with different values, and you'll get different template instances out the other side.
+
+00:22:52.860 --> 00:22:59.180
+Probably just worth calling that out so that it's clear to listeners that there is this kind of funny overloading lower template.
+
+00:22:59.740 --> 00:23:01.860
+But yeah, back to the point about optimization.
+
+00:23:02.500 --> 00:23:17.500
+We're pretty excited about just the basic opportunities for building optimized template processing code, like an HTML function or a SQL function that works on top of this basic structure that we provide in PEP 750.
+
+00:23:19.520 --> 00:23:28.160
+Yeah, and I think one thing you can think about is that, again, we may be getting a little too into the weeds here, but let's get into the weeds.
+
+00:23:29.560 --> 00:23:36.520
+You can think about, you know, the template is basically providing, you know, this interesting way of describing your arguments.
+
+00:23:37.400 --> 00:23:43.220
+All right. And then you get past it to some sort of function, HTML, SQL, you name it.
+
+00:23:43.530 --> 00:23:48.240
+Right. And basically it's going to, you know, evaluate with respect to those arguments.
+
+00:23:49.020 --> 00:24:04.020
+But, you know, if you, so we basically, you know, if I have an HTML function, I'm going to want to look it up with that dot strings, template dot strings.
+
+00:24:05.020 --> 00:24:09.000
+Say, I parsed this, and I know how to go and work with this fragment.
+
+00:24:09.150 --> 00:24:19.000
+I already know where all the pieces need to go, the holes that need to be filled in by these interpolations, and it could be done very quickly.
+
+00:24:20.260 --> 00:24:25.480
+And so we've put a lot of effort in terms of thinking about what is that optimization path.
+
+00:24:25.950 --> 00:24:27.580
+And there's also related aspects.
+
+00:24:27.980 --> 00:24:35.460
+Why is this another reason this is built into the language is because you can get lexical scope as opposed to dynamic scope.
+
+00:24:35.980 --> 00:24:40.580
+You think that lexical, you know, you might think that dynamic scope is always the thing that's going to work for you.
+
+00:24:41.040 --> 00:24:44.400
+But no, this is the thing that, you know, brought Paul and I together on this project.
+
+00:24:45.100 --> 00:24:50.680
+It's exactly, you know, you can't use dynamic scope when you would expect it.
+
+00:24:51.220 --> 00:24:56.500
+So, yeah, if we want to go to that scope issue when calling components from list comprehension.
+
+00:24:57.280 --> 00:25:03.000
+So, Paul, if you want to speak to this a little bit, in terms of the problems you experienced.
+
+00:25:04.980 --> 00:25:07.680
+Sure. And this is, oh, my gosh.
+
+00:25:09.440 --> 00:25:14.560
+Jim in the first round of this and Dave in the second round of this in the PEP and the comments.
+
+00:25:15.600 --> 00:25:21.780
+This this damn thing had more comments on it than every other PEP in the history of civilization.
+
+00:25:22.060 --> 00:25:27.400
+almost it felt that way major changes between the first draft and the second draft from lazy
+
+00:25:27.740 --> 00:25:34.580
+evaluation from tag template functions all those things uh but one that comes up pretty frequently
+
+00:25:35.340 --> 00:25:43.340
+is i could just do this with this get frame and you can but you can't and you shouldn't either way
+
+00:25:44.280 --> 00:25:50.500
+but there is a nuance about scoping that bit me right here on the screen in this ticket that was
+
+00:25:50.420 --> 00:25:53.520
+the origin story of Jim and I talking to each other.
+
+00:25:54.320 --> 00:26:01.980
+2020, a predecessor that mimicked t-strings in SysGepFrame
+
+00:26:02.700 --> 00:26:07.000
+from the people behind the JavaScript package called HTM.
+
+00:26:07.860 --> 00:26:10.240
+They did a port to Python called HTMPy
+
+00:26:11.360 --> 00:26:15.660
+for doing powerful template languages kind of closer to the language,
+
+00:26:16.020 --> 00:26:19.800
+something that in the JavaScript world, this is a replacement for JSX.
+
+00:26:19.860 --> 00:26:25.460
+It doesn't need tooling. And so they wanted to bring that kind of experience, language centric templating.
+
+00:26:26.020 --> 00:26:30.400
+They wanted to bring it to Python, but hit this issue about scope.
+
+00:26:33.040 --> 00:26:38.040
+Yeah. Yeah. And this and it seems like it's just this obscure thing, but it isn't.
+
+00:26:38.120 --> 00:26:42.140
+You know, you use a nested function. It pops up. Use a generator expression.
+
+00:26:42.300 --> 00:26:45.780
+It pops up. Use a list comprehension. It pops up.
+
+00:26:46.140 --> 00:26:50.440
+So things that you might commonly want to use, now you need to know you shouldn't do that.
+
+00:26:50.750 --> 00:26:51.600
+So that's one thing.
+
+00:26:51.710 --> 00:26:52.860
+The second thing is it's slow.
+
+00:26:54.040 --> 00:26:59.520
+And it basically also breaks a lot of optimizations that have been introduced into Python in recent years.
+
+00:27:00.120 --> 00:27:01.100
+So you don't want to do that either.
+
+00:27:02.820 --> 00:27:05.520
+And the creator of this hack, Barry, said don't use this hack.
+
+00:27:05.780 --> 00:27:07.140
+So Barry says don't use this hack.
+
+00:27:07.160 --> 00:27:12.940
+Well, I mean, there are good reasons to go and use sysgit frame, and especially there are historical good reasons.
+
+00:27:13.580 --> 00:27:25.720
+But I think we have, you know, again, so it's something that comes up because, you know, if you have dug into the internals of Python, you've looked at the inspect, you know, you can do certain things.
+
+00:27:27.280 --> 00:27:31.900
+Great. And that's I think that's a fantastic way to explore new capabilities.
+
+00:27:34.160 --> 00:27:43.980
+But it is not necessarily what you want to go rely on because, you know, again, the thing I would have taught in the class, what is the difference between dynamic and lexical scope?
+
+00:27:44.520 --> 00:27:46.180
+Well, here's where it really bites you.
+
+00:27:49.700 --> 00:27:49.880
+Yeah.
+
+00:27:50.160 --> 00:27:53.620
+Well, let's talk about HTML templates.
+
+00:27:53.840 --> 00:27:56.320
+Because I know, Paul, that was a lot of your interest in this, right?
+
+00:27:56.980 --> 00:27:57.140
+Yeah.
+
+00:27:58.860 --> 00:27:59.080
+Indeed.
+
+00:27:59.920 --> 00:28:02.880
+Michael, you and I are like web originalists, right?
+
+00:28:02.960 --> 00:28:05.960
+where you're a big fan of Chameleon.
+
+00:28:06.380 --> 00:28:08.220
+Whenever you encounter a new web framework,
+
+00:28:08.320 --> 00:28:10.760
+the first thing you do is make a package for that
+
+00:28:10.820 --> 00:28:12.060
+that gives it Chameleon support.
+
+00:28:13.140 --> 00:28:13.580
+That's right.
+
+00:28:13.620 --> 00:28:14.620
+You want FastAPI,
+
+00:28:14.720 --> 00:28:18.000
+just put the FastAPI Chameleon decorator on there
+
+00:28:18.000 --> 00:28:19.200
+and you're back to a proper language.
+
+00:28:19.800 --> 00:28:20.100
+Yes.
+
+00:28:22.620 --> 00:28:28.400
+But my feeling has been that Python web development,
+
+00:28:28.540 --> 00:28:29.440
+particularly templating,
+
+00:28:29.620 --> 00:28:31.440
+is stuck in the early 2000s.
+
+00:28:32.680 --> 00:28:34.060
+I went and looked up recently.
+
+00:28:34.780 --> 00:28:37.760
+I think Jinja was first released in 2008.
+
+00:28:38.700 --> 00:28:46.640
+And there was a feeling back then that HTML and web design was something different than software.
+
+00:28:48.820 --> 00:28:52.080
+Separation of concerns, but more importantly, separation of people.
+
+00:28:52.680 --> 00:28:55.780
+You wanted to keep the templating people away from the software people.
+
+00:28:55.960 --> 00:29:00.780
+You've got your designers and you've got your developers and they exchange through CSS.
+
+00:29:00.960 --> 00:29:03.580
+I'll give you this sandbox where you can't break things.
+
+00:29:03.690 --> 00:29:06.740
+And it's going to be like Python, but not really Python.
+
+00:29:07.680 --> 00:29:07.780
+Yeah.
+
+00:29:08.380 --> 00:29:11.000
+And the world doesn't work that way anymore.
+
+00:29:11.260 --> 00:29:13.860
+Front-end development is software.
+
+00:29:14.980 --> 00:29:16.980
+In the JavaScript world, it's software.
+
+00:29:17.220 --> 00:29:17.880
+It's components.
+
+00:29:18.820 --> 00:29:19.440
+It's tooling.
+
+00:29:20.940 --> 00:29:22.140
+It's testing.
+
+00:29:22.780 --> 00:29:27.900
+It's all of these things where people expect powerful tooling as part of software.
+
+00:29:28.980 --> 00:29:29.740
+We haven't.
+
+00:29:30.520 --> 00:29:37.940
+And there have been some things starting to get into this area, but this was what I was originally interested in, what Jim and I had talked about quite a bit.
+
+00:29:38.060 --> 00:29:48.360
+Dave comes from a similar background, and we want, in a general sense, we want DSLs, domain-specific languages, that are closer to Python.
+
+00:29:49.720 --> 00:29:52.740
+So when you say, here's a symbol, it's a symbol.
+
+00:29:53.580 --> 00:29:55.900
+And you know the scoping rules because it's just Python.
+
+00:29:56.080 --> 00:29:58.580
+It isn't some invented scoping rule.
+
+00:29:59.580 --> 00:30:05.740
+And you can use your formatter on it and you can use mypy on it and you can use all blah, blah, blah.
+
+00:30:05.840 --> 00:30:11.480
+You can get IDE assistance on it because it's just Python.
+
+00:30:12.580 --> 00:30:27.320
+And so that from an HTML perspective and a web perspective, we're trying to move from, you know, PSP, JSP, PHP style templating as a separate non-Python concern over into this new world.
+
+00:30:28.300 --> 00:30:29.460
+Dave, how did I do on that?
+
+00:30:29.540 --> 00:30:30.680
+Do you buy what I just sold?
+
+00:30:30.960 --> 00:30:32.440
+I absolutely buy it.
+
+00:30:32.540 --> 00:30:37.020
+And like Paul mentioned, that's sort of how I came into this crazy rollercoaster ride too,
+
+00:30:37.220 --> 00:30:40.240
+which is I had been working with a number of nonprofits over the last couple of years,
+
+00:30:40.900 --> 00:30:44.880
+building Python backends, doing a lot of front-end development with Python code,
+
+00:30:45.400 --> 00:30:51.580
+and feeling like, and in particular, one of the projects I worked on a couple years ago used HTMX.
+
+00:30:51.640 --> 00:30:54.020
+I think it was one of my first experiences with HTMX.
+
+00:30:54.600 --> 00:30:58.320
+And for those who haven't used it, you often write big templates,
+
+00:30:58.560 --> 00:31:01.860
+And then occasionally you need to send lots of little blobs of HTML back.
+
+00:31:02.170 --> 00:31:07.320
+And it really starts to get difficult to use a tool like Jinja or a tool like Django templates
+
+00:31:07.720 --> 00:31:12.660
+to produce lots of little blobs of HTML while still keeping everything cleanly organized.
+
+00:31:13.240 --> 00:31:17.020
+You end up with lots of sort of include statements or Jinja macros.
+
+00:31:17.540 --> 00:31:22.240
+And those are great, powerful features, but they aren't quite as powerful as what Paul
+
+00:31:22.250 --> 00:31:25.860
+was saying, which is the full generality of the Python programming language to begin with.
+
+00:31:26.420 --> 00:31:34.740
+And so, you know, we started resorting to using HTML builders like HTTPY in my case, but there are a few others, Dominic and others.
+
+00:31:36.000 --> 00:31:44.820
+And those felt great, but they also felt to me like what building web stuff felt like in the JavaScript ecosystem circa 2010, right?
+
+00:31:45.320 --> 00:31:50.920
+Before tag template strings came along and ultimately in the JavaScript world before JSX came along as well.
+
+00:31:51.660 --> 00:31:55.700
+And so it did feel like there was really an opportunity to revisit that question.
+
+00:31:55.990 --> 00:32:03.420
+And that's sort of how I found Jim and Paul who were thinking about this stuff and had been thinking about this stuff for far longer than I in the Python ecosystem.
+
+00:32:05.100 --> 00:32:05.500
+Yeah, very neat.
+
+00:32:05.530 --> 00:32:07.540
+I pulled up an example from Vue.js.
+
+00:32:09.440 --> 00:32:12.460
+And Dave, you mentioned HTMX.
+
+00:32:12.880 --> 00:32:20.080
+And one of the big ideas that Carson Gross from HTMX promotes is a locality of behavior.
+
+00:32:20.480 --> 00:32:23.400
+Like, I should be able to look kind of here on my editor
+
+00:32:24.020 --> 00:32:25.300
+and see all the stuff's going on.
+
+00:32:25.440 --> 00:32:26.680
+There shouldn't be four different places
+
+00:32:26.880 --> 00:32:29.560
+and then a convention that pulls in a fifth place that then
+
+00:32:29.720 --> 00:32:30.360
+makes a thing happen.
+
+00:32:31.919 --> 00:32:35.420
+And there's a lot of that in the JavaScript world of like,
+
+00:32:35.660 --> 00:32:37.020
+well, here's your behavior.
+
+00:32:37.300 --> 00:32:39.580
+And literally, here's the fragment of HTML
+
+00:32:40.160 --> 00:32:42.320
+that we're going to work on with capturing values
+
+00:32:42.620 --> 00:32:44.580
+and different substitutions and stuff.
+
+00:32:45.220 --> 00:32:48.979
+And it feels like new templating--
+
+00:32:49.000 --> 00:32:51.380
+And by-- you're the one who said this is overloaded, right?
+
+00:32:51.860 --> 00:32:52.160
+Yeah.
+
+00:32:52.380 --> 00:32:57.660
+New templating options like Chameleon 2 or Jinja 3
+
+00:32:57.950 --> 00:33:02.740
+or whatever could come along and build on the ideas
+
+00:33:03.220 --> 00:33:04.520
+using some of the things here.
+
+00:33:06.919 --> 00:33:07.940
+Yeah, absolutely.
+
+00:33:08.150 --> 00:33:11.400
+And I'm really hoping we see an explosion of that
+
+00:33:11.960 --> 00:33:14.140
+as after Python 3.14 ships out the door.
+
+00:33:15.580 --> 00:33:18.960
+So a lot of this work that the three of you plus others--
+
+00:33:18.980 --> 00:33:25.780
+to be super clear that there are other folks at the top of this PEP here yes uh about this who
+
+00:33:25.800 --> 00:33:32.080
+have also put a lot of work into it um yeah not just at the top of the PEP but also of course the
+
+00:33:32.220 --> 00:33:37.780
+broader python community in in in the discussions without which um and and paul mentioned the
+
+00:33:37.860 --> 00:33:42.500
+discussions are longer than for any PEP uh but without that community feedback i don't think
+
+00:33:42.480 --> 00:33:43.980
+we'd have landed where we are now.
+
+00:33:47.480 --> 00:33:49.960
+So if I print this, how long would this be?
+
+00:33:51.240 --> 00:33:52.040
+How many pages?
+
+00:33:53.580 --> 00:33:58.340
+206 pages to print the discussion of the tag streams.
+
+00:33:58.340 --> 00:33:59.160
+And that was the first.
+
+00:33:59.190 --> 00:34:00.040
+There were two discussions.
+
+00:34:00.920 --> 00:34:01.160
+Yeah.
+
+00:34:02.090 --> 00:34:03.300
+Even better than Novella.
+
+00:34:06.280 --> 00:34:07.040
+Yeah, that's incredible.
+
+00:34:09.020 --> 00:34:11.720
+Also great feedback in other locations as well
+
+00:34:11.659 --> 00:34:15.840
+that we were also, you know, really, you know, trying to respond to, you know, whether we're
+
+00:34:15.940 --> 00:34:23.580
+talking about Reddit or Hacker News. And a lot of credit to Jim on this. In the first round,
+
+00:34:24.800 --> 00:34:33.060
+Jim was really about lazy evaluation. And it was part of bigger ideas about
+
+00:34:33.879 --> 00:34:40.380
+inside out or outside in rendering and streaming and generators and a lot of things connected in
+
+00:34:40.379 --> 00:34:46.000
+his brain about it. And there was a lot of practical pushback, including Astral, about,
+
+00:34:46.139 --> 00:34:52.240
+hey, we're going to struggle to statically analyze that for Ruff. And Jim thought about it pretty
+
+00:34:52.440 --> 00:34:57.000
+hard and talked with Dave a lot and talked with others about it and rolled that back.
+
+00:34:58.720 --> 00:35:05.580
+Wow. So there's a difference between, there's a difference here between lazy, which is
+
+00:35:07.080 --> 00:35:10.780
+They're evaluated eagerly, these t-strings, but could maybe.
+
+00:35:12.440 --> 00:35:15.020
+And async, right?
+
+00:35:16.200 --> 00:35:19.120
+So can we do async stuff on our strings?
+
+00:35:19.340 --> 00:35:23.340
+Like you have to call a function given a template to render text.
+
+00:35:23.640 --> 00:35:25.280
+That seems like you could just write that, yeah?
+
+00:35:31.760 --> 00:35:32.960
+Jim, you take this one.
+
+00:35:35.680 --> 00:35:58.540
+Let me unmute myself. So yeah, I mean, the basic thing here is that these are expressions that can be evaluated, right? And so just because you have, you know, I'll go for something that's even, you know, broader than this. You look at something like, you know, common pattern like Django's query set, right?
+
+00:35:59.480 --> 00:36:05.400
+So it's lazily evaluated until you actually go and actually look at its contents.
+
+00:36:06.480 --> 00:36:12.400
+A query doesn't even happen, right, in terms of against the, you know, the underlying SQL engine that you're using.
+
+00:36:13.110 --> 00:36:13.240
+Okay.
+
+00:36:15.040 --> 00:36:22.180
+And in any event, the point is that we can have laziness where we Lambda wrap it.
+
+00:36:22.310 --> 00:36:26.200
+That was the original idea, and there's a lot of potential value in that.
+
+00:36:26.980 --> 00:36:35.280
+But there's also this aspect that, in general, the Python community has come up with a number of ways to incorporate laziness.
+
+00:36:37.500 --> 00:36:47.400
+And, you know, specifically through, you know, maybe it's an iterable, maybe it's a query set that is also an iterable, maybe it's through the use of async expressions.
+
+00:36:47.660 --> 00:36:56.780
+These are all expressions that can be passed around and then used by, you know, something that is evaluating with respect to that.
+
+00:36:58.320 --> 00:37:01.260
+So t-strings don't change any of that, right?
+
+00:37:02.180 --> 00:37:16.560
+Because, you know, if you have that expression and it's been evaluated, but it's been lazily so, it can still be used for however you're going to work with that template in the function that operates on it.
+
+00:37:19.880 --> 00:37:42.320
+And I think this is just going to get at most of the things that I was thinking about when we were originally looking at this from this more lazily done way without the typing issues that ultimately we decided would make it too difficult to work with.
+
+00:37:44.780 --> 00:38:06.760
+I think this is just something where we, you know, looked at what is the Python ecosystem? How have we solved these problems? And even though there was, you know, I really wanted to go and have something that basically would allow for maybe some greater functionality along, you know, doing like a deferred or lazy type capability implicitly.
+
+00:38:08.000 --> 00:38:14.300
+You know, that can be something else. We can bring, you know, there are discussions around like bringing in macros.
+
+00:38:14.540 --> 00:38:24.020
+It's, you know, you could implement that using coding on your file.
+
+00:38:25.040 --> 00:38:29.740
+I don't know where that goes. It might even interface with what we've done with t-strings.
+
+00:38:30.040 --> 00:38:38.300
+But the important thing is that you don't have to bring all that in in order to go and benefit from what we're doing with this.
+
+00:38:39.080 --> 00:38:45.300
+And by simplifying what we've done, I think we've come up with something that works a lot better.
+
+00:38:45.840 --> 00:38:49.980
+And I really value the great feedback we had from the community as far as that is concerned.
+
+00:38:51.820 --> 00:38:52.180
+Yeah, thanks.
+
+00:38:52.730 --> 00:38:58.820
+One of the things I hear a lot mentioned throughout the conversations and the PEP and stuff is DSLs.
+
+00:38:59.840 --> 00:39:01.600
+So a domain specific language.
+
+00:39:03.620 --> 00:39:06.200
+And SQL is kind of a domain specific language,
+
+00:39:06.290 --> 00:39:07.840
+but I think a lot of times people are thinking,
+
+00:39:08.700 --> 00:39:10.980
+something I make that is really simple, right?
+
+00:39:11.060 --> 00:39:14.780
+Maybe I want to make a language to talk to simple robots,
+
+00:39:15.900 --> 00:39:20.860
+and I want to use this to construct maybe a way to talk to it
+
+00:39:20.860 --> 00:39:23.500
+that's way simpler, but easier to parse because you can say,
+
+00:39:23.570 --> 00:39:27.700
+well, here's where the where piece went or whatever, right?
+
+00:39:27.920 --> 00:39:30.380
+you can pull them out of the interpolations and the values and stuff.
+
+00:39:31.720 --> 00:39:35.520
+Can you guys talk to maybe some examples of what you had in mind or what might be possible there?
+
+00:39:38.800 --> 00:39:39.480
+This is good to me.
+
+00:39:40.440 --> 00:39:47.820
+So the Python has been a very popular tool for constructing two types of DSLs.
+
+00:39:48.540 --> 00:39:56.480
+One would be like the internal DSL that you see in Pydantic or Simpy, that sort of thing,
+
+00:39:56.660 --> 00:40:00.340
+where it's basically taking advantage of operator overloading.
+
+00:40:00.740 --> 00:40:01.740
+So let's put that aside.
+
+00:40:02.240 --> 00:40:05.640
+We'll look at the other version, which is this external DSL,
+
+00:40:06.300 --> 00:40:08.480
+where we think about, again, canonically,
+
+00:40:09.000 --> 00:40:12.600
+HTML, SQL being pretty large targets.
+
+00:40:13.380 --> 00:40:15.400
+But if you look at the PyParsing project,
+
+00:40:15.680 --> 00:40:19.660
+you'll see, I don't know how many dozens of languages it supports.
+
+00:40:20.240 --> 00:40:25.220
+Not to mention the fact that it's straightforward
+
+00:40:25.220 --> 00:40:31.200
+to write your own grammar in it and parse it into an abstract syntax tree.
+
+00:40:33.300 --> 00:40:38.940
+Yeah, I mean, it's just like, as it says here, the use of parsing expression grammars,
+
+00:40:40.080 --> 00:40:45.820
+you know, really makes it very straightforward to write a purser.
+
+00:40:47.340 --> 00:40:51.980
+So I highly recommend anyone who's, like, interested in writing their own toy language
+
+00:40:51.980 --> 00:40:56.120
+or maybe have greater ambitions, look into tools like this,
+
+00:40:56.120 --> 00:40:59.780
+because I think this is one of the fantastic advantages we have in the Python community
+
+00:40:59.800 --> 00:41:03.860
+is we have really great libraries like this that are widely used.
+
+00:41:05.640 --> 00:41:10.780
+And so for your example of writing something that would interface with a robot,
+
+00:41:12.480 --> 00:41:13.780
+absolutely, absolutely.
+
+00:41:14.020 --> 00:41:16.320
+That's something that you could express.
+
+00:41:16.720 --> 00:41:21.960
+And you think about, would that potentially be even something where
+
+00:41:23.880 --> 00:41:27.040
+You know, it could be useful for education, for example.
+
+00:41:28.040 --> 00:41:30.160
+And how would it work with, again, t-strings?
+
+00:41:30.320 --> 00:41:35.280
+Well, again, you would basically say there's this domain of things that we know from the Python space.
+
+00:41:36.460 --> 00:41:42.400
+Right? You know, we're computing, you know, maybe some velocity that we want the robot to move at.
+
+00:41:43.040 --> 00:41:51.100
+We're, you know, computing, you know, which color of brick that we want to pick up or, you know, whatever it happens to be.
+
+00:41:51.700 --> 00:41:58.840
+And we can basically say that that's something that's happening in our Python code directly.
+
+00:41:59.240 --> 00:42:02.820
+And then there's this language that we're using to talk to the robot.
+
+00:42:03.640 --> 00:42:03.800
+Okay.
+
+00:42:04.720 --> 00:42:08.940
+And what it looks like in terms of the t-strings is you basically are saying,
+
+00:42:09.040 --> 00:42:17.380
+okay, I'm going to go and parse this language fragment with some parser
+
+00:42:17.480 --> 00:42:23.320
+that can be made to use placeholders that will work with interpolations.
+
+00:42:25.599 --> 00:42:27.540
+And I'm going to parse it.
+
+00:42:27.920 --> 00:42:30.020
+I'm going to get an abstract syntax tree out of that.
+
+00:42:30.020 --> 00:42:33.860
+I'm going to use that to then evaluate how I'm going to go and, say,
+
+00:42:34.560 --> 00:42:39.840
+send in a number or color or other information to that toy language
+
+00:42:40.520 --> 00:42:41.860
+or more ambitious language.
+
+00:42:43.160 --> 00:42:52.820
+And then send out whatever is necessary in order to complete that communication with the system that's implementing it.
+
+00:42:53.960 --> 00:42:59.060
+So it's going to be great for people who really love languages and want to play with them.
+
+00:42:59.200 --> 00:43:05.020
+And again, I would start with something like PyParsing as a great example of the type of tool you could use here.
+
+00:43:06.280 --> 00:43:09.340
+Excellent. Yeah, I'll put that link in the show notes so people can check it out.
+
+00:43:12.260 --> 00:43:21.800
+Yeah, maybe bringing it all back home for a second, or maybe just because I've got my head wrapped in building slide deck for a lightning introduction, lightning talk introduction to t-strings.
+
+00:43:22.500 --> 00:43:34.280
+But, you know, a common use case here when you're writing code that takes a template is not returning a string, but as Jim is kind of deeply hinting at here, parsing and returning some kind of abstract syntax tree.
+
+00:43:34.440 --> 00:43:42.100
+So in the HTML case, and you can actually find examples of this, for example, in the PEP 750 examples repository, there is an HTML function there.
+
+00:43:42.740 --> 00:43:49.940
+And it has a bunch of nice features, but you're returning an HTML element back from the code that processes the T-string.
+
+00:43:50.380 --> 00:43:55.340
+You don't, in fact, have to grab a string out of a T-string right away or ever if you don't want to.
+
+00:43:55.880 --> 00:44:00.960
+So there's an immense amount of flexibility here that we're excited to see people use.
+
+00:44:03.080 --> 00:44:06.660
+Yeah, Dave, under your account on GitHub, Dave Peck.
+
+00:44:07.020 --> 00:44:07.680
+It needs to move.
+
+00:44:08.400 --> 00:44:08.840
+You know what?
+
+00:44:09.480 --> 00:44:09.920
+It's fine.
+
+00:44:10.680 --> 00:44:11.760
+It's just as good as anywhere.
+
+00:44:12.480 --> 00:44:17.700
+You have a bunch of examples of things you might do with these.
+
+00:44:18.170 --> 00:44:19.460
+And one of them is HTML.
+
+00:44:20.380 --> 00:44:23.620
+People can see how that might work and so on.
+
+00:44:24.260 --> 00:44:25.840
+What are some of the other notable ones in here?
+
+00:44:25.840 --> 00:44:26.820
+I know I was looking through this earlier.
+
+00:44:28.060 --> 00:44:30.680
+Well, we wanted to show some basic examples like, hey,
+
+00:44:30.780 --> 00:44:33.180
+t-strings have a syntax that looks a lot like f-strings.
+
+00:44:33.370 --> 00:44:35.360
+How could you build f-strings on top of t-strings?
+
+00:44:35.430 --> 00:44:39.100
+So there is an F perem perem method that's implemented here
+
+00:44:39.490 --> 00:44:40.980
+that just kind of helps you understand,
+
+00:44:41.430 --> 00:44:43.480
+okay, I'm writing dynamic code to do the thing
+
+00:44:43.600 --> 00:44:46.180
+that f-strings would have done at compile time anyway.
+
+00:44:48.280 --> 00:44:51.000
+We also have a structured logging example.
+
+00:44:51.130 --> 00:44:53.740
+And I'm excited about this, you know,
+
+00:44:53.900 --> 00:44:56.620
+structured logging that Python has shipped a logging cookbook
+
+00:44:57.610 --> 00:45:00.540
+for a long time since the Python 2.something era.
+
+00:45:01.320 --> 00:45:10.420
+And one of the examples in that logging cookbook is structured logging, by which we mean like, hey, I want to write out a sentence or two that people can understand, that humans can read.
+
+00:45:10.770 --> 00:45:17.140
+But I also have some values that I'm substituting in that sentence, and I'd really like that to be written out in some schema compliant way.
+
+00:45:20.240 --> 00:45:30.380
+And with t-strings, you can kind of do that in a really elegant way, which is to say you write the T-string once, you send it to some kind of method that expects t-strings on logging.
+
+00:45:31.080 --> 00:45:33.760
+and it emits basically the equivalent of an F string.
+
+00:45:33.880 --> 00:45:35.220
+So that's the human readable bit.
+
+00:45:35.540 --> 00:45:37.760
+And then maybe it uses JSON or something
+
+00:45:37.800 --> 00:45:39.500
+to emit a structured output
+
+00:45:39.700 --> 00:45:41.420
+to a different log stream entirely.
+
+00:45:41.960 --> 00:45:43.920
+So one of the examples in the PEP
+
+00:45:44.060 --> 00:45:47.120
+and also in this PEP 750 repo is,
+
+00:45:47.600 --> 00:45:50.080
+we send the human readable stuff to standard out
+
+00:45:50.240 --> 00:45:52.480
+and we send the machine readable stuff to standard error.
+
+00:45:53.140 --> 00:45:54.960
+And you can imagine your logging system
+
+00:45:55.000 --> 00:45:57.720
+is going to redirect those somewhere else over there.
+
+00:45:58.240 --> 00:45:59.940
+I mean, the example here, you got standard error,
+
+00:46:00.060 --> 00:46:03.020
+but you could easily do a document database with JSON as well
+
+00:46:03.030 --> 00:46:04.860
+and then put an index on action and say,
+
+00:46:04.930 --> 00:46:10.140
+show me all the actions taken that have this commonality in it, right?
+
+00:46:10.150 --> 00:46:11.460
+And do a query and go, bam,
+
+00:46:12.090 --> 00:46:14.000
+rather than really error-prone,
+
+00:46:15.140 --> 00:46:17.340
+like substring matching of text or whatever, right?
+
+00:46:17.600 --> 00:46:19.320
+Yeah, and I'm really excited about it.
+
+00:46:19.320 --> 00:46:21.980
+You write the T string once and you get the benefit
+
+00:46:22.050 --> 00:46:25.760
+of both the human readable and the structured schema-compliant output.
+
+00:46:26.020 --> 00:46:27.980
+And that's really exciting to me.
+
+00:46:29.320 --> 00:46:29.420
+Yeah.
+
+00:46:29.900 --> 00:46:33.000
+Yeah. Yeah. And I guess if you use Postgres, you could just put it in a JSON field as well.
+
+00:46:33.240 --> 00:46:39.400
+Something like that. Oh, yeah. We call that mullet schema, right? It's a business up front
+
+00:46:39.460 --> 00:46:43.960
+and partying back where the last column on every table is a JSON field. I've never heard that.
+
+00:46:44.140 --> 00:46:48.520
+That's incredible. It's like, yeah, we look real formal, but don't look back there.
+
+00:46:50.740 --> 00:46:57.360
+Got it in the ponytail today. Amazing. Okay. One thing I wanted to cover,
+
+00:46:57.740 --> 00:47:03.560
+there's a really interesting thing from somewhere in here that I have pulled this up, I believe.
+
+00:47:04.560 --> 00:47:10.740
+I'll just go to the PEP. In the PEP, there's a section that talks about how to teach this.
+
+00:47:12.820 --> 00:47:18.200
+And I think that that's, there's just a couple of ideas here that I think would make it really
+
+00:47:18.380 --> 00:47:25.140
+interesting for helping people understand better, right? Speaking to developers or maybe people who
+
+00:47:25.160 --> 00:47:31.020
+build libraries like web frameworks or logging libraries or something. Who wants to kind of give
+
+00:47:31.030 --> 00:47:37.340
+us a few of the ideas here that just maybe like, I know we touched on some of them a little bit.
+
+00:47:37.980 --> 00:47:40.620
+Yeah. I mean, I'm happy to kind of step through the basics here, which is,
+
+00:47:41.780 --> 00:47:46.940
+we touched on the fact that the syntax of t-strings and f-strings is essentially identical.
+
+00:47:47.600 --> 00:47:52.900
+Anytime you have an F, you can substitute with a T, but the result, the evaluated result is
+
+00:47:52.920 --> 00:47:53.660
+is entirely different.
+
+00:47:53.850 --> 00:47:55.140
+You get a string or a template.
+
+00:47:55.500 --> 00:47:57.400
+And we've kind of talked about all the reasons
+
+00:47:57.660 --> 00:47:58.640
+why you might want to do that.
+
+00:47:59.140 --> 00:48:02.220
+I guess the key thing for developers to understand--
+
+00:48:02.220 --> 00:48:04.900
+and I'm going to divide developers into two groups
+
+00:48:05.080 --> 00:48:10.820
+here-- those who use tstrings and pull in an HTML or a SQL
+
+00:48:11.040 --> 00:48:13.220
+library, for example, and don't really
+
+00:48:13.290 --> 00:48:15.120
+think much about what's going on under the hood.
+
+00:48:15.440 --> 00:48:19.020
+For them, all they need to know is, hey, you write T of something
+
+00:48:19.270 --> 00:48:21.720
+and you send it to your SQL library and it's safe.
+
+00:48:22.680 --> 00:48:25.240
+and you don't really need to think much more about it than that.
+
+00:48:25.570 --> 00:48:26.020
+And then, of course...
+
+00:48:26.020 --> 00:48:26.840
+Right, we had...
+
+00:48:27.280 --> 00:48:29.660
+Sorry, but we had things like literal strings
+
+00:48:29.730 --> 00:48:31.260
+and other stuff in the type system
+
+00:48:31.940 --> 00:48:34.500
+that kind of tried to make type checkers check
+
+00:48:34.640 --> 00:48:36.700
+and catch when that would happen, right?
+
+00:48:36.730 --> 00:48:40.080
+But this is more runtime catching
+
+00:48:40.960 --> 00:48:41.960
+because of the way it operates
+
+00:48:42.170 --> 00:48:45.100
+rather than, hey, it's a bad idea to do that,
+
+00:48:45.300 --> 00:48:47.480
+but, you know, Python typing can be ignored, so...
+
+00:48:48.200 --> 00:48:50.760
+Yeah, it's probably worth mentioning the limits of that.
+
+00:48:51.100 --> 00:48:58.000
+I mean, template and interpolation, which are new types that ship with Python 3.14, are ones that you can cons up at runtime directly.
+
+00:48:58.480 --> 00:49:00.060
+You don't need to start with a literal.
+
+00:49:00.570 --> 00:49:07.400
+And so you can, of course, as a developer, do all kinds of goofy stuff and cons up all sorts of malicious templates if you want to.
+
+00:49:07.780 --> 00:49:20.240
+But generally speaking, if you're working from literals, which we sort of expect is the very common case, and you're using libraries that know about this new feature when Python 3.14 ships, generally speaking, you're staying on the safe side.
+
+00:49:20.300 --> 00:49:22.160
+You're staying in the bright, well-lit path.
+
+00:49:24.739 --> 00:49:29.380
+One of the ideas I like to think about in APIs and design of software
+
+00:49:29.540 --> 00:49:33.960
+is falling into the pit of success or falling into the pit of despair.
+
+00:49:34.240 --> 00:49:37.680
+You want to make it so the natural action is to fall into the pit of success
+
+00:49:37.850 --> 00:49:39.360
+and you've got to work your way out of there.
+
+00:49:39.480 --> 00:49:39.840
+You know what I mean?
+
+00:49:40.140 --> 00:49:41.240
+Yeah, you have to work hard to get there.
+
+00:49:41.400 --> 00:49:43.420
+Yeah, hopefully we've found a nice balance there.
+
+00:49:44.500 --> 00:49:45.920
+Yeah, it seems like it has.
+
+00:49:46.860 --> 00:49:49.380
+Yeah, I mean, I think from a teaching it perspective,
+
+00:49:50.060 --> 00:49:53.920
+You know, the pit of despair is so easy to fall into with f-strings, right?
+
+00:49:54.660 --> 00:49:58.360
+You know, so your structure logging, you know, I'm sorry, using f-strings in your logging.
+
+00:49:59.140 --> 00:50:01.200
+It's like, oh, I inadvertently log some passwords.
+
+00:50:02.040 --> 00:50:03.440
+Oh, that's unfortunate, right?
+
+00:50:03.960 --> 00:50:07.600
+Or I, you know, I'm using f-strings with a SQL statement.
+
+00:50:07.760 --> 00:50:10.020
+It's like, oh, that really worked until it didn't.
+
+00:50:10.760 --> 00:50:14.680
+And so it's very easy to go down that into that pit of despair as you're describing.
+
+00:50:15.340 --> 00:50:24.940
+Whereas we're hopefully making it, you know, something where you have to work a little bit, know what you're doing, in fact, in order to go and actually do something that's bad.
+
+00:50:26.520 --> 00:50:37.520
+So, you know, I'm sure that, you know, someone can show me, you know, a couple steps that, you know, make it straightforward to get into that pit of despair.
+
+00:50:38.300 --> 00:50:41.460
+But I don't think it will be still the most obvious thing to do.
+
+00:50:42.080 --> 00:50:47.140
+So from a teaching perspective, we want to ensure that the most obvious thing to do is the right thing to do.
+
+00:50:48.020 --> 00:50:58.520
+And, you know, people can build libraries, you know, an HTML function or whatever in order to ensure that is, you know, going to work with that right path.
+
+00:51:00.740 --> 00:51:12.740
+But there's more, I think, Paul, you, you know, if you wanted to go and just how to teach this, I think part of this is just like, again, things like IDE integration and things like, you know, working with lenders and whatnot.
+
+00:51:13.420 --> 00:51:15.600
+That's also very exciting in terms of what can be done.
+
+00:51:18.880 --> 00:51:20.420
+And for me, that's kind of the exciting part.
+
+00:51:20.560 --> 00:51:28.060
+There's a side about really lowering the bar for writing these functions that handle a template.
+
+00:51:28.720 --> 00:51:30.740
+You know, you're not going to do anything with a template yourself.
+
+00:51:31.040 --> 00:51:33.060
+You're going to hand it to a function that's going to do something.
+
+00:51:34.000 --> 00:51:40.200
+And it's going to return a stringable, not a string, something that can be made later into a string.
+
+00:51:41.500 --> 00:51:48.800
+But it's the people on the other side that are going to be creating the values and the content and all that kind of stuff.
+
+00:51:48.960 --> 00:51:51.300
+And we have a real chance here to help them.
+
+00:51:52.540 --> 00:51:56.720
+We're not going to talk about double curly braces or single curly braces for the rest of time.
+
+00:51:56.980 --> 00:51:57.780
+It's single curly.
+
+00:51:57.960 --> 00:51:58.840
+Just that alone.
+
+00:51:59.860 --> 00:52:06.600
+And what goes in there isn't going to be some invented language with a pipe that you send to safe or whatever.
+
+00:52:06.700 --> 00:52:10.340
+And you got to go memorize all these rules about how do I call a macro.
+
+00:52:10.880 --> 00:52:19.600
+It's just Python, which then means IDEs and tools and linters and formatters and type checkers all get to play a game.
+
+00:52:20.040 --> 00:52:25.020
+Go to mypy and file a ticket asking for type checking on Jinja.
+
+00:52:26.760 --> 00:52:28.860
+There is a ticket already and you can see their comments.
+
+00:52:29.380 --> 00:52:30.600
+They're not that interested.
+
+00:52:31.500 --> 00:52:33.320
+Same thing for a lot of other tools.
+
+00:52:34.120 --> 00:52:41.060
+But if they support 314, they support template strings and they support f-strings and they support this kind of everything.
+
+00:52:41.960 --> 00:52:44.540
+Because everything is just where it's supposed to be.
+
+00:52:45.560 --> 00:52:50.960
+And if I can go a little bit, Dave, is it okay if I go a little bit further on this riff about tooling?
+
+00:52:52.000 --> 00:52:53.640
+Let's see, you've got some points to make.
+
+00:52:53.900 --> 00:52:54.620
+Sorry, I'm on a roll.
+
+00:52:55.600 --> 00:52:57.060
+I'll try to wrap it up, I promise.
+
+00:52:58.820 --> 00:53:04.880
+This idea of a big ecosystem of tooling and all of that
+
+00:53:05.480 --> 00:53:09.420
+will give us a developer experience that's competitive again.
+
+00:53:10.920 --> 00:53:13.640
+All of these tools can start pitching in.
+
+00:53:14.540 --> 00:53:15.760
+I'm with the PyCharm team.
+
+00:53:16.010 --> 00:53:21.180
+Because this is f-strings with a T, they did it just like that.
+
+00:53:22.020 --> 00:53:31.860
+Dave did a fork of black where he got T-string support basically just like that because it was a T instead of an F.
+
+00:53:33.140 --> 00:53:37.820
+Then we can get into some more interesting things like an HTML templating library.
+
+00:53:37.920 --> 00:53:44.360
+We are very fortunate in the world of Python to have Andrea over from JavaScript on the PyScript team.
+
+00:53:45.000 --> 00:53:49.960
+He has written 400,000 variations of JavaScript templating engines,
+
+00:53:50.400 --> 00:53:51.880
+including tag template literals.
+
+00:53:51.880 --> 00:53:52.740
+He knows everything.
+
+00:53:53.150 --> 00:53:56.420
+He contributed a lot to this pep, such as that alternating thing.
+
+00:53:57.000 --> 00:54:02.560
+He's creating an HTML templating language that is browser first.
+
+00:54:04.460 --> 00:54:09.380
+Michael, you had a Vue.js up earlier that had like at click.
+
+00:54:11.400 --> 00:54:14.580
+There's going to be a lightning talk at PyCon.
+
+00:54:14.840 --> 00:54:17.060
+about showing this in PyScript
+
+00:54:17.980 --> 00:54:19.560
+where something can run on the server
+
+00:54:19.780 --> 00:54:21.460
+and in the client and it's nuts.
+
+00:54:21.610 --> 00:54:23.000
+The whole thing is just insane.
+
+00:54:23.120 --> 00:54:25.860
+Server rendered templates,
+
+00:54:25.950 --> 00:54:27.300
+but also client-side stuff.
+
+00:54:28.110 --> 00:54:28.260
+Yeah.
+
+00:54:29.320 --> 00:54:31.600
+So there is a chance for us
+
+00:54:31.650 --> 00:54:32.780
+in the world of Python,
+
+00:54:33.340 --> 00:54:35.900
+it doesn't have to be our spelling,
+
+00:54:36.090 --> 00:54:37.960
+but if we can agree to structure
+
+00:54:38.010 --> 00:54:39.220
+and intermediate representations,
+
+00:54:39.780 --> 00:54:42.760
+Dave has ideas about how HTTPY could play ball.
+
+00:54:43.340 --> 00:54:45.500
+They can make components that we can consume.
+
+00:54:45.600 --> 00:54:47.360
+We can make components that they can consume.
+
+00:54:48.080 --> 00:54:59.520
+I'm really bullish on how we can change the developer experience in web development and more to be modern Python with tooling.
+
+00:55:01.820 --> 00:55:02.060
+Dave.
+
+00:55:02.800 --> 00:55:03.440
+I'm here for it.
+
+00:55:03.700 --> 00:55:04.260
+I'm here for it, Paul.
+
+00:55:05.060 --> 00:55:06.840
+Yeah, I'm just going to give you a what-what here.
+
+00:55:10.320 --> 00:55:16.480
+Yeah, I think if we really can unlock a language
+
+00:55:17.320 --> 00:55:19.100
+that works well on the front end,
+
+00:55:20.580 --> 00:55:22.060
+I know PyScript's come a long way,
+
+00:55:22.150 --> 00:55:25.000
+but I feel like we need a view-like thing, right?
+
+00:55:25.280 --> 00:55:27.500
+And it sounds like work is being done.
+
+00:55:27.900 --> 00:55:28.280
+Yeah.
+
+00:55:29.100 --> 00:55:30.600
+Yeah, I mean, if that comes along,
+
+00:55:31.440 --> 00:55:32.540
+there's going to be a lot of people go,
+
+00:55:32.600 --> 00:55:34.820
+wait, we don't have to do JavaScript?
+
+00:55:35.050 --> 00:55:36.060
+Are you serious here?
+
+00:55:36.520 --> 00:55:37.380
+That would be pretty amazing.
+
+00:55:38.200 --> 00:55:43.620
+Just throw in your 100K MicroPython implementation of PyScript and you're off to the races.
+
+00:55:44.380 --> 00:55:44.700
+Go ahead, Jim.
+
+00:55:45.460 --> 00:55:59.900
+Yeah, I was just going to say, and one other nice thing about t-strings and the fact that they look a lot like f-strings is that it's going to be a straightforward thing for us to, or I shouldn't say for us, but I think the community.
+
+00:56:01.260 --> 00:56:10.440
+I think there will be plenty of people who can work on this, fortunately, to incorporate t-strings into MicroPython.
+
+00:56:11.290 --> 00:56:23.960
+And now you, instead of having something that requires a somewhat heavier download in terms of CPython on the client side with PyScript, you can use MicroPython for that.
+
+00:56:24.840 --> 00:56:25.940
+I looked into it.
+
+00:56:26.250 --> 00:56:26.900
+It looks straightforward.
+
+00:56:27.120 --> 00:56:31.740
+I hope that we will see that development happen sooner than later.
+
+00:56:32.540 --> 00:56:44.240
+So a lot of opportunities to go and mix together client side and server side in some really interesting and very cool ways going forward with this work.
+
+00:56:45.040 --> 00:56:45.120
+Yeah.
+
+00:56:45.820 --> 00:56:47.320
+What an interesting angle to say.
+
+00:56:48.360 --> 00:56:55.680
+We'll add t-strings to MicroPython so that it round trips to the front end of the browser in an efficient way.
+
+00:56:56.560 --> 00:56:56.840
+Yeah.
+
+00:56:57.460 --> 00:57:02.740
+We got a bunch of script sprint days coming up with PyCon, so you never know.
+
+00:57:03.680 --> 00:57:03.940
+Okay.
+
+00:57:04.720 --> 00:57:11.040
+But Michael, when you mentioned that MicroPython is about 100K, which, you know, to my ears
+
+00:57:11.180 --> 00:57:14.760
+as an old school web person sounds huge, but also really tiny these days.
+
+00:57:15.160 --> 00:57:21.080
+Like when you build, when you do the default Next.js app install, which literally does nothing
+
+00:57:21.300 --> 00:57:23.600
+but ship a static looking page to you.
+
+00:57:23.720 --> 00:57:26.780
+Although, of course, static includes a whole bundle of React and other stuff.
+
+00:57:26.900 --> 00:57:33.100
+with Next.js these days, that's about 130k. And that doesn't include an implementation of Python.
+
+00:57:33.860 --> 00:57:41.360
+So it's kind of amazing. Yeah, and I think it's pretty comparable to other things. I'm
+
+00:57:42.540 --> 00:57:51.400
+trying to poke around and find some examples. But yeah, I think 100k is certainly doable on a CDN
+
+00:57:52.380 --> 00:57:56.300
+and so on. It's a sweet spot. Hey, Michael, I got one for you.
+
+00:57:57.900 --> 00:58:01.880
+And this is one that Jim and I started talking about and others piped in.
+
+00:58:02.000 --> 00:58:06.200
+Kudai, who's also working on this project, is doing stuff in this field.
+
+00:58:07.339 --> 00:58:15.460
+LLMs and code that needs to generate good LLM-generated results.
+
+00:58:17.160 --> 00:58:21.140
+If you had a template language that was closer to the language of Python
+
+00:58:21.620 --> 00:58:23.520
+and could be analyzed as such,
+
+00:58:24.080 --> 00:58:29.680
+and all the LLN and RAG tricks that people are applying to not just get code,
+
+00:58:29.680 --> 00:58:31.420
+but to get good quality code.
+
+00:58:32.240 --> 00:58:37.280
+Is this a moment where we could invent a web development story for Python
+
+00:58:38.020 --> 00:58:41.300
+that wasn't just cool because it was browser first?
+
+00:58:42.180 --> 00:58:48.060
+It was cool because it anticipates AI and LLN-generated code.
+
+00:58:49.540 --> 00:58:50.020
+Okay.
+
+00:58:52.820 --> 00:59:08.560
+You know, if you can infer types and things like that because you can look into the structure of the template and those things, and they are Python rules inside the curly braces instead of invented stuff, you might have a better shot at machinery.
+
+00:59:08.860 --> 00:59:09.960
+Jim, what do you think?
+
+00:59:09.990 --> 00:59:11.140
+You had a lot to say on this.
+
+00:59:12.520 --> 00:59:21.700
+Yeah, I mean, I think a lot of people are looking at stuff around like in-context learning with, you know, how they work with prompts and everything.
+
+00:59:23.160 --> 00:59:33.260
+I do think that if I'm going to send a bunch of examples to some sort of mini shot, but
+
+00:59:33.320 --> 00:59:38.480
+I guess a few number of shots learning, it'd be really nice to do it in a very structured
+
+00:59:38.600 --> 00:59:40.420
+way and really have good support for that.
+
+00:59:40.760 --> 00:59:46.560
+And so if you look at how people typically do this, well, they emit f-strings.
+
+00:59:47.460 --> 00:59:48.740
+And I'm sure it works most of the time.
+
+00:59:49.660 --> 00:59:50.980
+I just want it to work all the time.
+
+00:59:53.340 --> 01:00:05.440
+And so I think, you know, having something that can, you know, taint that structure, maybe even do some interesting, you know, like there's some stuff around like DSP or DSPY or whatever.
+
+01:00:05.440 --> 01:00:17.300
+I'm not certain actually how it's pronounced, but it basically does, you know, additional rounds of optimizing your in-context learning and prompting in general.
+
+01:00:18.900 --> 01:00:22.040
+you know, having access to that structure might be very helpful for it.
+
+01:00:22.400 --> 01:00:23.440
+Who knows, right?
+
+01:00:23.460 --> 01:00:26.420
+I think that there's a lot of interesting opportunities in this space
+
+01:00:26.960 --> 01:00:30.560
+where we maintain this structure,
+
+01:00:31.760 --> 01:00:33.320
+we're able to reflect on it,
+
+01:00:33.960 --> 01:00:35.400
+and then use that, you know,
+
+01:00:35.560 --> 01:00:38.420
+for whatever sort of interaction we have with other systems.
+
+01:00:39.420 --> 01:00:41.920
+And fundamentally, that's what this supports,
+
+01:00:42.500 --> 01:00:44.540
+because you have access to those Python structures,
+
+01:00:45.220 --> 01:00:46.779
+you can figure out what that's supposed to be
+
+01:00:47.240 --> 01:00:49.000
+before you go and send it off to somewhere else.
+
+01:00:50.720 --> 01:00:53.220
+So what does that mean in terms of capabilities?
+
+01:00:54.460 --> 01:00:55.120
+That's very interesting.
+
+01:00:56.120 --> 01:00:58.200
+Paul, when you were talking about typing earlier
+
+01:00:58.940 --> 01:01:00.260
+and then talking about mypy,
+
+01:01:02.760 --> 01:01:04.320
+it just made me realize or think,
+
+01:01:04.680 --> 01:01:05.560
+I guess I thought about it before,
+
+01:01:05.700 --> 01:01:09.040
+but reemphasized that for me,
+
+01:01:09.840 --> 01:01:13.420
+the typing is a communication tool to me,
+
+01:01:13.860 --> 01:01:15.720
+mostly through things like PyCharm,
+
+01:01:16.160 --> 01:01:19.920
+but not 100%, but mostly through the editor saying,
+
+01:01:20.480 --> 01:01:21.540
+here's what it's supposed to be here.
+
+01:01:21.680 --> 01:01:22.820
+Here's what this is supposed to do.
+
+01:01:22.900 --> 01:01:25.440
+So I don't have to go to definition and try to decipher it.
+
+01:01:26.960 --> 01:01:32.240
+And I almost never use mypy or one of these Pyright or Pyre or you name it
+
+01:01:32.900 --> 01:01:34.140
+because that's not my goal.
+
+01:01:34.160 --> 01:01:37.480
+My goal is to add typing so that I can stay out of the docs,
+
+01:01:38.420 --> 01:01:39.160
+except for when I really must.
+
+01:01:39.780 --> 01:01:45.200
+And the same applies to what you share with chat and agenda code generators.
+
+01:01:45.720 --> 01:01:49.240
+They can look at those types and they can see much more information
+
+01:01:50.030 --> 01:01:53.680
+and it can make them way more accurate and productive, right?
+
+01:01:54.419 --> 01:01:58.580
+And I feel like this could communicate more information to them,
+
+01:01:58.720 --> 01:02:01.480
+like you were saying, so they have more structure to work with
+
+01:02:01.750 --> 01:02:04.480
+rather than just here's a string, I don't know what it is.
+
+01:02:11.380 --> 01:02:12.420
+Can I riff on that for a second?
+
+01:02:13.040 --> 01:02:13.440
+Yes, riff.
+
+01:02:15.000 --> 01:02:23.260
+This is all not news to Dave, who he and I are writing our lightning talks and FlaskCon talk together.
+
+01:02:24.030 --> 01:02:27.540
+If you're around on Friday afternoon, come see Dave, come see me.
+
+01:02:27.700 --> 01:02:30.100
+It's going to be mind-blowing.
+
+01:02:30.960 --> 01:02:32.720
+Lightning talks are going to be mind-blowing, too.
+
+01:02:32.960 --> 01:02:33.240
+Awesome.
+
+01:02:33.620 --> 01:02:35.980
+Don't they normally publish those videos from FlaskCon as well?
+
+01:02:37.860 --> 01:02:38.300
+Yeah.
+
+01:02:38.760 --> 01:02:39.260
+He needs help.
+
+01:02:40.240 --> 01:02:40.380
+Okay.
+
+01:02:40.760 --> 01:02:43.460
+Poor David is doing 500 jobs at once.
+
+01:02:43.540 --> 01:02:45.240
+And everyone support David Lord.
+
+01:02:46.380 --> 01:03:05.400
+I'm going to be giving a demo in PyCharm, at least, of T-String support with Interpolation Autocomplete and Navigation and all the PyCharm tricks, but also a experimental plugin that does component support with TDOM.
+
+01:03:05.680 --> 01:03:22.220
+So it looks just like JSX, where you pass props to something, and it obeys the, again, do not just autocomplete of the props, but if you're missing a required prop, it will know that because it looks at the function signature of the component.
+
+01:03:23.200 --> 01:03:25.320
+And it will match the types of the prop.
+
+01:03:25.330 --> 01:03:28.140
+If you pass a string for an int, it will squiggle you.
+
+01:03:28.880 --> 01:03:40.220
+In the future, we can go further like a lot of IDs can do and extract components to be standalone, to get big components into small components, all kinds of things.
+
+01:03:40.520 --> 01:03:48.260
+Once you get into the world of tooling, you know, you've got typing, you've got signatures, you've got all of these great things.
+
+01:03:49.860 --> 01:03:53.260
+Mouse over for doc strings and doc hints and help.
+
+01:03:54.040 --> 01:03:54.460
+Lots of help.
+
+01:03:55.400 --> 01:03:55.740
+That's awesome.
+
+01:03:57.580 --> 01:03:58.760
+Well, I'm looking forward to it.
+
+01:04:02.220 --> 01:04:03.300
+Guys, we're about out of time.
+
+01:04:03.540 --> 01:04:06.680
+I want to wrap this up with one final thought here.
+
+01:04:06.880 --> 01:04:09.440
+So speaking to several audiences,
+
+01:04:10.040 --> 01:04:11.640
+let's say two audiences at the moment,
+
+01:04:12.540 --> 01:04:14.620
+give us some advice for potential adopters.
+
+01:04:15.060 --> 01:04:20.580
+So if I'm Sebastian from FastAPI or David from Vlascourt
+
+01:04:22.680 --> 01:04:25.100
+or I'm some other library adopter,
+
+01:04:25.760 --> 01:04:27.240
+micro-SQLAlchemy, right?
+
+01:04:28.380 --> 01:04:29.640
+Or that's audience one.
+
+01:04:30.080 --> 01:04:33.260
+Audience two would just be people who thought f-strings were awesome
+
+01:04:33.360 --> 01:04:34.360
+and this is even more awesome.
+
+01:04:34.520 --> 01:04:35.580
+They want to try it in their code.
+
+01:04:36.320 --> 01:04:39.220
+What are some pitfalls and best practices for these folks?
+
+01:04:39.360 --> 01:04:40.620
+And what are the opportunities there?
+
+01:04:49.800 --> 01:04:51.339
+Well, I mean, I think...
+
+01:04:54.140 --> 01:05:00.220
+You know, in general, the fact that t-strings exist doesn't mean that f-strings need to disappear tomorrow.
+
+01:05:00.280 --> 01:05:08.960
+So I guess that would be the first thought I'd have for the community that isn't actively building libraries that might benefit from T-string functionality, which is that the tool is still useful.
+
+01:05:09.620 --> 01:05:13.920
+And in fact, there are many cases where probably what you really want is an F-string rather than a T-string.
+
+01:05:14.320 --> 01:05:30.860
+It's exactly these cases where you want the interpolations to do something special, whether that's prevent injunction vulnerabilities or, you know, transliterate, you know, a single dictionary into a bunch of attributes in HTML where you might want to start playing with t-strings.
+
+01:05:31.600 --> 01:05:37.980
+And there, you know, I think if you're a library developer and you happen to be at PyCon, come say hello.
+
+01:05:38.540 --> 01:05:42.160
+We'd love to talk to you and kind of figure out how you're thinking about adopting these.
+
+01:05:42.520 --> 01:05:48.880
+I think the biggest one that came up in discussion amongst library developers that I saw was just, wait, how do I type my function?
+
+01:05:49.030 --> 01:05:56.440
+So if I'm writing a SQL layer and I've got an execute method, right now that takes a string or maybe it takes, you know, Michael, you mentioned literal string.
+
+01:05:56.490 --> 01:06:00.560
+It takes some variety of some special type that my library supports.
+
+01:06:01.100 --> 01:06:02.660
+Should I also take a template there?
+
+01:06:02.810 --> 01:06:04.280
+Should I allow a union of both?
+
+01:06:04.920 --> 01:06:05.960
+Probably that's a foot gun.
+
+01:06:06.050 --> 01:06:08.760
+You probably really want to think about separating these things out.
+
+01:06:09.420 --> 01:06:13.060
+And so I think we'll see best practices like that kind of emerge over time.
+
+01:06:15.160 --> 01:06:17.060
+Yeah, I would add a couple things.
+
+01:06:17.360 --> 01:06:20.880
+One, we actually love fstrings.
+
+01:06:22.120 --> 01:06:32.120
+You know, when you look at the actual code that implements the tstring functionality in terms of like a library, you know, like an HTML function or whatever, what do you find in there?
+
+01:06:32.360 --> 01:06:38.820
+Lots of uses of fstrings to actually go and, you know, pump out the actual string that you need, right?
+
+01:06:38.900 --> 01:06:50.520
+It's just done in this disciplined fashion that we can do because we have carefully separated out when the interpolations are being actually evaluated in that context.
+
+01:06:52.880 --> 01:07:10.320
+Second thing to think about is in terms of like a good best practice would be, you know, if you have a T string, you know, and you say HTML, I don't think HTML should just like do something there or SQL or whatever.
+
+01:07:10.460 --> 01:07:20.620
+It should go and allow it to prepare, you know, a document object model or, you know, prepare a SQL query or whatever.
+
+01:07:21.180 --> 01:07:24.280
+And then you execute it or render it or whatever.
+
+01:07:24.940 --> 01:07:34.820
+So I would differentiate this sort of setup versus, you know, some final rendering would be a typical best practice that certainly I would recommend.
+
+01:07:38.340 --> 01:07:40.020
+And there are obviously more, you know.
+
+01:07:40.200 --> 01:07:47.420
+So, you know, another best practice definitely is at some point you probably want to think about the optimization of these things.
+
+01:07:47.890 --> 01:07:56.580
+Right. And as we really put in some thought into how the template strings can be used as a memorization key efficiently.
+
+01:07:58.820 --> 01:08:01.540
+So you can look it up in terms of an LRU cache.
+
+01:08:02.440 --> 01:08:09.400
+This is no different than if you looked at the internals of, say, the RE module, sports regular expressions.
+
+01:08:10.980 --> 01:08:17.299
+You know, there is this, at one point, you actually had to go into RE compile.
+
+01:08:17.940 --> 01:08:19.460
+And it's not a bad practice to do it.
+
+01:08:19.460 --> 01:08:24.060
+But if you look internally at it, it actually does the RE compile for you.
+
+01:08:24.160 --> 01:08:30.940
+So you don't, you know, pay the overhead of running through this Python parse every single time.
+
+01:08:31.440 --> 01:08:32.759
+Interesting. I didn't know that. Yeah.
+
+01:08:32.940 --> 01:08:50.900
+Yeah. But the actual implementation of that in terms of, you know, running the regular expression is done through this, you know, you know, by code virtual machine that's specific to regular expressions and can be very efficient.
+
+01:08:51.580 --> 01:09:06.060
+So again, we'll see some of these sorts of separations where we'll think about what it means to go and have a fast path where you actually are evaluating this HTML fragment or whatever, or working with SQL.
+
+01:09:06.580 --> 01:09:10.839
+And then there is some sort of, well, you have to pay the parse penalty at some point.
+
+01:09:11.560 --> 01:09:20.160
+But part of paying that parsing penalty is ensuring that things are done in a safe fashion, being written out in a structured way.
+
+01:09:21.020 --> 01:09:35.620
+So that's, you know, more than makes up for it compared to, again, just, you know, just using f-strings and hoping that your SQL statement didn't include, you know, in that interpolation, the Bobby tables evil injection.
+
+01:09:38.000 --> 01:09:38.120
+Yeah.
+
+01:09:38.900 --> 01:09:39.060
+Excellent.
+
+01:09:39.060 --> 01:09:49.480
+For me, I'd say first a shout out to our PEP sponsor and the hero for the second half of all this, Lissandros, has been marvelous.
+
+01:09:51.160 --> 01:09:55.200
+getting the implementation and shaping in our interface to the rest of the core team and all
+
+01:09:55.340 --> 01:10:01.840
+that kind of stuff really fast turnaround really joy to work with dave and lissandro spent a lot
+
+01:10:01.840 --> 01:10:08.320
+of time ironing out all the little things i think about this whole path since guido and jim sat down
+
+01:10:08.350 --> 01:10:12.780
+at a pi con like three years ago on the implementation i think it's been this will be
+
+01:10:13.050 --> 01:10:19.620
+like the fourth pi con since this whole thing first started and um jim and guido kind of laid
+
+01:10:19.640 --> 01:10:22.300
+the groundwork for where we are right now,
+
+01:10:22.560 --> 01:10:24.980
+which is t-strings is just the start.
+
+01:10:25.570 --> 01:10:27.840
+t-strings by itself ain't that much.
+
+01:10:28.090 --> 01:10:28.840
+And I think Jim,
+
+01:10:28.950 --> 01:10:34.120
+you made some decisions to intentionally defer to future peps.
+
+01:10:34.570 --> 01:10:41.720
+Some of the things Jim just said about these functions that don't immediately
+
+01:10:42.190 --> 01:10:42.360
+render,
+
+01:10:42.450 --> 01:10:47.140
+they prepare an intermediate representation that might later render for me.
+
+01:10:47.440 --> 01:10:49.080
+That's my interest in this PyCon.
+
+01:10:50.340 --> 01:11:03.780
+Let's build a community. Let's build a community around interoperability so HTPy doesn't have to spell things our way, but we can talk to each other because we agree on a node interface or something like that for a DOM representation.
+
+01:11:04.860 --> 01:11:08.720
+The front end world has gotten great value out of plugability.
+
+01:11:09.290 --> 01:11:16.160
+The Vite system, for example, is a processing chain with a documented intermediate representation.
+
+01:11:16.600 --> 01:11:20.120
+It's easy to write plug in to go grab that and hack on it.
+
+01:11:20.120 --> 01:11:22.140
+You want to turn everything into a relative URL?
+
+01:11:22.740 --> 01:11:28.000
+Write a little plug in, put it in the chain, and you'll be handed something that lets you operate on things.
+
+01:11:28.740 --> 01:11:31.200
+We can do something great together.
+
+01:11:31.580 --> 01:11:37.700
+We don't all have to do the XKCD to invent a new standard to replace all the other standards.
+
+01:11:38.660 --> 01:11:40.400
+We can still work with Jinja.
+
+01:11:40.430 --> 01:11:44.260
+We could still work with HTPy and some of these other things.
+
+01:11:44.370 --> 01:11:46.680
+And hopefully we'll see some of that at PyCon.
+
+01:11:48.880 --> 01:11:49.080
+Awesome.
+
+01:11:49.450 --> 01:11:49.880
+Thank you, guys.
+
+01:11:50.300 --> 01:11:54.940
+And we're specifically recording this on a time frame that hopefully.
+
+01:11:55.120 --> 01:11:56.100
+Thank you so much, Michael.
+
+01:11:56.760 --> 01:11:57.080
+You're welcome.
+
+01:11:57.280 --> 01:12:01.300
+If people are dutiful and on top of their listening,
+
+01:12:02.300 --> 01:12:04.300
+we'll listen to this right before they go to PyCon.
+
+01:12:04.540 --> 01:12:07.960
+So I would like to encourage them to reach out to all of you
+
+01:12:08.240 --> 01:12:09.580
+and maybe to go to some of the lightning talks
+
+01:12:09.820 --> 01:12:11.500
+and if they have ideas to participate,
+
+01:12:11.980 --> 01:12:12.660
+because now is the time.
+
+01:12:14.710 --> 01:12:14.800
+Indeed.
+
+01:12:17.180 --> 01:12:17.560
+Thanks for hosting us.
+
+01:12:17.560 --> 01:12:18.200
+Dave, you got something to say?
+
+01:12:18.580 --> 01:12:21.460
+No, no, thanks, Michael, for doing this.
+
+01:12:21.460 --> 01:12:22.920
+And we're excited to meet everybody at PyCon
+
+01:12:23.120 --> 01:12:23.920
+who's heading out that way.
+
+01:12:24.580 --> 01:12:25.360
+Yeah, Paul, you're welcome.
+
+01:12:25.910 --> 01:12:26.520
+And you too, Dave.
+
+01:12:27.780 --> 01:12:28.980
+Jim, Dave, and Paul
+
+01:12:29.340 --> 01:12:30.720
+thank you all for being here. See you later
+
+01:12:31.300 --> 01:12:32.500
+Thanks, Andrew. Bye
+
+01:12:33.180 --> 01:12:34.400
+Thank you. Bye-bye
+

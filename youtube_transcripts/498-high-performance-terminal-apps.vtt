@@ -1,0 +1,3617 @@
+WEBVTT
+
+00:00:00.940 --> 00:00:02.920
+Will, welcome back to Talk Python To Me.
+
+00:00:03.130 --> 00:00:03.820
+It's great to talk with you.
+
+00:00:04.500 --> 00:00:05.460
+Thank you. It's good to be here again.
+
+00:00:05.920 --> 00:00:08.500
+Yeah. It's going to be really fun.
+
+00:00:10.020 --> 00:00:12.380
+I've built some really cool apps with Rich,
+
+00:00:13.000 --> 00:00:15.260
+and we're going to talk about Rich and Textual.
+
+00:00:15.660 --> 00:00:18.200
+Probably a little more on the textual side this time around,
+
+00:00:18.440 --> 00:00:24.620
+but still, a very cool revolution you're bringing to the terminal.
+
+00:00:25.780 --> 00:00:28.200
+Yeah, a very quiet but pretty revolution.
+
+00:00:29.070 --> 00:00:29.600
+I like it.
+
+00:00:30.350 --> 00:00:30.460
+Indeed.
+
+00:00:31.520 --> 00:00:34.720
+Okay, so we want to talk about Textual.
+
+00:00:34.770 --> 00:00:38.940
+You wrote a cool article called Algorithms for High Performance Terminal Apps,
+
+00:00:39.270 --> 00:00:40.860
+which I thought would be fun to dive in,
+
+00:00:40.870 --> 00:00:43.840
+but we're going to also keep it more of a broad-ranging conversation.
+
+00:00:45.000 --> 00:00:46.300
+At the start of all that, you know,
+
+00:00:46.740 --> 00:00:50.180
+it's been a little while since I've had you on the show.
+
+00:00:50.780 --> 00:00:54.960
+I'm going to tell people who maybe haven't listened to that episode or episodes
+
+00:00:55.840 --> 00:00:56.200
+Who you are.
+
+00:00:57.680 --> 00:00:59.100
+Sure, my name is Wilma Guggen.
+
+00:01:00.280 --> 00:01:04.519
+I'm a software developer, Python developer, probably like most of your listeners.
+
+00:01:05.740 --> 00:01:13.440
+I achieved a certain amount of infamy when I built this library called Rich, which a lot of people use.
+
+00:01:13.840 --> 00:01:16.700
+If you see some fancy output in your terminal, that might have been me.
+
+00:01:17.000 --> 00:01:20.220
+And I founded a startup called Textualize,
+
+00:01:20.460 --> 00:01:21.560
+which is all about improving
+
+00:01:21.780 --> 00:01:24.580
+the developer experience in the terminal.
+
+00:01:25.280 --> 00:01:27.420
+And I'm sure we'll discuss Textual,
+
+00:01:27.500 --> 00:01:30.360
+which is my other Python library in this show.
+
+00:01:30.940 --> 00:01:34.940
+Yeah, absolutely. I'm super excited for it.
+
+00:01:35.140 --> 00:01:39.280
+And is this close to the one-year anniversary for Textual?
+
+00:01:39.800 --> 00:01:42.240
+Is that? It was an anniversary of some sort,
+
+00:01:42.260 --> 00:01:46.040
+because we're going to talk about one of your articles.
+
+00:01:47.479 --> 00:01:51.700
+It's actually closer to three years since I founded Textualize.
+
+00:01:51.740 --> 00:01:54.200
+Oh no, you know, it's not, it's the 1.0 milestone.
+
+00:01:54.440 --> 00:01:54.900
+Oh right, yeah.
+
+00:01:55.000 --> 00:01:57.360
+1.0 year, the 1.0 version.
+
+00:01:57.600 --> 00:01:58.080
+There we go.
+
+00:01:58.820 --> 00:01:59.620
+That's what I was thinking.
+
+00:02:00.799 --> 00:02:06.280
+Yeah, so Textual follows Semver, which I imagine people are familiar with.
+
+00:02:07.500 --> 00:02:11.720
+When you're on the zero version, you have a bit of flexibility and you can make breaking changes.
+
+00:02:12.100 --> 00:02:15.960
+We try not to, but you can make breaking changes and it gives you a bit of freedom.
+
+00:02:15.980 --> 00:02:18.540
+early on to play around with things.
+
+00:02:19.740 --> 00:02:24.040
+But some people stick to zero ver just forever,
+
+00:02:24.640 --> 00:02:25.640
+which is fine if that's what you do.
+
+00:02:25.700 --> 00:02:30.780
+But when you go to 1.0, it advertises to people that this is stable.
+
+00:02:31.480 --> 00:02:36.840
+You can rely on the interface not changing too quickly.
+
+00:02:38.900 --> 00:02:41.460
+And if there are any changes, it's well documented.
+
+00:02:42.900 --> 00:02:50.360
+So if you fold along, it's a very modest release from the last zero version to the 1.0 version.
+
+00:02:51.270 --> 00:02:54.420
+But it says to the world, hey, we think Textionalized is ready.
+
+00:02:54.610 --> 00:02:59.760
+You can start using it in production, even though you could probably have been using it in production for a year.
+
+00:03:00.020 --> 00:03:01.880
+I'm sure that you could have. I'm sure you could have.
+
+00:03:02.630 --> 00:03:09.240
+Are you familiar with zerover.org, the numeral zero, V-E-R.O-R-G?
+
+00:03:09.980 --> 00:03:10.600
+Have you seen this?
+
+00:03:11.220 --> 00:03:11.880
+No, I didn't.
+
+00:03:12.200 --> 00:03:14.400
+I thought it was just an aspect of Semver.
+
+00:03:14.430 --> 00:03:15.160
+I didn't realize it was.
+
+00:03:15.460 --> 00:03:17.740
+It is absolutely an aspect of Semver.
+
+00:03:18.300 --> 00:03:20.320
+But this, I can't remember who put this together.
+
+00:03:20.580 --> 00:03:21.340
+Does it say at the bottom?
+
+00:03:22.340 --> 00:03:23.640
+Let's see about the about page.
+
+00:03:26.440 --> 00:03:26.800
+Publish.
+
+00:03:27.040 --> 00:03:27.660
+Yeah, that's what I thought.
+
+00:03:27.720 --> 00:03:28.720
+I thought it was Mahmoud Hashemi.
+
+00:03:29.340 --> 00:03:29.680
+Amazing.
+
+00:03:30.500 --> 00:03:30.580
+Yeah.
+
+00:03:31.250 --> 00:03:32.600
+So Mahmoud put this together.
+
+00:03:33.310 --> 00:03:38.640
+And basically it calls out, I think it's a little contrarian to,
+
+00:03:38.960 --> 00:03:44.340
+you know there's a lot of especially larger companies that have rules about what version
+
+00:03:44.500 --> 00:03:49.760
+you're allowed to use and is software ready enough if it's a 0.3 we can't use it it's not ready
+
+00:03:50.840 --> 00:03:55.680
+not until it's a 1.0 or a 2.0 or something along those lines right and so this is
+
+00:03:57.460 --> 00:04:03.960
+the the popular popular projects that are still really really low in their versions
+
+00:04:04.340 --> 00:04:06.680
+It says, welcome December 0.0.1.
+
+00:04:08.180 --> 00:04:14.800
+And if you go down here, it says, look, React Native is 0.78, even though it's 10 years old.
+
+00:04:15.780 --> 00:04:20.200
+Hugo, which I use for my blog and love it, it's got 77,000 GitHub stars.
+
+00:04:20.299 --> 00:04:22.760
+It was first released 12 years ago.
+
+00:04:23.699 --> 00:04:25.320
+Yeah, more than a decade long.
+
+00:04:26.379 --> 00:04:28.420
+It's still 0.something.
+
+00:04:29.120 --> 00:04:31.040
+Let's see if there's some that are really extreme.
+
+00:04:31.100 --> 00:04:37.080
+I think the problem is that non-software developers have a different idea what versions mean.
+
+00:04:38.080 --> 00:04:38.720
+Yes, I know.
+
+00:04:39.010 --> 00:04:40.380
+We know that they're for about compatibility.
+
+00:04:42.580 --> 00:04:47.300
+But when you're marketing it, 1.0 is like you advertise it, you make a splash about it.
+
+00:04:47.520 --> 00:04:50.920
+That's when it's actually out. You can use it. The other one is just like a toy, right?
+
+00:04:52.160 --> 00:04:53.600
+And then boom, 2.0.
+
+00:04:54.520 --> 00:04:55.300
+Yeah, let's see.
+
+00:04:56.260 --> 00:05:05.180
+neo vim 0.10 scikit-learn it's 15 years old it's 0.17 but so i think i totally hear what you're
+
+00:05:05.260 --> 00:05:11.800
+saying right about like yes this and i think we both agree like what this should mean if your thing
+
+00:05:11.860 --> 00:05:22.039
+is 0.17 probably that means there's a good chance that there might be some adaptations to the api
+
+00:05:22.900 --> 00:05:28.140
+At the same time, if you're scikit-learn and you've been around for 15 years,
+
+00:05:28.680 --> 00:05:32.000
+it might be time to bump that to something over 0.17.
+
+00:05:32.540 --> 00:05:33.020
+You know what I mean?
+
+00:05:33.600 --> 00:05:34.140
+What do you think?
+
+00:05:34.800 --> 00:05:37.520
+I think it's the developer-led projects,
+
+00:05:37.720 --> 00:05:41.280
+the ones which are just a bunch of developers releasing open source.
+
+00:05:41.960 --> 00:05:44.180
+We developers don't like to make too much promises.
+
+00:05:44.920 --> 00:05:45.120
+Exactly.
+
+00:05:45.620 --> 00:05:47.200
+If we were to put a 1.0 on it.
+
+00:05:47.360 --> 00:05:49.480
+Who's going to be on the hook for making that 1.0
+
+00:05:49.600 --> 00:05:50.740
+and then they're stuck with it, right?
+
+00:05:51.140 --> 00:05:51.500
+Exactly.
+
+00:05:51.700 --> 00:05:55.740
+We know that 1.0 is not going to be perfect and bug-free.
+
+00:05:57.240 --> 00:06:02.680
+So we don't necessarily want to be on the hook for it not being perfect.
+
+00:06:03.540 --> 00:06:04.040
+Yeah, I know.
+
+00:06:04.640 --> 00:06:08.380
+At the same time, you're on the hook to not change scikit-learn at this point anyway.
+
+00:06:09.280 --> 00:06:09.920
+You know what I mean?
+
+00:06:10.180 --> 00:06:13.520
+And I'm only picking on them because I know they're so well-loved in the community,
+
+00:06:13.620 --> 00:06:15.920
+and they're very, very common.
+
+00:06:16.120 --> 00:06:19.580
+Unlike, say, Ruff, which is on this list, but Ruff is pretty new.
+
+00:06:21.500 --> 00:06:23.960
+Anyway, I think I'll put this in the show notes.
+
+00:06:24.240 --> 00:06:24.640
+ZeroVer.
+
+00:06:25.280 --> 00:06:25.780
+Thanks, David.
+
+00:06:25.840 --> 00:06:26.680
+That was really fun.
+
+00:06:28.180 --> 00:06:30.240
+So let's talk about terminals.
+
+00:06:31.940 --> 00:06:32.620
+Terminal revolution.
+
+00:06:33.360 --> 00:06:36.820
+I think it's a pretty interesting time for terminals.
+
+00:06:38.580 --> 00:06:45.460
+Both the application that runs your terminal as well as closer to what you're doing,
+
+00:06:46.460 --> 00:06:51.360
+building applications that are like CLI apps or TUI apps,
+
+00:06:51.920 --> 00:06:53.840
+as we'll coin the term.
+
+00:06:54.200 --> 00:06:54.820
+No, you've coined the term.
+
+00:06:55.220 --> 00:06:58.340
+We'll tell people about the term if they don't know, right?
+
+00:06:58.680 --> 00:07:00.320
+I mean, we've got Warp.
+
+00:07:00.480 --> 00:07:01.940
+We've got Ghostity.
+
+00:07:02.640 --> 00:07:04.840
+I don't know how you say Ghostity, whatever.
+
+00:07:05.460 --> 00:07:08.420
+A bunch of other options coming along for terminals
+
+00:07:08.620 --> 00:07:11.639
+that make being in the terminal nicer
+
+00:07:12.060 --> 00:07:16.940
+and I think also draw people into wanting to build apps
+
+00:07:17.100 --> 00:07:19.640
+that run in that space rather than try to get away from it, right?
+
+00:07:20.160 --> 00:07:25.480
+It's not macOS where it's just the default Z shell
+
+00:07:26.320 --> 00:07:29.220
+with no history and it's like white with weird fonts
+
+00:07:29.320 --> 00:07:31.760
+or CMD on Windows where you're like,
+
+00:07:31.790 --> 00:07:32.860
+what is this thing, you know?
+
+00:07:33.540 --> 00:07:34.520
+What are your thoughts on this?
+
+00:07:34.660 --> 00:07:36.840
+First of all, like maybe just on the apps that run,
+
+00:07:36.890 --> 00:07:39.240
+do you have a favorite terminal app that you run?
+
+00:07:40.800 --> 00:07:43.620
+I've been using iTerm for the last few years.
+
+00:07:43.710 --> 00:07:44.660
+It's kind of my daily driver.
+
+00:07:46.280 --> 00:07:47.080
+But there's a few other good ones.
+
+00:07:47.360 --> 00:07:52.320
+There's Alacrity and Kitty and then GhostTTY or GhostTTY.
+
+00:07:52.540 --> 00:07:52.900
+I'm not sure.
+
+00:07:53.300 --> 00:07:54.320
+That's a new kid on the block.
+
+00:07:54.620 --> 00:07:55.760
+It is a new kid on the block.
+
+00:07:55.790 --> 00:07:56.060
+And it is very good.
+
+00:07:56.480 --> 00:07:57.540
+It is very good indeed.
+
+00:07:58.500 --> 00:08:00.920
+But I like iTerm's feature set.
+
+00:08:01.700 --> 00:08:03.660
+It's not the fastest, but it's fairly reliable.
+
+00:08:04.260 --> 00:08:06.200
+And it's got lots of other features.
+
+00:08:07.180 --> 00:08:07.440
+Do you...
+
+00:08:07.440 --> 00:08:08.600
+I played around with...
+
+00:08:08.600 --> 00:08:09.400
+Yeah, sorry, Guy.
+
+00:08:10.220 --> 00:08:11.880
+I played around with warp.dev as well.
+
+00:08:13.700 --> 00:08:19.160
+I think that's a little too unconventional for me at the moment.
+
+00:08:20.240 --> 00:08:21.340
+They've done some very cool stuff, though.
+
+00:08:22.080 --> 00:08:23.560
+So, yeah, there's lots of innovation there.
+
+00:08:24.000 --> 00:08:25.320
+It is really, it takes some good news to you.
+
+00:08:25.400 --> 00:08:26.980
+That's the one I've been using last year or so,
+
+00:08:27.070 --> 00:08:28.660
+and I really, really enjoyed it.
+
+00:08:28.670 --> 00:08:30.440
+It does very cool things, like, for example,
+
+00:08:32.000 --> 00:08:36.320
+if I'm on my computer, and then I SSH into another computer,
+
+00:08:37.260 --> 00:08:44.500
+And then in that computer, I Docker exec something into a Docker system, a Docker container.
+
+00:08:46.340 --> 00:08:51.920
+Warp will say, would you like to apply the warp shell to this Docker container instead of whatever essay?
+
+00:08:52.100 --> 00:08:53.380
+It might not even have bash, right?
+
+00:08:53.440 --> 00:08:54.500
+It might just be essay.
+
+00:08:54.600 --> 00:08:55.860
+So you just hit a button and it goes, whoop.
+
+00:08:57.040 --> 00:09:03.200
+It adapts and basically become kind of like in memory installs itself into that container temporarily, right?
+
+00:09:03.240 --> 00:09:05.760
+That sets all the settings and stuff.
+
+00:09:06.100 --> 00:09:09.080
+So it's a long ways from cmd.exe.
+
+00:09:09.760 --> 00:09:13.120
+I guess it's worth putting out to people out there on Windows,
+
+00:09:13.320 --> 00:09:17.620
+if you're not using Windows Terminal, please.
+
+00:09:20.320 --> 00:09:20.440
+Right?
+
+00:09:20.670 --> 00:09:21.900
+You need to use Windows Terminal.
+
+00:09:22.940 --> 00:09:25.600
+It's such an improvement over...
+
+00:09:27.520 --> 00:09:28.240
+Massive improvement.
+
+00:09:28.260 --> 00:09:28.320
+Right?
+
+00:09:28.460 --> 00:09:30.360
+I mean, you probably run into this all the time, right?
+
+00:09:31.800 --> 00:09:31.900
+Yeah.
+
+00:09:32.120 --> 00:09:32.640
+I know the solution.
+
+00:09:32.870 --> 00:09:34.820
+If someone tries something in the terminal,
+
+00:09:34.960 --> 00:09:40.240
+uses retro textual and it doesn't work properly um i first say um have you tried downloading
+
+00:09:40.420 --> 00:09:46.840
+windows terminal and 99 of the time uh it not only fixes it but it makes it look look beautiful
+
+00:09:47.540 --> 00:09:54.460
+i mean hats off to microsoft um they didn't change the terminal for decades but when they
+
+00:09:54.960 --> 00:10:00.699
+did they made a very good job of it yeah it took a while i i don't know if it's the default
+
+00:10:01.280 --> 00:10:06.680
+yet. You know what I mean? I'm not sure what's actually presented if you kind of pull up the
+
+00:10:06.860 --> 00:10:16.980
+start menu. It's a very strange architecture. You can pull up cmd.exe. That's what I've been used
+
+00:10:16.980 --> 00:10:22.920
+to calling it because it has it in the title bar. If you send it some magic codes, you can switch it
+
+00:10:23.940 --> 00:10:30.460
+into essentially Windows terminal. It'll process escape sequences like it does on Mac.
+
+00:10:31.760 --> 00:10:32.560
+and Linux.
+
+00:10:33.400 --> 00:10:34.420
+So the actual window you see
+
+00:10:34.740 --> 00:10:35.940
+is just kind of like
+
+00:10:36.930 --> 00:10:38.360
+a window onto the
+
+00:10:38.860 --> 00:10:40.400
+thing which renders the terminal.
+
+00:10:42.360 --> 00:10:42.740
+So you can get
+
+00:10:42.830 --> 00:10:44.480
+Windows, you might already have Windows
+
+00:10:44.660 --> 00:10:46.560
+terminal even if you don't
+
+00:10:46.660 --> 00:10:48.360
+get the experience, but software
+
+00:10:48.620 --> 00:10:50.620
+can switch it into this mode
+
+00:10:51.400 --> 00:10:52.400
+which makes it work
+
+00:10:53.000 --> 00:10:54.640
+really well. I had no idea.
+
+00:10:54.800 --> 00:10:55.400
+That's cool. Yeah.
+
+00:10:56.100 --> 00:10:57.340
+It's probably the same core
+
+00:10:58.370 --> 00:10:59.540
+for both of them or something, right?
+
+00:11:00.260 --> 00:11:07.160
+Yeah, exactly. The architecture is very component based and you can switch it at runtime.
+
+00:11:07.760 --> 00:11:08.960
+Yeah, that sounds very Microsoft.
+
+00:11:10.020 --> 00:11:10.140
+Yeah.
+
+00:11:11.420 --> 00:11:13.180
+Is there a code that you can put to embed?
+
+00:11:13.580 --> 00:11:17.040
+Like if you can split the panes and then you can embed Excel on one side maybe?
+
+00:11:17.820 --> 00:11:18.820
+And then SharePoint on the other?
+
+00:11:19.460 --> 00:11:20.080
+I haven't found it.
+
+00:11:20.240 --> 00:11:20.780
+I'm just kidding.
+
+00:11:21.380 --> 00:11:22.500
+I feel like that's something I can do.
+
+00:11:22.500 --> 00:11:23.100
+I wouldn't be surprised.
+
+00:11:23.600 --> 00:11:24.520
+I wouldn't either.
+
+00:11:25.240 --> 00:11:25.840
+I wouldn't either.
+
+00:11:26.560 --> 00:11:31.680
+Are you a fan of modifying your shell, I guess?
+
+00:11:32.040 --> 00:11:38.360
+You know, like, oh, my ZSH or oh, my posh or Starship or any of these?
+
+00:11:38.959 --> 00:11:40.540
+Yeah, to change the prompt.
+
+00:11:41.160 --> 00:11:43.560
+Yeah, I do have, I can't remember which one I use now.
+
+00:11:44.160 --> 00:11:45.720
+It's not, is it Starship?
+
+00:11:46.600 --> 00:11:46.780
+Yeah.
+
+00:11:48.379 --> 00:11:49.740
+Yeah, it's fairly minimal.
+
+00:11:50.400 --> 00:11:54.040
+It tells me the branch, the Git branch I'm working on,
+
+00:11:54.120 --> 00:11:55.420
+the version of Python that's running.
+
+00:11:56.400 --> 00:11:59.120
+and the version of the application I'm working on.
+
+00:11:59.940 --> 00:12:01.700
+So that's really nice.
+
+00:12:02.220 --> 00:12:04.280
+Oh, it'll tell you the version of the application you're working on?
+
+00:12:05.680 --> 00:12:07.400
+Yeah, it says v1.0.0,
+
+00:12:07.410 --> 00:12:11.280
+so it's somehow pulled out the version from Textual, I guess.
+
+00:12:11.980 --> 00:12:13.520
+Oh, wow. That's pretty cool.
+
+00:12:13.700 --> 00:12:16.620
+I guess if it's in a repo and it knows that repo is a package,
+
+00:12:16.750 --> 00:12:19.420
+it can figure out what version it is, but that's still pretty neat.
+
+00:12:19.820 --> 00:12:21.320
+I guess. It must go in the spec.
+
+00:12:22.040 --> 00:12:23.300
+PyProject.toml, I'm guessing.
+
+00:12:23.770 --> 00:12:23.880
+Yeah.
+
+00:12:24.960 --> 00:12:26.700
+Yeah, I don't know. It's magic and it works.
+
+00:12:27.120 --> 00:12:29.540
+So don't delve too deeply.
+
+00:12:30.900 --> 00:12:32.500
+Yeah, the whole reason I'm bringing this up,
+
+00:12:32.500 --> 00:12:34.160
+it might feel like a little bit of a diversion,
+
+00:12:34.400 --> 00:12:37.500
+but when people think about terminal apps
+
+00:12:37.840 --> 00:12:40.400
+and just being in the terminal and somebody says,
+
+00:12:40.540 --> 00:12:42.220
+oh, God, I hate the terminal.
+
+00:12:42.440 --> 00:12:45.780
+It's so bad. I can't stand it.
+
+00:12:46.200 --> 00:12:48.840
+It usually means they're not adopting
+
+00:12:49.530 --> 00:12:51.320
+some of these really magical tools,
+
+00:12:52.240 --> 00:12:58.940
+regardless of which one regardless of whether you adopt starship or oh my zsh or warp or whatever
+
+00:13:00.540 --> 00:13:06.900
+you get a dramatically different experience right yeah it's uh infinitely customizable um the
+
+00:13:07.040 --> 00:13:13.100
+terminal and the shell and various other software um so you can get the kind of experience that you
+
+00:13:13.140 --> 00:13:19.579
+want out of a terminal people get very comfortable uh with their terminal environment um it feels
+
+00:13:19.600 --> 00:13:26.280
+like it feels like um an old pair of shoes you know it's just it's just uh that comfortable
+
+00:13:28.160 --> 00:13:35.220
+i guess it depends what tools you use as well for example if you're a neo vim or an emacs type
+
+00:13:35.400 --> 00:13:41.460
+person you're in the terminal even way way more than say for me for example use PyCharm and other
+
+00:13:41.620 --> 00:13:46.760
+tools that yeah you know i only dip in and out when you know when i'm working on code for that
+
+00:13:46.640 --> 00:13:53.180
+kind of stuff yeah for me i'm switching between terminal and vs code most of most of the day so
+
+00:13:53.180 --> 00:14:00.420
+i've got both open i write some code and i switch back to terminal and run said code so i i'm i'm in
+
+00:14:00.640 --> 00:14:10.399
+both um yeah but i know funnily enough i never got into editors that run inside the terminal um i do
+
+00:14:10.320 --> 00:14:17.200
+like all the fancy graphics that vs code can give you that terminal couldn't um yeah that matters
+
+00:14:17.400 --> 00:14:23.240
+less to other people but you know what when i when i started out doing programming i started out
+
+00:14:23.270 --> 00:14:30.240
+doing a lot of work on silicon graphics mainframes doing emacs on onyx workstations and stuff like
+
+00:14:30.360 --> 00:14:38.480
+that and i was happy as a clam to get out of there as quick as possible to get out of i'm like can i
+
+00:14:38.320 --> 00:14:46.320
+I get some better tools than this. And yeah, I don't know. I, I, I'm on the GUI side as well, but
+
+00:14:48.500 --> 00:14:52.320
+I feel like kind of, kind of like the terminal, if you don't customize your terminal, it's not
+
+00:14:52.350 --> 00:14:58.200
+a great experience. If you don't really can commit to learning all the hotkeys of your GUI app,
+
+00:14:58.620 --> 00:15:01.800
+well, it feels like, well, I gotta use this mouse at all clunky, but like, I almost never use the
+
+00:15:01.850 --> 00:15:06.220
+mouse. You know what I mean? Even though I'm in a GUI app, right? They just customize the hotkeys.
+
+00:15:06.420 --> 00:15:09.220
+I think you can get very proficient in both.
+
+00:15:10.980 --> 00:15:14.220
+You know, I've seen people using a terminal and they use Emacs or Vim
+
+00:15:14.940 --> 00:15:19.040
+and their fingers just fly through it and they're very proficient.
+
+00:15:19.780 --> 00:15:21.240
+But the same thing in VS Code.
+
+00:15:21.400 --> 00:15:24.740
+If you know your editor and you know the shortcut keys
+
+00:15:24.780 --> 00:15:26.500
+and you don't reach for the mouse very often,
+
+00:15:27.660 --> 00:15:30.700
+you can be just as proficient, really.
+
+00:15:32.160 --> 00:15:34.720
+At Textualize, we had a policy if you use whatever you want to use
+
+00:15:34.740 --> 00:15:36.440
+to edit code.
+
+00:15:36.860 --> 00:15:40.560
+Because if you take a developer who uses Vim
+
+00:15:40.620 --> 00:15:42.240
+and then force them to use code,
+
+00:15:42.240 --> 00:15:43.100
+they will not be happy.
+
+00:15:43.340 --> 00:15:46.900
+And they will not be as efficient at all.
+
+00:15:48.620 --> 00:15:50.620
+Yeah, that's a really tricky balance, right?
+
+00:15:50.680 --> 00:15:53.340
+You want to let people work where they're comfortable, for sure.
+
+00:15:55.380 --> 00:15:55.460
+Yeah.
+
+00:15:56.020 --> 00:16:02.100
+All right, well, I think that's a good transition to TUI.
+
+00:16:02.600 --> 00:16:04.200
+What are TUIs?
+
+00:16:04.440 --> 00:16:05.300
+Why do people build them?
+
+00:16:05.400 --> 00:16:06.880
+I know we talked about this in the last episode.
+
+00:16:07.640 --> 00:16:09.660
+We won't totally necessarily rehash it,
+
+00:16:09.680 --> 00:16:12.240
+but there are some, if people haven't seen it,
+
+00:16:12.240 --> 00:16:13.560
+there are some incredible applications.
+
+00:16:14.060 --> 00:16:16.800
+And we will see some built-in textual
+
+00:16:17.900 --> 00:16:18.940
+that run in the terminal.
+
+00:16:20.840 --> 00:16:21.160
+Yeah, sure.
+
+00:16:21.360 --> 00:16:24.260
+So TUI stands for text-use interface.
+
+00:16:25.460 --> 00:16:27.840
+I don't actually like that term anymore.
+
+00:16:28.600 --> 00:16:28.780
+Okay.
+
+00:16:29.620 --> 00:16:30.340
+What would you like?
+
+00:16:31.320 --> 00:16:32.140
+Well, the thing is,
+
+00:16:33.420 --> 00:16:35.780
+the two is that you build the textual are also GUIs.
+
+00:16:37.040 --> 00:16:39.060
+It's a very simplified form of graphics, but we've got,
+
+00:16:39.160 --> 00:16:44.720
+you've got lines and, and corners and you've got like a mouse that you can move around.
+
+00:16:45.560 --> 00:16:50.280
+So it is rounded with text, but it works just like a GUI.
+
+00:16:51.300 --> 00:16:57.800
+So I guess it's like a little bit like saying a web browser is a document based UI.
+
+00:16:58.880 --> 00:16:59.360
+Yeah.
+
+00:16:59.780 --> 00:17:10.380
+And we're having this whole video live stream recording across the internet, across the world in a web browser.
+
+00:17:10.699 --> 00:17:12.339
+And there's only a little text on the screen, right?
+
+00:17:13.100 --> 00:17:14.260
+Yeah, yeah, exactly.
+
+00:17:14.459 --> 00:17:19.380
+So the term tree is stuck, but it's just, it's a GUI that runs in your terminal.
+
+00:17:20.500 --> 00:17:22.980
+Well, I think originally it was pretty text based.
+
+00:17:23.740 --> 00:17:26.100
+The advanced version might be a progress bar, right?
+
+00:17:26.439 --> 00:17:27.819
+Or emojis or color.
+
+00:17:27.949 --> 00:17:28.960
+Yeah, exactly.
+
+00:17:29.260 --> 00:17:33.300
+So those are technically text, but it looks like images.
+
+00:17:33.470 --> 00:17:36.200
+So you've got emoji, you can have lots of,
+
+00:17:36.520 --> 00:17:39.600
+like I'm looking at my starship prompt
+
+00:17:39.740 --> 00:17:41.340
+and it's got like a snake 'cause it's in Python.
+
+00:17:41.920 --> 00:17:42.400
+That kind of stuff.
+
+00:17:42.560 --> 00:17:45.580
+That is technically text, but it is graphical.
+
+00:17:46.020 --> 00:17:50.920
+And progress bars, you create a bar using characters,
+
+00:17:51.560 --> 00:17:52.960
+but essentially you're creating an image.
+
+00:17:53.820 --> 00:17:57.259
+So I think the distinction between like text user interface
+
+00:17:57.280 --> 00:18:01.040
+and graphical user interface is fuzzy now.
+
+00:18:02.340 --> 00:18:04.380
+If you say Tui, I'll know what you're talking about,
+
+00:18:04.820 --> 00:18:07.020
+but I just don't like the term.
+
+00:18:07.050 --> 00:18:08.560
+I don't think it's as clear.
+
+00:18:08.740 --> 00:18:11.200
+I'm not sure that we even need the distinction.
+
+00:18:11.920 --> 00:18:12.820
+- Yeah, I hear you.
+
+00:18:13.380 --> 00:18:14.280
+Are you familiar with BTOP?
+
+00:18:14.310 --> 00:18:15.180
+Have you seen this app?
+
+00:18:15.940 --> 00:18:17.580
+- Yeah, that's really, really pretty.
+
+00:18:17.880 --> 00:18:18.940
+I like the fading effect.
+
+00:18:19.620 --> 00:18:27.240
+- I mean, this app has just crazy amounts of
+
+00:18:27.260 --> 00:18:32.400
+graphics and it's all written in the terminal with live updating i don't know how many graphs but
+
+00:18:32.940 --> 00:18:40.600
+many many graphs interesting thing about btop um i think most people who run it don't run it because
+
+00:18:40.740 --> 00:18:48.020
+they really need to keep an eye on the performance of their course and and file system etc um i think
+
+00:18:48.020 --> 00:18:54.580
+a lot of them run it because it's got it's retro cool it's right cool it looks cool it looks like
+
+00:18:55.380 --> 00:19:01.640
+uh how you thought computers were gonna look uh i'm gonna be a programmer and hacker i'm gonna be
+
+00:19:01.720 --> 00:19:07.840
+a super tech guy this yeah you know what it could be this could be a movie UI you know how when you're
+
+00:19:08.120 --> 00:19:15.060
+watching a movie they're like they for whatever reason won't run mac os or windows they come up
+
+00:19:15.060 --> 00:19:20.759
+with some you know weird variation that's got weird graphics and have some dialogue like
+
+00:19:21.420 --> 00:19:26.740
+excuse i've got to hack the gibson okay done exactly did it put up something oh my god this
+
+00:19:26.760 --> 00:19:33.240
+is visual basic i know visual basic i'm gonna get his ip address it's like what yeah no no oh boy
+
+00:19:33.540 --> 00:19:38.160
+anyway i think just you know this is a really really cool example of of pushing way way way
+
+00:19:38.320 --> 00:19:42.440
+beyond this is a google this is a graphical user interface this is not a textual user interface
+
+00:19:42.640 --> 00:19:49.880
+right exactly i mean it technically is tags but it's it's not graphical yeah yeah yeah so we have
+
+00:19:49.740 --> 00:19:51.440
+So we have two things that you guys make.
+
+00:19:52.180 --> 00:19:56.340
+We've got textual and rich, and maybe it's worth talking about rich for a moment since
+
+00:19:56.540 --> 00:19:57.180
+that's the foundation.
+
+00:19:58.420 --> 00:19:58.900
+Sure.
+
+00:19:59.580 --> 00:19:59.700
+Okay.
+
+00:19:59.820 --> 00:20:05.480
+So rich basically formats data in a very pleasing to the eye way.
+
+00:20:06.840 --> 00:20:13.780
+You can print say a Python dict and it'll format with an indentation and it'll colorize strings
+
+00:20:13.980 --> 00:20:14.260
+and things.
+
+00:20:15.780 --> 00:20:22.800
+And you can print things like tables quite effortlessly, syntax highlighted code, and
+
+00:20:22.940 --> 00:20:26.000
+you can use up to 16.7 million colors.
+
+00:20:27.120 --> 00:20:27.240
+Wow.
+
+00:20:27.240 --> 00:20:34.540
+Essentially it was a toolkit to prettify terminal output with as little effort as possible.
+
+00:20:35.480 --> 00:20:38.580
+And it's all kind of integrated.
+
+00:20:39.420 --> 00:20:46.480
+So you can put syntax-highlighted text inside a table or a progress bar inside a cell.
+
+00:20:46.660 --> 00:20:48.480
+And everything kind of works together.
+
+00:20:48.540 --> 00:20:50.960
+So it's a single coherent system.
+
+00:20:51.040 --> 00:20:53.900
+Because some of this stuff existed prior to Rich.
+
+00:20:54.780 --> 00:20:56.500
+But they were written by different authors.
+
+00:20:57.340 --> 00:20:59.020
+And they weren't designed to work together.
+
+00:20:59.900 --> 00:21:06.540
+Maybe there's a table one by one person and then a progress bar by another.
+
+00:21:06.600 --> 00:21:09.220
+And they didn't really work the same or integrate or things like that.
+
+00:21:09.280 --> 00:21:11.200
+Yeah, exactly. Exactly.
+
+00:21:11.460 --> 00:21:17.180
+So it meant that terminal output was still quite basic.
+
+00:21:17.940 --> 00:21:22.800
+When color was used, it would colorize a single line or something like that.
+
+00:21:23.440 --> 00:21:30.140
+And it still it helped, but it wasn't great for parsing visually
+
+00:21:30.320 --> 00:21:31.060
+parsing that information.
+
+00:21:32.200 --> 00:21:36.640
+But Rich gave you that ability that when you write output, it is readable.
+
+00:21:38.360 --> 00:21:45.320
+I think prior to that, we developers kind of built up this skill of staring at monochrome
+
+00:21:46.020 --> 00:21:52.080
+text with funny characters and numbers and somehow pulling out meaningful information
+
+00:21:52.940 --> 00:21:53.340
+out of that.
+
+00:21:53.340 --> 00:21:59.840
+And it took years to develop, but hopefully now we don't need to, you know, because you
+
+00:21:59.940 --> 00:22:04.580
+can write things to the terminal that looks much like the output you'd get in a browser.
+
+00:22:05.100 --> 00:22:08.040
+It's formatted and readable and colourful.
+
+00:22:08.680 --> 00:22:14.020
+Yeah. You know, one thing that might be worth talking about is the live updates.
+
+00:22:16.240 --> 00:22:17.560
+Like live tables and stuff.
+
+00:22:18.720 --> 00:22:25.180
+Yes. So in RIT you can create a live object. That's what the class is called.
+
+00:22:25.380 --> 00:22:31.780
+And basically it clears the screen and it writes that output and then you can refresh it.
+
+00:22:32.580 --> 00:22:39.480
+It can do that quickly, like 20 times a second or less, depending on how much data you've
+
+00:22:39.480 --> 00:22:39.520
+got.
+
+00:22:39.560 --> 00:22:46.680
+So you can create animations, you can create dashboards, you can create like a scrolling
+
+00:22:46.900 --> 00:22:48.420
+list of text.
+
+00:22:51.220 --> 00:22:52.800
+But it was kind of, it was limited.
+
+00:22:53.860 --> 00:22:57.260
+All it could do is update information regularly.
+
+00:22:57.260 --> 00:22:58.060
+It wasn't interactive.
+
+00:22:59.260 --> 00:23:04.260
+couldn't click or scroll or even detect key presses.
+
+00:23:04.450 --> 00:23:07.000
+It was purely for updating information.
+
+00:23:07.000 --> 00:23:11.700
+It's like a very rudimentary predecessor of textual.
+
+00:23:14.320 --> 00:23:16.200
+Another thing that's interesting is,
+
+00:23:17.380 --> 00:23:20.760
+what's the frame rate of a terminal?
+
+00:23:21.440 --> 00:23:25.060
+People think of it just scrolling text and printing out text,
+
+00:23:25.090 --> 00:23:26.840
+and you see it going by and you're like,
+
+00:23:26.880 --> 00:23:29.840
+yeah, well, that's kind of how the UIs must be.
+
+00:23:30.000 --> 00:23:32.980
+But you can actually push these things pretty far, right?
+
+00:23:34.040 --> 00:23:34.880
+You can.
+
+00:23:36.500 --> 00:23:40.300
+Interesting thing is I don't think anyone who sat down to develop a terminal
+
+00:23:41.100 --> 00:23:44.640
+was thinking in terms of frames per second.
+
+00:23:46.200 --> 00:23:50.660
+You know, they were just, they want to optimize the text output
+
+00:23:50.980 --> 00:23:55.320
+so that if you cut a large file, it didn't take forever to scroll through.
+
+00:23:55.980 --> 00:23:57.740
+- Right, or didn't flicker around or something.
+
+00:23:58.260 --> 00:24:02.620
+- Yeah, yeah, and later on people like myself and others
+
+00:24:03.780 --> 00:24:06.220
+were creating animations and things,
+
+00:24:06.670 --> 00:24:09.220
+and they're thinking, "Well, how fast can I push this?"
+
+00:24:09.920 --> 00:24:11.220
+And it turns out pretty fast,
+
+00:24:12.150 --> 00:24:16.980
+'cause terminals use your GPU to render the text,
+
+00:24:18.399 --> 00:24:22.220
+and if you send it text fast enough, it'll keep up, mostly.
+
+00:24:22.900 --> 00:24:28.480
+And I found that 60 frames a second is completely workable on most terminals.
+
+00:24:31.080 --> 00:24:37.060
+You don't really need that for most apps because if you're scrolling text,
+
+00:24:37.120 --> 00:24:39.280
+you can only move character at a time.
+
+00:24:39.600 --> 00:24:42.960
+It's not pixel perfect because it's kind of like a grid.
+
+00:24:44.720 --> 00:24:47.240
+So if you want to scroll at 60 frames a second,
+
+00:24:47.320 --> 00:24:50.140
+you'd have to move 60 lines in a second,
+
+00:24:51.260 --> 00:24:53.320
+Which text will just kind of whiz by.
+
+00:24:53.680 --> 00:24:54.860
+Yeah, it gets blurry anyway.
+
+00:24:55.360 --> 00:25:01.820
+Yeah, so it can do 60 frames a second, which is sometimes fun for animation effects.
+
+00:25:03.140 --> 00:25:04.260
+But generally, you don't need it.
+
+00:25:05.200 --> 00:25:10.040
+You know, you can update 10 frames a second and it'll look nice and smooth.
+
+00:25:11.440 --> 00:25:12.440
+But it's nice to know that you can.
+
+00:25:12.860 --> 00:25:20.660
+We've got a ridiculous demo which creates a really colorful gradient and then rotates it at 60 frames a second.
+
+00:25:21.480 --> 00:25:27.460
+wow and it looks very cool it would be a terrible in an actual app because it just burned your
+
+00:25:27.700 --> 00:25:34.600
+retina um but it is possible yeah reminds me of the early days when computers just started having
+
+00:25:34.980 --> 00:25:41.360
+vga and stuff and people would come out with amazing graphical what do they call them i can't
+
+00:25:41.420 --> 00:25:46.180
+remember what they call them anyway i think i was thinking demos as well yeah i think that is what
+
+00:25:46.180 --> 00:25:50.700
+they call them and you would we would download them off of bbs's and watch them or say wow it's
+
+00:25:50.720 --> 00:25:58.500
+and my 486dx i can't believe it could do it it's so smooth yeah they were amazing right similar
+
+00:25:58.550 --> 00:26:03.900
+deal with the terminals that the manufacturer of those devices back then um probably didn't have
+
+00:26:04.810 --> 00:26:11.200
+um graphical animations or games in mind when they were building the those computers but then you got
+
+00:26:11.280 --> 00:26:15.720
+some interested parties who were willing to like experiment and they actually managed to like
+
+00:26:16.500 --> 00:26:20.820
+make it do things which the manufacturer just never intended the same thing with the terminal
+
+00:26:21.520 --> 00:26:26.320
+um no one ever sat down and created a system to display 16.7 million colors at 60 frames
+
+00:26:27.360 --> 00:26:34.700
+um a second um it was other people that just tried that and got it to work so there's an
+
+00:26:34.810 --> 00:26:41.600
+amazing amount of um creativity and in freedom and working and stuff like that which i kind of
+
+00:26:41.740 --> 00:26:45.299
+missed from the old days because now computers are so fast and so powerful now people don't have to
+
+00:26:45.240 --> 00:26:46.220
+- They don't even worry about it, do they?
+
+00:26:46.640 --> 00:26:46.900
+- Yeah.
+
+00:26:49.120 --> 00:26:52.180
+- I think let's, I wanna kinda work through this.
+
+00:26:52.340 --> 00:26:55.140
+You have this live demo, the official textual demo,
+
+00:26:56.200 --> 00:26:58.220
+which you can install.
+
+00:26:58.860 --> 00:27:00.520
+Let me go, I think I'm at the next, no.
+
+00:27:01.600 --> 00:27:05.200
+So if I click on it, it tells me how to get it.
+
+00:27:06.919 --> 00:27:11.360
+Props for the install step here, the uvx.
+
+00:27:11.540 --> 00:27:12.900
+Are you a uv convert?
+
+00:27:13.000 --> 00:27:14.460
+Are you a uv fan these days?
+
+00:27:15.100 --> 00:27:24.600
+I am a fan. Yeah, I mean that I think is a killer app that you can send someone a fairly short command line and they can run your project.
+
+00:27:26.060 --> 00:27:37.080
+The Python, it says --Python 3.12. That was because at the time it wouldn't install a version of Python that it could run on.
+
+00:27:37.160 --> 00:27:39.200
+I think Astral's working on that.
+
+00:27:39.250 --> 00:27:40.520
+So I think in the future, maybe now,
+
+00:27:41.120 --> 00:27:43.960
+you could just do uvx, text-demo,
+
+00:27:44.780 --> 00:27:46.520
+and then it would just run.
+
+00:27:47.240 --> 00:27:49.360
+But even so, I think that's a beautiful way
+
+00:27:49.480 --> 00:27:53.100
+of allowing people to test your code
+
+00:27:53.150 --> 00:27:54.420
+with very little barriers.
+
+00:27:55.160 --> 00:27:57.980
+Yeah, especially the script stuff now.
+
+00:27:59.420 --> 00:28:00.440
+You can just hit the single script
+
+00:28:00.470 --> 00:28:01.760
+and put the dependencies at the top
+
+00:28:01.810 --> 00:28:05.780
+and just say, you know, uv run.
+
+00:28:06.020 --> 00:28:10.560
+I can't remember exact syntax, but basically you can embed what it needs to run just as a comment.
+
+00:28:12.260 --> 00:28:12.920
+That's excellent.
+
+00:28:13.200 --> 00:28:13.320
+Yeah.
+
+00:28:13.740 --> 00:28:16.840
+It's no harder than it needs to be, which is great.
+
+00:28:17.260 --> 00:28:18.400
+It's very clear what it does.
+
+00:28:18.960 --> 00:28:20.340
+It works very well.
+
+00:28:20.480 --> 00:28:21.860
+It's the kind of computing that you want.
+
+00:28:22.760 --> 00:28:26.840
+You don't want to have to send someone a page of instructions and say,
+
+00:28:26.980 --> 00:28:30.560
+go and download this software and then write this into your configuration file.
+
+00:28:32.340 --> 00:28:33.040
+That's just a headache.
+
+00:28:33.500 --> 00:28:34.820
+I don't want to deal with that ever again.
+
+00:28:35.020 --> 00:28:37.380
+I just want to send people a uvx, blah, and they're done.
+
+00:28:38.440 --> 00:28:38.700
+I agree.
+
+00:28:39.330 --> 00:28:39.660
+I agree.
+
+00:28:41.240 --> 00:28:43.360
+If you have uvx, you're good to go, right?
+
+00:28:44.140 --> 00:28:45.660
+And you don't even have to have Python.
+
+00:28:45.950 --> 00:28:48.060
+And you also don't have to worry about the version of Python.
+
+00:28:48.250 --> 00:28:49.080
+So these are all good things.
+
+00:28:49.620 --> 00:28:50.320
+So let's run it.
+
+00:28:51.520 --> 00:28:53.140
+And let's see what happens here.
+
+00:28:53.920 --> 00:28:55.720
+There's a lot going on in this demo.
+
+00:28:56.360 --> 00:29:00.180
+Chris May out of the audience gives you props for making it so easy to run.
+
+00:29:00.380 --> 00:29:04.960
+And Hugo says, I can drop the Python.
+
+00:29:05.520 --> 00:29:08.399
+As you imagined, I can just say uvx textual demo,
+
+00:29:08.840 --> 00:29:10.020
+and I'll probably get 13.1.
+
+00:29:10.600 --> 00:29:11.040
+Let's see.
+
+00:29:13.340 --> 00:29:13.880
+Something's happening.
+
+00:29:15.240 --> 00:29:17.420
+I think it worked if you had that version of Python,
+
+00:29:18.180 --> 00:29:19.900
+but if you didn't have the correct version of Python,
+
+00:29:19.960 --> 00:29:21.960
+it would sometimes fail.
+
+00:29:22.680 --> 00:29:23.260
+Got it.
+
+00:29:23.420 --> 00:29:24.100
+Maybe they fixed it.
+
+00:29:24.360 --> 00:29:24.800
+Maybe.
+
+00:29:27.080 --> 00:29:34.900
+So when this thing pulls up, it looks very much like a web browser.
+
+00:29:36.030 --> 00:29:43.500
+With the main difference, I think that there's not a lot of pictures, as in true graphics, right?
+
+00:29:43.630 --> 00:29:55.140
+But if you imagine a really nicely styled website that maybe used color and emoji and CSS, but just light on graphics, right?
+
+00:29:55.340 --> 00:29:56.540
+I feel like, what would you say?
+
+00:29:56.580 --> 00:29:58.380
+Like that's kind of the extent?
+
+00:29:59.000 --> 00:29:59.500
+It is.
+
+00:29:59.640 --> 00:30:04.480
+It's kind of like a minimal web interface that focuses on typography.
+
+00:30:05.160 --> 00:30:06.200
+I do want to point out.
+
+00:30:06.260 --> 00:30:07.000
+I've got one font.
+
+00:30:07.520 --> 00:30:08.160
+Yeah, yeah, yeah.
+
+00:30:08.680 --> 00:30:08.860
+Exactly.
+
+00:30:08.930 --> 00:30:09.340
+You can't.
+
+00:30:09.940 --> 00:30:10.000
+Yeah.
+
+00:30:11.660 --> 00:30:15.520
+But as we'll see, you can actually do graphics pretty well.
+
+00:30:16.340 --> 00:30:16.520
+So.
+
+00:30:17.560 --> 00:30:17.660
+Yeah.
+
+00:30:18.180 --> 00:30:22.360
+If you see the numbers up at the top, there's nothing in the terminal.
+
+00:30:23.180 --> 00:30:24.700
+Most people are saying so they won't know.
+
+00:30:24.820 --> 00:30:27.300
+But at the top it says version, then it says 100,
+
+00:30:28.060 --> 00:30:32.020
+GitHub stars 27.2 thousand, how many forks and so on.
+
+00:30:32.030 --> 00:30:35.140
+But those are colored differently, they look different.
+
+00:30:35.480 --> 00:30:36.360
+Okay, now tell us about the numbers.
+
+00:30:37.380 --> 00:30:40.100
+- Yeah, sure, so they're taller and wider
+
+00:30:40.280 --> 00:30:41.160
+than the rest of the text,
+
+00:30:41.400 --> 00:30:45.600
+but there is no alternative font in the terminal.
+
+00:30:45.840 --> 00:30:48.320
+Those numbers are made up of other characters,
+
+00:30:49.340 --> 00:30:50.040
+box drawing characters.
+
+00:30:50.130 --> 00:30:52.960
+So you've got like a vertical line, a horizontal line,
+
+00:30:53.940 --> 00:30:55.540
+You've got a curved corner.
+
+00:30:55.980 --> 00:31:00.600
+You've got like a T section and you can assemble that and make it display
+
+00:31:01.020 --> 00:31:02.400
+something that looks like numbers.
+
+00:31:02.660 --> 00:31:02.780
+Interesting.
+
+00:31:03.040 --> 00:31:04.460
+Does look like.
+
+00:31:05.420 --> 00:31:06.020
+It looks great.
+
+00:31:06.140 --> 00:31:09.900
+You've got the little subscript for the thousands, the K, the kilo,
+
+00:31:10.340 --> 00:31:11.580
+kilo stars, kilo stars.
+
+00:31:12.330 --> 00:31:12.440
+Yeah.
+
+00:31:12.440 --> 00:31:12.520
+Yeah.
+
+00:31:13.020 --> 00:31:17.160
+It's a, if I remember correctly, it's a two by three, no, sorry,
+
+00:31:17.490 --> 00:31:19.220
+three by three grid of characters.
+
+00:31:20.240 --> 00:31:27.140
+And I had to hand edit this in Python by cut and pasting the box characters from Wikipedia
+
+00:31:27.740 --> 00:31:29.260
+to assemble numbers.
+
+00:31:29.900 --> 00:31:31.420
+And I discovered the numbers work quite well.
+
+00:31:31.760 --> 00:31:33.420
+Numbers look like numbers.
+
+00:31:34.140 --> 00:31:35.840
+And I've also got hex digits.
+
+00:31:36.060 --> 00:31:41.560
+So I've got A, B, C, D, E, F. I tried to keep going, but I found that some characters didn't
+
+00:31:41.720 --> 00:31:42.780
+work at all.
+
+00:31:43.760 --> 00:31:44.360
+Like an X.
+
+00:31:44.840 --> 00:31:49.400
+There's no diagonal cross piece in these Unicode characters.
+
+00:31:49.720 --> 00:31:53.080
+So an X just became impossible with a 3x3 grid.
+
+00:31:54.380 --> 00:31:55.800
+But for numbers, it works beautifully.
+
+00:31:56.600 --> 00:31:57.780
+Yeah, very interesting.
+
+00:31:57.990 --> 00:32:01.640
+A little bit like a classical alarm clock where the numbers...
+
+00:32:02.340 --> 00:32:04.320
+Like a seven-digit display, yeah.
+
+00:32:04.530 --> 00:32:05.320
+Yes, exactly.
+
+00:32:05.860 --> 00:32:06.820
+Yeah, very similar.
+
+00:32:07.980 --> 00:32:08.160
+Cool.
+
+00:32:08.860 --> 00:32:11.120
+All right, so if you run the demo,
+
+00:32:11.590 --> 00:32:14.920
+it comes up with comments that show you
+
+00:32:15.040 --> 00:32:18.980
+or sort of a walkthrough of what's possible in these little boxes.
+
+00:32:19.240 --> 00:32:22.200
+And it says, look, you can go, you can scroll it.
+
+00:32:22.300 --> 00:32:23.760
+You can scroll it with your mouse.
+
+00:32:24.899 --> 00:32:26.340
+It scrolls that section.
+
+00:32:27.080 --> 00:32:28.680
+It says, you want to go to the next one?
+
+00:32:30.040 --> 00:32:31.860
+Hit tab, hit enter to open it up.
+
+00:32:33.740 --> 00:32:36.020
+It's even though, kind of like we were talking,
+
+00:32:36.180 --> 00:32:37.640
+even though it's a user interface,
+
+00:32:38.060 --> 00:32:39.960
+like with scroll bars and I can grab the scroll bar
+
+00:32:40.160 --> 00:32:43.180
+and go to it and I can click on the things and so on.
+
+00:32:45.159 --> 00:32:47.140
+It's also very keyboard friendly.
+
+00:32:48.460 --> 00:32:55.800
+This is probably a super important aspect of building these types of applications in the terminal because people expect that, right?
+
+00:32:56.820 --> 00:32:57.780
+Yeah, very much so.
+
+00:32:57.860 --> 00:33:04.040
+So a lot of textual was inspired by web development because I was a web developer for many years.
+
+00:33:04.720 --> 00:33:07.560
+And there's a lot of work being done in interfaces in the web world.
+
+00:33:08.800 --> 00:33:11.760
+Lots of work, you know, loads of developers working on it for years.
+
+00:33:12.680 --> 00:33:18.040
+I want to bring some of that to the terminal, but I also didn't want to lose what made the terminal interesting.
+
+00:33:20.260 --> 00:33:27.520
+Terminal is a very keyboard focused thing, so I wanted textual apps to also be very keyboard
+
+00:33:27.760 --> 00:33:27.880
+focused.
+
+00:33:28.840 --> 00:33:33.500
+The mouse is terrific for discovering things, you know, you can move it around and there's
+
+00:33:33.660 --> 00:33:34.300
+tool tips etc.
+
+00:33:35.640 --> 00:33:37.520
+You can click those links or you can press the key.
+
+00:33:38.620 --> 00:33:44.160
+But if you want to use an app regularly you'll want to learn the keys, so it is very focused.
+
+00:33:44.480 --> 00:33:47.400
+You can use the keyboard for everything.
+
+00:33:49.000 --> 00:33:52.300
+In the footer, that displays all the main keys.
+
+00:33:52.980 --> 00:33:56.400
+You can also use tab and shift tab to move around the various elements.
+
+00:33:57.040 --> 00:33:58.160
+You can use it up, down to scroll.
+
+00:33:59.520 --> 00:34:04.660
+So you could get by without ever using the mouse.
+
+00:34:06.960 --> 00:34:09.360
+It's there if you need it, but you don't have to.
+
+00:34:10.980 --> 00:34:11.860
+Yeah, that's incredible.
+
+00:34:14.080 --> 00:34:15.360
+It's got code highlighting.
+
+00:34:16.300 --> 00:34:17.700
+It's got a lot of different things.
+
+00:34:19.100 --> 00:34:20.879
+For people who maybe want to get started with this,
+
+00:34:21.169 --> 00:34:23.919
+I think there's two, well, let's say three.
+
+00:34:25.060 --> 00:34:26.360
+Three things that are worth looking at.
+
+00:34:26.460 --> 00:34:29.440
+One, you actually, you said you were a web developer,
+
+00:34:29.610 --> 00:34:31.899
+so you must have been a fan of Vue Source, right?
+
+00:34:32.919 --> 00:34:33.419
+Oh, yeah.
+
+00:34:33.860 --> 00:34:36.080
+So you basically added Vue Source.
+
+00:34:36.780 --> 00:34:37.500
+That's right, yeah.
+
+00:34:37.520 --> 00:34:41.060
+You type C, it says so at the bottom,
+
+00:34:41.169 --> 00:34:43.780
+and that pulls up the source of the current page
+
+00:34:43.800 --> 00:34:46.800
+like you would at my website, any website, right?
+
+00:34:47.540 --> 00:34:52.540
+Yeah, I want people to realize that the code behind it is not that complex.
+
+00:34:52.679 --> 00:34:54.139
+It looks like complex.
+
+00:34:55.040 --> 00:34:57.340
+What you're viewing at the moment is actually markdown,
+
+00:34:58.780 --> 00:35:01.860
+which you might think that's quite hard to render markdown in a terminal.
+
+00:35:02.280 --> 00:35:04.000
+Well, it is, but we've done it for you.
+
+00:35:04.320 --> 00:35:09.900
+So you just embed a widget and somewhere in the code it'll say yield markdown
+
+00:35:10.340 --> 00:35:11.800
+and then it'll have the contents
+
+00:35:12.500 --> 00:35:13.960
+and it renders marked out
+
+00:35:13.980 --> 00:35:15.740
+and you see there's a code block there
+
+00:35:15.750 --> 00:35:16.800
+with syntax highlight code.
+
+00:35:18.420 --> 00:35:21.700
+Yeah, well that's the magic of these libraries, right?
+
+00:35:21.740 --> 00:35:23.660
+It's hard once for you
+
+00:35:23.860 --> 00:35:25.020
+and then it's easy for other people.
+
+00:35:25.920 --> 00:35:27.640
+Yeah, we suffer so you don't have to.
+
+00:35:28.080 --> 00:35:28.500
+Exactly.
+
+00:35:29.090 --> 00:35:30.380
+I feel like the most,
+
+00:35:31.120 --> 00:35:33.140
+the biggest example of that in the Python space
+
+00:35:33.380 --> 00:35:35.720
+is Jupyter Notebooks, right?
+
+00:35:35.860 --> 00:35:37.560
+All that interactivity and all that stuff,
+
+00:35:37.700 --> 00:35:39.880
+people are writing TypeScript and JavaScript
+
+00:35:39.900 --> 00:35:46.100
+and all these kinds of things, you know, it's for, you know, Plotly and other plotting UI
+
+00:35:46.520 --> 00:35:52.800
+things. And that's so Python people can write Python code and not write, you know, they're
+
+00:35:52.810 --> 00:35:55.820
+not creating websites. They're just typing in a notebook and they get interactive things.
+
+00:35:55.970 --> 00:36:00.240
+Right. But yeah, that's probably the biggest take one for the team sort of deal.
+
+00:36:00.900 --> 00:36:07.140
+Yeah. So there's a lot of work under the hood. And a lot of people that use Jupyter Notebooks,
+
+00:36:08.260 --> 00:36:11.660
+that's the only knowledge of Python they think Python is Jupyter and Jupyter is
+
+00:36:11.800 --> 00:36:18.460
+Python and that's fine it's a tool and it gives them access to all this stuff
+
+00:36:18.700 --> 00:36:23.100
+which would be very hard otherwise so yeah I think Jupyter is a great example
+
+00:36:23.240 --> 00:36:30.960
+of that out in the audience and we have David points out JP term are you from
+
+00:36:30.980 --> 00:36:42.740
+jpterm yes it's that david brokert yeah yeah yeah the successor of mbterm and it's um jupiter
+
+00:36:43.440 --> 00:36:51.620
+jupiter lab in the terminal amazing yeah it's gone full circle um it's like the inception movie
+
+00:36:53.260 --> 00:36:57.440
+it really is right yeah but you can embed the textual app inside jupiter
+
+00:36:58.400 --> 00:37:04.900
+So you could have Jterm working in a textual app inside Jupyter that's also displaying another notebook.
+
+00:37:05.900 --> 00:37:06.020
+Yeah.
+
+00:37:08.120 --> 00:37:08.260
+Incredible.
+
+00:37:09.420 --> 00:37:09.740
+All right.
+
+00:37:09.960 --> 00:37:19.020
+So if we go to the terminal where I got this running and anyone else out there listening wants to check this out, just run it.
+
+00:37:19.280 --> 00:37:27.860
+And I was starting to say there's three places you should check out before I got kind of starstruck with a view code.
+
+00:37:28.920 --> 00:37:34.680
+okay so i think there's probably the best place to get started is to look at the widgets i don't
+
+00:37:34.680 --> 00:37:38.580
+know what you think but just like well what can this framework do in terms of what are the building
+
+00:37:38.760 --> 00:37:43.940
+blocks is that you can look at the widgets and then once you decide okay this is pretty interesting
+
+00:37:44.080 --> 00:37:48.020
+i think people should check out the projects because there are some pretty interesting
+
+00:37:48.280 --> 00:37:54.160
+things i know we've covered the mom python bytes that are built on top of textual and then just to
+
+00:37:54.220 --> 00:38:06.080
+talk about the graphics. What is this game? This is a game in inverted commas. It's got different
+
+00:38:06.320 --> 00:38:11.720
+names. Sliding tile puzzle, I think is the most common thing. You've probably seen it before.
+
+00:38:13.460 --> 00:38:17.840
+You've got a square. The square is made up of lots of little tiles and there's one space and you can
+
+00:38:17.860 --> 00:38:24.720
+move a square into that one space and the goal is to like reassemble the image but for here
+
+00:38:25.560 --> 00:38:32.080
+I've used code so you've got all these tiles with code on it you got to reassemble it into
+
+00:38:32.770 --> 00:38:38.780
+actual working code which I think is what most people think developers do this is how we make
+
+00:38:38.920 --> 00:38:44.500
+code just by sliding these tiles around yeah I remember one of my daughters I can't remember
+
+00:38:44.500 --> 00:38:47.620
+which one was like saw me typing out code.
+
+00:38:49.120 --> 00:38:49.840
+What are you doing?
+
+00:38:49.920 --> 00:38:50.540
+What is that?
+
+00:38:51.160 --> 00:38:53.660
+Work on this project, this program, this website.
+
+00:38:54.400 --> 00:38:55.600
+That's what websites look like.
+
+00:38:55.740 --> 00:38:55.860
+Okay.
+
+00:38:57.120 --> 00:38:57.480
+Yeah.
+
+00:38:58.220 --> 00:38:59.520
+My wife calls it the gibberish.
+
+00:39:00.160 --> 00:39:01.380
+She says, are you working on the gibberish?
+
+00:39:01.460 --> 00:39:01.860
+Yeah, I am.
+
+00:39:01.940 --> 00:39:02.080
+Yes.
+
+00:39:03.280 --> 00:39:03.940
+That's incredible.
+
+00:39:04.240 --> 00:39:05.500
+That's an amazing way to put it.
+
+00:39:06.640 --> 00:39:06.780
+Yeah.
+
+00:39:07.240 --> 00:39:10.560
+You know, I was just thinking the other day,
+
+00:39:10.720 --> 00:39:12.980
+like the incredible power of text.
+
+00:39:14.880 --> 00:39:20.720
+right you think of all these systems the internet Linux configuration source code
+
+00:39:21.740 --> 00:39:28.800
+design through c all of that is just words right it's not working with guis and all that stuff it's
+
+00:39:29.450 --> 00:39:35.880
+just typing taxes yeah very important i quite like um websites that skew graphics and have
+
+00:39:36.500 --> 00:39:41.619
+just kind of like typography based thing um i find you can easily more easily extract
+
+00:39:41.960 --> 00:39:45.600
+information you need. But most websites these days you go to and
+
+00:39:46.500 --> 00:39:49.620
+loads of ads, loads of image, they pop in and out.
+
+00:39:50.120 --> 00:39:52.660
+The text seems almost secondary.
+
+00:39:53.740 --> 00:39:57.720
+So I'm a big fan of just text in general.
+
+00:39:58.360 --> 00:40:01.440
+Yeah, same. Alright, so people can play the game.
+
+00:40:01.880 --> 00:40:05.020
+That's kind of interesting. Like I said, I think where maybe it's more
+
+00:40:05.560 --> 00:40:09.300
+interesting is talking about the widgets. And when I look at this,
+
+00:40:09.460 --> 00:40:28.380
+You know, what this reminds me of is it reminds me of if I were to go over here and type Bulma and go, which Bulma is a very refreshing CSS framework that doesn't require build tools and shaking and webpack and all that junk.
+
+00:40:29.620 --> 00:40:35.960
+Or like Tailwind, or Tailwind is kind of a pain to work with, but it's also super beautiful, right?
+
+00:40:36.900 --> 00:40:42.920
+When I look at this, the widgets, it feels very much similar to that, right?
+
+00:40:43.020 --> 00:40:44.600
+I'm sure people have checked out CSS frameworks.
+
+00:40:47.260 --> 00:40:48.720
+Yeah, tell us about it.
+
+00:40:49.960 --> 00:40:56.660
+Yeah, so I mean, again, coming from the web, I want to have a web-like experience.
+
+00:40:56.960 --> 00:40:58.100
+Because everybody's familiar with the web.
+
+00:40:58.240 --> 00:41:00.940
+It's like you can sit someone down on a website and they'll be able to use it.
+
+00:41:01.280 --> 00:41:02.920
+I wanted the same thing for terminal apps.
+
+00:41:05.140 --> 00:41:06.820
+Some terminal apps have a bad reputation,
+
+00:41:06.940 --> 00:41:09.220
+have been hard to use, and it's mostly deserved.
+
+00:41:09.700 --> 00:41:12.080
+Like, you know, how do you quit Vim?
+
+00:41:13.140 --> 00:41:14.040
+It's a running joke.
+
+00:41:15.080 --> 00:41:16.160
+I know how to quit Vim.
+
+00:41:16.200 --> 00:41:17.160
+You reboot your computer.
+
+00:41:17.680 --> 00:41:18.360
+Everybody knows that.
+
+00:41:18.760 --> 00:41:18.980
+Come on.
+
+00:41:19.720 --> 00:41:20.060
+Exactly.
+
+00:41:20.180 --> 00:41:22.580
+But I wanted, like, an interface
+
+00:41:22.800 --> 00:41:24.180
+that people were very, very familiar with.
+
+00:41:24.720 --> 00:41:27.200
+So this is actually an alphabetical order,
+
+00:41:27.440 --> 00:41:28.800
+but I think buttons was actually
+
+00:41:28.860 --> 00:41:30.000
+one of the first things I developed.
+
+00:41:32.300 --> 00:41:34.760
+Because the terminal doesn't give you anything for free.
+
+00:41:34.860 --> 00:41:41.560
+The terminal is just text with escape sequences for color and style, like italic, bold, etc.
+
+00:41:43.140 --> 00:41:44.480
+But there's no escape sequence for a button.
+
+00:41:44.840 --> 00:41:47.940
+The most simplest atomic user interface thing.
+
+00:41:48.420 --> 00:41:50.740
+A button with a bit of text that you click.
+
+00:41:51.080 --> 00:41:53.400
+There's nothing in the terminal spec for that.
+
+00:41:54.300 --> 00:41:55.240
+So you have to start from scratch.
+
+00:41:55.640 --> 00:42:00.040
+And we built this button that looks button-y.
+
+00:42:00.340 --> 00:42:04.480
+It even has a 3D raised effect and stuff.
+
+00:42:04.940 --> 00:42:08.140
+Yes, there's like a lighter color at the top and a dark color at the bottom.
+
+00:42:08.580 --> 00:42:12.920
+And it looks like a classic windows raised button.
+
+00:42:13.180 --> 00:42:15.140
+Imagine if this light is like coming
+
+00:42:15.200 --> 00:42:17.100
+from the top and illuminating the top edge.
+
+00:42:18.880 --> 00:42:20.400
+Some people don't don't like them.
+
+00:42:22.260 --> 00:42:24.860
+I think one of the reasons is it has to take up three characters.
+
+00:42:24.960 --> 00:42:27.480
+In order to get that effect, you have to take up three lines.
+
+00:42:28.540 --> 00:42:29.080
+I see.
+
+00:42:29.400 --> 00:42:30.940
+It creates quite a chunky button.
+
+00:42:31.620 --> 00:42:33.420
+Looks like a button, but it's chunky.
+
+00:42:34.300 --> 00:42:38.060
+But you can style it very trivially to be like one line long.
+
+00:42:38.130 --> 00:42:41.600
+So your button can just be as tall as it needs to be.
+
+00:42:43.080 --> 00:42:43.300
+Nice.
+
+00:42:44.050 --> 00:42:44.780
+Yeah, these are great.
+
+00:42:44.790 --> 00:42:46.660
+And we've got other things.
+
+00:42:46.900 --> 00:42:50.640
+I was thinking as you were talking about the primitives you have to work with,
+
+00:42:51.100 --> 00:42:56.700
+I was thinking of pretty much every 3D rendered thing that people see,
+
+00:42:56.960 --> 00:42:59.740
+video games and others as well, animations.
+
+00:43:00.500 --> 00:43:01.100
+They're just triangles.
+
+00:43:02.180 --> 00:43:06.520
+There's just a bunch of triangles, which is so insane that you think that thing that looks like a real forest.
+
+00:43:07.480 --> 00:43:12.720
+Every single thing on the screen is some weird triangle with a texture and stuff applied to it.
+
+00:43:13.280 --> 00:43:14.040
+But a lot of triangles.
+
+00:43:14.400 --> 00:43:14.460
+Yeah.
+
+00:43:14.760 --> 00:43:14.980
+Lots.
+
+00:43:15.700 --> 00:43:20.980
+You can't think too hard about how fast things are happening on graphics cards because your mind will melt.
+
+00:43:21.100 --> 00:43:22.420
+It's like there's so much going on.
+
+00:43:23.300 --> 00:43:24.040
+You've got check boxes.
+
+00:43:24.480 --> 00:43:24.860
+Are they all?
+
+00:43:26.700 --> 00:43:27.240
+Radio buttons.
+
+00:43:27.840 --> 00:43:27.960
+Yeah.
+
+00:43:28.380 --> 00:43:29.480
+Radio buttons, which are great.
+
+00:43:30.120 --> 00:43:34.940
+A lot of the things that people might think about data tables, you know, this is if you're doing data science.
+
+00:43:35.630 --> 00:43:46.580
+I think one of the things worth talking about, because when we talk about some of the performance things, there's a lot of this within that within that.
+
+00:43:46.740 --> 00:43:53.880
+Right. Like in your data table. So this whole UI, I can scroll up and down and see all the different widgets.
+
+00:43:54.010 --> 00:43:59.600
+But then when I get to the data table section, I can scroll horizontally and vertically within the data table itself.
+
+00:44:00.540 --> 00:44:04.440
+right yeah you can also press um control a and that'll maximize it
+
+00:44:06.660 --> 00:44:13.080
+oh yeah very cool i didn't even know about that yeah this is a nice feature um which i think
+
+00:44:13.240 --> 00:44:18.840
+websites should have and guis in general um i remember windows used to suffer from this you'd
+
+00:44:18.840 --> 00:44:24.619
+get like a dialogue we had to enter a lot of text but the dialogue was this size um and you weren't
+
+00:44:24.600 --> 00:44:26.160
+allowed to resize it.
+
+00:44:26.280 --> 00:44:27.320
+You can't resize it.
+
+00:44:28.420 --> 00:44:30.440
+You tap over and hope you hit the right button
+
+00:44:30.450 --> 00:44:31.020
+that you can't see.
+
+00:44:31.980 --> 00:44:32.140
+Yeah.
+
+00:44:32.510 --> 00:44:33.740
+So I added
+
+00:44:35.440 --> 00:44:36.600
+a shortcut key
+
+00:44:36.740 --> 00:44:37.640
+which can maximize anything
+
+00:44:38.100 --> 00:44:39.240
+which is focused, make it,
+
+00:44:39.980 --> 00:44:41.940
+resize it to the size of the screen.
+
+00:44:44.040 --> 00:44:44.240
+Nice.
+
+00:44:44.470 --> 00:44:44.600
+Okay.
+
+00:44:46.340 --> 00:44:48.460
+In the interest of time,
+
+00:44:49.120 --> 00:44:50.760
+let's go and talk about projects real quick.
+
+00:44:51.170 --> 00:44:52.040
+I think one of the things
+
+00:44:52.340 --> 00:44:54.560
+that probably can inspire people
+
+00:44:54.580 --> 00:44:58.600
+lot is some of these projects here.
+
+00:44:58.660 --> 00:45:03.700
+If you go to the project section, you've got a couple that are super nice here.
+
+00:45:03.860 --> 00:45:11.140
+For example, I would say this posting I know by Darren Burns, it's pretty, pretty interesting.
+
+00:45:13.200 --> 00:45:14.480
+This is like Postman, right?
+
+00:45:14.520 --> 00:45:17.100
+Like a HTTP client, but entirely in your terminal.
+
+00:45:17.280 --> 00:45:17.980
+Let's tell people about this.
+
+00:45:18.140 --> 00:45:18.540
+This is great.
+
+00:45:19.100 --> 00:45:19.500
+Yeah.
+
+00:45:19.600 --> 00:45:25.720
+This is something that Darren Burns built and he's a developer of Textual, one of the developers,
+
+00:45:26.260 --> 00:45:29.200
+and he made a fantastic job of this. This is not a textualized project.
+
+00:45:30.340 --> 00:45:37.700
+But basically it's Postman, which is a tool for making HTTP requests. You might use it if you're
+
+00:45:37.800 --> 00:45:42.840
+developing an API and you want to experiment and you don't want to have to build all the tooling
+
+00:45:43.620 --> 00:45:49.560
+to talk to your API. You can just go straight into this interface and experiment and play around with
+
+00:45:50.180 --> 00:45:51.420
+Yeah, I did that two days ago.
+
+00:45:51.960 --> 00:45:55.000
+Yeah, and it's super useful.
+
+00:45:55.380 --> 00:46:03.280
+And the fact that it's in the terminal is completely appropriate for this kind of application because that's where you're going to be a lot of the time.
+
+00:46:03.460 --> 00:46:04.720
+It just seems to be the right place.
+
+00:46:04.740 --> 00:46:13.020
+If you have your app in a browser, it can take you out of your flow if you're developing and then having to switch over a window.
+
+00:46:14.020 --> 00:46:17.780
+But having it all on the terminal is super useful.
+
+00:46:18.820 --> 00:46:21.840
+And this project has sort of grown in feature set,
+
+00:46:21.870 --> 00:46:25.520
+and I think it's comparable to some much, much larger projects,
+
+00:46:25.720 --> 00:46:26.560
+including Postman.
+
+00:46:27.060 --> 00:46:27.740
+Yeah, nice.
+
+00:46:27.980 --> 00:46:29.260
+And open source, right?
+
+00:46:30.100 --> 00:46:30.840
+Open source, yeah.
+
+00:46:31.500 --> 00:46:32.000
+Yeah, cool.
+
+00:46:34.960 --> 00:46:37.640
+What other ones do you want to give a quick shout out to?
+
+00:46:40.180 --> 00:46:41.500
+Well, yeah, we'll go through them there.
+
+00:46:41.640 --> 00:46:44.620
+We've got Memory that was written by Bloomberg.
+
+00:46:44.890 --> 00:46:46.840
+They were an early adopter of Textual.
+
+00:46:47.780 --> 00:46:49.620
+And it's kind of a memory profiler,
+
+00:46:49.740 --> 00:46:52.020
+so it can run your Python application
+
+00:46:53.080 --> 00:46:56.320
+and it can pinpoint exactly what's taken up too much memory.
+
+00:46:57.420 --> 00:46:58.860
+Or if you've got a leak, you know,
+
+00:46:59.200 --> 00:47:00.880
+you're in a loop and you're reserving objects,
+
+00:47:00.900 --> 00:47:03.640
+you don't know about it, it can alert you to that,
+
+00:47:04.740 --> 00:47:06.560
+which is very hard to actually debug
+
+00:47:07.680 --> 00:47:08.580
+without any kind of tool.
+
+00:47:09.820 --> 00:47:12.540
+So that's a fantastic project.
+
+00:47:12.620 --> 00:47:17.160
+- Yeah, I had them on not too long ago to talk about it.
+
+00:47:17.300 --> 00:47:18.700
+And yeah, this is a super cool project.
+
+00:47:21.120 --> 00:47:24.720
+I think also just graphically, it's pretty neat, right?
+
+00:47:25.640 --> 00:47:26.040
+Yeah.
+
+00:47:27.360 --> 00:47:33.420
+It displays all the information that you need right there in the terminal in a nice way.
+
+00:47:33.980 --> 00:47:45.820
+I mean, I can imagine a previous version of something like this, writing out a big spew of JSON, which you then got to study to figure out.
+
+00:47:46.640 --> 00:47:48.280
+We've saved a CSV file.
+
+00:47:48.330 --> 00:47:49.060
+Now you can look at it.
+
+00:47:49.070 --> 00:47:49.700
+It's like, oh, great.
+
+00:47:49.800 --> 00:47:51.060
+Yeah, exactly.
+
+00:47:51.250 --> 00:47:52.660
+But if you can look at it in a graphical form
+
+00:47:52.690 --> 00:47:53.340
+and a nice table,
+
+00:47:53.490 --> 00:47:57.520
+you can visually parse information much quicker
+
+00:47:57.910 --> 00:47:59.540
+so you can pinpoint things.
+
+00:48:00.340 --> 00:48:02.260
+Yeah, we talked a little bit around this,
+
+00:48:03.040 --> 00:48:05.640
+but another huge benefit of these types of UIs
+
+00:48:05.670 --> 00:48:12.000
+with Textual is the ability to run them remotely on servers
+
+00:48:12.400 --> 00:48:19.020
+and other or on a raspberry pi or on things that you that are embedded types of stuff that you just
+
+00:48:19.420 --> 00:48:25.460
+only access through the terminal right like if you wanted to do memory on your your web server
+
+00:48:25.850 --> 00:48:33.180
+you probably don't want to just open up a bunch of ports and start serving you know a parallel
+
+00:48:33.640 --> 00:48:38.360
+http request over there's right but if you sshn and you just run this gui that's updating it's
+
+00:48:38.380 --> 00:48:44.700
+really nice right yeah exactly this is um you don't even need to have a desktop you don't need
+
+00:48:44.860 --> 00:48:49.420
+to run a server and like you said you don't need to like set your firewall to allow a particular
+
+00:48:49.740 --> 00:48:54.920
+port and then configure application all that's gone because it's a text on the face you just need to
+
+00:48:55.320 --> 00:48:59.940
+have a shell ssh into the server and then run it and you can see this nice interface
+
+00:49:00.920 --> 00:49:07.700
+there because it is just purely text and there's not much text involved you'd be surprised um
+
+00:49:07.900 --> 00:49:11.600
+The text needs to be sent over the wire is surprisingly minimal.
+
+00:49:12.890 --> 00:49:16.300
+If you compared it to a YouTube video of the lowest quality,
+
+00:49:16.400 --> 00:49:19.900
+I don't know what the lowest quality is, like 120p or something.
+
+00:49:20.200 --> 00:49:23.280
+Yeah, 360 by 240 or something.
+
+00:49:23.490 --> 00:49:23.720
+Who knows?
+
+00:49:23.900 --> 00:49:29.060
+Yeah, that would be vastly more data than a text interface like this.
+
+00:49:29.810 --> 00:49:32.000
+Yeah, even if it's madly updating, yeah.
+
+00:49:33.380 --> 00:49:34.160
+I mean, you could actually.
+
+00:49:34.670 --> 00:49:35.760
+You could if you want to push it.
+
+00:49:35.940 --> 00:49:38.280
+Like if I was to run this ridiculous demo
+
+00:49:38.440 --> 00:49:40.420
+with a spinning gradient at 60 frames a second
+
+00:49:41.860 --> 00:49:44.220
+and setting the screen size to ridiculous,
+
+00:49:45.380 --> 00:49:49.000
+it might turn into a video, but for most interfaces.
+
+00:49:50.280 --> 00:49:53.960
+- But is it, it's probably applicable
+
+00:49:54.400 --> 00:49:56.840
+for like Gzip transfer as well, you know,
+
+00:49:57.000 --> 00:49:58.680
+text compresses really well, I don't know.
+
+00:49:59.480 --> 00:50:00.360
+- True, true.
+
+00:50:00.820 --> 00:50:01.960
+It depends what you're rendering.
+
+00:50:02.320 --> 00:50:04.880
+- I don't know SSH does, I don't know, maybe it does.
+
+00:50:05.040 --> 00:50:08.000
+I would think it compresses.
+
+00:50:09.140 --> 00:50:10.240
+Compresses and encrypts.
+
+00:50:10.840 --> 00:50:11.840
+Yeah, I would hope so.
+
+00:50:12.220 --> 00:50:12.420
+But yeah.
+
+00:50:12.500 --> 00:50:14.760
+Yeah, well, compression should be cheaper than the encryption.
+
+00:50:14.980 --> 00:50:16.980
+So yeah, why not go ahead and compress it while you're at it, right?
+
+00:50:17.080 --> 00:50:17.580
+Exactly, yeah.
+
+00:50:18.240 --> 00:50:18.760
+Yeah, yeah, yeah.
+
+00:50:18.960 --> 00:50:19.060
+Okay.
+
+00:50:20.960 --> 00:50:23.660
+So somewhere in here, we've pulled up so many things.
+
+00:50:24.060 --> 00:50:27.440
+I pulled up your article that I wanted to talk about as well.
+
+00:50:27.540 --> 00:50:29.060
+So let's talk about this.
+
+00:50:29.120 --> 00:50:31.560
+This was your, you said you wanted to write an article,
+
+00:50:32.340 --> 00:50:35.360
+would sort of celebrate the 1.0 milestone for Textual.
+
+00:50:36.200 --> 00:50:38.340
+And the article was called Algorithms
+
+00:50:38.520 --> 00:50:40.120
+for High Performance Terminal Apps.
+
+00:50:40.260 --> 00:50:41.820
+And I thought there was just some fun things
+
+00:50:41.960 --> 00:50:42.520
+to pull out of here.
+
+00:50:42.780 --> 00:50:45.200
+So I thought we could maybe talk through some of that.
+
+00:50:46.540 --> 00:50:47.240
+Yeah, sure.
+
+00:50:47.300 --> 00:50:49.740
+So there's lots of interesting technical problems
+
+00:50:49.880 --> 00:50:52.540
+to solve with Textual.
+
+00:50:54.060 --> 00:50:57.000
+And lots of cool solutions.
+
+00:50:57.660 --> 00:50:59.220
+And by so far, I rarely have the chance
+
+00:50:59.460 --> 00:51:01.860
+to talk to anyone about it.
+
+00:51:01.940 --> 00:51:03.980
+because it's one of these things that's kind of under the hood, it just works.
+
+00:51:04.780 --> 00:51:05.020
+Yeah.
+
+00:51:05.100 --> 00:51:07.220
+There's nothing to discuss.
+
+00:51:07.460 --> 00:51:11.420
+So I wrote this blog post to describe some of the cool things that go on.
+
+00:51:13.820 --> 00:51:17.000
+The most core part of Textual is the compositor.
+
+00:51:18.180 --> 00:51:19.960
+This takes all the widgets.
+
+00:51:20.820 --> 00:51:26.640
+If you've got an interface, it might have data table, button, checkboxes.
+
+00:51:28.840 --> 00:51:31.880
+And there might be loads of those and it might be able to scroll through it.
+
+00:51:33.040 --> 00:51:36.560
+And Textual has to take all those widgets and assemble them into a single update.
+
+00:51:37.800 --> 00:51:41.440
+Because there's nothing in the terminal that does a kind of a tiling window manager.
+
+00:51:42.800 --> 00:51:44.240
+You just write text to the terminal.
+
+00:51:44.990 --> 00:51:50.820
+So the software has to create this illusion that you've got windows and things that are
+
+00:51:51.040 --> 00:51:51.320
+overlapping.
+
+00:51:51.980 --> 00:51:53.800
+And that's essentially what the compositor does.
+
+00:51:54.440 --> 00:51:55.140
+That's great.
+
+00:51:55.280 --> 00:51:56.800
+And you've got transparency.
+
+00:51:57.840 --> 00:52:03.640
+sort of oh my goodness yeah it's kind of magical it's like it shouldn't be possible in terminal
+
+00:52:04.250 --> 00:52:08.180
+no it should not be possible it cheats um you're not you're not seeing true
+
+00:52:09.720 --> 00:52:13.420
+uh transparency because the terminal is not capable of it you can't put like um
+
+00:52:14.400 --> 00:52:21.640
+an x on top of an a and then see the x translucently with it in with the a in the background
+
+00:52:22.500 --> 00:52:25.280
+but you can change background colors.
+
+00:52:25.550 --> 00:52:27.620
+So if you put something on top of background,
+
+00:52:28.010 --> 00:52:34.160
+you can calculate the transparency on top of the widget underneath it.
+
+00:52:34.470 --> 00:52:37.880
+So you can create the illusion of background of transparency.
+
+00:52:39.180 --> 00:52:43.740
+And that's something that the compositor does as well.
+
+00:52:44.360 --> 00:52:46.640
+Yeah. Is textual pure Python?
+
+00:52:48.020 --> 00:52:48.720
+Pure Python, yeah.
+
+00:52:49.600 --> 00:52:49.700
+Wow.
+
+00:52:51.060 --> 00:52:55.860
+I had thought that at some point we would have to write something in Rust.
+
+00:52:58.180 --> 00:53:01.700
+I bought a couple of Rust books, which I haven't read yet.
+
+00:53:01.800 --> 00:53:04.200
+But every time I got to a point where this is a bit too slow,
+
+00:53:05.160 --> 00:53:09.040
+I found a very good optimization in Python.
+
+00:53:10.140 --> 00:53:12.080
+So it turns out that it's just not necessary.
+
+00:53:12.400 --> 00:53:15.620
+I mean, if we were to write some core code in Rust,
+
+00:53:16.320 --> 00:53:18.660
+I don't think we'd get a marvelous speed up.
+
+00:53:18.740 --> 00:53:22.600
+we might get 5%, 10% if we're lucky for a lot of effort.
+
+00:53:23.800 --> 00:53:26.060
+But since it runs on a lowly Raspberry Pi,
+
+00:53:27.400 --> 00:53:27.980
+it's not been necessary.
+
+00:53:28.260 --> 00:53:29.920
+Python's been more than fast enough.
+
+00:53:30.420 --> 00:53:30.620
+Yeah.
+
+00:53:31.360 --> 00:53:35.280
+And you can just ride on the coattails of the faster CPython team.
+
+00:53:36.280 --> 00:53:36.560
+Oh, yeah.
+
+00:53:36.800 --> 00:53:37.780
+I mean, yeah.
+
+00:53:37.840 --> 00:53:38.120
+That helps.
+
+00:53:38.280 --> 00:53:40.980
+A new version comes along, we can say Textual just got 10% faster.
+
+00:53:42.740 --> 00:53:46.060
+Textual has some sort of concurrency framework too, right?
+
+00:53:47.380 --> 00:53:47.460
+Yeah.
+
+00:53:47.580 --> 00:53:57.980
+So it's based on async.io and every widget from a button to a text area to a checkbox runs an async.io task.
+
+00:53:59.030 --> 00:54:02.840
+So all these things are running concurrently, potentially updating the state.
+
+00:54:03.810 --> 00:54:09.720
+And Textual will update things according to the schedule of the widgets.
+
+00:54:10.750 --> 00:54:13.820
+You might have a widget which updates 10 times a second.
+
+00:54:14.580 --> 00:54:16.820
+another widget which updates when you press a key,
+
+00:54:17.780 --> 00:54:21.100
+another widget which updates infrequently,
+
+00:54:21.800 --> 00:54:26.880
+and Textile will combine those updates into a single update
+
+00:54:27.780 --> 00:54:31.040
+so that it looks clean, it doesn't flicker,
+
+00:54:31.600 --> 00:54:38.500
+and it's what does the magic of updating things.
+
+00:54:39.340 --> 00:54:40.100
+Yeah, awesome.
+
+00:54:40.820 --> 00:54:41.700
+That's super neat.
+
+00:54:43.060 --> 00:54:48.540
+I think UI frameworks and AsyncIO, Async and await, they make a lot of sense, right?
+
+00:54:48.960 --> 00:54:50.040
+It's event-driven stuff.
+
+00:54:50.110 --> 00:54:56.380
+And so you can, instead of pulling or whatever, you just say, I'm going to wait till this thing has some kind of event.
+
+00:54:56.490 --> 00:54:57.460
+And then I'll work on it.
+
+00:54:57.510 --> 00:55:00.240
+And if that doesn't have an event, I'm going to go work on something else.
+
+00:55:00.440 --> 00:55:01.180
+Yeah, it's pretty cool.
+
+00:55:01.300 --> 00:55:01.840
+Yeah, exactly.
+
+00:55:02.880 --> 00:55:10.620
+It's funny that AsyncIO was obviously, you can tell by the name, it wasn't intended to build user interfaces, whether in the terminal or not.
+
+00:55:10.720 --> 00:55:17.960
+it was built for I/O but it's very good at handling concurrency of any kind and
+
+00:55:18.600 --> 00:55:24.740
+including text user interfaces. I'm a big fan of async I/O it's not it's not
+
+00:55:24.980 --> 00:55:28.880
+perfect there are a bunch of gotchas which come up in our support channels
+
+00:55:30.400 --> 00:55:34.780
+for instance someone will be playing around with textual and they'll say well
+
+00:55:34.840 --> 00:55:38.320
+I'm going to need some long-running tasks so I'll simulate this by putting a
+
+00:55:38.300 --> 00:55:43.740
+sleep pin we'll do like sleep 10 and then the whole app just locks up i can't believe exactly
+
+00:55:44.200 --> 00:55:50.900
+exactly so it's not it's not perfect but there is no perfect solution to concurrency um but i think
+
+00:55:51.690 --> 00:55:58.380
+you know it's it's as good as it can be with the current level of technology i think yeah yeah yeah
+
+00:55:58.480 --> 00:56:05.520
+very neat free threaded python have you played with this is it going to influence that kind of thing
+
+00:56:07.279 --> 00:56:12.880
+I think so. There's a whole lot of cool things that free-threaded Python can do. We've kind of
+
+00:56:13.060 --> 00:56:16.900
+convinced ourselves that we didn't need that kind of level of concurrency, you know, for like a web
+
+00:56:17.140 --> 00:56:24.860
+application or something, because it's linear. And the IO gives you concurrency in a sense,
+
+00:56:24.980 --> 00:56:31.580
+because you're waiting for the IO. But I think free-threaded Python, I think we need a better
+
+00:56:31.600 --> 00:56:39.780
+abstraction for concurrency because having to explicitly create a thread and run it requires
+
+00:56:39.840 --> 00:56:46.000
+that you think in terms of threads which is quite challenging yeah I think it should be
+
+00:56:47.000 --> 00:56:51.940
+it should be the same as async.io it should be async and await and there should be some item
+
+00:56:52.960 --> 00:56:56.500
+marriage between them where like you don't really know as you're consuming it you know
+
+00:56:57.500 --> 00:57:01.120
+Yeah, unfortunately, async.io is single threaded.
+
+00:57:02.220 --> 00:57:06.620
+You can use multiple threads, but you've got to consciously write the code.
+
+00:57:06.760 --> 00:57:13.060
+I would like to see an async.io where it just distributed work across the cores.
+
+00:57:13.460 --> 00:57:15.860
+If it's IO based, just keep it on the same thread.
+
+00:57:15.880 --> 00:57:19.480
+But if it's computational based, then like you're going to just put it on another thread
+
+00:57:19.620 --> 00:57:21.420
+and give me a future sort of thing to await.
+
+00:57:22.460 --> 00:57:23.100
+Yeah, we don't care.
+
+00:57:23.120 --> 00:57:23.980
+Yeah, absolutely.
+
+00:57:24.040 --> 00:57:33.860
+Yeah. So I think in the future, we're probably going to get something like that because I think free-threaded Python is so valuable that people are going to want to use it more.
+
+00:57:34.400 --> 00:57:36.480
+And they're going to build these better abstractions.
+
+00:57:36.770 --> 00:57:47.140
+So I imagine in a year or two, maybe less, we'll have an asyncio that's free-threaded or something like it.
+
+00:57:47.740 --> 00:57:51.780
+Yeah. We say that we don't need it for web apps because we can just scale them out, right?
+
+00:57:51.820 --> 00:57:54.180
+We'll just run four of them, four worker processes.
+
+00:57:54.480 --> 00:57:57.100
+But there's a big memory cost to running.
+
+00:57:57.520 --> 00:58:02.140
+Well, I've got 16 cores, so I'm going to run 16 worker processes, right?
+
+00:58:02.720 --> 00:58:03.940
+They each take half a gig.
+
+00:58:04.140 --> 00:58:06.280
+All of a sudden, you're like, it gigs just for this.
+
+00:58:07.900 --> 00:58:10.440
+Just so I can get computational parallelism, right?
+
+00:58:11.200 --> 00:58:11.320
+Yeah.
+
+00:58:11.890 --> 00:58:12.000
+Exactly.
+
+00:58:12.170 --> 00:58:17.020
+I mean, yeah, the IO gets you a lot of the way there,
+
+00:58:17.140 --> 00:58:20.820
+but sometimes you accidentally create CPU bound code.
+
+00:58:21.620 --> 00:58:22.740
+which would run very
+
+00:58:23.860 --> 00:58:25.060
+poorly but if we had
+
+00:58:25.270 --> 00:58:27.240
+if we were using all our threads efficiently then
+
+00:58:28.300 --> 00:58:29.240
+that should be easier
+
+00:58:29.580 --> 00:58:30.580
+it should be easier yeah
+
+00:58:31.680 --> 00:58:33.160
+you know it's super easy
+
+00:58:33.340 --> 00:58:35.260
+like oh I've got an ORM
+
+00:58:35.270 --> 00:58:35.840
+and I'm going to return
+
+00:58:37.960 --> 00:58:39.400
+20,000 things that I'm
+
+00:58:39.680 --> 00:58:41.340
+parsing into Pydantic objects for Fast
+
+00:58:41.500 --> 00:58:43.340
+API all of a sudden like the most of the work
+
+00:58:43.460 --> 00:58:45.360
+is the serialization that's computational
+
+00:58:46.140 --> 00:58:46.700
+anyway alright so
+
+00:58:47.640 --> 00:58:49.440
+let's get back to this but I think that's super
+
+00:58:49.460 --> 00:58:54.460
+super interesting we could we could do a whole another hour on that probably so one of the things
+
+00:58:54.580 --> 00:59:01.860
+in here you talked about is thinking in segments and not uh not characters or stuff for drawing um
+
+00:59:02.280 --> 00:59:06.040
+terminal so let's talk about that because i really want to talk about the switching the primitive
+
+00:59:06.400 --> 00:59:13.220
+idea you got but i think this is a good setup yeah sure um so people who aren't familiar with inner
+
+00:59:13.300 --> 00:59:17.839
+workings of terminals might look at terminal um and think it's like a two-dimensional array of
+
+00:59:17.780 --> 00:59:23.920
+characters because it does it does seem like that and if you're building a text lab you might think
+
+00:59:25.220 --> 00:59:31.880
+so you could compose a screen full of text and like a bitmap as if the characters were
+
+00:59:32.150 --> 00:59:38.060
+were pixels and as developers that'd be like um stuff we're very familiar with we could easily
+
+00:59:38.640 --> 00:59:45.200
+build that and you know create stuff with it and but the problem is that term terminals aren't
+
+00:59:45.860 --> 00:59:52.140
+two-dimensional arrays of characters and it's for one reason is that some characters take up
+
+00:59:52.590 --> 00:59:58.180
+twice as much space as others um chinese japanese and korean tags typically take up two characters
+
+00:59:58.400 --> 01:00:03.480
+because their characters are more complex they deliver more information in a single character
+
+01:00:03.660 --> 01:00:11.920
+so they have to be wider um there's also emoji which many emojis can take up twice as much space
+
+01:00:12.780 --> 01:00:19.680
+um i'd have the snake the snake emoji exactly um i think that yeah that might be two um i don't know
+
+01:00:19.720 --> 01:00:25.460
+how wide it is so some emoji are one like a smiley face or something but some emoji are two
+
+01:00:26.420 --> 01:00:30.760
+and if you were to treat it like a like a two-dimensional ray um it kind of falls apart
+
+01:00:30.960 --> 01:00:36.880
+at that point because um you know if you subtract one from the y coordinate it's not directly above
+
+01:00:38.360 --> 01:00:46.300
+um the original coordinate so in situations like that rather than trying to fudge things into like
+
+01:00:46.480 --> 01:00:53.180
+into the primitive that you first thought of you can come up with a new primitive a new way that
+
+01:00:53.300 --> 01:01:00.600
+represents um the very lowest common denominator of thing you want to do and for textual that turned
+
+01:01:00.600 --> 01:01:08.220
+out to be segments um so rather than a characters like a pixel um we use a segment a segment is
+
+01:01:08.640 --> 01:01:11.700
+a string, any number of characters, plus a style.
+
+01:01:12.880 --> 01:01:14.340
+And by assembling these segments,
+
+01:01:14.850 --> 01:01:17.740
+you can represent anything in the UI.
+
+01:01:18.740 --> 01:01:22.440
+And all the operations which are done
+
+01:01:22.550 --> 01:01:24.560
+are kind of built on segments.
+
+01:01:25.960 --> 01:01:27.940
+So I call this switching the primitive
+
+01:01:28.030 --> 01:01:30.220
+because the original primitive was like a character's a pixel,
+
+01:01:31.190 --> 01:01:31.900
+which didn't work.
+
+01:01:32.080 --> 01:01:35.960
+You could use that with a bunch of fudges
+
+01:01:36.680 --> 01:01:37.780
+to build on top of it.
+
+01:01:38.100 --> 01:01:39.660
+but you might find that it falls apart.
+
+01:01:39.880 --> 01:01:40.780
+Things which should be straightforward
+
+01:01:41.180 --> 01:01:42.360
+suddenly become really complicated.
+
+01:01:43.760 --> 01:01:46.840
+And that's because as developers we tend to layer primitives
+
+01:01:47.720 --> 01:01:48.680
+on top of other operations
+
+01:01:49.460 --> 01:01:51.140
+and if the very foundational primitive
+
+01:01:53.200 --> 01:01:55.460
+doesn't represent your problem very well
+
+01:01:56.080 --> 01:01:57.160
+then it can fall apart.
+
+01:01:58.100 --> 01:02:02.140
+So the switch from pixels to segments worked very well with textual
+
+01:02:02.400 --> 01:02:05.720
+and textual is essentially a segment processing engine.
+
+01:02:06.380 --> 01:02:09.580
+everything the compositor does takes in a bunch of segments,
+
+01:02:10.200 --> 01:02:12.560
+manipulates them, spits out new segments,
+
+01:02:12.920 --> 01:02:15.320
+and then those get turned into escape sequences.
+
+01:02:16.600 --> 01:02:17.540
+Yeah, very cool.
+
+01:02:20.700 --> 01:02:22.640
+I think this idea of switching the primitive,
+
+01:02:23.760 --> 01:02:26.040
+you know, people who are new to programming or new to Python,
+
+01:02:26.760 --> 01:02:30.480
+especially programming, I have a hard time.
+
+01:02:31.260 --> 01:02:32.100
+I see the code.
+
+01:02:32.460 --> 01:02:34.300
+I look at someone else's code, and I see the code,
+
+01:02:34.300 --> 01:02:35.140
+and it makes sense.
+
+01:02:35.940 --> 01:02:40.260
+but then when i sit down with a blank screen and try to solve a problem i'm stuck i don't know what
+
+01:02:40.340 --> 01:02:46.220
+to do and this the switching the primitive concept of like we looked at it this way and it just seemed
+
+01:02:46.420 --> 01:02:52.080
+so complicated and tractable and then i decided to re rejigger maybe the data structures and how
+
+01:02:52.080 --> 01:02:56.580
+we organize stuff and how we combine them and boom it just unlocks simplicity actually like
+
+01:02:57.240 --> 01:03:01.480
+kind of like going back to our triangles and graphics it's like well if you think in pixels
+
+01:03:02.220 --> 01:03:07.120
+3d game engines are impossible with ray tracing and lighting and shadows you think in triangles
+
+01:03:07.900 --> 01:03:12.660
+all of a sudden it unlocks it right this sounds a little bit similar and i think i think that's a
+
+01:03:12.780 --> 01:03:18.540
+pretty valuable lesson for people to take that's exactly right so if you had um a game engine and
+
+01:03:18.660 --> 01:03:25.920
+all the only function it had was like put pixel um it would be a nightmare to build anything but
+
+01:03:25.940 --> 01:03:32.360
+the most trivial games but the um the primitive of a triangle means you can build 3d anything so that
+
+01:03:32.360 --> 01:03:36.380
+is the primitive yeah and they have angles so they have reflection and so they have all sorts of stuff
+
+01:03:36.460 --> 01:03:44.060
+yeah yeah um something similar came up when um darren was building the text area um so the text
+
+01:03:44.140 --> 01:03:52.079
+area has lots of operations like um insert a new line um delete a character um delete a line
+
+01:03:52.160 --> 01:03:55.200
+delete a paragraph, cut and paste, etc.
+
+01:03:56.140 --> 01:03:59.920
+And the primitive for that boiled down to a very, very simple primitive,
+
+01:04:00.160 --> 01:04:02.920
+and that was replace a range of text with new text.
+
+01:04:03.740 --> 01:04:06.040
+It's like anything you can do to a text area
+
+01:04:06.720 --> 01:04:10.020
+comes down to that primitive of a range plus new text.
+
+01:04:10.880 --> 01:04:13.960
+Like to delete something, you replace a range with an empty string.
+
+01:04:16.059 --> 01:04:21.740
+To insert something, you replace a range with the insertion character,
+
+01:04:21.780 --> 01:04:27.260
+like a like a new line plus the previous string so everything boils down to like one very simple
+
+01:04:27.480 --> 01:04:33.840
+primitive and once you find the right primitive bigger problems become much much easier yeah
+
+01:04:35.360 --> 01:04:43.140
+100 it's it's amazing the way it works so we'll get short on time we got pick one more one more
+
+01:04:43.320 --> 01:04:50.160
+lesson from here that you want to i want to talk about maybe um the spatial map was quite interesting
+
+01:04:50.520 --> 01:04:51.460
+Yeah, I think so too.
+
+01:04:52.010 --> 01:04:52.640
+A bit further down.
+
+01:04:54.579 --> 01:05:00.520
+So one of the problems we had in textual, when interfaces get complex, we've got lots and lots of widgets.
+
+01:05:01.480 --> 01:05:04.440
+Some of them are visible and some of them are not. Some of them are scrolled off.
+
+01:05:05.119 --> 01:05:07.480
+They're still there in memory. We know exactly where they are.
+
+01:05:09.490 --> 01:05:13.560
+And when we come to render that, the most obvious way to do that is to step through them in a for loop,
+
+01:05:14.320 --> 01:05:17.580
+for widgets in all widgets, do stuff to widget.
+
+01:05:19.180 --> 01:05:26.640
+So that means we're iterating over all the widgets every single time, even if they aren't visible.
+
+01:05:28.420 --> 01:05:31.040
+So the spatial map is an attempt to optimize that.
+
+01:05:31.100 --> 01:05:37.740
+Basically it's a very quick way of deciding which the widgets are on screen and which the widgets are currently scrolled off.
+
+01:05:38.720 --> 01:05:41.740
+So we literally don't need to even loop through the scrolled off widgets.
+
+01:05:42.920 --> 01:05:50.900
+And the way we did that briefly is we kind of logically separated the terminal into a grid.
+
+01:05:52.140 --> 01:05:59.220
+There's a step where you go through and assign every widget to the grid squares that it might overlap with.
+
+01:05:59.770 --> 01:06:02.300
+Small widgets might be right inside a grid square.
+
+01:06:03.130 --> 01:06:05.780
+Some may overlap one or two or more.
+
+01:06:06.660 --> 01:06:12.020
+And then once we've got that information, it's very easy to pick out which widgets are visible
+
+01:06:12.150 --> 01:06:14.660
+and exclude which widgets aren't.
+
+01:06:15.440 --> 01:06:20.580
+Because we can take the screen, figure out which of the grid squares it covers, and then
+
+01:06:20.580 --> 01:06:24.580
+we can go through those grid squares, and there's probably just a handful of them, and
+
+01:06:24.580 --> 01:06:27.820
+each of those grid squares is associated with a list of widgets which are under that.
+
+01:06:28.870 --> 01:06:33.540
+You can combine that with a set, and then very quickly you've reduced that problem domain
+
+01:06:33.560 --> 01:06:38.000
+from being potentially unbounded very large to like very small.
+
+01:06:38.980 --> 01:06:40.780
+Some of the widgets might actually not be visible.
+
+01:06:40.850 --> 01:06:42.720
+They might actually be in a grid square,
+
+01:06:42.850 --> 01:06:44.180
+which is off the edge of the screen.
+
+01:06:45.660 --> 01:06:49.300
+But we can just loop through those and discard those ones.
+
+01:06:49.390 --> 01:06:50.800
+But that's a much smaller operation
+
+01:06:51.470 --> 01:06:53.240
+than looping through every widget.
+
+01:06:53.860 --> 01:06:54.460
+Yeah, interesting.
+
+01:06:55.560 --> 01:06:57.580
+You talked about it's fast enough in Python.
+
+01:06:58.660 --> 01:07:01.420
+It's this kind of stuff that makes it fast enough in Python, right?
+
+01:07:01.560 --> 01:07:04.720
+If you rewrote this in some other native compiled language,
+
+01:07:06.580 --> 01:07:09.060
+it would be faster to go through every single one of them,
+
+01:07:09.070 --> 01:07:14.020
+but you're still potentially processing a tremendous number of things.
+
+01:07:14.090 --> 01:07:16.220
+You get the compositor and overlap and all those kinds of,
+
+01:07:16.380 --> 01:07:18.400
+and you're like really worried about stuff that's way off the screen.
+
+01:07:19.200 --> 01:07:20.840
+Instead of going, we're going to rewrite it.
+
+01:07:20.850 --> 01:07:21.460
+You can just think like,
+
+01:07:21.760 --> 01:07:26.020
+let me think about the right data structures and the right algorithms and so on.
+
+01:07:26.090 --> 01:07:26.200
+Yeah.
+
+01:07:26.940 --> 01:07:29.700
+I mean, I would love it if Python just got so ridiculously fast.
+
+01:07:30.460 --> 01:07:31.280
+You'd have to worry about that.
+
+01:07:31.400 --> 01:07:34.220
+and I'll take any speed improvements to give.
+
+01:07:35.570 --> 01:07:38.340
+But the optimizations you can produce yourself
+
+01:07:38.610 --> 01:07:39.800
+just by having the right algorithm,
+
+01:07:40.900 --> 01:07:43.820
+they tend to outweigh the benefits you could get
+
+01:07:44.820 --> 01:07:46.520
+from say running it in C.
+
+01:07:47.040 --> 01:07:48.580
+If I was to re-implement that in C,
+
+01:07:48.660 --> 01:07:50.540
+it would obviously be faster,
+
+01:07:50.910 --> 01:07:53.420
+but it would still be much faster to have that algorithm.
+
+01:07:54.220 --> 01:07:55.060
+- Yeah, exactly.
+
+01:07:55.620 --> 01:08:00.320
+I'll take my order of O squared versus your,
+
+01:08:00.600 --> 01:08:03.460
+in fact, your O factorial versus N squared.
+
+01:08:03.790 --> 01:08:04.300
+You know what I mean?
+
+01:08:04.460 --> 01:08:04.680
+- Yeah.
+
+01:08:06.019 --> 01:08:08.160
+- Eventually it's gonna lose on N factorial
+
+01:08:08.510 --> 01:08:09.620
+no matter what you do, right?
+
+01:08:09.980 --> 01:08:11.380
+- Yeah, I mean, Python wins
+
+01:08:11.500 --> 01:08:12.340
+because of the speed of development.
+
+01:08:12.960 --> 01:08:14.120
+We know it's not the runtime speed.
+
+01:08:14.540 --> 01:08:15.000
+- Yeah, absolutely.
+
+01:08:15.110 --> 01:08:16.720
+- The runtime speed is okay most of the time,
+
+01:08:17.580 --> 01:08:18.500
+but it's the speed of development,
+
+01:08:18.710 --> 01:08:19.920
+the fact that you have got more time
+
+01:08:19.970 --> 01:08:21.020
+to pick the right algorithm.
+
+01:08:21.980 --> 01:08:22.080
+- Yeah.
+
+01:08:22.080 --> 01:08:25.180
+- That means it's not as slow as people might think.
+
+01:08:25.560 --> 01:08:26.080
+- Yeah, absolutely.
+
+01:08:26.330 --> 01:08:27.779
+It doesn't get too complicated.
+
+01:08:28.940 --> 01:08:35.560
+Yeah, thinking about this, you know, I think there's a lot of parallels back to game engines that I think about a lot.
+
+01:08:35.660 --> 01:08:41.880
+Like the game engines have this thing called oct trees, like basically break stuff into eight squares.
+
+01:08:42.140 --> 01:08:47.220
+And you say, well, which I'm looking for a thing if it's going to say intersect with this.
+
+01:08:47.620 --> 01:08:51.740
+Right. For business, like for hit detection and stuff like, well, is it in this half of this world or that half?
+
+01:08:51.779 --> 01:08:55.900
+Well, it's in this half. OK, well, we're not even going to compare it against half of the things in the world that are in that half.
+
+01:08:56.420 --> 01:08:57.580
+Now, break that into hash, right?
+
+01:08:57.759 --> 01:09:01.960
+Like you can super quickly go, I have a million objects on screen,
+
+01:09:02.980 --> 01:09:06.620
+but I can determine if this thing hits it with five comparisons
+
+01:09:06.759 --> 01:09:07.799
+or something like that, you know what I mean?
+
+01:09:07.839 --> 01:09:08.560
+With just the right data.
+
+01:09:08.580 --> 01:09:09.240
+That's exactly it.
+
+01:09:09.279 --> 01:09:10.140
+It's super interesting.
+
+01:09:10.380 --> 01:09:10.440
+Yeah.
+
+01:09:10.940 --> 01:09:15.580
+And it's probably, it's like no coincidence that I used to work in video games.
+
+01:09:16.299 --> 01:09:16.660
+Oh, did you?
+
+01:09:16.779 --> 01:09:16.880
+Okay.
+
+01:09:17.080 --> 01:09:17.180
+Yeah.
+
+01:09:17.440 --> 01:09:17.540
+Yeah.
+
+01:09:18.040 --> 01:09:19.400
+So that was kind of my mindset.
+
+01:09:19.560 --> 01:09:21.080
+It's like reducing the problem.
+
+01:09:21.580 --> 01:09:24.180
+And Textile is quite a lot like a video game.
+
+01:09:24.339 --> 01:09:25.420
+If you imagine like a 2D video game
+
+01:09:25.520 --> 01:09:27.020
+that's got lots of sprites that are over here,
+
+01:09:27.720 --> 01:09:28.520
+we don't want to worry about those.
+
+01:09:29.880 --> 01:09:30.060
+- Yeah.
+
+01:09:30.279 --> 01:09:31.319
+- Replace sprites with widgets,
+
+01:09:31.430 --> 01:09:32.700
+and it's pretty much the same problem.
+
+01:09:32.720 --> 01:09:33.140
+- Yeah, yeah, exactly.
+
+01:09:33.140 --> 01:09:34.259
+- It's the same kind of mindset.
+
+01:09:34.880 --> 01:09:35.799
+- It certainly is.
+
+01:09:37.380 --> 01:09:38.480
+All right, well, I think we're gonna need
+
+01:09:38.640 --> 01:09:40.140
+to just kind of wrap it up here,
+
+01:09:40.279 --> 01:09:41.940
+'cause I think we're getting short on time.
+
+01:09:43.460 --> 01:09:47.120
+Let's leave everyone with roadmap.
+
+01:09:47.940 --> 01:09:49.920
+Where, you know, you've hit this 1.0 milestone
+
+01:09:50.080 --> 01:09:52.180
+with textual, where are things going?
+
+01:09:54.279 --> 01:09:57.280
+So there's a whole bunch of features which I want to implement.
+
+01:09:59.350 --> 01:10:04.060
+I mean, text is usable as, now you can build fantastic apps, but there are a few things
+
+01:10:04.150 --> 01:10:05.920
+where we don't have parity with web apps.
+
+01:10:07.000 --> 01:10:10.600
+Something I've implemented on a feature branch is arbitrary text selection.
+
+01:10:11.960 --> 01:10:16.580
+So you know on a website you can just draw your mouse over text you want to select.
+
+01:10:18.160 --> 01:10:19.480
+That didn't work well with 2e's.
+
+01:10:21.340 --> 01:10:26.240
+If the terminal did it, the terminal doesn't understand the logical separation of widgets.
+
+01:10:26.890 --> 01:10:32.280
+It would just copy all the text on that line, which might get parts of one widget and parts
+
+01:10:32.340 --> 01:10:32.580
+of another.
+
+01:10:33.860 --> 01:10:37.740
+So I've implemented arbitrary text selection, which seems to work quite well.
+
+01:10:37.970 --> 01:10:42.560
+And it's such a fundamental feature, I think it'll make textual more useful.
+
+01:10:42.880 --> 01:10:48.440
+Yeah, I guess if you got a UI in textual and you're like, I need to get that and paste
+
+01:10:48.460 --> 01:10:54.100
+into another document or search it you know highlight the map the address to put in a map
+
+01:10:54.110 --> 01:10:59.220
+or something right yeah and things like um you know if you're using textual to talk to an llm
+
+01:10:59.640 --> 01:11:07.760
+an llm write some code um you don't want to transcribe that code visually um yeah and so now
+
+01:11:07.870 --> 01:11:12.040
+we could be able to like we can select the entire code you could add a button but it's very convenient
+
+01:11:12.060 --> 01:11:12.900
+to drag.
+
+01:11:14.270 --> 01:11:16.300
+So that's something that's coming very soon.
+
+01:11:17.140 --> 01:11:17.260
+Awesome.
+
+01:11:17.350 --> 01:11:19.340
+And yeah, there's a whole bunch of features I've got,
+
+01:11:20.010 --> 01:11:21.760
+which I'll be working on.
+
+01:11:23.720 --> 01:11:24.520
+Yeah, watch this space.
+
+01:11:26.280 --> 01:11:26.520
+Excellent.
+
+01:11:27.500 --> 01:11:28.680
+And PRs accepted?
+
+01:11:29.020 --> 01:11:29.760
+Contributions accepted?
+
+01:11:30.900 --> 01:11:32.220
+Very much so, yep.
+
+01:11:33.240 --> 01:11:34.240
+There's a big pile of them there,
+
+01:11:34.420 --> 01:11:36.800
+but I tend to work on a big feature.
+
+01:11:37.430 --> 01:11:39.340
+I then spend a few days going through the PRs.
+
+01:11:39.920 --> 01:11:41.300
+And I love to have PRs.
+
+01:11:41.420 --> 01:11:43.560
+that means that people are very interested.
+
+01:11:44.140 --> 01:11:45.160
+And it saves me time, of course.
+
+01:11:45.580 --> 01:11:48.480
+If someone else is fixing bugs and writing code,
+
+01:11:49.060 --> 01:11:50.000
+then it's a great thing.
+
+01:11:50.660 --> 01:11:51.020
+- Awesome.
+
+01:11:52.020 --> 01:11:53.280
+All right, well, thanks for coming on,
+
+01:11:53.580 --> 01:11:54.840
+giving us an update on Textual
+
+01:11:55.040 --> 01:11:56.820
+and all the stuff that you guys built.
+
+01:11:56.990 --> 01:11:58.440
+It's super valuable to people.
+
+01:11:59.160 --> 01:12:00.340
+- Always a pleasure, thank you very much.
+
+01:12:00.420 --> 01:12:01.000
+- Yeah, you bet.
+
+01:12:01.270 --> 01:12:01.580
+See you later.
+
+01:12:02.520 --> 01:12:02.680
+- Bye-bye.
+

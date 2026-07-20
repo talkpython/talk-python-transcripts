@@ -1,0 +1,3023 @@
+WEBVTT
+
+00:00:01.800 --> 00:00:04.360
+Hey, Chang. Welcome to Talk Python To Me.
+
+00:00:05.240 --> 00:00:06.020
+Hey, how are you?
+
+00:00:06.800 --> 00:00:07.080
+I'm excited to be here.
+
+00:00:07.080 --> 00:00:07.500
+I'm doing a little while.
+
+00:00:08.380 --> 00:00:09.140
+I'm excited to have you here.
+
+00:00:10.220 --> 00:00:15.100
+We're going to talk about Lance DB, multi-dimensional data,
+
+00:00:16.440 --> 00:00:19.400
+all sorts of fun multimodal data, all sorts of fun things.
+
+00:00:20.140 --> 00:00:25.360
+So really cool database, kind of in the same category,
+
+00:00:26.280 --> 00:00:26.980
+SQLite, DuckDB.
+
+00:00:27.860 --> 00:00:31.700
+People want a quick mental model, but different kind of data, right?
+
+00:00:32.840 --> 00:00:33.920
+Yeah, absolutely.
+
+00:00:34.360 --> 00:00:41.980
+So I think we specialize in multimodal data or AI data.
+
+00:00:42.700 --> 00:00:49.540
+And what we think about as included in that is the tabular data that we have from previous
+
+00:00:49.820 --> 00:00:56.080
+generations of data engineering, data science, but also embedding vectors, images, videos,
+
+00:00:57.220 --> 00:01:02.040
+PDFs, basically anything that don't really fit neatly
+
+00:01:02.200 --> 00:01:05.400
+into data frames or Excel sheets.
+
+00:01:06.420 --> 00:01:08.260
+RICK VISCOMI: Yeah, less tabular data.
+
+00:01:08.660 --> 00:01:09.580
+RICK VISCOMI: That's right.
+
+00:01:09.580 --> 00:01:10.960
+RICK VISCOMI: It's not good tabular,
+
+00:01:11.700 --> 00:01:12.860
+you need something else probably.
+
+00:01:13.400 --> 00:01:14.280
+RICK VISCOMI: Yep, yep.
+
+00:01:14.420 --> 00:01:14.860
+RICK VISCOMI: Awesome.
+
+00:01:15.040 --> 00:01:17.660
+RICK VISCOMI: Which is pretty interesting since I
+
+00:01:18.200 --> 00:01:22.480
+was one of the earliest co-contributors to Pandas.
+
+00:01:22.840 --> 00:01:25.700
+So I spent years of my life working on data frames
+
+00:01:26.120 --> 00:01:26.800
+and big data.
+
+00:01:26.920 --> 00:01:28.600
+You've given up on squares and rectangles?
+
+00:01:28.750 --> 00:01:29.260
+Oh my gosh.
+
+00:01:29.780 --> 00:01:33.660
+Well, never, but I think there's room
+
+00:01:33.750 --> 00:01:34.760
+to build something more here.
+
+00:01:36.400 --> 00:01:37.320
+Yeah, I hear you.
+
+00:01:37.580 --> 00:01:39.020
+And also, I agree.
+
+00:01:39.520 --> 00:01:42.440
+So it's going to be super fun to dive into all of that stuff
+
+00:01:42.600 --> 00:01:42.680
+together.
+
+00:01:43.920 --> 00:01:45.640
+Before we do, though, let's hear your story.
+
+00:01:45.740 --> 00:01:46.740
+How do you get into programming?
+
+00:01:47.490 --> 00:01:50.760
+I know this is written in Rust, but also has some programming
+
+00:01:51.000 --> 00:01:51.120
+APIs.
+
+00:01:51.410 --> 00:01:54.020
+How much Python are you doing these days versus other languages?
+
+00:01:55.600 --> 00:02:02.420
+Yeah, well, the core of Lance format and LanceCV are in Rust.
+
+00:02:02.960 --> 00:02:08.420
+And then there are Python APIs and wrappers around that, as well as TypeScript.
+
+00:02:09.780 --> 00:02:16.800
+And the team spends a significant amount of time thinking about what the Python user experience looks like
+
+00:02:16.800 --> 00:02:23.380
+and how best to combine the performance that you get from Rust and the user views you get from Python.
+
+00:02:24.120 --> 00:02:28.240
+And then also making it more as extensible as possible
+
+00:02:28.390 --> 00:02:30.580
+so that even though it's a Python library,
+
+00:02:31.560 --> 00:02:33.600
+if you want to add features, for example,
+
+00:02:33.690 --> 00:02:38.980
+you don't have to learn Rust just to be a contributor to Lance or LanceDB.
+
+00:02:40.740 --> 00:02:44.000
+You know, I think Python has benefited a lot
+
+00:02:44.330 --> 00:02:48.060
+from the various Rust-based projects out there, right?
+
+00:02:48.940 --> 00:02:51.720
+Obviously, we've got uv and Ruff.
+
+00:02:51.980 --> 00:02:55.440
+We've got Pydantic, a bunch of other things that make it faster.
+
+00:02:56.290 --> 00:03:02.140
+But there has been some pushback that if everything gets done in Rust, then it's hard for Python people to contribute.
+
+00:03:03.100 --> 00:03:09.020
+I don't necessarily subscribe to that because previously the answer was when things are too slow, we write them in C.
+
+00:03:10.420 --> 00:03:15.820
+Maybe it's just traditional Python people also know C, but traditional Python people don't also know Rust.
+
+00:03:15.950 --> 00:03:20.180
+I think that's honestly the crux of the issue or the crux of the pushback.
+
+00:03:21.600 --> 00:03:26.240
+So I really like to hear that, you know, the extensibility points and, and you've thought
+
+00:03:26.380 --> 00:03:29.800
+through like how Python people can extend it and contribute and stuff.
+
+00:03:30.440 --> 00:03:30.880
+Yeah.
+
+00:03:31.150 --> 00:03:31.300
+Yeah.
+
+00:03:31.380 --> 00:03:38.180
+I've spent a lot of time, writing like Cython and C, to, to make Python code
+
+00:03:38.420 --> 00:03:40.120
+go faster, back in the day.
+
+00:03:40.620 --> 00:03:41.980
+I think, yeah, I think you're right.
+
+00:03:42.120 --> 00:03:48.120
+A lot of the points are the same for, for Rust and actually Rust is a lot safer actually.
+
+00:03:48.240 --> 00:03:55.060
+So when we, we originally started Lance in the very beginning in C++ and we spent months,
+
+00:03:55.520 --> 00:03:59.020
+we spent months writing C++ code for a new format.
+
+00:04:00.320 --> 00:04:06.640
+And, I think it was the, it was Christmas break of 2022 that that's what I call,
+
+00:04:06.760 --> 00:04:10.400
+our rust pill moment was when we decided to switch over.
+
+00:04:11.140 --> 00:04:16.380
+And I think we ended up, you know, we took about three weeks and we rewrote roughly
+
+00:04:16.239 --> 00:04:18.579
+roughly four or five months of C++ code there.
+
+00:04:20.120 --> 00:04:21.900
+Overall, I think we actually ended up
+
+00:04:22.320 --> 00:04:24.660
+getting better performance for the most part.
+
+00:04:26.500 --> 00:04:29.820
+I think the biggest thing was just us having
+
+00:04:29.820 --> 00:04:34.060
+the confidence to move forward very quickly without that,
+
+00:04:34.340 --> 00:04:37.000
+like in the back of our mind,
+
+00:04:37.000 --> 00:04:38.940
+like where's the next sexual coming from?
+
+00:04:39.300 --> 00:04:41.900
+Yeah. Yeah. Oh, absolutely.
+
+00:04:42.220 --> 00:04:44.639
+Or the next security vulnerability because you
+
+00:04:44.580 --> 00:04:44.720
+Exactly.
+
+00:04:45.640 --> 00:04:48.680
+Did an S print F, not at one of the safe variants or whatever.
+
+00:04:48.820 --> 00:04:50.220
+It's been a long time since I've done C++.
+
+00:04:50.460 --> 00:04:53.360
+But tell me about that process.
+
+00:04:54.400 --> 00:04:57.980
+I don't know how many people are working on the project at this time
+
+00:04:58.110 --> 00:05:00.860
+and how much experience you all had with Rust.
+
+00:05:01.060 --> 00:05:04.860
+Why did you make that choice and how did it go?
+
+00:05:05.600 --> 00:05:06.120
+Oh, yeah.
+
+00:05:07.440 --> 00:05:09.080
+I'm a Rust neophyte.
+
+00:05:09.560 --> 00:05:14.900
+Before that Christmas of 2022, I've never written a line of Rust.
+
+00:05:15.920 --> 00:05:21.120
+Most of our team are also new to Rust,
+
+00:05:21.860 --> 00:05:24.460
+or they're new when they join LanceDB.
+
+00:05:25.180 --> 00:05:28.240
+And I think what helps is that most of them
+
+00:05:28.520 --> 00:05:31.260
+were also already proficient in CC++.
+
+00:05:31.720 --> 00:05:36.700
+So the core thinking around algorithms and design
+
+00:05:36.750 --> 00:05:39.320
+is all the same, performance and all that.
+
+00:05:39.500 --> 00:05:44.660
+and the Rust language makes it just easier to learn.
+
+00:05:44.690 --> 00:05:48.420
+You're more productive and it's just safer.
+
+00:05:48.990 --> 00:05:52.360
+And I think one of the surprising benefits that we saw
+
+00:05:52.910 --> 00:05:55.220
+that I don't see people talking about a lot,
+
+00:05:55.320 --> 00:06:00.320
+and maybe that's just us not being very good at CMake,
+
+00:06:00.320 --> 00:06:02.100
+is that productivity piece.
+
+00:06:03.140 --> 00:06:05.100
+When we were writing lots of C++ code,
+
+00:06:05.270 --> 00:06:08.879
+we spent tons of time just wrestling with CMake
+
+00:06:08.900 --> 00:06:10.460
+to make the builds work.
+
+00:06:10.820 --> 00:06:14.060
+And once we moved to Rust,
+
+00:06:15.160 --> 00:06:17.120
+Cargo just made that so easy.
+
+00:06:17.420 --> 00:06:19.180
+Basically, we spent zero time wrestling with that.
+
+00:06:19.460 --> 00:06:20.820
+Wow, that's pretty wild.
+
+00:06:23.680 --> 00:06:25.480
+So you all were pretty new to Rust.
+
+00:06:27.320 --> 00:06:29.420
+How much do you think that LLMs,
+
+00:06:29.919 --> 00:06:30.400
+ChatGPT,
+
+00:06:32.860 --> 00:06:34.240
+Mistral, Llama,
+
+00:06:34.520 --> 00:06:35.140
+all these things,
+
+00:06:35.880 --> 00:06:37.020
+the availability to just go,
+
+00:06:37.580 --> 00:06:38.600
+hey, chat thing,
+
+00:06:38.660 --> 00:06:41.060
+How do you do this in Rust? Here it is in C++.
+
+00:06:42.240 --> 00:06:44.740
+Do you all find that beneficial? Did you all do this?
+
+00:06:45.520 --> 00:06:50.940
+Sometimes. So we use a lot of coding aid,
+
+00:06:51.330 --> 00:06:56.020
+so from Copilot to Cursor, Continue, Zed.
+
+00:06:56.860 --> 00:06:58.920
+We try out lots of different tools as well.
+
+00:06:59.820 --> 00:07:05.680
+I think certainly the quality of the tooling matters,
+
+00:07:06.360 --> 00:07:10.660
+But at the core of it, there's that model performance.
+
+00:07:11.410 --> 00:07:20.340
+And so the models today performs pretty well on Python and TypeScript, but on Rust, much less so.
+
+00:07:20.740 --> 00:07:21.760
+Oh, interesting.
+
+00:07:22.260 --> 00:07:22.380
+Yeah.
+
+00:07:22.550 --> 00:07:34.260
+And so we always joke about, God grant me the confidence of ChatGPT coming up with random Rust syntax.
+
+00:07:35.260 --> 00:07:36.880
+Yeah, I've had that as well.
+
+00:07:36.930 --> 00:07:38.620
+I asked for some how to do this in Python,
+
+00:07:38.960 --> 00:07:40.620
+because I was feeling lazy or something.
+
+00:07:40.720 --> 00:07:42.100
+I just needed it for an example real quick.
+
+00:07:42.150 --> 00:07:43.840
+And it said, you use this.
+
+00:07:44.340 --> 00:07:45.480
+It looked completely plausible.
+
+00:07:45.610 --> 00:07:49.060
+It was converting time zones and date times.
+
+00:07:49.210 --> 00:07:51.380
+And just the time zone part of it was driving me nuts.
+
+00:07:51.450 --> 00:07:53.060
+I'm like, all right, chat, let's do this.
+
+00:07:54.080 --> 00:07:55.260
+And it just made up stuff.
+
+00:07:55.330 --> 00:07:58.420
+So you're going to use this function or this property
+
+00:07:58.530 --> 00:07:59.040
+based on this.
+
+00:07:59.440 --> 00:08:00.320
+No, that doesn't exist.
+
+00:08:00.660 --> 00:08:01.540
+I'm like, that doesn't exist.
+
+00:08:01.660 --> 00:08:01.880
+Try again.
+
+00:08:01.960 --> 00:08:02.740
+Oh, I'm so sorry.
+
+00:08:02.880 --> 00:08:03.740
+Let me try another one.
+
+00:08:04.760 --> 00:08:17.120
+Yeah. What's interesting is I think that in Python, if you're looking at really well-known libraries out there, it generally does much better.
+
+00:08:17.940 --> 00:08:29.360
+But even for long-known libraries that don't have as much training corpus or attention focus on it, it tends to hallucinate a lot.
+
+00:08:29.380 --> 00:08:36.940
+even for something you know like at apache arrow like uh pyero kind of api um you know it's the
+
+00:08:37.200 --> 00:08:44.140
+it's the standard for in memory in memory data but the chattypd still makes up apis for that and
+
+00:08:45.040 --> 00:08:51.900
+and also i think if you were looking at um in terms of like the effect on the developer community
+
+00:08:52.490 --> 00:08:58.500
+so there are lots of times where i've seen either like hacker news posts or comments on hacker news
+
+00:08:58.480 --> 00:09:03.600
+posts where there's a choice between two similar libraries.
+
+00:09:04.370 --> 00:09:10.960
+And then I think the commenters are like, well, I'm choosing A because ChatGPT or
+
+00:09:11.260 --> 00:09:13.320
+copilot generates better completions for that one.
+
+00:09:13.500 --> 00:09:14.260
+How interesting.
+
+00:09:14.260 --> 00:09:15.260
+Which is really interesting.
+
+00:09:15.260 --> 00:09:16.060
+I've never thought about that.
+
+00:09:16.130 --> 00:09:16.580
+But yeah.
+
+00:09:18.220 --> 00:09:18.480
+Wow.
+
+00:09:18.930 --> 00:09:28.460
+You know, the Python, the PSF and JetBrains Python developer survey that came out, one of
+
+00:09:28.480 --> 00:09:33.020
+really interesting stats is 50% of the people who filled out that survey said
+
+00:09:33.140 --> 00:09:36.280
+they've been doing professional software development for less than two years.
+
+00:09:37.900 --> 00:09:39.400
+Wow. That is surprising.
+
+00:09:39.630 --> 00:09:43.120
+50% of all Python developers, less than two years.
+
+00:09:43.650 --> 00:09:49.960
+And I think there's got to be a strong pull for, yeah, I could go research that.
+
+00:09:49.990 --> 00:09:51.940
+Let me just ask chat first and see what it says.
+
+00:09:52.550 --> 00:09:52.700
+Right.
+
+00:09:53.030 --> 00:09:57.240
+Or check ask Copilot or whatever tools they're using.
+
+00:09:57.400 --> 00:10:04.640
+you know yep yep actually yeah i mean i think that's um you know now that i think about it yeah
+
+00:10:04.640 --> 00:10:11.500
+i do i do feel like that's a that's probably that shouldn't be surprising um and and also what's
+
+00:10:11.700 --> 00:10:18.380
+what's interesting i think i've noticed kind of the same thing with um ai versus you know previous
+
+00:10:18.560 --> 00:10:24.500
+generations of machine learning in previous generations it was all python um with ai there's
+
+00:10:24.520 --> 00:10:28.440
+huge TypeScript community that has formed around AI.
+
+00:10:28.820 --> 00:10:32.440
+And then also just up in previous generations of machine learning,
+
+00:10:32.540 --> 00:10:38.160
+you had to have years of training to learn math and stats and data analytics
+
+00:10:38.280 --> 00:10:43.340
+and data science before you're a productive machine learning engineer.
+
+00:10:43.880 --> 00:10:46.600
+And I think today it's with AI,
+
+00:10:46.880 --> 00:10:52.440
+it's definitely not the case that you could quickly through some experimentation
+
+00:10:52.440 --> 00:10:57.460
+and self-learning to become a fairly proficient AI engineer,
+
+00:10:57.670 --> 00:11:00.940
+which is also a new term that's been coined in the last two years.
+
+00:11:01.760 --> 00:11:02.280
+Amazing.
+
+00:11:03.360 --> 00:11:06.880
+It's going to be really interesting to see how this affects the industry.
+
+00:11:07.980 --> 00:11:11.280
+On one hand, it's going to supercharge people getting going faster,
+
+00:11:12.440 --> 00:11:15.020
+help them become unstuck if they're stuck on a problem.
+
+00:11:16.030 --> 00:11:21.600
+But it could also end up hollowing out deep knowledge maybe in the long term.
+
+00:11:21.760 --> 00:11:22.660
+I'm not entirely sure.
+
+00:11:23.940 --> 00:11:24.860
+Yeah, we'll see.
+
+00:11:25.760 --> 00:11:27.900
+Yeah, you know, that is very interesting.
+
+00:11:29.180 --> 00:11:35.680
+I do think that, so what we're seeing is, you know, there's a lot of focus around sort
+
+00:11:35.770 --> 00:11:42.380
+of model capabilities and then maybe like RAG and, you know, how to marry context and
+
+00:11:42.470 --> 00:11:46.620
+knowledge bases to the model through, you know, vector search and vector databases.
+
+00:11:48.080 --> 00:11:57.080
+But what we're seeing a lot is more traditional and large enterprises are now starting to adopt AI in wholesale.
+
+00:11:57.240 --> 00:12:11.100
+And the way they're thinking about it is, you know, let's build an excellence center around AI internally and make AI applications easily accessible to the rest of the company across many different groups.
+
+00:12:11.560 --> 00:12:13.940
+so that you don't have to worry too much about AI infrastructure,
+
+00:12:14.180 --> 00:12:18.080
+where the data is stored, how that interfaces with a model,
+
+00:12:19.300 --> 00:12:23.700
+and maybe just think about more at the business level and the user level
+
+00:12:24.180 --> 00:12:25.540
+how you want these things to work.
+
+00:12:25.760 --> 00:12:31.120
+So I think that deep knowledge around AI, statistics, machine learning
+
+00:12:31.880 --> 00:12:35.820
+will probably start to coalesce around these centers of innovation
+
+00:12:36.260 --> 00:12:37.160
+within these large enterprises.
+
+00:12:38.040 --> 00:12:50.580
+And of course, within AI native startups, they all have to have much deeper knowledge in advance of the rest of the market to stay ahead of the curve.
+
+00:12:51.260 --> 00:12:51.740
+Yeah.
+
+00:12:53.720 --> 00:12:54.180
+It's interesting.
+
+00:12:54.280 --> 00:12:56.700
+And I started to see these bots.
+
+00:12:57.540 --> 00:12:58.960
+We'll get to the database in just a second.
+
+00:12:59.080 --> 00:13:01.980
+I started to see these bots as kind of almost replacing search.
+
+00:13:03.560 --> 00:13:05.920
+I find myself, maybe I'll just skip search.
+
+00:13:06.040 --> 00:13:11.860
+Maybe we'll just ask this thing because I got a good shot of a good answer straight away rather than.
+
+00:13:12.820 --> 00:13:13.380
+Right, right.
+
+00:13:13.940 --> 00:13:15.720
+And that kind of ties into this enterprise thing.
+
+00:13:15.800 --> 00:13:18.640
+Like, you know, searching Google is a little bit tricky sometimes.
+
+00:13:18.940 --> 00:13:20.440
+I use cat or whatever you're using.
+
+00:13:22.139 --> 00:13:26.540
+It's tricky because there's SEO tricks going on.
+
+00:13:27.340 --> 00:13:28.120
+There's ads.
+
+00:13:28.340 --> 00:13:30.460
+There's a lot of stuff where you're like, is this really relevant?
+
+00:13:31.660 --> 00:13:34.420
+And I think that's probably even worse than trying to search within your enterprise.
+
+00:13:34.560 --> 00:13:36.460
+It's like, do we have documents on this or whatever?
+
+00:13:36.580 --> 00:13:40.320
+It's probably just like, here's a 175 email email thread.
+
+00:13:41.100 --> 00:13:42.200
+Like, no, no thanks.
+
+00:13:42.230 --> 00:13:42.960
+This isn't going to help.
+
+00:13:43.720 --> 00:13:44.520
+Right, right.
+
+00:13:45.680 --> 00:13:50.020
+Let's talk LanceDB and multimodal data.
+
+00:13:50.110 --> 00:13:51.760
+And I guess maybe that's the place.
+
+00:13:51.930 --> 00:13:57.240
+Before we get into the details of Lance, what is multimodal data anyway?
+
+00:13:58.140 --> 00:13:58.760
+Yeah, absolutely.
+
+00:13:58.990 --> 00:14:04.140
+So like I was saying earlier, I think with AI data, vectors and embedding vectors,
+
+00:14:04.280 --> 00:14:06.440
+is just scratching the surface.
+
+00:14:07.260 --> 00:14:10.280
+One of the most powerful things about AI
+
+00:14:10.420 --> 00:14:12.000
+is that it makes it a lot easier
+
+00:14:12.900 --> 00:14:15.840
+to interact with the multimodal
+
+00:14:15.980 --> 00:14:17.700
+or unstructured data that we have.
+
+00:14:18.420 --> 00:14:21.560
+And so if you're thinking about images, videos,
+
+00:14:21.840 --> 00:14:23.720
+audio forms, 3D point clouds,
+
+00:14:24.200 --> 00:14:26.980
+there's a lot that's happening in generation
+
+00:14:27.800 --> 00:14:29.540
+in things like autonomous vehicles.
+
+00:14:30.180 --> 00:14:31.680
+But even for traditional enterprises,
+
+00:14:31.740 --> 00:14:39.120
+right you have just just oodles of like pdf documents or slide decks and there's lots of
+
+00:14:39.120 --> 00:14:49.620
+use cases for a tool that can help those users extract the extract insights and then possibly
+
+00:14:49.760 --> 00:14:56.800
+train models on top of those on top of that kind of data and so you know i think if you look at
+
+00:14:57.600 --> 00:15:01.080
+if you look at data by volume, right,
+
+00:15:01.960 --> 00:15:03.000
+you know, if you look at your average,
+
+00:15:03.270 --> 00:15:04.580
+like TPCH data table,
+
+00:15:04.940 --> 00:15:06.900
+it's like, what, like 150 bytes
+
+00:15:06.930 --> 00:15:08.120
+or something like that per row.
+
+00:15:09.480 --> 00:15:11.200
+And then embeddings, you know,
+
+00:15:11.240 --> 00:15:12.800
+if you just look at the previous generation
+
+00:15:12.970 --> 00:15:14.640
+of OpenAI, it's like, you know,
+
+00:15:14.960 --> 00:15:16.500
+25 times that.
+
+00:15:17.130 --> 00:15:18.720
+And then if you look at images and videos,
+
+00:15:19.420 --> 00:15:21.280
+you're quickly getting to these tables
+
+00:15:21.520 --> 00:15:23.100
+where even if you have the same number of rows,
+
+00:15:23.320 --> 00:15:24.600
+the data is just huge.
+
+00:15:24.820 --> 00:15:26.360
+So it's not,
+
+00:15:26.700 --> 00:15:30.760
+username, address, and a few other things are still simple.
+
+00:15:30.880 --> 00:15:31.020
+Yeah.
+
+00:15:31.400 --> 00:15:31.680
+Yeah.
+
+00:15:32.040 --> 00:15:36.580
+So when we talk to a lot of our customers
+
+00:15:37.260 --> 00:15:39.560
+who are trying to build this new,
+
+00:15:40.020 --> 00:15:41.720
+what they call unstructured data lake,
+
+00:15:42.360 --> 00:15:44.820
+the expectation, they are already coming in with expectations.
+
+00:15:45.200 --> 00:15:46.680
+Okay, in terms of data volume,
+
+00:15:48.680 --> 00:15:53.200
+this is going to trounce the existing previous generations of data lakes.
+
+00:15:54.060 --> 00:15:55.380
+And then not only that-
+
+00:15:55.660 --> 00:16:02.360
+before but now we've got big data right yeah this is even bigger and and it's not only that each row
+
+00:16:02.460 --> 00:16:09.160
+is bigger but you know previous generations of tooling you have um you know you like users or
+
+00:16:09.500 --> 00:16:14.820
+humans manually generating one data point at a time and now you know ai is generating its own
+
+00:16:15.040 --> 00:16:19.280
+training data at thousands of tokens per second right you know when you're when you're doing
+
+00:16:19.460 --> 00:16:24.599
+completions that completion itself becomes training data and so the volume at which
+
+00:16:24.780 --> 00:16:29.600
+the data is increasing is also growing at very, very rapidly.
+
+00:16:31.220 --> 00:16:31.300
+Yeah.
+
+00:16:31.460 --> 00:16:38.860
+If anyone wants to get a sense for just how intensely the world is focused on this, they
+
+00:16:38.860 --> 00:16:44.520
+just reopened Three Mile Island, the nuclear power plant, purely to plug in a single Azure
+
+00:16:44.840 --> 00:16:45.700
+data center for AI.
+
+00:16:46.060 --> 00:16:49.920
+So yeah, I think we're putting a lot of energy into generating data.
+
+00:16:50.380 --> 00:16:51.060
+What would you say?
+
+00:16:51.540 --> 00:16:52.020
+Yeah.
+
+00:16:52.200 --> 00:16:59.340
+Well, I'm glad this data center, even if something goes wrong, the consequences will be much less dire.
+
+00:17:00.960 --> 00:17:01.200
+Yes.
+
+00:17:02.220 --> 00:17:08.500
+Honestly, I think nuclear is worth considering rather than coal or whatever.
+
+00:17:08.640 --> 00:17:10.180
+But still, that's a whole different discussion.
+
+00:17:10.280 --> 00:17:11.699
+We don't need to go down that hole right now.
+
+00:17:11.860 --> 00:17:13.280
+Maybe later at the end.
+
+00:17:13.280 --> 00:17:13.560
+Who knows?
+
+00:17:13.760 --> 00:17:14.339
+I mean, yeah.
+
+00:17:14.760 --> 00:17:14.900
+Yeah.
+
+00:17:15.360 --> 00:17:16.740
+There's a crazy amount of...
+
+00:17:16.740 --> 00:17:18.920
+You can turn this show into talk politics instead.
+
+00:17:19.559 --> 00:17:19.959
+No.
+
+00:17:20.400 --> 00:17:20.839
+No, no, no.
+
+00:17:21.100 --> 00:17:21.459
+Please no.
+
+00:17:21.480 --> 00:17:21.500
+No.
+
+00:17:21.760 --> 00:17:22.579
+It's too early.
+
+00:17:23.170 --> 00:17:29.320
+So let's talk about something-- maybe dissect,
+
+00:17:29.540 --> 00:17:34.660
+kind of like what the H2 or the one sentence elevator pitch here
+
+00:17:34.820 --> 00:17:36.040
+for LanceDB is.
+
+00:17:36.140 --> 00:17:38.540
+So I'll read it out, and we'll take it apart,
+
+00:17:38.550 --> 00:17:40.520
+and you make sense of it for all of us, OK?
+
+00:17:41.520 --> 00:17:45.000
+LanceDB is a developer-friendly, open source database for AI.
+
+00:17:46.760 --> 00:17:50.179
+From hyper-scalable vector search and advanced retrieval
+
+00:17:50.200 --> 00:17:53.960
+for RAG to streaming data, interactively exploring
+
+00:17:54.220 --> 00:17:55.760
+large scale AI sets.
+
+00:17:56.360 --> 00:17:59.620
+Best foundation for your AI application.
+
+00:17:59.800 --> 00:18:04.820
+Yeah, so open source for starters, right?
+
+00:18:05.340 --> 00:18:06.660
+Go over here to GitHub.
+
+00:18:06.720 --> 00:18:09.220
+You can see just under 10,000 stars, which is--
+
+00:18:09.540 --> 00:18:09.800
+congratulations.
+
+00:18:10.200 --> 00:18:11.120
+That's excellent.
+
+00:18:14.059 --> 00:18:14.620
+Actually--
+
+00:18:14.620 --> 00:18:15.800
+So we're adding--
+
+00:18:15.940 --> 00:18:17.240
+Across the different bits.
+
+00:18:17.240 --> 00:18:19.160
+But yeah, so really cool.
+
+00:18:19.360 --> 00:18:21.480
+And it's under the Apache 2 license.
+
+00:18:21.760 --> 00:18:25.840
+That's pretty open for people to do most things what they want, right?
+
+00:18:25.990 --> 00:18:30.320
+Maybe not build a closed source business on top of, but.
+
+00:18:31.040 --> 00:18:31.840
+Right, right.
+
+00:18:32.520 --> 00:18:32.620
+Yeah.
+
+00:18:32.890 --> 00:18:36.920
+So I think if the way we're thinking about it is,
+
+00:18:37.620 --> 00:18:42.460
+like, there's a base layer of how do you work with AI data?
+
+00:18:42.940 --> 00:18:47.260
+And we've made Lance format, which is open source,
+
+00:18:47.640 --> 00:18:50.380
+a columnar format that's optimized for AI.
+
+00:18:51.720 --> 00:18:53.820
+And on top of that, we're building
+
+00:18:54.220 --> 00:19:00.580
+the different workloads that allow our users and customers
+
+00:19:01.160 --> 00:19:07.600
+to search, retrieve, run analytical queries,
+
+00:19:08.040 --> 00:19:11.060
+run training workloads across the board
+
+00:19:11.100 --> 00:19:14.060
+for all of their AI needs across the enterprise.
+
+00:19:15.240 --> 00:19:17.360
+So the repo that you're looking at,
+
+00:19:17.460 --> 00:19:21.340
+which is LanceDB open source, that's one of the tools
+
+00:19:21.340 --> 00:19:25.000
+that we built on top of the Lans format.
+
+00:19:25.590 --> 00:19:28.620
+And the idea is when you--
+
+00:19:29.050 --> 00:19:32.700
+a super common workload is you want
+
+00:19:32.700 --> 00:19:36.340
+to start experimenting with building rag or agents
+
+00:19:36.520 --> 00:19:40.760
+with memory semantic search, AI-enabled semantic search,
+
+00:19:41.280 --> 00:19:44.680
+like text image and video search and things like that.
+
+00:19:45.840 --> 00:19:49.860
+LanceDB is sort of the easiest way for you to get started and prototype.
+
+00:19:50.360 --> 00:19:51.900
+So like you said in the beginning,
+
+00:19:53.080 --> 00:19:57.060
+the mental model would be something like equivalent to like a SQLite or DuckDB.
+
+00:19:57.420 --> 00:19:57.560
+Right.
+
+00:19:57.560 --> 00:20:00.440
+So the data is just a file.
+
+00:20:00.580 --> 00:20:02.800
+There's no service to manage.
+
+00:20:03.260 --> 00:20:05.580
+There's nothing to sort of connect to.
+
+00:20:06.040 --> 00:20:06.960
+It's totally open.
+
+00:20:07.080 --> 00:20:09.880
+So you can look at it from with other tools that you have.
+
+00:20:10.760 --> 00:20:11.960
+And then the actual database.
+
+00:20:12.120 --> 00:20:12.280
+I totally.
+
+00:20:13.460 --> 00:20:13.560
+Yeah.
+
+00:20:13.660 --> 00:20:14.940
+I love this idea.
+
+00:20:15.460 --> 00:20:25.280
+I believe, I think things like SQLite and Lance DB, I think this, I just have a file and it,
+
+00:20:26.060 --> 00:20:33.540
+there's a really smart engine on top of that file instead of a complex server architecture to run
+
+00:20:33.560 --> 00:20:41.579
+and manage and security and firewalls and all of that, migrations, all these things. It's really
+
+00:20:42.160 --> 00:20:48.040
+pretty positive, I think, to just say, you can just have a file. You can just run it. When your
+
+00:20:48.200 --> 00:20:53.080
+app is running, it's part of your app. And when your app shuts down, it saves the data and it
+
+00:20:53.630 --> 00:20:58.700
+shuts down with it, right? Totally. Yeah. And one of the interesting things we've,
+
+00:20:59.220 --> 00:21:04.819
+a couple of interesting things about the, you know, it's just a file is I think we took that
+
+00:21:04.840 --> 00:21:07.520
+a little bit further than that.
+
+00:21:07.800 --> 00:21:13.700
+One is I think that we wanted the file to be open
+
+00:21:14.130 --> 00:21:15.760
+and so that you can inspect it,
+
+00:21:15.760 --> 00:21:17.960
+you can work with it using your other tools, right?
+
+00:21:17.970 --> 00:21:20.060
+So when you're building that AI application,
+
+00:21:21.160 --> 00:21:24.960
+one is if you have more than just that search
+
+00:21:25.160 --> 00:21:26.000
+and the vector lookup.
+
+00:21:26.300 --> 00:21:28.020
+There's, you know, you might want to run SQL
+
+00:21:28.170 --> 00:21:28.960
+to look at metadata.
+
+00:21:29.840 --> 00:21:32.759
+You might have, you know, tensors
+
+00:21:32.780 --> 00:21:35.640
+that will upload to PyTorch training workloads
+
+00:21:35.850 --> 00:21:36.600
+and things like that.
+
+00:21:37.640 --> 00:21:39.000
+And then we wanted that layer.
+
+00:21:39.500 --> 00:21:41.440
+So we wanted that file to be accessible
+
+00:21:41.780 --> 00:21:43.280
+by all your familiar tools, right?
+
+00:21:43.350 --> 00:21:44.640
+From like Pandas and Polars,
+
+00:21:45.520 --> 00:21:47.940
+you know, new data frame engines like DAF, for example.
+
+00:21:49.460 --> 00:21:52.560
+And even, you know, distributed engines like Spark and Ray.
+
+00:21:53.160 --> 00:21:56.880
+So that was one big thing that we focused on
+
+00:21:57.080 --> 00:22:01.180
+with Lance Format is making it plug in into the ecosystem.
+
+00:22:02.020 --> 00:22:11.520
+So that, you know, for folks who are coming with a Python background and a data background, working with AI would feel familiar, right?
+
+00:22:12.280 --> 00:22:12.460
+Right.
+
+00:22:12.600 --> 00:22:17.500
+A lot of people know how to do SQL to ask questions about their data, even if they're not programmers, right?
+
+00:22:17.820 --> 00:22:23.820
+Maybe a business analyst is like, well, I can write a query, maybe connect that result to some graph or whatever, right?
+
+00:22:24.640 --> 00:22:25.120
+Yeah, exactly.
+
+00:22:26.020 --> 00:22:41.660
+And this is why I think this was the primary reason why we chose Apache Arrow as the standard interface and the standard type system so that it's easy to plug in all these other tools on top.
+
+00:22:42.460 --> 00:22:43.060
+Excellent.
+
+00:22:44.040 --> 00:22:49.720
+So a good question to the audience out there from Carol is, how's the integration with Narwhals?
+
+00:22:50.760 --> 00:22:55.140
+You know, I am not familiar enough with Narwhals.
+
+00:22:55.160 --> 00:23:02.140
+So narwhals is a layer that will let you work with multiple data frame libraries.
+
+00:23:02.400 --> 00:23:08.620
+So if you wanted to work with, say, pandas and Polars, you could use this, and it will
+
+00:23:08.900 --> 00:23:14.260
+adapt, depending on what the original data source is, it'll adapt everything to a subset
+
+00:23:14.600 --> 00:23:15.980
+of Polars commands.
+
+00:23:16.600 --> 00:23:21.780
+So maybe the question is, how does it work with Polars or pandas, right?
+
+00:23:22.100 --> 00:23:23.860
+So maybe if it does with one or the other,
+
+00:23:23.910 --> 00:23:25.920
+then there might be a way to connect it.
+
+00:23:26.520 --> 00:23:33.060
+Yeah, so basically the core interface input-output is Arrow.
+
+00:23:33.310 --> 00:23:37.040
+And then with LAN-CB, on the output end,
+
+00:23:37.390 --> 00:23:41.160
+you can convert results to Pandas data frames or Polars data frames.
+
+00:23:42.250 --> 00:23:46.520
+And then on the input end to, I think natively,
+
+00:23:46.550 --> 00:23:49.960
+we can take Pandas data frames as batches of input,
+
+00:23:50.520 --> 00:23:52.180
+But we convert that to arrow tables.
+
+00:23:52.570 --> 00:23:56.280
+And so for others, it's like pullers, for example,
+
+00:23:56.420 --> 00:23:58.640
+it's really easy to convert pullers to an arrow table.
+
+00:23:59.020 --> 00:24:02.280
+So a lot of that, even if it's not already automatic,
+
+00:24:02.660 --> 00:24:05.360
+it's like dot two arrow one command away.
+
+00:24:05.960 --> 00:24:06.260
+Yeah.
+
+00:24:06.600 --> 00:24:06.880
+Oh, awesome.
+
+00:24:07.450 --> 00:24:09.220
+Yeah, Carol added, given it works with the arrow,
+
+00:24:09.410 --> 00:24:10.180
+it probably just works.
+
+00:24:10.230 --> 00:24:10.360
+Yeah.
+
+00:24:10.640 --> 00:24:10.860
+Yeah.
+
+00:24:10.900 --> 00:24:11.160
+Nice.
+
+00:24:12.050 --> 00:24:12.160
+Yeah.
+
+00:24:12.440 --> 00:24:12.720
+Awesome.
+
+00:24:14.420 --> 00:24:14.840
+OK.
+
+00:24:15.300 --> 00:24:15.480
+Yeah.
+
+00:24:15.780 --> 00:24:26.140
+So the other thing, too, is when I think, you know, when we talk about a file, we don't just mean your local file system, but also object store.
+
+00:24:26.310 --> 00:24:31.060
+So if you throw the data set on S3, you can just query it directly.
+
+00:24:31.260 --> 00:24:36.800
+Now, you know, you'll hit additional latency because object store, but it works.
+
+00:24:37.100 --> 00:24:48.160
+So a lot of our users see that as a bridge into production so that, you know, they use Lansi B open source to do the prototyping MVP.
+
+00:24:48.890 --> 00:25:01.520
+And then, you know, they if their use cases fit before they need like a distributed system, it's easy for them to just say, hey, the embedded library lives in my application code.
+
+00:25:01.920 --> 00:25:06.680
+And then I have a shared data layer in S3 or maybe in EFS or something like that.
+
+00:25:07.330 --> 00:25:14.320
+And you can run distributed queries very easily still without having to manage your own additional systems.
+
+00:25:15.080 --> 00:25:15.360
+Okay.
+
+00:25:15.570 --> 00:25:25.960
+Just use a really scalable storage layer like S3 or probably anything that has an S3 compatible API.
+
+00:25:26.120 --> 00:25:32.480
+Yeah, anything that's like a POSIX compliant interface or an S3 compliant API.
+
+00:25:33.520 --> 00:25:37.300
+And this is where also the rest community-
+
+00:25:37.420 --> 00:25:39.980
+Yeah, exactly.
+
+00:25:39.980 --> 00:25:45.360
+I think MinIO published their own integration with LAN-CV as an example as well.
+
+00:25:45.380 --> 00:25:46.540
+Oh, did they?
+
+00:25:47.600 --> 00:25:47.880
+Okay.
+
+00:25:47.880 --> 00:25:50.060
+That's cool.
+
+00:25:50.060 --> 00:25:53.120
+Maybe tell people real quick what MinIO is.
+
+00:25:53.120 --> 00:25:54.720
+It sounds like you're familiar with it, or I can.
+
+00:25:55.700 --> 00:25:56.120
+Yeah, go ahead.
+
+00:25:57.210 --> 00:26:01.480
+Yeah, so MinIO is like, I'm not sure if I got the right website pulled up,
+
+00:26:01.580 --> 00:26:02.760
+but it looks like it.
+
+00:26:02.910 --> 00:26:09.380
+So MinIO is a self-hosted, high-end, sort of pretty complete version
+
+00:26:09.660 --> 00:26:11.560
+of what you would think of as S3.
+
+00:26:13.040 --> 00:26:16.420
+But if you don't want to use S3, you want to host on your own infrastructure
+
+00:26:16.810 --> 00:26:18.740
+with your own storage layer and things like that,
+
+00:26:18.820 --> 00:26:22.200
+but you still want to talk S3 APIs and security and all that stuff.
+
+00:26:22.660 --> 00:26:23.640
+Yeah, that's what MinIO is.
+
+00:26:24.220 --> 00:26:25.280
+Yeah, pretty neat.
+
+00:26:25.460 --> 00:26:26.080
+Yep, totally.
+
+00:26:26.780 --> 00:26:27.080
+Yeah.
+
+00:26:27.480 --> 00:26:33.760
+Yeah, and so we really took It's Just a File really, really far.
+
+00:26:35.020 --> 00:26:41.740
+And I think the results end up speaking for itself.
+
+00:26:42.800 --> 00:26:43.880
+We're seeing really good results.
+
+00:26:43.970 --> 00:26:50.080
+And I think it really matches with the way that a lot of our users think about existing tooling
+
+00:26:50.310 --> 00:26:54.460
+and how to add AI to their existing business and applications.
+
+00:26:56.059 --> 00:27:01.100
+cool so we might be getting just a little bit ahead of ourselves but we'll backtrack and talk
+
+00:27:01.260 --> 00:27:07.180
+apis and how it works and stuff but what's the you know if it's just a file which you said is
+
+00:27:07.360 --> 00:27:12.520
+obviously like a pretty broad statement by that right the way you all right but what's the go to
+
+00:27:12.760 --> 00:27:19.180
+production story right yep absolutely if you're using sqlite and that's your middle model you're
+
+00:27:19.180 --> 00:27:22.819
+like well you probably should just switch to postgres right but it doesn't sound like that's
+
+00:27:22.860 --> 00:27:25.740
+your answer it sounds like you've thought it through on how to run it at larger scale
+
+00:27:26.840 --> 00:27:32.960
+right right so um in terms of large-scale production um there's a number of different
+
+00:27:33.280 --> 00:27:42.220
+workloads for both online and offline so um so this is our commercial offering um calling land cb
+
+00:27:42.600 --> 00:27:52.179
+enterprise um and essentially it's one distributed system that gives you a huge scale
+
+00:27:53.440 --> 00:27:59.980
+low latency, high throughput, a system that can be backed by the same LANs data.
+
+00:28:00.920 --> 00:28:02.580
+It's just a file in S3.
+
+00:28:03.210 --> 00:28:11.340
+So the trick is to create that distributed system in a way that allows you to enjoy the
+
+00:28:12.380 --> 00:28:19.800
+cost efficiency of Object Store and the scalability of it while being very, very fast and very
+
+00:28:20.180 --> 00:28:20.460
+performant.
+
+00:28:21.040 --> 00:28:50.480
+And so that's the production story for our customers who, you know, are putting AI applications into production where they need high throughput or they need very large index sizes or just lots of, to manage lots of vectors and query a small portion of it without the same sort of budget constraints as like you would with
+
+00:28:50.600 --> 00:28:55.240
+OpenSearch or other tools that doesn't give you that compute storage separation.
+
+00:28:55.980 --> 00:29:03.900
+Right. Oh, very cool. So it says it has GPU support for building vector indexes, which is
+
+00:29:04.830 --> 00:29:12.040
+pretty awesome. Databases, indexes are, they're like the magic speed dust you can sprinkle on
+
+00:29:12.040 --> 00:29:17.080
+them, obviously. What's the story with indexing and this GPU support?
+
+00:29:18.280 --> 00:29:22.660
+Yeah, so I think with traditional database indices,
+
+00:29:24.560 --> 00:29:26.720
+it's not very computationally intensive.
+
+00:29:27.500 --> 00:29:29.960
+Unfortunately for vector indices and NN indices,
+
+00:29:30.980 --> 00:29:31.620
+they're quite so.
+
+00:29:31.620 --> 00:29:36.720
+So I think with Rust, you can make CPU-based indexing
+
+00:29:36.960 --> 00:29:39.900
+for vector data pretty efficient.
+
+00:29:40.080 --> 00:29:42.620
+So if you're looking at hundreds of thousands
+
+00:29:43.040 --> 00:29:46.780
+or even up to maybe 30 or 50 million vectors,
+
+00:29:48.060 --> 00:29:52.440
+You know, CPU indexing is pretty good and can get pretty fast.
+
+00:29:52.680 --> 00:30:03.580
+But for our customers that have, you know, 15 billion vectors in one table that they need to index one index, that's, you know, that's going to take days.
+
+00:30:03.860 --> 00:30:10.020
+All right. So with with GPU support, you know, we cut that down by more than like 15, 20 X.
+
+00:30:10.340 --> 00:30:22.440
+So then it becomes like a something that they can do repeatedly and have a, you know, acceptable feedback loop in terms of, you know, maybe adding new data, refreshing that index.
+
+00:30:23.400 --> 00:30:32.040
+And I think a lot of it, this is also what I love about the composable data ecosystem.
+
+00:30:32.220 --> 00:30:41.780
+And we talk about that, but there's also, I think, there's also an extension, which I'd like to add, is like that composable AI data ecosystem.
+
+00:30:42.860 --> 00:30:50.760
+So we talked a little bit about the benefits of like having arrow, which is just means if we make the input output APIs arrow, it just works with the rest of the ecosystem.
+
+00:30:51.460 --> 00:31:02.560
+And so, and this is one of the points where we git additional benefits, where with GPU support, it's easy through that arrow interface to actually talk to PyTorch.
+
+00:31:02.560 --> 00:31:11.000
+So we can use a lot of the GPU tooling in PyTorch to build a lot of our accelerated vector indexing tools.
+
+00:31:12.080 --> 00:31:23.840
+So that way saves us lots of time messing with CUDA interfaces and things like that that are not quite mature in the Rust ecosystem yet.
+
+00:31:24.140 --> 00:31:24.560
+I see.
+
+00:31:25.480 --> 00:31:27.940
+Yeah, and it's something you don't have to build.
+
+00:31:28.260 --> 00:31:31.160
+It just gets better on its own and you just get to upgrade it.
+
+00:31:31.300 --> 00:31:31.400
+Exactly.
+
+00:31:32.300 --> 00:31:32.440
+Exactly.
+
+00:31:32.620 --> 00:31:32.780
+Yeah.
+
+00:31:33.340 --> 00:31:40.000
+That's part of the magic of package managers and package repositories and stuff.
+
+00:31:40.140 --> 00:31:40.540
+It's really cool.
+
+00:31:43.200 --> 00:31:51.600
+So what is the workflow? Like, take me through the journey that somebody might go on, they have a
+
+00:31:51.600 --> 00:31:55.220
+bunch of data, they want to put it into the database, and they want to put the resulting
+
+00:31:56.000 --> 00:32:01.540
+thing into production so that they could use it behind an API or something that they're
+
+00:32:01.700 --> 00:32:08.699
+implementing for their app or something like that. Is there a big training block of time that you do
+
+00:32:08.720 --> 00:32:11.020
+and then you move the resulting data somewhere?
+
+00:32:11.350 --> 00:32:13.400
+Or do you just put it in production
+
+00:32:13.470 --> 00:32:14.680
+and start adding to it over
+
+00:32:14.690 --> 00:32:16.580
+and just keep adding to it over time?
+
+00:32:16.840 --> 00:32:17.460
+What's the workflow?
+
+00:32:18.080 --> 00:32:23.460
+Yeah, so with the LansDB Enterprise,
+
+00:32:23.720 --> 00:32:24.700
+like the system that's running,
+
+00:32:25.680 --> 00:32:27.000
+you can just keep adding data to it.
+
+00:32:27.180 --> 00:32:29.440
+The indexing and all of that is automatic
+
+00:32:29.700 --> 00:32:31.040
+once you've configured it properly,
+
+00:32:32.140 --> 00:32:33.640
+which is just, you know, here's the schema
+
+00:32:34.200 --> 00:32:36.460
+and like create indices on these columns, right?
+
+00:32:36.580 --> 00:32:39.940
+much like what you would do with a Postgres table.
+
+00:32:40.700 --> 00:32:42.700
+And then once you have that set up
+
+00:32:43.000 --> 00:32:45.580
+and as you add data, the indexing is automatic.
+
+00:32:45.880 --> 00:32:50.580
+And then for small amounts of data,
+
+00:32:52.080 --> 00:32:56.240
+our users typically will say like have Python dictionaries,
+
+00:32:56.580 --> 00:32:59.580
+JSON, or Pandas data frames,
+
+00:32:59.680 --> 00:33:03.040
+they can add those to the database through the API.
+
+00:33:04.140 --> 00:33:05.680
+For really large scale data,
+
+00:33:06.040 --> 00:33:08.920
+So if you're working with terabytes or even petabytes of data,
+
+00:33:09.520 --> 00:33:13.080
+you don't want to be shoving that through the API like a thousand rows at a time.
+
+00:33:13.580 --> 00:33:15.540
+So this is where the open data layer comes in.
+
+00:33:15.560 --> 00:33:21.080
+So if you have a large data set and you have, you know, whether it's Spark or Ray,
+
+00:33:21.760 --> 00:33:29.160
+you can use those large distributed systems to write data directly to S3 in the in Lens open source format.
+
+00:33:29.860 --> 00:33:35.459
+And then the system actually picks it up from from object store and takes care of the indexing
+
+00:33:35.520 --> 00:33:37.460
+and compaction and all of that.
+
+00:33:37.980 --> 00:33:41.200
+So it's sort of like when we're talking about adding data to it,
+
+00:33:41.200 --> 00:33:42.240
+it's both.
+
+00:33:42.900 --> 00:33:43.380
+OK.
+
+00:33:43.920 --> 00:33:44.780
+Yeah, that sounds really cool.
+
+00:33:46.180 --> 00:33:48.720
+So I'm talking to you on a Mac Mini M2 Pro
+
+00:33:49.700 --> 00:33:53.520
+with maxed out RAM and four terabytes of space or something.
+
+00:33:53.800 --> 00:33:56.440
+Can I do interesting stuff on my computer?
+
+00:33:56.600 --> 00:33:58.580
+Is it too small?
+
+00:33:59.160 --> 00:34:00.900
+Oh, it's not too small at all.
+
+00:34:02.200 --> 00:34:07.060
+I think one of the things about LAN's format is it's all disk, right?
+
+00:34:07.240 --> 00:34:17.040
+So most of the magic that we talked about with LAN-CV, at least open source, lives in that open source format layer.
+
+00:34:17.179 --> 00:34:19.419
+And that format is three things in one.
+
+00:34:19.760 --> 00:34:26.159
+One, there's the columnar format, the file format, and then there's a table format, and then there's the indexing.
+
+00:34:26.679 --> 00:34:30.800
+So the indexing is what speeds up the NN vector lookups.
+
+00:34:31.340 --> 00:34:35.940
+And typically, we've made the index disk base
+
+00:34:36.050 --> 00:34:41.919
+so that if you're looking up a few partitions in the index,
+
+00:34:42.240 --> 00:34:45.780
+it's only loading those partitions.
+
+00:34:46.720 --> 00:34:49.419
+And so the RAM requirement is actually quite small.
+
+00:34:50.270 --> 00:34:56.980
+And so on your systems, probably the more limiting factor
+
+00:34:57.050 --> 00:35:01.120
+is going to be the disk size rather than how much memory.
+
+00:35:01.260 --> 00:35:01.540
+you have.
+
+00:35:01.980 --> 00:35:02.640
+Yeah, OK.
+
+00:35:03.600 --> 00:35:04.340
+A couple of terabytes.
+
+00:35:04.460 --> 00:35:05.640
+I should be able to put some data on that.
+
+00:35:05.820 --> 00:35:06.340
+Yeah, exactly.
+
+00:35:06.500 --> 00:35:07.780
+A couple of free terabytes, that is.
+
+00:35:09.420 --> 00:35:12.600
+All right, let's talk about the architecture a little bit,
+
+00:35:12.720 --> 00:35:13.880
+maybe a look inside.
+
+00:35:13.960 --> 00:35:16.820
+Like give us a-- you've talked about some of the pieces
+
+00:35:17.160 --> 00:35:19.860
+and formats, but give us a sense here.
+
+00:35:20.600 --> 00:35:21.000
+Yep.
+
+00:35:22.140 --> 00:35:25.140
+And so this is sort of an architecture
+
+00:35:25.320 --> 00:35:27.200
+that includes more than just Lance,
+
+00:35:27.420 --> 00:35:32.140
+but it's more about how our customers are thinking
+
+00:35:32.360 --> 00:35:36.460
+about building their own multimodal data lake.
+
+00:35:36.620 --> 00:35:38.540
+So we call this like vector data lake
+
+00:35:38.680 --> 00:35:39.840
+or unstructured data lake.
+
+00:35:39.980 --> 00:35:43.200
+And there's no standardized terminology yet,
+
+00:35:43.500 --> 00:35:45.720
+but this is what I was mentioning before.
+
+00:35:46.600 --> 00:35:46.960
+- Nice.
+
+00:35:47.380 --> 00:35:48.740
+Yeah, I'll just add for the listeners,
+
+00:35:49.020 --> 00:35:53.200
+I'll put a link to a diagram that talks about this a little bit.
+
+00:35:53.280 --> 00:35:54.320
+People can check out if they want.
+
+00:35:55.660 --> 00:36:11.440
+So the idea is from these companies' perspective, they now have, on the one hand, they have lots of data that they can now take advantage of because of new AI models and applications.
+
+00:36:12.240 --> 00:36:41.660
+And on the other hand is there's lots of business units across that enterprise that wants to experiment with AI or add AI applications, whether it's agents or internal tooling or customer success, video and image search and lots of different use cases where there's a lot of like, hey, can you sprinkle some AI magic dust on my existing business?
+
+00:36:41.700 --> 00:36:45.880
+and maybe look for that 10x in terms of ROI.
+
+00:36:46.660 --> 00:36:48.520
+And so we have all this SharePoint data.
+
+00:36:48.800 --> 00:36:49.460
+Can you help me out?
+
+00:36:50.780 --> 00:36:51.180
+Exactly.
+
+00:36:54.600 --> 00:36:55.900
+That's literally a conversation.
+
+00:36:56.680 --> 00:36:57.880
+I'm sure that it is.
+
+00:36:58.260 --> 00:36:59.280
+Because SharePoint is bad
+
+00:36:59.320 --> 00:37:00.600
+and you don't want anything to do with it.
+
+00:37:00.600 --> 00:37:02.200
+But people keep putting stuff into it.
+
+00:37:02.200 --> 00:37:02.660
+I don't know.
+
+00:37:03.380 --> 00:37:03.920
+Yeah, yeah.
+
+00:37:04.820 --> 00:37:05.060
+Amazing.
+
+00:37:05.160 --> 00:37:08.900
+Yeah, and so it's not just about the AI capabilities,
+
+00:37:09.220 --> 00:37:11.800
+but how do you build this base layer
+
+00:37:14.359 --> 00:37:17.260
+and make it a lot easier to access
+
+00:37:17.410 --> 00:37:19.920
+for the rest of the folks in the company?
+
+00:37:20.360 --> 00:37:24.340
+And most of these companies aren't starting from scratch.
+
+00:37:24.630 --> 00:37:27.260
+They already have made significant investments
+
+00:37:27.710 --> 00:37:29.780
+into the data science and analytical tooling,
+
+00:37:30.940 --> 00:37:32.700
+training for their data scientists, analysts,
+
+00:37:33.170 --> 00:37:35.400
+and they also made significant investments
+
+00:37:35.670 --> 00:37:37.580
+into their existing data lake
+
+00:37:37.610 --> 00:37:39.000
+for large-scale data processing.
+
+00:37:39.060 --> 00:37:44.520
+So you don't want to make them have to throw all that away.
+
+00:37:44.930 --> 00:37:51.980
+And instead, that open data layer is super important to plug into the rest of their existing ecosystem.
+
+00:37:52.430 --> 00:38:00.340
+And with Lance, unlike Parquet or JSON or WebDataSet, all of their multi-bono data can live in one place.
+
+00:38:01.180 --> 00:38:04.620
+So that they can do search and retrieval on the vectors.
+
+00:38:05.270 --> 00:38:07.060
+They can run SQL.
+
+00:38:07.760 --> 00:38:13.340
+they can do do training and data processing workloads all sort of in one engine and one
+
+00:38:13.880 --> 00:38:19.560
+piece of data so it makes just it just makes things a lot simpler it allows us to add a lot
+
+00:38:19.660 --> 00:38:26.360
+more performance optimizations and then it saves because of the size issue it also saves
+
+00:38:26.750 --> 00:38:34.359
+these enterprises a lot in terms of cost so that they don't have to keep making different copies of
+
+00:38:34.380 --> 00:38:36.580
+different parts of the data for different parts of that workload.
+
+00:38:36.900 --> 00:38:37.060
+Right.
+
+00:38:37.250 --> 00:38:38.840
+This thing needs that format of the data.
+
+00:38:39.080 --> 00:38:40.480
+That thing needs that format of the data.
+
+00:38:41.260 --> 00:38:41.480
+Right.
+
+00:38:41.610 --> 00:38:41.720
+Exactly.
+
+00:38:42.140 --> 00:38:42.220
+Yeah.
+
+00:38:42.540 --> 00:38:47.880
+And or things like, so I'll give you like two, two examples that really stuck out to me.
+
+00:38:49.680 --> 00:38:58.020
+So one, I was speaking with one user recently and they have, you know, they're doing EDA
+
+00:38:58.640 --> 00:38:59.720
+and DuckDB, right?
+
+00:38:59.750 --> 00:39:00.760
+So they have lots of metadata.
+
+00:39:01.000 --> 00:39:02.100
+They're doing EDA and DuckDB.
+
+00:39:03.100 --> 00:39:04.840
+Wait, don't we got acronym police?
+
+00:39:05.100 --> 00:39:05.480
+What's EDA?
+
+00:39:06.220 --> 00:39:07.540
+Oh, sorry about that.
+
+00:39:08.080 --> 00:39:09.160
+Exploratory data analysis.
+
+00:39:09.460 --> 00:39:10.240
+OK, got it.
+
+00:39:10.840 --> 00:39:10.960
+Yeah.
+
+00:39:11.160 --> 00:39:11.760
+Sorry, carry on.
+
+00:39:12.280 --> 00:39:15.160
+Right, so they're running SQL in DuckDB,
+
+00:39:15.390 --> 00:39:16.700
+but then they need to fetch--
+
+00:39:17.180 --> 00:39:23.040
+there's like 10 columns of images and 10 columns of multi-vectors.
+
+00:39:23.570 --> 00:39:30.880
+And so at the end where they finish running that join and filter,
+
+00:39:31.920 --> 00:39:35.220
+it takes just ages to fetch that data.
+
+00:39:35.470 --> 00:39:39.440
+So whether because of the lack of random access support
+
+00:39:40.100 --> 00:39:40.620
+across the board.
+
+00:39:40.840 --> 00:39:45.060
+So then you have to think about other tooling,
+
+00:39:45.680 --> 00:39:48.880
+either distributed engine or somehow just load
+
+00:39:48.950 --> 00:39:50.060
+all of your data in memory.
+
+00:39:50.290 --> 00:39:51.600
+And that's also not tenable.
+
+00:39:52.720 --> 00:39:56.160
+Whereas with LANs format, because you can do random access
+
+00:39:56.360 --> 00:40:01.019
+very quickly, you can actually just quickly move
+
+00:40:01.040 --> 00:40:03.300
+on to the next step in the same Python application.
+
+00:40:03.940 --> 00:40:05.840
+And because it works with DuckTP,
+
+00:40:06.030 --> 00:40:08.040
+you can get the row IDs out, fetch the rows,
+
+00:40:08.800 --> 00:40:11.060
+and then quickly move on to downstream processing,
+
+00:40:11.290 --> 00:40:15.460
+whether it's for like train a UMAP or something like that.
+
+00:40:16.720 --> 00:40:23.220
+So that is just one small example where Lance makes it
+
+00:40:23.340 --> 00:40:28.800
+so that new workloads just works with existing tooling.
+
+00:40:30.160 --> 00:40:30.720
+There's another--
+
+00:40:30.740 --> 00:40:32.140
+That interop layer is really nice.
+
+00:40:32.780 --> 00:40:33.160
+Yeah.
+
+00:40:33.870 --> 00:40:36.040
+And another example is around--
+
+00:40:36.450 --> 00:40:40.060
+and again, this is like the size changes everything,
+
+00:40:40.500 --> 00:40:43.160
+where we spoke with folks that are like,
+
+00:40:44.040 --> 00:40:47.340
+we manage a bunch of image and video data in, let's say,
+
+00:40:47.640 --> 00:40:48.260
+web data set.
+
+00:40:48.560 --> 00:40:50.700
+And we want to iterate on our model.
+
+00:40:51.400 --> 00:40:53.380
+And to create new features means we
+
+00:40:53.380 --> 00:40:56.440
+have to download terabytes of web data set, which
+
+00:40:57.510 --> 00:40:58.340
+are basically tarballs.
+
+00:40:59.400 --> 00:41:03.740
+open up the tarballs, compute the feature from that data,
+
+00:41:04.740 --> 00:41:07.060
+put it back in the tarball, and then upload it.
+
+00:41:07.340 --> 00:41:12.280
+So to access one small piece and write a small piece,
+
+00:41:13.380 --> 00:41:17.860
+you often are downloading or transferring 100x that
+
+00:41:18.240 --> 00:41:20.440
+because of the large multimodal data.
+
+00:41:21.280 --> 00:41:23.040
+Whereas with something like LANCE,
+
+00:41:23.400 --> 00:41:26.919
+instead of using web data set, the table format features
+
+00:41:26.940 --> 00:41:30.060
+of Lance allows you to just keep that data in place,
+
+00:41:30.680 --> 00:41:32.740
+just add a new column which writes a new file.
+
+00:41:33.320 --> 00:41:35.820
+And then you can--
+
+00:41:35.820 --> 00:41:40.840
+and then the readers can just see an updated version of that
+
+00:41:40.960 --> 00:41:41.960
+with new schema.
+
+00:41:42.160 --> 00:41:44.440
+And you can move forward not having
+
+00:41:45.300 --> 00:41:47.300
+to pay that transfer cost.
+
+00:41:47.440 --> 00:41:49.460
+And it's not just the infrastructure cost,
+
+00:41:50.000 --> 00:41:52.740
+but also in the time that your engineers are spending
+
+00:41:52.900 --> 00:41:54.820
+on that, managing that process.
+
+00:41:55.860 --> 00:42:00.840
+and just running across maybe petabytes of that data.
+
+00:42:02.260 --> 00:42:03.420
+That's a crazy amount of data.
+
+00:42:03.860 --> 00:42:04.220
+Yeah.
+
+00:42:04.400 --> 00:42:05.960
+So let's talk about--
+
+00:42:06.160 --> 00:42:09.860
+let's keep it in mind that this is an audio-only format,
+
+00:42:10.310 --> 00:42:10.420
+primarily.
+
+00:42:11.720 --> 00:42:14.540
+Let's talk through what it's like to write a little bit of code,
+
+00:42:14.680 --> 00:42:16.500
+you know, connecting to the database, doing some queries,
+
+00:42:16.650 --> 00:42:17.400
+or adding some data.
+
+00:42:17.830 --> 00:42:19.220
+You guys have a quick start on here.
+
+00:42:19.240 --> 00:42:21.180
+Maybe you could just talk us through real quickly
+
+00:42:21.280 --> 00:42:22.740
+on how to get started in Python with it.
+
+00:42:23.340 --> 00:42:23.580
+Yeah.
+
+00:42:24.080 --> 00:42:31.740
+So overall, the goal for the quick start is you have a package
+
+00:42:31.830 --> 00:42:33.320
+that you install in seconds.
+
+00:42:33.750 --> 00:42:35.840
+And then depending on how quickly you're
+
+00:42:35.940 --> 00:42:40.200
+running through the quick start, that between a minute to five
+
+00:42:40.320 --> 00:42:42.960
+minutes, you've got a quote unquote,
+
+00:42:43.240 --> 00:42:45.980
+vector database running, embedded vector database running,
+
+00:42:46.050 --> 00:42:48.580
+where you can start building applications on top.
+
+00:42:48.830 --> 00:42:51.200
+So the first step is very familiar.
+
+00:42:51.440 --> 00:42:53.540
+you just run pip install lancedb.
+
+00:42:55.420 --> 00:42:58.340
+And that pulls in lancedb.connect,
+
+00:42:58.340 --> 00:42:59.980
+and installs our Rust packages.
+
+00:43:00.940 --> 00:43:03.780
+And then you can start connecting to it.
+
+00:43:04.020 --> 00:43:08.700
+So the default is you just give it a local file path,
+
+00:43:08.860 --> 00:43:10.480
+and you say lancedb.connect.
+
+00:43:11.400 --> 00:43:15.300
+And then that gives you a database connection, which--
+
+00:43:16.140 --> 00:43:19.859
+and there's two flavors of that, a synchronous client
+
+00:43:19.880 --> 00:43:21.060
+and an asynchronous client.
+
+00:43:21.140 --> 00:43:22.080
+I love it.
+
+00:43:22.080 --> 00:43:22.740
+I love it.
+
+00:43:23.080 --> 00:43:23.580
+Yeah.
+
+00:43:23.640 --> 00:43:28.940
+So the async is basically just connect underscore async.
+
+00:43:29.340 --> 00:43:33.340
+And roughly, the interfaces are roughly equivalent.
+
+00:43:34.220 --> 00:43:37.260
+There's some disparities which we're addressing now.
+
+00:43:37.440 --> 00:43:40.940
+But the main difference is you just sprinkle some await
+
+00:43:42.460 --> 00:43:42.800
+in places.
+
+00:43:43.180 --> 00:43:47.819
+The async and await keywords make concurrent programming
+
+00:43:47.840 --> 00:43:51.540
+so much easier than threads and callbacks and all that business.
+
+00:43:52.120 --> 00:43:52.600
+For sure.
+
+00:43:53.100 --> 00:43:53.520
+Yeah.
+
+00:43:53.890 --> 00:43:57.220
+So the connect bit is if people are familiar with SQLite,
+
+00:43:57.220 --> 00:43:58.980
+you just-- here's a URL to a file.
+
+00:43:59.520 --> 00:44:01.100
+That's pretty much-- you give it that.
+
+00:44:02.030 --> 00:44:04.420
+And then you have--
+
+00:44:05.060 --> 00:44:07.880
+what's your naming convention on the async API?
+
+00:44:08.280 --> 00:44:10.840
+Are all the functions ending in underscore async?
+
+00:44:10.840 --> 00:44:12.720
+Or do you create an async client?
+
+00:44:12.950 --> 00:44:13.840
+Or how do you differ?
+
+00:44:13.980 --> 00:44:15.840
+We create-- yeah, that's a good question.
+
+00:44:15.930 --> 00:44:16.060
+Yeah.
+
+00:44:16.540 --> 00:44:22.200
+create an async client, the method names are the same between the two. And it's really just
+
+00:44:25.060 --> 00:44:31.060
+that initial connect call that's different. I see. But that's kind of the factory method for
+
+00:44:31.620 --> 00:44:36.120
+the client, either sync or async that comes back. And then you know what you got.
+
+00:44:36.940 --> 00:44:46.520
+Right. So the second example, we see that in action. So first step is let's create a table
+
+00:44:46.540 --> 00:44:50.660
+and let's add some simple data to it.
+
+00:44:51.280 --> 00:44:55.940
+So let's say we have two fields,
+
+00:44:56.920 --> 00:44:58.220
+an item and a price,
+
+00:44:58.840 --> 00:45:00.160
+and then an embedding vector.
+
+00:45:00.760 --> 00:45:06.020
+Here for the example, we're just going to use two digits for that vector.
+
+00:45:06.420 --> 00:45:12.480
+In practice, of course, it's going to be like 1,500 or 3,000 or something like that.
+
+00:45:12.600 --> 00:45:12.680
+Yeah.
+
+00:45:13.040 --> 00:45:15.420
+That's how you print on your code.
+
+00:45:15.540 --> 00:45:37.760
+Right, right. Yeah. So here we just have, you know, essentially digits of pi here. And then you can see whether you have the async connection or the sync connection, both you call create table, you add it, you give it the table name, and then optionally, you can give it data to initialize it.
+
+00:45:38.420 --> 00:45:51.280
+And there's some, yeah, so if you have data initially, the schema is inferred from the data that you provide it when you call create table.
+
+00:45:52.660 --> 00:46:04.280
+If you go to the next example, you can also initialize an empty table that has with just a schema.
+
+00:46:04.780 --> 00:46:10.140
+So here in this quick start, you can have a arrow schema.
+
+00:46:11.980 --> 00:46:14.540
+And basically, this is the same schema as the data before,
+
+00:46:14.980 --> 00:46:18.040
+but you create an empty table, and then you can add data to it later.
+
+00:46:19.480 --> 00:46:22.560
+I think I should update this, but I think what's more convenient
+
+00:46:22.860 --> 00:46:25.540
+is that we've, as you see in the box below,
+
+00:46:26.920 --> 00:46:28.860
+you can actually, we've added pedantic support.
+
+00:46:29.680 --> 00:46:33.660
+So there's a translation layer between pedantic and arrow schemas.
+
+00:46:34.300 --> 00:46:46.040
+And so it's, I think for a lot of our Python users, it's much easier to think in terms of pedantic objects as the data model, rather than manually dealing with the Pyro API to create a schema.
+
+00:46:46.660 --> 00:46:56.120
+Like, you know, like how do I, we saw lots of issues where users like, well, how do I create a fixed size list?
+
+00:46:56.540 --> 00:46:58.660
+What is a fixed size list?
+
+00:46:58.900 --> 00:47:03.480
+And, you know, like, why does my vector has to be, have to be that?
+
+00:47:04.940 --> 00:47:11.180
+you know, is it float? Should I do float 32 or 64? There's lots of stuff that is just much easier
+
+00:47:11.920 --> 00:47:14.720
+to think of in terms of Python types and Python objects.
+
+00:47:16.079 --> 00:47:22.480
+I love the Python, the Pydantic integration there. That's super cool. The data layer used for my
+
+00:47:22.940 --> 00:47:28.840
+course of website and the podcast website and stuff is all based on Beanie and Mongo, which is
+
+00:47:29.500 --> 00:47:34.760
+async basically you're writing async queries against pydantic models which is you know it's
+
+00:47:34.760 --> 00:47:41.940
+a real got the validation but you're not writing directly to the database and just random dictionaries
+
+00:47:42.120 --> 00:47:49.000
+and who knows if it stays consistent so speaking of which you have a schema here is this uh how
+
+00:47:49.180 --> 00:47:55.939
+hard how strictly is this enforced right is this postgres level or is this mongadb level like uh
+
+00:47:55.960 --> 00:48:02.540
+this is probably yeah this is right this is fairly strictly enforced so think okay think like arrow
+
+00:48:02.720 --> 00:48:08.360
+tables and you know writing to writing arrow tables i think there's some there's a little bit
+
+00:48:08.360 --> 00:48:15.320
+of magic uh there's a little bit of like give around like nullability because a lot of times
+
+00:48:15.420 --> 00:48:22.919
+if you're providing data um the types can be inferred which is it's easier to do casting
+
+00:48:23.520 --> 00:48:34.160
+And then if you're inferring like nullable versus non-nullable, that can get you in trouble when you're inserting data.
+
+00:48:34.380 --> 00:48:43.160
+So for example, if you have a non-nullable column that you've declared in the schema, but new data coming in,
+
+00:48:43.940 --> 00:48:49.060
+sometimes that translation layer into Arrow just automatically turns it into a nullable,
+
+00:48:50.500 --> 00:48:53.820
+even though you didn't give it any nulls in the data.
+
+00:48:54.200 --> 00:48:56.960
+And then when you insert it, it'll produce an error.
+
+00:48:57.560 --> 00:49:01.800
+Do you respect things like optional typing
+
+00:49:02.100 --> 00:49:04.360
+in Pydantic models to control nullability,
+
+00:49:04.560 --> 00:49:07.640
+like optional float versus float being not nullable?
+
+00:49:08.160 --> 00:49:08.300
+Yeah.
+
+00:49:08.520 --> 00:49:09.920
+So we do a bunch of that as well.
+
+00:49:10.560 --> 00:49:12.280
+So in terms of pedantic integration,
+
+00:49:14.460 --> 00:49:15.760
+it's another Rust project.
+
+00:49:15.980 --> 00:49:19.180
+We've loved working with it for a long time.
+
+00:49:19.960 --> 00:49:26.300
+If any listeners are out there that's interested in just messing with like pedantic and arrow.
+
+00:49:27.180 --> 00:49:32.200
+So that translation layer, I think we'd love to get some help as well.
+
+00:49:32.340 --> 00:49:36.760
+So for some of the more like complicated nested types out there.
+
+00:49:37.900 --> 00:49:44.840
+So where that's like lists of lists or lists of fixed with lists and dictionaries and that kind of thing.
+
+00:49:44.900 --> 00:49:46.880
+The translation layer is incomplete.
+
+00:49:48.080 --> 00:49:53.560
+But we know a couple of other companies and tools in the ecosystem
+
+00:49:53.760 --> 00:49:56.360
+who've also built their own kind of translation layer.
+
+00:49:56.980 --> 00:49:59.860
+So it would be really interesting, I think,
+
+00:50:01.260 --> 00:50:04.220
+if there was a community member who can lead, say,
+
+00:50:04.440 --> 00:50:07.560
+like, let's get a bunch of projects together
+
+00:50:07.560 --> 00:50:09.680
+and let's create a standardized translation layer.
+
+00:50:10.360 --> 00:50:11.600
+I think that would be--
+
+00:50:11.600 --> 00:50:13.340
+MARK MANDEL: Not everyone just doing their own copy, right?
+
+00:50:13.540 --> 00:50:14.200
+JOHN MUELLER: Right, right.
+
+00:50:14.260 --> 00:50:17.080
+And then maybe like either Pedantic or maybe Arrow,
+
+00:50:17.600 --> 00:50:20.500
+one of the two projects can own that translation layer.
+
+00:50:21.610 --> 00:50:24.780
+I think that would be really great for the ecosystem.
+
+00:50:25.800 --> 00:50:27.780
+Yeah, that sounds like a fantastic idea.
+
+00:50:28.620 --> 00:50:32.340
+And let's maybe wrap up our little code sample here
+
+00:50:32.740 --> 00:50:36.120
+with talking about querying the database or doing a search.
+
+00:50:36.210 --> 00:50:37.460
+Because it's fun.
+
+00:50:37.600 --> 00:50:39.340
+I know it is fun to put data into a database
+
+00:50:39.560 --> 00:50:41.400
+and define schemas, but the actual purpose
+
+00:50:41.530 --> 00:50:42.720
+is to ask questions, right?
+
+00:50:43.060 --> 00:50:43.480
+That's right.
+
+00:50:43.580 --> 00:50:43.940
+That's right.
+
+00:50:45.300 --> 00:50:55.940
+Yeah, and so we wanted to make it so that it's really familiar for people who've worked with databases and data frame engines.
+
+00:50:56.870 --> 00:51:05.400
+So the main workload for, excuse me, the main workload for Lansi B open source is that search API.
+
+00:51:05.760 --> 00:51:10.640
+So when you, you can say table.search
+
+00:51:11.920 --> 00:51:16.340
+and you can pass in the vector, the query vector,
+
+00:51:16.880 --> 00:51:19.400
+and then you can call dot limit to say
+
+00:51:20.080 --> 00:51:21.440
+how many results we want.
+
+00:51:22.060 --> 00:51:25.720
+And then a dot two underscore, you know, blah, blah, blah
+
+00:51:26.400 --> 00:51:29.700
+to determine what format you want the results back.
+
+00:51:29.840 --> 00:51:33.420
+So you have two pandas here in the example,
+
+00:51:33.700 --> 00:51:35.720
+but you can convert it to polars
+
+00:51:35.740 --> 00:51:37.220
+and just get it back as a list.
+
+00:51:38.350 --> 00:51:39.260
+JOHN MUELLER: Awesome.
+
+00:51:39.740 --> 00:51:40.560
+That's really cool.
+
+00:51:40.910 --> 00:51:41.320
+I love it.
+
+00:51:41.900 --> 00:51:44.020
+And then-- oh, and also a couple of other things.
+
+00:51:44.460 --> 00:51:46.660
+So here, you can also do--
+
+00:51:46.690 --> 00:51:49.380
+if you have a Pydantic model that you use as the table schema,
+
+00:51:49.910 --> 00:51:52.400
+you can also say to pedantic and pass in the model.
+
+00:51:52.860 --> 00:51:56.660
+And it'll automatically return a list of pedantic objects
+
+00:51:56.860 --> 00:51:57.840
+back to you.
+
+00:51:57.840 --> 00:51:58.520
+JOHN MUELLER: Oh, that's cool.
+
+00:51:58.520 --> 00:52:03.619
+This is particularly useful for multi-step agent workflows
+
+00:52:03.640 --> 00:52:05.300
+where you want that structured data,
+
+00:52:05.720 --> 00:52:08.820
+and it's easy to connect it to the rest of your--
+
+00:52:08.820 --> 00:52:09.040
+Right.
+
+00:52:09.280 --> 00:52:11.060
+You would just maybe want to take your pedantic
+
+00:52:11.130 --> 00:52:15.440
+and say, turn that into JSON and hand it over to the next agent
+
+00:52:15.470 --> 00:52:16.260
+or something like that.
+
+00:52:17.040 --> 00:52:17.480
+Exactly.
+
+00:52:18.120 --> 00:52:18.180
+Yep.
+
+00:52:19.240 --> 00:52:19.680
+Nice.
+
+00:52:19.880 --> 00:52:24.600
+So in addition to creating--
+
+00:52:24.620 --> 00:52:27.160
+if we move forward in that example a little bit.
+
+00:52:29.180 --> 00:52:29.620
+Yeah.
+
+00:52:32.620 --> 00:52:35.020
+In addition to setting up the schema,
+
+00:52:35.340 --> 00:52:41.120
+there is also the embedding API that's really interesting.
+
+00:52:41.420 --> 00:52:44.460
+So that when you create the schema--
+
+00:52:44.460 --> 00:52:48.420
+so here's an example where we can create the schema using
+
+00:52:49.540 --> 00:52:49.980
+pedantic.
+
+00:52:50.340 --> 00:52:53.580
+So in this block, I've declared the class
+
+00:52:53.980 --> 00:52:56.040
+words, which is a Lance model.
+
+00:52:56.280 --> 00:52:59.180
+And the Lance model is just a pedantic-based model
+
+00:52:59.400 --> 00:53:01.420
+that knows how to convert itself to Arrow.
+
+00:53:02.620 --> 00:53:10.400
+and then i have two fields in here text and vector and what i what we have in lan cb
+
+00:53:10.600 --> 00:53:17.680
+is an embedding registry where you can hear i declared a function of embedding function called
+
+00:53:17.860 --> 00:53:24.080
+func and basically i call get registry dot get open ai dot create and i give it the name of the
+
+00:53:24.180 --> 00:53:31.640
+embedding here we're using ada2 but you know new new models have been released since and i can use
+
+00:53:31.640 --> 00:53:38.060
+the pedantic annotations to to say hey the text field is the source field for that function
+
+00:53:38.590 --> 00:53:44.280
+so it's text string equals func dot source field um and then the function itself knows how many
+
+00:53:44.440 --> 00:53:49.820
+dimensions it is so i don't need to think about like how many dimensions this the vector the
+
+00:53:49.920 --> 00:53:56.860
+embedding has um and then once i've once i've declared this schema i can call the familiar dot
+
+00:53:56.860 --> 00:54:05.340
+create table workflow and then i can call table.add to add data to it and here because i've declared
+
+00:54:05.520 --> 00:54:10.600
+the embedding function in the schema i don't actually have to generate the embeddings myself
+
+00:54:10.940 --> 00:54:17.520
+so in this example i've i'm only passing in the text field as input um that's really cool yeah
+
+00:54:17.640 --> 00:54:25.560
+just takes care of calling the open ai api on your behalf and then adding the vectors before you know
+
+00:54:26.140 --> 00:54:32.420
+adding the whole batch to the table so open ai was was our first one but there's dozens of compatible
+
+00:54:32.880 --> 00:54:39.460
+embedding models so pretty much anything you can pull off hugging face um you know like and then
+
+00:54:39.580 --> 00:54:46.200
+there's lots of um other vendors like coherer for example um if you were running open source like
+
+00:54:46.340 --> 00:54:55.000
+olama um there's also an a integration for that nice you can use some of the on machine ones
+
+00:54:55.020 --> 00:54:55.880
+potentially as well.
+
+00:54:56.520 --> 00:54:57.500
+Exactly, yeah.
+
+00:54:57.580 --> 00:55:00.800
+So a lot of the ones you can pull off Hugging Face
+
+00:55:01.100 --> 00:55:02.780
+can just run locally.
+
+00:55:03.580 --> 00:55:05.120
+And it exposes the options.
+
+00:55:05.240 --> 00:55:09.620
+So if you do have, for your Mac Mini
+
+00:55:10.720 --> 00:55:14.200
+or even your MacBook laptop, there are options.
+
+00:55:14.540 --> 00:55:15.660
+There are lots of Hugging Face models
+
+00:55:15.780 --> 00:55:19.060
+where you can specify NPS to actually make it run
+
+00:55:19.060 --> 00:55:19.680
+a little bit faster.
+
+00:55:20.220 --> 00:55:20.780
+Oh, nice.
+
+00:55:21.240 --> 00:55:23.440
+That uses the neural processing units or something
+
+00:55:23.580 --> 00:55:24.660
+instead of CPU or GPU.
+
+00:55:24.760 --> 00:55:24.780
+you.
+
+00:55:25.280 --> 00:55:25.380
+OK.
+
+00:55:25.460 --> 00:55:25.540
+Yeah.
+
+00:55:26.420 --> 00:55:26.820
+Yeah.
+
+00:55:27.160 --> 00:55:27.660
+OK, that's cool.
+
+00:55:27.660 --> 00:55:28.140
+I didn't know that.
+
+00:55:28.600 --> 00:55:28.860
+Very nice.
+
+00:55:30.180 --> 00:55:31.440
+And it looks like--
+
+00:55:31.540 --> 00:55:34.920
+I did want to ask you, what's the integration with things
+
+00:55:35.260 --> 00:55:39.180
+like OpenAI or Gemini or other things?
+
+00:55:40.560 --> 00:55:43.640
+It looks like a lot of LanceDB is kind of for you building
+
+00:55:43.760 --> 00:55:45.140
+your app that is self-contained.
+
+00:55:45.720 --> 00:55:49.560
+But also, here's integration with some of the OpenAI, API stuff.
+
+00:55:49.820 --> 00:55:57.700
+What's, how much should I, how much do you depend on using other external AI systems versus just your own?
+
+00:55:59.000 --> 00:55:59.380
+Right.
+
+00:55:59.650 --> 00:56:10.080
+So I think typically the embedding model is you either bring your own run locally or you call a third party API.
+
+00:56:11.240 --> 00:56:16.600
+And then the actual completion, right?
+
+00:56:16.740 --> 00:56:19.960
+That's outside of the scope of LanceDB.
+
+00:56:20.020 --> 00:56:22.620
+So the prompt engineering and the calling
+
+00:56:22.900 --> 00:56:26.800
+the completion model once you have the context retrieved,
+
+00:56:29.400 --> 00:56:31.660
+that's not part of the LanceDB API.
+
+00:56:32.100 --> 00:56:34.780
+That said, so we integrate with, let's say,
+
+00:56:34.840 --> 00:56:36.320
+like a LangChain or a LAMA index.
+
+00:56:37.080 --> 00:56:40.840
+So if you're comfortable with that layer of sort of AI
+
+00:56:41.140 --> 00:56:42.700
+orchestration or RAG orchestration,
+
+00:56:43.740 --> 00:56:47.980
+you can use their APIs and plug in LanceDB into that.
+
+00:56:48.060 --> 00:56:49.960
+So that takes care of a lot of that,
+
+00:56:50.960 --> 00:56:52.900
+the other parts of the workflow.
+
+00:56:54.100 --> 00:57:00.020
+And then if you're in the, let's say, AWS ecosystem,
+
+00:57:00.540 --> 00:57:03.540
+and you're familiar with Bedrock and things like that,
+
+00:57:04.559 --> 00:57:11.960
+there are a few AWS folks who've built a complete serverless
+
+00:57:11.980 --> 00:57:19.600
+Rack Stack where they're using the bedrock APIs for embedding creation and then for completion.
+
+00:57:19.830 --> 00:57:26.180
+But then they have Lance data that's sitting on S3 and they're running Lance DB open source
+
+00:57:26.370 --> 00:57:33.280
+in an AWS Lambda function so that you can essentially have, you don't have to manage
+
+00:57:33.370 --> 00:57:39.540
+any servers and just be calling serverless functions to build your Rack application.
+
+00:57:40.860 --> 00:57:41.480
+It sounds super cool.
+
+00:57:42.180 --> 00:57:43.820
+All right, we're getting short on time.
+
+00:57:43.980 --> 00:57:46.260
+Let's wrap it up with a couple of things here.
+
+00:57:46.540 --> 00:57:50.640
+First of all, we have the open source LanceDB.
+
+00:57:52.240 --> 00:57:54.180
+You talked about the enterprise stuff as well.
+
+00:57:54.320 --> 00:57:56.200
+Let's just talk business on a while really quick.
+
+00:57:56.340 --> 00:58:01.200
+I think it's always interesting to see companies that have maybe OpenCore
+
+00:58:01.480 --> 00:58:05.600
+or some kind of open source foundation and how you guys are making this work
+
+00:58:05.700 --> 00:58:09.540
+for both contributing to open source but also eating.
+
+00:58:11.180 --> 00:58:17.980
+yep what's the what's the story here right right so um yeah i mean it's it's always uh
+
+00:58:18.840 --> 00:58:25.980
+i think it's always a very complicated topic um i think the way that we think about it is
+
+00:58:26.790 --> 00:58:35.160
+um your your journey building building ai so um when you're just starting out and you're doing
+
+00:58:35.120 --> 00:58:42.140
+that prototype and that MVP, a lot of times you don't even know the value of the thing that you
+
+00:58:42.240 --> 00:58:49.940
+want to build or whether it works. So why would you want to go through the hassle of managing
+
+00:58:50.560 --> 00:58:56.900
+complicated infrastructure or pay a third-party vendor to just have some small amounts of data?
+
+00:58:57.160 --> 00:59:03.960
+So we wanted to make LAN-CB open source super easy for you to just get started.
+
+00:59:04.860 --> 00:59:09.540
+and also just bridge you into production in that early stage.
+
+00:59:10.500 --> 00:59:13.460
+The cloud and enterprise offerings are essentially for
+
+00:59:13.880 --> 00:59:16.800
+when you go into production and you want to have
+
+00:59:17.440 --> 00:59:19.820
+a super scalable and highly performant vector database
+
+00:59:20.240 --> 00:59:22.660
+where you still don't have to worry about the infrastructure,
+
+00:59:23.540 --> 00:59:28.200
+but you have lots more challenging systems needs.
+
+00:59:28.760 --> 00:59:34.020
+And so LansDB Cloud, it's a hosted serverless offering.
+
+00:59:34.040 --> 00:59:37.600
+So for small teams that have production needs,
+
+00:59:37.940 --> 00:59:40.080
+but maybe don't have billions of vectors
+
+00:59:40.800 --> 00:59:46.460
+or really challenging security requirements and things like that.
+
+00:59:47.059 --> 00:59:50.480
+And LASDB Enterprises, we really have,
+
+00:59:50.480 --> 00:59:54.640
+OK, I need 1,000 to 10,000 queries per second.
+
+00:59:54.840 --> 00:59:59.340
+I have just a ridiculous amount of data
+
+00:59:59.580 --> 01:00:01.020
+to catch myself before I curse.
+
+01:00:01.680 --> 01:00:05.020
+And on prem.
+
+01:00:05.900 --> 01:00:09.620
+Yeah, and I need my data to live on on-prem.
+
+01:00:09.810 --> 01:00:15.100
+And so the enterprise comes in in two different packages.
+
+01:00:15.340 --> 01:00:21.360
+One is a managed offering where you can bring your own bucket,
+
+01:00:22.050 --> 01:00:23.600
+and then we just run the compute for you
+
+01:00:23.600 --> 01:00:24.520
+and give you a private link.
+
+01:00:25.220 --> 01:00:27.500
+Or it can be fully--
+
+01:00:28.510 --> 01:00:29.380
+we call it BYOC.
+
+01:00:29.600 --> 01:00:32.400
+So it runs within the customer account.
+
+01:00:32.430 --> 01:00:35.540
+So nothing leaves the premises except for basic telemetry data.
+
+01:00:36.020 --> 01:00:36.860
+Yeah, nice.
+
+01:00:37.210 --> 01:00:37.340
+Awesome.
+
+01:00:38.060 --> 01:00:38.300
+All right.
+
+01:00:38.450 --> 01:00:43.700
+And then, you know, quickly close it out with, I guess, what's next?
+
+01:00:44.340 --> 01:00:46.240
+Like, where are things going here?
+
+01:00:46.530 --> 01:00:50.300
+I see LanceDB Cloud is in private beta, early access mode.
+
+01:00:51.240 --> 01:00:52.120
+Where are you all going?
+
+01:00:53.420 --> 01:00:53.560
+Yep.
+
+01:00:54.000 --> 01:01:00.380
+So I think there's a couple of really exciting things.
+
+01:01:00.690 --> 01:01:07.160
+So first on the open source, our vision for Lance
+
+01:01:07.440 --> 01:01:13.380
+is to make it the standard for working with AI.
+
+01:01:14.260 --> 01:01:18.400
+So I think we already have lots of folks
+
+01:01:18.620 --> 01:01:24.020
+who are depending on Lance with image data, video data,
+
+01:01:24.170 --> 01:01:25.020
+large scale training.
+
+01:01:25.730 --> 01:01:28.060
+And we'll continue to make that better.
+
+01:01:28.470 --> 01:01:30.300
+And then add additional encoding.
+
+01:01:30.470 --> 01:01:34.020
+So for folks that not just have those,
+
+01:01:34.280 --> 01:01:37.780
+but compressing text data and the metadata they have
+
+01:01:37.790 --> 01:01:39.580
+to make it as efficient as possible.
+
+01:01:41.480 --> 01:01:45.700
+And I think there, between Lance and Lance-EB,
+
+01:01:46.280 --> 01:01:51.540
+I think we just broke through 2.2 million monthly downloads.
+
+01:01:52.430 --> 01:01:56.680
+So we're really excited about that and that community uptake as well.
+
+01:01:57.750 --> 01:02:02.000
+And we're getting lots of community collaborators and contributors,
+
+01:02:03.480 --> 01:02:06.600
+and we're looking to grow that community.
+
+01:02:06.890 --> 01:02:09.840
+So on the open source side, it's better APIs,
+
+01:02:10.940 --> 01:02:13.760
+more automation around the data management like compaction,
+
+01:02:14.660 --> 01:02:20.720
+and then just better encodings for the non-large blob types,
+
+01:02:21.060 --> 01:02:24.340
+smaller strings, numerical data, and things like that.
+
+01:02:24.860 --> 01:02:28.900
+And then for LanceDB Enterprise, a lot of times,
+
+01:02:32.600 --> 01:02:36.700
+if you have to look at the whole search engine,
+
+01:02:37.420 --> 01:02:41.800
+so right now, our customers still have to do the chunking and embedding themselves,
+
+01:02:42.540 --> 01:02:45.900
+But we're basically looking to make it much easier
+
+01:02:46.030 --> 01:02:48.480
+for those types of workloads, not just in terms of productivity,
+
+01:02:48.960 --> 01:02:54.060
+but to also save them cost as well in terms of embedding.
+
+01:02:54.180 --> 01:02:56.680
+So a lot of times what we find is our customers
+
+01:02:56.790 --> 01:03:00.620
+will update a table with a new version that's like 80% the same.
+
+01:03:01.200 --> 01:03:05.940
+And so if we have the right APIs and manage
+
+01:03:06.060 --> 01:03:10.180
+the embedding calls for them, we can essentially
+
+01:03:10.200 --> 01:03:18.600
+save 80 of that cost in terms of embedding apis without complicated sort of um like query cache
+
+01:03:18.600 --> 01:03:25.540
+or embedding cache that has more complexity right so uh and then just deepening the so
+
+01:03:26.090 --> 01:03:32.040
+complete more complete search engine for ai and then on the offline side uh complete complete
+
+01:03:32.440 --> 01:03:40.160
+features at scale around um building that training pre-processing and exploratory data analysis
+
+01:03:40.180 --> 01:03:43.180
+workflow for those types of customers.
+
+01:03:44.520 --> 01:03:44.960
+- Awesome.
+
+01:03:45.520 --> 01:03:47.080
+Well, it looks like a really cool product
+
+01:03:47.290 --> 01:03:50.640
+and set of services and nice work.
+
+01:03:51.820 --> 01:03:52.340
+- Thank you.
+
+01:03:52.860 --> 01:03:54.180
+- Yeah, thanks for being here.
+
+01:03:54.780 --> 01:03:56.840
+Final parting thoughts, people wanna get started
+
+01:03:56.840 --> 01:03:57.880
+with LanceDB, what do you tell them?
+
+01:03:58.920 --> 01:04:00.860
+- Oh, come to our Discord.
+
+01:04:01.580 --> 01:04:06.480
+And I think, I forgot if you have the,
+
+01:04:06.880 --> 01:04:08.220
+if I give you the...
+
+01:04:10.060 --> 01:04:12.160
+I don't know if I have the link, but give it to me,
+
+01:04:12.160 --> 01:04:13.540
+and I'll put it in the show notes for people later.
+
+01:04:14.200 --> 01:04:15.020
+Yeah, sounds good.
+
+01:04:15.840 --> 01:04:16.640
+So come to our Discord.
+
+01:04:17.460 --> 01:04:21.040
+We're all in there, and it's pretty active,
+
+01:04:21.230 --> 01:04:23.240
+and we respond fairly quickly.
+
+01:04:26.519 --> 01:04:28.040
+And there's not a lot of noise,
+
+01:04:28.500 --> 01:04:30.880
+so it's mostly sort of practical topics,
+
+01:04:32.759 --> 01:04:34.760
+debugging and talking about new features,
+
+01:04:35.480 --> 01:04:37.780
+maybe having a little bit of fun with new examples
+
+01:04:37.950 --> 01:04:38.580
+and things like that.
+
+01:04:38.820 --> 01:04:39.100
+Awesome.
+
+01:04:39.660 --> 01:04:41.100
+All right, well, thanks for being here.
+
+01:04:41.360 --> 01:04:41.660
+See you later.
+
+01:04:42.560 --> 01:04:42.800
+Thank you.
+
+01:05:11.960 --> 01:05:11.980
+Продолжение следует...
+

@@ -1,4409 +1,3584 @@
 WEBVTT
 
-00:00:00.000 --> 00:00:04.160
+00:00:01.980 --> 00:00:03.900
 Stanislav, welcome to Talk Python To Me.
 
-00:00:04.160 --> 00:00:06.800
+00:00:04.010 --> 00:00:04.700
 It's great to have you here.
 
-00:00:06.800 --> 00:00:08.600
+00:00:06.680 --> 00:00:07.300
 It's good to be here.
 
-00:00:08.600 --> 00:00:10.200
+00:00:08.480 --> 00:00:09.940
 Yeah, it's good to have you here.
 
-00:00:10.200 --> 00:00:12.560
-I wonder what version we're going to end up
+00:00:10.100 --> 00:00:13.920
+I wonder what version that we're going to end up shipping of this episode.
 
-00:00:12.560 --> 00:00:14.040
-shipping of this episode.
-
-00:00:14.040 --> 00:00:20.200
+00:00:17.340 --> 00:00:19.040
 We're going to talk about API versions.
 
-00:00:20.200 --> 00:00:21.040
+00:00:20.100 --> 00:00:20.700
 API versions.
 
-00:00:21.040 --> 00:00:23.400
+00:00:20.980 --> 00:00:21.480
 API versions.
 
-00:00:23.400 --> 00:00:26.360
+00:00:23.240 --> 00:00:24.680
 It's good to have many of them, you know?
 
-00:00:26.360 --> 00:00:29.480
-Yeah, it's one of those problems that as soon as you
+00:00:26.260 --> 00:00:28.540
+Yeah, it's one of those problems that, you know,
 
-00:00:29.480 --> 00:00:33.040
-create an API and people start to use it,
+00:00:28.620 --> 00:00:31.900
+as soon as you create an API and people start to use it,
 
-00:00:33.040 --> 00:00:36.640
+00:00:32.960 --> 00:00:34.300
 they don't want to keep rewriting their code.
 
-00:00:36.640 --> 00:00:40.720
-But you need to evolve your API over time
+00:00:34.840 --> 00:00:40.420
+So, but you need to evolve your API over time
 
-00:00:40.720 --> 00:00:43.680
-as it gets new features, as maybe more importantly,
+00:00:40.660 --> 00:00:41.560
+as it gets new features,
 
-00:00:43.680 --> 00:00:46.560
-you realize, oh, that was a bad choice.
+00:00:41.920 --> 00:00:44.160
+as maybe more importantly, you realize like,
 
-00:00:46.560 --> 00:00:47.600
-How do you fix this?
+00:00:44.340 --> 00:00:45.560
+oh, that was a bad choice.
 
-00:00:47.600 --> 00:00:51.320
+00:00:46.460 --> 00:00:47.340
+How do you fix this, right?
+
+00:00:47.500 --> 00:00:50.160
 So that's kind of the theme of this episode.
 
-00:00:51.320 --> 00:00:54.080
+00:00:51.160 --> 00:00:53.779
 We're going to talk about concrete tools
 
-00:00:54.080 --> 00:00:58.800
-that you can use to add versioning to various API
+00:00:53.880 --> 00:01:00.420
+that you can use to add versioning to various API frameworks in Python and some of the ideas
 
-00:00:58.800 --> 00:01:01.200
-frameworks in Python and some of the ideas behind it.
+00:01:00.580 --> 00:01:07.360
+behind it. So going to be a ton of fun. Let's start though with your story. Tell us a bit about
 
-00:01:01.200 --> 00:01:03.760
-So it's going to be a ton of fun.
+00:01:07.500 --> 00:01:16.360
+yourself. So previously I have been a backend engineer for six or even seven years now.
 
-00:01:03.760 --> 00:01:07.080
-Let's start, though, with your story.
+00:01:17.740 --> 00:01:21.820
+But recently I have shifted into infrastructure.
 
-00:01:07.080 --> 00:01:10.040
-Tell us a bit about yourself.
+00:01:22.540 --> 00:01:25.820
+Right now I'm a platform engineering tech lead at Monite.
 
-00:01:10.040 --> 00:01:15.160
-So previously, I have been a back-end engineer for six
-
-00:01:15.160 --> 00:01:17.720
-or even seven years now.
-
-00:01:17.720 --> 00:01:22.720
-But recently, I have shifted into infrastructure.
-
-00:01:22.720 --> 00:01:25.200
-Right now, I'm a platform engineering tech
-
-00:01:25.200 --> 00:01:26.400
-lead at Monite.
-
-00:01:26.400 --> 00:01:29.960
+00:01:26.280 --> 00:01:29.340
 What I do is I make architectural decisions.
 
-00:01:29.960 --> 00:01:31.400
+00:01:29.800 --> 00:01:31.040
 I mentor the teams.
 
-00:01:31.400 --> 00:01:35.400
-I help the teams with Python-specific questions.
+00:01:31.300 --> 00:01:34.540
+I help the teams with Python specific questions.
 
-00:01:35.400 --> 00:01:38.600
-But mostly, I build Python-specific infrastructure.
+00:01:35.180 --> 00:01:38.020
+But mostly I build Python specific infrastructure.
 
-00:01:38.600 --> 00:01:42.840
+00:01:38.340 --> 00:01:41.500
 And my main job is making our business teams happy.
 
-00:01:42.840 --> 00:01:43.320
+00:01:42.720 --> 00:01:42.980
 Excellent.
 
-00:01:43.320 --> 00:01:44.120
-I try to do that--
+00:01:42.980 --> 00:01:43.740
+I try to do that.
 
-00:01:44.120 --> 00:01:46.400
-Sounds really--
-
-00:01:46.400 --> 00:01:47.240
+00:01:46.280 --> 00:01:46.380
 Yeah.
 
-00:01:47.240 --> 00:01:50.720
+00:01:46.940 --> 00:01:49.960
 I try to do that in my open source work as well.
 
-00:01:50.720 --> 00:01:53.080
+00:01:50.600 --> 00:01:52.760
 I like to make my own open source projects.
 
-00:01:53.080 --> 00:01:55.720
+00:01:52.840 --> 00:01:55.380
 I like to contribute to big projects, small projects.
 
-00:01:55.720 --> 00:01:57.680
+00:01:55.600 --> 00:01:56.900
 It's all over the place.
 
-00:01:57.680 --> 00:02:00.240
+00:01:57.480 --> 00:01:58.980
 And we're going to be mentioning one of them today.
 
-00:02:00.240 --> 00:02:01.800
+00:01:59.760 --> 00:02:01.540
 Yeah, you built a really cool library
 
-00:02:01.800 --> 00:02:03.120
+00:02:01.580 --> 00:02:02.460
 that we're going to talk about.
 
-00:02:03.120 --> 00:02:04.840
+00:02:03.060 --> 00:02:04.660
 And that'll be a lot of fun.
 
-00:02:04.840 --> 00:02:05.840
+00:02:04.660 --> 00:02:05.340
 It looks really useful.
 
-00:02:05.840 --> 00:02:10.480
+00:02:05.740 --> 00:02:09.000
 And some other third-party ones as well.
 
-00:02:10.480 --> 00:02:13.560
-So I wanted to ask you a little bit about,
+00:02:11.140 --> 00:02:13.299
+So I wanted to ask you a little bit about
 
-00:02:13.560 --> 00:02:17.240
-what is the difference between being a back-end software
+00:02:13.320 --> 00:02:30.520
+What is the difference between being a backend software developer, which I think a lot of people get the sense of, like building APIs, building the backend, at least, aspect of websites and so on, versus, say, building infrastructure in Python?
 
-00:02:17.240 --> 00:02:19.520
-developer, which I think a lot of people
+00:02:30.730 --> 00:02:31.820
+Like, what are these two worlds?
 
-00:02:19.520 --> 00:02:21.920
-get the sense of, like building APIs,
-
-00:02:21.920 --> 00:02:27.680
-building the back-end, at least, aspect of websites and so on,
-
-00:02:27.680 --> 00:02:30.800
-versus, say, building infrastructure in Python?
-
-00:02:30.800 --> 00:02:31.880
-What are these two worlds?
-
-00:02:31.880 --> 00:02:32.800
+00:02:32.000 --> 00:02:32.520
 How are they the same?
 
-00:02:32.800 --> 00:02:35.120
+00:02:32.660 --> 00:02:33.020
 How are they different?
 
-00:02:35.120 --> 00:02:39.640
-So when you're building them, especially when you're
+00:02:34.840 --> 00:02:41.660
+So when you're building them, especially when you're building products, it's very similar.
 
-00:02:39.640 --> 00:02:42.080
-building products, it's very similar.
+00:02:41.900 --> 00:02:47.740
+However, in backend, there is already a lot of infrastructure around you.
 
-00:02:42.080 --> 00:02:45.320
-However, in back-end, there is already a lot
+00:02:47.770 --> 00:02:52.280
+There is already a lot of people who do portions of your job.
 
-00:02:45.320 --> 00:02:47.960
-of infrastructure around you.
+00:02:52.500 --> 00:02:55.100
+So like there are people who can sell your product.
 
-00:02:47.960 --> 00:02:50.920
-There is already a lot of people who
+00:02:55.370 --> 00:03:00.880
+There are people who are thinking about how to, you know, how to move it forward, how to evolve it.
 
-00:02:50.920 --> 00:02:52.600
-do portions of your job.
+00:03:00.980 --> 00:03:05.160
+There are people who are, you know, designing it, thinking about it.
 
-00:02:52.600 --> 00:02:55.560
-So there are people who can sell your product.
+00:03:05.400 --> 00:03:08.340
+But when you're a platform engineer, you got to do all of that yourself.
 
-00:02:55.560 --> 00:02:59.480
-There are people who are thinking about how
+00:03:09.080 --> 00:03:31.140
+And also one big portion of any library framework or anything else, any developer tools development, is the fact that unlike an API, well, a web API, a REST API, which has a very strict sort of interface where the developer wouldn't be able to use it in a million ways.
 
-00:02:59.480 --> 00:03:01.120
-to move it forward, how to evolve it.
+00:03:32.380 --> 00:03:36.840
+a library, especially in a language as introspectable as Python,
 
-00:03:01.120 --> 00:03:05.600
-There are people who are designing it, thinking about it.
+00:03:38.240 --> 00:03:40.500
+the developers can do crazy things with your stuff.
 
-00:03:05.600 --> 00:03:07.200
-But when you're a platform engineer,
+00:03:40.800 --> 00:03:44.060
+So you've got to think forward for all of these use cases,
 
-00:03:07.200 --> 00:03:09.280
-you've got to do all of that yourself.
+00:03:44.400 --> 00:03:48.880
+and you've got to be sure that you don't expose extra private interfaces
 
-00:03:09.280 --> 00:03:13.880
-And also, one big portion of any library framework
+00:03:49.200 --> 00:03:53.780
+because once you do expose them, it won't be nice to break them in the future.
 
-00:03:13.880 --> 00:03:17.600
-or anything else, any developer tools development,
+00:03:54.700 --> 00:03:55.460
+Yeah, absolutely.
 
-00:03:17.600 --> 00:03:20.480
-is the fact that, unlike an API--
+00:03:57.760 --> 00:04:03.300
+I guess it's a little more restricted with APIs than it is with handing out packages, right?
 
-00:03:20.480 --> 00:03:22.840
-well, a web API, a REST API, which
+00:04:03.320 --> 00:04:08.340
+Because people, they can just dive into the packages and do whatever you want.
 
-00:03:22.840 --> 00:03:29.760
-has a very strict interface where the developer wouldn't
+00:04:08.340 --> 00:04:12.880
+And the API is more or less limited by what the website's willing to process, right?
 
-00:03:29.760 --> 00:03:32.560
-be able to use it in a million ways,
-
-00:03:32.560 --> 00:03:35.480
-a library, especially in a language
-
-00:03:35.480 --> 00:03:39.080
-as introspectable as Python, the developers
-
-00:03:39.080 --> 00:03:41.040
-can do crazy things with your stuff.
-
-00:03:41.040 --> 00:03:44.520
-So you've got to think forward for all of these use cases.
-
-00:03:44.520 --> 00:03:47.960
-And you've got to be sure that you don't expose
-
-00:03:47.960 --> 00:03:49.400
-extra private interfaces.
-
-00:03:49.400 --> 00:03:51.600
-Because once you do expose them, it
-
-00:03:51.600 --> 00:03:54.840
-won't be nice to break them in the future.
-
-00:03:54.840 --> 00:03:58.160
->>Yeah, absolutely.
-
-00:03:58.160 --> 00:04:01.400
-I guess it's a little more restricted with APIs
-
-00:04:01.400 --> 00:04:03.560
-than it is with handing out packages, right?
-
-00:04:03.560 --> 00:04:07.600
-Because people, they can just dive into the packages
-
-00:04:07.600 --> 00:04:08.640
-and do whatever you want.
-
-00:04:08.640 --> 00:04:10.280
-And the API is more or less limited
-
-00:04:10.280 --> 00:04:15.280
-by what the website's willing to process, right?
-
-00:04:15.280 --> 00:04:16.360
+00:04:15.140 --> 00:04:15.260
 Yep.
 
-00:04:16.360 --> 00:04:19.640
+00:04:16.220 --> 00:04:19.260
 On the flip side, you have code on the internet.
 
-00:04:19.640 --> 00:04:22.640
-And any time you have code on the internet,
+00:04:19.440 --> 00:04:23.940
+And anytime you have code on the internet, that's always a little stressful, right?
 
-00:04:22.640 --> 00:04:26.120
-that's always a little stressful, right?
+00:04:24.080 --> 00:04:33.140
+Just like whatever is out there, it's incredible if you have a website, if you pull up the logs, how much abuse your website is taking constantly.
 
-00:04:26.120 --> 00:04:28.240
-Whatever is out there, it's incredible
-
-00:04:28.240 --> 00:04:30.640
-if you have a website, you pull up the logs,
-
-00:04:30.640 --> 00:04:33.960
-how much abuse your website is taking constantly.
-
-00:04:33.960 --> 00:04:34.880
->>True.
-
-00:04:34.880 --> 00:04:36.240
+00:04:33.840 --> 00:04:33.980
 True.
 
-00:04:36.240 --> 00:04:38.840
-But I mean, the great thing about building packages
+00:04:34.740 --> 00:04:34.880
+True.
 
-00:04:38.840 --> 00:04:42.360
-is that you're not worried about what happens with them after.
+00:04:36.140 --> 00:04:41.980
+But I mean, the great thing about building packages is that, you know, you're not worried about what happens with them after.
 
-00:04:42.360 --> 00:04:43.680
-You just give them.
+00:04:42.060 --> 00:04:43.300
+You know, you just skim them.
 
-00:04:43.680 --> 00:04:46.280
+00:04:43.520 --> 00:04:46.080
 And then if it breaks, it's not you.
 
-00:04:46.280 --> 00:04:49.840
+00:04:46.240 --> 00:04:48.720
 It's not on your servers, hopefully.
 
-00:04:49.840 --> 00:04:53.760
-But also, as I mentioned, you've got to both be its designer,
+00:04:49.720 --> 00:04:53.500
+But also, as I mentioned, you got to both be its designer.
 
-00:04:53.760 --> 00:04:59.400
-you've got to sell it, you've got to talk people through that,
+00:04:53.720 --> 00:04:54.460
+You've got to sell it.
 
-00:04:59.400 --> 00:05:00.960
-you've got to document it.
+00:04:55.440 --> 00:04:59.200
+You've got to talk people through that.
 
-00:05:00.960 --> 00:05:03.320
-As a platform engineer, you do all of the parts
+00:04:59.320 --> 00:05:00.140
+You've got to document it.
 
-00:05:03.320 --> 00:05:06.320
-that backend engineers are abstracted away from,
+00:05:00.240 --> 00:05:01.540
+You've got to, as a platform engineer,
 
-00:05:06.320 --> 00:05:11.080
+00:05:01.690 --> 00:05:06.000
+you do all of the parts that backend engineers are abstracted away from,
+
+00:05:06.260 --> 00:05:09.700
 or at least in most bigger companies, abstracted away from.
 
-00:05:11.080 --> 00:05:11.920
->>Yeah.
-
-00:05:11.920 --> 00:05:14.240
-Yeah, super interesting.
-
-00:05:14.240 --> 00:05:17.000
-All right, let's talk about, I guess,
-
-00:05:17.000 --> 00:05:20.080
-one more thing for your introduction before we move on.
-
-00:05:20.080 --> 00:05:24.280
-You've worked on quite a few interesting projects here.
-
-00:05:24.280 --> 00:05:26.640
-So maybe give us just a little bit of background
-
-00:05:26.640 --> 00:05:29.800
-on some of your open source work.
-
-00:05:29.800 --> 00:05:34.080
->>So I'll just talk about, I guess, the most popular ones.
-
-00:05:34.080 --> 00:05:37.520
-The coolest one was Pathwalk.
-
-00:05:37.520 --> 00:05:39.640
-If you remember, in Python, there is OSwalk,
-
-00:05:39.640 --> 00:05:43.680
-but then in Python 3.12, I added Pathwalk.
-
-00:05:43.680 --> 00:05:46.800
-I have also added the type-ins for that into TypeShed,
-
-00:05:46.800 --> 00:05:48.520
-I think some other things.
-
-00:05:48.520 --> 00:05:52.600
-And I am, I think, top 10 contributor of Tortoise ORM,
-
-00:05:52.600 --> 00:05:57.600
-the asynchronous ORM that claims to be the fastest,
-
-00:05:57.600 --> 00:06:00.240
-or at least one of the fastest in Python.
-
-00:06:00.240 --> 00:06:02.480
-And a few smaller projects,
-
-00:06:02.480 --> 00:06:06.320
-which I don't think there is anything particularly
-
-00:06:06.320 --> 00:06:09.760
-fun to talk about there.
-
-00:06:09.760 --> 00:06:12.500
-It's just mostly bug fixes and small features.
-
-00:06:12.500 --> 00:06:14.800
-But then my other projects,
-
-00:06:14.800 --> 00:06:17.320
-the ones that I maintain, are way cooler.
-
-00:06:17.320 --> 00:06:20.360
-For example, Pydantic Duality enables you to
-
-00:06:20.360 --> 00:06:25.680
-have multiple versions of your Pydantic models
-
-00:06:25.680 --> 00:06:28.120
-for almost free in terms of performance
-
-00:06:28.120 --> 00:06:32.480
-and without any code generation.
-
-00:06:32.480 --> 00:06:35.360
-And CADWIN, the project we're going to be discussing today,
-
-00:06:35.360 --> 00:06:38.120
-implements, I guess, the fullest
-
-00:06:38.120 --> 00:06:40.920
-and most sophisticated API versioning paradigm
-
-00:06:40.920 --> 00:06:42.260
-there is at this point.
-
-00:06:42.260 --> 00:06:44.560
->>Excellent, yeah.
-
-00:06:44.560 --> 00:06:45.400
->>A lot of cool stuff.
-
-00:06:45.400 --> 00:06:46.480
->>Pydantic Duality looks, yeah,
-
-00:06:46.480 --> 00:06:48.720
-Pydantic Duality looks really, really cool.
-
-00:06:48.720 --> 00:06:51.600
-So a lot of neat stuff here.
-
-00:06:51.600 --> 00:06:54.040
-A lot of different ways people might know about you.
-
-00:06:54.040 --> 00:06:57.000
-So yeah, CADWIN's the one we're gonna be focusing on
-
-00:06:57.000 --> 00:06:58.440
-for here.
-
-00:06:58.440 --> 00:07:02.800
-So let's start with talking about APIs.
-
-00:07:02.800 --> 00:07:06.440
-You talked about API-first companies, what's that?
-
-00:07:06.440 --> 00:07:13.200
->>So API-first company, just like any other term
-
-00:07:13.200 --> 00:07:16.300
-that gets popular, is a buzzword, obviously.
-
-00:07:16.300 --> 00:07:19.680
-But the truth behind it is,
-
-00:07:19.680 --> 00:07:24.720
-an API-first company is any company whose main product
-
-00:07:24.720 --> 00:07:28.560
-is an API and the SDKs associated with it.
-
-00:07:28.560 --> 00:07:33.160
-And as a result, API-first company has to document
-
-00:07:33.160 --> 00:07:36.040
-their API really thoroughly, think about their API,
-
-00:07:36.040 --> 00:07:38.800
-both the internal one and the external one,
-
-00:07:38.800 --> 00:07:41.320
-and take great care of that
-
-00:07:41.320 --> 00:07:43.160
-because it's their main product.
-
-00:07:43.160 --> 00:07:48.160
-So we have a lot of API-first companies right now,
-
-00:07:48.160 --> 00:07:51.520
-but with every year, new industries are joining.
-
-00:07:51.520 --> 00:07:55.860
-And if you ever heard of Open Banking, things like that,
-
-00:07:55.860 --> 00:08:00.000
-banks are going to join us soon.
-
-00:08:00.000 --> 00:08:02.040
-In some countries, they already have.
-
-00:08:02.040 --> 00:08:07.040
-And Monite is doing similar things
-
-00:08:07.040 --> 00:08:11.080
-and tries to bring that innovation, that Open Banking,
-
-00:08:11.080 --> 00:08:14.680
-and that API-first approach into banking.
-
-00:08:14.680 --> 00:08:17.020
->>Yeah, so the company we work for, Monite,
-
-00:08:18.560 --> 00:08:23.520
-they build, you all build APIs to basically facilitate
-
-00:08:23.520 --> 00:08:26.520
-other people doing invoicing and bill pay in their apps.
-
-00:08:26.520 --> 00:08:27.360
-Is that correct?
-
-00:08:27.360 --> 00:08:32.280
->>Yeah, you could call us a B2B2B company.
-
-00:08:32.280 --> 00:08:35.840
-'Cause essentially, many banks, many marketplaces
-
-00:08:35.840 --> 00:08:40.600
-are very outdated in terms of how they handle invoicing
-
-00:08:40.600 --> 00:08:44.000
-and payments, and we try to take all of that,
-
-00:08:44.000 --> 00:08:47.280
-combine that, and offer that as a white label product
-
-00:08:47.280 --> 00:08:48.240
-to them.
-
-00:08:48.240 --> 00:08:52.160
-So we do this for them, they integrate with us once,
-
-00:08:52.160 --> 00:08:54.840
-and then they forget it was ever a problem.
-
-00:08:54.840 --> 00:08:59.280
-They just give our product as their straight to their clients
-
-00:08:59.280 --> 00:09:01.400
->>Yeah, that's excellent.
-
-00:09:01.400 --> 00:09:05.840
-So this seems like kind of in that category of API-first.
-
-00:09:05.840 --> 00:09:08.000
->>Oh, yes.
-
-00:09:08.000 --> 00:09:09.520
->>Yeah, okay.
-
-00:09:09.520 --> 00:09:12.880
-Yeah, it's cool that you have concrete experience with it,
-
-00:09:12.880 --> 00:09:13.920
-right, of course.
-
-00:09:17.720 --> 00:09:22.040
-So give us some of the laws.
-
-00:09:22.040 --> 00:09:23.960
-We coordinated a little bit beforehand,
-
-00:09:23.960 --> 00:09:28.000
-and there's some interesting laws for designing good APIs.
-
-00:09:28.000 --> 00:09:31.400
-Like one of them is the reverse Conway maneuver,
-
-00:09:31.400 --> 00:09:34.920
-which to me sounds like a jujitsu sort of move
-
-00:09:34.920 --> 00:09:36.080
-that you might try to pull.
-
-00:09:36.080 --> 00:09:36.920
-What is this?
-
-00:09:36.920 --> 00:09:39.360
->>Oh, yes.
-
-00:09:39.360 --> 00:09:43.040
-So when you are designing any system,
-
-00:09:43.040 --> 00:09:46.320
-you gotta think about the way it's going to end up
-
-00:09:46.320 --> 00:09:48.520
-and the laws that are going to govern them.
-
-00:09:48.520 --> 00:09:52.400
-And Conway's law is one of the main laws that do that.
-
-00:09:52.400 --> 00:09:55.400
-To explain that to people in simple terms,
-
-00:09:55.400 --> 00:09:58.120
-if you have four teams designing a compiler,
-
-00:09:58.120 --> 00:10:00.680
-you're going to have a four-pass compiler.
-
-00:10:00.680 --> 00:10:05.320
-And essentially, the way you set up communications
-
-00:10:05.320 --> 00:10:07.600
-within your company, the way you set up your teams,
-
-00:10:07.600 --> 00:10:11.000
-your structure is going to be reflected in your product,
-
-00:10:11.000 --> 00:10:12.520
-and you can't do anything about it.
-
-00:10:12.520 --> 00:10:15.040
-You can spend money, you can coordinate people,
-
-00:10:15.040 --> 00:10:18.680
-but at some point, Conway's law is going to affect you
-
-00:10:18.680 --> 00:10:21.120
-and it's going to be harsh.
-
-00:10:21.120 --> 00:10:25.800
-So one of the ways to, I guess, go around it
-
-00:10:25.800 --> 00:10:28.720
-is to first think of an interface that you want to provide,
-
-00:10:28.720 --> 00:10:31.240
-and it applies to anything, not just APIs.
-
-00:10:31.240 --> 00:10:33.720
-API is just a really good example of that.
-
-00:10:33.720 --> 00:10:36.480
-And then design your company
-
-00:10:36.480 --> 00:10:38.920
-and the communications within your company,
-
-00:10:38.920 --> 00:10:40.400
-the teams within your company,
-
-00:10:40.400 --> 00:10:44.480
-to reflect the interfaces that you want to get in the end.
-
-00:10:44.480 --> 00:10:45.920
-And that's reverse Conway's law.
-
-00:10:45.920 --> 00:10:48.440
-- Okay, because your code and your APIs
-
-00:10:48.440 --> 00:10:49.840
-and all those things are going to reflect
-
-00:10:49.840 --> 00:10:51.640
-your company's structure and culture.
-
-00:10:51.640 --> 00:10:54.840
-So instead of having that being implicit,
-
-00:10:54.840 --> 00:10:57.320
-make it more explicit by saying,
-
-00:10:57.320 --> 00:10:58.920
-well, this is the end point that we want,
-
-00:10:58.920 --> 00:11:01.320
-the end result that we want.
-
-00:11:01.320 --> 00:11:04.440
-How do we work that backwards to end up,
-
-00:11:04.440 --> 00:11:07.520
-structuring teams or whatever to get this, right?
-
-00:11:07.520 --> 00:11:08.880
-- Precisely, yes.
-
-00:11:08.880 --> 00:11:10.880
-- Yeah, it is a little bit like Jujitsu.
-
-00:11:10.880 --> 00:11:12.960
-Anyway. (laughs)
-
-00:11:12.960 --> 00:11:15.800
-But there are more laws that do that.
-
-00:11:15.800 --> 00:11:17.200
-Of course, there is REST,
-
-00:11:17.200 --> 00:11:20.000
-which I guess not really laws, but principles,
-
-00:11:20.000 --> 00:11:26.080
-which most people, or at least most companies I saw,
-
-00:11:26.080 --> 00:11:29.320
-don't really like to follow it to the letter.
-
-00:11:29.320 --> 00:11:31.640
-But if you do, making,
-
-00:11:31.640 --> 00:11:34.720
-if you do follow REST,
-
-00:11:34.720 --> 00:11:39.640
-if you try to make your API as available as you can
-
-00:11:39.640 --> 00:11:41.880
-and as standardized as you can,
-
-00:11:41.880 --> 00:11:43.480
-then it's much easier for new people,
-
-00:11:43.480 --> 00:11:45.160
-especially junior developers to learn.
-
-00:11:45.160 --> 00:11:47.280
-And then that makes it much easier
-
-00:11:47.280 --> 00:11:50.040
-for your clients to integrate with you, which is great.
-
-00:11:50.040 --> 00:11:54.400
-There is also, there are also a few,
-
-00:11:54.400 --> 00:11:55.880
-I guess, more advanced things.
-
-00:11:55.880 --> 00:11:58.120
-For example, when you are designing an API,
-
-00:11:58.120 --> 00:11:59.680
-when you're doing microservices
-
-00:11:59.680 --> 00:12:02.680
-and when you have many services talking to each other,
-
-00:12:02.680 --> 00:12:07.680
-which in the end provide your final product
-
-00:12:07.680 --> 00:12:09.840
-to your customers,
-
-00:12:09.840 --> 00:12:13.440
-a good idea is to omit any internal APIs
-
-00:12:13.440 --> 00:12:15.200
-and make all of your APIs,
-
-00:12:15.200 --> 00:12:18.140
-or at least the majority of your APIs external.
-
-00:12:18.140 --> 00:12:21.520
-That is also one of the things about API-first.
-
-00:12:21.520 --> 00:12:23.600
-Once all of your APIs are external,
-
-00:12:23.600 --> 00:12:28.000
-it means that your clients will be able to build a product
-
-00:12:28.000 --> 00:12:30.600
-that is of similar quality to yours.
-
-00:12:30.600 --> 00:12:33.240
-We're using your APIs, using your data,
-
-00:12:33.240 --> 00:12:36.640
-which provides them with infinite capabilities of using you,
-
-00:12:36.640 --> 00:12:38.320
-which is great.
-
-00:12:38.320 --> 00:12:39.880
-- Yeah, that is great.
-
-00:12:39.880 --> 00:12:42.760
-It's certainly frustrating when you see,
-
-00:12:42.760 --> 00:12:44.880
-it's not on the API level,
-
-00:12:44.880 --> 00:12:48.160
-but you see things in like the iOS platform
-
-00:12:48.160 --> 00:12:50.880
-or in Windows or wherever, you're like,
-
-00:12:50.880 --> 00:12:52.160
-why can't I do this?
-
-00:12:52.160 --> 00:12:54.920
-Like, these are private things
-
-00:12:54.920 --> 00:12:56.920
-that either Apple or Microsoft or whoever
-
-00:12:56.920 --> 00:12:58.320
-are keeping to themselves
-
-00:12:58.320 --> 00:13:01.640
-and clearly are important for building apps,
-
-00:13:01.640 --> 00:13:02.960
-but you can't use them, right?
-
-00:13:02.960 --> 00:13:06.600
-So you're suggesting that by having basically
-
-00:13:06.600 --> 00:13:08.160
-whatever APIs you need,
-
-00:13:08.160 --> 00:13:09.880
-I guess there's probably limits, right?
-
-00:13:09.880 --> 00:13:12.680
-Like you don't want to expose, say, your like HR API
-
-00:13:12.680 --> 00:13:14.360
-if you're not an HR company, right?
-
-00:13:14.360 --> 00:13:19.360
-But in general, having your APIs just be all public, right?
-
-00:13:19.360 --> 00:13:21.440
-It probably makes them better as well
-
-00:13:21.440 --> 00:13:23.480
-because they just get so many more use cases.
-
-00:13:23.480 --> 00:13:25.840
-They get treated with things like versioning
-
-00:13:25.840 --> 00:13:27.000
-and stuff more seriously.
-
-00:13:27.000 --> 00:13:28.240
-- Exactly.
-
-00:13:28.240 --> 00:13:30.360
-- Yeah, yeah.
-
-00:13:30.360 --> 00:13:31.320
-Excellent.
-
-00:13:31.320 --> 00:13:35.080
-- But it's a complex topic that could span,
-
-00:13:35.080 --> 00:13:36.640
-you know, we could discuss it for hours,
-
-00:13:36.640 --> 00:13:41.640
-you know, which parts of your API do you make public?
-
-00:13:41.640 --> 00:13:44.680
-Which parts of your API do you start versioning?
-
-00:13:44.680 --> 00:13:47.200
-And if you're combining your APIs
-
-00:13:47.200 --> 00:13:49.760
-using a gateway or a federation, you know,
-
-00:13:49.760 --> 00:13:53.440
-it's a long story, but I guess with a federation,
-
-00:13:53.440 --> 00:13:55.280
-you wouldn't really make it public.
-
-00:13:55.280 --> 00:13:57.840
-- Sure.
-
-00:13:57.840 --> 00:13:59.480
-Well, let's dive into that a little bit.
-
-00:13:59.480 --> 00:14:02.080
-Let's talk about API versioning.
-
-00:14:03.200 --> 00:14:05.800
-We know what versioning is in Python.
-
-00:14:05.800 --> 00:14:08.920
-We have lock files.
-
-00:14:08.920 --> 00:14:10.440
-We pin the version.
-
-00:14:10.440 --> 00:14:15.200
-We might say we're using Pydantic 2.0.5
-
-00:14:15.200 --> 00:14:16.560
-or whatever it is.
-
-00:14:16.560 --> 00:14:19.760
-And that leaves the Pydantic team free
-
-00:14:19.760 --> 00:14:21.080
-to do whatever they want.
-
-00:14:21.080 --> 00:14:22.920
-And we can trust that our code
-
-00:14:22.920 --> 00:14:24.600
-is gonna stay the way it stayed.
-
-00:14:24.600 --> 00:14:27.640
-I guess API versioning is that,
-
-00:14:27.640 --> 00:14:32.440
-but for web endpoints rather than software links.
-
-00:14:32.440 --> 00:14:37.440
-- Yeah, and it's a little different though in some regards.
-
-00:14:37.440 --> 00:14:42.160
-For example, when you're packaging your, I don't know,
-
-00:14:42.160 --> 00:14:45.360
-software and you just send it to clients,
-
-00:14:45.360 --> 00:14:49.200
-thing is you need to have versions for every single thing.
-
-00:14:49.200 --> 00:14:52.560
-For example, if we are doing a bug fix
-
-00:14:52.560 --> 00:14:54.240
-and we need to ship that to our clients,
-
-00:14:54.240 --> 00:14:56.120
-that is going to be a separate version.
-
-00:14:56.120 --> 00:14:59.280
-But in web, when you're hosting it on a server
-
-00:14:59.280 --> 00:15:02.600
-and your clients just make requests to your servers,
-
-00:15:02.600 --> 00:15:03.600
-you don't need that.
-
-00:15:03.600 --> 00:15:06.720
-You don't need to ship bug fixes as separate versions.
-
-00:15:06.720 --> 00:15:08.160
-You can just ship them
-
-00:15:08.160 --> 00:15:10.240
-because they're not going to break anything for your clients
-
-00:15:10.240 --> 00:15:12.480
-and your clients will be able to automatically get them.
-
-00:15:12.480 --> 00:15:14.840
-Same goes for minor versions.
-
-00:15:14.840 --> 00:15:17.200
-Minor versions that just add features
-
-00:15:17.200 --> 00:15:20.280
-don't really need to be for a version on APIs.
-
-00:15:20.280 --> 00:15:23.640
-That leaves us with just major versions,
-
-00:15:23.640 --> 00:15:27.120
-which is why many companies like Stripe at Monite
-
-00:15:27.120 --> 00:15:31.920
-use dates for their versions
-
-00:15:31.920 --> 00:15:33.080
-because we don't really need
-
-00:15:33.080 --> 00:15:36.080
-all of the power of semantic versioning.
-
-00:15:36.080 --> 00:15:36.920
-- Yeah, yeah, sure.
-
-00:15:36.920 --> 00:15:40.280
-More calendar versioning because all you really need to say
-
-00:15:40.280 --> 00:15:43.080
-is this one is different than before, right?
-
-00:15:43.080 --> 00:15:44.280
-It doesn't-- - Exactly.
-
-00:15:44.280 --> 00:15:47.600
-- Stripe does a lot of interesting things.
-
-00:15:47.600 --> 00:15:52.600
-We're gonna talk a little bit about what they're up to.
-
-00:15:52.600 --> 00:15:53.480
-But you're right.
-
-00:15:53.480 --> 00:15:56.040
-When I think about APIs that I've created,
-
-00:15:56.040 --> 00:16:00.440
-sometimes I've had other versions, right?
-
-00:16:00.440 --> 00:16:05.440
-One of the main areas is in the apps that we have,
-
-00:16:05.440 --> 00:16:08.720
-over, is that the URL work?
-
-00:16:08.720 --> 00:16:09.560
-It does.
-
-00:16:09.560 --> 00:16:11.240
-In the apps for consuming the courses, right?
-
-00:16:11.240 --> 00:16:16.200
-We had two completely different versions of the app.
-
-00:16:16.200 --> 00:16:19.240
-One got completely rewrote it.
-
-00:16:19.240 --> 00:16:22.520
-And many of the API endpoints were just fine.
-
-00:16:22.520 --> 00:16:24.680
-We could just use them over,
-
-00:16:24.680 --> 00:16:25.800
-and it didn't have to change anything,
-
-00:16:25.800 --> 00:16:27.680
-but three or four were like,
-
-00:16:27.680 --> 00:16:31.080
-you know, this really would be better if it was different.
-
-00:16:31.080 --> 00:16:35.680
-And so added like a slash V2 or something in there, right?
-
-00:16:35.680 --> 00:16:37.240
-But really, really limited.
-
-00:16:37.240 --> 00:16:38.760
-So the thing that's interesting though
-
-00:16:38.760 --> 00:16:40.600
-that you point out here is like,
-
-00:16:40.600 --> 00:16:44.960
-until that happened, I'd shipped many, many versions
-
-00:16:44.960 --> 00:16:47.560
-of that API, and long as the schema didn't change,
-
-00:16:47.560 --> 00:16:51.680
-I didn't bother even specifying that it had a version, right?
-
-00:16:51.680 --> 00:16:55.720
-It was just like slash course, my courses
-
-00:16:55.720 --> 00:16:56.600
-or whatever it is, right?
-
-00:16:56.600 --> 00:16:57.920
-Like just give those to me.
-
-00:16:57.920 --> 00:17:00.760
-And long as it kept giving the courses back, it was good.
-
-00:17:00.760 --> 00:17:02.760
-- Exactly.
-
-00:17:02.760 --> 00:17:04.280
-And that's the thing.
-
-00:17:04.280 --> 00:17:07.880
-As long as you extend stuff, it's going to be fine.
-
-00:17:07.880 --> 00:17:10.080
-But as you mentioned in the beginning,
-
-00:17:10.080 --> 00:17:12.720
-you can't really do that forever.
-
-00:17:12.720 --> 00:17:16.760
-At some point you're going to make wrong design decisions.
-
-00:17:16.760 --> 00:17:19.720
-At some point, even if you did everything perfectly,
-
-00:17:19.720 --> 00:17:22.800
-your product is just going to evolve.
-
-00:17:22.800 --> 00:17:23.640
-It's just going to evolve.
-
-00:17:23.640 --> 00:17:26.960
-And then you'll need to use old endpoints that alter
-
-00:17:26.960 --> 00:17:31.960
-or get old data and extend them in some breaking ways.
-
-00:17:31.960 --> 00:17:34.120
-Of course, there are ways around it.
-
-00:17:34.120 --> 00:17:35.980
-You can use API evolution.
-
-00:17:35.980 --> 00:17:38.740
-You can just add fields constantly
-
-00:17:38.740 --> 00:17:40.800
-and duplicate the old functionality.
-
-00:17:40.800 --> 00:17:45.480
-But after a few such versions, your API will look terrible.
-
-00:17:45.480 --> 00:17:46.320
-- Yeah.
-
-00:17:46.320 --> 00:17:47.920
-- Which is why we use versioning.
-
-00:17:47.920 --> 00:17:52.440
-And which is why when your company's main product is an API
-
-00:17:52.440 --> 00:17:54.720
-when you are an API first company,
-
-00:17:54.720 --> 00:17:57.980
-you can't do anything without versioning.
-
-00:17:57.980 --> 00:18:00.620
-You can live for a short period of time.
-
-00:18:00.620 --> 00:18:02.560
-For example, a pre-series A company,
-
-00:18:02.560 --> 00:18:06.240
-I don't think should deal with versioning.
-
-00:18:06.240 --> 00:18:09.680
-But then after series A, after you gather, I don't know,
-
-00:18:09.680 --> 00:18:13.200
-15, 20 clients, it will be really hard
-
-00:18:13.200 --> 00:18:15.520
-to survive without versioning.
-
-00:18:15.520 --> 00:18:19.040
-- Yeah, and it's a really quick and easy way
-
-00:18:19.040 --> 00:18:21.760
-to make loyal customers angry
-
-00:18:21.760 --> 00:18:25.960
-by making changes to your API that just start breaking code.
-
-00:18:25.960 --> 00:18:28.480
-I remember.
-
-00:18:28.480 --> 00:18:30.280
-Yeah, go ahead.
-
-00:18:30.280 --> 00:18:36.240
-- And even if you wait for your clients,
-
-00:18:36.240 --> 00:18:39.800
-even if you warn them, it's still not nice
-
-00:18:39.800 --> 00:18:41.800
-when you're trying to use some API
-
-00:18:41.800 --> 00:18:45.560
-and then every three months or every month,
-
-00:18:45.560 --> 00:18:46.760
-it breaks everything.
-
-00:18:46.760 --> 00:18:48.120
-You don't do that. - Yeah, exactly.
-
-00:18:48.120 --> 00:18:48.960
-- Even with a--
-
-00:18:48.960 --> 00:18:51.000
-- You put in all the work to do the integration.
-
-00:18:51.000 --> 00:18:53.000
-You got it working, you tested it.
-
-00:18:53.000 --> 00:18:56.320
-Your job is, your product is not the integration.
-
-00:18:56.320 --> 00:18:58.720
-The integration facilitates what you're trying to build.
-
-00:18:58.720 --> 00:19:01.080
-And every time you gotta go back and rewrite that stuff,
-
-00:19:01.080 --> 00:19:03.120
-it's not great.
-
-00:19:03.120 --> 00:19:07.400
-I was working, I have MailChimp for our newsletter
-
-00:19:07.400 --> 00:19:09.760
-marketing side of stuff, the courses,
-
-00:19:09.760 --> 00:19:12.280
-and I've been using them for a long time.
-
-00:19:12.280 --> 00:19:13.200
-And I got a message like,
-
-00:19:13.200 --> 00:19:17.120
-hey, we're retiring this API you're using.
-
-00:19:17.120 --> 00:19:20.000
-And their API is dreadful.
-
-00:19:20.000 --> 00:19:22.920
-Like their Python library API is dreadful.
-
-00:19:22.920 --> 00:19:26.440
-It's like star args, star star KW args.
-
-00:19:26.440 --> 00:19:27.760
-You better pass the right things,
-
-00:19:27.760 --> 00:19:30.560
-but there's no enforcement or instruction
-
-00:19:30.560 --> 00:19:31.880
-about what goes in there, right?
-
-00:19:31.880 --> 00:19:34.080
-And so some random dictionary that was going in there
-
-00:19:34.080 --> 00:19:37.120
-was no longer right and had to be like recreated.
-
-00:19:37.120 --> 00:19:39.560
-So they just decided,
-
-00:19:39.560 --> 00:19:40.760
-we're gonna just take different stuff
-
-00:19:40.760 --> 00:19:42.760
-and we're just gonna shut down that endpoint.
-
-00:19:42.760 --> 00:19:47.440
-And when they did, all of the aspects of my website
-
-00:19:47.440 --> 00:19:48.440
-just started breaking.
-
-00:19:48.440 --> 00:19:50.920
-Like it wasn't crashing, but just anything around,
-
-00:19:50.920 --> 00:19:52.240
-hey, put me on your newsletter.
-
-00:19:52.240 --> 00:19:53.800
-Like, nope, you couldn't be on the newsletter.
-
-00:19:53.800 --> 00:19:56.200
-'Cause people started sending me message,
-
-00:19:56.200 --> 00:19:58.320
-Michael, I'm trying to sign up to be on the newsletter,
-
-00:19:58.320 --> 00:20:01.680
-but it just keeps saying that something went wrong
-
-00:20:01.680 --> 00:20:02.800
-with our site, we're sorry.
-
-00:20:02.800 --> 00:20:05.160
-I'm like, oh boy, go look.
-
-00:20:05.160 --> 00:20:07.100
-And they just turned off that endpoint.
-
-00:20:07.100 --> 00:20:09.840
-And it was just like, nope, not doing that anymore.
-
-00:20:09.840 --> 00:20:11.760
-And it was super frustrating.
-
-00:20:11.760 --> 00:20:15.160
-It took me eight hours to rewrite it.
-
-00:20:15.160 --> 00:20:18.960
-Because like I said, there was no real guidance on like,
-
-00:20:18.960 --> 00:20:20.160
-oh, you just pass the dictionary.
-
-00:20:20.160 --> 00:20:22.520
-Like, well, what goes in the dictionary?
-
-00:20:22.520 --> 00:20:25.360
-You know, it was like some word of one of the keys chain.
-
-00:20:25.360 --> 00:20:26.720
-I was so, it just took forever.
-
-00:20:26.720 --> 00:20:27.840
-It was frustrating.
-
-00:20:27.840 --> 00:20:30.480
-So what we're gonna talk about here
-
-00:20:30.480 --> 00:20:33.360
-is a lot about how does that,
-
-00:20:33.360 --> 00:20:36.640
-how do you not do, how do you not pull a MailChimp?
-
-00:20:36.640 --> 00:20:39.780
-How do you set it up so that your code keeps running?
-
-00:20:39.780 --> 00:20:42.460
-And you know, the reason why they did that is they're like,
-
-00:20:42.460 --> 00:20:44.620
-well, we feel like we wrote it wrong before.
-
-00:20:44.620 --> 00:20:47.320
-We wanna fix those to make it better,
-
-00:20:47.320 --> 00:20:51.340
-but we don't wanna maintain two versions, right?
-
-00:20:51.340 --> 00:20:54.220
-That's probably the heart of it.
-
-00:20:54.220 --> 00:20:58.720
-It is until you have half a million users of the old API.
-
-00:20:58.720 --> 00:21:02.400
-And how many of those, like, so for me,
-
-00:21:02.400 --> 00:21:03.460
-yeah, I was frustrated.
-
-00:21:03.460 --> 00:21:04.380
-Yeah, I'm like, all right, well,
-
-00:21:04.380 --> 00:21:06.460
-I had plans today for constructive work,
-
-00:21:06.460 --> 00:21:09.340
-I'm gonna go rewrite what I did four years ago,
-
-00:21:09.340 --> 00:21:11.000
-and then I'll do something again tomorrow.
-
-00:21:11.000 --> 00:21:13.500
-But okay, that's like a pretty good outcome.
-
-00:21:13.500 --> 00:21:17.580
-A more common outcome is probably,
-
-00:21:17.580 --> 00:21:20.080
-I hired a consultant to build me an app
-
-00:21:20.080 --> 00:21:23.320
-and integrate MailChimp, and they're gone.
-
-00:21:23.320 --> 00:21:26.760
-And now my thing that I built a year ago doesn't even work,
-
-00:21:26.760 --> 00:21:29.140
-and I don't have the skills.
-
-00:21:29.140 --> 00:21:30.760
-I gotta go hire somebody again
-
-00:21:30.760 --> 00:21:32.580
-to dig back in there and fix it, right?
-
-00:21:32.580 --> 00:21:34.500
-Like that would be really frustrating.
-
-00:21:36.220 --> 00:21:37.060
-- Yeah, that's crazy.
-
-00:21:37.060 --> 00:21:40.100
-And it could be devastating to some clients,
-
-00:21:40.100 --> 00:21:42.180
-especially if the changes are huge,
-
-00:21:42.180 --> 00:21:43.980
-especially if it's not just a single endpoint,
-
-00:21:43.980 --> 00:21:47.160
-or if there is only one endpoint,
-
-00:21:47.160 --> 00:21:51.740
-and it does a lot of things, then, oh my God, it's scary.
-
-00:21:51.740 --> 00:21:53.300
-- It is, it is.
-
-00:21:53.300 --> 00:21:56.220
-Before we move on to maybe some of the approaches,
-
-00:21:56.220 --> 00:21:59.540
-Alexi out in the audience says,
-
-00:21:59.540 --> 00:22:02.220
-"One more law, Hirem's law is also great.
-
-00:22:02.220 --> 00:22:04.440
-"With sufficient number of users of an API,
-
-00:22:04.440 --> 00:22:07.840
-"it does not matter what you promise in the contract.
-
-00:22:07.840 --> 00:22:09.980
-"All observable behaviors of your system
-
-00:22:09.980 --> 00:22:12.180
-"will be depended on by somebody."
-
-00:22:12.180 --> 00:22:16.940
-- It is one of my favorite laws about any system.
-
-00:22:16.940 --> 00:22:19.300
-- That's true. - Yeah, that is very true.
-
-00:22:19.300 --> 00:22:21.100
-And it's a scary law, you know,
-
-00:22:21.100 --> 00:22:24.340
-because at some point you'll have to version everything,
-
-00:22:24.340 --> 00:22:29.020
-which is why it's a good idea to make things,
-
-00:22:30.180 --> 00:22:34.560
-I guess, to describe all the behaviors
-
-00:22:34.560 --> 00:22:39.360
-and to try to handle all of the possible behaviors thoroughly
-
-00:22:39.360 --> 00:22:42.880
-so that you know what is going to become a part of it,
-
-00:22:42.880 --> 00:22:45.640
-because at some point you'll just not be able to stop it,
-
-00:22:45.640 --> 00:22:49.920
-and then you break something that was never intended to work
-
-00:22:49.920 --> 00:22:51.520
-and then 100 of your users are like,
-
-00:22:51.520 --> 00:22:53.560
-"Oh, we weren't using that.
-
-00:22:53.560 --> 00:22:55.880
-"It wasn't a bug, it was a feature for us."
-
-00:22:55.880 --> 00:22:58.520
-- Yeah, we needed that.
-
-00:22:58.520 --> 00:23:01.380
-We found that's the only way we could use it, yeah, for sure.
-
-00:23:01.380 --> 00:23:03.460
-All right, let's talk about some of the techniques.
-
-00:23:03.460 --> 00:23:05.540
-You've put together a nice thing here,
-
-00:23:05.540 --> 00:23:08.580
-like how to maintain hundreds of API versions and survive.
-
-00:23:08.580 --> 00:23:12.760
-What are some of the ways in which people version APIs?
-
-00:23:12.760 --> 00:23:19.380
-- So, first of all, it's really hard to really figure out
-
-00:23:19.380 --> 00:23:24.820
-how people do this and how to do it,
-
-00:23:24.820 --> 00:23:28.100
-because 90% of the time when you're going to be researching
-
-00:23:28.100 --> 00:23:31.460
-API versioning, what you're going to see is people
-
-00:23:31.460 --> 00:23:34.500
-having tough decisions between putting it into a header
-
-00:23:34.500 --> 00:23:36.140
-or putting it into a path.
-
-00:23:36.140 --> 00:23:38.980
-But then when you ask, "Well, how do you version?"
-
-00:23:38.980 --> 00:23:40.640
-Nobody really has an answer.
-
-00:23:40.640 --> 00:23:43.080
-Well, there are a few ways.
-
-00:23:43.080 --> 00:23:47.220
-First of all, you can go from the lowest level
-
-00:23:47.220 --> 00:23:49.800
-and version everything, including your database.
-
-00:23:49.800 --> 00:23:53.380
-You just make a separate copy of your app,
-
-00:23:53.380 --> 00:23:55.140
-you can host it on a separate server,
-
-00:23:55.140 --> 00:23:57.680
-even a separate Kubernetes namespace,
-
-00:23:57.680 --> 00:23:58.860
-and forget about it.
-
-00:23:58.860 --> 00:24:01.560
-And you have two completely separate apps,
-
-00:24:01.560 --> 00:24:05.500
-and now you need to have double the people
-
-00:24:05.500 --> 00:24:10.040
-for the maintenance, or at least a smaller separate team
-
-00:24:10.040 --> 00:24:11.600
-to maintain the second product.
-
-00:24:11.600 --> 00:24:15.280
-This approach is really nice if you have a product
-
-00:24:15.280 --> 00:24:16.260
-that cannot break.
-
-00:24:16.260 --> 00:24:21.180
-There needs to be zero possibility of that breaking.
-
-00:24:21.180 --> 00:24:24.380
-If you are on a nuclear power plant,
-
-00:24:24.380 --> 00:24:25.580
-you'll probably do that.
-
-00:24:26.320 --> 00:24:31.320
-You can't have the old one broken and the new one working.
-
-00:24:31.320 --> 00:24:35.520
-But it's the most expensive approach, obviously.
-
-00:24:35.520 --> 00:24:38.360
-You can, however, limit that.
-
-00:24:38.360 --> 00:24:41.640
-You can start versioning just the application,
-
-00:24:41.640 --> 00:24:42.640
-but not the database.
-
-00:24:42.640 --> 00:24:45.480
-Okay, now we have the same thing,
-
-00:24:45.480 --> 00:24:47.560
-a separate branch in our code, a separate,
-
-00:24:47.560 --> 00:24:50.000
-not in our code, in our repository,
-
-00:24:50.000 --> 00:24:53.640
-a separate Kubernetes namespace, whatever.
-
-00:24:53.640 --> 00:24:56.220
-But now it's still expensive.
-
-00:24:56.220 --> 00:24:57.860
-It's still a whole separate copy
-
-00:24:57.860 --> 00:24:59.100
-of everything you have built,
-
-00:24:59.100 --> 00:25:02.120
-and now you have to make sure that the new one
-
-00:25:02.120 --> 00:25:04.220
-or the old one doesn't break the database
-
-00:25:04.220 --> 00:25:06.540
-because the database might have changed,
-
-00:25:06.540 --> 00:25:09.700
-but one of the versions of code might not know about that.
-
-00:25:09.700 --> 00:25:13.700
-And then you realize that you go higher.
-
-00:25:13.700 --> 00:25:18.260
-- Yeah, the database aspect of it sounds especially tricky,
-
-00:25:18.260 --> 00:25:19.920
-especially a relational database
-
-00:25:19.920 --> 00:25:21.940
-with super strong schemas.
-
-00:25:21.940 --> 00:25:24.880
-Like, you know what, that used to be a VAR char,
-
-00:25:24.880 --> 00:25:27.840
-and now it's an int, and so, nope.
-
-00:25:27.840 --> 00:25:29.880
-It's just not gonna work, right?
-
-00:25:29.880 --> 00:25:31.880
-There's really little flexibility.
-
-00:25:31.880 --> 00:25:34.960
-So even if you run the two things in parallel,
-
-00:25:34.960 --> 00:25:37.720
-then you almost have to have two databases,
-
-00:25:37.720 --> 00:25:40.000
-and then like a mil points out,
-
-00:25:40.000 --> 00:25:41.840
-and then you have to sync the databases,
-
-00:25:41.840 --> 00:25:44.140
-and it's non-trivial.
-
-00:25:44.140 --> 00:25:46.240
-- Oh, yes.
-
-00:25:46.240 --> 00:25:49.240
-And then you start realizing, okay,
-
-00:25:49.300 --> 00:25:52.140
-why do I need a separate branch and a separate namespace?
-
-00:25:52.140 --> 00:25:55.340
-Let's just keep them within the same app,
-
-00:25:55.340 --> 00:25:59.220
-because as long as you have separate paths for this,
-
-00:25:59.220 --> 00:26:01.600
-even you can build separate swaggers from them,
-
-00:26:01.600 --> 00:26:05.380
-you can have them within the same branch,
-
-00:26:05.380 --> 00:26:07.880
-within the same repository, just in different directories,
-
-00:26:07.880 --> 00:26:10.060
-and you can just copy all of your code.
-
-00:26:10.060 --> 00:26:13.180
-And now I call that versioning by suffering
-
-00:26:13.180 --> 00:26:16.620
-because you think, oh, I'm going to version less this time.
-
-00:26:16.620 --> 00:26:18.400
-You know, now I'm not versioning the database.
-
-00:26:18.400 --> 00:26:19.620
-Now it's not a separate branch.
-
-00:26:19.620 --> 00:26:23.940
-It's gonna be much easier to, I don't know,
-
-00:26:23.940 --> 00:26:26.220
-make fixes in both places.
-
-00:26:26.220 --> 00:26:30.020
-But now you have to support both of the code bases.
-
-00:26:30.020 --> 00:26:31.700
-And once you update anything,
-
-00:26:31.700 --> 00:26:33.400
-any of the related resources,
-
-00:26:33.400 --> 00:26:35.060
-for example, the database models,
-
-00:26:35.060 --> 00:26:36.380
-you have to update them twice.
-
-00:26:36.380 --> 00:26:38.060
-If you update any of the dependencies,
-
-00:26:38.060 --> 00:26:39.700
-you have to update them twice.
-
-00:26:39.700 --> 00:26:42.080
-And that can get painful.
-
-00:26:42.080 --> 00:26:43.400
-And after a while,
-
-00:26:43.400 --> 00:26:45.920
-if you have more than two of these versions,
-
-00:26:45.920 --> 00:26:47.060
-you're going to be asking yourself,
-
-00:26:47.060 --> 00:26:51.060
-okay, what is the difference between these versions?
-
-00:26:51.060 --> 00:26:52.300
-And if you weren't careful
-
-00:26:52.300 --> 00:26:54.100
-with documentation and code review,
-
-00:26:54.100 --> 00:26:56.600
-oh, you're in for a treat.
-
-00:26:56.600 --> 00:26:57.440
-- Yeah.
-
-00:26:57.440 --> 00:26:58.820
-- But that's just the beginning.
-
-00:26:58.820 --> 00:27:01.620
-You can version much less.
-
-00:27:01.620 --> 00:27:04.020
-Now, instead of the whole directories,
-
-00:27:04.020 --> 00:27:06.080
-you can version just separate endpoints.
-
-00:27:06.080 --> 00:27:09.880
-And I think that's the way that I recommend for everyone.
-
-00:27:09.880 --> 00:27:11.740
-Everyone who is doing API versioning,
-
-00:27:11.740 --> 00:27:14.020
-who wants to be with the cool kids,
-
-00:27:14.020 --> 00:27:16.100
-I recommend this approach.
-
-00:27:16.100 --> 00:27:19.420
-As long as you are a small company or an individual
-
-00:27:19.420 --> 00:27:22.500
-and you want something really simple, that's a good way.
-
-00:27:22.500 --> 00:27:25.060
-You just copy a single endpoint that you have changed,
-
-00:27:25.060 --> 00:27:27.220
-create another schema for that,
-
-00:27:27.220 --> 00:27:30.060
-and then create another branch in your business logic,
-
-00:27:30.060 --> 00:27:31.940
-or maybe even no branch.
-
-00:27:31.940 --> 00:27:35.340
-That's even better, using the same business logic.
-
-00:27:35.340 --> 00:27:37.580
-But then at some point,
-
-00:27:37.580 --> 00:27:39.460
-once you want to support many versions
-
-00:27:39.460 --> 00:27:43.500
-or your versions become too different,
-
-00:27:43.500 --> 00:27:45.140
-that's where you get a problem.
-
-00:27:45.140 --> 00:27:47.420
-Because now all of a sudden you have all of these,
-
-00:27:47.420 --> 00:27:49.660
-oh, I have this endpoint in this version,
-
-00:27:49.660 --> 00:27:50.860
-that endpoint in that version.
-
-00:27:50.860 --> 00:27:52.700
-Oh, it's gonna be bad.
-
-00:27:52.700 --> 00:27:53.540
-- Yeah. - Really bad.
-
-00:27:53.540 --> 00:27:54.360
-- Yeah, yeah.
-
-00:27:54.360 --> 00:27:55.940
-We've been talking like there's the old version
-
-00:27:55.940 --> 00:27:57.900
-and the new version, but in practice,
-
-00:27:57.900 --> 00:28:01.060
-somebody starts to depend on the new version
-
-00:28:01.060 --> 00:28:03.460
-and then you evolve the new version and it just,
-
-00:28:03.460 --> 00:28:07.860
-it combinatorially explodes and it's out of control, yeah.
-
-00:28:07.860 --> 00:28:10.100
-- Precisely.
-
-00:28:10.100 --> 00:28:12.540
-So it's gonna be really bad for your developers.
-
-00:28:12.540 --> 00:28:14.380
-Your clients are going to be fine with it.
-
-00:28:14.380 --> 00:28:15.740
-Your developers are going to hate you,
-
-00:28:15.740 --> 00:28:18.820
-although not as bad as with the previous approach.
-
-00:28:18.820 --> 00:28:24.060
-Now, the next one you get to is you start thinking,
-
-00:28:24.060 --> 00:28:28.220
-okay, what if instead of duplicating all of that stuff,
-
-00:28:28.220 --> 00:28:33.000
-I am just going to change the schemas?
-
-00:28:33.000 --> 00:28:35.100
-So, okay, if I do need to rename my endpoint,
-
-00:28:35.100 --> 00:28:36.340
-I am going to duplicate it.
-
-00:28:36.340 --> 00:28:37.700
-But most of the time you're not.
-
-00:28:37.700 --> 00:28:39.540
-Most of the time you're just changing some field
-
-00:28:39.540 --> 00:28:41.260
-in some schema, you're renaming it,
-
-00:28:41.260 --> 00:28:43.260
-you're extending it, changing its type,
-
-00:28:43.260 --> 00:28:44.140
-stuff like that.
-
-00:28:44.140 --> 00:28:46.420
-That's like 90% of your use cases.
-
-00:28:46.420 --> 00:28:48.540
-Okay, what if we just change the schemas
-
-00:28:48.540 --> 00:28:50.340
-and then have some serializers?
-
-00:28:50.340 --> 00:28:52.940
-For example, Django,
-
-00:28:52.940 --> 00:28:56.580
-Django DRF loves that.
-
-00:28:56.580 --> 00:28:59.500
-They love the serializers and reserializers
-
-00:28:59.500 --> 00:29:01.660
-and you can just have a, each,
-
-00:29:01.660 --> 00:29:04.100
-we have five versions and version one serializes
-
-00:29:04.100 --> 00:29:07.940
-into version five, two serializes into version five,
-
-00:29:07.940 --> 00:29:09.460
-yada, yada, yada.
-
-00:29:09.460 --> 00:29:12.460
-And so our client sends us a request,
-
-00:29:12.460 --> 00:29:14.620
-we reserialize it into the correct version,
-
-00:29:14.620 --> 00:29:17.460
-then we return a response, we use the same business logic,
-
-00:29:17.460 --> 00:29:20.220
-and then we serialize it back into each version.
-
-00:29:20.220 --> 00:29:24.020
-Great, now we have solved all the problems
-
-00:29:24.020 --> 00:29:25.460
-of the previous approaches.
-
-00:29:25.460 --> 00:29:28.660
-Now, you need to realize that
-
-00:29:28.660 --> 00:29:30.780
-when you're doing something like this,
-
-00:29:30.780 --> 00:29:33.580
-you are in a little bit of danger
-
-00:29:33.580 --> 00:29:36.860
-of creating bugs in the new versions
-
-00:29:36.860 --> 00:29:39.580
-and these bugs cascading to the old versions,
-
-00:29:40.460 --> 00:29:43.460
-which hopefully you have tests to handle that.
-
-00:29:43.460 --> 00:29:45.900
-But at least your clients are happy
-
-00:29:45.900 --> 00:29:48.700
-because you can support versions for a long time
-
-00:29:48.700 --> 00:29:50.580
-and your developers are happy
-
-00:29:50.580 --> 00:29:54.200
-because the burden of support is now on the serializers,
-
-00:29:54.200 --> 00:29:56.580
-but you still have to support these serializers.
-
-00:29:56.580 --> 00:29:57.660
-It's still a lot of stuff.
-
-00:29:57.660 --> 00:30:00.980
-You still have to put every field in there
-
-00:30:00.980 --> 00:30:05.180
-and take care of any problems that happen.
-
-00:30:05.180 --> 00:30:07.420
-And each new version will change
-
-00:30:07.420 --> 00:30:09.900
-basically all of your serializers.
-
-00:30:09.900 --> 00:30:11.820
-A little bit, yes, but you won't be able
-
-00:30:11.820 --> 00:30:13.180
-to support 20 versions like that.
-
-00:30:13.180 --> 00:30:14.340
-It's going to be crazy.
-
-00:30:14.340 --> 00:30:20.820
-And now that's where we get to the final approaches,
-
-00:30:20.820 --> 00:30:22.860
-the approaches that I guess
-
-00:30:22.860 --> 00:30:24.860
-the most sophisticated in the industry.
-
-00:30:24.860 --> 00:30:28.020
-If you are making a backend for frontend,
-
-00:30:28.020 --> 00:30:30.620
-for your own frontend, then you can just use GraphQL.
-
-00:30:30.620 --> 00:30:32.860
-GraphQL basically requires no versioning,
-
-00:30:32.860 --> 00:30:35.820
-and that's one of the benefits of it.
-
-00:30:36.900 --> 00:30:39.420
-I would recommend that if you have developers
-
-00:30:39.420 --> 00:30:42.420
-that are good with GraphQL, that's great.
-
-00:30:42.420 --> 00:30:44.820
-You can omit versioning altogether.
-
-00:30:44.820 --> 00:30:47.220
-But if you're not, if it's a public API,
-
-00:30:47.220 --> 00:30:51.360
-then that's where Stripe's approach comes.
-
-00:30:51.360 --> 00:30:52.780
-I think they were the first ones
-
-00:30:52.780 --> 00:30:55.860
-to publish an article about that.
-
-00:30:55.860 --> 00:30:58.280
-It was Brander Leach, the author of this article.
-
-00:30:58.280 --> 00:31:01.940
-He has supported API versioning at Stripe for a while,
-
-00:31:01.940 --> 00:31:06.780
-and he has helped us with building our backend.
-
-00:31:06.900 --> 00:31:08.820
-API versioning approach.
-
-00:31:08.820 --> 00:31:11.300
-Essentially what Stripe did is said,
-
-00:31:11.300 --> 00:31:13.820
-okay, let's imagine that our developers
-
-00:31:13.820 --> 00:31:15.900
-are only supporting one version, the latest one,
-
-00:31:15.900 --> 00:31:18.620
-just like with serializers.
-
-00:31:18.620 --> 00:31:22.180
-But instead of serializing every version to the latest one,
-
-00:31:22.180 --> 00:31:25.780
-let's say that each version knows how to serialize
-
-00:31:25.780 --> 00:31:27.120
-into the next version.
-
-00:31:27.120 --> 00:31:28.980
-So let's say that-
-
-00:31:28.980 --> 00:31:31.460
-- Kind of like database migrations.
-
-00:31:31.460 --> 00:31:32.300
-- Exactly.
-
-00:31:32.300 --> 00:31:37.300
-So let's say that I return response from the latest version.
-
-00:31:37.300 --> 00:31:41.940
-This response, or at least they call them,
-
-00:31:41.940 --> 00:31:44.140
-I think, version gates.
-
-00:31:44.140 --> 00:31:47.340
-These version gates, the version gate for fifth version
-
-00:31:47.340 --> 00:31:49.900
-knows how to convert back my response back
-
-00:31:49.900 --> 00:31:51.460
-into the fourth version.
-
-00:31:51.460 --> 00:31:53.520
-The version gate for the fourth version
-
-00:31:53.520 --> 00:31:56.380
-knows how to convert it back into the third version.
-
-00:31:56.380 --> 00:32:00.940
-And all of a sudden you get simple version gates
-
-00:32:00.940 --> 00:32:03.940
-because if it's just field renaming in a single version,
-
-00:32:03.940 --> 00:32:05.180
-then it's just a single line.
-
-00:32:05.180 --> 00:32:06.320
-They're really simple.
-
-00:32:06.320 --> 00:32:10.420
-But at the same time, they're immutable
-
-00:32:10.420 --> 00:32:11.580
-because these version gates,
-
-00:32:11.580 --> 00:32:13.480
-they're not describing the whole schema.
-
-00:32:13.480 --> 00:32:16.680
-They're describing the difference between two versions.
-
-00:32:16.680 --> 00:32:18.940
-And because we know that we don't wanna
-
-00:32:18.940 --> 00:32:20.620
-change the old version,
-
-00:32:20.620 --> 00:32:23.720
-we want the old version to work,
-
-00:32:23.720 --> 00:32:26.060
-which is why the difference between version two
-
-00:32:26.060 --> 00:32:27.780
-and version three is going to stay.
-
-00:32:27.780 --> 00:32:29.220
-It's not going to change,
-
-00:32:29.220 --> 00:32:31.740
-which is why these converters are also immutable,
-
-00:32:31.740 --> 00:32:35.060
-which means that you don't need to spend much time
-
-00:32:35.060 --> 00:32:35.920
-supporting them.
-
-00:32:35.920 --> 00:32:39.600
->>Right, once you get, if you're on version three
-
-00:32:39.600 --> 00:32:42.340
-and you get the transition from one to two set,
-
-00:32:42.340 --> 00:32:44.700
-like that's not gonna change ever, right?
-
-00:32:44.700 --> 00:32:46.660
->>Exactly, precisely.
-
-00:32:46.660 --> 00:32:49.620
-Well, at some point you need it for optimizations
-
-00:32:49.620 --> 00:32:52.020
-or for returning extra data,
-
-00:32:52.020 --> 00:32:55.780
-but it's such a rare use case that I haven't seen it so far.
-
-00:32:55.780 --> 00:32:58.740
-And I hope that I won't.
-
-00:32:58.740 --> 00:33:01.580
->>Yeah, so this is Stripe's approach.
-
-00:33:01.580 --> 00:33:03.420
-And one of the things that's really interesting
-
-00:33:03.420 --> 00:33:05.820
-that Stripe does and is laid out in this article
-
-00:33:05.820 --> 00:33:08.920
-that you're pretty stable here is,
-
-00:33:08.920 --> 00:33:13.540
-they also implicitly assign you a version
-
-00:33:13.540 --> 00:33:15.380
-when you first make a call,
-
-00:33:15.380 --> 00:33:17.180
-which was really interesting.
-
-00:33:17.180 --> 00:33:19.880
-And I use Stripe and I didn't realize
-
-00:33:19.880 --> 00:33:22.220
-that when I've made calls into Stripe
-
-00:33:22.220 --> 00:33:24.460
-that the first time you make a call,
-
-00:33:24.460 --> 00:33:27.400
-it pins you somewhere like on your user account
-
-00:33:27.400 --> 00:33:30.180
-on their side, pins you to that version of the API.
-
-00:33:30.180 --> 00:33:32.140
-And you never know you're on a different,
-
-00:33:32.140 --> 00:33:34.000
-you're on a particular version,
-
-00:33:34.000 --> 00:33:36.460
-but they keep you on that version.
-
-00:33:36.460 --> 00:33:37.300
-That's wild.
-
-00:33:37.300 --> 00:33:38.120
->>That's great.
-
-00:33:38.120 --> 00:33:41.900
-Imagine you log in into Stripe, you make a call,
-
-00:33:41.900 --> 00:33:44.900
-and then every time you open a documentation
-
-00:33:44.900 --> 00:33:47.220
-in your account, you're going to see your version.
-
-00:33:47.220 --> 00:33:48.060
-Every time you make a call,
-
-00:33:48.060 --> 00:33:50.740
-you're going to get response from your version.
-
-00:33:50.740 --> 00:33:54.060
-And then because they keep versions for years,
-
-00:33:54.060 --> 00:33:57.180
-for example, we are using, I think,
-
-00:33:57.180 --> 00:34:00.540
-three or four year old version of Stripe's API,
-
-00:34:00.540 --> 00:34:01.620
-and they still keep it.
-
-00:34:01.620 --> 00:34:04.860
-According to this article, they keep all of their versions,
-
-00:34:04.860 --> 00:34:06.900
-all since the company's beginning.
-
-00:34:06.900 --> 00:34:09.540
-I'm not sure how old that is.
-
-00:34:09.540 --> 00:34:13.820
-Yeah, but still, they keep years worth of versions.
-
-00:34:13.820 --> 00:34:16.360
-That is very true.
-
-00:34:16.360 --> 00:34:17.980
->>Now, you might see that as a negative.
-
-00:34:17.980 --> 00:34:20.260
-Like you might think, well, I'm pinned to this version.
-
-00:34:20.260 --> 00:34:22.140
-Like how do I escape the old version
-
-00:34:22.140 --> 00:34:23.540
-if I want the new version?
-
-00:34:23.540 --> 00:34:25.300
-But you can pass it in a header,
-
-00:34:25.300 --> 00:34:27.060
-or there's other ways to say,
-
-00:34:27.060 --> 00:34:29.220
-I explicitly choose something else.
-
-00:34:29.220 --> 00:34:32.260
-But by default, you're just, you're living in the past.
-
-00:34:32.260 --> 00:34:35.220
->>Yeah, and that's really cool.
-
-00:34:35.220 --> 00:34:36.800
-You integrate, and then you live in the past
-
-00:34:36.800 --> 00:34:37.740
-for as long as you want.
-
-00:34:37.740 --> 00:34:42.420
-The thing is, yes, you can change it using a header.
-
-00:34:42.420 --> 00:34:44.980
-Monite has a similar structure.
-
-00:34:44.980 --> 00:34:51.220
-You can also change it in your partner's portal,
-
-00:34:51.400 --> 00:34:54.880
-and you can also, or I guess developer's portal,
-
-00:34:54.880 --> 00:34:56.560
-and you can also specify, for example,
-
-00:34:56.560 --> 00:34:58.480
-if you receive webhooks from Stripe,
-
-00:34:58.480 --> 00:35:01.240
-you can specify, okay, I want this webhook of this version
-
-00:35:01.240 --> 00:35:02.940
-and that webhook of that version.
-
-00:35:02.940 --> 00:35:05.160
->>That's cool.
-
-00:35:05.160 --> 00:35:08.560
->>And it's a really neat interface
-
-00:35:08.560 --> 00:35:10.560
-that if you don't want to think about versioning,
-
-00:35:10.560 --> 00:35:12.360
-you don't, you forget about it.
-
-00:35:12.360 --> 00:35:14.000
-But the second you want to,
-
-00:35:14.000 --> 00:35:16.380
-the second you want to have the latest API,
-
-00:35:16.380 --> 00:35:20.560
-they give you all the tools to work with it nicely.
-
-00:35:20.560 --> 00:35:21.380
-And that's the thing.
-
-00:35:21.380 --> 00:35:26.380
-This approach allows you to keep years worth of versions,
-
-00:35:26.380 --> 00:35:29.540
-or maybe even decades worth of versions, actually,
-
-00:35:29.540 --> 00:35:33.400
-without your developers getting overburdened,
-
-00:35:33.400 --> 00:35:35.240
-because there is still a single version
-
-00:35:35.240 --> 00:35:36.280
-of the business logic.
-
-00:35:36.280 --> 00:35:37.920
-They work on a single version of Schemas,
-
-00:35:37.920 --> 00:35:39.520
-and they just need to make sure
-
-00:35:39.520 --> 00:35:41.480
-that when they release a new version,
-
-00:35:41.480 --> 00:35:43.720
-they write a converter for it.
-
-00:35:43.720 --> 00:35:45.040
-And your clients are also happy
-
-00:35:45.040 --> 00:35:47.520
-because they never need to switch.
-
-00:35:47.520 --> 00:35:49.000
->>Yeah, it sounds really nice.
-
-00:35:49.000 --> 00:35:53.660
-I suspect there's not a complete ability
-
-00:35:53.660 --> 00:35:56.300
-to just ignore the old versions,
-
-00:35:56.300 --> 00:35:59.740
-because maybe you want, in your new version,
-
-00:35:59.740 --> 00:36:02.020
-you're going to imagine this piece of data
-
-00:36:02.020 --> 00:36:02.940
-doesn't even exist,
-
-00:36:02.940 --> 00:36:04.580
-and we're going to remove it from the database.
-
-00:36:04.580 --> 00:36:06.820
-But if it needs to be there for the old ones,
-
-00:36:06.820 --> 00:36:09.380
-there's probably some level of,
-
-00:36:09.380 --> 00:36:10.700
-you're constrained a little bit,
-
-00:36:10.700 --> 00:36:12.360
-but it sounds a lot better still.
-
-00:36:12.360 --> 00:36:16.340
->>Yeah, you're still constrained,
-
-00:36:16.340 --> 00:36:21.340
-but remember, API versioning, if we translate it,
-
-00:36:21.340 --> 00:36:24.360
-application programming interface versioning,
-
-00:36:24.360 --> 00:36:25.880
-we're not versioning the app,
-
-00:36:25.880 --> 00:36:28.200
-we're versioning the interface to the app.
-
-00:36:28.200 --> 00:36:29.520
->>Yeah, so a lot of times it's like,
-
-00:36:29.520 --> 00:36:32.000
-what fields are we passing or something, right?
-
-00:36:32.000 --> 00:36:32.840
+00:05:10.620 --> 00:05:11.060
 Yeah.
 
-00:36:32.840 --> 00:36:37.200
->>Yeah, so if you are trying to change the data
+00:05:11.840 --> 00:05:11.900
+Yeah.
 
-00:36:37.200 --> 00:36:39.240
-between versions, if the data is different,
+00:05:12.180 --> 00:05:12.680
+Super interesting.
 
-00:36:39.240 --> 00:36:40.980
-entirely different, I mean,
+00:05:14.100 --> 00:05:14.400
+All right.
 
-00:36:40.980 --> 00:36:43.840
-then you're probably not doing API versioning.
+00:05:15.020 --> 00:05:18.720
+Let's talk about, I guess, one more thing for your introduction
 
-00:36:43.840 --> 00:36:46.240
-Then you probably should be calling it
+00:05:18.810 --> 00:05:19.500
+before we move on.
 
-00:36:46.240 --> 00:36:47.520
-application versioning.
+00:05:20.080 --> 00:05:23.540
+You've worked on quite a few interesting projects here.
 
-00:36:47.520 --> 00:36:52.520
+00:05:24.180 --> 00:05:27.720
+So maybe give us just a little bit of background on some of your open source work.
+
+00:05:29.940 --> 00:05:33.140
+So I'll just talk about, I guess, the most popular ones.
+
+00:05:34.020 --> 00:05:36.360
+The coolest one was PathWalk.
+
+00:05:37.380 --> 00:05:42.820
+If you remember in Python, there is OSWalk, but then in Python 3.12, I added PathWalk.
+
+00:05:43.560 --> 00:05:47.940
+I have also added the typeins for that into TypeShed, I think some other things.
+
+00:05:48.760 --> 00:05:56.040
+And I am, I think, top 10 contributor of Tortoise ORM, the asynchronous ORM that claims to be
+
+00:05:56.620 --> 00:05:59.620
+the fastest, or at least one of the fastest in Python.
+
+00:06:00.020 --> 00:06:08.280
+And a few smaller projects, which I don't think there is anything particularly fun to
+
+00:06:08.280 --> 00:06:09.040
+talk about there.
+
+00:06:09.640 --> 00:06:11.740
+It's just mostly bug fixes and small features.
+
+00:06:12.270 --> 00:06:16.900
+But then my other projects, the ones that I maintain, are way cooler.
+
+00:06:17.200 --> 00:06:25.220
+For example, Pydantic Duality enables you to have multiple versions of your Pydantic models
+
+00:06:25.480 --> 00:06:31.800
+for almost free in terms of performance and without any code generation.
+
+00:06:32.360 --> 00:06:37.040
+And Cadwin, the project we're going to be discussing today, implements, I guess, the
+
+00:06:37.360 --> 00:06:41.840
+fullest and most sophisticated API versioning paradigm there is at this point.
+
+00:06:43.240 --> 00:06:43.840
+Excellent, yeah.
+
+00:06:44.220 --> 00:06:45.120
+A lot of stuff.
+
+00:06:45.240 --> 00:06:47.720
+- Duality looks, yeah, Pydantic duality looks really,
+
+00:06:47.860 --> 00:06:48.160
+really cool.
+
+00:06:48.600 --> 00:06:52.440
+So a lot of neat stuff here, a lot of different ways people
+
+00:06:52.680 --> 00:06:53.820
+might know about you.
+
+00:06:53.860 --> 00:06:57.220
+So yeah, Cadman's the one we're gonna be focusing on for here.
+
+00:06:58.340 --> 00:07:01.400
+So let's start with talking about APIs.
+
+00:07:02.539 --> 00:07:06.020
+You talked about API first companies, what's that?
+
+00:07:08.539 --> 00:07:12.559
+- So API first company, just like any other term
+
+00:07:12.580 --> 00:07:15.740
+in that gets popular is a buzzword, obviously.
+
+00:07:17.160 --> 00:07:19.160
+But the truth behind it is
+
+00:07:21.080 --> 00:07:23.100
+an API first company is any company
+
+00:07:23.200 --> 00:07:25.260
+whose main product is an API
+
+00:07:25.720 --> 00:07:28.100
+and the SDKs associated with it.
+
+00:07:28.500 --> 00:07:32.840
+And as a result, API first company has to document
+
+00:07:32.940 --> 00:07:35.780
+their API really thoroughly, think about their API,
+
+00:07:35.980 --> 00:07:38.360
+both the internal one and the external one
+
+00:07:38.700 --> 00:07:41.199
+and take great care of that
+
+00:07:41.220 --> 00:07:42.320
+because it's their main product.
+
+00:07:43.180 --> 00:07:47.840
+So we have a lot of API first companies right now,
+
+00:07:48.340 --> 00:07:51.160
+but with every year, new industries are joining.
+
+00:07:51.440 --> 00:07:55.340
+And if you ever heard of open banking, things like that,
+
+00:07:56.680 --> 00:07:59.780
+banks are going to join us soon.
+
+00:07:59.780 --> 00:08:01.180
+In some countries they already have.
+
+00:08:01.790 --> 00:08:06.160
+And Monite is doing similar things
+
+00:08:07.280 --> 00:08:09.420
+and tries to bring that innovation,
+
+00:08:10.160 --> 00:08:13.680
+that open banking and that API first approach into banking.
+
+00:08:14.380 --> 00:08:16.500
+- Yeah, so the company you work for Mo Knight,
+
+00:08:18.360 --> 00:08:20.720
+they build, you all build APIs
+
+00:08:21.660 --> 00:08:24.660
+to basically facilitate other people doing invoicing
+
+00:08:25.080 --> 00:08:26.720
+and bill pay in their apps, is that correct?
+
+00:08:28.080 --> 00:08:31.180
+- Yeah, you could call us a B2B2B company
+
+00:08:32.180 --> 00:08:35.479
+'cause essentially many banks, many marketplaces
+
+00:08:35.580 --> 00:08:40.120
+are very outdated in terms of how they handle
+
+00:08:40.140 --> 00:08:40.760
+voicing and payments.
+
+00:08:41.250 --> 00:08:43.539
+And we try to take all of that,
+
+00:08:43.990 --> 00:08:45.420
+combine that and offer that
+
+00:08:45.760 --> 00:08:47.360
+as a white label product to them.
+
+00:08:48.080 --> 00:08:49.660
+So we do this for them.
+
+00:08:49.990 --> 00:08:51.280
+They integrate with us once
+
+00:08:52.000 --> 00:08:54.320
+and then they forget it was ever a problem.
+
+00:08:54.700 --> 00:08:56.880
+They just give our product as theirs
+
+00:08:57.220 --> 00:08:57.980
+straight to their clients.
+
+00:08:58.680 --> 00:09:00.280
+Yeah, that's excellent.
+
+00:09:01.240 --> 00:09:05.280
+So this seems like kind of in that category of API first.
+
+00:09:06.640 --> 00:09:07.000
+Oh, yes.
+
+00:09:07.820 --> 00:09:08.560
+Yeah. Okay.
+
+00:09:09.340 --> 00:09:10.040
+Yeah, it's cool.
+
+00:09:10.100 --> 00:09:12.740
+that you have concrete experience with it, right?
+
+00:09:13.060 --> 00:09:13.320
+Of course.
+
+00:09:18.580 --> 00:09:21.100
+So give us some of the laws.
+
+00:09:21.880 --> 00:09:23.480
+We coordinated a little bit beforehand
+
+00:09:23.700 --> 00:09:25.640
+and there's some interesting laws
+
+00:09:25.840 --> 00:09:27.320
+for designing good APIs.
+
+00:09:27.900 --> 00:09:31.100
+Like one of them is the reverse Conway maneuver,
+
+00:09:31.260 --> 00:09:34.340
+which to me sounds like a jujitsu sort of move
+
+00:09:34.760 --> 00:09:35.700
+that you might try to pull.
+
+00:09:35.840 --> 00:09:36.300
+What is this?
+
+00:09:38.020 --> 00:09:38.460
+Oh, yes.
+
+00:09:38.960 --> 00:09:48.040
+So when you are designing any system, you got to think about the way it's going to end up and the laws that are going to govern them.
+
+00:09:48.460 --> 00:09:51.480
+And Conway's law is one of the main laws that do that.
+
+00:09:52.260 --> 00:09:59.760
+To explain that to people in simple terms, if you have four teams designing a compiler, you're going to have a four pass compiler.
+
+00:10:00.660 --> 00:10:12.160
+And essentially, the way you set up communications within your company, the way you set up your teams, your structure is going to be reflected in your product and you can't do anything about it.
+
+00:10:12.270 --> 00:10:19.680
+You can spend money, you can coordinate people, but at some point, Conway's Law is going to affect you and it's going to be harsh.
+
+00:10:20.840 --> 00:10:28.240
+So one of the ways to, I guess, go around it is to first think of an interface that you want to provide.
+
+00:10:28.640 --> 00:10:30.660
+And it applies to anything, not just APIs.
+
+00:10:31.200 --> 00:10:32.980
+API is just a really good example of that.
+
+00:10:33.560 --> 00:10:43.700
+And then design your company and the communications within your company, the teams within your company, to reflect the interfaces that you want to get in the end.
+
+00:10:44.320 --> 00:10:45.700
+And that's reverse con with Mo.
+
+00:10:45.880 --> 00:10:46.080
+Okay.
+
+00:10:46.430 --> 00:10:50.660
+Because your code and your APIs and all those things are going to reflect your company structure.
+
+00:10:50.760 --> 00:10:56.200
+and culture. So instead of having that being implicit, make it more explicit by saying,
+
+00:10:57.120 --> 00:11:02.460
+well, this is the end point that we want, the end result that we want. How do we work that
+
+00:11:02.680 --> 00:11:09.540
+backwards to end up structuring teams or whatever to get this, right? Precisely, yes. Yeah, it is a
+
+00:11:09.540 --> 00:11:17.479
+little bit like Jiu-Jitsu. But there are more laws that do that. Of course, there is REST, which I
+
+00:11:17.500 --> 00:11:25.260
+guess not really lost principles um which uh most people or at least most companies i saw
+
+00:11:25.980 --> 00:11:31.520
+don't really like to follow it to the letter uh but if you do uh making you know
+
+00:11:33.270 --> 00:11:40.880
+if you do follow rest if you try to make your api as available as as you can and as standardized as
+
+00:11:40.880 --> 00:11:45.399
+you can then it's much easier for new people especially junior developers to learn and then
+
+00:11:45.400 --> 00:11:49.360
+And that makes it much easier for your clients to integrate with you, which is great.
+
+00:11:51.820 --> 00:11:55.600
+There are also a few, I guess, more advanced things.
+
+00:11:55.640 --> 00:11:59.240
+For example, when you are designing an API, when you're doing microservices,
+
+00:11:59.440 --> 00:12:01.520
+and when you have many services talking to each other,
+
+00:12:03.300 --> 00:12:08.600
+which in the end provide your final product to your customers,
+
+00:12:09.620 --> 00:12:14.820
+a good idea is to omit any internal APIs and make all of your APIs,
+
+00:12:15.040 --> 00:12:17.680
+or at least the majority of your API is external.
+
+00:12:17.910 --> 00:12:20.600
+That is also one of the things about API First.
+
+00:12:21.100 --> 00:12:23.260
+Once all of your APIs are external,
+
+00:12:23.350 --> 00:12:27.560
+it means that your clients will be able to build a product
+
+00:12:27.860 --> 00:12:29.640
+that is of similar quality to yours.
+
+00:12:30.460 --> 00:12:32.520
+We're using your APIs, using your data,
+
+00:12:33.160 --> 00:12:36.360
+which provides them with infinite capabilities of using you,
+
+00:12:36.430 --> 00:12:37.140
+which is great.
+
+00:12:38.000 --> 00:12:38.780
+Yeah, that is great.
+
+00:12:39.980 --> 00:12:42.220
+It's certainly frustrating when you see,
+
+00:12:43.380 --> 00:12:44.580
+it's not on the API level,
+
+00:12:44.740 --> 00:12:49.760
+but you see things in like the iOS platform or in Windows or wherever you're
+
+00:12:49.900 --> 00:12:51.940
+like, why can't I do this?
+
+00:12:52.100 --> 00:12:53.300
+Like these are,
+
+00:12:53.380 --> 00:12:57.060
+these are private things that either Apple or Microsoft or whoever are keeping
+
+00:12:57.100 --> 00:13:01.360
+to themselves and clearly are important for building apps,
+
+00:13:01.540 --> 00:13:02.520
+but you can't use them.
+
+00:13:02.600 --> 00:13:02.720
+Right.
+
+00:13:02.780 --> 00:13:07.860
+So you're suggesting that by having basically whatever APIs you need,
+
+00:13:07.980 --> 00:13:09.440
+I guess there's probably limits,
+
+00:13:09.520 --> 00:13:09.640
+right?
+
+00:13:09.660 --> 00:13:13.420
+Like you don't want to expose say you're like HR API if you're not an HR
+
+00:13:13.800 --> 00:13:13.880
+company.
+
+00:13:14.020 --> 00:13:14.140
+Right.
+
+00:13:14.200 --> 00:13:19.660
+But in general, having your APIs just be all public, right?
+
+00:13:19.760 --> 00:13:21.220
+It probably makes them better as well
+
+00:13:21.340 --> 00:13:23.100
+because they just get so many more use cases.
+
+00:13:23.280 --> 00:13:25.140
+They get treated with things like versioning
+
+00:13:25.680 --> 00:13:26.720
+and stuff more seriously.
+
+00:13:27.720 --> 00:13:28.200
+Yeah.
+
+00:13:29.160 --> 00:13:29.280
+Yeah.
+
+00:13:30.220 --> 00:13:30.520
+Excellent.
+
+00:13:31.180 --> 00:13:34.400
+But it's a complex topic that could span.
+
+00:13:34.940 --> 00:13:36.340
+You know, we could discuss it for hours.
+
+00:13:36.540 --> 00:13:41.360
+You know, which parts of your API do you make public?
+
+00:13:41.440 --> 00:13:44.460
+which parts of your API do you start versioning?
+
+00:13:44.490 --> 00:13:48.760
+And if you're combining your APIs using a gateway or a federation,
+
+00:13:49.210 --> 00:13:51.560
+you know, it's a long story.
+
+00:13:51.910 --> 00:13:54.760
+But I guess with a federation, you wouldn't really make it public.
+
+00:13:56.260 --> 00:13:56.780
+Sure.
+
+00:13:57.720 --> 00:13:59.280
+Well, let's dive into that a little bit.
+
+00:13:59.340 --> 00:14:01.600
+Let's talk about API versioning.
+
+00:14:03.040 --> 00:14:04.820
+We know what versioning is in Python.
+
+00:14:05.740 --> 00:14:08.180
+We have lock files.
+
+00:14:08.860 --> 00:14:09.900
+We pin the version.
+
+00:14:10.120 --> 00:14:15.840
+We might say we're using Pydantic 2.0.5 or whatever it is.
+
+00:14:16.520 --> 00:14:20.580
+And that leaves the Pydantic team free to do whatever they want.
+
+00:14:20.860 --> 00:14:24.080
+And we can trust that our code is going to stay the way it stayed.
+
+00:14:25.380 --> 00:14:30.300
+I guess API versioning is that, but for web endpoints rather than software.
+
+00:14:32.080 --> 00:14:38.120
+Yeah, and it's a little different, though, in some regards.
+
+00:14:38.380 --> 00:14:48.900
+For example, when you're packaging your, I don't know, software and you just send it to clients, the thing is you need to have versions for every single thing.
+
+00:14:49.020 --> 00:14:55.380
+For example, if we are doing a bug fix and we need to ship that to our clients, that is going to be a separate version.
+
+00:14:56.080 --> 00:15:03.100
+But in web, when you're hosting it on a server and your clients just make requests to your servers, you don't need that.
+
+00:15:03.420 --> 00:15:06.460
+You don't need to ship bug fixes as separate versions.
+
+00:15:06.620 --> 00:15:11.900
+You can just ship them because they're not going to break anything for your clients and your clients will be able to automatically get them.
+
+00:15:12.460 --> 00:15:13.840
+Same goes for minor versions.
+
+00:15:14.840 --> 00:15:19.600
+Minor versions that just add features don't really need to be a version on APIs.
+
+00:15:20.100 --> 00:15:34.920
+That leaves us with just major versions, which is why many companies like Stripe at Monite use dates for their versions because we don't really need all of the power of semantic versioning.
+
+00:15:36.060 --> 00:15:40.260
+Yeah, sure. More calendar versioning because all you really need to say is,
+
+00:15:40.420 --> 00:15:41.580
+this one is different than before.
+
+00:15:42.760 --> 00:15:43.260
+It doesn't.
+
+00:15:46.000 --> 00:15:47.320
+Stripe does a lot of interesting things.
+
+00:15:47.380 --> 00:15:51.680
+We're going to talk a little bit about what they're up to.
+
+00:15:52.600 --> 00:15:53.140
+But you're right.
+
+00:15:53.260 --> 00:15:58.920
+When I think about APIs that I've created, sometimes I've had other versions.
+
+00:15:59.940 --> 00:16:05.900
+One of the main areas is in the apps that we have.
+
+00:16:07.300 --> 00:16:08.560
+over, is that URL work?
+
+00:16:08.560 --> 00:16:08.860
+It does.
+
+00:16:09.120 --> 00:16:11.020
+In the apps for consuming the courses, right?
+
+00:16:11.040 --> 00:16:15.240
+We had two completely different versions of the app.
+
+00:16:16.060 --> 00:16:18.640
+One got completely, completely rewrote it.
+
+00:16:19.060 --> 00:16:22.140
+And many of the API endpoints were just fine.
+
+00:16:22.280 --> 00:16:23.600
+We could just use them over,
+
+00:16:24.520 --> 00:16:25.540
+didn't have to change anything,
+
+00:16:25.600 --> 00:16:27.520
+but three or four were like,
+
+00:16:27.580 --> 00:16:30.720
+you know, this really would be better if it was different.
+
+00:16:30.900 --> 00:16:34.960
+And so added like a slash V2 or something in there, right?
+
+00:16:35.500 --> 00:16:36.520
+but really, really limited.
+
+00:16:37.180 --> 00:16:38.560
+So the thing that's interesting though
+
+00:16:38.640 --> 00:16:40.180
+that you point out here is like,
+
+00:16:40.720 --> 00:16:41.400
+until that happened,
+
+00:16:41.640 --> 00:16:45.480
+I'd shipped many, many versions of that API.
+
+00:16:45.660 --> 00:16:47.140
+And long as the schema didn't change,
+
+00:16:47.400 --> 00:16:51.440
+I didn't bother even specifying that it had a version, right?
+
+00:16:51.500 --> 00:16:56.380
+It was just like slash my courses or whatever it is, right?
+
+00:16:56.460 --> 00:16:57.660
+Like just give those to me.
+
+00:16:57.680 --> 00:16:59.900
+And long as it kept giving the courses back, it was good.
+
+00:17:01.480 --> 00:17:01.880
+Exactly.
+
+00:17:02.360 --> 00:17:04.000
+And that's the thing.
+
+00:17:04.100 --> 00:17:07.400
+as long as you extend stuff, it's going to be fine.
+
+00:17:07.640 --> 00:17:09.020
+But as you mentioned in the beginning,
+
+00:17:09.900 --> 00:17:11.640
+you can't really do that forever.
+
+00:17:12.540 --> 00:17:16.140
+At some point, you're going to make wrong design decisions.
+
+00:17:16.520 --> 00:17:19.079
+At some point, even if you did everything perfectly,
+
+00:17:19.600 --> 00:17:21.880
+you know, your product is just going to evolve.
+
+00:17:22.600 --> 00:17:23.280
+It's just going to evolve.
+
+00:17:23.380 --> 00:17:25.640
+And then you'll need to use old endpoints
+
+00:17:25.980 --> 00:17:28.960
+that alter or, you know, get old data
+
+00:17:29.780 --> 00:17:32.480
+and extend them in some breaking ways.
+
+00:17:32.680 --> 00:17:33.900
+Of course, there are ways around it.
+
+00:17:34.020 --> 00:17:35.620
+You can use API evolution.
+
+00:17:35.710 --> 00:17:38.180
+You can just, you know, add fields constantly
+
+00:17:38.600 --> 00:17:40.360
+and duplicate the old functionality.
+
+00:17:40.590 --> 00:17:42.080
+But after a few such versions,
+
+00:17:42.960 --> 00:17:44.320
+your API will look terrible,
+
+00:17:45.300 --> 00:17:47.400
+which is why we use versioning.
+
+00:17:47.690 --> 00:17:51.120
+And which is why when your company's main product
+
+00:17:51.500 --> 00:17:53.940
+is an API, when you are an API first company,
+
+00:17:54.520 --> 00:17:57.620
+you can't do anything without versioning.
+
+00:17:57.710 --> 00:18:00.240
+You can live for a short period of time.
+
+00:18:00.330 --> 00:18:02.300
+For example, a pre-series A company,
+
+00:18:02.420 --> 00:18:05.800
+I don't think should deal with versioning.
+
+00:18:06.010 --> 00:18:09.400
+But then after series A, after you gather, I don't know,
+
+00:18:09.560 --> 00:18:13.420
+15, 20 clients, it will be really hard to survive
+
+00:18:13.590 --> 00:18:14.380
+without versioning.
+
+00:18:16.040 --> 00:18:21.300
+It's a really quick and easy way to make loyal customers angry
+
+00:18:21.920 --> 00:18:25.480
+by making changes to your API that just start breaking code.
+
+00:18:27.440 --> 00:18:28.480
+I remember...
+
+00:18:29.320 --> 00:18:29.720
+Go ahead.
+
+00:18:31.120 --> 00:18:41.240
+And even if, you know, if you make, you know, even if you wait for your clients, even if you, you know, warn them, it's still not nice when you're trying to use some API.
+
+00:18:41.630 --> 00:18:46.060
+And then every three months or every month, it breaks everything.
+
+00:18:46.940 --> 00:18:47.340
+Yeah, exactly.
+
+00:18:47.960 --> 00:18:50.420
+Even with you put in all the work to do the integration.
+
+00:18:50.770 --> 00:18:51.480
+You got it working.
+
+00:18:51.680 --> 00:18:52.300
+You tested it.
+
+00:18:52.840 --> 00:18:55.780
+Your job is your product is not the integration.
+
+00:18:56.200 --> 00:18:58.420
+The integration facilitates what you're trying to build.
+
+00:18:58.600 --> 00:19:02.760
+And every time you got to go back and rewrite that stuff, it's not great.
+
+00:19:03.020 --> 00:19:04.100
+I was working.
+
+00:19:04.190 --> 00:19:11.460
+I have MailChimp for our newsletter marketing side of stuff, the courses, and use them for
+
+00:19:11.460 --> 00:19:11.940
+a long time.
+
+00:19:12.010 --> 00:19:16.040
+And I got a message like, hey, we're retiring this API you're using.
+
+00:19:17.000 --> 00:19:19.640
+And their API is dreadful.
+
+00:19:19.940 --> 00:19:22.640
+Their Python library API is dreadful.
+
+00:19:22.760 --> 00:19:25.700
+It's like star args, star star kwo args.
+
+00:19:26.260 --> 00:19:27.400
+You better pass the right things.
+
+00:19:27.780 --> 00:19:32.900
+there's no enforcement or instruction about what goes in there. Right. And so some random dictionary
+
+00:19:33.140 --> 00:19:38.960
+that was going in, there was no longer right and had to be like recreated. So they just decided,
+
+00:19:39.200 --> 00:19:41.560
+you know, we're going to just take different stuff and we're just going to shut down that
+
+00:19:41.670 --> 00:19:48.720
+endpoint. And when they did all of the aspects of my website just started breaking. Like it wasn't
+
+00:19:48.840 --> 00:19:53.060
+crashing, but just anything around, Hey, put me on your newsletter. Like, Nope, you couldn't be on
+
+00:19:53.060 --> 00:19:57.019
+the newsletter. Cause it, you know, people started sending me a message, Michael, I'm trying to sign
+
+00:19:57.060 --> 00:20:02.040
+up to be on the newsletter but uh it it just keeps saying that something went wrong with our site
+
+00:20:02.120 --> 00:20:07.640
+we're sorry i'm like oh boy uh go look and they just turned off that endpoint and it was just like
+
+00:20:08.020 --> 00:20:15.360
+nope not doing that anymore it was super frustrating it took me eight hours to rewrite it because like
+
+00:20:15.360 --> 00:20:20.940
+i said there was no real guidance on like oh you just passed the dictionary like well what goes in
+
+00:20:20.940 --> 00:20:26.459
+the dictionary you know it was like some word of one of the keys change i was so it just took forever
+
+00:20:26.480 --> 00:20:33.320
+it was frustrating so what we're going to talk about here is a lot about how how does that how
+
+00:20:33.320 --> 00:20:38.920
+do you not do how do you not pull a mailchimp how do you set it up so that your code keeps running
+
+00:20:39.580 --> 00:20:43.920
+and you know the reason why they did that is they're like well we feel like we wrote it wrong
+
+00:20:44.200 --> 00:20:50.939
+before we want to fix those for to make it better but we don't want to maintain two versions right
+
+00:20:52.300 --> 00:20:57.800
+that's probably the heart of it you know it is until you have half a million users of the old
+
+00:20:59.080 --> 00:21:04.400
+api and how many of those like so for me yeah i was frustrated yeah i'm like all right well i had
+
+00:21:04.420 --> 00:21:09.600
+plans today for constructive work but i'm gonna go rewrite what i did four years ago and then i'll do
+
+00:21:09.700 --> 00:21:16.579
+something again tomorrow but okay that's like a pretty good outcome a more common outcome is
+
+00:21:16.600 --> 00:21:21.780
+probably I hired a consultant to build me an app and integrate MailChimp and
+
+00:21:21.840 --> 00:21:22.220
+they're gone.
+
+00:21:23.110 --> 00:21:24.240
+And now my thing that I,
+
+00:21:24.430 --> 00:21:27.880
+I built a year ago doesn't even work and I don't have the skills.
+
+00:21:28.960 --> 00:21:32.080
+I got to go hire somebody again to dig back in there and fix it.
+
+00:21:32.150 --> 00:21:32.260
+Right?
+
+00:21:32.420 --> 00:21:33.960
+Like that would be really frustrating.
+
+00:21:36.020 --> 00:21:36.160
+Yeah,
+
+00:21:36.240 --> 00:21:36.640
+that's crazy.
+
+00:21:36.820 --> 00:21:36.980
+And,
+
+00:21:37.010 --> 00:21:37.120
+uh,
+
+00:21:37.580 --> 00:21:39.780
+it could be devastating to some clients,
+
+00:21:40.010 --> 00:21:41.740
+especially if the changes are huge,
+
+00:21:41.970 --> 00:21:45.620
+especially if it's not just a single end point or if there is only one end
+
+00:21:45.740 --> 00:21:46.000
+point.
+
+00:21:46.560 --> 00:21:50.580
+and it does a lot of things, then, oh my God, it's scary.
+
+00:21:51.280 --> 00:21:52.480
+It is, it is.
+
+00:21:52.940 --> 00:21:55.440
+Before we move on to maybe some of the approaches,
+
+00:21:56.960 --> 00:21:58.900
+Alex, Alexi out in the audience says,
+
+00:21:59.440 --> 00:22:01.920
+one more law, Hiram's law is also great.
+
+00:22:02.160 --> 00:22:04.100
+With sufficient number of users of an API,
+
+00:22:04.260 --> 00:22:06.880
+it does not matter what you promise in the contract.
+
+00:22:07.780 --> 00:22:09.720
+All observable behaviors of your system
+
+00:22:09.920 --> 00:22:11.440
+will be depended on by somebody.
+
+00:22:12.860 --> 00:22:16.380
+It is one of my favorite laws about any system.
+
+00:22:17.660 --> 00:22:18.920
+That is very true.
+
+00:22:19.090 --> 00:22:23.380
+And it's a scary law, you know, because at some point you'll have to version everything,
+
+00:22:24.130 --> 00:22:34.000
+which is why it's a good idea to make things, you know, I guess to describe all the behaviors
+
+00:22:34.440 --> 00:22:41.480
+and to try to handle all of the possible behaviors early so that you know what is going to become
+
+00:22:41.500 --> 00:22:46.500
+a part of it because at some point you'll just not be able to stop it and then you break something
+
+00:22:46.840 --> 00:22:51.920
+that uh was not was never intended to work and then a hundred of your users are like oh we were
+
+00:22:52.090 --> 00:22:58.920
+using that we were it wasn't a bug it was a feature for us yeah we needed that we found that's the
+
+00:22:58.950 --> 00:23:04.140
+only way we could use it yeah for sure all right let's talk about some of the techniques you put
+
+00:23:04.240 --> 00:23:08.640
+together a nice thing here like how to maintain hundreds of api versions and survive like so what
+
+00:23:08.660 --> 00:23:12.060
+What are some of the ways in which people version APIs?
+
+00:23:16.860 --> 00:23:24.220
+So first of all, it's really hard to really figure out how people do this and how to do
+
+00:23:24.340 --> 00:23:24.480
+it.
+
+00:23:24.700 --> 00:23:29.040
+Because 90% of the time when you're going to be researching API versioning, what you're
+
+00:23:29.120 --> 00:23:34.640
+going to see is people having tough decisions between putting it into a header or putting
+
+00:23:34.800 --> 00:23:35.620
+it into a path.
+
+00:23:36.080 --> 00:23:42.460
+then when you ask, well, how do you version? Nobody really has an answer. Well, there are a few ways.
+
+00:23:42.960 --> 00:23:49.080
+First of all, you can go from the lowest level and version everything, including your database.
+
+00:23:50.340 --> 00:23:55.080
+You know, you just make a separate copy of your app. You can host it on a separate server, even
+
+00:23:55.400 --> 00:24:00.980
+a separate Kubernetes namespace and forget about it. And, you know, you have two completely separate
+
+00:24:01.000 --> 00:24:06.240
+apps and now you have the you know you need to have double the people for the maintenance or
+
+00:24:07.420 --> 00:24:14.180
+at least a smaller separate team to maintain the second product um this approach is really nice if
+
+00:24:14.180 --> 00:24:19.920
+you have a product that cannot break like there is there needs to be zero possibility of that
+
+00:24:20.080 --> 00:24:25.400
+breaking you know if uh you are i don't know on a nuclear power plant you'll probably do that you
+
+00:24:25.420 --> 00:24:29.300
+You know, you can't have the old one broken
+
+00:24:29.540 --> 00:24:30.900
+and, you know, the new one working.
+
+00:24:32.140 --> 00:24:34.240
+But it's the most expensive approach, obviously.
+
+00:24:35.380 --> 00:24:38.000
+You can, however, limit that.
+
+00:24:38.180 --> 00:24:41.060
+You can start versioning just the application,
+
+00:24:41.440 --> 00:24:42.240
+but not the database.
+
+00:24:42.580 --> 00:24:45.260
+Okay, now we have the same thing, you know,
+
+00:24:45.260 --> 00:24:46.560
+a separate branch in our code,
+
+00:24:46.600 --> 00:24:48.900
+a separate, not in our code, in our repository,
+
+00:24:49.780 --> 00:24:52.240
+a separate Kubernetes namespace, whatever.
+
+00:24:53.480 --> 00:24:55.420
+But now it's still expensive.
+
+00:24:56.120 --> 00:24:58.840
+It's still a whole separate copy of everything you have built.
+
+00:24:58.890 --> 00:25:03.800
+And now you have to make sure that the new one or the old one doesn't break the database
+
+00:25:04.260 --> 00:25:06.280
+because the database might have changed.
+
+00:25:06.440 --> 00:25:09.160
+But one of the versions of code might not know about that.
+
+00:25:09.530 --> 00:25:11.520
+And then you realize it.
+
+00:25:13.160 --> 00:25:17.820
+Yeah, the database aspect of it sounds especially tricky.
+
+00:25:18.340 --> 00:25:21.720
+Especially a relational database with super strong schemas.
+
+00:25:21.860 --> 00:25:22.460
+Like, you know what?
+
+00:25:23.060 --> 00:25:26.200
+that used to be a VAR char and now it's an int.
+
+00:25:26.230 --> 00:25:28.540
+And so, nope, it's not, like,
+
+00:25:28.620 --> 00:25:29.660
+it's just not gonna work, right?
+
+00:25:29.720 --> 00:25:31.420
+There's really little flexibility.
+
+00:25:31.840 --> 00:25:33.900
+So even if you run the two things in parallel,
+
+00:25:34.920 --> 00:25:36.920
+then you almost have to have two databases
+
+00:25:37.620 --> 00:25:39.340
+and then like Emil points out
+
+00:25:39.860 --> 00:25:41.240
+and then you have to sync the databases
+
+00:25:41.720 --> 00:25:43.580
+and like, it's not trivial.
+
+00:25:44.900 --> 00:25:45.460
+- Oh yes.
+
+00:25:47.260 --> 00:25:48.920
+And then you start realizing, okay,
+
+00:25:49.200 --> 00:25:51.860
+why do I need a separate branch and a separate namespace?
+
+00:25:51.980 --> 00:25:54.260
+let's just keep them within the same app.
+
+00:25:55.160 --> 00:25:57.340
+Because as long as, you know,
+
+00:25:57.500 --> 00:25:58.920
+you have separate paths for this,
+
+00:25:59.080 --> 00:26:01.080
+even you can build separate swaggers from them,
+
+00:26:02.000 --> 00:26:05.140
+you can have them within the same branch,
+
+00:26:05.180 --> 00:26:06.180
+within the same repository,
+
+00:26:06.320 --> 00:26:07.580
+just in different directories.
+
+00:26:07.640 --> 00:26:09.520
+And you can just copy all of your code.
+
+00:26:09.920 --> 00:26:12.180
+And now I call that versioning by suffering.
+
+00:26:13.020 --> 00:26:13.560
+Because you think,
+
+00:26:13.740 --> 00:26:16.680
+oh, I'm going to version less this time, you know?
+
+00:26:16.880 --> 00:26:17.980
+Now I'm not versioning the database.
+
+00:26:18.260 --> 00:26:19.300
+Now it's not a separate branch.
+
+00:26:19.460 --> 00:26:22.760
+it's going to be much easier to, I don't know,
+
+00:26:23.980 --> 00:26:25.360
+make fixes in both places.
+
+00:26:26.040 --> 00:26:29.620
+But now you have to support both of the code bases.
+
+00:26:29.820 --> 00:26:31.120
+And once you update anything,
+
+00:26:31.560 --> 00:26:32.860
+any of the related resources,
+
+00:26:33.160 --> 00:26:34.520
+for example, the database models,
+
+00:26:34.820 --> 00:26:35.800
+you have to update them twice.
+
+00:26:36.180 --> 00:26:37.580
+If you update any of the dependencies,
+
+00:26:37.800 --> 00:26:38.840
+you have to update them twice.
+
+00:26:39.540 --> 00:26:41.580
+And that can get painful.
+
+00:26:41.960 --> 00:26:42.920
+And after a while,
+
+00:26:43.200 --> 00:26:45.120
+if you have more than two of these versions,
+
+00:26:45.720 --> 00:26:46.740
+you're going to be asking yourself,
+
+00:26:46.940 --> 00:26:49.940
+okay, what is the difference between these versions?
+
+00:26:50.860 --> 00:26:53.560
+And if you weren't careful with documentation and code review,
+
+00:26:54.020 --> 00:26:55.480
+oh, you're in for a treat.
+
+00:26:56.320 --> 00:26:56.600
+Yeah.
+
+00:26:56.930 --> 00:26:57.820
+But that's just the beginning.
+
+00:26:58.640 --> 00:27:01.120
+You can version much less.
+
+00:27:01.390 --> 00:27:03.780
+Now, instead of the whole directories,
+
+00:27:03.780 --> 00:27:05.380
+you can version just separate endpoints.
+
+00:27:05.980 --> 00:27:09.280
+And I think that's the way that I recommend for everyone.
+
+00:27:09.720 --> 00:27:11.480
+Everyone who is doing API versioning,
+
+00:27:11.560 --> 00:27:13.540
+who wants to be with the cool kids,
+
+00:27:13.810 --> 00:27:14.940
+I recommend this approach.
+
+00:27:15.520 --> 00:27:21.760
+As long as you are a small company or an individual and you want something really simple, that's a good way.
+
+00:27:22.190 --> 00:27:29.740
+You just copy a single endpoint that you have changed, create another schema for that, and then create another branch in your business logic.
+
+00:27:29.810 --> 00:27:31.440
+Or maybe even no branch.
+
+00:27:31.800 --> 00:27:34.460
+That's even better, you know, using the same business logic.
+
+00:27:35.140 --> 00:27:44.700
+But then at some point, once you want to support many versions or your versions become too different, that's where you get a problem.
+
+00:27:44.980 --> 00:27:47.160
+Because now all of a sudden you have all of these,
+
+00:27:47.340 --> 00:27:49.320
+oh, I have this endpoint in this version,
+
+00:27:49.560 --> 00:27:50.480
+that endpoint in that version.
+
+00:27:50.740 --> 00:27:52.400
+Oh, it's going to be bad.
+
+00:27:52.520 --> 00:27:52.680
+Yeah.
+
+00:27:52.740 --> 00:27:53.100
+Really bad.
+
+00:27:53.120 --> 00:27:53.340
+Yeah, yeah.
+
+00:27:53.720 --> 00:27:55.620
+We've been talking like there's the old version
+
+00:27:55.740 --> 00:27:56.320
+and the new version.
+
+00:27:56.530 --> 00:28:00.660
+But in practice, somebody starts to depend on the new version
+
+00:28:00.850 --> 00:28:02.080
+and then you evolve the new version
+
+00:28:02.360 --> 00:28:05.940
+and it just, it combinatorially explodes
+
+00:28:06.230 --> 00:28:07.000
+and it's out of control.
+
+00:28:07.240 --> 00:28:07.320
+Yeah.
+
+00:28:08.880 --> 00:28:09.160
+Precisely.
+
+00:28:10.039 --> 00:28:12.080
+So it's going to be really bad for your developers.
+
+00:28:12.420 --> 00:28:14.140
+Your clients are going to be fine with it.
+
+00:28:14.260 --> 00:28:15.480
+your developers are going to hate you.
+
+00:28:15.630 --> 00:28:18.200
+Although not as bad as with the previous approach.
+
+00:28:19.460 --> 00:28:23.720
+Now, the next one you get to is you start thinking,
+
+00:28:23.910 --> 00:28:27.460
+okay, what if instead of duplicating all of that stuff,
+
+00:28:28.040 --> 00:28:31.800
+I am just going to change the schemas?
+
+00:28:32.840 --> 00:28:34.720
+So, okay, if I do need to rename my endpoint,
+
+00:28:34.960 --> 00:28:36.060
+I am going to duplicate it.
+
+00:28:36.150 --> 00:28:37.220
+But most of the time, you're not.
+
+00:28:37.520 --> 00:28:39.280
+Most of the time, you're just changing some field
+
+00:28:39.330 --> 00:28:39.920
+in some schema.
+
+00:28:40.100 --> 00:28:41.760
+You're renaming it, you're extending it,
+
+00:28:41.880 --> 00:28:43.580
+changing its type, you know, stuff like that.
+
+00:28:43.940 --> 00:28:45.760
+That's like 90% of your use cases.
+
+00:28:46.200 --> 00:28:47.980
+Okay, what if we just change the schemas
+
+00:28:48.320 --> 00:28:50.040
+and then have some serializers?
+
+00:28:50.100 --> 00:28:56.020
+For example, Django DRF loves that.
+
+00:28:56.380 --> 00:28:59.100
+They love the serializers and re-serializers.
+
+00:28:59.220 --> 00:29:01.120
+And you can just have each,
+
+00:29:01.440 --> 00:29:03.780
+we have five versions and version one serializes
+
+00:29:03.880 --> 00:29:06.960
+into version five, version two serializes
+
+00:29:07.020 --> 00:29:08.280
+into version five, yada, yada, yada.
+
+00:29:09.280 --> 00:29:12.080
+And so our client sends us a request.
+
+00:29:12.360 --> 00:29:14.260
+We re-serialize it into the correct version.
+
+00:29:14.380 --> 00:29:15.580
+Then we return a response.
+
+00:29:15.640 --> 00:29:16.940
+We use the same business logic.
+
+00:29:17.300 --> 00:29:19.420
+And then we serialize it back into each version.
+
+00:29:20.040 --> 00:29:20.320
+Great.
+
+00:29:20.680 --> 00:29:24.840
+Now, we have solved all the problems of the previous approaches.
+
+00:29:25.340 --> 00:29:29.780
+Now, you need to realize that when you're doing something like this,
+
+00:29:30.640 --> 00:29:36.220
+you are in a little bit of danger of creating bugs in the new versions
+
+00:29:36.780 --> 00:29:38.940
+and these bugs cascading to the old versions,
+
+00:29:39.500 --> 00:29:42.320
+which hopefully you have tests to handle that.
+
+00:29:43.460 --> 00:29:45.600
+But at least your clients are happy
+
+00:29:45.750 --> 00:29:48.260
+because you can support versions for a long time
+
+00:29:48.490 --> 00:29:49.940
+and your developers are happy
+
+00:29:50.400 --> 00:29:53.480
+because the burden of support is now on the serializers.
+
+00:29:54.020 --> 00:29:55.960
+But you still have to support these serializers.
+
+00:29:56.160 --> 00:29:57.420
+It's still a lot of stuff.
+
+00:29:57.420 --> 00:30:00.320
+You still have to put every field in there
+
+00:30:00.690 --> 00:30:04.800
+and take care of any problems that happen.
+
+00:30:05.040 --> 00:30:07.020
+And each new version will change
+
+00:30:07.290 --> 00:30:08.720
+basically all of your serializers.
+
+00:30:09.700 --> 00:30:13.740
+a little bit yes but you won't be able to support 20 versions like that it's going to be crazy
+
+00:30:15.240 --> 00:30:22.400
+and now that's where we get to uh the final approaches the approaches that i guess uh
+
+00:30:22.600 --> 00:30:28.260
+the most sophisticated in the industry if you are making a back end for front end uh for your own
+
+00:30:28.480 --> 00:30:33.640
+front end then you can just use graphql graphql basically requires no versioning and that's one of
+
+00:30:33.560 --> 00:30:35.460
+the benefits of it.
+
+00:30:36.460 --> 00:30:39.020
+I would recommend that if you have developers
+
+00:30:39.300 --> 00:30:42.060
+that are good with GraphQL, that's great.
+
+00:30:42.260 --> 00:30:43.520
+You can omit versioning altogether.
+
+00:30:44.700 --> 00:30:46.580
+But if you're not, if it's a public API,
+
+00:30:48.020 --> 00:30:50.420
+then that's where Stripe's approach comes.
+
+00:30:51.160 --> 00:30:52.520
+I think they were the first ones
+
+00:30:52.720 --> 00:30:54.740
+to publish an article about that.
+
+00:30:55.680 --> 00:30:57.980
+It was Brander Leach, the author of this article.
+
+00:30:58.020 --> 00:31:01.660
+He has supported API versioning at Stripe for a while
+
+00:31:01.780 --> 00:31:07.760
+and he has helped us with building our API versioning approach.
+
+00:31:08.800 --> 00:31:11.060
+Essentially, what Stripe did is said,
+
+00:31:11.100 --> 00:31:14.880
+okay, let's imagine that our developers are only supporting one version,
+
+00:31:14.960 --> 00:31:17.900
+the latest one, just like with serializers.
+
+00:31:18.480 --> 00:31:21.320
+But instead of serializing every version to the latest one,
+
+00:31:22.040 --> 00:31:26.640
+let's say that each version knows how to serialize into the next version.
+
+00:31:28.020 --> 00:31:28.720
+So let's say that...
+
+00:31:28.720 --> 00:31:29.840
+Kind of like database migrations.
+
+00:31:31.300 --> 00:31:31.460
+Exactly.
+
+00:31:32.180 --> 00:31:36.140
+So let's say that I return response from the latest version.
+
+00:31:37.210 --> 00:31:42.940
+This response, or at least they call them, I think, version gates.
+
+00:31:43.920 --> 00:31:46.760
+These version gates, the version gate for fifth version,
+
+00:31:47.320 --> 00:31:50.600
+knows how to convert back my response back into the fourth version.
+
+00:31:51.300 --> 00:31:55.480
+The version gate for the fourth version knows how to convert it back into the third version.
+
+00:31:56.240 --> 00:32:00.660
+And all of a sudden, you get simple version gates.
+
+00:32:00.720 --> 00:32:03.600
+because if it's just field renaming in a single version,
+
+00:32:03.690 --> 00:32:04.700
+then it's just a single line.
+
+00:32:04.950 --> 00:32:05.760
+They're really simple.
+
+00:32:07.420 --> 00:32:09.140
+But at the same time, they're immutable
+
+00:32:10.000 --> 00:32:11.240
+because these version gates,
+
+00:32:11.460 --> 00:32:12.940
+they're not describing the whole schema.
+
+00:32:13.230 --> 00:32:15.980
+They're describing the difference between two versions.
+
+00:32:16.470 --> 00:32:19.920
+And because we know that we don't want to change the old version,
+
+00:32:20.940 --> 00:32:23.240
+we want the old version to work,
+
+00:32:23.530 --> 00:32:26.380
+which is why the difference between version 2 and version 3
+
+00:32:26.490 --> 00:32:27.240
+is going to stay.
+
+00:32:27.600 --> 00:32:28.580
+It's not going to change,
+
+00:32:28.960 --> 00:32:31.240
+which is why these converters are also immutable,
+
+00:32:31.590 --> 00:32:33.480
+which means that you don't need
+
+00:32:33.570 --> 00:32:35.440
+to spend much time supporting them.
+
+00:32:37.360 --> 00:32:39.160
+Right, once you get, if you're on version three
+
+00:32:39.440 --> 00:32:42.080
+and you get the transition from one to two set,
+
+00:32:42.180 --> 00:32:44.280
+like that's not gonna change ever, right?
+
+00:32:44.520 --> 00:32:45.980
+Exactly, precisely.
+
+00:32:46.480 --> 00:32:49.180
+Well, at some point you need it for optimizations
+
+00:32:49.480 --> 00:32:51.660
+or for returning extra data,
+
+00:32:51.830 --> 00:32:55.460
+but it's such a rare use case that I haven't seen it so far
+
+00:32:55.640 --> 00:32:57.560
+and I hope that I won't.
+
+00:32:58.560 --> 00:32:58.760
+But yeah.
+
+00:32:59.620 --> 00:32:59.860
+Yeah.
+
+00:33:00.320 --> 00:33:01.300
+So this is Stripe's approach.
+
+00:33:01.350 --> 00:33:16.140
+And one of the things that's really interesting that Stripe does and is laid out in this article that you're bringing to the table here is they also implicitly assign you a version when you first make a call, which was really interesting.
+
+00:33:17.000 --> 00:33:35.120
+And I use Stripe, and I didn't realize that when I've made calls into Stripe that the first time you make a call, it pins you somewhere like on your user account on their side, pins you to that version of the API, and you never know you're on a different, you're on a particular version, but they keep you on that version.
+
+00:33:36.320 --> 00:33:36.620
+That's wild.
+
+00:33:36.720 --> 00:34:01.200
+That's great. Imagine you log in into Stripe, you make a call, and then every time you open a documentation in your account, you're going to see your version. Every time you make a call, you're going to get response from your version. And then because they keep versions for years, for example, we are using, I think, a three or four year old version of Stripe's API, and they still keep it.
+
+00:34:01.460 --> 00:34:06.400
+According to this article, they keep all of their versions, all since the company's beginning.
+
+00:34:06.820 --> 00:34:08.560
+I'm not sure how cool that is.
+
+00:34:09.419 --> 00:34:09.620
+Yeah.
+
+00:34:09.830 --> 00:34:13.260
+But still, they keep years worth of versions.
+
+00:34:13.780 --> 00:34:15.179
+That is very true.
+
+00:34:16.240 --> 00:34:17.600
+Now, you might see that as a negative.
+
+00:34:17.899 --> 00:34:20.000
+Like, you might think, well, I'm pinned to this version.
+
+00:34:20.110 --> 00:34:22.960
+Like, how do I escape the old version if I want the new version?
+
+00:34:23.389 --> 00:34:24.980
+But you can pass it in a header.
+
+00:34:25.149 --> 00:34:28.940
+Or there's other ways to say, I explicitly choose something else.
+
+00:34:29.060 --> 00:34:31.780
+But by default, you're just living in the past.
+
+00:34:32.960 --> 00:34:33.340
+Yeah.
+
+00:34:33.990 --> 00:34:34.940
+And that's really cool.
+
+00:34:35.010 --> 00:34:37.440
+You integrate, and then you live in the past for as long as you want.
+
+00:34:37.470 --> 00:34:41.260
+The thing is, yes, you can change it using a header.
+
+00:34:42.300 --> 00:34:44.360
+Monite has a similar structure.
+
+00:34:46.080 --> 00:34:50.240
+You can also change it in your partner's portal.
+
+00:34:51.260 --> 00:34:53.780
+And you can also, or I guess developer's portal.
+
+00:34:54.740 --> 00:34:57.980
+And you can also specify, for example, if you receive webhooks from Stripe,
+
+00:34:58.340 --> 00:35:02.540
+You can specify, okay, I want this webhook of this version and that webhook of that version.
+
+00:35:03.670 --> 00:35:03.940
+You know?
+
+00:35:04.080 --> 00:35:04.460
+That's cool.
+
+00:35:04.600 --> 00:35:10.760
+And it's a really neat interface that if you don't want to think about versioning, you don't.
+
+00:35:10.930 --> 00:35:11.720
+You forget about it.
+
+00:35:12.200 --> 00:35:19.420
+But the second you want to, the second you want to have the latest API, they give you all the tools to work with it nicely.
+
+00:35:20.420 --> 00:35:20.980
+And that's the thing.
+
+00:35:21.120 --> 00:35:28.520
+this approach allows you to keep years worth of versions or maybe even decades worth of versions
+
+00:35:28.850 --> 00:35:34.620
+actually without your developers getting overburdened because there is still a single
+
+00:35:34.820 --> 00:35:38.380
+version of the business logic they work on a single version of schemas and they just need to
+
+00:35:38.580 --> 00:35:44.100
+make sure that when they release a new version they write a converter for it and your clients
+
+00:35:44.260 --> 00:35:50.219
+are also happy because they never need to switch yeah it sounds really nice i suspect there's not
+
+00:35:51.560 --> 00:35:55.880
+a complete ability to just ignore the old versions
+
+00:35:56.260 --> 00:35:59.380
+because maybe in your new version,
+
+00:35:59.600 --> 00:36:02.600
+you're going to imagine this piece of data doesn't even exist
+
+00:36:02.670 --> 00:36:04.060
+and we're going to remove it from the database.
+
+00:36:04.460 --> 00:36:05.940
+But if it needs to be there for the old ones,
+
+00:36:06.400 --> 00:36:10.420
+there's probably some level of your constraint a little bit,
+
+00:36:10.470 --> 00:36:11.860
+but it sounds a lot better still.
+
+00:36:14.440 --> 00:36:16.000
+Yeah, you're still constrained,
+
+00:36:16.140 --> 00:36:23.240
+But remember, API versioning, if we translate it, you know, application programming interface
+
+00:36:23.700 --> 00:36:24.080
+versioning.
+
+00:36:24.150 --> 00:36:25.420
+We're not versioning the app.
+
+00:36:25.700 --> 00:36:27.680
+We're versioning the interface to the app.
+
+00:36:27.920 --> 00:36:31.140
+So a lot of times it's like, what fields are we passing or something, right?
+
+00:36:31.820 --> 00:36:31.980
+Yeah.
+
+00:36:32.600 --> 00:36:32.680
+Yeah.
+
+00:36:32.980 --> 00:36:39.320
+So if you are trying to change the data between versions, if the data is different, entirely
+
+00:36:39.580 --> 00:36:43.120
+different, I mean, then you're probably not doing API versioning.
+
+00:36:43.220 --> 00:36:47.100
+then you probably should be calling it application versioning.
+
+00:36:47.420 --> 00:36:53.180
 And actually, Stripe has, I guess, a hack for that too.
 
-00:36:52.520 --> 00:36:58.180
-If you take a look at their API, they still have a V1,
+00:36:54.760 --> 00:36:57.700
+If you take a look at their API, they still have a V1.
 
-00:36:58.180 --> 00:37:02.000
-but that's the thing, they don't use this V1.
+00:36:59.620 --> 00:37:00.180
+But that's the thing.
 
-00:37:02.000 --> 00:37:04.720
-They use date-based versioning that is in the headers
+00:37:00.410 --> 00:37:01.620
+They don't use this V1.
 
-00:37:04.720 --> 00:37:06.580
-and their settings.
+00:37:01.880 --> 00:37:06.000
+They use date-based versioning that is in the headers and their settings.
 
-00:37:06.580 --> 00:37:10.700
-But the V1 is precisely for this situation.
+00:37:06.370 --> 00:37:09.760
+But V1 is precisely for this situation.
 
-00:37:10.700 --> 00:37:13.660
-If someday they will need to have something else,
+00:37:10.500 --> 00:37:23.580
+If someday they will need to have something else, if someday they will need to break everything and change the data required or any other crazy changes, they will be able to do it using that V1.
 
-00:37:13.660 --> 00:37:16.920
-if someday they will need to break everything
+00:37:24.360 --> 00:37:24.680
+Yeah.
 
-00:37:16.920 --> 00:37:21.700
-and change the data required or any other crazy changes,
+00:37:25.540 --> 00:37:25.620
+Yeah.
 
-00:37:21.700 --> 00:37:24.700
-they will be able to do it using that V1.
+00:37:25.940 --> 00:37:26.800
+It's just there in case.
 
-00:37:24.700 --> 00:37:28.260
->>Yeah, yeah, it's just there in case, exactly.
+00:37:27.300 --> 00:37:27.520
+Exactly.
 
-00:37:28.260 --> 00:37:29.100
->>Yep.
+00:37:28.080 --> 00:37:28.200
+Yep.
 
-00:37:29.100 --> 00:37:31.020
-So yeah.
+00:37:29.980 --> 00:37:30.320
+Cool.
 
-00:37:31.020 --> 00:37:32.640
->>Cool, all right, well, let's talk about your project.
+00:37:30.500 --> 00:37:30.600
+All right.
 
-00:37:32.640 --> 00:37:33.560
-Let's talk about your project
+00:37:30.630 --> 00:37:32.060
+Well, let's talk about your project.
 
-00:37:33.560 --> 00:37:35.240
-that makes this possible in Python,
+00:37:32.400 --> 00:37:34.820
+Let's talk about your project that makes this possible in Python.
 
-00:37:35.240 --> 00:37:37.740
-because the Stripe examples,
+00:37:35.090 --> 00:37:39.760
+Because the Stripe examples, I believe this is Ruby that they all have here, right?
 
-00:37:37.740 --> 00:37:40.140
-I believe this is Ruby that they all have here, right?
+00:37:40.000 --> 00:37:45.300
+which is really nice to read until you try to understand it,
 
-00:37:40.140 --> 00:37:41.020
-Which--
-
-00:37:41.020 --> 00:37:42.260
->>It is.
-
-00:37:42.260 --> 00:37:45.740
-It is really nice to read until you try to understand it,
-
-00:37:45.740 --> 00:37:48.580
+00:37:45.610 --> 00:37:47.540
 until you try to understand what it actually does.
 
-00:37:48.580 --> 00:37:49.420
-And it's crazy.
+00:37:48.390 --> 00:37:48.780
+And it's great.
 
-00:37:49.420 --> 00:37:51.780
->>I know, when I was reading this today, I was like,
+00:37:48.980 --> 00:37:49.280
+I know.
 
-00:37:51.780 --> 00:37:52.620
-you know, I'm pretty glad
+00:37:49.610 --> 00:37:51.760
+When I was reading this today, I was like, you know,
 
-00:37:52.620 --> 00:37:54.260
-that I'm not writing Ruby right now.
+00:37:51.820 --> 00:37:53.500
+I'm pretty glad that I'm not writing Ruby right now.
 
-00:37:54.260 --> 00:37:56.900
-Okay, all right, let's talk about Python though.
+00:37:54.120 --> 00:37:54.360
+Okay.
 
-00:37:56.900 --> 00:38:00.500
-You've got a project called CAD1
+00:37:55.060 --> 00:37:55.200
+All right.
 
-00:38:00.500 --> 00:38:03.780
-that takes the Stripe philosophy
+00:37:55.280 --> 00:37:56.380
+Let's talk about Python though.
 
-00:38:03.780 --> 00:38:06.460
+00:37:58.020 --> 00:38:03.279
+You've got a project called Cadwin that takes the Stripe philosophy
+
+00:38:04.099 --> 00:38:05.980
 and applies it to versioning
 
-00:38:06.460 --> 00:38:11.460
-for the most popular API framework for Python, FastAPI.
+00:38:06.480 --> 00:38:10.780
+for the most popular API framework for Python,
 
-00:38:11.660 --> 00:38:12.500
->>FastAPI.
+00:38:11.480 --> 00:38:11.960
+FastAPI.
 
-00:38:12.500 --> 00:38:14.480
+00:38:13.400 --> 00:38:13.960
 Tell us about it.
 
-00:38:14.480 --> 00:38:18.300
->>Yeah, so here's the thing.
+00:38:14.120 --> 00:38:14.380
+Yeah.
 
-00:38:18.300 --> 00:38:20.000
+00:38:16.420 --> 00:38:17.760
+So here's the thing.
+
+00:38:18.080 --> 00:38:19.500
 When I started developing it,
 
-00:38:20.000 --> 00:38:22.620
+00:38:19.760 --> 00:38:21.820
 we were using versioning by suffering.
 
-00:38:22.620 --> 00:38:25.140
-So we were using directory copies,
+00:38:22.380 --> 00:38:23.960
+So we were using directory copies.
 
-00:38:25.140 --> 00:38:28.820
-and none of us really enjoyed it,
+00:38:26.240 --> 00:38:28.600
+And none of us really enjoyed it.
 
-00:38:28.820 --> 00:38:32.180
-so there needed to be a solution.
+00:38:29.440 --> 00:38:30.840
+So there needed to be a solution.
 
-00:38:32.180 --> 00:38:34.980
+00:38:32.020 --> 00:38:34.540
 And I went to Stripe, I went to other companies,
 
-00:38:34.980 --> 00:38:35.880
-I spoke with them,
+00:38:34.750 --> 00:38:37.460
+I spoke with them, I tried to understand
 
-00:38:35.880 --> 00:38:40.020
-I tried to understand the nitty-gritty details.
+00:38:38.000 --> 00:38:39.220
+the nitty-gritty details.
 
-00:38:40.020 --> 00:38:44.660
+00:38:39.840 --> 00:38:43.620
 As I mentioned, Brander Leach extended us huge help
 
-00:38:44.660 --> 00:38:47.820
+00:38:44.580 --> 00:38:47.360
 when he, I guess, described how he thinks
 
-00:38:47.820 --> 00:38:50.220
+00:38:47.720 --> 00:38:48.880
 about API versioning right now.
 
-00:38:50.220 --> 00:38:51.760
+00:38:49.900 --> 00:38:51.400
 And I built it.
 
-00:38:51.760 --> 00:38:54.160
+00:38:51.530 --> 00:38:53.740
 The first version was just like Stripe.
 
-00:38:54.160 --> 00:38:58.580
+00:38:53.930 --> 00:38:57.360
 It was exactly what Stripe did, you know, to the letter.
 
-00:38:58.580 --> 00:39:00.540
-But then at some point,
+00:38:58.400 --> 00:39:01.980
+But then at some point, we started applying it
 
-00:39:00.540 --> 00:39:02.780
-we started applying it at Monite,
-
-00:39:02.780 --> 00:39:07.140
+00:39:02.000 --> 00:39:06.020
 and I realized, wow, Stripe had a lot of legacy.
 
-00:39:07.140 --> 00:39:08.780
+00:39:07.080 --> 00:39:08.500
 So they didn't implement some things.
 
-00:39:08.780 --> 00:39:10.380
+00:39:08.510 --> 00:39:09.700
 For example, in Stripe's article,
 
-00:39:10.380 --> 00:39:15.380
-you can see that they're not using any schema validation,
+00:39:10.130 --> 00:39:15.240
+you can see that they're not using any schema validation
 
-00:39:15.380 --> 00:39:18.600
+00:39:15.640 --> 00:39:17.980
 or at least, how do I describe it?
 
-00:39:18.600 --> 00:39:23.600
+00:39:18.280 --> 00:39:22.860
 Their business logic just receives a hash map, a dictionary.
 
-00:39:23.600 --> 00:39:28.380
+00:39:24.920 --> 00:39:27.160
 It's not statically typed.
 
-00:39:28.380 --> 00:39:30.100
-But FastAPI uses Pydantic,
+00:39:27.840 --> 00:39:29.680
+But Fest API uses Pydantic,
 
-00:39:30.100 --> 00:39:32.140
+00:39:30.040 --> 00:39:31.860
 so it's a bit more complex than that.
 
-00:39:32.140 --> 00:39:34.580
-Okay, we added support for that.
+00:39:31.980 --> 00:39:34.280
+okay, we added support for that.
 
-00:39:34.580 --> 00:39:35.920
+00:39:34.420 --> 00:39:35.540
 It's a bit more complex.
 
-00:39:35.920 --> 00:39:38.340
+00:39:35.780 --> 00:39:37.560
 It's a bit more, I guess, sophisticated now.
 
-00:39:38.340 --> 00:39:40.700
+00:39:38.160 --> 00:39:40.080
 But then I also realized that Stripe,
 
-00:39:40.700 --> 00:39:43.140
+00:39:40.680 --> 00:39:42.380
 they don't migrate requests.
 
-00:39:43.140 --> 00:39:44.820
-They only migrate responses.
+00:39:42.880 --> 00:39:43.980
+They only migrate responses
 
-00:39:44.820 --> 00:39:47.040
-Because a migration of a request
+00:39:44.700 --> 00:39:46.260
+because a migration of a request
 
-00:39:47.040 --> 00:39:50.380
-is usually not just a breaking change,
+00:39:46.700 --> 00:39:49.920
+is usually not just a breaking change.
 
-00:39:50.380 --> 00:39:52.520
-it's a change in a business logic.
+00:39:50.300 --> 00:39:51.460
+It's a change in a business logic
 
-00:39:52.520 --> 00:39:53.700
-Because when you return a response,
+00:39:52.300 --> 00:39:53.340
+because when you return a response,
 
-00:39:53.700 --> 00:39:55.020
-you can just return the whole thing,
+00:39:53.440 --> 00:39:54.700
+you can just return the whole thing
 
-00:39:55.020 --> 00:39:57.340
-and then, you know, just play around with it.
+00:39:54.900 --> 00:39:56.880
+and then just play around with it.
 
-00:39:57.340 --> 00:40:00.260
+00:39:57.120 --> 00:39:59.580
 But when you are changing the request,
 
-00:40:00.260 --> 00:40:02.360
+00:40:00.080 --> 00:40:01.920
 your business logic also needs to change.
 
-00:40:02.360 --> 00:40:05.020
-And that's what they did.
+00:40:03.020 --> 00:40:07.900
+and that's what they did you know they have extra ifs and extra you know levels of business
 
-00:40:05.020 --> 00:40:07.440
-You know, they have extra ifs and extra, you know,
+00:40:08.080 --> 00:40:14.000
+logic to handle that well apparently it's not necessary apparently requests are also migratable
 
-00:40:07.440 --> 00:40:09.900
-levels of business logic to handle that.
+00:40:14.680 --> 00:40:22.480
+uh and that's the second uh feature that greatly distinguishes us from uh stripe this thing
 
-00:40:09.900 --> 00:40:11.620
-Well, apparently, it's not necessary.
+00:40:22.920 --> 00:40:29.200
+can statically well by statically i mean uh it code generates your schema so that you can see
 
-00:40:11.620 --> 00:40:14.580
-Apparently, requests are also migratable.
+00:40:29.220 --> 00:40:34.320
+everything before you run your app.
 
-00:40:14.580 --> 00:40:18.420
-And that's the second feature
-
-00:40:18.420 --> 00:40:22.100
-that greatly distinguishes us from Stripe.
-
-00:40:22.100 --> 00:40:25.940
-This thing can statically, well, by statically,
-
-00:40:25.940 --> 00:40:28.460
-I mean, it co-generates your schema
-
-00:40:28.460 --> 00:40:30.100
-so that you can see everything
-
-00:40:30.100 --> 00:40:35.540
-before you run your app.
-
-00:40:35.540 --> 00:40:38.960
+00:40:35.340 --> 00:40:38.580
 This thing can migrate both requests and responses,
 
-00:40:38.960 --> 00:40:41.000
+00:40:38.840 --> 00:40:40.560
 and it supports everything that Stripe does.
 
-00:40:41.000 --> 00:40:44.860
+00:40:40.740 --> 00:40:44.040
 And we have pretty big plans for extending it.
 
-00:40:44.860 --> 00:40:47.680
-And as an added bonus,
+00:40:44.760 --> 00:40:50.320
+And as an added bonus, we also have pretty big documentation.
 
-00:40:47.680 --> 00:40:50.920
-we also have a pretty big documentation.
-
-00:40:50.920 --> 00:40:54.360
+00:40:50.800 --> 00:40:53.240
 Well, not compared to Django or FastAPI.
 
-00:40:54.360 --> 00:40:56.760
-Django is, you know, older than me,
+00:40:54.100 --> 00:41:03.500
+Django is older than me and FastAPI is pretty amazing for, how do I describe it?
 
-00:40:56.760 --> 00:41:01.760
-and FastAPI is really amazing for,
-
-00:41:01.760 --> 00:41:04.080
-how do I describe it?
-
-00:41:05.120 --> 00:41:07.520
+00:41:04.960 --> 00:41:06.760
 It's pretty amazing in terms of its documentation.
 
-00:41:07.520 --> 00:41:10.680
+00:41:07.540 --> 00:41:10.060
 Sebastian Ramirez is an expert at making tutorials.
 
-00:41:10.680 --> 00:41:13.960
-And if you take a look at our reference documentation
+00:41:10.500 --> 00:41:17.680
+And if you take a look at our reference documentation to the left and our, how do I describe it?
 
-00:41:13.960 --> 00:41:17.880
-to the left and our, how do I describe it?
+00:41:17.820 --> 00:41:26.360
+recipes documentation, they basically describe to you every single use case that you could have
 
-00:41:17.880 --> 00:41:19.780
-Recipes documentation,
+00:41:26.620 --> 00:41:32.140
+with API versioning. Every single, you know, every single problem that you could solve with it.
 
-00:41:19.780 --> 00:41:24.780
-they basically describe to you every single use case
+00:41:32.630 --> 00:41:40.720
+And then we try to apply our approach to it. So it's not just the framework. It's all the ways
 
-00:41:24.780 --> 00:41:28.320
-that you could have with API versioning.
+00:41:40.720 --> 00:41:47.480
+you could use the framework. Someday, hopefully, we will also extend it beyond FastAPI and Pydantic.
 
-00:41:28.320 --> 00:41:30.240
-Every single, you know,
+00:41:48.020 --> 00:41:51.720
+and we also have sections for theory
 
-00:41:30.240 --> 00:41:32.840
-every single problem that you could solve with it.
+00:41:51.950 --> 00:41:54.360
+for people who are not Pythonistas
 
-00:41:32.840 --> 00:41:37.840
-And then we try to apply our approach to it.
+00:41:54.490 --> 00:41:56.940
+who just want to learn how to do API versioning
 
-00:41:37.840 --> 00:41:40.140
-So it's not just the framework.
+00:41:56.940 --> 00:41:59.080
+but fail to find any resources.
 
-00:41:40.140 --> 00:41:43.000
-It's all the ways you could use the framework.
+00:41:59.750 --> 00:42:01.720
+So Cadwyn also becomes this, I guess,
 
-00:41:43.000 --> 00:41:45.520
-Someday, hopefully we will also extend it
-
-00:41:45.520 --> 00:41:48.520
-beyond FastAPI and Pydantic.
-
-00:41:48.520 --> 00:41:52.120
-And we also have sections for theory,
-
-00:41:52.120 --> 00:41:54.720
-for people who are not Pythonistas,
-
-00:41:54.720 --> 00:41:57.140
-who just wanna learn how to do API versioning,
-
-00:41:57.140 --> 00:41:59.960
-but failed to find any resources.
-
-00:41:59.960 --> 00:42:01.920
-So Kadwin also becomes this, I guess,
-
-00:42:01.920 --> 00:42:05.480
+00:42:01.980 --> 00:42:05.040
 hub for API versioning resources
 
-00:42:05.480 --> 00:42:07.960
+00:42:05.360 --> 00:42:06.840
 and anything related to them.
 
-00:42:07.960 --> 00:42:08.800
-- Sure.
+00:42:07.400 --> 00:42:07.920
+Sure.
 
-00:42:08.800 --> 00:42:10.800
+00:42:08.320 --> 00:42:10.560
 It seems like it would probably be pretty easy
 
-00:42:10.800 --> 00:42:13.560
+00:42:10.590 --> 00:42:12.900
 to adapt to anything that uses Pydantic
 
-00:42:13.560 --> 00:42:14.880
+00:42:13.380 --> 00:42:14.360
 for its data exchange.
 
-00:42:14.880 --> 00:42:16.080
-- Oh, yes.
+00:42:14.590 --> 00:42:15.040
+Oh, yes.
 
-00:42:16.080 --> 00:42:16.920
-- Yeah.
+00:42:15.920 --> 00:42:16.040
+Yeah.
 
-00:42:16.920 --> 00:42:18.840
+00:42:16.360 --> 00:42:17.740
 So like, for example, in Flask,
 
-00:42:18.840 --> 00:42:22.140
+00:42:18.780 --> 00:42:21.840
 Flask doesn't do the model binding type stuff
 
-00:42:22.140 --> 00:42:23.000
-on the endpoint,
+00:42:22.040 --> 00:42:25.000
+on the endpoint, but you can just take the input data
 
-00:42:23.000 --> 00:42:25.240
-but you can just take the input data
+00:42:25.120 --> 00:42:27.300
+and just star start into a Pydantic model.
 
-00:42:25.240 --> 00:42:28.440
-and just star star it into a Pydantic model.
-
-00:42:28.440 --> 00:42:31.100
+00:42:28.340 --> 00:42:30.900
 And then, you know, now you're in Pydantic world, right?
 
-00:42:31.100 --> 00:42:34.000
+00:42:31.020 --> 00:42:33.540
 So it sounds like maybe something along those lines
 
-00:42:34.000 --> 00:42:35.600
+00:42:34.000 --> 00:42:35.140
 might be a good bridge.
 
-00:42:35.600 --> 00:42:38.520
-- Oh, yes, it can be.
+00:42:37.040 --> 00:42:38.040
+- Oh yes, it can be.
 
-00:42:38.520 --> 00:42:41.200
-Though there's a lot of magic involved
+00:42:38.480 --> 00:42:42.400
+So there's a lot of magic involved in trying to interface
 
-00:42:41.200 --> 00:42:43.840
-in trying to interface with FastAPI
+00:42:42.420 --> 00:42:46.280
+with FastAPI simply due to its internal complexity.
 
-00:42:43.840 --> 00:42:47.560
-simply due to its internal complexity.
-
-00:42:47.560 --> 00:42:48.400
+00:42:47.160 --> 00:42:47.640
 - Sure.
 
-00:42:48.400 --> 00:42:49.220
+00:42:47.860 --> 00:42:48.100
 - But yeah.
 
-00:42:49.220 --> 00:42:50.080
+00:42:48.320 --> 00:42:49.720
 - All right, so some good questions,
 
-00:42:50.080 --> 00:42:53.360
-but I think they'll be somewhat answered
+00:42:49.960 --> 00:42:52.340
+but I think they'll be somewhat answered.
 
-00:42:53.360 --> 00:42:57.520
-if we just maybe talk us through your tutorial here.
+00:42:53.200 --> 00:42:57.240
+If we just maybe talk us through your tutorial here,
 
-00:42:57.520 --> 00:42:59.760
-Like, what is it?
+00:42:57.440 --> 00:43:00.420
+like what is it, how do we use Cadwyn
 
-00:42:59.760 --> 00:43:02.220
-How do we use Kadwin and how does it manifest?
+00:43:00.440 --> 00:43:01.880
+and how does it manifest?
 
-00:43:02.220 --> 00:43:03.380
-How does it work at runtime?
+00:43:02.000 --> 00:43:03.740
+How does it work at runtime, stuff like that?
 
-00:43:03.380 --> 00:43:04.220
-Stuff like that.
+00:43:06.640 --> 00:43:08.940
+- So first before using Cadwyn, you know,
 
-00:43:04.220 --> 00:43:08.940
-- So first, before using Kadwin,
+00:43:09.060 --> 00:43:10.080
+you write your regular app,
 
-00:43:08.940 --> 00:43:10.500
-you know, you write your regular app,
-
-00:43:10.500 --> 00:43:13.860
+00:43:10.400 --> 00:43:12.380
 but then you just structure it a little bit differently.
 
-00:43:13.860 --> 00:43:15.980
+00:43:13.700 --> 00:43:15.300
 When you are versioning,
 
-00:43:15.980 --> 00:43:20.980
+00:43:15.860 --> 00:43:20.320
 you need a directory that you will consider versioned.
 
-00:43:20.980 --> 00:43:24.940
-So, and this directory will be duplicated for every version.
+00:43:21.020 --> 00:43:24.420
+And this directory will be duplicated for every version.
 
-00:43:24.940 --> 00:43:28.900
+00:43:24.800 --> 00:43:27.920
 No worries, you're not going to support the version code.
 
-00:43:28.900 --> 00:43:31.400
+00:43:28.760 --> 00:43:30.840
 It's going to be code generation all the way through.
 
-00:43:31.400 --> 00:43:33.640
+00:43:31.340 --> 00:43:33.260
 And you can use it to generate connectors
 
-00:43:33.640 --> 00:43:34.720
+00:43:33.430 --> 00:43:34.260
 for your application,
 
-00:43:34.720 --> 00:43:38.240
+00:43:34.620 --> 00:43:37.980
 or you could use it to generate schemas or enums,
 
-00:43:38.240 --> 00:43:40.240
-you know, the different version of them
+00:43:38.140 --> 00:43:39.680
+you know, the different version of them.
 
-00:43:40.240 --> 00:43:42.760
+00:43:40.580 --> 00:43:42.180
 and anything else related to them.
 
-00:43:42.760 --> 00:43:44.240
+00:43:42.530 --> 00:43:43.860
 So you pick such a directory,
 
-00:43:44.240 --> 00:43:47.560
+00:43:44.030 --> 00:43:46.940
 you call it latest as for your latest version.
 
-00:43:47.560 --> 00:43:51.440
+00:43:47.540 --> 00:43:51.120
 Then you define a single version bundle.
 
-00:43:51.440 --> 00:43:54.580
+00:43:51.270 --> 00:43:54.060
 If you go a little bit down,
 
-00:43:54.580 --> 00:43:57.940
+00:43:55.420 --> 00:43:57.680
 you will see somewhere in here after defining versions.
 
-00:43:57.940 --> 00:44:01.080
+00:43:57.880 --> 00:44:00.380
 Yes, we define our version bundle with a single version,
 
-00:44:01.080 --> 00:44:03.720
+00:44:00.910 --> 00:44:03.020
 whichever version it is for you,
 
-00:44:03.720 --> 00:44:05.700
+00:44:03.600 --> 00:44:05.300
 whichever date it is for you.
 
-00:44:05.700 --> 00:44:09.920
+00:44:06.600 --> 00:44:09.480
 And then you run code generation.
 
-00:44:09.920 --> 00:44:13.980
+00:44:09.730 --> 00:44:13.580
 It generates basically empty, how do I describe it?
 
-00:44:13.980 --> 00:44:17.160
-It generates a directory
+00:44:13.790 --> 00:44:18.800
+It generates a directory that simply imports from your latest.
 
-00:44:17.160 --> 00:44:19.640
-that simply imports from your latest,
+00:44:19.520 --> 00:44:22.580
+And that's where you can start doing the magic.
 
-00:44:19.640 --> 00:44:23.880
-and that's where you can start doing the magic.
-
-00:44:23.880 --> 00:44:27.620
+00:44:23.800 --> 00:44:27.200
 Now you just use our versioned app.
 
-00:44:27.620 --> 00:44:31.700
-If you take a look, we have a versioned API router,
+00:44:28.180 --> 00:44:31.000
+If you take a look, we have a versioned API router.
 
-00:44:31.700 --> 00:44:34.300
-then you use the Katherine versioned app,
+00:44:31.490 --> 00:44:33.680
+Then you use the CatVan version app.
 
-00:44:34.300 --> 00:44:37.300
-you generate versioned,
+00:44:34.320 --> 00:44:39.300
+you generate versioned routers,
 
-00:44:37.300 --> 00:44:40.540
-versioned, versioned, versioned.
-
-00:44:40.540 --> 00:44:43.180
-You generate versioned routers,
-
-00:44:43.180 --> 00:44:45.380
+00:44:43.860 --> 00:44:45.080
 and then it's going to generate
 
-00:44:45.380 --> 00:44:47.780
-a really nice swagger for them.
+00:44:45.240 --> 00:44:47.400
+a really nice Swagger for them.
 
-00:44:47.780 --> 00:44:51.780
+00:44:47.610 --> 00:44:50.980
 If you open it somewhere, I think, yep, this one.
 
-00:44:51.780 --> 00:44:54.560
+00:44:51.660 --> 00:44:54.160
 So now your dashboard, the one on docs,
 
-00:44:54.560 --> 00:44:56.320
-is not the swagger page,
+00:44:54.480 --> 00:44:55.980
+is not the Swagger page,
 
-00:44:56.320 --> 00:44:59.120
+00:44:56.300 --> 00:44:58.020
 but the dashboard of all your versions.
 
-00:44:59.120 --> 00:45:00.040
+00:44:58.930 --> 00:44:59.400
 And that's it.
 
-00:45:00.040 --> 00:45:04.640
+00:44:59.900 --> 00:45:04.220
 After that, you can simply repeat the steps above.
 
-00:45:04.640 --> 00:45:09.640
-So you write a migration, write that converter
+00:45:04.520 --> 00:45:11.420
+So you write a migration, write that converter that describes the difference between the versions.
 
-00:45:09.640 --> 00:45:12.960
-that describes the difference between the versions.
-
-00:45:12.960 --> 00:45:15.100
+00:45:12.700 --> 00:45:14.440
 We have it somewhere there.
 
-00:45:15.100 --> 00:45:17.240
-Let's see, yep.
+00:45:15.520 --> 00:45:16.100
+Let's see.
 
-00:45:17.240 --> 00:45:19.400
-For example, if we had an address as a string
+00:45:16.150 --> 00:45:16.280
+Yep.
 
-00:45:19.400 --> 00:45:21.600
-and we want to change it to a list,
+00:45:17.020 --> 00:45:23.660
+For example, if we had an address as a string and we want to change it to a list, we say, okay, schema, base user.
 
-00:45:21.600 --> 00:45:24.240
-we say, okay, schema, base user.
+00:45:23.720 --> 00:45:28.560
+So for people listening, you have a user object, which is a Pydantic model.
 
-00:45:24.240 --> 00:45:27.680
-- So for people listening, you have a user object,
+00:45:28.660 --> 00:45:36.660
+The user object in version, the initial version, just had a field called address, which was a string.
 
-00:45:27.680 --> 00:45:29.100
-which is a Pydantic model.
-
-00:45:29.100 --> 00:45:34.100
-The user object in the initial version
-
-00:45:34.100 --> 00:45:37.280
-just had a field called address, which was a string.
-
-00:45:37.280 --> 00:45:38.120
+00:45:37.090 --> 00:45:37.860
 But you said, you know what?
 
-00:45:38.120 --> 00:45:40.800
-People might have multiple addresses that they live at,
+00:45:37.980 --> 00:45:40.560
+People might have multiple addresses that they live at.
 
-00:45:40.800 --> 00:45:44.280
-so let's make it a list of strings
+00:45:41.130 --> 00:45:45.820
+So let's make it a list of strings and make it addresses, right?
 
-00:45:44.280 --> 00:45:46.120
-and make it address as, right?
+00:45:45.980 --> 00:45:47.160
+Which seems like a minor change.
 
-00:45:46.120 --> 00:45:47.380
-Which seems like a minor change,
+00:45:47.210 --> 00:45:53.080
+But clearly, that's going to be a major problem for the things that assume there's an address and it's no longer there.
 
-00:45:47.380 --> 00:45:50.240
-but clearly that's going to be a major problem
+00:45:53.700 --> 00:46:01.620
+Right, so you create this version change derived class that has a upgrade downgrade basically feature, right?
 
-00:45:50.240 --> 00:45:52.280
-for the things that assume there's an address
+00:46:02.960 --> 00:46:03.080
+Yep.
 
-00:45:52.280 --> 00:45:54.080
-and it's no longer there, right?
+00:46:03.550 --> 00:46:16.460
+And so you just describe, you simply describe how to migrate your, how do I, you simply describe how do you migrate your schemas?
 
-00:45:54.080 --> 00:45:57.740
-So you create this version change derived class
+00:46:16.710 --> 00:46:20.400
+How do you change your schema classes, your Pydantic models?
 
-00:45:57.740 --> 00:46:02.060
-that has a upgrade, downgrade basically feature, right?
+00:46:21.220 --> 00:46:26.900
+and then you describe how you convert your request
 
-00:46:02.060 --> 00:46:05.280
-- Yep, and so you just describe,
+00:46:27.120 --> 00:46:27.680
+and response.
 
-00:46:05.280 --> 00:46:11.440
-you simply describe how to migrate your,
+00:46:27.860 --> 00:46:28.300
+And that's it.
 
-00:46:11.440 --> 00:46:14.440
-how do I, you simply describe
-
-00:46:14.440 --> 00:46:16.980
-how do you migrate your schemas?
-
-00:46:16.980 --> 00:46:18.940
-How do you change your schema classes,
-
-00:46:18.940 --> 00:46:21.360
-your Pydantic models?
-
-00:46:21.360 --> 00:46:26.360
-And then you describe how you convert
-
-00:46:26.360 --> 00:46:29.240
-your requests and response, and that's it.
-
-00:46:29.240 --> 00:46:32.520
+00:46:29.140 --> 00:46:31.820
 This class is the only thing you write for the new versions.
 
-00:46:32.520 --> 00:46:36.080
-Then you run code generation, run your app, that's it.
+00:46:32.480 --> 00:46:35.320
+Then you run code generation, run your app.
 
-00:46:36.080 --> 00:46:36.980
+00:46:35.500 --> 00:46:35.720
+That's it.
+
+00:46:36.080 --> 00:46:36.480
 Everything works.
 
-00:46:36.980 --> 00:46:40.560
-- Yeah, that's super cool.
+00:46:38.720 --> 00:46:39.620
+Yeah, that's super cool.
 
-00:46:40.560 --> 00:46:43.240
-So couple of questions that were,
+00:46:40.660 --> 00:46:43.380
+So a couple of questions or comments
 
-00:46:43.240 --> 00:46:45.800
-or comments that are interesting here is,
+00:46:43.460 --> 00:46:46.320
+that are interesting here is Emil asks,
 
-00:46:45.800 --> 00:46:49.740
-Emil asks, is it like database migrations?
+00:46:46.620 --> 00:46:48.660
+is it like database migrations?
 
-00:46:49.740 --> 00:46:51.780
-And my friend points out, - It's really similar.
+00:46:50.140 --> 00:46:53.740
+And it's really similar to like Alembic, right?
 
-00:46:51.780 --> 00:46:54.540
-- It's really, really similar to like Alembic, right?
-
-00:46:54.540 --> 00:46:56.580
+00:46:54.380 --> 00:46:56.260
 You say, generate me the changes.
 
-00:46:56.580 --> 00:46:58.640
-Alembic is a little different in that it looks
+00:46:56.520 --> 00:47:00.840
+Alembic is a little different in that it looks at the two different database schemas and tries
 
-00:46:58.640 --> 00:47:00.580
-at the two different database schemas
+00:47:01.040 --> 00:47:05.660
+to actually write the migration code to do the DDL changes.
 
-00:47:00.580 --> 00:47:04.420
-and tries to actually write the migration code
+00:47:05.940 --> 00:47:10.760
+But in principle, it's like every time there's a version change, there's some bit of code
 
-00:47:04.420 --> 00:47:06.040
-to do the DDL changes.
-
-00:47:06.040 --> 00:47:08.420
-But in principle, it's like every time
-
-00:47:08.420 --> 00:47:11.000
-there's a version change, there's some bit of code
-
-00:47:11.000 --> 00:47:12.780
+00:47:10.760 --> 00:47:12.160
 that is generated that will run.
 
-00:47:12.780 --> 00:47:15.060
-And then the other one is about,
+00:47:12.680 --> 00:47:16.060
+And then the other one is about, you know, how does this affect performance?
 
-00:47:15.060 --> 00:47:16.540
-how does this affect performance?
-
-00:47:16.540 --> 00:47:19.260
+00:47:16.400 --> 00:47:18.940
 And I guess the only real performance change
 
-00:47:19.260 --> 00:47:22.060
+00:47:19.120 --> 00:47:21.700
 is like there'll be a couple of steps to the serialization,
 
-00:47:22.060 --> 00:47:23.100
+00:47:21.840 --> 00:47:22.740
 but they're often small.
 
-00:47:23.100 --> 00:47:28.100
+00:47:22.940 --> 00:47:28.800
 Like in this case, the new version takes the old data
 
-00:47:28.100 --> 00:47:30.580
+00:47:28.940 --> 00:47:30.240
 and says, well, we're just gonna have a list
 
-00:47:30.580 --> 00:47:33.540
-with one address, so we're gonna stick the one address
+00:47:30.500 --> 00:47:31.080
+with one address.
 
-00:47:33.540 --> 00:47:36.900
-into the list of addresses, and vice versa.
+00:47:31.400 --> 00:47:32.540
+So we're gonna stick the one address
 
-00:47:36.900 --> 00:47:39.280
-You just set the address field to be the first thing
+00:47:33.460 --> 00:47:35.760
+into the list of addresses and vice versa.
 
-00:47:39.280 --> 00:47:40.120
-in the address list.
+00:47:36.680 --> 00:47:37.860
+You just set the address field
 
-00:47:40.120 --> 00:47:42.860
+00:47:37.920 --> 00:47:39.800
+to be the first thing in the address list.
+
+00:47:39.820 --> 00:47:42.360
 And like, that's a really low amount of code overhead
 
-00:47:44.080 --> 00:47:45.280
+00:47:43.880 --> 00:47:44.700
 to go back.
 
-00:47:45.280 --> 00:47:47.240
-Hopefully people are moving towards the new versions
+00:47:44.900 --> 00:47:49.620
+Hopefully people are moving towards the new versions eventually, you know, that kind of thing, right?
 
-00:47:47.240 --> 00:47:49.920
-eventually, that kind of thing.
+00:47:49.800 --> 00:47:54.700
+But if they don't, then this code just runs to transform the dictionaries that goes back to it, right?
 
-00:47:49.920 --> 00:47:52.360
-But if they don't, then this code just runs
+00:47:56.020 --> 00:48:02.240
+Yeah, but the thing is, imagine you have, like Stripe, I don't know, 13 years worth of versions.
 
-00:47:52.360 --> 00:47:54.960
-to transform the dictionaries that goes back to it.
+00:48:03.720 --> 00:48:10.400
+Now, if you are a successful company, and if you are alive, you are probably a successful company after 13 years, you know.
 
-00:47:54.960 --> 00:48:00.280
-- Yeah, but thing is, imagine you have like Stripe,
+00:48:11.020 --> 00:48:12.240
+if you are a successful company,
 
-00:48:00.280 --> 00:48:02.800
-I don't know, 13 years worth of versions.
+00:48:12.330 --> 00:48:16.100
+that most of your clients will probably be newer ones.
 
-00:48:02.800 --> 00:48:06.240
-Now, if you are a successful company,
-
-00:48:06.240 --> 00:48:09.440
-and if you are alive, you are probably a successful company
-
-00:48:09.440 --> 00:48:10.480
-after 13 years.
-
-00:48:10.480 --> 00:48:14.040
-If you're a successful company, that most of your clients
-
-00:48:14.040 --> 00:48:16.640
-will probably be newer ones.
-
-00:48:16.640 --> 00:48:19.840
+00:48:17.520 --> 00:48:19.340
 You know, the longer you exist,
 
-00:48:19.840 --> 00:48:21.720
-the more clients you have, and the more clients you have,
+00:48:19.630 --> 00:48:20.580
+the more clients you have,
 
-00:48:21.720 --> 00:48:23.880
+00:48:20.580 --> 00:48:21.500
+and the more clients you have,
+
+00:48:21.500 --> 00:48:23.280
 the more, you know, newer clients you have,
 
-00:48:23.880 --> 00:48:27.200
+00:48:24.340 --> 00:48:26.260
 the newer API versions they will use.
 
-00:48:27.200 --> 00:48:29.560
-And this means that most of your clients-
+00:48:27.240 --> 00:48:28.340
+And this means that most of your clients...
 
-00:48:29.560 --> 00:48:33.640
-- They might decide to, they might rewrite their own app
+00:48:28.340 --> 00:48:31.140
+Even if they're old clients, they might decide to...
 
-00:48:33.640 --> 00:48:34.980
-and get a new version, right?
+00:48:31.740 --> 00:48:34.660
+They might rewrite their own app and get a new version, right?
 
-00:48:34.980 --> 00:48:38.400
-Like they could upgrade their code,
+00:48:34.840 --> 00:48:38.140
+Like, they could upgrade their code,
 
-00:48:38.400 --> 00:48:40.280
-'cause their code's gonna be 13 years old
+00:48:38.210 --> 00:48:40.080
+because their code's going to be 13 years old
 
-00:48:40.280 --> 00:48:41.560
+00:48:40.100 --> 00:48:41.320
 or 12 years old at this point.
 
-00:48:41.560 --> 00:48:43.480
+00:48:41.460 --> 00:48:42.700
 They're like, they need to change too.
 
-00:48:44.480 --> 00:48:49.480
-- And so at some point, yes, your old client might,
+00:48:44.720 --> 00:48:51.400
+And so at some point, yes, your old client might, you know,
 
-00:48:49.480 --> 00:48:53.520
-you know, from the very first version might request something
+00:48:51.750 --> 00:48:53.580
+from the very first version might request something
 
-00:48:53.520 --> 00:48:56.000
-and then we'll go through all converters.
+00:48:53.790 --> 00:48:55.920
+and then will go through all converters.
 
-00:48:56.000 --> 00:48:58.360
+00:48:56.170 --> 00:48:58.460
 Well, not all, all converters that are related
 
-00:48:58.360 --> 00:49:00.320
+00:48:58.620 --> 00:49:00.100
 to the specific request and response.
 
-00:49:00.320 --> 00:49:03.000
+00:49:00.610 --> 00:49:02.960
 And that is probably going to be in the tens,
 
-00:49:03.000 --> 00:49:05.800
+00:49:03.360 --> 00:49:05.740
 not even in the hundreds, even after 13 years.
 
-00:49:05.800 --> 00:49:08.920
+00:49:07.140 --> 00:49:09.120
 But your clients from the latest versions
 
-00:49:08.920 --> 00:49:12.320
+00:49:09.140 --> 00:49:12.420
 or even from the middle versions will not suffer that.
 
-00:49:13.280 --> 00:49:15.360
+00:49:13.380 --> 00:49:15.140
 So the majority of your clients
 
-00:49:15.360 --> 00:49:18.760
+00:49:15.480 --> 00:49:18.500
 will actually see almost no performance difference.
 
-00:49:18.760 --> 00:49:20.280
+00:49:18.880 --> 00:49:20.040
 And even your old clients,
 
-00:49:20.280 --> 00:49:24.360
+00:49:20.500 --> 00:49:23.420
 even your clients for 13 years old will probably,
 
-00:49:24.360 --> 00:49:26.000
+00:49:24.400 --> 00:49:25.860
 even if they do see a performance difference,
 
-00:49:26.000 --> 00:49:28.520
+00:49:25.960 --> 00:49:28.300
 it's not going to be multiple orders.
 
-00:49:28.520 --> 00:49:30.560
-It's not going to be 2X, 3X,
+00:49:28.620 --> 00:49:30.540
+It's not going to be 2X, 3X.
 
-00:49:30.560 --> 00:49:32.600
-it's probably going to be maybe 20%,
+00:49:30.540 --> 00:49:32.620
+It's probably going to be maybe 20%,
 
-00:49:32.600 --> 00:49:36.000
+00:49:32.680 --> 00:49:35.480
 maybe even 10%, depending on how slow your app is.
 
-00:49:36.000 --> 00:49:39.240
-And that's considering how many years have passed
+00:49:36.120 --> 00:49:40.860
+And that's considering how many years have passed is crazy fast.
 
-00:49:39.240 --> 00:49:41.640
-is crazy fast.
+00:49:41.560 --> 00:49:41.800
+Yeah.
 
-00:49:41.640 --> 00:49:43.320
-- Yeah, yeah, absolutely.
+00:49:42.400 --> 00:49:42.940
+Yeah, absolutely.
 
-00:49:43.320 --> 00:49:44.720
+00:49:43.360 --> 00:49:43.880
 That's very cool.
 
-00:49:44.720 --> 00:49:47.280
+00:49:44.800 --> 00:49:47.080
 So what about the URL?
 
-00:49:47.280 --> 00:49:48.680
+00:49:47.260 --> 00:49:48.100
 What about the endpoint?
 
-00:49:48.680 --> 00:49:55.800
-Do, how much do consumers of your API
+00:49:52.500 --> 00:50:00.700
+How much do consumers of your API have to actually think about, I'm using this version or that version?
 
-00:49:55.800 --> 00:49:58.080
-have to actually think about,
+00:50:00.800 --> 00:50:03.340
+Is the version passed as a header?
 
-00:49:58.080 --> 00:50:00.840
-I'm using this version or that version?
+00:50:04.140 --> 00:50:04.880
+Is it a query string?
 
-00:50:00.840 --> 00:50:04.240
-Is it passed as a, is the version passed as a header,
+00:50:05.580 --> 00:50:06.200
+part of the URL?
 
-00:50:04.240 --> 00:50:06.560
-it's a query string, part of the URL?
+00:50:07.460 --> 00:50:09.560
+The version is passed as a header
 
-00:50:06.560 --> 00:50:09.880
-- The version is passed as a header.
+00:50:10.780 --> 00:50:11.120
+and
 
-00:50:10.720 --> 00:50:14.760
-And Cadwin on by default requires it to be.
+00:50:12.280 --> 00:50:13.460
+Catwin by default
 
-00:50:14.760 --> 00:50:18.000
-But if you have some developer portal,
+00:50:13.900 --> 00:50:14.580
+requires it to be.
 
-00:50:18.000 --> 00:50:21.640
-if you wanna store your version in some database,
+00:50:15.880 --> 00:50:17.380
+But if you have some developer
 
-00:50:21.640 --> 00:50:25.560
-then even though it's a little more advanced,
+00:50:17.660 --> 00:50:19.420
+portal, if you want to store your
 
-00:50:25.560 --> 00:50:27.880
+00:50:19.620 --> 00:50:20.620
+version in some database,
+
+00:50:21.720 --> 00:50:23.500
+then even though it's a little
+
+00:50:24.200 --> 00:50:24.860
+more advanced,
+
+00:50:25.580 --> 00:50:27.740
 you can write yourself your own middleware
 
-00:50:27.880 --> 00:50:30.880
-that will check if the client already has a version
+00:50:28.000 --> 00:50:29.540
+that will check if the client
 
-00:50:30.880 --> 00:50:35.400
-and then pick that version and put it into the context bar.
+00:50:29.800 --> 00:50:31.560
+already has a version and then pick that
 
-00:50:35.400 --> 00:50:37.040
+00:50:31.720 --> 00:50:32.300
+version and put it
+
+00:50:33.400 --> 00:50:35.520
+into the context var
+
+00:50:35.540 --> 00:50:36.800
 And it's possible.
 
-00:50:37.040 --> 00:50:40.280
+00:50:37.220 --> 00:50:39.860
 So by default, you're going to have,
 
-00:50:40.280 --> 00:50:45.280
-no, no, no, middlewares are the more advanced sections,
+00:50:40.300 --> 00:50:41.660
+no, no, no, middlewares are
 
-00:50:45.280 --> 00:50:47.280
-not in the tutorial.
+00:50:43.040 --> 00:50:46.220
+the more advanced sections, not in the tutorial.
 
-00:50:47.280 --> 00:50:49.520
-- This one has an, this other one
+00:50:46.960 --> 00:50:48.180
+This one has an,
 
-00:50:49.520 --> 00:50:50.520
-we're gonna talk about in a section,
+00:50:48.580 --> 00:50:50.120
+this other one we're going to talk about in section
 
-00:50:50.520 --> 00:50:52.080
+00:50:50.360 --> 00:50:51.480
 has just an example of all,
 
-00:50:52.080 --> 00:50:55.920
-you basically just in fastAPI, when you create the app,
+00:50:51.900 --> 00:50:54.160
+you basically just in FastAPI,
 
-00:50:55.920 --> 00:50:58.280
-like app equals fastAPI,
+00:50:54.220 --> 00:50:55.320
+when you create the app,
 
-00:50:58.280 --> 00:51:02.040
+00:50:55.520 --> 00:50:57.680
+you know, like app equals FastAPI,
+
+00:50:58.120 --> 00:51:01.680
 you just say middleware equals a list of classes
 
-00:51:02.040 --> 00:51:03.320
+00:51:01.860 --> 00:51:02.860
 that implement these behaviors.
 
-00:51:03.320 --> 00:51:04.920
+00:51:03.140 --> 00:51:04.260
 So what you're suggesting is,
 
-00:51:04.920 --> 00:51:06.080
-like you just create a class
+00:51:04.540 --> 00:51:12.480
+Like you just create a class and you pass it in at FastAPI startup and it just goes, is there a version being passed to me?
 
-00:51:06.080 --> 00:51:09.280
-and you pass it in at fastAPI startup.
+00:51:13.100 --> 00:51:17.180
+If not, let's see who the user is based on their API key.
 
-00:51:09.280 --> 00:51:13.200
-And it just goes, is there a version being passed to me?
+00:51:17.360 --> 00:51:22.120
+Pull that from a database and maybe just set that header right there before the request and then let it fly.
 
-00:51:13.200 --> 00:51:17.400
-If not, let's see who the user is based on their API key,
+00:51:22.230 --> 00:51:23.060
+Right. Something like that.
 
-00:51:17.400 --> 00:51:18.360
-pull that from a database
+00:51:24.320 --> 00:51:30.960
+Yep. And then your API will essentially be Stripe like where your client won't need to think about versioning at all.
 
-00:51:18.360 --> 00:51:20.720
-and maybe just set that header right there
+00:51:31.500 --> 00:51:36.280
+But by default, of course, the clients need to always pass it with a header, which might
 
-00:51:20.720 --> 00:51:22.640
-before the request and then let it fly, right?
+00:51:36.640 --> 00:51:41.700
+sound like something really, you know, unnecessary and hard for the clients.
 
-00:51:22.640 --> 00:51:24.400
-Something like that?
+00:51:41.920 --> 00:51:46.260
+But if you imagine that you're writing code, it's exceptionally easy to just put it into
 
-00:51:24.400 --> 00:51:27.520
-- Yep, and then your API will essentially be Stripe-like
+00:51:46.860 --> 00:51:51.820
+your, I don't know, requests or HTTPX client and forget about it, you know?
 
-00:51:27.520 --> 00:51:29.040
-where your client won't need to
+00:51:52.040 --> 00:51:53.400
+Yeah, it is pretty easy.
 
-00:51:29.040 --> 00:51:31.560
-think about versioning at all.
+00:51:53.580 --> 00:51:57.980
+Even if you're consuming APIs in the fashion that we're talking about, you're probably
 
-00:51:31.560 --> 00:51:33.080
-But by default, of course,
+00:51:58.000 --> 00:52:05.680
+already put in an API key or some kind of thing into the header as well, right?
 
-00:51:33.080 --> 00:51:35.800
-the clients need to always pass it with a header,
+00:52:05.860 --> 00:52:08.380
+Like, so you're already messing with the header anyway.
 
-00:51:35.800 --> 00:51:39.160
-which might sound like something really,
+00:52:08.800 --> 00:52:09.900
+Just put another value in there.
 
-00:51:39.160 --> 00:51:42.120
-unnecessary and hard for the clients.
+00:52:09.940 --> 00:52:10.040
+Yep.
 
-00:51:42.120 --> 00:51:44.080
-But if you imagine that you're writing code,
+00:52:11.400 --> 00:52:11.680
+Precisely.
 
-00:51:44.080 --> 00:51:47.640
-it's exceptionally easy to just put it into your,
+00:52:12.880 --> 00:52:13.020
+Yeah.
 
-00:51:47.640 --> 00:51:50.680
-I don't know, requests or HTTPS client
+00:52:13.520 --> 00:52:13.640
+Yeah.
 
-00:51:50.680 --> 00:51:52.240
-and forget about it.
+00:52:13.760 --> 00:52:14.080
+Very cool.
 
-00:51:52.240 --> 00:51:54.320
-- Yeah, it is pretty easy.
+00:52:17.140 --> 00:52:17.320
+All right.
 
-00:51:54.320 --> 00:51:55.960
-If you're consuming APIs
+00:52:17.360 --> 00:52:23.940
+So right now this is a FastAPI thing, but you're considering opening up to other areas,
 
-00:51:55.960 --> 00:51:57.640
-in the fashion that we're talking about,
-
-00:51:57.640 --> 00:52:01.560
-you're probably already putting an API key
-
-00:52:01.560 --> 00:52:06.560
-or some kind of thing into the header as well, right?
-
-00:52:06.560 --> 00:52:08.960
-So you're already messing with the header anyway,
-
-00:52:08.960 --> 00:52:10.040
-just put another value in there.
-
-00:52:10.040 --> 00:52:12.060
-- Yep, precisely.
-
-00:52:12.060 --> 00:52:14.480
-- Yeah, very cool.
-
-00:52:14.480 --> 00:52:20.480
-All right, so right now this is a FastAPI thing,
-
-00:52:20.480 --> 00:52:25.040
-but you're considering opening it up to other areas,
-
-00:52:25.040 --> 00:52:26.800
+00:52:24.900 --> 00:52:26.380
 other platforms, other frameworks?
 
-00:52:28.000 --> 00:52:30.760
-- It has a, what is it called?
+00:52:27.880 --> 00:52:27.960
+Oh, yes.
 
-00:52:30.760 --> 00:52:32.560
+00:52:27.980 --> 00:52:30.040
+It has a, what is it called?
+
+00:52:30.680 --> 00:52:31.580
 Milestone for that,
 
-00:52:32.560 --> 00:52:36.360
+00:52:32.420 --> 00:52:36.000
 which I am planning to extend with tasks, with plans.
 
-00:52:36.360 --> 00:52:39.960
-First, it's like with Pydantic,
+00:52:36.230 --> 00:52:39.060
+First, you know, it's like with Pydantic,
 
-00:52:39.960 --> 00:52:42.120
-at some point it separated the core
+00:52:39.260 --> 00:52:41.840
+you know, at some point it separated the core
 
-00:52:42.120 --> 00:52:44.640
-when it was moving to Pydantic 2,
+00:52:42.020 --> 00:52:44.340
+when it was moving to Pydantic 2.
 
-00:52:44.640 --> 00:52:47.120
-and that's one of the plans for Kadwin.
+00:52:44.600 --> 00:52:46.660
+And that's one of the plans for Cadwin,
 
-00:52:47.120 --> 00:52:50.240
-Separate the core without breaking the public interfaces.
+00:52:46.730 --> 00:52:47.740
+you know, separate the core
 
-00:52:50.240 --> 00:52:55.040
-And then at some point use this core to build more Kadwins,
+00:52:47.850 --> 00:52:49.100
+without breaking the public interfaces.
 
-00:52:55.040 --> 00:52:57.080
-Kadwin Django, Kadwin Flask, whatever.
+00:52:50.120 --> 00:52:53.060
+And then at some point use this core
 
-00:52:57.920 --> 00:53:01.200
-Or it doesn't even have to be a part of Kadwin.
+00:52:53.170 --> 00:52:54.820
+to build more Cadwins, you know,
 
-00:53:01.200 --> 00:53:04.520
-The approach is there, so anyone can use it.
+00:52:54.960 --> 00:52:56.600
+Cadwin Django, Cadwin Flask, whatever.
 
-00:53:04.520 --> 00:53:09.400
-Because 99% of complexity in implementing Kadwin
+00:52:58.060 --> 00:53:00.960
+or it doesn't even have to be a part of Catwin.
 
-00:53:09.400 --> 00:53:13.040
+00:53:01.360 --> 00:53:04.480
+The approach is there so anyone can use it
+
+00:53:04.840 --> 00:53:08.540
+because 99% of complexity in implementing Catwin
+
+00:53:09.339 --> 00:53:12.820
 was actually figuring out these patterns
 
-00:53:13.040 --> 00:53:15.200
+00:53:13.280 --> 00:53:15.140
 and understanding how to do it.
 
-00:53:15.200 --> 00:53:18.360
-Because unlike a web app, unlike, I don't know,
+00:53:15.340 --> 00:53:16.800
+Because unlike a web app,
 
-00:53:18.360 --> 00:53:20.440
-many apps that we develop daily,
+00:53:16.900 --> 00:53:20.220
+unlike, I don't know, many apps that we develop daily,
 
-00:53:20.440 --> 00:53:24.720
-these things haven't been done.
+00:53:20.900 --> 00:53:24.320
+it doesn't, these things haven't been done.
 
-00:53:24.720 --> 00:53:29.080
-People have migrated stuff, but it was mostly,
+00:53:24.920 --> 00:53:43.040
+People have migrated stuff, but it was mostly, you know, oh, change this dictionary without a proper DSL or without code generation, you know, without the niceties that would make your IDs happy and that would make, you know, auto-completion happy.
 
-00:53:29.080 --> 00:53:32.920
-oh, change this dictionary without a proper DSL
+00:53:43.860 --> 00:53:44.100
+Yeah.
 
-00:53:32.920 --> 00:53:37.360
-or without code generation, without the niceties
+00:53:44.320 --> 00:53:45.660
+Oh, yeah.
 
-00:53:37.360 --> 00:53:40.600
-that would make your IDs happy
+00:53:45.660 --> 00:53:48.580
+You are a contributor to TypeShed, which is awesome.
 
-00:53:40.600 --> 00:53:44.120
-and that would make autocompletion happy.
+00:53:48.910 --> 00:53:49.160
+Oh, yes.
 
-00:53:44.120 --> 00:53:45.680
-- Yeah, oh.
+00:53:49.460 --> 00:53:57.440
+So you must care about conveying the type information of the different versions and stuff like that.
 
-00:53:45.680 --> 00:53:49.200
-Yeah, you are a contributor to TypeShed, which is awesome.
-
-00:53:49.200 --> 00:53:50.040
-- Oh, yes.
-
-00:53:50.040 --> 00:53:53.600
-- So you must care about conveying
-
-00:53:53.600 --> 00:53:56.440
-the type information of the different versions
-
-00:53:56.440 --> 00:53:57.800
-and stuff like that.
-
-00:53:57.800 --> 00:53:58.920
+00:53:57.700 --> 00:53:58.640
 That's tricky, right?
 
-00:53:58.920 --> 00:54:01.360
-And of course, working on FastAPI and Pydantic,
+00:53:58.700 --> 00:54:02.000
+And of course, working on FastAPI and Pydantic, those are very type.
 
-00:54:01.360 --> 00:54:02.440
-those are very type.
+00:54:02.300 --> 00:54:04.380
+Oh, and the shirt says Type Hints for Life.
 
-00:54:02.440 --> 00:54:05.280
-Oh, and the shirt says Type Hints for Life, I love it.
+00:54:04.440 --> 00:54:04.900
+I love it.
 
-00:54:05.280 --> 00:54:06.640
-I don't have any cool slogan on mine,
+00:54:05.060 --> 00:54:06.620
+I don't have any cool slogan in my eyes.
 
-00:54:06.640 --> 00:54:08.720
-I just have gray stripes.
+00:54:06.620 --> 00:54:09.220
+I have gray stripes, but I should.
 
-00:54:08.720 --> 00:54:10.800
-But I should, very cool.
+00:54:09.860 --> 00:54:10.220
+Very cool.
 
-00:54:10.800 --> 00:54:13.200
-So yeah, wanna speak to the type hint,
+00:54:10.620 --> 00:54:15.780
+So yeah, want to speak to the type hint type information aspect of this whole thing?
 
-00:54:13.200 --> 00:54:16.280
-type information aspect of this whole thing?
+00:54:17.840 --> 00:54:28.720
+Well, essentially, as I mentioned, Stripe did it using simply dictionaries, and it was mostly untyped.
 
-00:54:16.280 --> 00:54:21.200
-- Well, essentially, as I mentioned,
+00:54:28.780 --> 00:54:41.420
+As probably many people know, Stripe, after having so many problems with scalability in terms of the team scalability and problems with typing,
 
-00:54:22.400 --> 00:54:25.800
-Stripe did it using simply dictionaries
+00:54:42.140 --> 00:54:44.760
+they have decided to adopt Sorbet.
 
-00:54:25.800 --> 00:54:30.800
-and it was mostly untyped, as probably many people know.
+00:54:45.240 --> 00:54:47.060
+Well, not adopt, create Sorbet,
 
-00:54:30.800 --> 00:54:36.120
-Stripe, after having so many problems with scalability
-
-00:54:36.120 --> 00:54:40.120
-in terms of the team scalability and problems with typing,
-
-00:54:40.120 --> 00:54:45.480
-they have decided to adopt Sorbet,
-
-00:54:45.480 --> 00:54:47.680
-well, not adopt, create Sorbet,
-
-00:54:47.680 --> 00:54:51.520
+00:54:47.720 --> 00:54:50.980
 which is essentially a type checker.
 
-00:54:51.520 --> 00:54:56.520
+00:54:51.460 --> 00:54:55.860
 It's like a type checker and DSL for Ruby for type hints,
 
-00:54:56.520 --> 00:54:57.680
+00:54:56.600 --> 00:54:57.440
 which is really nice.
 
-00:54:57.680 --> 00:55:01.320
-It has both a runtime component and a static component,
+00:54:57.520 --> 00:54:59.360
+It has both the runtime component
 
-00:55:01.320 --> 00:55:02.560
-as far as I remember.
+00:54:59.620 --> 00:55:02.080
+and a static component as far as I remember.
 
-00:55:02.560 --> 00:55:10.240
-But they still, most of the time, work with untyped code,
+00:55:06.180 --> 00:55:09.940
+But they still most of the time work with untype code,
 
-00:55:10.240 --> 00:55:14.600
+00:55:11.500 --> 00:55:13.300
 which essentially can lead to many errors.
 
-00:55:14.600 --> 00:55:16.600
-Kadwin tries to make sure
+00:55:14.540 --> 00:55:16.180
+Cadwin tries to make sure
 
-00:55:16.600 --> 00:55:18.840
-that you still work with your schemas,
+00:55:16.440 --> 00:55:18.600
+that you still work with your schemas.
 
-00:55:18.840 --> 00:55:20.560
-you still know which schema you work with,
+00:55:18.700 --> 00:55:20.400
+You still know which schema you work with.
 
-00:55:20.560 --> 00:55:21.960
-it's always the latest.
+00:55:20.500 --> 00:55:21.220
+It's always the latest.
 
-00:55:21.960 --> 00:55:24.560
-And Kadwin tries to make sure
+00:55:22.260 --> 00:55:24.300
+And Cadwin tries to make sure
 
-00:55:24.560 --> 00:55:29.320
+00:55:24.520 --> 00:55:29.020
 that you're not going to have any type errors
 
-00:55:29.320 --> 00:55:31.200
+00:55:29.100 --> 00:55:30.100
 if you don't want to.
 
-00:55:31.200 --> 00:55:33.800
+00:55:31.160 --> 00:55:33.380
 And you're going to have all of the niceties
 
-00:55:33.800 --> 00:55:35.400
+00:55:33.720 --> 00:55:35.119
 of having this dynamic
 
-00:55:35.400 --> 00:55:41.440
+00:55:38.580 --> 00:55:40.360
 request response conversion thing.
 
-00:55:41.440 --> 00:55:44.480
+00:55:41.240 --> 00:55:44.160
 So we're trying to take the best of both worlds,
 
-00:55:44.480 --> 00:55:46.600
+00:55:44.420 --> 00:55:45.920
 have you support very little code,
 
-00:55:46.600 --> 00:55:50.120
-but make sure that you can type hint everything
+00:55:46.440 --> 00:55:49.740
+but make sure that you can type in everything
 
-00:55:50.120 --> 00:55:52.760
-without any issue and you're not going to have problems
+00:55:50.000 --> 00:55:50.860
+without any issue
 
-00:55:52.760 --> 00:55:55.560
+00:55:51.140 --> 00:55:52.460
+and you're not going to have problems
+
+00:55:52.660 --> 00:55:55.220
 and your type checker is going to check everything for you.
 
-00:55:55.560 --> 00:55:58.440
-And your, I don't know, VS Code is going to see
+00:55:55.340 --> 00:55:57.500
+And your VS Code is going to see
 
-00:55:58.440 --> 00:56:01.520
-which fields something has, which types of things.
+00:55:58.300 --> 00:55:59.800
+which field something has,
 
-00:56:01.520 --> 00:56:02.360
-- Yeah, excellent.
+00:55:59.960 --> 00:56:00.740
+which type something has.
 
-00:56:02.360 --> 00:56:07.360
-One of the big problems with all the runtime modifications,
+00:56:01.140 --> 00:56:01.760
+Yeah, excellent.
 
-00:56:07.360 --> 00:56:09.960
-one way you could have done this is that app startup,
+00:56:02.240 --> 00:56:03.940
+One of the big problems
 
-00:56:09.960 --> 00:56:12.360
+00:56:03.960 --> 00:56:07.180
+with like all the runtime modifications.
+
+00:56:07.540 --> 00:56:08.620
+Like one way you could have done this
+
+00:56:08.640 --> 00:56:09.660
+is that app startup,
+
+00:56:09.740 --> 00:56:11.180
 it could look at all of those things
 
-00:56:12.360 --> 00:56:14.960
+00:56:12.260 --> 00:56:14.540
 and it could just dynamically generate
 
-00:56:14.960 --> 00:56:17.280
-all the different versions and all the things
+00:56:14.900 --> 00:56:15.700
+all the different versions
 
-00:56:18.280 --> 00:56:22.080
-using meta programming, but then the editor--
+00:56:15.940 --> 00:56:17.540
+and all the things, you know,
 
-00:56:22.080 --> 00:56:24.000
-- Yeah, and it does that.
+00:56:19.000 --> 00:56:19.960
+using metaprogramming.
 
-00:56:24.000 --> 00:56:27.400
+00:56:20.960 --> 00:56:22.600
+But then the editor does that.
+
+00:56:23.740 --> 00:56:26.320
 Yeah, it does that with the endpoints
 
-00:56:27.400 --> 00:56:30.840
-because endpoints are not, you know,
+00:56:27.280 --> 00:56:28.960
+because endpoints are not,
 
-00:56:30.840 --> 00:56:33.240
-your editors, they don't care about endpoints.
+00:56:29.800 --> 00:56:31.120
+you know, your editors,
 
-00:56:33.240 --> 00:56:34.080
-- Exactly.
+00:56:31.360 --> 00:56:32.580
+they don't care about endpoints.
 
-00:56:34.080 --> 00:56:36.840
-- You never call your endpoint from your code.
+00:56:33.080 --> 00:56:33.280
+Exactly.
 
-00:56:36.840 --> 00:56:39.800
-No, you usually call the business logic from it,
+00:56:33.500 --> 00:56:36.560
+You never call your endpoint from your code.
 
-00:56:39.800 --> 00:56:41.400
+00:56:36.600 --> 00:56:38.660
+No, you usually code the business logic from it,
+
+00:56:39.680 --> 00:56:40.980
 which is why I decided to do it in runtime.
 
-00:56:41.400 --> 00:56:43.240
+00:56:41.160 --> 00:56:42.320
 You don't really need it.
 
-00:56:43.240 --> 00:56:45.120
-But for Schemas, yes.
+00:56:43.020 --> 00:56:44.340
+But for schemas, yes.
 
-00:56:45.120 --> 00:56:47.320
-For Schemas, having them generated
+00:56:44.900 --> 00:56:46.960
+For schemas, having them generated
 
-00:56:47.320 --> 00:56:48.560
+00:56:47.100 --> 00:56:48.260
 and then having people guessing
 
-00:56:48.560 --> 00:56:53.120
+00:56:48.360 --> 00:56:52.580
 and then having their IDs just put everything in red,
 
-00:56:53.120 --> 00:56:54.920
+00:56:52.900 --> 00:56:53.480
 that is horrible.
 
-00:56:54.920 --> 00:56:56.840
+00:56:54.720 --> 00:56:56.220
 I wouldn't want anyone to have that.
 
-00:56:56.840 --> 00:56:58.800
-- Yeah, yeah, I don't like it either.
+00:56:56.540 --> 00:56:57.680
+Yeah, yeah, I don't like it either.
 
-00:56:58.800 --> 00:57:00.360
+00:56:58.740 --> 00:56:59.260
 Not at all.
 
-00:57:00.360 --> 00:57:03.800
-It's right up there with the star, star, star, KW args.
+00:57:00.220 --> 00:57:02.820
+It's right up there with the star, star, star, k, w, orgs.
 
-00:57:03.800 --> 00:57:06.560
-Have a good time guessing in my world.
+00:57:03.660 --> 00:57:06.320
+have a good time guessing in my world.
 
-00:57:06.560 --> 00:57:07.960
+00:57:06.320 --> 00:57:07.160
 I don't like either of them.
 
-00:57:07.960 --> 00:57:10.160
-Awesome, all right.
+00:57:09.140 --> 00:57:09.340
+Awesome.
 
-00:57:10.160 --> 00:57:12.760
+00:57:09.580 --> 00:57:09.740
+All right.
+
+00:57:10.040 --> 00:57:12.320
 Well, let's just maybe touch real quickly
 
-00:57:12.760 --> 00:57:16.360
+00:57:12.720 --> 00:57:16.100
 on a couple of other choices that are out here.
 
-00:57:16.360 --> 00:57:19.480
-You know, Kadwin looks awesome, but we also have,
+00:57:16.280 --> 00:57:17.300
+You know, Cadwin looks awesome,
 
-00:57:19.480 --> 00:57:22.120
-for example, we have from Dean Way,
+00:57:17.480 --> 00:57:19.800
+but we also have, for example,
 
-00:57:22.120 --> 00:57:23.720
+00:57:19.880 --> 00:57:21.880
+we have from Dean Way,
+
+00:57:21.920 --> 00:57:23.520
 we have FastAPI versioning,
 
-00:57:23.720 --> 00:57:25.200
+00:57:23.540 --> 00:57:24.900
 which has a very different philosophy.
 
-00:57:25.200 --> 00:57:30.200
+00:57:25.020 --> 00:57:29.660
 It has kind of the V1, the V2 style
 
-00:57:30.200 --> 00:57:33.680
+00:57:30.360 --> 00:57:33.300
 that you might maintain multiple versions of.
 
-00:57:33.680 --> 00:57:36.200
-You wanna just maybe speak to your thoughts
+00:57:34.400 --> 00:57:35.960
+You want to just maybe speak to your thoughts
 
-00:57:36.200 --> 00:57:39.080
-on this one real quick and people can take that
+00:57:35.970 --> 00:57:36.640
+on this one real quick
 
-00:57:39.080 --> 00:57:39.920
-if they like this style.
+00:57:36.710 --> 00:57:39.340
+and people can take that if they like this.
 
-00:57:39.920 --> 00:57:41.120
-- It's a great library.
+00:57:39.460 --> 00:57:40.240
+It's a great library.
 
-00:57:41.120 --> 00:57:44.480
+00:57:40.950 --> 00:57:44.300
 And I think it's either the first or the most popular.
 
-00:57:44.480 --> 00:57:45.600
+00:57:44.340 --> 00:57:45.340
 It's definitely the most popular,
 
-00:57:45.600 --> 00:57:47.880
+00:57:45.430 --> 00:57:47.560
 but I think it might even be the first library
 
-00:57:47.880 --> 00:57:50.400
+00:57:47.780 --> 00:57:50.200
 in FastAPI to implement versioning,
 
-00:57:50.400 --> 00:57:52.480
+00:57:50.260 --> 00:57:51.240
 implement proper versioning.
 
-00:57:52.480 --> 00:57:54.120
+00:57:52.340 --> 00:57:53.220
 It has a few issues.
 
-00:57:54.120 --> 00:57:58.560
+00:57:53.980 --> 00:57:57.520
 First of all, it only, as far as I remember,
 
-00:57:58.560 --> 00:58:02.920
-it is mostly, how do I say it?
+00:57:58.140 --> 00:58:02.080
+It is mostly, how do I say it?
 
-00:58:02.920 --> 00:58:04.360
-It is mostly duplication-based,
+00:58:02.760 --> 00:58:04.100
+It is mostly duplication based.
 
-00:58:04.360 --> 00:58:05.960
-so it doesn't automate anything for you,
+00:58:04.240 --> 00:58:05.760
+So it doesn't automate anything for you,
 
-00:58:05.960 --> 00:58:07.800
+00:58:05.920 --> 00:58:07.560
 which is a good thing if you know what you're doing
 
-00:58:07.800 --> 00:58:10.960
+00:58:07.700 --> 00:58:09.900
 and you're not going to have a lot of versions.
 
-00:58:10.960 --> 00:58:14.200
+00:58:11.400 --> 00:58:13.860
 But if you have 10 or 20 versions,
 
-00:58:14.200 --> 00:58:16.400
-if you wanna keep them for a long time,
+00:58:14.100 --> 00:58:15.720
+if you want to keep them for a long time,
 
-00:58:16.400 --> 00:58:20.600
-this is the endpoint copying approach that I mentioned,
+00:58:16.260 --> 00:58:19.780
+this is the endpoint copying approach that I mentioned
 
-00:58:20.600 --> 00:58:23.280
+00:58:20.640 --> 00:58:22.860
 that with time is going to kill you,
 
-00:58:23.280 --> 00:58:26.320
+00:58:24.080 --> 00:58:25.240
 which is a problem here.
 
-00:58:26.320 --> 00:58:31.240
-The second problem is that it, as far as I understand,
+00:58:25.940 --> 00:58:33.660
+The second problem is that it, as far as I understand, kind of recommends semantic versioning.
 
-00:58:31.240 --> 00:58:33.920
-kind of recommends semantic versioning,
+00:58:33.920 --> 00:58:35.500
+It doesn't bind you to it.
 
-00:58:33.920 --> 00:58:35.920
-though it doesn't bind you to it.
+00:58:35.720 --> 00:58:39.620
+You can use dates, though you have to make sure that they're dates yourself.
 
-00:58:35.920 --> 00:58:37.840
-You can use dates,
+00:58:40.280 --> 00:58:42.760
+And you can use just simple integers.
 
-00:58:37.840 --> 00:58:40.200
-though you will have to make sure that they're dates yourself
+00:58:43.720 --> 00:58:48.100
+So you're not bound by semantic versioning, but it has a few examples with that.
 
-00:58:40.200 --> 00:58:43.800
-and you can use just simple integers.
-
-00:58:43.800 --> 00:58:46.240
-So you're not bound by semantic versioning,
-
-00:58:46.240 --> 00:58:48.800
-but it has a few examples with that.
-
-00:58:48.800 --> 00:58:51.560
+00:58:48.640 --> 00:58:51.180
 Aside from these two, it's an amazing library.
 
-00:58:51.560 --> 00:58:54.680
+00:58:51.420 --> 00:58:53.980
 And for anyone who just wants to version a small app,
 
-00:58:54.680 --> 00:58:57.000
+00:58:54.480 --> 00:58:56.560
 just add a single version that is going to be,
 
-00:58:57.000 --> 00:59:00.880
-the old version is going to be deleted in like two months,
+00:58:57.880 --> 00:59:00.280
+the old version is going to be deleted in like two months.
 
-00:59:00.880 --> 00:59:03.520
-use that, use FastAPI versioning.
+00:59:00.700 --> 00:59:01.180
+Use that.
 
-00:59:03.520 --> 00:59:06.520
+00:59:01.740 --> 00:59:03.100
+Use FastAPI versioning.
+
+00:59:03.100 --> 00:59:06.080
 It's an amazing library and you don't need anything else.
 
-00:59:06.520 --> 00:59:10.840
-CADWIN is for use cases where you need to keep
+00:59:07.400 --> 00:59:09.300
+Catwin is for use cases
 
-00:59:10.840 --> 00:59:13.560
-a larger number of versions,
+00:59:09.660 --> 00:59:12.880
+where you need to keep a larger number of versions
 
-00:59:13.560 --> 00:59:16.640
+00:59:13.500 --> 00:59:16.220
 or if the changes between your versions are much trickier.
 
-00:59:16.640 --> 00:59:19.480
-- Sure, yeah, like this might be pretty good
+00:59:17.500 --> 00:59:17.680
+Sure.
 
-00:59:19.480 --> 00:59:23.800
-for my example I talked about with the courses app
+00:59:18.100 --> 00:59:19.320
+Yeah, like this might be pretty good
 
-00:59:23.800 --> 00:59:24.640
-that we built, right?
+00:59:19.320 --> 00:59:25.320
+for my example I talked about with the courses app that we built right we literally have two
 
-00:59:24.640 --> 00:59:26.080
-We literally have two versions.
+00:59:25.460 --> 00:59:31.560
+versions it's been around since 2018 and there's two versions you know like that would be a decorator
 
-00:59:26.080 --> 00:59:29.160
-It's been around since 2018 and there's two versions.
+00:59:31.800 --> 00:59:37.780
+and I'm probably good to go I don't need to think too much about it precisely no code generation no
 
-00:59:29.160 --> 00:59:31.880
-You know, like that would be a decorator
+00:59:37.920 --> 00:59:44.400
+nothing you just you know yeah you just put it in and you go yep all right another one if you're a
 
-00:59:31.880 --> 00:59:33.800
-and I'm probably good to go.
+00:59:44.440 --> 00:59:51.400
+flask person you could have flask rebar which seems to have a real similar philosophy to what
 
-00:59:33.800 --> 00:59:36.080
-I don't need to think too much about it.
+00:59:51.400 --> 01:00:00.260
+you just described but you know works for flask well i i feel like it's uh a little
 
-00:59:36.080 --> 00:59:38.320
-- Precisely, no code generation, no nothing.
+01:00:01.030 --> 01:00:07.120
+more complex than that if i remember on us discussing that let me pull that up
 
-00:59:38.320 --> 00:59:41.600
-You just put it in and you go.
+01:00:09.880 --> 01:00:13.600
+Oh, yes, no, it is also the parent point.
 
-00:59:41.600 --> 00:59:43.680
-- Yep, all right, another one.
+01:00:13.940 --> 01:00:17.980
+So it also allows you to duplicate single endpoints.
 
-00:59:43.680 --> 00:59:47.560
-If you're a Flask person, you could have Flask rebar,
+01:00:18.980 --> 01:00:25.640
+And it also allows you to -- how do I describe it?
 
-00:59:47.560 --> 00:59:51.360
-which seems to have a real similar philosophy
-
-00:59:51.360 --> 00:59:54.360
-to what you just described, but you know, it works for Flask.
-
-00:59:54.360 --> 01:00:01.800
-- Oh, I feel like it's a little more complex than that.
-
-01:00:01.800 --> 01:00:07.560
-If I remember on us discussing that, let me pull that up.
-
-01:00:10.440 --> 01:00:14.080
-- Oh yes, no, it is also the parent point.
-
-01:00:14.080 --> 01:00:18.720
-So it also allows you to duplicate single endpoints
-
-01:00:18.720 --> 01:00:23.720
-and it also allows you to, how do I describe it?
-
-01:00:23.720 --> 01:00:29.060
+01:00:25.880 --> 01:00:28.420
 It also allows you to do arbitrary prefixes.
 
-01:00:29.060 --> 01:00:31.840
-So you can have integers, you can have dates,
+01:00:30.020 --> 01:00:33.080
+So you can have integers, you can have dates, you can have whatever.
 
-01:00:31.840 --> 01:00:34.400
-you can have, you know, whatever.
+01:00:33.960 --> 01:00:35.540
+Old, new, whatever.
 
-01:00:34.400 --> 01:00:36.440
-- Old, new, whatever.
+01:00:36.560 --> 01:00:37.060
+Yeah, old new.
 
-01:00:36.440 --> 01:00:38.080
-- Yeah, old, new.
-
-01:00:38.080 --> 01:00:39.680
+01:00:37.960 --> 01:00:39.240
 I guess some people do that.
 
-01:00:40.200 --> 01:00:42.920
-(laughing)
+01:00:42.540 --> 01:00:43.860
+Yeah, latest, latest.
 
-01:00:42.920 --> 01:00:45.040
-- Yeah, latest, latest.
+01:00:44.820 --> 01:00:47.440
+- Yeah, yeah, latest, latest, final.
 
-01:00:45.040 --> 01:00:48.860
-- Yeah, yeah, latest, latest, final, yes, exactly.
+01:00:47.760 --> 01:00:48.180
+Yes, exactly.
 
-01:00:48.860 --> 01:00:53.600
+01:00:50.180 --> 01:00:51.880
 - But yeah, it's really similar.
 
-01:00:53.600 --> 01:00:55.680
+01:00:53.440 --> 01:00:55.300
 - They probably use zipping up folders
 
-01:00:55.680 --> 01:00:56.840
-for version control as well.
+01:00:55.460 --> 01:00:56.620
+for version control as well
 
-01:00:56.840 --> 01:00:59.940
-I'm just naming them by the date, final, final, final.
+01:00:56.620 --> 01:00:57.800
+and just naming them by the date.
 
-01:00:59.940 --> 01:01:05.080
-- Yeah, let's not use Git, let's just copy them.
+01:00:58.440 --> 01:00:59.460
+Final, final, final.
 
-01:01:05.080 --> 01:01:07.120
-And I mean, as per versioning,
+01:01:00.680 --> 01:01:03.020
+- Yeah, let's not use Git.
 
-01:01:07.120 --> 01:01:08.960
-that's like a really good metaphor.
+01:01:03.620 --> 01:01:04.760
+Let's just copy them.
 
-01:01:08.960 --> 01:01:12.560
-If you are a person that just needs another version
+01:01:04.920 --> 01:01:08.340
+And I mean, as per versioning, that's like a really good metaphor.
 
-01:01:12.560 --> 01:01:14.840
-of their Google Doc, you wouldn't use Git.
+01:01:08.920 --> 01:01:14.260
+If you are a person that just needs another version of their Google Doc, you wouldn't use Git.
 
-01:01:14.840 --> 01:01:17.640
+01:01:14.630 --> 01:01:16.980
 Well, unless you use Git for everything else.
 
-01:01:17.640 --> 01:01:21.920
-And same here, you don't need a huge combine
+01:01:18.220 --> 01:01:18.700
+And same here.
 
-01:01:21.920 --> 01:01:23.680
-for using Flask.
+01:01:19.170 --> 01:01:23.200
+You don't need a huge combine for using Flask.
 
-01:01:23.680 --> 01:01:26.840
-And Flask usually, at least in my experience,
+01:01:23.490 --> 01:01:28.320
+And Flask usually, at least in my experience, tries to build simpler APIs.
 
-01:01:26.840 --> 01:01:30.040
-tries to build simpler APIs and you wouldn't use,
+01:01:29.020 --> 01:01:36.000
+you wouldn't use, well, most companies that do API first don't use Flask. They try to do, you know,
 
-01:01:30.040 --> 01:01:35.040
-well, most companies that do API first don't use Flask.
+01:01:36.600 --> 01:01:42.380
+Django DRF or FastAPI, which is why this library seems like a perfect choice for that.
 
-01:01:35.280 --> 01:01:39.560
-They try to do Django DRF or FastAPI,
+01:01:43.460 --> 01:01:49.080
+Yeah. Yeah, indeed. It seems really nice. One of the things that we were speaking of duplication,
 
-01:01:39.560 --> 01:01:41.400
-which is why this library seems
+01:01:49.600 --> 01:01:56.160
+one of the things that they just jump right into to demonstrate here, and I imagine the FastAPI
 
-01:01:41.400 --> 01:01:42.900
-like a perfect choice for that.
+01:01:56.180 --> 01:02:02.320
+version one as well could do it but there's one endpoint that doesn't change and there's one that
 
-01:01:42.900 --> 01:01:45.720
-- Yeah, yeah, indeed.
+01:02:02.320 --> 01:02:06.380
+is different so they copy the one that's different but for the one that doesn't change they just put a
 
-01:01:45.720 --> 01:01:46.680
-It seems really nice.
+01:02:06.560 --> 01:02:11.600
+v1 and a v2 decorator on that one and it it remains unchanged basically right
 
-01:01:46.680 --> 01:01:49.800
-One of the things that, we were speaking of duplication,
+01:02:14.359 --> 01:02:22.980
+yep but i mean uh cadwin tries to escape this kind of verbosity and essentially you have all
 
-01:01:49.800 --> 01:01:52.400
-one of the things that they just jump right into
+01:02:23.040 --> 01:02:27.080
+endpoints everywhere. And if you want to, you know, omit some endpoint or change some endpoint
 
-01:01:52.400 --> 01:01:57.040
-to demonstrate here, and I imagine the FastAPI version one
+01:02:27.220 --> 01:02:34.540
+or add some endpoint into the new version, you just add a version change and say, oh,
 
-01:01:57.040 --> 01:02:00.200
-as well could do it, but there's one endpoint
+01:02:34.900 --> 01:02:39.380
+this endpoint didn't exist in the old version. That's it.
 
-01:02:00.200 --> 01:02:03.160
-that doesn't change and there's one that is different.
+01:02:39.560 --> 01:02:43.800
+Yeah. Yeah, that's cool. Very cool. Yeah, because if you had 20 of these,
 
-01:02:03.160 --> 01:02:04.640
-So they copy the one that's different,
+01:02:43.960 --> 01:02:48.940
+you'd have 20 decorators in a little function. Right. That's what I'm saying. But I mean,
 
-01:02:04.640 --> 01:02:05.920
-but for the one that doesn't change,
+01:02:49.640 --> 01:02:51.160
+Not a huge issue for Flask.
 
-01:02:05.920 --> 01:02:09.560
-they just put a V1 and a V2 decorator on that one
-
-01:02:09.560 --> 01:02:12.120
-and it remains unchanged basically, right?
-
-01:02:12.120 --> 01:02:14.520
-- Mm-hmm, mm-hmm, yep.
-
-01:02:14.520 --> 01:02:16.360
-But I mean,
-
-01:02:16.360 --> 01:02:21.800
-Kadwin tries to escape this kind of verbosity
-
-01:02:21.800 --> 01:02:24.260
-and essentially you have all endpoints everywhere
-
-01:02:24.260 --> 01:02:26.560
-and if you wanna omit some endpoint
-
-01:02:26.560 --> 01:02:28.760
-or change some endpoint or add some endpoint
-
-01:02:28.760 --> 01:02:34.000
-into the new version, you just add a version change
-
-01:02:34.000 --> 01:02:38.120
-and say, oh, this endpoint didn't exist
-
-01:02:38.120 --> 01:02:39.720
-in the old version, that's it.
-
-01:02:39.720 --> 01:02:41.120
-- Yeah, yeah, that's cool.
-
-01:02:41.120 --> 01:02:44.120
-Very cool, yeah, because if you had 20 of these,
-
-01:02:44.120 --> 01:02:47.720
-you'd have 20 decorators in a little function, right?
-
-01:02:47.720 --> 01:02:48.560
-That's where it starts to get--
-
-01:02:48.560 --> 01:02:50.000
-- That's what I'm saying, but I mean,
-
-01:02:50.000 --> 01:02:51.880
-not a huge issue for Flask.
-
-01:02:51.880 --> 01:02:54.300
+01:02:51.700 --> 01:02:53.820
 I haven't seen anyone building, I don't know,
 
-01:02:54.300 --> 01:03:00.160
-50 or 200 endpoints apps with Flask.
+01:02:55.800 --> 01:02:59.900
+50 or 200 endpoint apps with Flask.
 
-01:03:00.160 --> 01:03:03.880
+01:02:59.980 --> 01:03:02.720
 I'm sure people do that, but I think it's the minority.
 
-01:03:03.880 --> 01:03:07.080
-- Sure, all right, other side of the fence,
+01:03:03.700 --> 01:03:03.880
+Sure.
 
-01:03:07.080 --> 01:03:08.800
-Django REST framework, DRF,
+01:03:04.720 --> 01:03:04.980
+All right.
 
-01:03:08.800 --> 01:03:10.640
-you already mentioned them a little bit.
+01:03:05.900 --> 01:03:08.560
+Other side of the fence, Django REST framework, DRF.
 
-01:03:10.640 --> 01:03:14.680
-And so Django, they already have like versioning
+01:03:08.560 --> 01:03:09.940
+You already mentioned them a little bit.
 
-01:03:14.680 --> 01:03:17.640
-built into the framework itself, right?
+01:03:10.500 --> 01:03:17.180
+And so Django, they already have versioning built into the framework itself, right?
 
-01:03:17.640 --> 01:03:21.520
-- They have versioning interfaces built into.
+01:03:18.580 --> 01:03:20.980
+they have versioning interfaces built into.
 
-01:03:21.520 --> 01:03:25.780
-So like, it's not, they're not implementing versioning
+01:03:21.320 --> 01:03:23.020
+So like it's not,
 
-01:03:25.780 --> 01:03:28.440
-for you, but they give you all the tools
+01:03:23.560 --> 01:03:25.960
+they're not implementing versioning for you,
 
-01:03:28.440 --> 01:03:30.080
+01:03:26.660 --> 01:03:28.080
+but they give you all the tools
+
+01:03:28.280 --> 01:03:29.600
 to implement your own versioning.
 
-01:03:30.080 --> 01:03:33.040
-- Got it, yeah, okay, so they kind of have
+01:03:30.760 --> 01:03:31.020
+Got it.
 
-01:03:33.040 --> 01:03:36.080
-the building blocks for it, excellent.
+01:03:31.620 --> 01:03:32.000
+Yeah, okay.
 
-01:03:36.080 --> 01:03:40.000
-All right, well, I think we're pretty much out of time,
+01:03:32.120 --> 01:03:34.000
+So they kind of have the building blocks for it.
 
-01:03:40.000 --> 01:03:42.840
-but thank you for being here,
+01:03:34.960 --> 01:03:35.200
+Excellent.
 
-01:03:42.840 --> 01:03:44.480
-this has been really interesting.
+01:03:35.880 --> 01:03:36.140
+All right.
 
-01:03:44.480 --> 01:03:47.360
-- Oh, it was for me as well.
+01:03:36.840 --> 01:03:39.440
+Well, I think we are pretty much out of time,
 
-01:03:47.360 --> 01:03:49.120
+01:03:39.900 --> 01:03:42.600
+but thank you for being here.
+
+01:03:42.640 --> 01:03:43.500
+It's been really interesting.
+
+01:03:45.440 --> 01:03:46.640
+Oh, it was for me as well.
+
+01:03:47.180 --> 01:03:48.140
 Thank you for having me here.
 
-01:03:49.120 --> 01:03:50.960
-- Yeah, you've given everyone a lot to think about.
+01:03:48.660 --> 01:03:53.840
+yeah you've given everyone a lot to think about you know before we wrap it up uh two quick things
 
-01:03:50.960 --> 01:03:54.320
-You know, before we wrap it up, two quick things,
+01:03:54.060 --> 01:04:02.480
+you know um notable pypi package i mean we've already given cadwin a shout out anything else
 
-01:03:54.320 --> 01:04:01.280
-notable PyPI package, I mean, we've already given
+01:04:02.610 --> 01:04:07.860
+that like oh i came across this and it was super cool maybe it deserves a little bit of a shout
 
-01:04:01.280 --> 01:04:03.880
-Cadwin a shout out, anything else that like,
+01:04:07.870 --> 01:04:17.480
+out anything that like use a lot that you would recommend um so for us in our company we started
 
-01:04:03.880 --> 01:04:06.200
-oh, I came across this and it was super cool,
+01:04:17.500 --> 01:04:19.620
+using one more package of mine.
 
-01:04:06.200 --> 01:04:08.280
-maybe it deserves a little bit of a shout out,
+01:04:20.540 --> 01:04:22.480
+It's called pytest Fixture Classes.
 
-01:04:08.280 --> 01:04:11.180
-anything that like you use a lot that you would recommend?
+01:04:23.520 --> 01:04:26.780
+Essentially, when you are building groups of fixtures
 
-01:04:11.180 --> 01:04:18.520
-- So for us in our company, we started using
-
-01:04:18.520 --> 01:04:20.680
-one more package of mine,
-
-01:04:20.680 --> 01:04:23.740
-it's called ByteTest fixture classes.
-
-01:04:23.740 --> 01:04:24.580
-- Okay.
-
-01:04:24.580 --> 01:04:27.200
-- Essentially, when you are building groups of fixtures
-
-01:04:27.200 --> 01:04:31.760
+01:04:27.100 --> 01:04:31.300
 that create some objects for you to use in your tests,
 
-01:04:31.760 --> 01:04:34.840
-and then all of a sudden, one of your tests needs an object
+01:04:31.900 --> 01:04:32.780
+and then all of a sudden,
 
-01:04:34.840 --> 01:04:37.680
-that's a little different, you know, just a little bit,
+01:04:33.060 --> 01:04:34.500
+one of your tests needs an object
 
-01:04:37.680 --> 01:04:40.680
+01:04:34.700 --> 01:04:37.260
+that's a little different, just a little bit,
+
+01:04:38.440 --> 01:04:39.880
 and then everything just falls apart.
 
-01:04:40.680 --> 01:04:45.680
-Well, a factory fixture pattern that you can see in ByteTest
+01:04:40.580 --> 01:04:43.860
+Well, a factory fixture pattern
 
-01:04:45.680 --> 01:04:50.020
-allows you to, you know, make a function within a function
+01:04:44.140 --> 01:04:46.040
+that you can see in pytest
 
-01:04:50.020 --> 01:04:55.020
-and one of them is a fixture and that's all cool and nice,
+01:04:46.100 --> 01:04:53.440
+allows you to make a function within a function, and one of them is a fixture, and that's all
 
-01:04:55.320 --> 01:04:58.200
-but then it's not typed.
+01:04:53.720 --> 01:05:03.320
+cool and nice, but then it's not typed. Yeah, you can use the callable syntax, and then you're not
 
-01:04:58.200 --> 01:05:01.320
-Yeah, you can, you know, you can use, you know,
+01:05:03.320 --> 01:05:10.480
+going to have the keyword arguments there, and otherwise you can write a protocol, and it's a lot
 
-01:05:01.320 --> 01:05:04.120
-the callable syntax and then you're not going to have
+01:05:10.500 --> 01:05:18.700
+of code. What pytest fixture classes does is it allows you to type everything there. So you write
 
-01:05:04.120 --> 01:05:07.760
-the keyword arguments there and otherwise,
+01:05:18.770 --> 01:05:24.660
+the same amount of code, but it's all typed. And now you have, you can have groups of fixture classes
 
-01:05:07.760 --> 01:05:11.220
-you can write a protocol and it's a lot of code.
+01:05:24.860 --> 01:05:30.120
+building on top of each other, which is a nice pattern to have, but a really bad pattern to abuse.
 
-01:05:11.220 --> 01:05:14.560
-What ByteTest fixture classes does
+01:05:31.540 --> 01:05:36.660
+Very cool. All right. Well, nice, nice recommendation. People can check that out.
 
-01:05:14.560 --> 01:05:17.440
-is it allows you to type everything there,
+01:05:36.840 --> 01:05:40.760
+the audience already says, amazing thing, I'm already using it.
 
-01:05:17.440 --> 01:05:21.360
-so you write the same amount of code, but it's all typed
-
-01:05:21.360 --> 01:05:25.020
-and now you have, you can have groups of fixture classes
-
-01:05:25.020 --> 01:05:28.520
-building on top of each other, which is a nice pattern
-
-01:05:28.520 --> 01:05:30.800
-to have, but a really bad pattern to abuse.
-
-01:05:30.800 --> 01:05:33.480
-- Very cool.
-
-01:05:33.480 --> 01:05:36.000
-All right, well, nice, nice recommendation.
-
-01:05:36.000 --> 01:05:36.920
-People can check that out.
-
-01:05:36.920 --> 01:05:39.480
-Emil out in the audience already says,
-
-01:05:39.480 --> 01:05:41.280
-amazing thing, I'm already using it.
-
-01:05:41.280 --> 01:05:46.360
+01:05:42.420 --> 01:05:45.240
 So final call to action, people have APIs,
 
-01:05:46.360 --> 01:05:48.640
+01:05:46.240 --> 01:05:48.320
 they've listened to us talk for an hour and they're like,
 
-01:05:48.640 --> 01:05:51.440
+01:05:48.560 --> 01:05:50.640
 oh, we should be versioning our APIs.
 
-01:05:51.440 --> 01:05:54.600
+01:05:51.700 --> 01:05:53.960
 We probably should be doing something here.
 
-01:05:54.600 --> 01:05:55.720
+01:05:54.420 --> 01:05:55.480
 What do you recommend people do?
 
-01:05:55.720 --> 01:05:56.780
+01:05:55.480 --> 01:05:56.160
 How do they get started?
 
-01:05:56.780 --> 01:05:58.060
+01:05:56.630 --> 01:05:57.520
 How do they go further?
 
-01:05:58.060 --> 01:06:02.320
-- So first you need to decide whether your use case
+01:05:58.920 --> 01:06:02.400
+So first you need to decide whether your use case is simple.
 
-01:06:02.320 --> 01:06:04.760
-is simple, how many versions are you going to support?
+01:06:02.640 --> 01:06:04.140
+How many versions are you going to support?
 
-01:06:04.760 --> 01:06:07.240
-If you're not planning to support more than two versions,
+01:06:04.460 --> 01:06:17.280
+If you're not planning to support more than two versions, or if you are supporting versions only for your internal microservices or only for your front end, then consider using the simple tools.
 
-01:06:07.240 --> 01:06:11.020
-or if you are supporting versions only for your internal
+01:06:17.480 --> 01:06:22.740
+Consider using the FastAPI versioning, you know, Flask Rebar, things like that.
 
-01:06:11.020 --> 01:06:14.840
-microservices or only for your front end,
+01:06:23.160 --> 01:06:41.520
+But then once you realize that you need to support versions for months and you need three or more versions and, you know, you're providing your versions as a public, you know, to the public, then I advise moving straight into Cadwin or Cadwin-like frameworks.
 
-01:06:14.840 --> 01:06:17.600
-then consider using the simple tools,
+01:06:41.730 --> 01:06:43.800
+If you use FastAPI, you can just use Cadwin.
 
-01:06:17.600 --> 01:06:19.960
-consider using the FastAPI versioning,
+01:06:44.960 --> 01:06:50.360
+It has a bit of a learning curve, but within making one version, you will realize just how simple it is.
 
-01:06:19.960 --> 01:06:23.340
-you know, Flask, Raybar, things like that.
+01:06:51.060 --> 01:06:54.340
+And if you're not using Cadwyn, that's fine as well.
 
-01:06:23.340 --> 01:06:27.800
-But then once you realize that you need to support versions
-
-01:06:27.800 --> 01:06:30.720
-for months and you need three or more versions,
-
-01:06:30.720 --> 01:06:35.000
-and you're providing your versions as a public,
-
-01:06:35.000 --> 01:06:36.880
-you know, to the public,
-
-01:06:36.880 --> 01:06:40.040
-then I advise moving straight into CAD/WIN
-
-01:06:40.040 --> 01:06:42.040
-or CAD/WIN like frameworks.
-
-01:06:42.040 --> 01:06:45.140
-If you use FastAPI, you can just use CAD/WIN.
-
-01:06:45.140 --> 01:06:47.140
-It has a bit of a learning curve,
-
-01:06:47.140 --> 01:06:49.000
-but within making one version,
-
-01:06:49.000 --> 01:06:51.280
-you will realize just how simple it is.
-
-01:06:51.280 --> 01:06:55.440
-And if you're not using CAD/WIN, that's fine as well.
-
-01:06:55.440 --> 01:06:58.860
+01:06:55.260 --> 01:06:58.420
 I have all of the resources that I used to build it
 
-01:06:58.860 --> 01:07:01.320
+01:06:58.760 --> 01:07:00.800
 and all of the resources, you know,
 
-01:07:01.320 --> 01:07:03.840
-describing different ways of API versioning
+01:07:01.280 --> 01:07:03.840
+describing different ways of API versioning there
 
-01:07:03.840 --> 01:07:06.540
-there in the repository in the theory section.
+01:07:04.010 --> 01:07:05.960
+in the repository in the theory section.
 
-01:07:06.540 --> 01:07:07.920
+01:07:06.370 --> 01:07:07.620
 So you can just read that.
 
-01:07:07.920 --> 01:07:10.140
+01:07:07.900 --> 01:07:09.580
 And even if you don't like that approach,
 
-01:07:10.140 --> 01:07:12.300
+01:07:10.020 --> 01:07:11.980
 we describe everything else there.
 
-01:07:12.300 --> 01:07:14.920
+01:07:12.260 --> 01:07:14.320
 So you'll be able to pick the one you like.
 
-01:07:14.920 --> 01:07:17.100
+01:07:14.780 --> 01:07:16.080
 But my personal recommendation,
 
-01:07:17.100 --> 01:07:19.400
-don't pick the directories, they're painful.
+01:07:17.020 --> 01:07:18.120
+don't pick the directories.
 
-01:07:21.100 --> 01:07:24.340
-- Awesome, really good advice, super cool project.
+01:07:18.340 --> 01:07:18.880
+They're painful.
 
-01:07:24.340 --> 01:07:26.580
-So thank you for being here Stanislav,
+01:07:20.840 --> 01:07:28.200
+Awesome. Really good advice. Super cool project. So thank you for being here, Stanislav, and talk to you later.
 
-01:07:26.580 --> 01:07:28.700
-and talk to you later.
-
-01:07:28.700 --> 01:07:30.900
-- Talk to you later.
-
-01:07:30.900 --> 01:07:34.500
-[ monitoring background sound ]
+01:07:29.740 --> 01:07:30.140
+Talk to you later.
 

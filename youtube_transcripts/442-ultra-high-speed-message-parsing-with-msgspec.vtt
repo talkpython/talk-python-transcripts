@@ -1,0 +1,3578 @@
+WEBVTT
+
+00:00:03.199 --> 00:00:04.000
+Jim, hello.
+
+00:00:04.500 --> 00:00:04.980
+Jim O' Hello.
+
+00:00:05.520 --> 00:00:06.940
+Jim O' Welcome to Talk Python To Me.
+
+00:00:06.940 --> 00:00:07.800
+It's awesome to have you here.
+
+00:00:08.280 --> 00:00:09.480
+Jim O' Yeah, thanks for having me.
+
+00:00:09.940 --> 00:00:11.280
+Jim O' Yeah, of course.
+
+00:00:11.600 --> 00:00:16.120
+I spoke to the LightStar guys, you know, at lightstar.dev and had them on the show.
+
+00:00:16.880 --> 00:00:22.500
+And I was talking about their DTOs, different types of objects they can pass around in their
+
+00:00:22.840 --> 00:00:23.740
+APIs and their web apps.
+
+00:00:23.800 --> 00:00:28.640
+And like FastAPI, they've got this concept where you kind of bind a type,
+
+00:00:28.970 --> 00:00:32.480
+like a class or something, to an input, to a web API,
+
+00:00:32.630 --> 00:00:35.620
+and it does all that sort of magic like FastAPI.
+
+00:00:35.620 --> 00:00:37.280
+And it's, oh, so you guys probably work with PyDanta.
+
+00:00:37.440 --> 00:00:39.800
+Like, yes, but let me tell you about msgspec,
+
+00:00:40.520 --> 00:00:41.780
+because that's where the action is.
+
+00:00:42.400 --> 00:00:45.860
+They were so enamored with your project that I just had to reach out and have you on.
+
+00:00:45.860 --> 00:00:47.100
+It looks super cool.
+
+00:00:48.560 --> 00:00:50.340
+I think people are going to really enjoy learning about it.
+
+00:00:51.960 --> 00:00:52.320
+Thanks.
+
+00:00:52.520 --> 00:00:53.860
+Yeah, it's nice to hear that.
+
+00:00:59.059 --> 00:01:00.820
+Yeah, we're going to dive into the details.
+
+00:01:01.020 --> 00:01:01.700
+It's going to be a lot of fun.
+
+00:01:03.080 --> 00:01:04.000
+Before we get to them, though,
+
+00:01:04.260 --> 00:01:06.580
+give us just a quick introduction on who you are
+
+00:01:06.620 --> 00:01:08.640
+so people don't know you yet.
+
+00:01:09.000 --> 00:01:09.720
+Yeah, yeah.
+
+00:01:10.620 --> 00:01:11.820
+So my name's Jim Christreif.
+
+00:01:11.940 --> 00:01:14.260
+I am currently an engineering manager
+
+00:01:14.900 --> 00:01:17.280
+doing actually mostly dev work at Voltron Data,
+
+00:01:18.300 --> 00:01:20.200
+working on the IBIS project,
+
+00:01:20.720 --> 00:01:23.260
+which is a completely different conversation than what we're going to have today.
+
+00:01:24.420 --> 00:01:34.560
+And prior to that, Bob turned on a couple of startups and was most of them doing Dask was the main thing I've contributed to in the past on an open source Python front.
+
+00:01:35.460 --> 00:01:38.620
+For those not aware, Dask is a distributed compute ecosystem.
+
+00:01:38.900 --> 00:01:44.100
+I come from the PyData side of the Python ecosystem, not the web dev side.
+
+00:01:44.780 --> 00:01:49.380
+Nice. Yeah, I've had Matthew Rocklin on a couple of times, but it's been a while, so people don't necessarily know.
+
+00:01:49.520 --> 00:01:56.920
+but it's like super distributed pandas kind of grid computing for pandas sort of.
+
+00:01:58.280 --> 00:02:00.060
+Or say like Spark written in Python.
+
+00:02:00.960 --> 00:02:01.080
+Sure.
+
+00:02:01.500 --> 00:02:01.620
+Yeah.
+
+00:02:02.200 --> 00:02:04.580
+You know, another thing that's been on kind of on my radar,
+
+00:02:04.840 --> 00:02:08.479
+but I didn't really necessarily realize it was associated with you.
+
+00:02:09.280 --> 00:02:10.520
+Tell people just a bit about IBIS.
+
+00:02:10.700 --> 00:02:12.220
+Like IBIS is looking pretty interesting.
+
+00:02:13.000 --> 00:02:13.180
+Yeah.
+
+00:02:14.080 --> 00:02:19.260
+IBIS is a, I don't want to say the wrong thing.
+
+00:02:20.040 --> 00:02:22.980
+Ivis is a portable data frame library is the current tagline we're using.
+
+00:02:24.019 --> 00:02:27.100
+If you're coming from R, it's dplyr for Python.
+
+00:02:28.240 --> 00:02:32.480
+It's more than that, and it's not exactly that, but that's a quick mental model.
+
+00:02:33.560 --> 00:02:35.740
+So you write data frame-like code.
+
+00:02:37.000 --> 00:02:38.000
+We're not pandas compatible.
+
+00:02:38.070 --> 00:02:40.440
+We're pandas-like enough that you might find something familiar.
+
+00:02:40.930 --> 00:02:48.120
+And it can compile down to generate SQL for 18-plus different database backends, also like PySpark and a couple other things.
+
+00:02:48.520 --> 00:02:50.500
+So you write your code once and you kind of run it on whatever.
+
+00:02:52.080 --> 00:02:52.380
+I see.
+
+00:02:52.560 --> 00:02:58.160
+And you do Pandas-like things, but it converts those into database queries?
+
+00:02:58.290 --> 00:02:58.760
+Is that the real model?
+
+00:02:58.760 --> 00:02:58.980
+Yeah.
+
+00:02:59.210 --> 00:02:59.320
+Yeah.
+
+00:02:59.550 --> 00:03:00.740
+So it's a data frame API.
+
+00:03:01.080 --> 00:03:02.600
+It's not Pandas-compatible.
+
+00:03:03.100 --> 00:03:05.880
+But if you're familiar with Pandas, you should be able to pick it up.
+
+00:03:07.560 --> 00:03:10.280
+We cleaned up what we thought was a bunch of rough edges with the Pandas API.
+
+00:03:11.120 --> 00:03:11.320
+Yeah.
+
+00:03:11.660 --> 00:03:14.140
+Were those Pandas 1 or Pandas 2 rough edges?
+
+00:03:15.560 --> 00:03:15.780
+Both.
+
+00:03:15.900 --> 00:03:16.580
+I don't know.
+
+00:03:17.240 --> 00:03:18.220
+It's Pandas-like.
+
+00:03:18.460 --> 00:03:26.520
+we'll say. Sure, sure. Okay. Yeah, this looks really cool. That's a topic for another day,
+
+00:03:26.860 --> 00:03:34.440
+but awesome. People can check that out. But this time you're here to talk about
+
+00:03:35.420 --> 00:03:41.620
+your personal project, msgspec. Am I saying that right? Are you saying MSG or msgspec?
+
+00:03:41.820 --> 00:03:47.040
+msgspec is how it's pronounced. I think a lot of these projects sometimes need a little,
+
+00:03:47.680 --> 00:03:52.200
+Like, here's the MP3 you can press play on, like how it's meant to be said, you know?
+
+00:03:53.760 --> 00:03:58.540
+And sometimes it's kind of obvious, like PyPI versus PyPI, you know?
+
+00:03:58.600 --> 00:04:01.980
+But other times it's just like, okay, I know you have a really clever name.
+
+00:04:02.720 --> 00:04:03.220
+Yes, I know.
+
+00:04:03.380 --> 00:04:04.500
+People say NumPy all the time.
+
+00:04:04.580 --> 00:04:09.760
+I'm like, I don't want to, I try to not correct guests because it's not kind.
+
+00:04:09.860 --> 00:04:10.740
+But I also feel awkward.
+
+00:04:11.100 --> 00:04:12.800
+They will say NumPy and I'll say, how do you feel about NumPy?
+
+00:04:12.860 --> 00:04:13.440
+Like, NumPy's great.
+
+00:04:13.540 --> 00:04:16.780
+I'm like, okay, we're just going back and forth like this for the next hour.
+
+00:04:16.859 --> 00:04:17.180
+It's fine.
+
+00:04:17.540 --> 00:04:23.140
+But yeah, it's always, I think some of these could use a little play.
+
+00:04:23.280 --> 00:04:25.940
+So msgspec, tell people about what it is.
+
+00:04:26.440 --> 00:04:29.720
+Yeah, so we've gone through a couple different taglines.
+
+00:04:29.940 --> 00:04:36.660
+The current one is a fast serialization and validation library with built-in support for JSON, MessagePack, YAML, and TOML.
+
+00:04:38.820 --> 00:04:46.720
+If you are familiar with Pydantic, that's probably one of the closest, most popular libraries that does a similar thing.
+
+00:04:47.000 --> 00:04:55.860
+You define kind of a structure of your data using type annotations and msgspec will parse your data to ensure it is that structure and does so efficiently.
+
+00:04:57.460 --> 00:05:02.920
+It's also compatible with a lot of the other serialization libraries.
+
+00:05:03.060 --> 00:05:07.740
+You could also use it as a stand-in for JSON, you know, with the JSON dumps, JSON loads.
+
+00:05:08.000 --> 00:05:09.380
+You don't need to specify the types.
+
+00:05:10.860 --> 00:05:11.040
+Right.
+
+00:05:12.660 --> 00:05:23.680
+I think the mental model of kind of like it swims in the same water or the same pond as Pydantic, but it's also fairly distinguished from Pydantic, right?
+
+00:05:23.800 --> 00:05:26.680
+As we're going to explore throughout our chat here.
+
+00:05:26.760 --> 00:05:45.860
+The goal from my side, one of the goals, was to replicate more of the experience writing Rust or Go with Rust-Sirday or Go's JSON, where the serializer kind of stands in the background rather than my experience working with Pydantic where it felt like the base model kind of stood in the foreground.
+
+00:05:46.440 --> 00:05:47.800
+You're defining the model.
+
+00:05:48.000 --> 00:05:52.580
+Serialization kind of comes on to the types you've defined, but you're not actually working with the serializers on the types themselves.
+
+00:05:53.700 --> 00:05:53.920
+Got it.
+
+00:05:54.000 --> 00:05:57.540
+So an example, let me see if I see if I do have it.
+
+00:05:58.260 --> 00:06:07.980
+An example might be if I want to take some message I got from, some response I got from an API, I want to turn it into a Pydantic model or I'm writing an API.
+
+00:06:08.020 --> 00:06:09.620
+I want to take something from a client, whatever.
+
+00:06:10.780 --> 00:06:12.400
+I'll go and create a Pydantic class.
+
+00:06:13.080 --> 00:06:20.160
+And then I, the way I use it as I go to that class and I'll say star, star dictionary I got.
+
+00:06:21.120 --> 00:06:23.920
+And then it comes to life like that, right?
+
+00:06:25.680 --> 00:06:27.320
+Where this is a little more focused
+
+00:06:27.320 --> 00:06:32.040
+on just the serialization and has this capability,
+
+00:06:32.260 --> 00:06:35.080
+but like you said, it's optional in the sense.
+
+00:06:37.160 --> 00:06:41.760
+- Yeah, in msgspec, all types are on equal footing.
+
+00:06:42.580 --> 00:06:45.120
+So we use functions, not methods,
+
+00:06:45.360 --> 00:06:47.900
+because if you wanna decode into a list of ints,
+
+00:06:48.000 --> 00:06:49.680
+I can't add a method to a list.
+
+00:06:49.960 --> 00:06:57.640
+it's a python built-in type so you'd say msgspec dot json dot decode your message and then
+
+00:06:57.840 --> 00:07:02.040
+you'd specify the type annotation as part of that function call and so it could be you know list
+
+00:07:02.260 --> 00:07:09.820
+bracket int right so you'll say decode and then you might say type equals list of of your type or
+
+00:07:09.980 --> 00:07:15.080
+like you say list of int and that's hard when you have to have a class that knows how to
+
+00:07:16.220 --> 00:07:22.440
+basically become what the model uh the data passed in is even if it's just a list of some
+
+00:07:22.580 --> 00:07:27.580
+pydantic classes you got to kind of jump through some hoops to say hey pydantic i don't have a
+
+00:07:27.780 --> 00:07:32.460
+thing to give you i want a list of those things and that's the top level thing is you know
+
+00:07:32.680 --> 00:07:39.780
+bracket bracket it's not it's not any one thing i can specify in python easily yeah to be fair to
+
+00:07:39.900 --> 00:07:46.160
+the panini project i believe in v2 the type adapter yes object can work with that um but
+
+00:07:47.320 --> 00:07:51.660
+you know it's a it's a different way of working with it i i wanted to have one api that did it all
+
+00:07:52.100 --> 00:07:56.420
+sure so and it's awesome they made it i mean i want to just put this out front like
+
+00:07:57.280 --> 00:08:01.820
+i'm a massive fan of pydantic uh what samuel's done there is incredible and it's just
+
+00:08:02.710 --> 00:08:07.300
+you know it's really made a big difference in the way that people work with data and by that it's
+
+00:08:07.360 --> 00:08:12.300
+awesome but it's also awesome that you have this project that is an alternative and it makes
+
+00:08:12.240 --> 00:08:17.260
+different assumptions and you can see those really play out in like the performance or the apis so
+
+00:08:17.790 --> 00:08:24.260
+you know like pidantic encourages you to take your classes and then you know send them the data but
+
+00:08:24.300 --> 00:08:28.540
+you've kind of got to know like oh there's this type adapter thing that i can give a list of my
+
+00:08:28.700 --> 00:08:34.440
+class and then make it work right but it's not just oh you just fall into that by trying to play with
+
+00:08:34.520 --> 00:08:41.479
+the api you know yeah yeah and i think having being able to specify any type means we work
+
+00:08:41.300 --> 00:08:46.300
+with standard library data classes the same as we work with our built-in struct type or we also work
+
+00:08:46.360 --> 00:08:52.860
+with attrs types um everything is kind of on equal footing yeah and i what i want to really
+
+00:08:52.930 --> 00:09:00.700
+dig into is your custom struct type that has some really cool properties uh class properties but
+
+00:09:00.880 --> 00:09:11.260
+components uh features of the class of the type there yeah all right so let's um let's look at a
+
+00:09:11.280 --> 00:09:17.640
+It's fast, and I love how somehow italicies on the word fast makes it feel even faster,
+
+00:09:17.770 --> 00:09:20.360
+like it's leaning forward, you know, it's leaning into the speed.
+
+00:09:21.980 --> 00:09:24.000
+Fast serialization and validation library.
+
+00:09:25.620 --> 00:09:28.820
+The validation is kind of can be, but not required, right?
+
+00:09:28.940 --> 00:09:30.860
+The types can be, but they don't have to be.
+
+00:09:30.950 --> 00:09:34.320
+So I think that's one of the ways it really differs from Pydantic.
+
+00:09:34.570 --> 00:09:38.300
+But the other is Pydantic is quite focused on JSON,
+
+00:09:38.840 --> 00:09:42.160
+whereas this is JSON, MessagePack, YAML, and Toml.
+
+00:09:43.080 --> 00:09:44.180
+Everyone knows what JSON is.
+
+00:09:45.900 --> 00:09:48.800
+I always thought of Toml as kind of like YAML.
+
+00:09:49.060 --> 00:09:49.860
+Are they really different?
+
+00:09:50.940 --> 00:09:54.780
+It's another configuration-focused language.
+
+00:09:55.230 --> 00:09:57.900
+I think some people do JSON for config files,
+
+00:09:58.240 --> 00:10:00.120
+but I personally don't like to handwrite JSON.
+
+00:10:00.920 --> 00:10:03.540
+YAML and Toml are more human-friendly,
+
+00:10:05.130 --> 00:10:06.880
+in quotes, forms of that.
+
+00:10:08.440 --> 00:10:10.900
+The ML is a superset of JSON.
+
+00:10:11.240 --> 00:10:12.160
+Toml is its own thing.
+
+00:10:14.400 --> 00:10:14.500
+Yeah.
+
+00:10:14.860 --> 00:10:15.280
+Got it.
+
+00:10:15.280 --> 00:10:19.400
+And then MessagePack is a binary JSON-like file format.
+
+00:10:21.660 --> 00:10:22.620
+Yeah, MessagePack.
+
+00:10:22.820 --> 00:10:24.100
+I don't know how many people work with that.
+
+00:10:24.240 --> 00:10:26.780
+Where would people run into MessagePack?
+
+00:10:27.160 --> 00:10:27.420
+Yeah.
+
+00:10:27.540 --> 00:10:29.420
+If they were, say, consuming an API,
+
+00:10:29.620 --> 00:10:33.500
+or what API framework would people be generating MessagePack in Python?
+
+00:10:33.980 --> 00:10:34.600
+That's a good question.
+
+00:10:34.700 --> 00:10:40.620
+So going back to the creation of this project, actually, msgspec sounds a lot like message
+
+00:10:40.880 --> 00:10:40.980
+pack.
+
+00:10:41.000 --> 00:10:41.500
+And that was intentional.
+
+00:10:41.500 --> 00:10:42.040
+It does, yeah.
+
+00:10:42.100 --> 00:10:44.480
+Because that's what I wrote it for originally.
+
+00:10:44.720 --> 00:10:49.080
+So as I said at the beginning, I'm one of the original contributors to Dask.
+
+00:10:49.200 --> 00:10:50.160
+I worked on Dask forever.
+
+00:10:50.920 --> 00:10:55.740
+And the Dask distributed scheduler uses message pack for its RP serialization layer.
+
+00:10:55.880 --> 00:10:57.900
+That kind of fell out of what was available at the time.
+
+00:10:58.100 --> 00:10:59.460
+We benchmarked a bunch of different libraries.
+
+00:11:00.180 --> 00:11:04.540
+And that was the fastest way to send bytes between nodes in 2015.
+
+00:11:05.520 --> 00:11:05.800
+Sure.
+
+00:11:07.160 --> 00:11:12.900
+The distributed schedulers RPC for America has kind of grown haphazardly over time.
+
+00:11:13.060 --> 00:11:15.880
+And there were a bunch of bugs due to some hacky things we were doing with it.
+
+00:11:15.940 --> 00:11:17.780
+And also it was a slower than we would have wanted.
+
+00:11:18.060 --> 00:11:29.600
+So this was an attempt to write a faster message pack library for Python that also did fancier things, supported more types, did some schema validation because like we wanted to catch, you know,
+
+00:11:29.660 --> 00:11:33.200
+the worker is sending this data and the scheduler is getting it and saying it's wrong
+
+00:11:33.840 --> 00:11:41.160
+and we wanted to also add in a way to make schema evolution meaning that i can have different
+
+00:11:41.520 --> 00:11:45.980
+versions of my worker and scheduler and client process and things kind of work if i add new
+
+00:11:46.140 --> 00:11:52.480
+features to the scheduler they don't break the client you know we have a nice forward and backward
+
+00:11:52.580 --> 00:11:57.420
+compatibility story and so that's what kind of fell out um yeah it's a really nice feature we're
+
+00:11:57.420 --> 00:12:00.820
+We're going to dive into that, but you know, you might think, oh, well,
+
+00:12:01.620 --> 00:12:03.760
+just update your client or update the server.
+
+00:12:03.940 --> 00:12:06.240
+But there's all sorts of situations that get really weird.
+
+00:12:06.500 --> 00:12:12.400
+Like if you have Redis as a caching layer and you create a message pack object
+
+00:12:12.620 --> 00:12:17.220
+and stick it in there, and then you deploy a new version of the app, it could
+
+00:12:17.360 --> 00:12:21.380
+maybe can't deserialize anything in the cache anymore because it says something's
+
+00:12:21.420 --> 00:12:23.540
+missing or something's there that it doesn't expect.
+
+00:12:23.670 --> 00:12:23.780
+Right.
+
+00:12:24.500 --> 00:12:26.720
+And so this evolution is important there.
+
+00:12:26.880 --> 00:12:30.440
+if you've got long running work and you stash it into a database and you pull it back out,
+
+00:12:30.520 --> 00:12:34.220
+like all these things where it kind of lives a little outside the process,
+
+00:12:34.920 --> 00:12:41.160
+all of a sudden it starts to matter that before you even consider like clients that run separate code, right?
+
+00:12:42.640 --> 00:12:45.060
+Like you could be the client, just different places in time.
+
+00:12:45.940 --> 00:12:46.340
+Yeah.
+
+00:12:46.580 --> 00:12:46.700
+Yeah.
+
+00:12:46.720 --> 00:12:51.300
+So adding a little bit more structure to how you define messages in a way to make the schedule more maintainable.
+
+00:12:52.220 --> 00:12:52.920
+That work never landed.
+
+00:12:53.340 --> 00:12:55.720
+It's as it is with open source projects.
+
+00:12:55.920 --> 00:12:58.800
+It's a democracy and also a duocracy.
+
+00:12:59.060 --> 00:13:01.840
+And you don't always, paths can be done at dead ends.
+
+00:13:01.920 --> 00:13:03.400
+I still think it'll be valuable in the future,
+
+00:13:03.740 --> 00:13:05.500
+but some stuff was changing the scheduler
+
+00:13:05.700 --> 00:13:08.100
+and serialization is no longer the bottleneck
+
+00:13:08.100 --> 00:13:10.780
+that it was two and a half years ago
+
+00:13:11.100 --> 00:13:11.760
+when this originally started.
+
+00:13:12.760 --> 00:13:12.960
+Okay.
+
+00:13:13.620 --> 00:13:13.760
+Yeah.
+
+00:13:14.740 --> 00:13:17.700
+So let me put this in context for people
+
+00:13:17.780 --> 00:13:18.560
+and maybe make it relevant.
+
+00:13:18.800 --> 00:13:21.579
+Like maybe right now someone's got a FastAPI
+
+00:13:21.580 --> 00:13:26.800
+API and they're using Pydantic and obviously it generates all the awesome
+
+00:13:27.040 --> 00:13:28.380
+JSON that they want.
+
+00:13:29.220 --> 00:13:36.060
+You know, is there a way to, how would you go about creating say a Python
+
+00:13:36.700 --> 00:13:42.100
+server-based system set of APIs that maybe as an option, take message pack,
+
+00:13:43.380 --> 00:13:45.500
+or maybe use that as a primary way.
+
+00:13:45.680 --> 00:13:48.420
+Like it could be maybe, you know, passing an accept header.
+
+00:13:49.700 --> 00:13:50.820
+To take a message pack.
+
+00:13:51.480 --> 00:13:56.120
+Like if you want to exchange message pack client server Python right now, what do you do?
+
+00:13:57.800 --> 00:13:58.940
+That's a good question.
+
+00:13:59.640 --> 00:14:00.780
+To be clear, I am not a web dev.
+
+00:14:00.980 --> 00:14:02.380
+I do not do this for a living.
+
+00:14:03.360 --> 00:14:06.600
+I think there is no standard application slash message pack.
+
+00:14:06.600 --> 00:14:12.440
+I think people can use it if they want, but that's not a standardized thing the same way
+
+00:14:12.440 --> 00:14:13.020
+that JSON is.
+
+00:14:13.800 --> 00:14:13.900
+Yeah.
+
+00:14:14.340 --> 00:14:17.360
+I think that Litestar as a framework does support this out of the box.
+
+00:14:17.720 --> 00:14:18.800
+I don't know about FastAPI.
+
+00:14:18.940 --> 00:14:24.140
+I'm sure there's a way to hack it in as there is with any ASGI server.
+
+00:14:26.220 --> 00:14:29.080
+Yeah, like I said, I had Litestar on those guys maybe a month ago.
+
+00:14:30.199 --> 00:14:32.320
+And yeah, super, super cool about that.
+
+00:14:32.940 --> 00:14:37.920
+So yeah, I know that they support msgspec and a lot of different options there.
+
+00:14:38.220 --> 00:14:45.059
+But I imagine you could just return binary bits between you and your client.
+
+00:14:45.820 --> 00:14:52.460
+I'm thinking of latency sensitive microservice type things sort of, yeah.
+
+00:14:53.020 --> 00:14:53.220
+Yeah.
+
+00:14:53.400 --> 00:14:54.240
+Within your data center.
+
+00:14:54.250 --> 00:14:57.660
+How can you lower serialization, deserialization, serialization,
+
+00:14:57.860 --> 00:15:01.420
+like all that, that cost that could be the max, you know,
+
+00:15:01.420 --> 00:15:04.680
+the biggest part of what's making your app spend time and energy.
+
+00:15:09.720 --> 00:15:14.300
+Michael out there says would love PyArrow parquet support for large data.
+
+00:15:18.060 --> 00:15:22.520
+Yeah, there's been a request for Arrow integration with msgspec.
+
+00:15:22.520 --> 00:15:24.060
+I'm not exactly sure what that would look like.
+
+00:15:24.940 --> 00:15:26.760
+Arrow containers are pretty efficient on their own.
+
+00:15:27.240 --> 00:15:35.080
+Breaking them out into a bunch of objects or stuff to work with msgspec doesn't necessarily make sense in my mind.
+
+00:15:35.080 --> 00:15:39.720
+But anyway, if you have ideas on that, please open an issue or comment on the existing issue.
+
+00:15:41.200 --> 00:15:41.980
+Yeah, indeed.
+
+00:15:43.390 --> 00:15:43.740
+All right.
+
+00:15:44.040 --> 00:15:48.040
+So let's see, some of the highlights are high performance encoders and decoders
+
+00:15:48.660 --> 00:15:50.100
+across those protocols we talked.
+
+00:15:50.660 --> 00:15:51.100
+You have benchmarks.
+
+00:15:51.440 --> 00:15:52.820
+We'll look at them in a minute.
+
+00:15:53.700 --> 00:15:58.220
+You have a really nice, a lot of support for different types that can go in there
+
+00:15:58.900 --> 00:16:02.280
+that can be serialized, but there's also a way to extend it to say,
+
+00:16:03.660 --> 00:16:08.680
+I've got a custom type that you don't think is serializable to whatever end thing,
+
+00:16:08.740 --> 00:16:09.880
+a message package, JSON, whatever.
+
+00:16:11.100 --> 00:16:13.880
+But I can write a little code that'll take it either way.
+
+00:16:14.000 --> 00:16:17.060
+you know, dates are something that drive me crazy,
+
+00:16:17.190 --> 00:16:19.520
+but it could be like an object ID out of MongoDB
+
+00:16:19.670 --> 00:16:23.300
+or other things that seem like they should go back and forth,
+
+00:16:23.390 --> 00:16:24.800
+but don't, you know, right?
+
+00:16:24.990 --> 00:16:25.780
+So that's really nice.
+
+00:16:28.080 --> 00:16:31.700
+And then zero cost schema validation, right?
+
+00:16:31.860 --> 00:16:36.200
+It decodes and validates JSON two times as fast as ORJSON,
+
+00:16:36.260 --> 00:16:38.480
+which is one of the high-performance JSON decoders,
+
+00:16:38.860 --> 00:16:41.660
+and that's just decoding, right?
+
+00:16:42.000 --> 00:16:43.460
+And then the struct thing that we're going to talk about,
+
+00:16:43.640 --> 00:16:49.340
+Which the struct type is kind of what brings the parity with Pydantic, right?
+
+00:16:50.460 --> 00:16:52.980
+Yeah, you could think of it as Pydantic's base model.
+
+00:16:53.260 --> 00:16:55.460
+It's our built-in data class-like type.
+
+00:16:57.420 --> 00:16:59.440
+So structs are data class-like.
+
+00:16:59.900 --> 00:17:04.380
+They, like everything in msgspec, are implemented fully as a C extension.
+
+00:17:05.060 --> 00:17:10.540
+Getting these to work required reading a lot of the CPython source code
+
+00:17:10.550 --> 00:17:12.439
+because we're doing some things that...
+
+00:17:12.459 --> 00:17:14.740
+I don't want to say that they don't want you to do.
+
+00:17:14.880 --> 00:17:17.260
+We're not doing them wrong.
+
+00:17:17.689 --> 00:17:18.760
+But they're not really documented.
+
+00:17:19.030 --> 00:17:23.579
+So, for example, when you subclass for msgspec.struct,
+
+00:17:25.360 --> 00:17:27.540
+that's using a metaclass mechanism,
+
+00:17:28.339 --> 00:17:30.140
+which is a way of defining types, the defined types.
+
+00:17:31.140 --> 00:17:32.460
+And the metaclass is written in C,
+
+00:17:32.650 --> 00:17:36.360
+which CPython doesn't make easy to do.
+
+00:17:37.580 --> 00:17:41.520
+So it's a C extension metaclass that creates new C types.
+
+00:17:42.880 --> 00:17:44.060
+they're pretty speedy.
+
+00:17:44.500 --> 00:17:47.700
+They are 10 to 100x faster for most operations
+
+00:17:48.080 --> 00:17:50.980
+than even handwriting a class that does the same thing.
+
+00:17:51.780 --> 00:17:53.720
+But definitely more than data classes or attrs.
+
+00:17:54.700 --> 00:17:56.180
+Yeah, it's super interesting.
+
+00:17:56.220 --> 00:17:57.600
+And I really want to dive into that.
+
+00:17:57.720 --> 00:18:00.380
+I almost can see the struct type being relevant
+
+00:18:01.020 --> 00:18:05.280
+even outside of msgspec in general, potentially.
+
+00:18:05.740 --> 00:18:07.120
+So yeah, we'll see about that.
+
+00:18:07.120 --> 00:18:07.780
+But it's super cool.
+
+00:18:08.140 --> 00:18:09.640
+And Michael also points out,
+
+00:18:10.480 --> 00:18:13.100
+he's the one who made the issue. Sorry about that.
+
+00:18:14.640 --> 00:18:17.660
+He's commented already, I suppose, in a sense. But yeah, awesome.
+
+00:18:20.140 --> 00:18:22.940
+Cool. All right. So let's do this. I think
+
+00:18:23.880 --> 00:18:26.440
+probably the best way to get started is
+
+00:18:27.720 --> 00:18:31.520
+we could talk through an example. And there's a really nice article
+
+00:18:32.220 --> 00:18:35.300
+by Itmar Turner-Trowing, who's been on the show a couple times,
+
+00:18:35.590 --> 00:18:39.299
+called Faster, More Memory-Efficient Python, JSON parsing with
+
+00:18:39.320 --> 00:18:42.400
+msgspec and just has a couple examples that I thought maybe we could throw up and
+
+00:18:42.770 --> 00:18:47.560
+and you could talk to speak to your thoughts like why is the API work this way here's the
+
+00:18:47.720 --> 00:18:52.900
+advantages and so on yeah so there's this big I believe this is the GitHub API just returning
+
+00:18:52.990 --> 00:18:59.000
+these giant blobs of stuff about users okay and says well if we want to find out what users
+
+00:18:59.960 --> 00:19:06.319
+follow what repos or how many given a user how many repos do they follow right we could just say
+
+00:19:06.380 --> 00:19:13.500
+with open, read this, and then just do a JSON load, and then do the standard dictionary stuff,
+
+00:19:13.720 --> 00:19:18.720
+right? Like for everything, we're going to go to the element that we got out and say bracket some
+
+00:19:19.020 --> 00:19:24.140
+key, bracket some key. You know, it looks like key not found errors are just lurking in here all over
+
+00:19:24.160 --> 00:19:29.560
+the place, but you know, you should know that, you know, maybe it'll work, right, if you know the API,
+
+00:19:29.680 --> 00:19:34.279
+I guess. So it's like, this is the standard way. How much memory does this use? How much time does
+
+00:19:34.300 --> 00:19:41.840
+it take so look we can basically swap out or json i'm not super familiar with or json are you uh
+
+00:19:42.210 --> 00:19:48.260
+yeah or json is compatible ish with the standard lib json except that it returns uh bytes rather
+
+00:19:48.380 --> 00:19:55.420
+than strings got it okay there's also ijson i believe which makes it streaming so there's that
+
+00:19:55.810 --> 00:20:01.580
+and then it says okay well how would this look if we're going to use msgspec and in his example
+
+00:20:01.600 --> 00:20:07.120
+he's using structured data so the structs would this is like the pydantic version but it doesn't
+
+00:20:07.880 --> 00:20:12.580
+have to be this way but it is this way right this is the one he chose so maybe just talk us through
+
+00:20:12.680 --> 00:20:19.820
+like how would you solve this problem using msgspec and classes yeah so as as he's done here in
+
+00:20:19.840 --> 00:20:26.539
+this blog post he's defined a couple struct types for the various levels of this message so repos
+
+00:20:27.200 --> 00:20:33.940
+actors and interactions and then uh parses the message directly into those types so the final
+
+00:20:34.040 --> 00:20:39.340
+call there is passing in the red message and then specifying the type as a list of interactions
+
+00:20:39.640 --> 00:20:44.640
+which uh tree down into actors and reposts exactly so this is what you mentioned earlier about having
+
+00:20:45.660 --> 00:20:52.300
+more function based so you just say decode give it the string or the bytes and you say type
+
+00:20:52.320 --> 00:20:59.620
+equals list of bracket top level class and just like pydantic these can be nested so there's an
+
+00:20:59.780 --> 00:21:04.480
+interaction which has an actor there's an actor class which has a login which has a type so your
+
+00:21:04.780 --> 00:21:09.680
+pydantic mental model for how those kind of fit together is pretty straightforward right
+
+00:21:10.860 --> 00:21:16.900
+pretty similar yeah and then you're just programming with classes awesome yep and it'll all work well
+
+00:21:17.060 --> 00:21:21.340
+with like my pi or pi right or whatever you're using if you're doing yeah analysis tools okay
+
+00:21:21.360 --> 00:21:26.840
+Yeah, so you've thought about making sure that not just does it work well
+
+00:21:27.130 --> 00:21:30.920
+from a usability perspective, but the type checkers don't go crazy.
+
+00:21:31.260 --> 00:21:35.140
+Yeah, and any editor integration you have should just work.
+
+00:21:36.940 --> 00:21:37.200
+Nice.
+
+00:21:37.710 --> 00:21:42.980
+Because there's sometimes, oh gosh, I think maybe FastAPIs changes,
+
+00:21:43.070 --> 00:21:48.480
+but you'll have things like you would say the type of an argument being passed in,
+
+00:21:48.510 --> 00:21:49.920
+if it's, say, coming off the query string,
+
+00:21:50.200 --> 00:21:57.040
+you would say it's depend it's a type depends not a not an int for example it's a because it's being
+
+00:21:57.200 --> 00:22:04.280
+pulled out of the query string i think that's fast api and while it makes the runtime happy and the
+
+00:22:04.400 --> 00:22:09.420
+runtime says oh i see you want to get this int from the query string the type checkers and stuff are
+
+00:22:09.500 --> 00:22:14.160
+like depends what is this like this is an int why are you trying to use this depends as an int this
+
+00:22:14.220 --> 00:22:18.980
+doesn't make any sense i think it's a bit of a challenge to have the runtime the types drive the
+
+00:22:19.000 --> 00:22:21.420
+the runtime, but still not freak it out.
+
+00:22:22.160 --> 00:22:24.820
+Yeah, I think that the Python typing ecosystem,
+
+00:22:25.320 --> 00:22:28.400
+especially with the recent changes in new versions
+
+00:22:29.180 --> 00:22:32.960
+and the annotated wrapper, are moving towards a system
+
+00:22:33.140 --> 00:22:36.980
+where these kinds of APIs can be spelled natively in ways
+
+00:22:37.180 --> 00:22:38.740
+that the type checkers will understand.
+
+00:22:40.520 --> 00:22:43.220
+But if your product that existed before these changes,
+
+00:22:43.450 --> 00:22:45.420
+you obviously had some pre-existing way
+
+00:22:45.420 --> 00:22:48.520
+to make those work that might not play as nicely.
+
+00:22:48.820 --> 00:22:50.420
+And so there's the upgrade cost for the project.
+
+00:22:50.620 --> 00:22:55.220
+I'm not envious of the work that Samuel Coven and team have had to do to upgrade Pydantic
+
+00:22:56.580 --> 00:22:59.120
+to erase some old warts in the API that they found.
+
+00:22:59.880 --> 00:23:01.760
+It's nice to see what they've done, and it's impressive.
+
+00:23:01.900 --> 00:23:06.960
+But I have the benefit of starting this project after those changes in typing sync system existed
+
+00:23:07.080 --> 00:23:10.500
+and can look at hindsight mistakes others have made and learn from them.
+
+00:23:10.980 --> 00:23:12.160
+Yeah, that's really excellent.
+
+00:23:12.760 --> 00:23:16.440
+They have done, like I said, I'm a big fan of Pydantic, and it took them almost a year.
+
+00:23:16.860 --> 00:23:20.400
+I interviewed Samuel about that change and it was no joke.
+
+00:23:20.750 --> 00:23:25.700
+It was a lot of work, but what they came up with, pretty compatible,
+
+00:23:26.310 --> 00:23:29.720
+pretty much feels like the same Pydantic, but if you peel back the covers,
+
+00:23:29.940 --> 00:23:30.760
+it's definitely not.
+
+00:23:34.020 --> 00:23:36.980
+All right, so the other interesting thing about Idmar's article here
+
+00:23:37.240 --> 00:23:38.700
+is the performance side.
+
+00:23:38.820 --> 00:23:39.100
+It's okay.
+
+00:23:41.200 --> 00:23:46.380
+Do you get fixed memory usage or does it vary based on the size of the data?
+
+00:23:46.600 --> 00:23:47.720
+And do you get schema validation?
+
+00:23:49.600 --> 00:23:53.800
+So standard lib, just straight JSON module, 420 milliseconds.
+
+00:23:55.960 --> 00:24:00.120
+ORJSON, the fast one, a little less than twice as fast, 280 milliseconds.
+
+00:24:01.540 --> 00:24:07.080
+iJSON for iterable JSON, 300, so a little more than the fast one.
+
+00:24:07.520 --> 00:24:09.240
+Message spec, 90 milliseconds.
+
+00:24:09.780 --> 00:24:10.080
+That's awesome.
+
+00:24:10.400 --> 00:24:16.560
+That's like three times as fast as the better one, over four times as fast
+
+00:24:16.580 --> 00:24:21.940
+built-in one it also is doing you know quote unquote more work it's a validating the response
+
+00:24:22.070 --> 00:24:27.300
+as it comes in exactly you're sure that it's correct then too all those other ones are just
+
+00:24:27.700 --> 00:24:33.260
+giving you dictionaries and yolo do what you want with them right but here you're actually all those
+
+00:24:33.380 --> 00:24:37.580
+types that you described right the interaction and the actors and the repos in the class structure
+
+00:24:38.360 --> 00:24:43.680
+that's all validation so and on top of that you've created classes which are heavier weight
+
+00:24:44.260 --> 00:24:50.600
+than dictionaries because general classes are heavier weight than dictionaries because they
+
+00:24:50.600 --> 00:24:56.440
+have the dunder dict that has all the fields in there effectively anyway right um so that's
+
+00:24:56.440 --> 00:25:03.380
+and that's not true for for structs are yes i know yes so trucks they they are lighter weight to
+
+00:25:03.660 --> 00:25:06.620
+allocate than a dictionary or standard class that's one of the reasons they're faster
+
+00:25:07.520 --> 00:25:11.679
+yeah and structs are awesome and so the other thing i was to point out is you know you've got
+
+00:25:11.700 --> 00:25:18.660
+40 megabytes of memory usage versus 130 so almost four times less than the standard module and the
+
+00:25:18.780 --> 00:25:23.620
+only thing that beats you is the iterative one because it literally only has one in memory at a
+
+00:25:23.700 --> 00:25:30.960
+time right yeah one element yeah so so this benchmark is kind of hiding uh two things together
+
+00:25:31.640 --> 00:25:38.700
+um so there there is the output what you're parsing uh everything here except for ijson is going to
+
+00:25:38.500 --> 00:25:42.540
+parse the full input into something.
+
+00:25:43.320 --> 00:25:46.600
+msgspec is more efficient than orJSON or the standard lib in this respect
+
+00:25:46.700 --> 00:25:48.600
+because we're only extracting the fields we care about,
+
+00:25:48.700 --> 00:25:51.260
+but you're still going to end up with a list of a bunch of objects.
+
+00:25:52.179 --> 00:25:54.420
+iJSON is only going to pull one into memory at a time,
+
+00:25:55.000 --> 00:25:56.640
+so it's going to have less in-memory there.
+
+00:25:57.180 --> 00:25:59.640
+And then you have the memory usage of the parsers themselves,
+
+00:26:00.400 --> 00:26:01.040
+which can also vary.
+
+00:26:02.360 --> 00:26:06.680
+So orJSON's memory usage in its parser is a lot higher than msgspecs,
+
+00:26:07.140 --> 00:26:08.400
+regardless of the output size.
+
+00:26:09.100 --> 00:26:10.360
+There's a little more internal state.
+
+00:26:11.680 --> 00:26:13.480
+- So this is a pretty interesting distinction
+
+00:26:14.000 --> 00:26:15.020
+that you're calling out here.
+
+00:26:15.840 --> 00:26:19.160
+So for example, if people check out this article,
+
+00:26:19.340 --> 00:26:21.780
+which I'll link, there's like tons of stuff
+
+00:26:21.880 --> 00:26:24.200
+that people don't care about in the JSON,
+
+00:26:24.460 --> 00:26:27.180
+like the avatar URL, the gravatar ID,
+
+00:26:28.360 --> 00:26:30.440
+the reference type, whether it's a brand,
+
+00:26:30.500 --> 00:26:32.500
+like this stuff that you just don't care about, right?
+
+00:26:33.920 --> 00:26:36.140
+But to parse it in, you got to read that.
+
+00:26:37.300 --> 00:26:43.000
+But what's pretty cool you're saying is like, in this case, the class that Edmar came up
+
+00:26:43.040 --> 00:26:45.360
+with is just repo driving from struct.
+
+00:26:45.460 --> 00:26:46.200
+It just has a name.
+
+00:26:47.100 --> 00:26:49.540
+There's a bunch of other stuff in there, but you don't care about it.
+
+00:26:49.580 --> 00:26:53.660
+And so what you're saying is like, if you say that that's the decoder, it looks at that
+
+00:26:53.760 --> 00:26:54.860
+and goes, there's a bunch of stuff here.
+
+00:26:55.580 --> 00:26:56.400
+We're not loading that.
+
+00:26:56.600 --> 00:27:00.660
+We're just going to look for the things you've explicitly asked us to model, right?
+
+00:27:01.140 --> 00:27:01.320
+Mm-hmm.
+
+00:27:02.180 --> 00:27:04.440
+There's no sense in doing the work if you're never going to look at it.
+
+00:27:05.900 --> 00:27:34.760
+Yeah. A lot of different serialization frameworks. I can't remember how Pydantic responds when you do this, but, you know, the comments beyond Pydantic, it doesn't really matter, is they'll freak out to say, oh, there's extra stuff here. What am I supposed, you know, for example, this repo, it just has name, but in the data model, it has way more in the JSON data. So you try to deserialize it, it'll go, well, I don't have room to put all this other stuff.
+
+00:27:34.940 --> 00:27:38.200
+things are, you know, to freak out. And this one is just like, no, we're just going to filter down
+
+00:27:38.200 --> 00:27:43.240
+to what you asked for. I really, it's nice in a couple of ways. It's nice from performance,
+
+00:27:44.040 --> 00:27:47.380
+nice from clean code. I don't have to put all those other fields I don't care about,
+
+00:27:48.480 --> 00:27:54.140
+but also from, you talked about the evolution friendliness, right? Because what's way more
+
+00:27:54.420 --> 00:27:59.660
+common is that things git added rather than taken away or change. It's like, well, the complexity
+
+00:27:59.660 --> 00:28:05.760
+grows now repos also have this you know related repos or sub repos or whatever the heck they have
+
+00:28:05.880 --> 00:28:13.120
+right and this model here will just let you go whatever don't care not yeah if get up updates
+
+00:28:13.270 --> 00:28:17.280
+their api and adds new fields you're not going to get an error and if they remove a field you should
+
+00:28:17.440 --> 00:28:23.020
+get a nice error that says expected you know field name and now it's missing and you can track that
+
+00:28:23.040 --> 00:28:25.260
+down a lot easier than a random key error.
+
+00:28:27.280 --> 00:28:27.860
+I agree.
+
+00:28:27.870 --> 00:28:31.320
+I think, okay, let's, let's dive into the struct a little bit, because since
+
+00:28:31.500 --> 00:28:35.240
+we're kind of on that now, and I think this is one of the highlights of what you
+
+00:28:35.280 --> 00:28:39.340
+built again, it's kind of the same mental model as people are familiar with some
+
+00:28:39.940 --> 00:28:42.720
+data classes with Pytantic and attrs and so on.
+
+00:28:44.040 --> 00:28:48.980
+So when I saw your numbers, I won't come back and talk about benchmarks with
+
+00:28:49.120 --> 00:28:51.240
+numbers on, but I just saw like, wow, this is fast.
+
+00:28:52.000 --> 00:28:55.060
+While the memory usage is low, you must be doing something native.
+
+00:28:55.140 --> 00:28:59.700
+You must be doing something crazy in here that's not just dunder slots.
+
+00:29:00.000 --> 00:29:04.180
+While dunder slots is awesome, there's more to it than that, right?
+
+00:29:04.960 --> 00:29:09.620
+And so they're written in C, quite speedy, and lightweight.
+
+00:29:12.280 --> 00:29:15.100
+So measurably faster than data classes, attrs, and Pydantic.
+
+00:29:16.560 --> 00:29:17.300
+Tell us about these classes.
+
+00:29:17.700 --> 00:29:18.780
+This is pretty interesting.
+
+00:29:19.540 --> 00:29:24.580
+So as mentioned earlier, they're not exactly,
+
+00:29:24.580 --> 00:29:26.120
+but they're basically slots classes.
+
+00:29:26.770 --> 00:29:30.080
+So Python's data model, actually CPython's data model,
+
+00:29:30.720 --> 00:29:35.840
+is either a standard class where it stores its attributes in a dict.
+
+00:29:36.660 --> 00:29:37.760
+That's not exactly true.
+
+00:29:38.340 --> 00:29:40.960
+There's been some optimizations where the keys are stored separately
+
+00:29:41.340 --> 00:29:42.260
+alongside the class structure,
+
+00:29:42.270 --> 00:29:44.320
+and all the values are stored on the object instances.
+
+00:29:45.180 --> 00:29:49.500
+But in model, there's dict classes and there's slots classes
+
+00:29:49.520 --> 00:29:55.340
+which you pre-declare your attributes to be in this Dunder slots interval.
+
+00:29:56.160 --> 00:30:00.240
+And those get stored inline in the same allocation as the object instance.
+
+00:30:00.660 --> 00:30:01.540
+There's no pointer chasing.
+
+00:30:02.590 --> 00:30:05.560
+What that means is that you can't set extra attributes on them
+
+00:30:05.980 --> 00:30:09.120
+that weren't pre-declared, but also things are a little bit more efficient.
+
+00:30:10.940 --> 00:30:14.940
+We create those automatically when you use a class from a struct type.
+
+00:30:15.460 --> 00:30:19.480
+And we do a bunch of other interesting things that are stored on the type
+
+00:30:19.500 --> 00:30:21.800
+is why we had to write a metaclass in C.
+
+00:30:23.620 --> 00:30:24.580
+And this is...
+
+00:30:24.580 --> 00:30:25.180
+I went to read it.
+
+00:30:25.190 --> 00:30:25.980
+I'm like, whoa, okay.
+
+00:30:26.520 --> 00:30:27.560
+Maybe we'll come back to this.
+
+00:30:27.700 --> 00:30:28.780
+There's a lot of stuff going on.
+
+00:30:29.040 --> 00:30:31.420
+This is one of the problems with this hobby project
+
+00:30:31.530 --> 00:30:33.320
+is that I wrote this for fun
+
+00:30:34.090 --> 00:30:35.700
+and a little bit of work related, but mostly fun.
+
+00:30:36.220 --> 00:30:37.500
+And it's not the easiest code base
+
+00:30:37.570 --> 00:30:38.880
+for others to step into.
+
+00:30:39.960 --> 00:30:41.700
+It fits my mental model, but not necessarily.
+
+00:30:42.120 --> 00:30:43.940
+I can tell you weren't looking for VC funding
+
+00:30:44.120 --> 00:30:45.000
+because you didn't write it in Rust.
+
+00:30:45.540 --> 00:30:45.680
+No.
+
+00:30:48.260 --> 00:30:55.860
+seems to be the common denominator these days yeah anyway c just because the c python's already in c
+
+00:30:56.460 --> 00:31:02.460
+and that's right and then you see i i do know rust but uh i for what i wanted to do in the use case
+
+00:31:02.500 --> 00:31:09.420
+i had in mind i wanted to be able to touch the c api directly and that felt like the easiest way
+
+00:31:09.420 --> 00:31:16.540
+to go about doing it yeah okay so from a consumer of this struct class i just say class and your
+
+00:31:16.400 --> 00:31:17.140
+your example is user.
+
+00:31:17.150 --> 00:31:18.360
+You say class, user, parentheses,
+
+00:31:18.810 --> 00:31:19.380
+direct from struct.
+
+00:31:20.500 --> 00:31:21.740
+In the field, colon type.
+
+00:31:21.830 --> 00:31:22.860
+So like name, colon, string,
+
+00:31:23.600 --> 00:31:26.040
+groups, colon, set of, str, and so on.
+
+00:31:27.700 --> 00:31:30.880
+It looks like standard data classes type of stuff.
+
+00:31:31.160 --> 00:31:34.320
+But what you're saying is your meta class goes through
+
+00:31:34.440 --> 00:31:35.200
+and looks at that and says,
+
+00:31:35.330 --> 00:31:37.540
+okay, we're going to create a class called user,
+
+00:31:37.720 --> 00:31:39.100
+but it's going to have slots called name,
+
+00:31:39.270 --> 00:31:41.140
+email, and groups, among other things, right?
+
+00:31:41.250 --> 00:31:42.780
+It like does that magic for us.
+
+00:31:43.500 --> 00:31:43.700
+Yeah.
+
+00:31:44.150 --> 00:31:46.340
+And then it sets up a bunch of internal data structures.
+
+00:31:46.380 --> 00:31:48.020
+that are stored on the type.
+
+00:31:49.100 --> 00:31:50.400
+- Okay, give me a sense of like,
+
+00:31:51.040 --> 00:31:52.880
+what's something, why do you gotta put that in there?
+
+00:31:54.100 --> 00:31:55.960
+- So the way data classes work,
+
+00:31:57.200 --> 00:31:58.500
+after they do all the type parsing stuff,
+
+00:31:58.620 --> 00:31:59.280
+which we have to do too,
+
+00:32:00.280 --> 00:32:04.080
+they then generate some code and eval it
+
+00:32:04.250 --> 00:32:05.460
+to generate each of the methods.
+
+00:32:05.760 --> 00:32:07.240
+So when you're importing,
+
+00:32:07.310 --> 00:32:08.400
+or when you define a new data class,
+
+00:32:08.720 --> 00:32:11.400
+it generates an init method and evals it
+
+00:32:11.480 --> 00:32:12.480
+and then stores it on the instance.
+
+00:32:14.140 --> 00:32:15.700
+That means that you have little bits of bytecode
+
+00:32:15.720 --> 00:32:17.720
+floating around for all of your new methods.
+
+00:32:18.480 --> 00:32:21.760
+msgspec structs instead each of the standard methods
+
+00:32:22.020 --> 00:32:23.660
+that the implementation provides,
+
+00:32:23.680 --> 00:32:28.640
+which would be init, wrapper, equality checks, copies,
+
+00:32:29.920 --> 00:32:34.300
+various things, are single C functions.
+
+00:32:35.120 --> 00:32:40.660
+And then the type has some data structures on it
+
+00:32:40.660 --> 00:32:42.360
+that we can use to define those.
+
+00:32:42.460 --> 00:32:44.779
+So we have a single init method for all struct types
+
+00:32:44.800 --> 00:32:46.120
+It's used everywhere.
+
+00:32:46.940 --> 00:32:52.900
+And as part of the init method, we need to know the fields that are defined on the struct.
+
+00:32:53.090 --> 00:32:57.220
+So we have some data stored on there about the field names, default values, various things.
+
+00:32:59.420 --> 00:33:03.620
+Because they're written in C rather than Python bytecode, they can be a lot faster.
+
+00:33:04.420 --> 00:33:08.500
+And because we're not having to eval a new method every time we define a struct,
+
+00:33:09.160 --> 00:33:10.780
+importing structs is a lot faster than data classes.
+
+00:33:12.200 --> 00:33:13.620
+I'm not going to guess.
+
+00:33:13.820 --> 00:33:19.860
+I have to look up on my benchmarks, but they are basically as efficient to define as a handwritten
+
+00:33:20.160 --> 00:33:23.540
+class where data classes have a bunch of overhead. If you've ever written a project that has
+
+00:33:24.200 --> 00:33:28.940
+a hundred of them, importing can slow down. Yeah. Okay. Because you basically are dynamically
+
+00:33:29.720 --> 00:33:35.600
+building them up, right? Yeah. In data class story. Yeah. So you've got kind of the data class
+
+00:33:36.480 --> 00:33:41.180
+stuff. You got, as you said, dunder net, repper, copy, et cetera, but you also have dunder match
+
+00:33:41.220 --> 00:33:42.880
+ARGs for pattern matching.
+
+00:33:43.980 --> 00:33:44.740
+That's pretty cool.
+
+00:33:46.960 --> 00:33:50.280
+And Dunder Rich Reper for pretty printing support with Rich.
+
+00:33:50.900 --> 00:33:51.380
+Yeah.
+
+00:33:51.580 --> 00:33:54.300
+If you just rich.print, it'll take that, right?
+
+00:33:54.440 --> 00:33:55.060
+What happens then?
+
+00:33:55.860 --> 00:33:58.520
+It preprints it, similar to how a data class would be rendered.
+
+00:34:00.180 --> 00:34:00.640
+Yeah.
+
+00:34:01.840 --> 00:34:03.060
+Rich is making a pretty big impact.
+
+00:34:03.620 --> 00:34:05.260
+So Rich is special.
+
+00:34:05.260 --> 00:34:05.940
+I enjoy using it.
+
+00:34:06.760 --> 00:34:06.900
+Yeah.
+
+00:34:09.740 --> 00:34:11.120
+So this is excellent.
+
+00:34:11.320 --> 00:34:13.220
+You've got all the stuff generated.
+
+00:34:13.520 --> 00:34:16.740
+So much of it is in C and super lightweight and fast.
+
+00:34:17.100 --> 00:34:20.060
+But from the way we think of it, it's just a Python class,
+
+00:34:20.679 --> 00:34:22.820
+even a little less weird than data classes, right?
+
+00:34:22.879 --> 00:34:24.360
+Because you don't have to put a decorator on it.
+
+00:34:24.360 --> 00:34:27.280
+You just derive from this thing.
+
+00:34:27.679 --> 00:34:28.360
+So that's super cool.
+
+00:34:33.020 --> 00:34:34.139
+Yeah, super neat.
+
+00:34:34.379 --> 00:34:37.980
+The hope was that these would feel familiar enough to users
+
+00:34:38.000 --> 00:34:40.780
+coming from data classes or attrs or Pydantic
+
+00:34:40.870 --> 00:34:44.659
+or all the various models that learning a new one
+
+00:34:44.879 --> 00:34:45.540
+wouldn't be necessary.
+
+00:34:46.740 --> 00:34:47.240
+They're the same.
+
+00:34:48.070 --> 00:34:48.200
+Yeah.
+
+00:34:49.440 --> 00:34:49.639
+Excellent.
+
+00:34:49.860 --> 00:34:51.540
+One difference if you're coming from Pydantic
+
+00:34:51.590 --> 00:34:53.700
+is there's no methods defined on these by default.
+
+00:34:54.260 --> 00:34:57.540
+So if you define a struct with fields A, B, and C,
+
+00:34:58.380 --> 00:35:01.100
+only A, B, and C exist as attributes on that class.
+
+00:35:01.380 --> 00:35:03.120
+You don't have to worry about any conflicting names.
+
+00:35:04.560 --> 00:35:04.700
+Okay.
+
+00:35:04.940 --> 00:35:14.800
+so for example like the pandemic ones have gosh i can't remember the um v1 versus v2 it's like
+
+00:35:17.000 --> 00:35:21.020
+two i can't remember like two dictionary effectively right where they'll like
+
+00:35:21.360 --> 00:35:28.180
+dump out the json yeah there's a in v1 there's a method dot json which if you have a field name
+
+00:35:28.360 --> 00:35:34.520
+json will conflict um they are remedying that by adding a model prefix for everything which i think
+
+00:35:34.300 --> 00:35:38.240
+is a good idea i think that's yeah yeah it's like model underscore json or dict or something like
+
+00:35:38.240 --> 00:35:44.160
+that yeah cool yeah that's one of the few breaking changes they actually unless you're deep down in
+
+00:35:44.160 --> 00:35:48.960
+the guts of Pydantic that you'll you might encounter yeah you don't have to worry about that stuff
+
+00:35:49.160 --> 00:35:56.660
+because you're more function based right you would say decode or i guess yeah decode here's some some
+
+00:35:56.840 --> 00:36:02.820
+data some json or something and then the thing you decode it into would be your user type you'd say
+
+00:36:02.700 --> 00:36:06.160
+say type equals user rather than going to the user directly.
+
+00:36:08.460 --> 00:36:12.220
+Can we put our own properties and methods and stuff
+
+00:36:12.480 --> 00:36:13.760
+on these classes and that work all right?
+
+00:36:14.060 --> 00:36:14.220
+Yeah.
+
+00:36:15.200 --> 00:36:17.560
+This, to a user, you should think of this as a data class
+
+00:36:17.630 --> 00:36:18.540
+that doesn't use a decorator.
+
+00:36:19.520 --> 00:36:19.640
+OK.
+
+00:36:19.840 --> 00:36:21.740
+They should be identical unless you're ever
+
+00:36:21.850 --> 00:36:25.860
+trying to touch the Dunder data class fields attribute
+
+00:36:26.040 --> 00:36:26.940
+that exists on data classes.
+
+00:36:27.190 --> 00:36:28.940
+There should be no runtime differences,
+
+00:36:29.220 --> 00:36:29.900
+as far as you can tell.
+
+00:36:30.400 --> 00:36:30.820
+Mm-hmm.
+
+00:36:32.220 --> 00:36:33.360
+And when you're doing the schema validation,
+
+00:36:34.280 --> 00:36:36.500
+it sounds like you're basically embracing
+
+00:36:36.800 --> 00:36:40.360
+the optionality of the type system.
+
+00:36:40.420 --> 00:36:41.700
+If you say int, it has to be there.
+
+00:36:42.200 --> 00:36:43.920
+If you say optional int or int pipe none,
+
+00:36:45.260 --> 00:36:46.900
+it may not be there, right?
+
+00:36:47.380 --> 00:36:47.780
+No.
+
+00:36:48.980 --> 00:36:49.960
+So it's close.
+
+00:36:50.100 --> 00:36:52.700
+I'm going to be pedantic here a little bit.
+
+00:36:53.020 --> 00:36:56.960
+The optional fields are ones that have default values set.
+
+00:36:57.520 --> 00:36:59.620
+So optional bracket int without a default
+
+00:36:59.840 --> 00:37:00.740
+is still a required field.
+
+00:37:00.920 --> 00:37:02.460
+It's just one that could be an int or none.
+
+00:37:02.900 --> 00:37:04.260
+You'd have to have a literal none passed in.
+
+00:37:04.360 --> 00:37:04.880
+Otherwise, we'd error.
+
+00:37:05.520 --> 00:37:08.300
+This more matches with how mypy interprets the type system.
+
+00:37:08.900 --> 00:37:09.420
+Got it.
+
+00:37:09.530 --> 00:37:09.620
+OK.
+
+00:37:10.150 --> 00:37:12.460
+So if I had an optional thing, but it had no value,
+
+00:37:12.580 --> 00:37:14.280
+I'd have to explicitly set it to none?
+
+00:37:14.820 --> 00:37:15.020
+Yes.
+
+00:37:15.680 --> 00:37:16.040
+OK.
+
+00:37:16.530 --> 00:37:19.900
+Or it would have to be there in the data every time.
+
+00:37:21.880 --> 00:37:24.300
+Like other things, you have default factories, right?
+
+00:37:24.420 --> 00:37:25.620
+Passing a function that gets called.
+
+00:37:27.799 --> 00:37:29.480
+I guess if it doesn't exist, right?
+
+00:37:29.600 --> 00:37:31.980
+If the data's in there that's being deserialized, it won't.
+
+00:37:34.719 --> 00:37:35.440
+Okay, excellent.
+
+00:37:35.820 --> 00:37:39.000
+And I guess your decorator creates the initializer.
+
+00:37:39.010 --> 00:37:42.760
+But another thing that I saw that you had was you have this post init,
+
+00:37:43.900 --> 00:37:47.080
+which is really nice, like a way to say, like, okay, it's been deserialized.
+
+00:37:47.960 --> 00:37:49.180
+Let me try a little further.
+
+00:37:50.740 --> 00:37:51.260
+Tell us about this.
+
+00:37:51.310 --> 00:37:51.600
+This is cool.
+
+00:37:52.380 --> 00:37:54.320
+That's, I mean, that's coming from data classes.
+
+00:37:54.450 --> 00:37:55.160
+They have the same method.
+
+00:37:56.280 --> 00:37:59.460
+So if you need to do any extra thing after init,
+
+00:37:59.860 --> 00:38:02.760
+you can use it here rather than trying to override the built-in init,
+
+00:38:03.260 --> 00:38:04.280
+which we don't let you do.
+
+00:38:05.640 --> 00:38:08.100
+Right, because it has so much magic to do.
+
+00:38:08.260 --> 00:38:08.960
+Like, let it do it.
+
+00:38:11.360 --> 00:38:13.200
+And you don't want to override that anyway.
+
+00:38:13.580 --> 00:38:17.660
+You'll have to deal with, like, passing all the arguments.
+
+00:38:17.880 --> 00:38:21.340
+Yeah, it runs Python instead of maybe C, all these things, right?
+
+00:38:23.020 --> 00:38:27.420
+So PostNet would exist if you have more complex constraints, right?
+
+00:38:29.180 --> 00:38:30.760
+Currently, that's one reason to use it.
+
+00:38:32.060 --> 00:38:35.200
+We currently don't support custom validation functions.
+
+00:38:35.500 --> 00:38:40.340
+There's no.validate, decorator, various frameworks, different ways of defining these.
+
+00:38:40.540 --> 00:38:42.180
+We have some constraints that are built in.
+
+00:38:42.240 --> 00:38:45.940
+You can constraint a number to be greater than some value,
+
+00:38:46.020 --> 00:38:49.140
+but there's no way to specify custom constraints currently.
+
+00:38:49.460 --> 00:38:50.020
+It's on the roadmap.
+
+00:38:50.660 --> 00:38:51.500
+It's a thing we want to add.
+
+00:38:52.000 --> 00:38:53.240
+PostNet's a way to hack around that.
+
+00:38:53.910 --> 00:38:56.000
+So right now, you're looking at the screen,
+
+00:38:56.050 --> 00:38:57.160
+you have a PostNet defined,
+
+00:38:57.190 --> 00:39:00.440
+and you're checking if low is greater than high,
+
+00:39:00.960 --> 00:39:01.600
+raise an error.
+
+00:39:02.040 --> 00:39:04.020
+And that'll bubble up through decodes
+
+00:39:04.070 --> 00:39:06.060
+and raise an ice user-facing validation error.
+
+00:39:06.760 --> 00:39:08.020
+In the long run, we'd like that to be done
+
+00:39:08.120 --> 00:39:09.380
+a little bit more field-based.
+
+00:39:10.940 --> 00:39:12.220
+It is tricky, though,
+
+00:39:12.600 --> 00:39:16.580
+because the validation goes on to one field or the other.
+
+00:39:16.610 --> 00:39:19.880
+You don't have composite validators necessarily, right?
+
+00:39:20.560 --> 00:39:23.480
+And so there's totally valid values of this low,
+
+00:39:23.700 --> 00:39:25.720
+but whatever it is, it has to be lower than high.
+
+00:39:26.480 --> 00:39:27.960
+But how do you express that relationship?
+
+00:39:28.150 --> 00:39:29.000
+So I think this is awesome.
+
+00:39:31.300 --> 00:39:33.540
+Other areas where it could be interesting is like
+
+00:39:35.320 --> 00:39:37.460
+under some circumstances, maybe you've got to compute,
+
+00:39:38.440 --> 00:39:42.960
+I don't know, compute some field also that's in there that's not set.
+
+00:39:42.970 --> 00:39:43.200
+I don't know.
+
+00:39:43.560 --> 00:39:44.560
+There's some good options in here.
+
+00:39:44.690 --> 00:39:45.220
+I like it a lot.
+
+00:39:48.320 --> 00:39:50.800
+Yeah, I guess the errors just come out as just straight out of,
+
+00:39:50.830 --> 00:39:53.180
+like something went wrong with under post init, right?
+
+00:39:53.600 --> 00:39:56.100
+Rather than field low has this problem.
+
+00:39:57.900 --> 00:40:02.340
+Yeah, it's a little harder to relate an error being raised
+
+00:40:02.480 --> 00:40:04.240
+to a specific field if you raise it in the post init.
+
+00:40:06.100 --> 00:40:07.420
+Also, since you're looking at this,
+
+00:40:07.540 --> 00:40:09.440
+and I'm proud that I got this to work,
+
+00:40:11.199 --> 00:40:14.460
+the errors raised in post init use chained exceptions.
+
+00:40:14.910 --> 00:40:16.800
+So you can see a little bit of the cause of where it comes from
+
+00:40:16.860 --> 00:40:18.960
+and getting those to work at the Python C API
+
+00:40:19.090 --> 00:40:20.080
+is completely undocumented
+
+00:40:20.560 --> 00:40:21.780
+and a little tricky to figure out.
+
+00:40:22.380 --> 00:40:24.380
+It's a lot of reading how the interpreter does it
+
+00:40:24.430 --> 00:40:27.640
+and making the right 12 incantations
+
+00:40:28.940 --> 00:40:30.020
+to get them to bubble up right.
+
+00:40:30.620 --> 00:40:32.920
+Yeah, I do not envy you working on this struct,
+
+00:40:34.420 --> 00:40:35.380
+this base class,
+
+00:40:35.720 --> 00:40:38.240
+but that's where part of the magic is, right?
+
+00:40:38.380 --> 00:40:39.900
+And that's why I wanted to dive into this
+
+00:40:40.020 --> 00:40:42.720
+because I think it behaves like Python classes,
+
+00:40:42.910 --> 00:40:45.360
+but it has these really special features
+
+00:40:45.560 --> 00:40:46.720
+that we don't normally get, right?
+
+00:40:46.780 --> 00:40:51.840
+like low memory usage, high performance, accessing the fields?
+
+00:40:53.380 --> 00:40:56.040
+Is that any quicker, or is it like standard struct?
+
+00:40:57.220 --> 00:41:00.220
+Attribute access and settings should be the same as any other class.
+
+00:41:00.920 --> 00:41:02.240
+Things that are faster are in it.
+
+00:41:04.180 --> 00:41:05.780
+Reper, not that that should matter.
+
+00:41:06.190 --> 00:41:07.720
+If you're looking for a high performance reper,
+
+00:41:07.720 --> 00:41:09.840
+that seems like you're doing something wrong.
+
+00:41:11.460 --> 00:41:13.960
+Equality checks, comparisons, so sorting,
+
+00:41:14.190 --> 00:41:15.140
+you know, less than, greater than.
+
+00:41:18.840 --> 00:41:19.880
+I think that's it.
+
+00:41:20.180 --> 00:41:21.340
+Everything else should be about the same.
+
+00:41:22.860 --> 00:41:23.300
+Okay.
+
+00:41:25.900 --> 00:41:26.800
+So field ordering,
+
+00:41:28.000 --> 00:41:29.740
+you talked about evolution over time.
+
+00:41:30.100 --> 00:41:32.660
+Does this matter?
+
+00:41:33.440 --> 00:41:34.640
+Field ordering is mostly defining
+
+00:41:34.930 --> 00:41:36.460
+what happens if you do subclasses and stuff.
+
+00:41:36.640 --> 00:41:37.640
+This whole section is,
+
+00:41:38.350 --> 00:41:39.280
+if you're not subclassing,
+
+00:41:39.400 --> 00:41:41.180
+shouldn't hopefully be relevant to you.
+
+00:41:41.720 --> 00:41:43.100
+We match how data class handles things.
+
+00:41:43.860 --> 00:41:44.000
+Okay.
+
+00:41:44.410 --> 00:41:45.340
+So I could have,
+
+00:41:46.560 --> 00:41:50.660
+my user, but I could have a super user that derives from my user that derives from struct
+
+00:41:50.710 --> 00:41:51.880
+and things are still hanging together.
+
+00:41:51.940 --> 00:41:55.740
+And so figuring out how all the fields order out through that type of class is what this
+
+00:41:55.880 --> 00:41:56.280
+doc is about.
+
+00:41:56.780 --> 00:41:57.200
+Yeah.
+
+00:41:59.020 --> 00:42:03.780
+Another typing system thing you can do a lot is have explicitly claimed something as a
+
+00:42:04.040 --> 00:42:04.500
+class variable.
+
+00:42:06.920 --> 00:42:13.300
+Python is weird about its classes and what makes a variable that's associated with a
+
+00:42:13.460 --> 00:42:15.240
+class or not, right?
+
+00:42:15.440 --> 00:42:19.620
+So with these type classes, you would say like class example colon, and then you have X colon
+
+00:42:19.840 --> 00:42:20.720
+int, right?
+
+00:42:20.880 --> 00:42:27.360
+And that appears, will appear on the static type like example.x, but it also imbues each
+
+00:42:27.740 --> 00:42:30.060
+object with its own copy of that X, right?
+
+00:42:30.980 --> 00:42:35.380
+Which is like a little bit, is it a static thing or part of the type or is it not?
+
+00:42:35.400 --> 00:42:35.940
+It's kind of funky.
+
+00:42:36.440 --> 00:42:40.280
+But you also can say that explicitly from the typing, you say this is a class variable.
+
+00:42:40.880 --> 00:42:41.800
+What happens then, right?
+
+00:42:43.080 --> 00:42:43.400
+Yeah.
+
+00:42:43.720 --> 00:42:45.880
+So standard attributes exist on the instances,
+
+00:42:47.200 --> 00:42:49.840
+where class var exists on the class itself.
+
+00:42:51.240 --> 00:42:52.760
+Class fars are accessible on an instance,
+
+00:42:54.080 --> 00:42:57.540
+but the actual data is stored on the class.
+
+00:42:58.330 --> 00:42:59.300
+So you don't have an extra copy.
+
+00:43:00.000 --> 00:43:00.660
+I see.
+
+00:43:00.880 --> 00:43:03.680
+So if there's some kind of singleton type of thing--
+
+00:43:04.280 --> 00:43:06.140
+Yeah, it has to do with how Python
+
+00:43:07.220 --> 00:43:10.120
+does attribute resolution, where it'll check on the instance
+
+00:43:10.500 --> 00:43:11.120
+and then on the type.
+
+00:43:11.360 --> 00:43:15.120
+and also there's descriptors in there somewhere.
+
+00:43:17.280 --> 00:43:17.600
+Interesting.
+
+00:43:17.910 --> 00:43:18.080
+Okay.
+
+00:43:23.119 --> 00:43:26.200
+Like other things, I suppose it's pretty straightforward
+
+00:43:26.600 --> 00:43:31.280
+that you take these types and you use them to validate them,
+
+00:43:31.280 --> 00:43:34.520
+but one of the big differences with msgspec.struct
+
+00:43:35.030 --> 00:43:37.260
+versus Pydantic.base model and others
+
+00:43:38.740 --> 00:43:41.540
+is the validation doesn't happen all the time.
+
+00:43:41.620 --> 00:43:45.140
+It just happens on encode decode, right?
+
+00:43:45.360 --> 00:43:49.000
+Like you could call the constructor and pass in bad data
+
+00:43:49.140 --> 00:43:51.320
+or like it just doesn't pay attention, right?
+
+00:43:51.720 --> 00:43:51.840
+Yeah.
+
+00:43:52.120 --> 00:43:53.640
+Yeah, why is it like that?
+
+00:43:53.940 --> 00:43:56.940
+So this is one of the reasons I wrote my own thing
+
+00:43:57.060 --> 00:44:00.060
+rather than building off of something existing like Pydantic.
+
+00:44:02.420 --> 00:44:04.820
+Side tangent here, just to add history context here,
+
+00:44:06.200 --> 00:44:11.460
+Message spec was started about three years ago, the JSON, and it kind of fell into its full model about two years ago.
+
+00:44:11.760 --> 00:44:13.220
+So this has existed for around two years.
+
+00:44:15.220 --> 00:44:17.100
+We're pre the Pydantic rewrite.
+
+00:44:18.660 --> 00:44:27.360
+Anyway, the reason I wanted all of this was when you have your own code, like where bugs can come up.
+
+00:44:27.440 --> 00:44:28.420
+Are bugs in your own code?
+
+00:44:28.600 --> 00:44:29.420
+I've typed something wrong.
+
+00:44:29.640 --> 00:44:32.060
+I've made a mistake, and I want that to be checked.
+
+00:44:32.480 --> 00:44:33.860
+Or it can be user data is coming in.
+
+00:44:34.120 --> 00:44:36.820
+Or maybe it's a distributed system and it's still my own code.
+
+00:44:36.960 --> 00:44:38.340
+Or a file or data.
+
+00:44:38.610 --> 00:44:38.960
+Yeah, whatever.
+
+00:44:41.680 --> 00:44:45.140
+We have many mechanisms of testing our own code.
+
+00:44:45.290 --> 00:44:46.080
+You can write tests.
+
+00:44:46.410 --> 00:44:49.620
+You have static analysis tools like mypy, Pyright for checking.
+
+00:44:51.240 --> 00:44:54.680
+It's a lot easier for me to validate that a function I wrote is correct.
+
+00:44:56.320 --> 00:44:56.620
+Got it.
+
+00:44:56.820 --> 00:45:03.040
+So there are other tools I believe that we should lean on rather than runtime validation in those cases.
+
+00:45:03.860 --> 00:45:05.660
+But when we're reading in external data,
+
+00:45:06.140 --> 00:45:08.080
+whether it's coming over the wire, coming from a file,
+
+00:45:08.360 --> 00:45:09.680
+coming from user input in some way,
+
+00:45:10.100 --> 00:45:12.080
+we do need to validate because the user could have passed us
+
+00:45:12.300 --> 00:45:14.800
+something that doesn't match our constraints.
+
+00:45:15.840 --> 00:45:17.560
+As soon as you started trusting user input,
+
+00:45:17.660 --> 00:45:19.100
+you're in for a bad time.
+
+00:45:19.100 --> 00:45:20.580
+We don't want to arbitrarily be trusting that.
+
+00:45:20.640 --> 00:45:24.720
+And so we do validate on JSON decoding,
+
+00:45:24.780 --> 00:45:25.980
+we validate on message pack decoding.
+
+00:45:26.160 --> 00:45:28.780
+We also have a couple of functions for doing in-memory conversions.
+
+00:45:29.140 --> 00:45:31.320
+So there's msgspec convert,
+
+00:45:32.060 --> 00:45:34.000
+msgspec to built-ins for going the other way.
+
+00:45:34.540 --> 00:45:36.060
+And so that's for doing conversion
+
+00:45:36.100 --> 00:45:37.620
+of runtime data that you got from somewhere
+
+00:45:38.500 --> 00:45:39.680
+rather than a specific
+
+00:45:40.260 --> 00:45:40.380
+format.
+
+00:45:42.160 --> 00:45:44.120
+Right. Yeah, because if you're
+
+00:45:44.220 --> 00:45:45.760
+calling this constructor and passing the wrong data,
+
+00:45:46.140 --> 00:45:48.000
+mypy should check that. PyCharm
+
+00:45:48.160 --> 00:45:50.120
+should check that. Maybe
+
+00:45:50.600 --> 00:45:52.040
+Ruff would catch it. I'm not
+
+00:45:52.200 --> 00:45:54.160
+sure, but there's a bunch of tools. Ruff doesn't have a type checker
+
+00:45:54.280 --> 00:45:56.080
+yet. TBD
+
+00:45:56.280 --> 00:45:56.520
+on that.
+
+00:45:58.380 --> 00:46:00.280
+Being able to check these statically
+
+00:46:00.500 --> 00:46:02.020
+means that we don't have to
+
+00:46:02.060 --> 00:46:04.320
+pay the cost every time we're running,
+
+00:46:04.780 --> 00:46:05.460
+which I don't think we should.
+
+00:46:05.900 --> 00:46:07.540
+That's extra runtime performance
+
+00:46:07.640 --> 00:46:08.680
+that we don't need to be spending.
+
+00:46:10.400 --> 00:46:10.860
+Yeah, definitely.
+
+00:46:12.880 --> 00:46:13.900
+Check it on the boundaries, right?
+
+00:46:14.540 --> 00:46:15.700
+Check it where it comes into the system
+
+00:46:15.800 --> 00:46:17.200
+and then it should be good.
+
+00:46:17.700 --> 00:46:19.700
+The other reason I was against adding
+
+00:46:20.040 --> 00:46:21.220
+runtime validation to these structs
+
+00:46:21.220 --> 00:46:22.920
+is I want all types to be on equal footing.
+
+00:46:23.720 --> 00:46:25.240
+And so if I'm creating a list,
+
+00:46:26.180 --> 00:46:27.520
+the list isn't going to be doing any validation
+
+00:46:29.040 --> 00:46:30.820
+because it's the Python built-in.
+
+00:46:31.020 --> 00:46:31.760
+Same with data classes.
+
+00:46:31.900 --> 00:46:38.220
+same with attrs types you know whatever and so only doing validation when you construct uh some
+
+00:46:38.340 --> 00:46:43.300
+object type that subclasses from a built-in that i've defined or like a type i've defined doesn't
+
+00:46:43.500 --> 00:46:48.480
+give parity across all types and might give a user you know misconceptions about when something is
+
+00:46:48.520 --> 00:46:54.600
+validated and when they can be sure it's correct first when it hasn't yeah have you seen bear type
+
+00:46:55.180 --> 00:47:00.160
+i have yeah bear type's a pretty interesting option if people really want runtime validation
+
+00:47:00.980 --> 00:47:07.960
+they could you know go in and throw bear type onto their system and let it do its thing even if you're
+
+00:47:08.000 --> 00:47:12.640
+not doing it you should read the docs just for the sheer joy that these docs are um oh they're
+
+00:47:12.750 --> 00:47:18.060
+pretty glorious yeah i'll do it i'll i'll read you got it it's kind of burying the lead a little
+
+00:47:18.140 --> 00:47:23.640
+down here but uh they described themselves as bear type brings rust and c plus plus inspired zero
+
+00:47:23.840 --> 00:47:29.200
+cost abstractions into the lawless world of the dynamically typed python by enforcing type safety
+
+00:47:29.200 --> 00:47:31.300
+at the granular level of functions and methods
+
+00:47:31.960 --> 00:47:34.060
+against type hints standardized by the Python community
+
+00:47:34.200 --> 00:47:37.020
+of O order one, non-amortized worst case time
+
+00:47:37.420 --> 00:47:39.680
+with negligible constant factors.
+
+00:47:39.880 --> 00:47:41.900
+Oh my gosh, so much fun, right?
+
+00:47:41.980 --> 00:47:42.840
+They're just joking around here,
+
+00:47:42.980 --> 00:47:44.040
+but it's a pretty cool library.
+
+00:47:45.000 --> 00:47:48.260
+If you want runtime type checking, it's pretty fast.
+
+00:47:50.420 --> 00:47:51.740
+Yeah, okay, interesting.
+
+00:47:52.980 --> 00:47:54.100
+You talked about the pattern matching.
+
+00:47:54.380 --> 00:47:55.160
+I'll come back to that.
+
+00:47:56.200 --> 00:47:57.240
+One thing I want to talk about,
+
+00:47:58.300 --> 00:48:00.520
+Well, okay, frozen, frozen instances.
+
+00:48:00.670 --> 00:48:01.580
+This comes from data classes.
+
+00:48:02.040 --> 00:48:06.960
+Without the instances being frozen, the structs are mutable.
+
+00:48:07.220 --> 00:48:11.420
+Yeah, I can get one, change its value, serialize it back out, things like that.
+
+00:48:11.760 --> 00:48:11.900
+Yep.
+
+00:48:13.400 --> 00:48:13.600
+Okay.
+
+00:48:14.550 --> 00:48:16.340
+But frozen, I suppose, means...
+
+00:48:16.920 --> 00:48:19.240
+Yeah, frozen has the same meaning as a data class equivalent.
+
+00:48:20.540 --> 00:48:22.360
+How deep does frozen go?
+
+00:48:22.510 --> 00:48:24.420
+So, for example, is it frozen all the way down?
+
+00:48:24.620 --> 00:48:32.400
+So in the previous example from Itamar, it had the top level class and then other structs that were nested in there.
+
+00:48:32.520 --> 00:48:35.120
+If I say the top level is frozen, do the nested ones themselves become frozen?
+
+00:48:35.120 --> 00:48:37.020
+No, so frozen applies to the type.
+
+00:48:37.340 --> 00:48:43.140
+So if you define a type as frozen, that means you can't change values that are set as attributes on that type.
+
+00:48:43.560 --> 00:48:45.680
+But you can still change things that are inside it.
+
+00:48:45.740 --> 00:48:49.220
+So if a frozen class contains a list, you can still append stuff to the list.
+
+00:48:49.780 --> 00:48:54.080
+There's no way to get around that except if we were to do some deep, deep, deep magic, which we shouldn't.
+
+00:48:54.680 --> 00:48:58.720
+it would it would definitely slow it down if you had to go through and like recreate
+
+00:48:59.680 --> 00:49:04.800
+frozen lists every time you saw a list and stuff like that yeah okay and then there's one about
+
+00:49:05.120 --> 00:49:13.020
+garbage collection in here um yeah which is uh pretty interesting that was disabling garbage
+
+00:49:13.280 --> 00:49:17.800
+collection this is under the advanced category warning box around this that tells you not to
+
+00:49:18.560 --> 00:49:19.540
+So what could go wrong? Come on.
+
+00:49:19.860 --> 00:49:32.340
+Yeah. So part of this was experimenting with the DAS distributed scheduler, which is a unique application, I think, for people that are writing web stuff in that all of its data is kept in memory.
+
+00:49:32.600 --> 00:49:41.660
+There's no backing database that's external. And so it is as fast to respond as the bits of in-memory computation it needs to do before it sends out a new task to a worker.
+
+00:49:42.880 --> 00:49:47.220
+So in this case, their serialization performance matters.
+
+00:49:47.640 --> 00:49:49.360
+But also, it's got a lot of in-memory state.
+
+00:49:49.940 --> 00:49:52.180
+It's a difference of types of--
+
+00:49:52.720 --> 00:49:53.500
+lots of chaining down.
+
+00:49:55.720 --> 00:49:58.180
+The way the CPython garbage collector works
+
+00:49:58.240 --> 00:50:02.480
+is that these large dictionaries could add GC overhead.
+
+00:50:02.680 --> 00:50:04.480
+Every time a GC thing happens, it
+
+00:50:04.500 --> 00:50:05.720
+has to scan the entire dictionary.
+
+00:50:06.200 --> 00:50:08.220
+Any container thing could contain another.
+
+00:50:08.300 --> 00:50:09.720
+And once you do that, it could be a cycle.
+
+00:50:10.220 --> 00:50:14.920
+So for very large graphs, GC pauses could become noticeable.
+
+00:50:16.460 --> 00:50:18.100
+This was an experiment in seeing ways around that.
+
+00:50:19.460 --> 00:50:22.120
+Because we've done some deep magic with how structs work,
+
+00:50:22.220 --> 00:50:27.140
+we can disable GC for subclasses, user-defined types,
+
+00:50:27.900 --> 00:50:30.520
+which CPyA-thon does not expose normally
+
+00:50:31.000 --> 00:50:32.320
+and really isn't something you probably
+
+00:50:32.720 --> 00:50:34.060
+want to be doing in most cases.
+
+00:50:34.580 --> 00:50:36.160
+But if you do, you get a couple of benefits.
+
+00:50:36.760 --> 00:50:37.460
+The types are smaller.
+
+00:50:38.220 --> 00:50:42.220
+Every instance needs to include some extra state for tracking GC.
+
+00:50:42.920 --> 00:50:46.140
+I believe on recent builds, it's 16 bytes, so it's two pointers.
+
+00:50:47.900 --> 00:50:50.300
+And so that's, you know, you're saving 16 bytes, for instance.
+
+00:50:50.320 --> 00:50:52.260
+If you've got a huge list of them, that could be a lot.
+
+00:50:52.640 --> 00:50:52.880
+Yeah.
+
+00:50:53.460 --> 00:50:57.060
+And two, they're not traced.
+
+00:50:57.500 --> 00:51:01.800
+And so if you have a lot of them, that's reduction in tracing overhead
+
+00:51:03.020 --> 00:51:03.980
+every time a GC pass happens.
+
+00:51:06.300 --> 00:51:10.540
+GC puts more overhead on top of stuff than you would think.
+
+00:51:10.740 --> 00:51:15.860
+So I did some crazy GC stuff over at Talk Python and Chain of My Courses.
+
+00:51:16.320 --> 00:51:21.600
+If you go to slash sitemap.xml, I don't know how many entries are in the sitemap,
+
+00:51:22.280 --> 00:51:28.860
+but there are 30,000 lines of sitemap, like many, many, many, many, many thousands of
+
+00:51:29.220 --> 00:51:34.440
+URLs have to come back with details just to generate that page in one request with the
+
+00:51:34.460 --> 00:51:41.760
+default Python settings in Python 3.10, I think it was, was doing 77 garbage collections
+
+00:51:42.920 --> 00:51:51.340
+while generating this page. That's not ideal. I switched it to just change or tweak how
+
+00:51:51.700 --> 00:51:57.200
+frequently the GC runs. So like every 70,000, no, every 50,000 allocations instead of every 700.
+
+00:51:57.880 --> 00:52:03.540
+And the site runs 20% faster now and uses the same amount of memory. Right. And so this is not
+
+00:52:03.500 --> 00:52:09.160
+exactly what you're talking about here but it's in the it plays in the same space as like you can
+
+00:52:09.370 --> 00:52:13.600
+you can dramatically change the things that are triggering this and dramatically change
+
+00:52:14.050 --> 00:52:20.480
+the performance potentially the caveat is you better not have cycles yeah so the other
+
+00:52:20.530 --> 00:52:25.740
+thing with these is um as you pointed out is the indicator of when a gc pass happens has to do
+
+00:52:25.840 --> 00:52:31.400
+with how many of gc type gc aware types have been allocated yep and so if you mark a type is not a
+
+00:52:31.340 --> 00:52:36.100
+gc type then the counter is an increment you're not you're not paying that cost right you can
+
+00:52:36.340 --> 00:52:40.200
+allocate all the integers you want all day long it'll never affect the gc but if you start
+
+00:52:40.440 --> 00:52:45.200
+allocating classes dictionaries tuples etc yep it's like well those could contain cycles you have 700
+
+00:52:45.540 --> 00:52:51.100
+more than you've deallocated since last time i'm gonna go check it yeah so one place this comes up
+
+00:52:51.320 --> 00:52:57.460
+is if you have say a really really large json file because any deserialization is inherently
+
+00:52:57.480 --> 00:52:58.560
+an allocation-heavy workload,
+
+00:53:00.120 --> 00:53:01.360
+which means that you can have a GC pause
+
+00:53:01.690 --> 00:53:03.460
+happen several times during it
+
+00:53:03.660 --> 00:53:05.520
+because you've allocated that many types.
+
+00:53:06.060 --> 00:53:07.140
+Turning up GC for these types
+
+00:53:07.360 --> 00:53:08.920
+lets you avoid those GC pauses,
+
+00:53:09.130 --> 00:53:10.840
+which gives you actual runtime benefits.
+
+00:53:11.940 --> 00:53:13.500
+A different way of doing this that is less insane
+
+00:53:14.200 --> 00:53:16.700
+is to just disable GC during the decode.
+
+00:53:17.220 --> 00:53:19.720
+Do a GC disable, JSON decode,
+
+00:53:20.640 --> 00:53:21.180
+GC enable,
+
+00:53:21.640 --> 00:53:23.040
+and you only do a GC pass once,
+
+00:53:23.720 --> 00:53:25.440
+especially because JSON as a tree-like structure
+
+00:53:25.580 --> 00:53:26.620
+can never create cycles.
+
+00:53:27.000 --> 00:53:28.840
+you're not gonna be having an issue there.
+
+00:53:29.940 --> 00:53:32.060
+- But you're probably allocating a lot of different things
+
+00:53:32.240 --> 00:53:33.140
+that are container types.
+
+00:53:33.210 --> 00:53:37.480
+And so it looks to the GC like,
+
+00:53:37.650 --> 00:53:39.780
+oh, this is some really sketchy stuff.
+
+00:53:39.850 --> 00:53:41.140
+We better get on the game here.
+
+00:53:41.900 --> 00:53:45.700
+But you know, as you said, there's no cycles in JSON.
+
+00:53:47.980 --> 00:53:49.780
+So there's a lot of scenarios like that,
+
+00:53:49.920 --> 00:53:50.540
+like database queries.
+
+00:53:51.270 --> 00:53:53.160
+I got a thousand records back from a table.
+
+00:53:53.760 --> 00:53:55.100
+They're all some kind of container.
+
+00:53:55.320 --> 00:53:58.780
+So minimum one GC happens just to read back that data,
+
+00:53:59.820 --> 00:54:00.800
+but you know there's no cycles.
+
+00:54:01.020 --> 00:54:02.100
+So why is the GC happening?
+
+00:54:02.300 --> 00:54:03.740
+You can kind of control that a little bit.
+
+00:54:05.940 --> 00:54:08.140
+Or you just turn the number up to 50,000 like I did.
+
+00:54:09.480 --> 00:54:11.220
+It still happens, but less, a lot less.
+
+00:54:13.360 --> 00:54:15.300
+Yeah, so this is pretty interesting though
+
+00:54:15.320 --> 00:54:16.700
+that you just set GC equals false.
+
+00:54:17.920 --> 00:54:18.780
+Where do you set this?
+
+00:54:18.880 --> 00:54:21.560
+Is this like in the direct it or?
+
+00:54:21.880 --> 00:54:24.180
+- It's part of the class definition.
+
+00:54:24.600 --> 00:54:27.540
+So we make use of class definition keyword arguments.
+
+00:54:28.140 --> 00:54:30.740
+So it goes after the struct type in the subclass.
+
+00:54:30.940 --> 00:54:37.340
+You do, you know, my class, open-rethety, struct, comma, gc equals false, close comma, colon, rest of the class.
+
+00:54:37.340 --> 00:54:38.100
+Yeah, that's what I thought.
+
+00:54:38.300 --> 00:54:40.180
+But it is a little funky.
+
+00:54:41.240 --> 00:54:41.360
+Yeah.
+
+00:54:41.500 --> 00:54:44.480
+I mean, it kind of highlights the metaclass action going on there, right?
+
+00:54:46.060 --> 00:54:49.140
+What else should people know about these structs?
+
+00:54:50.900 --> 00:54:51.700
+They're fast.
+
+00:54:52.680 --> 00:54:55.500
+They're fast and they can be used for not just serialization.
+
+00:54:56.040 --> 00:54:59.080
+So if you are just writing a program and you happen to have msgspec on your system,
+
+00:54:59.340 --> 00:55:01.340
+it should be faster to use them than data classes.
+
+00:55:01.530 --> 00:55:05.900
+Whether that matters is, of course, application dependent, but they're generally a good idea.
+
+00:55:06.420 --> 00:55:10.040
+They happen to live in this serialization library, but that's just because that's where I wrote them.
+
+00:55:10.880 --> 00:55:13.560
+In a future world, we might split them out into a sub package.
+
+00:55:14.460 --> 00:55:14.760
+Yeah.
+
+00:55:16.160 --> 00:55:16.880
+Fast struck.
+
+00:55:17.280 --> 00:55:18.140
+Pip install fast struck.
+
+00:55:18.660 --> 00:55:19.000
+Who knows?
+
+00:55:20.100 --> 00:55:20.760
+He had to be named.
+
+00:55:22.280 --> 00:55:26.440
+so better than data classes i mean they have the capabilities of data classes so that's cool but
+
+00:55:26.760 --> 00:55:34.980
+better than straight up regular classes uh so their classes a little bit um they're how i think
+
+00:55:35.120 --> 00:55:39.540
+people probably should be writing classes uh and they're opinionated in a bit that means that you
+
+00:55:39.640 --> 00:55:46.100
+can't write them in ways that i don't want you to um so the way a struct works is you define
+
+00:55:46.400 --> 00:55:51.000
+attributes on it using type annotations and we generate a fast in it method for you we don't let
+
+00:55:50.900 --> 00:55:52.080
+let you write your own in it.
+
+00:55:52.300 --> 00:55:53.880
+In the subclass, you can't override in it.
+
+00:55:54.000 --> 00:55:55.460
+The generated one is the one you get.
+
+00:55:56.580 --> 00:55:58.620
+That means that if you're trying to create an instance
+
+00:55:58.920 --> 00:56:01.840
+from something that isn't those field names,
+
+00:56:03.460 --> 00:56:04.480
+you can't do that.
+
+00:56:04.620 --> 00:56:06.420
+You need to use a new class method for writing those.
+
+00:56:06.640 --> 00:56:09.320
+I believe this is how people, at least some projects I work on,
+
+00:56:09.400 --> 00:56:10.540
+generally use classes.
+
+00:56:11.180 --> 00:56:12.780
+So I think it's a fine limitation.
+
+00:56:13.220 --> 00:56:16.920
+But it is putting some guardrails around how--
+
+00:56:17.020 --> 00:56:19.020
+the arbitrariness of how you can define a Python class.
+
+00:56:19.860 --> 00:56:23.940
+You could have a handwritten class that has two attributes, X and Y,
+
+00:56:24.680 --> 00:56:27.660
+and your init takes parameters A and B.
+
+00:56:29.400 --> 00:56:29.880
+Sure.
+
+00:56:30.420 --> 00:56:32.840
+Or it maybe just takes X and it always defaults Y
+
+00:56:32.980 --> 00:56:35.160
+unless you go and change it after or whatever, right?
+
+00:56:36.200 --> 00:56:38.400
+I guess you could sort of do that with default values,
+
+00:56:39.100 --> 00:56:41.240
+but you couldn't prohibit it from being passed in.
+
+00:56:41.520 --> 00:56:41.820
+Yeah.
+
+00:56:42.420 --> 00:56:46.400
+The attrs docs have a whole page telling people
+
+00:56:46.740 --> 00:56:49.580
+about why this pattern is better and nudging them to do this.
+
+00:56:49.700 --> 00:56:50.720
+So this isn't a new idea.
+
+00:56:51.140 --> 00:56:55.380
+Yeah, go check out attrs and see what they're saying as well, huh?
+
+00:56:56.480 --> 00:56:58.380
+There's probably a debate in the issues somewhere on GitHub.
+
+00:56:58.680 --> 00:56:58.920
+Yeah, probably.
+
+00:56:58.960 --> 00:56:59.920
+There's a debate, yeah.
+
+00:57:01.960 --> 00:57:04.860
+Let's see, let's go get a bunch of stuff up here I want to talk about.
+
+00:57:05.230 --> 00:57:10.460
+I guess really quickly, since there's a lot of C native platform stuff, right?
+
+00:57:10.640 --> 00:57:14.760
+This is available on pip install msgspec.
+
+00:57:15.980 --> 00:57:16.680
+We're getting a wheel.
+
+00:57:17.920 --> 00:57:21.380
+It seemed like it worked fine on my M2 MacBook Air.
+
+00:57:22.080 --> 00:57:26.440
+But what are the platforms that I get a wheel that worry about compiling?
+
+00:57:26.680 --> 00:57:29.240
+So we use CI BuildWheel for building everything.
+
+00:57:30.060 --> 00:57:32.460
+And I believe I've disabled some of the platforms.
+
+00:57:33.790 --> 00:57:39.480
+But not the ones that are disabled are mostly disabled because CI takes time.
+
+00:57:39.990 --> 00:57:41.120
+And I need to minimize them.
+
+00:57:41.350 --> 00:57:46.200
+But everything common should exist, including Raspberry Pi and various ARM builds.
+
+00:57:47.020 --> 00:57:47.440
+Excellent.
+
+00:57:47.720 --> 00:57:49.540
+Okay, yeah, it seemed like it worked just fine.
+
+00:57:49.740 --> 00:57:53.500
+I didn't really know that it was doing a lot of native code stuff,
+
+00:57:53.680 --> 00:57:54.660
+but it seems like it.
+
+00:57:55.580 --> 00:57:57.900
+And also available on Conda, Conda Forge.
+
+00:57:58.060 --> 00:57:58.580
+So that's cool.
+
+00:57:58.960 --> 00:58:01.760
+If you Conda, you can also just Conda install it.
+
+00:58:05.680 --> 00:58:08.980
+I kind of promised talking about the benchmarks a little bit, didn't I?
+
+00:58:11.400 --> 00:58:11.880
+Benchmarks are always...
+
+00:58:11.880 --> 00:58:14.120
+If you click on the graph on the bottom, it'll bring you to it.
+
+00:58:14.500 --> 00:58:18.460
+Yeah, they're always rife with, like, that's not my benchmark.
+
+00:58:18.780 --> 00:58:19.420
+I'm doing it different.
+
+00:58:20.680 --> 00:58:25.400
+But give us a sense of just, it says fast, italicies leaning forward.
+
+00:58:25.620 --> 00:58:27.520
+Give us a sense of, like, where does this land?
+
+00:58:27.610 --> 00:58:30.420
+Is it 20% faster or is it a lot better?
+
+00:58:30.970 --> 00:58:31.080
+Yeah.
+
+00:58:31.210 --> 00:58:32.500
+So as you said, benchmarks are a problem.
+
+00:58:33.280 --> 00:58:37.840
+The top of this benchmark docs as a whole argument against believing them and telling you to run your own.
+
+00:58:38.220 --> 00:58:40.940
+So, you know, take a grain of salt.
+
+00:58:41.500 --> 00:58:45.640
+I started benchmarking this mostly just to know how we stacked up.
+
+00:58:46.460 --> 00:58:48.580
+It's important if you're making changes to know if you're getting slower.
+
+00:58:48.580 --> 00:58:51.300
+It's also important to know what the actual tradeoffs of your library are.
+
+00:58:51.330 --> 00:58:52.960
+All software engineering is tradeoffs.
+
+00:58:55.260 --> 00:58:59.060
+So msgspec is generally fast.
+
+00:58:59.920 --> 00:59:05.500
+The JSON parser in it is one of the fastest in Python or the fastest,
+
+00:59:05.800 --> 00:59:08.960
+depending on what your message structure is and how you're invoking it.
+
+00:59:09.800 --> 00:59:13.740
+It at least is on par with orJSON, which is generally what people consider to be the fastest person.
+
+00:59:13.740 --> 00:59:15.800
+Right, that's where they go when they want fast, yeah.
+
+00:59:16.040 --> 00:59:16.160
+Yes.
+
+00:59:17.180 --> 00:59:22.940
+If you are specifying types, so if you add a type annotation to a JSON decode call with msgspec,
+
+00:59:23.120 --> 00:59:28.100
+even if you're decoding the whole message, you're not doing a subset, we're about 2x faster than orJSON.
+
+00:59:28.800 --> 00:59:33.820
+You actually get a speedup by defining your types because struct types are so efficient to allocate.
+
+00:59:35.240 --> 00:59:37.420
+That's kind of the opposite of what you might expect.
+
+00:59:37.540 --> 00:59:43.780
+Exactly. It seems like we're doing more work, but we're actually able to do less because we can take some more efficient fast paths.
+
+00:59:45.800 --> 00:59:54.220
+And then 1,000 objects with validation compared to MasterMurrow, Seadders, Pydantic, and so on.
+
+00:59:54.460 --> 00:59:58.000
+This was a graph bag of various validation libraries that seemed popular.
+
+00:59:59.200 --> 01:00:02.840
+MasterMurrow is the one that DBT uses. I think they're the primary consumer of that.
+
+01:00:03.560 --> 01:00:06.760
+Catters is for attrs. Pydantic is ubiquitous.
+
+01:00:08.600 --> 01:00:10.300
+this right here in this benchmark graph
+
+01:00:10.470 --> 01:00:12.220
+we're looking at is against Pydantic
+
+01:00:12.460 --> 01:00:14.200
+V1 I have not
+
+01:00:14.380 --> 01:00:16.160
+had a chance to update our benchmarks
+
+01:00:16.270 --> 01:00:18.340
+to go against V2 there's a separate gist
+
+01:00:18.580 --> 01:00:20.040
+somewhere that has got some numbers
+
+01:00:20.190 --> 01:00:20.320
+there
+
+01:00:21.360 --> 01:00:24.020
+the standard number they throw out is like 22 times faster
+
+01:00:24.190 --> 01:00:25.180
+so it still puts you
+
+01:00:26.530 --> 01:00:27.300
+in multiples faster
+
+01:00:27.410 --> 01:00:29.160
+in that benchmark we're averaging
+
+01:00:29.850 --> 01:00:31.920
+10 to 20x faster than Pydantic V2
+
+01:00:33.360 --> 01:00:34.080
+in numbers
+
+01:00:34.130 --> 01:00:36.080
+I run against V1 we're about 80
+
+01:00:36.100 --> 01:00:37.360
+250x faster.
+
+01:00:37.960 --> 01:00:40.120
+So it really is
+
+01:00:40.400 --> 01:00:41.040
+structure dependent.
+
+01:00:42.200 --> 01:00:44.320
+Yeah, sure. Yeah, it does a lot.
+
+01:00:44.540 --> 01:00:46.300
+Do you have one field or do you
+
+01:00:46.300 --> 01:00:47.960
+have a whole bunch of stuff? Yeah, exactly.
+
+01:00:48.040 --> 01:00:49.340
+What types of fields?
+
+01:00:50.380 --> 01:00:52.120
+To be getting more into the weeds here,
+
+01:00:53.300 --> 01:00:54.320
+JSON parsing is
+
+01:00:54.520 --> 01:00:55.940
+not easy.
+
+01:00:56.300 --> 01:00:58.220
+Message pack parsing is. The format was designed
+
+01:00:58.340 --> 01:00:59.360
+for computers to handle it.
+
+01:01:00.660 --> 01:01:02.360
+Seven bytes in, there is an integer
+
+01:01:02.640 --> 01:01:03.060
+here. Exactly.
+
+01:01:04.440 --> 01:01:06.060
+Where JSON is
+
+01:01:06.120 --> 01:01:12.340
+human readable and parsing strings into stuff is slow um right our string parsing routines in in
+
+01:01:12.500 --> 01:01:18.840
+msgspec are faster than the ones used by or json our integer reparsing routines are slower um
+
+01:01:19.400 --> 01:01:26.040
+but there's a different trade-off there yeah yeah interesting okay um yeah i think this is
+
+01:01:26.620 --> 01:01:29.420
+it just seems so neat there's so much flexibility right with all the different formats
+
+01:01:30.500 --> 01:01:34.860
+and the restrictions on the class they exist but they're unstruck but they're they're not insane
+
+01:01:34.960 --> 01:01:43.500
+right i mean you could build proper proper oop type of things uh you don't need super crazy
+
+01:01:43.800 --> 01:01:49.920
+hierarchies like that's where you get in trouble with that stuff anyway so don't do it yeah i guess
+
+01:01:50.180 --> 01:01:53.520
+we don't have much time left one thing i think we could talk about a bit maybe would be
+
+01:01:54.340 --> 01:01:59.740
+i find the extensions just maybe talk about parsing stuff that are just kind of unknown
+
+01:01:59.760 --> 01:02:00.600
+Yeah, this is pretty interesting.
+
+01:02:02.800 --> 01:02:07.780
+Yeah, so the way we allow extension currently--
+
+01:02:07.780 --> 01:02:09.900
+there's an intention to change this and expand it.
+
+01:02:09.900 --> 01:02:12.160
+But currently, extending adding new types
+
+01:02:12.500 --> 01:02:14.660
+is done via a number of different hooks
+
+01:02:15.180 --> 01:02:16.720
+that are called when a new type is encountered.
+
+01:02:17.320 --> 01:02:19.040
+So custom user defined type of some form.
+
+01:02:19.900 --> 01:02:22.740
+I liked doing this rather than adding it into the annotation
+
+01:02:22.980 --> 01:02:26.140
+because if I have a new type, I want it to exist probably
+
+01:02:26.380 --> 01:02:26.480
+everywhere.
+
+01:02:27.240 --> 01:02:29.720
+And I don't want to have to keep adding in
+
+01:02:29.740 --> 01:02:34.440
+the serializer and deserializer as part of the type annotations.
+
+01:02:36.660 --> 01:02:39.600
+So to define a new type that you want to encode,
+
+01:02:39.920 --> 01:02:43.380
+you can add an encode hook, which takes in the instance
+
+01:02:43.660 --> 01:02:46.080
+and returns something that msgspec knows how to handle.
+
+01:02:46.200 --> 01:02:48.920
+This is similar to if you're coming from standard library
+
+01:02:49.120 --> 01:02:50.780
+JSON, there's a default callback.
+
+01:02:50.880 --> 01:02:51.300
+It's the same.
+
+01:02:51.720 --> 01:02:53.640
+We renamed it to be a little better name in my mind,
+
+01:02:53.760 --> 01:02:54.740
+but it's the same thing.
+
+01:02:55.720 --> 01:02:56.120
+Right.
+
+01:02:56.260 --> 01:02:58.760
+So your example here is taking a complex number
+
+01:02:58.780 --> 01:03:02.000
+but storing it as a tuple of real and imaginary numbers,
+
+01:03:02.660 --> 01:03:06.140
+but then pulling it back into a proper complex number object.
+
+01:03:07.580 --> 01:03:08.960
+And super straightforward, yeah?
+
+01:03:10.120 --> 01:03:10.640
+I mean, hopefully.
+
+01:03:11.390 --> 01:03:11.500
+Yeah.
+
+01:03:12.400 --> 01:03:13.260
+Yeah, that's really cool.
+
+01:03:14.200 --> 01:03:15.540
+So people can apply this.
+
+01:03:15.540 --> 01:03:19.200
+And this, I guess, doesn't really matter on the output destination, does it?
+
+01:03:19.840 --> 01:03:23.900
+Your job here is to take a type that's not serializable to one that is,
+
+01:03:24.000 --> 01:03:27.460
+and then whether that goes to message pack
+
+01:03:27.780 --> 01:03:30.840
+or JSON or whatever is kind of not your problem.
+
+01:03:32.380 --> 01:03:34.040
+Yeah, and then the decode hook is the inverse.
+
+01:03:34.980 --> 01:03:36.380
+You get a bunch of stuff that is, you know,
+
+01:03:36.820 --> 01:03:38.700
+core types and strings, whatever,
+
+01:03:38.980 --> 01:03:41.200
+and you compose them up into your new custom type.
+
+01:03:42.500 --> 01:03:42.680
+Yeah.
+
+01:03:43.500 --> 01:03:45.060
+Jim, I think we're getting about out of time here,
+
+01:03:45.440 --> 01:03:46.180
+but I just want to point out,
+
+01:03:46.330 --> 01:03:47.440
+like if people hit the user guide,
+
+01:03:47.620 --> 01:03:48.640
+there's a lot of cool stuff here
+
+01:03:48.820 --> 01:03:52.700
+and there's a whole performance tips section.
+
+01:03:54.579 --> 01:03:55.840
+that people can check out.
+
+01:03:56.800 --> 01:03:58.360
+If we had more time, maybe we'd go into them.
+
+01:03:58.520 --> 01:04:00.560
+But like, for example,
+
+01:04:01.160 --> 01:04:03.780
+you can call msgspec.json.encode
+
+01:04:03.810 --> 01:04:06.180
+or you can create an encoder and say the type and stuff
+
+01:04:06.260 --> 01:04:07.080
+and then reuse that, right?
+
+01:04:07.240 --> 01:04:08.780
+Those kinds of things, yeah.
+
+01:04:09.020 --> 01:04:11.700
+There's another method that is, again,
+
+01:04:11.900 --> 01:04:14.620
+a terrible internal hack for reusing buffers.
+
+01:04:14.830 --> 01:04:16.520
+So you don't have to keep allocating byte buffers
+
+01:04:16.590 --> 01:04:16.940
+every message.
+
+01:04:17.150 --> 01:04:18.840
+You can allocate a byte array once
+
+01:04:18.960 --> 01:04:20.380
+and use it for everything.
+
+01:04:20.800 --> 01:04:21.180
+Save some memory.
+
+01:04:21.200 --> 01:04:22.160
+Yeah, awesome.
+
+01:04:22.720 --> 01:04:24.620
+Let me ask, Ellie's got a question.
+
+01:04:24.800 --> 01:04:26.280
+I'm going to read some words that don't mean anything to me,
+
+01:04:26.440 --> 01:04:27.060
+but they may to you.
+
+01:04:28.300 --> 01:04:31.240
+How does the performance of message pack plus msgspec
+
+01:04:32.500 --> 01:04:34.360
+with the array-like equals true optimization
+
+01:04:34.860 --> 01:04:35.940
+compare to flat buffers?
+
+01:04:37.140 --> 01:04:39.060
+Yeah, so by default, objects,
+
+01:04:40.200 --> 01:04:41.560
+so struct types, data classes, whatever,
+
+01:04:42.340 --> 01:04:44.260
+encode as objects in the stream.
+
+01:04:44.660 --> 01:04:47.140
+So a JSON object has keys and values, right?
+
+01:04:47.520 --> 01:04:49.260
+If you have a point with fields X and Y,
+
+01:04:49.520 --> 01:04:51.620
+it's got X and Y, you know, one, two.
+
+01:04:51.700 --> 01:04:56.560
+So we have an array-like optimization, which lets you drop the field names.
+
+01:04:56.880 --> 01:05:01.660
+And so that would instead include as an array of 1, 2, dropping the X and Y.
+
+01:05:02.100 --> 01:05:03.440
+Reduces the message size on the wire.
+
+01:05:03.960 --> 01:05:07.880
+If the other side knows what the structure is, it can pull that back up into a type.
+
+01:05:08.920 --> 01:05:14.320
+In terms of message pack as a format, plus with the array-like optimization,
+
+01:05:15.260 --> 01:05:19.720
+the output size should be approximately the same as you would expect to come out of flat buffers.
+
+01:05:20.840 --> 01:05:25.940
+The Python flatbuffers library is not efficient for creating objects from the binary.
+
+01:05:26.350 --> 01:05:28.260
+So it's going to be a lot faster to pull it in.
+
+01:05:29.380 --> 01:05:30.960
+Obviously, this is then a very custom format.
+
+01:05:31.220 --> 01:05:32.880
+You're doing a weird thing.
+
+01:05:33.090 --> 01:05:36.020
+And so compatibility with other ecosystems will be slower.
+
+01:05:37.880 --> 01:05:40.220
+Or not slower necessarily, but you'll have to write them yourself.
+
+01:05:40.880 --> 01:05:41.020
+Yeah.
+
+01:05:41.660 --> 01:05:43.000
+Not everything knows how to write a message pack.
+
+01:05:43.050 --> 01:05:43.480
+More brittle, potentially.
+
+01:05:43.900 --> 01:05:44.040
+Yes.
+
+01:05:45.940 --> 01:05:49.120
+But for Python, talking to Python, that's probably the fastest way to go between processes.
+
+01:05:49.800 --> 01:05:54.080
+and probably a lot faster than JSON or YAML or something like that.
+
+01:05:56.760 --> 01:06:01.140
+Okay. Excellent. I guess, you know, there's many more things to discuss,
+
+01:06:01.440 --> 01:06:05.880
+but we're going to leave it here. Thanks for being on the show.
+
+01:06:06.180 --> 01:06:09.060
+Final call to action. People want to get started with msgspec.
+
+01:06:09.200 --> 01:06:13.760
+Are you accepting PRs if they want to contribute? What do you tell them?
+
+01:06:14.600 --> 01:06:17.660
+Yeah. Yeah. So first I encourage people to try it out.
+
+01:06:18.920 --> 01:06:21.620
+I'm available to answer questions on GitHub and stuff.
+
+01:06:23.480 --> 01:06:24.700
+It is obviously a hobby project.
+
+01:06:24.940 --> 01:06:28.740
+So if the usage bandwidth increases significantly,
+
+01:06:29.580 --> 01:06:30.760
+we'll have to get some more maintainers on,
+
+01:06:30.760 --> 01:06:32.860
+and hopefully we can make this more maintainable over time.
+
+01:06:33.420 --> 01:06:37.760
+But once the sponsor funds exceed $20,000, $30,000 a month,
+
+01:06:38.360 --> 01:06:39.160
+you'll re-value your...
+
+01:06:39.460 --> 01:06:39.960
+No, just kidding.
+
+01:06:40.140 --> 01:06:40.600
+Sure, sure.
+
+01:06:41.480 --> 01:06:42.560
+But yeah, please try it out.
+
+01:06:43.380 --> 01:06:43.700
+Things work.
+
+01:06:44.760 --> 01:06:46.780
+Should be hopefully faster than what you're currently using.
+
+01:06:47.880 --> 01:06:49.520
+And hopefully intuitive to use.
+
+01:06:49.620 --> 01:06:51.400
+We've done a lot of work to make sure the API is friendly.
+
+01:06:52.280 --> 01:06:52.600
+Yeah.
+
+01:06:53.060 --> 01:06:53.140
+Awesome.
+
+01:06:53.480 --> 01:06:53.580
+Yeah.
+
+01:06:53.660 --> 01:06:55.060
+It looks pretty easy to get started with.
+
+01:06:56.060 --> 01:06:56.960
+The docs are really good.
+
+01:06:57.640 --> 01:06:58.020
+Thank you.
+
+01:06:58.680 --> 01:06:58.820
+Yeah.
+
+01:07:00.000 --> 01:07:00.940
+Congrats on the cool project.
+
+01:07:01.160 --> 01:07:03.700
+Thanks for taking the time to come on the show and tell everyone about it.
+
+01:07:04.900 --> 01:07:05.040
+Thanks.
+
+01:07:05.280 --> 01:07:05.420
+Yeah.
+
+01:07:05.860 --> 01:07:05.920
+Yeah.
+
+01:07:06.140 --> 01:07:06.360
+See you later.
+
+01:07:06.920 --> 01:07:07.040
+Bye.
+

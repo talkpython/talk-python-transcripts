@@ -1,0 +1,3452 @@
+WEBVTT
+
+00:00:00.120 --> 00:00:02.200
+Alex, welcome to Talk Python To Me.
+
+00:00:02.710 --> 00:00:04.420
+Alex Bauer: Howdy, thanks so much for having me.
+
+00:00:04.490 --> 00:00:05.940
+Alex Bauer: Yeah, it's fabulous to have you here.
+
+00:00:06.620 --> 00:00:08.240
+I'm really excited to talk about databases.
+
+00:00:09.020 --> 00:00:12.660
+Databases are so important for making your app work well.
+
+00:00:13.800 --> 00:00:18.000
+Making them fast surprises me how many people have slow databases.
+
+00:00:18.270 --> 00:00:19.100
+It doesn't make sense.
+
+00:00:19.550 --> 00:00:21.960
+Alex Bauer: We're pretty big fans of databases around here, for sure.
+
+00:00:21.960 --> 00:00:23.660
+Alex Bauer: Yeah, and fast ones as well, right?
+
+00:00:24.450 --> 00:00:25.720
+Alex Bauer: As best we can.
+
+00:00:26.210 --> 00:00:27.260
+Alex Bauer: That's right.
+
+00:00:27.940 --> 00:00:35.200
+Well, DuckDB is certainly on the rise in terms of me hearing people talk about like,
+
+00:00:35.270 --> 00:00:36.180
+oh, have you heard DuckDB?
+
+00:00:36.520 --> 00:00:37.500
+Have you seen DuckDB?
+
+00:00:37.760 --> 00:00:38.820
+Have you worked with it?
+
+00:00:39.360 --> 00:00:47.240
+And I think it continues an interesting tradition of lots of low stress near your application
+
+00:00:47.600 --> 00:00:48.160
+type of databases.
+
+00:00:48.420 --> 00:00:50.780
+So it's going to be fun to dive into that for sure.
+
+00:00:51.070 --> 00:00:53.160
+Before we do, tell us about yourself.
+
+00:00:54.100 --> 00:00:54.400
+Sure.
+
+00:00:54.660 --> 00:00:55.680
+Well, thanks so much for having me.
+
+00:00:55.940 --> 00:00:56.480
+Huge fan of the show.
+
+00:00:56.600 --> 00:00:57.320
+Really excited to be here.
+
+00:00:57.920 --> 00:00:58.600
+I appreciate that.
+
+00:00:59.660 --> 00:01:01.300
+I work at Mother Duck.
+
+00:01:01.600 --> 00:01:03.560
+I'm a forward deployed software engineer, which
+
+00:01:03.560 --> 00:01:04.879
+is kind of a made up title.
+
+00:01:05.080 --> 00:01:06.260
+A couple of companies use it, but it's really
+
+00:01:06.580 --> 00:01:08.120
+a customer facing software engineer.
+
+00:01:08.840 --> 00:01:12.280
+So working closely with folks to see how Mother Duck fits in
+
+00:01:12.360 --> 00:01:13.260
+with all the rest of their stack.
+
+00:01:14.400 --> 00:01:16.600
+So Mother Duck is a cloud data warehouse
+
+00:01:17.100 --> 00:01:18.060
+with DuckDB at its core.
+
+00:01:18.540 --> 00:01:20.440
+So absolutely a huge part of what we do.
+
+00:01:21.080 --> 00:01:23.580
+I also work part time for DuckDB Labs, which
+
+00:01:23.600 --> 00:01:24.940
+is our partner organization.
+
+00:01:25.560 --> 00:01:29.320
+And I do blogging and some developer advocacy types of things for them.
+
+00:01:30.960 --> 00:01:34.480
+And so it's a separate company based in Amsterdam, the Netherlands.
+
+00:01:35.060 --> 00:01:38.000
+And they are database experts and researchers.
+
+00:01:38.130 --> 00:01:39.940
+And they're kind of the stewards of the open source project.
+
+00:01:40.400 --> 00:01:41.200
+Yeah, awesome.
+
+00:01:41.840 --> 00:01:44.880
+What is a forward deployed engineer do?
+
+00:01:45.220 --> 00:01:49.180
+Do you get called into big companies who want to adopt the technology?
+
+00:01:49.250 --> 00:01:51.480
+And they say, hey, could you help us do this quicker?
+
+00:01:52.160 --> 00:01:54.300
+Or are they running into trouble?
+
+00:01:54.740 --> 00:01:57.480
+and they're like, "You said it was fast, it's not fast, help."
+
+00:01:57.920 --> 00:02:00.700
+Like, "Well, don't copy this every query so you'll be better."
+
+00:02:01.140 --> 00:02:02.280
+There's quite a lot of variety.
+
+00:02:02.840 --> 00:02:05.800
+I think there's definitely some aspects of,
+
+00:02:07.280 --> 00:02:08.179
+"Hey, can you help me with this?"
+
+00:02:08.259 --> 00:02:10.500
+There's also aspects of as folks are getting started,
+
+00:02:10.660 --> 00:02:12.740
+they're picking out the rest of the tools around the database.
+
+00:02:13.640 --> 00:02:15.060
+What BI tool should I use?
+
+00:02:15.480 --> 00:02:17.000
+What orchestrator should I use?
+
+00:02:17.660 --> 00:02:20.280
+Then we do get into some SQL optimization stuff like that.
+
+00:02:20.900 --> 00:02:22.100
+That's the customer facing side,
+
+00:02:22.220 --> 00:02:23.060
+that's the majority of the role.
+
+00:02:23.320 --> 00:02:25.920
+There's also troubleshooting that goes along with it,
+
+00:02:26.160 --> 00:02:28.120
+as well as feeding things back into the company,
+
+00:02:28.600 --> 00:02:30.120
+being the voice of the customer saying,
+
+00:02:30.220 --> 00:02:31.400
+"Hey, we've had three people hit this.
+
+00:02:31.920 --> 00:02:34.440
+Is there a way we can build something different?"
+
+00:02:34.460 --> 00:02:35.020
+Yeah. Yeah.
+
+00:02:35.660 --> 00:02:37.680
+Everyone thinks they should do it this way.
+
+00:02:37.860 --> 00:02:39.120
+We need to change our docs or
+
+00:02:39.880 --> 00:02:41.980
+they want this particular feature and we don't have it.
+
+00:02:42.440 --> 00:02:42.500
+Yeah.
+
+00:02:42.980 --> 00:02:45.780
+Yep. It's a good cycle that we've got going.
+
+00:02:46.560 --> 00:02:47.560
+It sounds really fun.
+
+00:02:48.540 --> 00:02:50.840
+It's a lot of fun. The variety is my favorite part.
+
+00:02:50.980 --> 00:02:53.580
+And a lot of fun investigation, troubleshooting,
+
+00:02:53.740 --> 00:02:56.320
+you know, gotta reframe it as a scavenger hunt.
+
+00:02:56.520 --> 00:02:58.480
+You know, it's fun.
+
+00:02:59.760 --> 00:03:01.960
+- Yeah, every day is like a box of chocolates, huh?
+
+00:03:02.700 --> 00:03:04.160
+- Oh yeah, a little different all the time.
+
+00:03:04.420 --> 00:03:05.960
+- You know, you don't know what you're gonna get.
+
+00:03:06.780 --> 00:03:10.700
+I used to do in-person professional training.
+
+00:03:11.040 --> 00:03:15.340
+You know, I'd travel to Chicago or New York or Beijing
+
+00:03:15.900 --> 00:03:17.940
+and I would show up Monday morning,
+
+00:03:18.060 --> 00:03:21.140
+I mean, all right, folks, what are we, you know, what's the situation?
+
+00:03:21.600 --> 00:03:26.520
+Obviously, I'd know what we were going to talk about, but it was still, it was different every time.
+
+00:03:26.910 --> 00:03:27.560
+Every week was different.
+
+00:03:28.420 --> 00:03:31.280
+Sounds like it might be not so different from what you're doing.
+
+00:03:31.920 --> 00:03:35.660
+Are a lot of these in-person things or are they mostly Zoom style?
+
+00:03:36.480 --> 00:03:42.840
+It's Zoom style, you know, just we work with a variety of folks, not, you know, like a couple of really giant customers.
+
+00:03:43.100 --> 00:03:46.100
+So with that variety means that I couldn't fly fast enough.
+
+00:03:47.320 --> 00:03:47.940
+Yeah, for sure.
+
+00:03:48.560 --> 00:03:52.680
+or you know issues I've had as well as like three people on the team are in this city three people
+
+00:03:52.800 --> 00:03:56.600
+are in that other city and one is here it's like even if you flew somewhere you would only be you'd
+
+00:03:56.630 --> 00:04:01.960
+still be on zoom so you might as well just be on zoom I definitely definitely the world we live in
+
+00:04:02.680 --> 00:04:09.260
+and well I mean that's a blessing honestly to not have to fly to all these places as well as just
+
+00:04:09.620 --> 00:04:16.159
+be able to pop in and out right I mean this work from home story it's amazing it's only getting
+
+00:04:16.180 --> 00:04:25.320
+better all the time. So let's talk DuckDB and databases. I think maybe setting a bit of a
+
+00:04:25.380 --> 00:04:35.800
+mental model. A lot of folks are familiar with SQLite, right? And so SQLite is a library,
+
+00:04:35.840 --> 00:04:41.559
+not a server that you can use that then plugs into your application, works on a local file rather
+
+00:04:41.580 --> 00:04:47.220
+than a certain thing you run in another VM or however you, you know, there's not a managed
+
+00:04:47.660 --> 00:04:47.980
+SQLite.
+
+00:04:48.220 --> 00:04:48.700
+Not that I know.
+
+00:04:48.780 --> 00:04:50.200
+I know maybe there's a managed SQLite.
+
+00:04:50.200 --> 00:04:50.920
+I don't know of one.
+
+00:04:51.020 --> 00:04:51.360
+There are.
+
+00:04:51.500 --> 00:04:51.760
+There are.
+
+00:04:52.220 --> 00:04:52.500
+Are there?
+
+00:04:52.740 --> 00:04:52.880
+Incredible.
+
+00:04:54.500 --> 00:04:58.080
+Yeah, there's a bunch of cool stuff that you can do if you have a database that's just
+
+00:04:58.280 --> 00:04:59.820
+part of your application instead of somewhere else.
+
+00:05:00.560 --> 00:05:07.079
+You know, another one that I just ran across is Mocha-py, or there's no dot, there's Dash
+
+00:05:07.100 --> 00:05:13.800
+Pi, which is a Python wrapper around the, I think it's Rust Mocha caching thing, but instead of
+
+00:05:13.860 --> 00:05:19.420
+being Redis or something like that, it's like an in-memory thing that you can run for sort of the
+
+00:05:19.560 --> 00:05:27.240
+same purpose. So DuckDB sort of falls into that realm, right? Yes. I think it's an in-process
+
+00:05:27.380 --> 00:05:37.060
+database, just like you said. So it's definitely a library. It's import DuckDB. So it's not in the
+
+00:05:37.640 --> 00:05:39.180
+pre-compiled, zero dependencies.
+
+00:05:39.730 --> 00:05:40.800
+So it is super easy.
+
+00:05:41.110 --> 00:05:43.580
+Basically, anywhere you can get to pip, you can get DuckDB running.
+
+00:05:43.940 --> 00:05:44.940
+So that could be your laptop.
+
+00:05:45.480 --> 00:05:46.580
+That could be a big, beefy server.
+
+00:05:47.260 --> 00:05:48.960
+It could be a Lambda function.
+
+00:05:49.600 --> 00:05:53.140
+It could be inside of your orchestrator, you know, in a GitHub action.
+
+00:05:54.100 --> 00:05:55.080
+Kind of slots in everywhere.
+
+00:05:55.260 --> 00:05:55.880
+That's part of the magic.
+
+00:05:58.039 --> 00:06:02.320
+Presumably, when you pip install DuckDB, it's just downloading a wheel for your architecture,
+
+00:06:03.000 --> 00:06:03.360
+for your platform.
+
+00:06:03.840 --> 00:06:03.900
+Absolutely.
+
+00:06:03.900 --> 00:06:03.960
+Yep.
+
+00:06:04.160 --> 00:06:05.540
+Pre-compiled, all the accommodations.
+
+00:06:06.400 --> 00:06:07.080
+Yeah, that's really good.
+
+00:06:07.780 --> 00:06:10.300
+Yeah, if you just sit on the DuckDB.org homepage,
+
+00:06:11.380 --> 00:06:14.900
+you can learn about it as it animates different messages to use.
+
+00:06:15.420 --> 00:06:18.280
+DuckDB is a fast analytical database system,
+
+00:06:18.650 --> 00:06:22.240
+open source database system, in-memory database system.
+
+00:06:23.320 --> 00:06:24.640
+We'll see what else-- yeah, portable.
+
+00:06:25.600 --> 00:06:28.920
+So yeah, it works on most of the places,
+
+00:06:29.050 --> 00:06:30.220
+the main operating systems, right?
+
+00:06:30.760 --> 00:06:31.200
+Yes.
+
+00:06:31.470 --> 00:06:32.240
+Yep, it's all over.
+
+00:06:33.080 --> 00:06:34.680
+Can I Raspberry Pi it?
+
+00:06:34.840 --> 00:06:35.940
+I'd imagine the answer is yes.
+
+00:06:36.260 --> 00:06:38.060
+Can I circuit Python it?
+
+00:06:39.200 --> 00:06:39.640
+Probably not, right?
+
+00:06:39.640 --> 00:06:41.740
+I haven't checked that. You can do iPhone and Android.
+
+00:06:42.280 --> 00:06:43.580
+There's a Swift client so you can build
+
+00:06:43.720 --> 00:06:46.460
+iPhone apps and your Android works as well.
+
+00:06:46.620 --> 00:06:47.380
+Yeah, you could do that.
+
+00:06:47.560 --> 00:06:49.480
+Works in your browser with WebAssembly.
+
+00:06:49.840 --> 00:06:52.180
+It'll work with PyDyde in the browser as well.
+
+00:06:52.260 --> 00:06:53.820
+So it really goes all over.
+
+00:06:54.640 --> 00:06:57.160
+That's really cool. One of the things that I said people are
+
+00:06:57.220 --> 00:07:01.360
+doing interesting stuff with and in mind with SQLite is,
+
+00:07:01.500 --> 00:07:04.160
+I saw some folks suggesting using
+
+00:07:04.180 --> 00:07:10.300
+SQLite in the browser instead of local storage and like the local, like all the JavaScripty
+
+00:07:11.100 --> 00:07:16.640
+things. And could I do that with DuckDB? You could definitely do that with DuckDB. I think the
+
+00:07:17.460 --> 00:07:21.740
+use case is slightly different, but that's sort of the benefit is you can use both. So
+
+00:07:23.139 --> 00:07:26.320
+definitely could talk a bit more about the differences, but I'd say in general,
+
+00:07:26.420 --> 00:07:31.800
+a good mental model for DuckDB is kind of a from scratch separate project from SQLite,
+
+00:07:32.220 --> 00:07:36.100
+but taking a lot of the lessons and learnings about what makes people love SQLite
+
+00:07:36.580 --> 00:07:38.440
+and bringing that into the analytical realm.
+
+00:07:38.550 --> 00:07:44.460
+And that's really, instead of inserting and updating tons of tiny transactions all the time really fast,
+
+00:07:44.880 --> 00:07:48.540
+it's big bulk operations, you know, aggregate a billion rows,
+
+00:07:49.150 --> 00:07:51.980
+join a billion rows to a billion rows, that type of thing.
+
+00:07:52.780 --> 00:07:55.060
+Yeah. Doing that in memory in JavaScript is not that great.
+
+00:07:56.600 --> 00:07:58.160
+Doing that in memory in Python is not that great.
+
+00:07:58.520 --> 00:08:04.460
+But it sounds a little bit more like vector programming in the sense of kind of like
+
+00:08:05.900 --> 00:08:08.920
+you would do with pandas or Polars, right?
+
+00:08:09.230 --> 00:08:10.480
+You wouldn't loop over.
+
+00:08:11.820 --> 00:08:15.240
+You shouldn't loop over a panda's data frame processing each item.
+
+00:08:15.250 --> 00:08:21.240
+You should issue vector operations that apply to every row, like multiply this column by
+
+00:08:21.270 --> 00:08:25.740
+two rather than for every C in column, you know, whatever, like looping it over.
+
+00:08:26.800 --> 00:08:27.040
+Yes.
+
+00:08:27.320 --> 00:08:28.840
+So it is exactly what you said.
+
+00:08:28.960 --> 00:08:29.760
+It's designed for that.
+
+00:08:30.600 --> 00:08:33.580
+It's vectorized execution, so it's a little different than Panas.
+
+00:08:34.719 --> 00:08:36.140
+Polars is a bit more similar.
+
+00:08:37.399 --> 00:08:40.340
+Where instead, Panas will process a whole column at a time.
+
+00:08:41.140 --> 00:08:43.240
+And that works a lot better than one row at a time
+
+00:08:43.620 --> 00:08:45.740
+until your columns get too big and then it crashes.
+
+00:08:46.840 --> 00:08:49.760
+So what DuckDB does is it does it in chunks of about 2,000 rows
+
+00:08:49.800 --> 00:08:50.180
+at a time.
+
+00:08:50.700 --> 00:08:52.860
+And so that way you get all the benefits of your modern CPU
+
+00:08:53.820 --> 00:08:57.280
+hierarchy, your caches, all that, where it's just pumping data
+
+00:08:58.160 --> 00:09:04.640
+but you also conserve memory and you can not get into issues with that. I will also say it's
+
+00:09:05.740 --> 00:09:08.440
+technically we are an in-process database, not an in-memory database.
+
+00:09:08.980 --> 00:09:11.220
+Oh, sorry. If I said in-memory, I meant in-process.
+
+00:09:11.920 --> 00:09:17.660
+It is very much an interchangeable word like in English. We just are very specific about it in
+
+00:09:17.800 --> 00:09:21.260
+database land. No, you do. And you do support in-memory databases.
+
+00:09:22.260 --> 00:09:25.560
+Yes. But that's not the same as in-process. Yeah, sorry. In-process is what I meant.
+
+00:09:25.580 --> 00:09:30.480
+No problem. All I mean to say there is, you know, you don't need to limit yourself to your size of RAM.
+
+00:09:31.100 --> 00:09:34.780
+You know, you can solve one terabyte problems on your laptop with DuckDB, no problem.
+
+00:09:35.920 --> 00:09:36.120
+Really?
+
+00:09:37.200 --> 00:09:40.880
+Yes, it handles larger than memory data, both streaming from disk.
+
+00:09:41.030 --> 00:09:45.400
+So it'll just read just the pieces it needs as it goes and even in the intermediates.
+
+00:09:45.660 --> 00:09:49.700
+So let's say you join two tables together and you multiply the number of rows.
+
+00:09:50.700 --> 00:09:54.520
+It'll send things to disk as it gets memory pressure close to your memory limit.
+
+00:09:54.620 --> 00:09:58.560
+So a lot of effort has been put into that in the last year or so.
+
+00:09:59.010 --> 00:10:00.640
+So it's working pretty smooth now.
+
+00:10:00.980 --> 00:10:04.020
+Yeah, I can imagine that that's super important.
+
+00:10:04.280 --> 00:10:09.120
+So I'm really looking forward to talking about schemas, indexes,
+
+00:10:09.830 --> 00:10:13.020
+those kinds of things, which sound like they may play important roles here.
+
+00:10:13.460 --> 00:10:16.960
+But you talked about these different ways in which you can use DuckDB.
+
+00:10:19.760 --> 00:10:22.700
+Looking through the documentation, it looks like it works with not just Python,
+
+00:10:22.800 --> 00:10:25.280
+but quite a few platforms or languages.
+
+00:10:26.360 --> 00:10:27.920
+Yes, somewhere north of 15.
+
+00:10:28.220 --> 00:10:30.600
+So Python is the most popular way to use DuckDB.
+
+00:10:30.940 --> 00:10:33.180
+We've got some really tight integrations with data frame libraries,
+
+00:10:33.440 --> 00:10:34.520
+which we can definitely talk more about.
+
+00:10:35.400 --> 00:10:36.620
+There's a lot of Java use out there.
+
+00:10:37.050 --> 00:10:38.840
+So JDBC, we've got a JDBC driver.
+
+00:10:39.680 --> 00:10:43.620
+You can use it in JavaScript, both in the browser with Wasm
+
+00:10:44.080 --> 00:10:47.160
+or on the server with Node, popular Node package.
+
+00:10:48.020 --> 00:10:51.280
+You can also do Go, Rust, C++, C.
+
+00:10:52.920 --> 00:10:55.240
+I think there's a community-driven Ruby client,
+
+00:10:55.580 --> 00:10:56.760
+really all over the place.
+
+00:10:58.340 --> 00:11:00.980
+.NET, C#, you can use it from.NET, all over.
+
+00:11:01.380 --> 00:11:03.200
+Yeah, that's awesome.
+
+00:11:03.620 --> 00:11:06.520
+And I'm guessing it's interchangeable, the file?
+
+00:11:08.220 --> 00:11:08.480
+Yes.
+
+00:11:08.610 --> 00:11:11.920
+So just like SQLite files are designed to be read
+
+00:11:12.030 --> 00:11:13.960
+for a long time, they're very portable.
+
+00:11:14.700 --> 00:11:17.740
+DuckDB just kind of reached the 1.0 milestone in June.
+
+00:11:18.280 --> 00:11:19.520
+So super excited about that.
+
+00:11:19.820 --> 00:11:22.940
+And with that, you know, promised stability with the file format.
+
+00:11:23.390 --> 00:11:33.760
+And that means that we expect for the next somewhere around five years to have your DuckDB files be totally compatible where you can read a five-year-old file five years from now type thing.
+
+00:11:34.340 --> 00:11:34.400
+Yeah.
+
+00:11:34.520 --> 00:11:40.920
+Which means you can, it's like SQLite in that you can fit all your tables and all the relationships between them all in one file.
+
+00:11:41.300 --> 00:11:44.120
+So that's one nice thing about SQLite.
+
+00:11:44.120 --> 00:11:45.300
+You can email the whole database.
+
+00:11:45.680 --> 00:11:47.000
+You can do the same with DuckDB.
+
+00:11:47.620 --> 00:11:51.900
+But DuckDB is going to store it a lot more compactly if you've got a lot of data.
+
+00:11:51.950 --> 00:11:55.240
+Oh, really? Okay. You guys have worked a lot on the file format.
+
+00:11:57.380 --> 00:12:00.480
+It's, again, taking inspiration from SQLite, the format is very separate.
+
+00:12:00.690 --> 00:12:05.700
+And in databases, you kind of have a pretty hard fork in the road pretty early on in your architecture,
+
+00:12:05.870 --> 00:12:09.360
+which is you want to be row-based or do you want to be column-based?
+
+00:12:10.760 --> 00:12:14.800
+And row-based is SQLite and column-based would be your pandas, your polars,
+
+00:12:15.000 --> 00:12:16.940
+and most of your cloud data warehouses,
+
+00:12:17.220 --> 00:12:18.700
+your snowflakes, that type of thing.
+
+00:12:19.160 --> 00:12:20.360
+And once you go column-based,
+
+00:12:20.980 --> 00:12:22.360
+suddenly your compression is amazing
+
+00:12:22.840 --> 00:12:25.680
+because you store data that's very similar
+
+00:12:25.770 --> 00:12:26.460
+right next to each other.
+
+00:12:26.850 --> 00:12:27.840
+So you can really compress it.
+
+00:12:27.980 --> 00:12:29.180
+Your dates are back-to-back.
+
+00:12:29.890 --> 00:12:31.840
+Instead of a date column, string column,
+
+00:12:32.080 --> 00:12:33.780
+integer column in a row-based store,
+
+00:12:34.260 --> 00:12:35.260
+they don't compress well.
+
+00:12:35.420 --> 00:12:37.840
+So we can get somewhere around 5x the compression typically.
+
+00:12:39.420 --> 00:12:40.760
+Okay, that's really great.
+
+00:12:41.660 --> 00:12:43.820
+And you could take this file and you could put it...
+
+00:12:46.739 --> 00:12:50.880
+into S3 or use it with some sort of Jupyter Notebook, right?
+
+00:12:50.900 --> 00:12:53.200
+And just, they could just grab the file and run with it.
+
+00:12:53.200 --> 00:12:54.060
+And it's all the data, yeah?
+
+00:12:54.880 --> 00:12:54.980
+Yes.
+
+00:12:55.880 --> 00:12:58.640
+Object stores are really the name of the game there.
+
+00:12:59.140 --> 00:13:02.660
+You can even work with a file on object store and read it
+
+00:13:02.880 --> 00:13:04.520
+without having to download the whole file first.
+
+00:13:05.220 --> 00:13:07.260
+So DuckDB supports something like SQLite
+
+00:13:07.420 --> 00:13:08.940
+in that it's got this attach syntax.
+
+00:13:09.420 --> 00:13:11.520
+So you can say, hey, I want you to attach this file
+
+00:13:11.520 --> 00:13:14.240
+and then just read the pieces of it that I actually query,
+
+00:13:15.180 --> 00:13:15.800
+which is pretty slick.
+
+00:13:16.380 --> 00:13:17.840
+Yeah, that is super slick.
+
+00:13:19.480 --> 00:13:22.880
+All right, let me scroll down here
+
+00:13:23.500 --> 00:13:28.080
+and let's talk about maybe using it from Python.
+
+00:13:28.170 --> 00:13:32.760
+Give us a sense of what working with DuckDB is like here.
+
+00:13:34.120 --> 00:13:34.420
+You bet.
+
+00:13:34.450 --> 00:13:35.780
+So you've got your pip install DuckDB,
+
+00:13:37.580 --> 00:13:39.060
+which will download that pre-compiled binary.
+
+00:13:39.300 --> 00:13:40.380
+It's like 20 or 30 megabytes,
+
+00:13:40.620 --> 00:13:41.940
+So pretty close to instant.
+
+00:13:42.980 --> 00:13:46.000
+Then import DuckDB, and then you can do DuckDB.SQL.
+
+00:13:47.020 --> 00:13:48.760
+And then within that function, you just
+
+00:13:48.860 --> 00:13:51.620
+pass in a string of your SQL statement, and it'll execute.
+
+00:13:52.840 --> 00:13:53.500
+It's really that simple.
+
+00:13:53.790 --> 00:13:56.240
+And so it follows the DB API if you want,
+
+00:13:56.340 --> 00:13:58.140
+so you can get back your typical peoples.
+
+00:13:58.830 --> 00:14:02.260
+Or you can say.df at the end and get back a pandas data frame.
+
+00:14:03.440 --> 00:14:06.260
+Or.pl, get pullers, all kinds of stuff.
+
+00:14:06.760 --> 00:14:13.040
+Yeah, I saw that there's a lot of to and from the popular data science libraries, which seems really nice.
+
+00:14:14.620 --> 00:14:18.920
+You work in your data science library, or maybe run a query and get a subset of your data,
+
+00:14:19.380 --> 00:14:26.960
+and then maybe plot that with PlotLay or Altair or pass it along to other things that expect a data frame, right?
+
+00:14:27.920 --> 00:14:34.020
+Yes, exactly. A lot of the DuckDB ethos is don't ask folks to ship their data necessarily somewhere else.
+
+00:14:34.260 --> 00:14:36.900
+Don't ask them to change their workflow dramatically to use a database.
+
+00:14:37.600 --> 00:14:38.880
+Meet folks right where they are.
+
+00:14:39.050 --> 00:14:42.380
+And that means you can have one line of code be in your data frame library of choice,
+
+00:14:43.070 --> 00:14:47.380
+you know, pandas, polars, or arrow, and then a line of code inductee be,
+
+00:14:47.940 --> 00:14:50.160
+and then you're right back in your data frame in the next line.
+
+00:14:50.230 --> 00:14:51.920
+So it fits really wherever you want.
+
+00:14:53.160 --> 00:14:55.020
+It's a great fit if you want to throw some SQL at a problem.
+
+00:14:55.340 --> 00:14:59.100
+Some problems are easier to formulate in SQL, I think, than in data frame libraries,
+
+00:14:59.420 --> 00:14:59.940
+and vice versa.
+
+00:15:00.740 --> 00:15:04.960
+But also, some libraries, it's harder to scale larger than memory.
+
+00:15:05.900 --> 00:15:08.500
+And DuckDB does have a lot of nice performance under the hood.
+
+00:15:08.880 --> 00:15:16.180
+So maybe the hardest part of your workflow, you can slide in DuckDB and make the minimum change to get it working.
+
+00:15:17.280 --> 00:15:22.380
+Yeah, well, it seems to me like maybe you put all of the data into DuckDB,
+
+00:15:23.600 --> 00:15:29.580
+and then you can ask questions, which result in Python data science objects that then you can work on,
+
+00:15:29.680 --> 00:15:30.960
+where those questions result in,
+
+00:15:31.920 --> 00:15:34.360
+give me the stuff for this state or this time period
+
+00:15:34.520 --> 00:15:37.120
+or something like that where it's a reasonable amount of data,
+
+00:15:37.360 --> 00:15:39.160
+but if you tried to just load it all,
+
+00:15:39.180 --> 00:15:40.940
+then it would say no.
+
+00:15:42.120 --> 00:15:44.080
+I think that's a great way to go about it for sure.
+
+00:15:46.420 --> 00:15:49.560
+Another common workflow is to do some similar things,
+
+00:15:49.620 --> 00:15:52.580
+but with Parquet files or CSVs or JSON.
+
+00:15:52.880 --> 00:15:56.300
+So in the same way you can store a lot of your data in DuckDB,
+
+00:15:56.360 --> 00:15:58.559
+you can periodically write chunks out to Parquet
+
+00:15:58.560 --> 00:16:00.820
+or read in from Parquet, all that type of stuff too.
+
+00:16:01.520 --> 00:16:01.820
+Yeah.
+
+00:16:02.270 --> 00:16:03.440
+Tell people what Parquet is.
+
+00:16:03.650 --> 00:16:07.200
+I know it comes from PyArrow or the Aero Project, right?
+
+00:16:08.360 --> 00:16:09.000
+Where does it come from?
+
+00:16:09.400 --> 00:16:10.280
+I know they use it.
+
+00:16:10.280 --> 00:16:11.240
+I don't know if they came up with it.
+
+00:16:11.960 --> 00:16:14.580
+They definitely collaborated and were a big part of it.
+
+00:16:14.720 --> 00:16:17.900
+So it's a community-developed open format.
+
+00:16:18.280 --> 00:16:19.140
+It's Apache Parquet.
+
+00:16:19.470 --> 00:16:22.800
+So it's an open-source community-driven.
+
+00:16:23.420 --> 00:16:25.080
+And it's a columnar format.
+
+00:16:25.900 --> 00:16:28.540
+So instead of storing things by rows, it's columnar storage,
+
+00:16:29.120 --> 00:16:30.480
+and it's chunked columnar storage.
+
+00:16:30.720 --> 00:16:33.620
+So it's sort of like somewhere around every million rows or so,
+
+00:16:33.680 --> 00:16:35.380
+you kind of write out another chunk.
+
+00:16:35.740 --> 00:16:38.140
+And it ends up being a really good format
+
+00:16:39.140 --> 00:16:41.920
+to store large amounts of data in the cloud.
+
+00:16:42.110 --> 00:16:44.380
+And it's typically what's underneath a data lake
+
+00:16:44.680 --> 00:16:45.360
+or a data lake house.
+
+00:16:45.890 --> 00:16:48.780
+The vast majority of those have parquet under the hood.
+
+00:16:50.220 --> 00:16:51.240
+We love the parquet format.
+
+00:16:51.540 --> 00:16:52.760
+At DuckDB, we read it and write it.
+
+00:16:52.760 --> 00:16:54.639
+We have a custom from scratch reader, custom
+
+00:16:54.660 --> 00:16:55.640
+from scratch writer for it.
+
+00:16:57.080 --> 00:17:00.140
+We actually prefer our own format given the choice as well.
+
+00:17:00.500 --> 00:17:03.280
+Parquet's been around for a decade or so at this point.
+
+00:17:03.620 --> 00:17:05.260
+And we've added a few things over time
+
+00:17:05.699 --> 00:17:06.699
+into DuckDB that are new.
+
+00:17:09.580 --> 00:17:12.480
+Yeah, Parquet is one of those things that--
+
+00:17:12.480 --> 00:17:14.020
+Pandas 2.0 supports it, right?
+
+00:17:14.280 --> 00:17:15.319
+Polar supports it.
+
+00:17:15.579 --> 00:17:16.880
+It's pretty universal.
+
+00:17:17.240 --> 00:17:21.500
+So it might be a good way to get data from--
+
+00:17:21.500 --> 00:17:22.939
+that you've worked on before into DuckDB.
+
+00:17:24.200 --> 00:17:31.220
+yes it's great i think you know most universal csv uh most difficult also csv uh parquet is a
+
+00:17:31.220 --> 00:17:42.640
+really great compromise uh there yeah um hold on my computer's lagging is distracting me i apologize
+
+00:17:45.300 --> 00:17:46.780
+one sec scroll scroll
+
+00:18:03.179 --> 00:18:08.080
+so duck TV works well it sounds like for the data science story like it's built for the data science
+
+00:18:08.260 --> 00:18:15.959
+story if I was wanting to store relational data you know maybe I've already got duck TV working
+
+00:18:15.980 --> 00:18:22.180
+or something, I'm like, you know, do I necessarily want to bring SQLite into the story as well
+
+00:18:22.180 --> 00:18:22.820
+and have these two things?
+
+00:18:23.300 --> 00:18:29.440
+Is it possible to, say, do relational type things with DuckDB?
+
+00:18:31.080 --> 00:18:32.000
+Yes, that's a great question.
+
+00:18:32.240 --> 00:18:35.600
+So I think DuckDB is trying to bring the best of both.
+
+00:18:35.820 --> 00:18:41.620
+It is a full relational database, as well as supporting some of the data science workflows
+
+00:18:41.730 --> 00:18:44.040
+that you typically in the past would have been doing in a data frame.
+
+00:18:44.760 --> 00:18:48.000
+So DuckDB is an analytical system, not transactional.
+
+00:18:48.220 --> 00:18:54.120
+So it's not going to be the fastest at doing individual row operations, but it supports them all.
+
+00:18:54.560 --> 00:19:02.240
+And it supports them with full ACID transactions that you'd expect from a database where you won't get database corruption, even if your computer cuts out.
+
+00:19:02.540 --> 00:19:05.780
+You know, it's got that kind of robustness that you expect from a database.
+
+00:19:06.560 --> 00:19:14.640
+So part of the story, though, is that with an analytical database, it's typically not your only database unless you're doing data science work.
+
+00:19:14.790 --> 00:19:25.500
+If you're building an application, you're going to want a transactional database for, you know, saving your, you know, when a customer places an order, you know, all that type of transactional stuff is still critical.
+
+00:19:26.020 --> 00:19:28.100
+So typically DuckDB is going to be layered in addition.
+
+00:19:28.780 --> 00:19:32.080
+And the interoperability story there with DuckDB is pretty, pretty fantastic.
+
+00:19:32.520 --> 00:19:36.340
+You can actually read SQLite files directly with DuckDB.
+
+00:19:37.400 --> 00:19:42.760
+And it's going to be, if you're doing any sort of advanced processing on them, it's going to be a lot quicker in DuckDB.
+
+00:19:43.420 --> 00:19:44.740
+You can even read Postgres databases.
+
+00:19:45.140 --> 00:19:46.600
+You can read MySQL databases.
+
+00:19:47.180 --> 00:19:49.040
+There's a community extension to read BigQuery.
+
+00:19:49.820 --> 00:19:58.040
+So it's really a universal Swiss Army knife in a lot of ways to read from those operational data stores, but to do those analytical tasks.
+
+00:19:58.920 --> 00:20:00.080
+Look at all my orders.
+
+00:20:00.580 --> 00:20:02.300
+What was the most popular five products?
+
+00:20:03.120 --> 00:20:07.200
+You know, that's going to be a tough query for a transactional system, but bread and butter for DuckDB.
+
+00:20:08.400 --> 00:20:18.060
+So when you say read from, let's say, Postgres, does that import it into a table in DuckDB?
+
+00:20:18.460 --> 00:20:23.520
+Or does it translate the queries over to the underlying data system?
+
+00:20:23.880 --> 00:20:24.640
+What's happening there?
+
+00:20:25.160 --> 00:20:26.080
+That's a great question.
+
+00:20:26.720 --> 00:20:29.220
+We are communicating with Postgres.
+
+00:20:29.940 --> 00:20:31.200
+So we're not importing everything.
+
+00:20:31.320 --> 00:20:35.060
+we're sending the query to it, and we're reading all the data.
+
+00:20:36.460 --> 00:20:39.920
+Typically, that's going to be sparing the table or forming a view from Postgres,
+
+00:20:40.640 --> 00:20:44.600
+and then after that point, bring it into the DuckDB engine for subsequent processing.
+
+00:20:44.840 --> 00:20:46.640
+But you don't have to migrate all your data.
+
+00:20:47.240 --> 00:20:50.660
+It's kind of a data virtualization is one of the buzzwords.
+
+00:20:50.780 --> 00:20:51.540
+It's been around a little bit.
+
+00:20:53.480 --> 00:20:56.760
+It's getting to get some of the benefits of analytical performance
+
+00:20:58.210 --> 00:20:59.500
+without having to move your data first.
+
+00:21:00.160 --> 00:21:06.220
+It'll definitely be more performant if you put it in an analytical format like Parquet, like DefDB, like an analytical database.
+
+00:21:06.870 --> 00:21:15.400
+But you get a big fraction of that benefit with the engine part, which is the vectorized engine of doing things 2,000 rows at a time instead of one row at a time.
+
+00:21:15.900 --> 00:21:17.020
+That's a lot of it.
+
+00:21:17.880 --> 00:21:18.700
+Yeah, that's a huge benefit.
+
+00:21:20.340 --> 00:21:23.860
+It's almost like microservices for databases.
+
+00:21:24.170 --> 00:21:25.560
+You can click the things together.
+
+00:21:25.620 --> 00:21:40.100
+But the benefit would be that if you have an operational database, that is, it's getting written to and read from in real time, when you ask questions about it, it's using that real-time data.
+
+00:21:40.280 --> 00:21:44.260
+It's not, well, we did an export last night, and here's what we know.
+
+00:21:44.470 --> 00:21:47.060
+You can just get more live data, I guess.
+
+00:21:48.180 --> 00:21:49.740
+Yes, that's definitely a use case for that.
+
+00:21:50.430 --> 00:21:53.240
+You can kind of go either end of that spectrum.
+
+00:21:53.280 --> 00:22:07.240
+You can use that as an easy way to import, or you can pull it live, or you can kind of do midway and say, for any data older than an hour, use what I extracted, but grab the last hour right out of the operational database and get the best of both.
+
+00:22:07.540 --> 00:22:10.360
+Oh, wow. Okay. Yeah, that'd be pretty wild, wouldn't it?
+
+00:22:11.120 --> 00:22:19.480
+So you say that you all have the simplest or friendliest SQL syntax. What's the story with that?
+
+00:22:20.860 --> 00:22:33.180
+Sure. I think a lot of that is around part of the origin story of DuckDB is reaching out to the data science community and hearing feedback that we've invented this entire other thing called data frames because we didn't love databases.
+
+00:22:33.960 --> 00:22:34.360
+Yeah, exactly.
+
+00:22:36.060 --> 00:22:39.260
+They didn't answer the questions we wanted or whatever.
+
+00:22:39.400 --> 00:22:40.060
+Yeah, right.
+
+00:22:40.780 --> 00:22:41.680
+There was a lot of friction.
+
+00:22:41.980 --> 00:22:49.140
+And if folks have installed Postgres and set it up, there's a lot more to it than import pandas as PD.
+
+00:22:49.720 --> 00:22:53.420
+It's just a different level of hassle that you have to do.
+
+00:22:54.520 --> 00:22:55.660
+The SQL syntax is no different.
+
+00:22:56.000 --> 00:22:58.120
+SQL is an old language, much older than Python.
+
+00:22:58.920 --> 00:23:05.260
+And it's got a lot of very interesting behavior that, by modern standards, is very different.
+
+00:23:05.460 --> 00:23:09.240
+So with DuckDB, we've really pushed the envelope in a lot of ways.
+
+00:23:10.400 --> 00:23:10.460
+Nice.
+
+00:23:10.590 --> 00:23:19.500
+Well, many of the things that relational databases were built for and when they were designed, this was the 70s.
+
+00:23:19.680 --> 00:23:25.460
+and they had different memory was expensive disk was expensive so they made these trade-offs
+
+00:23:26.980 --> 00:23:35.300
+in that world right yes and it's absolutely um there's definitely some aspects of sql where it's
+
+00:23:35.300 --> 00:23:39.480
+been around a long time so it'll be around forever but what ducktb is trying to do is have it not be
+
+00:23:39.580 --> 00:23:44.680
+frozen in time forever and really push the whole language forward so there's a couple of
+
+00:23:44.600 --> 00:23:50.240
+cool ways. The syntax itself is designed to be both easier to use and also push it into areas
+
+00:23:50.500 --> 00:23:55.820
+that are new and different for databases. So easier to use, for example, in SQL, if you want
+
+00:23:55.820 --> 00:24:00.640
+to aggregate, you kind of typically need two ingredients. You need an aggregation function,
+
+00:24:00.880 --> 00:24:06.880
+like a sum or a max or an average, and then you want to group by clause to say, what's the level
+
+00:24:06.920 --> 00:24:12.380
+of detail I want to group at? Do I want to group by customer or customer and order? What level of
+
+00:24:12.280 --> 00:24:17.680
+of detail am I looking at? DuckDB can actually infer that level of detail with group by all
+
+00:24:18.200 --> 00:24:21.200
+and just say, whichever columns you're looking at, if you're looking at the customer ID
+
+00:24:22.020 --> 00:24:26.000
+and you're getting an average, okay, I'll just aggregate it up at customer ID level for you.
+
+00:24:26.340 --> 00:24:30.240
+And so it cuts out a whole clause of SQL. You basically never have to worry about the group
+
+00:24:30.340 --> 00:24:35.680
+by clause ever again. Just put the keyword all, you're good to go. I love it because the group
+
+00:24:35.760 --> 00:24:41.519
+by clause is hard. Anytime you have to edit something in two places, you're already in
+
+00:24:41.540 --> 00:24:41.920
+trouble, right?
+
+00:24:42.090 --> 00:24:45.240
+I mean, just the don't repeat yourself is very valuable.
+
+00:24:45.660 --> 00:24:46.060
+Yeah.
+
+00:24:47.320 --> 00:24:48.720
+Yeah, the joins and the group buys
+
+00:24:49.060 --> 00:24:50.940
+and the whole aggregation pipeline stuff, which
+
+00:24:51.040 --> 00:24:53.460
+is incredibly powerful, especially
+
+00:24:53.800 --> 00:24:56.960
+in analytical databases like DuckDB, but also hard.
+
+00:24:58.280 --> 00:24:59.360
+Yes, absolutely.
+
+00:24:59.500 --> 00:25:01.940
+And I think obviously anything we
+
+00:25:01.940 --> 00:25:03.780
+can do to reduce the friction there is helpful.
+
+00:25:04.840 --> 00:25:06.580
+So we are talking about the friendly SQL dialect.
+
+00:25:06.800 --> 00:25:08.180
+I'll throw a teaser in there to say
+
+00:25:08.510 --> 00:25:10.979
+there are ways to use DuckDB without SQL as well
+
+00:25:11.000 --> 00:25:11.900
+in very Pythonic ways.
+
+00:25:11.990 --> 00:25:14.760
+So you really can have it both ways if you want.
+
+00:25:14.840 --> 00:25:15.020
+Okay.
+
+00:25:16.580 --> 00:25:17.680
+What about ORMs?
+
+00:25:17.950 --> 00:25:20.600
+Is there a concept of a ORM for DuckDB?
+
+00:25:22.160 --> 00:25:24.120
+I'd have to check exactly which ones support it.
+
+00:25:24.280 --> 00:25:26.300
+But I know at Mother Duck,
+
+00:25:26.540 --> 00:25:28.880
+we're working on a TypeScript ORM
+
+00:25:30.340 --> 00:25:32.900
+that'll support DuckDB SQLize.
+
+00:25:33.980 --> 00:25:35.340
+I'd have to check which other ones are out there
+
+00:25:35.440 --> 00:25:35.860
+that support it.
+
+00:25:36.020 --> 00:25:38.260
+But nothing in principle really stops it.
+
+00:25:38.340 --> 00:25:40.420
+We support the fundamental things you need,
+
+00:25:40.480 --> 00:25:45.080
+like transactions, like all the other pieces you need.
+
+00:25:45.400 --> 00:25:48.360
+Yeah, basically, if it runs on pure SQL,
+
+00:25:49.980 --> 00:25:53.600
+then you should, ORMs are mostly about,
+
+00:25:54.320 --> 00:25:55.280
+I'm querying against classes,
+
+00:25:55.500 --> 00:25:57.360
+and then I'm going to turn that into SQL for you.
+
+00:25:57.580 --> 00:25:59.220
+And then the things that come back,
+
+00:25:59.360 --> 00:26:00.940
+I'm going to turn them into objects, right?
+
+00:26:01.080 --> 00:26:03.300
+I feel like both sides of that would be fine.
+
+00:26:04.540 --> 00:26:08.140
+Yes, and it is, it's a relational database.
+
+00:26:08.240 --> 00:26:13.780
+So it'll look very similar to the ORMs themselves.
+
+00:26:13.940 --> 00:26:15.540
+So it should be very compatible.
+
+00:26:16.500 --> 00:26:18.220
+Yeah, it seems possible.
+
+00:26:18.940 --> 00:26:19.600
+It seems totally possible.
+
+00:26:20.460 --> 00:26:21.100
+All right.
+
+00:26:22.820 --> 00:26:26.040
+So maybe let's talk through a little bit of the ways
+
+00:26:26.040 --> 00:26:31.040
+of working with DuckDB through maybe connecting,
+
+00:26:32.140 --> 00:26:34.120
+running some queries, updating.
+
+00:26:35.020 --> 00:26:39.180
+But let me first ask you, what does a schema look like?
+
+00:26:39.480 --> 00:26:42.020
+If, for example, if I'm going to work with Postgres or SQLite,
+
+00:26:42.580 --> 00:26:46.420
+I need to run create scripts to create the tables
+
+00:26:47.220 --> 00:26:49.500
+and the indices and that kind of stuff
+
+00:26:49.600 --> 00:26:51.880
+before I can even talk to it, generally speaking.
+
+00:26:53.600 --> 00:26:54.980
+Is that needed for DuckDB?
+
+00:26:55.040 --> 00:26:57.480
+It doesn't look like it from the examples that I've seen,
+
+00:26:57.720 --> 00:26:58.420
+but how does that work?
+
+00:26:59.559 --> 00:27:02.080
+I think in those other databases,
+
+00:27:02.360 --> 00:27:03.440
+there are some ways where you don't necessarily
+
+00:27:03.540 --> 00:27:04.040
+have to do that.
+
+00:27:04.160 --> 00:27:05.920
+and DuckDB follows that same approach
+
+00:27:06.140 --> 00:27:09.260
+where it can automatically create tables for you
+
+00:27:10.020 --> 00:27:11.800
+based on the query that you pipe into it.
+
+00:27:11.920 --> 00:27:16.700
+So you create a table as the result of another SQL statement,
+
+00:27:16.980 --> 00:27:18.760
+and it will just automatically create that table
+
+00:27:20.200 --> 00:27:21.920
+with the data types that you pass through.
+
+00:27:22.120 --> 00:27:25.680
+So one key note, if folks really know a lot about SQLite,
+
+00:27:25.920 --> 00:27:27.360
+one of the defining characteristics of it
+
+00:27:27.420 --> 00:27:30.300
+is that it is very much non-typed as much as possible.
+
+00:27:31.200 --> 00:27:33.459
+DuckDB is very much more traditional
+
+00:27:33.480 --> 00:27:35.000
+in that it does have typing.
+
+00:27:35.820 --> 00:27:39.680
+It does take full advantage of having nice numeric data types,
+
+00:27:40.080 --> 00:27:42.680
+date times that are true date times, not strings.
+
+00:27:43.940 --> 00:27:45.420
+It'll do its best to auto-convert for you,
+
+00:27:46.500 --> 00:27:47.980
+but it really does make it very easy.
+
+00:27:48.000 --> 00:27:50.220
+You can just create a table as, for example,
+
+00:27:50.700 --> 00:27:53.900
+create table as select star from this parquet file.
+
+00:27:54.680 --> 00:27:55.820
+It can really be that easy.
+
+00:27:55.980 --> 00:27:58.140
+It'll just auto-create the table based on the parquet file.
+
+00:27:58.600 --> 00:28:00.480
+Okay. Yeah, that's really neat.
+
+00:28:00.600 --> 00:28:03.280
+A lot of those have their columns have data types and stuff, right?
+
+00:28:03.320 --> 00:28:11.060
+Yes. And we have also invested quite a lot in our CSV reader as well. So the CSV reader,
+
+00:28:12.560 --> 00:28:19.520
+we consider to be up there with the best on the planet. It auto infers the data types by sniffing
+
+00:28:19.640 --> 00:28:25.900
+the CSV to really deduce it. And it handles some seriously wacky CSV files.
+
+00:28:26.300 --> 00:28:27.320
+You know, okay.
+
+00:28:27.580 --> 00:28:33.980
+I mean, whatever you're imagining, it's worse, you know, like it's, it's, it's worse than that.
+
+00:28:35.120 --> 00:28:40.020
+But DuckDB is okay and ready to handle it and bringing you, you know, making it easy.
+
+00:28:40.100 --> 00:28:45.920
+Because it really aligns with the DuckDB ethos, which is a database shouldn't be extra work.
+
+00:28:46.540 --> 00:28:47.580
+It should be saving you work.
+
+00:28:48.760 --> 00:28:53.020
+And, and most of the time, step one of a database is import your data.
+
+00:28:53.920 --> 00:28:55.900
+And a lot of databases, that's not that easy.
+
+00:28:56.820 --> 00:28:57.880
+to just import your data.
+
+00:28:58.380 --> 00:29:01.860
+Especially if it's not exactly the format of that database, right?
+
+00:29:02.620 --> 00:29:05.380
+It's like, well, okay, I have a.SQL file.
+
+00:29:05.580 --> 00:29:06.720
+It's a bunch of update statements.
+
+00:29:06.960 --> 00:29:07.960
+Sure, that's easy to import,
+
+00:29:08.220 --> 00:29:10.060
+but here's my CSV,
+
+00:29:10.400 --> 00:29:12.760
+and actually you need to transform it or whatever, yeah.
+
+00:29:13.780 --> 00:29:16.580
+Yes, there's a long tail of complexity there,
+
+00:29:16.700 --> 00:29:18.440
+but DuckDB is really trying to handle that
+
+00:29:18.860 --> 00:29:21.680
+and just make that first experience using a database
+
+00:29:22.120 --> 00:29:24.760
+just straight out of the box, really easy.
+
+00:29:25.360 --> 00:29:29.260
+Yeah. So you have some interesting data ingestion.
+
+00:29:30.240 --> 00:29:31.640
+This is a good thing, not a bad thing.
+
+00:29:32.960 --> 00:29:35.160
+Data ingestion options.
+
+00:29:35.330 --> 00:29:38.120
+You have a, it feels a little bit Pandas-like.
+
+00:29:38.190 --> 00:29:41.360
+You have a read CSV, read Parquet, read JSON.
+
+00:29:42.770 --> 00:29:46.060
+And then it's just, as you sort of hinted there,
+
+00:29:46.160 --> 00:29:48.920
+it's like part of the database now and you can ask it questions.
+
+00:29:50.720 --> 00:29:55.080
+Yes. So you can absolutely do that just with the read CSV.
+
+00:29:55.200 --> 00:29:57.240
+and it'll import there.
+
+00:29:57.650 --> 00:30:01.660
+You can also even just read it without importing.
+
+00:30:02.600 --> 00:30:05.220
+So for example, when we're running that read parquet,
+
+00:30:06.100 --> 00:30:09.120
+it's lazily evaluated, much like Polars
+
+00:30:09.120 --> 00:30:11.200
+or some of the other more modern data frame libraries are,
+
+00:30:11.540 --> 00:30:13.700
+where it's building up this relation object that says,
+
+00:30:14.820 --> 00:30:16.200
+once you look at the results,
+
+00:30:17.140 --> 00:30:18.540
+start by reading the parquet file
+
+00:30:18.650 --> 00:30:20.040
+and then process the next few steps.
+
+00:30:20.110 --> 00:30:21.860
+You could do something like read parquet,
+
+00:30:22.260 --> 00:30:24.800
+filter to these things, aggregate up on these columns.
+
+00:30:25.440 --> 00:30:27.940
+and it will actually do all those operations together.
+
+00:30:28.340 --> 00:30:30.400
+It'll optimize them to do them in the right order
+
+00:30:30.730 --> 00:30:31.820
+to pull the least amount of data.
+
+00:30:32.460 --> 00:30:33.520
+And then only at that point
+
+00:30:33.610 --> 00:30:35.500
+will it materialize what it needs to.
+
+00:30:36.420 --> 00:30:38.540
+So the examples that you're looking at on screen
+
+00:30:39.960 --> 00:30:42.600
+are DuckDB.SQL select star from a Parquet file.
+
+00:30:43.980 --> 00:30:46.960
+You don't ever even have to write that Parquet file
+
+00:30:47.150 --> 00:30:47.880
+into DuckDB format.
+
+00:30:48.300 --> 00:30:50.820
+It's just going to read it and return the results to you
+
+00:30:51.540 --> 00:30:53.300
+straight as a pass-through, as an engine.
+
+00:30:54.860 --> 00:30:55.980
+Oh, that's really cool.
+
+00:30:56.280 --> 00:30:59.940
+So if it were a million lines of that,
+
+00:30:59.940 --> 00:31:02.420
+I could just iteratively pull through it.
+
+00:31:02.900 --> 00:31:05.740
+Yes, it'll just chunk through it at nice low memory usage
+
+00:31:05.940 --> 00:31:08.360
+and just pass those results out to you.
+
+00:31:08.370 --> 00:31:11.020
+And then if you process them also in batches,
+
+00:31:11.390 --> 00:31:12.700
+you can keep your memory used super low
+
+00:31:12.940 --> 00:31:15.980
+and take advantage of DuckDB being a streaming engine
+
+00:31:16.830 --> 00:31:17.780
+and not bring it on to memory.
+
+00:31:18.160 --> 00:31:18.440
+Right.
+
+00:31:18.550 --> 00:31:20.860
+Well, let's say I want to read a CSV file,
+
+00:31:20.980 --> 00:31:24.060
+but then put it into a persistent table in DuckDB.
+
+00:31:25.320 --> 00:31:26.080
+What do I do for this?
+
+00:31:26.720 --> 00:31:27.760
+- Yes, you could say,
+
+00:31:28.360 --> 00:31:31.980
+create table as my improved CSV table
+
+00:31:32.820 --> 00:31:36.420
+as select star from path to my CSV file.
+
+00:31:37.340 --> 00:31:39.140
+- Will it copy over the schema?
+
+00:31:39.700 --> 00:31:42.580
+- It will infer the schema as best as it possibly can,
+
+00:31:42.740 --> 00:31:45.640
+and it will automatically define the schema for you.
+
+00:31:46.580 --> 00:31:47.140
+- Nice.
+
+00:31:47.860 --> 00:31:49.760
+What's the nullability story in your schema?
+
+00:31:51.340 --> 00:31:55.480
+I think, do you support nullability or are there things that cannot be null?
+
+00:31:56.620 --> 00:32:01.860
+Yes, it's more traditional in the database in that everything can have a null value in the column.
+
+00:32:02.730 --> 00:32:08.280
+I think in pandas that was a little bit complicated by the fact that they were using numpy in some cases,
+
+00:32:08.540 --> 00:32:09.980
+but extending beyond numpy in others.
+
+00:32:10.980 --> 00:32:16.060
+But in DuckDB, it's more of a traditional database story in that you can have a null value wherever you choose,
+
+00:32:16.540 --> 00:32:18.220
+Unless you define a table to say,
+
+00:32:18.930 --> 00:32:20.760
+this column doesn't allow nulls.
+
+00:32:21.180 --> 00:32:22.100
+You can do that if you want.
+
+00:32:23.320 --> 00:32:24.580
+Yeah, I remember that was one of the things
+
+00:32:24.610 --> 00:32:25.880
+that caught me out with SQLite.
+
+00:32:26.740 --> 00:32:28.320
+I think it doesn't support,
+
+00:32:28.850 --> 00:32:29.880
+I can't remember which way it went.
+
+00:32:30.240 --> 00:32:30.800
+It's been a while.
+
+00:32:31.240 --> 00:32:34.060
+It doesn't support non-nullable columns,
+
+00:32:34.150 --> 00:32:36.600
+like everything is nullable or something like that.
+
+00:32:36.670 --> 00:32:39.240
+And it was like, wait, why is this not failing
+
+00:32:39.350 --> 00:32:40.380
+when I put in this wrong data
+
+00:32:40.550 --> 00:32:41.520
+or something along those lines?
+
+00:32:43.040 --> 00:32:45.379
+You know, SQLite is incredibly flexible
+
+00:32:45.740 --> 00:32:47.000
+and there's a lot of benefits to it.
+
+00:32:47.680 --> 00:32:49.900
+At times that can mean that things pop up later
+
+00:32:50.020 --> 00:32:52.120
+in the lifecycle than at the beginning, like you said.
+
+00:32:52.160 --> 00:32:55.040
+So with SQLite, you can put a number in a string column
+
+00:32:55.240 --> 00:32:56.600
+and a string column and a number column,
+
+00:32:57.020 --> 00:32:59.500
+and it'll mostly work until it doesn't work.
+
+00:33:00.899 --> 00:33:03.640
+DECDB will be much more explicit about that,
+
+00:33:04.160 --> 00:33:06.980
+but it offers a lot of tools where you can auto-convert
+
+00:33:07.640 --> 00:33:08.980
+or it'll auto-convert for you.
+
+00:33:09.020 --> 00:33:10.880
+So you kind of get the benefits without the cost.
+
+00:33:11.460 --> 00:33:13.400
+And it actually has what's called a union type
+
+00:33:13.480 --> 00:33:14.819
+where you can actually have one column
+
+00:33:14.840 --> 00:33:16.760
+that can have strings and numbers in it
+
+00:33:17.700 --> 00:33:19.320
+if you know that you're going to have a little bit of both.
+
+00:33:19.560 --> 00:33:23.060
+So really, best of all worlds, I'd say.
+
+00:33:23.280 --> 00:33:25.360
+Yeah, I think that's more common in the data science,
+
+00:33:25.600 --> 00:33:27.080
+data lake space.
+
+00:33:27.440 --> 00:33:28.700
+You've got a bunch of data, you pull it in,
+
+00:33:28.710 --> 00:33:30.740
+and then you're going to clean it up and work on it.
+
+00:33:31.840 --> 00:33:37.020
+Whereas in maybe a relational database powering a web API,
+
+00:33:37.200 --> 00:33:38.740
+like, nope, users always have an email.
+
+00:33:39.400 --> 00:33:40.080
+That's just how it is.
+
+00:33:40.680 --> 00:33:42.100
+Right. Yes.
+
+00:33:44.060 --> 00:33:48.000
+Okay, so I'm looking at some code on your documentation here about getting started with
+
+00:33:48.150 --> 00:33:49.260
+Python for pandas.
+
+00:33:50.100 --> 00:33:51.960
+And I need some help.
+
+00:33:53.000 --> 00:33:53.540
+I need some help.
+
+00:33:54.020 --> 00:33:56.320
+It says import DuckDB, import pandas as PD.
+
+00:33:56.500 --> 00:33:57.060
+This is all normal.
+
+00:33:57.190 --> 00:34:00.840
+And then it says pandas df, it's a variable, equals PD.dataFrame.
+
+00:34:00.840 --> 00:34:01.360
+So it creates one.
+
+00:34:02.220 --> 00:34:03.040
+And here's where I need the help.
+
+00:34:03.300 --> 00:34:10.020
+The next line is duckdb.sql, select star, in the quotes, pandas df.
+
+00:34:10.899 --> 00:34:12.700
+How do those two things connect?
+
+00:34:14.000 --> 00:34:18.379
+that's a great question so you never like take the actual object of the data frame and
+
+00:34:19.080 --> 00:34:22.720
+show it to duck db in any way like you don't pass through a function or set of property or nothing
+
+00:34:23.700 --> 00:34:28.460
+exactly and this is the benefit of being an in-process database we are in the same memory
+
+00:34:28.720 --> 00:34:35.800
+space as python which means we can actually read the python locals for its local variables and duck
+
+00:34:35.860 --> 00:34:40.779
+db has been built from the very beginning with this concept of interchangeability of storage format
+
+00:34:41.480 --> 00:34:45.240
+That's why you can read Parquet files or read CSV files, because we treat them as first-class
+
+00:34:45.409 --> 00:34:50.419
+citizens in our database. And data frames are no different. What we'll do first when we see a
+
+00:34:50.570 --> 00:34:54.800
+select statement come in and it's got a table in there, in this case, it's pandas df is the name of
+
+00:34:54.800 --> 00:34:58.900
+the table. First thing we'll do is, hey, do we have a physical Ducky Bee table like that? Is there a
+
+00:34:59.080 --> 00:35:03.720
+table of that name? And if we don't find one, we don't give up, we keep looking. We say, okay,
+
+00:35:04.190 --> 00:35:08.539
+is there another object we know how to read with that name? And so we look in Python's local
+
+00:35:08.560 --> 00:35:14.560
+variables. There's a variable named pandasdf, and we check the class name. What class is this? Is it
+
+00:35:15.160 --> 00:35:20.820
+pandas? Is it polars? Is it Apache Arrow? And if it's one of those, we can treat it just like a
+
+00:35:20.940 --> 00:35:29.080
+table and then run SQL right on top of it. Pretty wild. It's pretty wild. I think one of the real
+
+00:35:29.400 --> 00:35:35.319
+values there is that you don't have to do, presumably, I'm presuming, you don't have to
+
+00:35:35.820 --> 00:35:44.420
+do a data conversion from pandas into whatever in-memory thing DuckDB thinks is ideal and then
+
+00:35:44.580 --> 00:35:49.840
+back? That's a great question. So you definitely don't have to do it all at once. So pandas,
+
+00:35:49.980 --> 00:35:54.460
+sometimes it is Python objects under the hood, whereas DuckDB is written in C++. So it will
+
+00:35:54.700 --> 00:35:59.380
+change some things, but it'll do it in chunks like we're talking about. So it won't be all up front.
+
+00:36:00.720 --> 00:36:09.080
+But for things like Polars and Arrow, in most data types, it's zero copy, where it's the same format.
+
+00:36:09.780 --> 00:36:18.540
+DuckDB has slightly different data formats, and Apache Arrow is actually adjusted to align closer to DuckDB in some of their format, like how they store strings.
+
+00:36:19.140 --> 00:36:27.320
+So DuckDB has really been one of the leading databases in terms of how it handles strings, and Apache Arrow is also making those changes.
+
+00:36:27.800 --> 00:36:29.080
+Yeah, that's super cool.
+
+00:36:29.160 --> 00:36:34.520
+you can't write back to these can you you can't say wait you can you can say update
+
+00:36:36.020 --> 00:36:45.060
+like the data frame variable pd data frame set whatever yeah so you if you're updating the data
+
+00:36:45.130 --> 00:36:51.400
+frame you will overwrite the whole data frame but a duckdb table you can run updates on that object
+
+00:36:51.760 --> 00:36:57.140
+for sure yeah but you can write you know data frames for sure so so you can replace the whole
+
+00:36:57.500 --> 00:37:04.180
+Right, but I couldn't change the 172nd row of that data frame with a SQL query, or could I?
+
+00:37:06.380 --> 00:37:09.060
+You would just be making a copy of the object.
+
+00:37:09.500 --> 00:37:09.780
+Got it.
+
+00:37:10.220 --> 00:37:11.080
+Yeah, that's what I thought.
+
+00:37:11.140 --> 00:37:15.140
+You would make the changes, but then you would return as data frame and make a copy of it.
+
+00:37:15.580 --> 00:37:15.820
+Correct.
+
+00:37:16.060 --> 00:37:19.480
+We return a different object in memory, but functionally it would be the same,
+
+00:37:19.680 --> 00:37:23.100
+and inductively is fast enough where it'd probably be quite performant still.
+
+00:37:23.380 --> 00:37:24.280
+Yeah, probably fine, yeah.
+
+00:37:25.020 --> 00:37:26.940
+Okay, I'm not saying that it should be able to do.
+
+00:37:26.960 --> 00:37:28.740
+I'm just trying to figure out how far down this.
+
+00:37:29.200 --> 00:37:29.700
+How far down?
+
+00:37:30.040 --> 00:37:30.120
+Yeah.
+
+00:37:31.720 --> 00:37:33.220
+How far down does it go?
+
+00:37:33.900 --> 00:37:36.280
+Yeah. So it does the same kind of magic with the locals,
+
+00:37:37.200 --> 00:37:39.860
+with Pyro and pullers and so on.
+
+00:37:42.920 --> 00:37:48.480
+So there's different ways to get data back and it doesn't really matter where it came from.
+
+00:37:49.120 --> 00:37:55.400
+If it came from pandas or DuckDB files itself or even just hard-coded SQL.
+
+00:37:56.580 --> 00:38:02.000
+But you can say things like fetch all, which will return you Python objects, or.df will
+
+00:38:02.160 --> 00:38:04.740
+return you a Pandas data frame or different things, right?
+
+00:38:06.280 --> 00:38:06.380
+Yes.
+
+00:38:06.700 --> 00:38:06.800
+Yep.
+
+00:38:06.800 --> 00:38:09.020
+We've got.pl for polars,.arrow.
+
+00:38:09.520 --> 00:38:11.360
+You could do NumPy arrays if you'd like.
+
+00:38:12.120 --> 00:38:18.860
+We also support outputting to TensorFlow tensors and PyTorch tensors, because those are NumPy
+
+00:38:18.960 --> 00:38:20.180
+under the hood in a lot of ways.
+
+00:38:21.000 --> 00:38:22.360
+So we can output to that as well.
+
+00:38:23.580 --> 00:38:23.800
+Okay.
+
+00:38:24.160 --> 00:38:24.640
+That's super cool.
+
+00:38:26.800 --> 00:38:30.500
+Do I need to be worried about little Bobby tables, SQL injections?
+
+00:38:32.200 --> 00:38:36.300
+We could definitely pass in parameters that will get escaped properly and all that.
+
+00:38:37.760 --> 00:38:39.620
+With DuckDB, I think that in general,
+
+00:38:39.700 --> 00:38:41.180
+we take the approach of being super flexible,
+
+00:38:41.750 --> 00:38:44.060
+but there's a lot of options to lock it down should you choose.
+
+00:38:44.340 --> 00:38:48.800
+So the select star from any CSV file on my hard drive,
+
+00:38:49.150 --> 00:38:50.380
+you could turn that off if you want.
+
+00:38:50.950 --> 00:38:52.940
+For example, likewise with the data frames,
+
+00:38:53.010 --> 00:38:54.280
+you can disable that also.
+
+00:38:54.940 --> 00:39:00.660
+Yeah, I guess what I'm asking more, is there a concept of a parameterized query or something like that?
+
+00:39:01.200 --> 00:39:01.920
+Yes, yes.
+
+00:39:02.030 --> 00:39:06.380
+So you can follow the same Python DB 2.0 kind of API spec.
+
+00:39:06.470 --> 00:39:12.720
+You could do.execute and pass in a query with placeholder parameters and then pass in those as arguments.
+
+00:39:12.980 --> 00:39:14.120
+So you can absolutely do that.
+
+00:39:14.800 --> 00:39:18.140
+It tends to be not good for bulk ingestion.
+
+00:39:19.180 --> 00:39:21.220
+Reason for that is Python objects just have a lot more.
+
+00:39:37.720 --> 00:39:38.000
+Uh-oh.
+
+00:39:45.920 --> 00:39:46.540
+Uh-oh, Alex.
+
+00:39:46.590 --> 00:39:48.300
+I lost your audio.
+
+00:39:49.020 --> 00:39:51.320
+Did you possibly hit something that hit a mute button?
+
+00:39:51.990 --> 00:39:52.320
+I did.
+
+00:39:52.660 --> 00:39:52.760
+Sorry.
+
+00:39:53.040 --> 00:39:53.300
+Okay.
+
+00:39:53.540 --> 00:39:53.760
+Sorry.
+
+00:39:54.050 --> 00:39:57.880
+Give us the, you said it's not good for bulk congestion.
+
+00:39:58.680 --> 00:39:59.580
+Let's go from there.
+
+00:40:00.160 --> 00:40:00.300
+Yep.
+
+00:40:00.450 --> 00:40:00.560
+Yep.
+
+00:40:00.620 --> 00:40:00.720
+Sorry.
+
+00:40:01.840 --> 00:40:02.320
+Oh, all good.
+
+00:40:02.540 --> 00:40:02.900
+That's on me.
+
+00:40:02.950 --> 00:40:08.020
+So you can insert straight from Python objects with parameters.
+
+00:40:08.900 --> 00:40:09.820
+It works really great.
+
+00:40:09.890 --> 00:40:12.120
+It's very convenient, but it's not great for bulk congestion.
+
+00:40:13.220 --> 00:40:16.920
+Inserting a million rows that way versus a million rows in a Pandas data frame,
+
+00:40:17.220 --> 00:40:20.640
+it's going to be a couple orders of magnitude faster to do it through a data frame.
+
+00:40:21.140 --> 00:40:22.460
+Yeah, yeah, absolutely.
+
+00:40:24.740 --> 00:40:29.920
+So if by default, if I just do WDB.SQL,
+
+00:40:30.600 --> 00:40:34.840
+this is working in this correctly this time, in-memory database.
+
+00:40:36.780 --> 00:40:40.780
+But if you create a connection to a file,
+
+00:40:41.080 --> 00:40:43.940
+then that where you just call it whatever you want, right?
+
+00:40:44.060 --> 00:40:45.440
+Like in your examples, you got file.db.
+
+00:40:46.200 --> 00:40:49.880
+That will then start persisting to that file, right?
+
+00:40:49.910 --> 00:40:52.060
+But it's pretty simple to do either.
+
+00:40:53.440 --> 00:40:55.520
+Yes, you're just changing the connection path.
+
+00:40:56.160 --> 00:40:59.680
+And if you pass in no path, it'll be in memory.
+
+00:40:59.880 --> 00:41:01.160
+Otherwise, you can point to a file.
+
+00:41:01.580 --> 00:41:04.120
+And it's really that straightforward.
+
+00:41:04.420 --> 00:41:06.460
+It'll save all your tables into that same file,
+
+00:41:07.060 --> 00:41:08.640
+nice and compressed in columnar format.
+
+00:41:09.260 --> 00:41:11.380
+And then now the format is all stabilized.
+
+00:41:11.530 --> 00:41:13.380
+You can throw that on an object store,
+
+00:41:13.520 --> 00:41:15.260
+share it with anybody, put it in your data lake,
+
+00:41:15.740 --> 00:41:16.340
+anywhere you want it to go.
+
+00:41:16.560 --> 00:41:19.360
+Can I read from objects or can I give it an S3 connection?
+
+00:41:20.260 --> 00:41:20.720
+Yes, indeed.
+
+00:41:21.050 --> 00:41:23.020
+You can read from any of the major clouds.
+
+00:41:23.640 --> 00:41:28.420
+So AWS, Google, Azure, you can read individual files
+
+00:41:28.580 --> 00:41:30.920
+or actually it'll understand hierarchies of files.
+
+00:41:31.580 --> 00:41:33.560
+So if you have like a top level folder for a year
+
+00:41:34.120 --> 00:41:35.440
+and a folder for month and day,
+
+00:41:36.380 --> 00:41:38.580
+if you filter for I only want three days worth of data,
+
+00:41:39.280 --> 00:41:40.720
+DuckDB will only read three files.
+
+00:41:41.210 --> 00:41:41.620
+So it's pretty sick.
+
+00:41:41.620 --> 00:41:42.280
+Oh, wow, that's wild.
+
+00:41:42.480 --> 00:41:42.840
+Okay.
+
+00:41:42.860 --> 00:41:44.840
+Okay. Yeah, that is really slick.
+
+00:41:46.060 --> 00:41:47.860
+And you can even write out to those as well.
+
+00:41:47.910 --> 00:41:50.220
+So you can actually write on object stores too.
+
+00:41:50.880 --> 00:41:51.960
+That's amazing, actually.
+
+00:41:53.180 --> 00:41:57.860
+And a lot of less hyperscale clouds, I don't know,
+
+00:41:57.940 --> 00:41:59.220
+I was almost calling them lesser clouds,
+
+00:41:59.230 --> 00:42:01.380
+but I think of almost as like even better clouds.
+
+00:42:02.180 --> 00:42:05.600
+You know, Digital Ocean, Hetzner, Linode,
+
+00:42:05.710 --> 00:42:07.240
+some of these smaller places,
+
+00:42:08.420 --> 00:42:10.440
+a lot of them have their own object store
+
+00:42:10.560 --> 00:42:16.020
+and the objects door API is just a different connection string
+
+00:42:16.420 --> 00:42:19.580
+for the S3 API, right?
+
+00:42:20.180 --> 00:42:22.760
+So it sounds like you could probably get that to work as well.
+
+00:42:23.260 --> 00:42:23.780
+Just pass that.
+
+00:42:24.080 --> 00:42:25.900
+I believe I've seen min.io used,
+
+00:42:26.020 --> 00:42:27.800
+which is even like self-hosted if you want.
+
+00:42:27.960 --> 00:42:30.740
+So if it handles min.io, you can kind of put it wherever you want, I think.
+
+00:42:30.780 --> 00:42:31.760
+Yeah, that's for sure.
+
+00:42:32.300 --> 00:42:33.020
+Min.io is awesome.
+
+00:42:33.740 --> 00:42:39.820
+I haven't got a chance to put min.io into any useful work,
+
+00:42:39.860 --> 00:42:45.860
+But it's like a self-hosted S3, basically, which is really cool.
+
+00:42:46.880 --> 00:42:47.060
+Yeah.
+
+00:42:47.320 --> 00:42:47.980
+So I don't know.
+
+00:42:48.120 --> 00:42:51.140
+It seems like a really neat system.
+
+00:42:51.780 --> 00:42:53.280
+But it's also, I mean, I was complicated.
+
+00:42:54.220 --> 00:42:58.040
+You know, it's not easy to set up and run.
+
+00:42:58.700 --> 00:43:00.060
+It seems like there's a lot going on there.
+
+00:43:00.220 --> 00:43:03.140
+So that's why I haven't done anything with it yet.
+
+00:43:03.220 --> 00:43:03.980
+I'm like, this looks amazing.
+
+00:43:04.220 --> 00:43:05.080
+Oh, this looks complicated.
+
+00:43:05.240 --> 00:43:06.220
+What else am I going to do today?
+
+00:43:07.900 --> 00:43:09.680
+I think S3 is pretty great.
+
+00:43:10.160 --> 00:43:11.720
+drop a file, read a file.
+
+00:43:12.460 --> 00:43:14.780
+So it's not a bad starting point for quite a while.
+
+00:43:15.460 --> 00:43:16.220
+Yeah, absolutely.
+
+00:43:17.080 --> 00:43:18.280
+So with this connection object,
+
+00:43:18.600 --> 00:43:20.660
+if you want to have a persistent database,
+
+00:43:21.000 --> 00:43:22.540
+you create a connection object,
+
+00:43:22.720 --> 00:43:27.280
+and then it has basically the same API as the DuckDB itself.
+
+00:43:27.460 --> 00:43:28.500
+So you can run SQL queries,
+
+00:43:28.660 --> 00:43:30.160
+you can do table stuff on it, and so on.
+
+00:43:33.120 --> 00:43:35.940
+What's the concurrency story with this thing?
+
+00:43:36.360 --> 00:43:39.000
+So, for example, what if I open it?
+
+00:43:39.040 --> 00:43:46.180
+What if I try to use DuckDB in Flask and I have Flask running in Gunicorn and I say,
+
+00:43:46.220 --> 00:43:49.220
+Gunicorn, please use four worker processes.
+
+00:43:49.540 --> 00:43:50.460
+And I try to talk to it.
+
+00:43:51.700 --> 00:43:52.600
+It's a great question.
+
+00:43:52.840 --> 00:43:55.140
+Am I going to be having a bad time or having a good time?
+
+00:43:56.500 --> 00:43:57.320
+It depends a little bit.
+
+00:43:58.160 --> 00:44:00.320
+But yes, there's some trade-offs.
+
+00:44:00.620 --> 00:44:05.020
+There's reasons that there are databases that are in process and that there are databases that are client-server.
+
+00:44:05.620 --> 00:44:12.240
+And so whenever you want to write data to DuckDB, you can only write data from within a single process.
+
+00:44:13.440 --> 00:44:18.560
+And you'll open up a read-write connection, and it will actually disallow any access from any other process.
+
+00:44:19.020 --> 00:44:22.080
+And it'll be single process access while you're doing reads and writes.
+
+00:44:22.800 --> 00:44:24.320
+It does handle multi-threading just fine.
+
+00:44:24.690 --> 00:44:26.140
+So you can have multiple Python threads.
+
+00:44:26.270 --> 00:44:28.500
+You get nice parallel performance that way.
+
+00:44:29.140 --> 00:44:29.480
+No problem.
+
+00:44:29.850 --> 00:44:32.140
+But it's all within the same memory space because you're using threads.
+
+00:44:32.600 --> 00:44:35.280
+So we're pretty excited about free threading coming soon in Python.
+
+00:44:35.560 --> 00:44:35.740
+Yes.
+
+00:44:36.160 --> 00:44:42.260
+Yeah, well, that's going to knock out the need for the web garden,
+
+00:44:42.800 --> 00:44:46.280
+not the web farm, the web garden, where you've got a bunch of these copies
+
+00:44:46.520 --> 00:44:51.620
+of the web server running in parallel because they're all trying to have
+
+00:44:51.760 --> 00:44:53.340
+separate gills so they can be more concurrent.
+
+00:44:54.140 --> 00:44:56.520
+That's not the only reason, but that's a big reason in Python.
+
+00:44:56.940 --> 00:44:57.820
+That's definitely a big reason.
+
+00:44:57.960 --> 00:44:59.100
+So that we're excited about.
+
+00:45:00.400 --> 00:45:04.120
+If you want to be read-only, so since DuckDB is an analytical database,
+
+00:45:04.600 --> 00:45:05.640
+since we can read from files,
+
+00:45:06.110 --> 00:45:08.360
+there are a lot of use cases that are read-only,
+
+00:45:08.820 --> 00:45:11.240
+where if I'm reading from parquet files on an object store,
+
+00:45:12.000 --> 00:45:14.200
+I might not be doing any write operations at all,
+
+00:45:14.430 --> 00:45:18.120
+at which point multi-process access is totally fine,
+
+00:45:18.660 --> 00:45:21.240
+as long as you're in read-only mode for all of those processes.
+
+00:45:21.840 --> 00:45:24.900
+I will add one big other thing to look into, though,
+
+00:45:25.100 --> 00:45:27.020
+is where I work, which is MotherDuck.
+
+00:45:27.340 --> 00:45:30.660
+So we're a cloud serverless data warehouse built around DuckDB,
+
+00:45:31.320 --> 00:45:32.940
+and we'll handle the concurrency side.
+
+00:45:33.560 --> 00:45:36.400
+So it's really taking this amazing single-player DECDB
+
+00:45:36.700 --> 00:45:38.520
+experience and bringing it into the cloud
+
+00:45:38.650 --> 00:45:41.460
+as a full multiplayer cloud data warehouse experience.
+
+00:45:41.610 --> 00:45:46.000
+So you get concurrency, you get automatic managed storage.
+
+00:45:46.260 --> 00:45:46.800
+It's very efficient.
+
+00:45:47.330 --> 00:45:49.840
+And you also get access control and some of the things
+
+00:45:50.150 --> 00:45:52.460
+you associate with a large-scale database.
+
+00:45:52.880 --> 00:45:55.420
+So that's the story.
+
+00:45:55.420 --> 00:45:57.220
+If you need concurrency but you're using DECDB,
+
+00:45:57.740 --> 00:45:59.500
+I think MetherDuck is a great option.
+
+00:46:00.800 --> 00:46:04.200
+Right, so this is kind of DuckDB as a service.
+
+00:46:04.750 --> 00:46:05.080
+Is that right?
+
+00:46:07.140 --> 00:46:08.760
+That's definitely a key piece of it.
+
+00:46:08.760 --> 00:46:13.140
+I think we have a, DuckDB is a huge part of what we do,
+
+00:46:13.560 --> 00:46:15.580
+and it is the engine under the hood.
+
+00:46:15.580 --> 00:46:21.060
+I think we are using that to really be meeting the use case
+
+00:46:21.170 --> 00:46:26.360
+of being not just sort of a cloud hosting for DuckDB.
+
+00:46:26.560 --> 00:46:28.400
+It's to really be a full data warehouse
+
+00:46:29.000 --> 00:46:30.000
+with DuckDB as the engine.
+
+00:46:30.220 --> 00:46:38.040
+So a little bit of a distinction there, but just as an organization could kind of use it as opposed to just one person, you know, cloud hosting it, something like that.
+
+00:46:39.480 --> 00:46:39.560
+Yeah.
+
+00:46:39.760 --> 00:46:41.980
+Well, it seems like a really, really great service.
+
+00:46:42.120 --> 00:46:54.400
+And I guess it's worth calling out that DuckDB, the thing that runs in your process, is available as an MIT licensed thing, right?
+
+00:46:54.560 --> 00:46:56.780
+Which is, that's pretty amazing.
+
+00:46:57.400 --> 00:47:03.460
+And I saw somewhere, I can't remember where I saw it, but it's something like you'll promise to be MIT, to stay MIT.
+
+00:47:04.360 --> 00:47:06.680
+No rug pulling, the rugs will stay.
+
+00:47:07.760 --> 00:47:07.980
+Yes.
+
+00:47:08.260 --> 00:47:11.300
+So it's a pretty cool kind of corporate structure.
+
+00:47:11.440 --> 00:47:14.720
+And if you can say a cool corporate structure, we'll see if we can get away with that.
+
+00:47:14.920 --> 00:47:17.340
+But as far as corporate structures go, it's pretty cool, right?
+
+00:47:17.780 --> 00:47:19.900
+So there's actually three organizations at play.
+
+00:47:20.180 --> 00:47:24.420
+And one of them is a nonprofit foundation called the DuckDB Foundation.
+
+00:47:24.440 --> 00:47:27.380
+And they actually own the intellectual property for DuckDB.
+
+00:47:27.900 --> 00:47:35.360
+And that is what ensures that it will be MIT licensed forever because it is not a company that owns DuckDB, which is amazing.
+
+00:47:35.470 --> 00:47:40.040
+So there is like it's not even possible to do a rug pull, even if somebody wanted, which nobody does.
+
+00:47:40.160 --> 00:47:43.100
+It's not even possible. It's against the law, which is pretty cool.
+
+00:47:43.619 --> 00:47:47.680
+So, yeah, I guess maybe give people I threw that out there.
+
+00:47:47.900 --> 00:47:49.260
+There might be people who don't know what that means.
+
+00:47:51.100 --> 00:47:52.040
+Oh, what a rug pull is.
+
+00:47:52.460 --> 00:47:53.720
+Yes, exactly. Yeah. What is that?
+
+00:47:53.780 --> 00:48:05.480
+You know, certain products, once they're open source, they begin to, they get funded in certain ways to where they need to be, you know, selling it as a product.
+
+00:48:05.860 --> 00:48:16.800
+And at times that means that either they don't always put everything back in open source or there's different licensing models that get changed so that the license is a little bit more restrictive than it was in the past.
+
+00:48:17.260 --> 00:48:21.020
+Kind of the typical maneuver there for a couple of different companies has been around.
+
+00:48:21.820 --> 00:48:24.360
+Amazon will just host your product,
+
+00:48:24.920 --> 00:48:26.900
+and then it's very hard to have your own business
+
+00:48:28.020 --> 00:48:29.860
+if Amazon just hosts it.
+
+00:48:29.980 --> 00:48:33.000
+So we're not in that situation with DuckDB
+
+00:48:33.300 --> 00:48:35.260
+because it's open source forever.
+
+00:48:35.680 --> 00:48:39.060
+But also Mother Duck is not just wrapping DuckDB.
+
+00:48:39.300 --> 00:48:42.760
+We're innovating at that service layer
+
+00:48:43.420 --> 00:48:45.320
+where with Mother Duck,
+
+00:48:45.480 --> 00:48:47.140
+one of its secret sauce ingredients
+
+00:48:47.460 --> 00:48:48.920
+is it's not just a cloud service.
+
+00:48:49.920 --> 00:48:50.900
+When you connect to Mother Duck,
+
+00:48:51.100 --> 00:48:53.380
+you have DuckDB running locally and in the cloud.
+
+00:48:54.060 --> 00:48:56.240
+And one query, one Python statement
+
+00:48:56.380 --> 00:48:57.960
+can actually run partially in the cloud
+
+00:48:58.120 --> 00:48:59.160
+and partially on your laptop.
+
+00:49:00.640 --> 00:49:00.740
+And we actually can--
+
+00:49:00.740 --> 00:49:01.420
+Oh, wow, OK.
+
+00:49:01.900 --> 00:49:04.260
+We can choose the optimal location for that
+
+00:49:04.260 --> 00:49:06.100
+to run based on your query plan.
+
+00:49:06.220 --> 00:49:08.200
+We actually do that as a part of the optimization to say,
+
+00:49:08.740 --> 00:49:10.260
+where's the most efficient place for this to run?
+
+00:49:11.460 --> 00:49:13.220
+And that's some serious secret sauce
+
+00:49:13.480 --> 00:49:17.280
+that is not just wrapping an open source solution and hosting
+
+00:49:17.460 --> 00:49:17.540
+it.
+
+00:49:18.560 --> 00:49:20.240
+That gives some really nice benefits for things
+
+00:49:20.260 --> 00:49:21.760
+like the local development experience.
+
+00:49:22.980 --> 00:49:25.280
+You can develop locally at light speed
+
+00:49:25.680 --> 00:49:27.720
+and then push to the Cloud at the final step.
+
+00:49:28.900 --> 00:49:30.720
+Or alternatively, reverse the polarity,
+
+00:49:31.100 --> 00:49:33.340
+maybe your first step is to bring everything down locally in
+
+00:49:33.340 --> 00:49:36.700
+a cache and then do all kinds of data science processing on it.
+
+00:49:36.700 --> 00:49:41.320
+So it's very convenient to have both local and Cloud.
+
+00:49:41.700 --> 00:49:45.580
+I see. We talked about writing
+
+00:49:45.640 --> 00:49:48.840
+a query and then turn it into a data science object
+
+00:49:49.060 --> 00:49:49.940
+and then asking questions.
+
+00:49:50.140 --> 00:49:54.240
+This is a little bit like distributed versus local,
+
+00:49:55.340 --> 00:49:56.600
+but staying within DuckDB.
+
+00:49:58.759 --> 00:50:00.760
+It's definitely-- you get to use server-side computer,
+
+00:50:00.950 --> 00:50:02.120
+local compute, however you like.
+
+00:50:03.300 --> 00:50:03.640
+Yeah.
+
+00:50:06.160 --> 00:50:06.640
+Super cool.
+
+00:50:06.780 --> 00:50:07.820
+I love the idea of it.
+
+00:50:09.480 --> 00:50:10.180
+It's a lot of fun.
+
+00:50:10.680 --> 00:50:11.720
+We're doing a lot of fun things.
+
+00:50:11.860 --> 00:50:14.420
+And you can have fun with it as well.
+
+00:50:15.160 --> 00:50:16.820
+What do you call someone who works at Mother Duck?
+
+00:50:18.199 --> 00:50:18.920
+A duckling.
+
+00:50:19.900 --> 00:50:23.580
+That's the second most popular one. We actually were Mother Duckers, Michael.
+
+00:50:24.180 --> 00:50:26.680
+Oh, okay. Mother Duckers. All right.
+
+00:50:27.560 --> 00:50:30.600
+You got to have fun with it, right? Otherwise, it's all just ones and zeros at the end of the day, right?
+
+00:50:30.720 --> 00:50:33.660
+You have to have fun with it. Yeah, you have to have fun with it. You should.
+
+00:50:35.580 --> 00:50:38.680
+I don't know. Ducklings. But Mother Duckers is good still.
+
+00:50:39.070 --> 00:50:42.120
+I guess ducklings might send the wrong message. They're all good.
+
+00:50:43.920 --> 00:50:52.960
+Do you want a tough persona or facade, or do you want a coddled, whatever?
+
+00:50:53.580 --> 00:50:54.240
+No, it's a great name.
+
+00:50:57.800 --> 00:51:00.180
+If you look at the branding on our website, you know we're not going for like,
+
+00:51:00.600 --> 00:51:03.660
+we're not like a super muscly duck, you know, at our 11 ridges.
+
+00:51:03.660 --> 00:51:05.000
+We're definitely in the playful side.
+
+00:51:06.540 --> 00:51:10.920
+And part of it is because we really think that back in the big data era,
+
+00:51:11.020 --> 00:51:14.240
+We believe the big data era is over here at MotherVec.
+
+00:51:14.360 --> 00:51:19.080
+And the reason for that is you no longer need 50 servers to answer your questions.
+
+00:51:19.440 --> 00:51:22.040
+It turns out laptops are pretty daggone fast now.
+
+00:51:22.320 --> 00:51:23.740
+And you can do a lot.
+
+00:51:24.500 --> 00:51:28.340
+Even if you're not able to handle it on a laptop, how about one giant node on AWS?
+
+00:51:29.100 --> 00:51:32.860
+You can rent a node with multiple terabytes of RAM.
+
+00:51:33.700 --> 00:51:34.280
+Of RAM.
+
+00:51:34.720 --> 00:51:36.320
+I mean, you could do a lot, right?
+
+00:51:36.720 --> 00:51:39.340
+So at that point, what is a single node?
+
+00:51:39.540 --> 00:51:41.840
+You can kind of do almost anything that you need.
+
+00:51:43.780 --> 00:51:47.900
+And single server versus distributed is way easier.
+
+00:51:48.500 --> 00:51:48.880
+Yes.
+
+00:51:49.150 --> 00:51:50.560
+It allows you to innovate a lot faster.
+
+00:51:50.850 --> 00:51:51.880
+You can use better algorithms.
+
+00:51:52.250 --> 00:51:55.600
+So in many cases, it's actually just plain old faster to do it that way.
+
+00:51:56.600 --> 00:51:57.460
+A lot of benefits.
+
+00:51:58.130 --> 00:51:59.940
+But what we realized fundamentally at MotherDuck is,
+
+00:52:00.610 --> 00:52:01.940
+in a lot of ways, DuckDB as well,
+
+00:52:03.840 --> 00:52:06.560
+the scale of data shouldn't be the most important thing anymore.
+
+00:52:07.620 --> 00:52:09.400
+It should be how easy it is to use.
+
+00:52:10.420 --> 00:52:16.260
+you should be able to do select star from a csv you know it doesn't take scale to parse a csv file
+
+00:52:16.460 --> 00:52:21.360
+in an intelligent way it takes elbow grease it takes innovation in terms of the algorithm but
+
+00:52:21.700 --> 00:52:25.820
+at the end of the day it's not about how big is your csv file it's about how long did it take me
+
+00:52:25.940 --> 00:52:30.640
+get my job done yeah and mother duck it's a similar kind of pragmatism and our branding i
+
+00:52:30.640 --> 00:52:37.180
+think does a really good job of showing that i think so well i asked you about half of
+
+00:52:38.340 --> 00:52:40.340
+what I said I was looking forward to asking about,
+
+00:52:40.380 --> 00:52:42.500
+which was the table schemas, how to do that.
+
+00:52:43.100 --> 00:52:46.400
+However, what about indexes?
+
+00:52:48.700 --> 00:52:51.140
+Sure. I think indexes are a great question.
+
+00:52:51.420 --> 00:52:53.980
+So DuckDB does support indexes,
+
+00:52:54.420 --> 00:52:57.320
+but in many cases, it's not necessarily something that you need.
+
+00:52:58.060 --> 00:53:01.060
+And the reason for that is because of the workloads
+
+00:53:01.400 --> 00:53:03.680
+that it's best for, but also because of columnar databases.
+
+00:53:04.460 --> 00:53:06.220
+So when you have a columnar database,
+
+00:53:07.140 --> 00:53:12.280
+by default, it's going to create some rough indexes for you automatically.
+
+00:53:12.770 --> 00:53:15.320
+So every about 100,000 rows in DuckDB,
+
+00:53:15.780 --> 00:53:17.500
+we create an index there that says,
+
+00:53:17.860 --> 00:53:19.220
+what's the minimum value in this chunk
+
+00:53:19.920 --> 00:53:21.440
+and then the maximum value in this chunk?
+
+00:53:22.260 --> 00:53:24.220
+And what we'll do is then if you run a query that says,
+
+00:53:24.460 --> 00:53:25.860
+select data from this week,
+
+00:53:26.800 --> 00:53:30.940
+we're going to check, hey, which blocks have any data from this week?
+
+00:53:31.440 --> 00:53:33.660
+And we can skip 90% of your data
+
+00:53:34.090 --> 00:53:36.900
+because we know that it doesn't match that filter.
+
+00:53:37.800 --> 00:53:40.000
+but that's not like an individual row index.
+
+00:53:40.820 --> 00:53:42.820
+It's an index for every 100,000 rows.
+
+00:53:43.770 --> 00:53:45.260
+And it's for the analytical queries
+
+00:53:45.370 --> 00:53:46.360
+where you're looking at trends,
+
+00:53:46.570 --> 00:53:48.400
+where you're analyzing large amounts of data,
+
+00:53:49.100 --> 00:53:51.380
+it tends to be really the optimal way to go about it.
+
+00:53:51.380 --> 00:53:53.240
+And that's the way most systems do it.
+
+00:53:54.140 --> 00:53:55.620
+There is an external index you can add.
+
+00:53:56.080 --> 00:53:59.560
+It's an ART index, an adaptive radix tri index,
+
+00:54:00.120 --> 00:54:01.540
+which is a pretty cool way of doing it.
+
+00:54:01.840 --> 00:54:03.420
+It's a little different than the B tree in SQLite,
+
+00:54:03.820 --> 00:54:06.220
+but it allows for those vast point lookups
+
+00:54:06.640 --> 00:54:07.900
+where if you want to grab one row,
+
+00:54:08.140 --> 00:54:10.780
+you can get a very quick mapping to that individual row.
+
+00:54:12.420 --> 00:54:15.200
+It tends to be just less necessary in DuctDB to do that,
+
+00:54:15.980 --> 00:54:17.120
+but we have it if you need it.
+
+00:54:19.480 --> 00:54:23.180
+I'm realizing that I need to learn more about databases,
+
+00:54:23.460 --> 00:54:24.800
+especially columnar ones,
+
+00:54:25.920 --> 00:54:28.020
+because they're not matching my mental model
+
+00:54:28.460 --> 00:54:30.800
+as much as, say, for relational or document ones.
+
+00:54:32.160 --> 00:54:35.320
+It's definitely a different world,
+
+00:54:35.700 --> 00:54:46.320
+And that's, I think, the fun of it is I think of databases as an infinitely deep rabbit hole of really just fun optimizations, fun things to learn about.
+
+00:54:46.440 --> 00:54:47.640
+So a lot of exciting stuff.
+
+00:54:47.900 --> 00:54:49.740
+Yeah, when you get that stuff right, it's like magic.
+
+00:54:50.320 --> 00:54:54.880
+It's like, how could it possibly answer that so quickly?
+
+00:54:56.100 --> 00:54:58.060
+At the same time, when it's wrong, it's really frustrating.
+
+00:54:58.630 --> 00:55:04.220
+You go to a website and it'll say, oh, click this thing here.
+
+00:55:04.580 --> 00:55:08.340
+then you try to, and it just sits there and spins like, I know this is happening without an index.
+
+00:55:08.900 --> 00:55:14.180
+And I know this could be so easily fixed and it's just not, why, why is it so bad? But you know,
+
+00:55:15.560 --> 00:55:18.820
+you can make your stuff fast. You can't make other people's stuff fast. So I guess it's an
+
+00:55:18.980 --> 00:55:25.840
+advantage. It makes you look good. Yes. So I think that the workloads are just so different, but the
+
+00:55:25.920 --> 00:55:30.440
+mental model, it does open, open doors in a lot of ways. So for example, if you want to, if you
+
+00:55:30.440 --> 00:55:37.040
+want to get the average of like a billion rows in DuckDB. It's a couple seconds. Wow. It's that
+
+00:55:37.160 --> 00:55:43.580
+fast. You know, so just the things that you can do with that kind of tool, an analytical oriented
+
+00:55:43.800 --> 00:55:49.800
+tool, really unlocks things you can do in an application sense. So data apps, we think are a
+
+00:55:49.920 --> 00:55:55.980
+really interesting market for both DuckDB and MotherDuck, where, you know, it's not just show me
+
+00:55:55.980 --> 00:56:01.020
+a little bit of data. Maybe it's an event tracker, like a fitness tracker. I want to see the history
+
+00:56:01.110 --> 00:56:06.880
+of my bike rides for the last month. And I want to see the trends, my moving averages, highlight
+
+00:56:06.970 --> 00:56:13.280
+the outliers for me. There's a lot of heavy analytical work to be done in data apps that
+
+00:56:13.330 --> 00:56:22.280
+an analytical database is really good for. Yeah. Give us some, I don't know how much you can share.
+
+00:56:22.410 --> 00:56:25.960
+I know you interact with these customers quite a bit, so you know, but I don't know how much you
+
+00:56:25.980 --> 00:56:28.100
+give us some senses of what people are doing.
+
+00:56:30.400 --> 00:56:30.580
+Sure.
+
+00:56:30.660 --> 00:56:32.520
+On the MotherDuck side or the DuckDB side?
+
+00:56:32.940 --> 00:56:35.720
+Well, give us a little example from each, maybe,
+
+00:56:35.860 --> 00:56:36.920
+that you think is representative.
+
+00:56:37.940 --> 00:56:38.200
+You bet.
+
+00:56:38.380 --> 00:56:41.700
+I think on the DuckDB side,
+
+00:56:41.740 --> 00:56:43.360
+I think some of the very interesting things
+
+00:56:43.520 --> 00:56:47.420
+are when you use DuckDB as a data processing engine
+
+00:56:48.280 --> 00:56:51.900
+where each individual processing task is one node,
+
+00:56:52.100 --> 00:56:53.500
+but you're doing a ton of them in parallel.
+
+00:56:53.560 --> 00:57:00.120
+So some companies will actually take DuckDB and use it to transform one Parquet file into an aggregated Parquet file.
+
+00:57:00.600 --> 00:57:01.660
+And they'll just set it up on a trigger.
+
+00:57:01.920 --> 00:57:10.240
+So when a Parquet file gets added, they'll automatically just create a little pipeline with DuckDB and convert it into a much cleaner, more aggregated form.
+
+00:57:10.780 --> 00:57:12.140
+And you could do that at huge scale.
+
+00:57:12.420 --> 00:57:22.680
+So some companies that are doing huge amounts of data processing with DuckDB, tons of tiny DuckDBs, a flock of tiny DuckDBs running behind the scenes.
+
+00:57:22.740 --> 00:57:33.620
+So I think that's an interesting use case that, you know, DuckDB originated as a data science tool, but I think the data engineering side of DuckDB is also very exciting, where it fits really well in those pipelines.
+
+00:57:34.560 --> 00:57:47.520
+On the mother duck side, I think what we see is a lot of cases where the transactional database, you know, a lot of cases, it's Postgres, it's got a really friendly SQL syntax, and it aligns very closely with DuckDB's SQL syntax.
+
+00:57:48.600 --> 00:57:53.240
+where Postgres just is too slow for those kind of trend-oriented aggregates
+
+00:57:53.240 --> 00:57:54.600
+or join queries that you want to run.
+
+00:57:55.880 --> 00:57:57.880
+And MotherDuck ends up being a really great way
+
+00:57:58.420 --> 00:58:00.940
+to very easily get a lot more speed in those cases.
+
+00:58:01.640 --> 00:58:03.680
+And that could be speed for data engineering tasks.
+
+00:58:03.920 --> 00:58:07.480
+Like some folks are running data processing jobs
+
+00:58:07.500 --> 00:58:10.720
+with this tool called DBT, stands for Data Build Tool.
+
+00:58:12.380 --> 00:58:13.640
+And it's a Python library.
+
+00:58:14.260 --> 00:58:20.420
+And they were running these sets of computation and aggregations, and they would take eight hours.
+
+00:58:22.000 --> 00:58:30.520
+And if it starts running at 2 a.m., by the time it errors out, you've lost your whole day of your data analysis being up to date.
+
+00:58:30.740 --> 00:58:32.280
+Yeah, you better get it right, right?
+
+00:58:32.600 --> 00:58:33.420
+Better get it right.
+
+00:58:33.920 --> 00:58:37.860
+Unfortunately, DBT does also stand for behavioral therapy of a certain kind.
+
+00:58:38.040 --> 00:58:39.980
+So you've got to search for DBT data.
+
+00:58:41.160 --> 00:58:41.880
+It's a tough acronym.
+
+00:58:43.000 --> 00:58:43.120
+Yeah.
+
+00:58:44.000 --> 00:58:44.500
+It's a little short.
+
+00:58:45.900 --> 00:58:46.120
+Yeah.
+
+00:58:46.820 --> 00:58:47.920
+DPD Python, that'll get you there too.
+
+00:58:48.140 --> 00:58:48.220
+Yeah.
+
+00:58:50.260 --> 00:58:54.300
+With MotherDuck and with DuckDB, you can take that and instead of being eight hours, you
+
+00:58:54.300 --> 00:58:56.100
+can run it in, you know, 15 or 30 minutes.
+
+00:58:57.620 --> 00:59:03.520
+And just that scale of change means that, you know, it's just a far more delightful
+
+00:59:03.860 --> 00:59:08.300
+experience to do those kind of data pipelines on an analytical tool as opposed to a transaction.
+
+00:59:08.900 --> 00:59:09.320
+So that's one.
+
+00:59:09.320 --> 00:59:11.180
+The other one is business intelligence tools.
+
+00:59:11.360 --> 00:59:13.920
+In a lot of cases, those start to get really slow on a transactional database.
+
+00:59:14.650 --> 00:59:19.080
+Because if you're looking at a graph, most of the time it's a trend.
+
+00:59:19.560 --> 00:59:22.260
+And most of the time it's looking at a lot of data to plot.
+
+00:59:22.560 --> 00:59:25.640
+Even if it's just plotting a few points, it's looking at a lot of data to plot it.
+
+00:59:26.080 --> 00:59:29.220
+And DuckDB is really excellent for that, and MotherDuck as well.
+
+00:59:29.660 --> 00:59:33.020
+There's actually a lot of business intelligence tools where they are powered by DuckDB.
+
+00:59:34.279 --> 00:59:36.240
+So Mode was acquired by PlotSpot.
+
+00:59:36.340 --> 00:59:37.420
+They're powered by DuckDB.
+
+00:59:38.300 --> 00:59:39.760
+Hex is a data science notebook.
+
+00:59:39.860 --> 00:59:42.220
+They have DuckDB as a part of their architecture.
+
+00:59:44.400 --> 00:59:44.940
+There's a couple others.
+
+00:59:47.980 --> 00:59:49.760
+We talked about some of the data types.
+
+00:59:50.460 --> 00:59:55.020
+What about JSON or document type of things, right?
+
+00:59:55.120 --> 00:59:56.600
+Where you've got a little hierarchical data.
+
+00:59:57.280 --> 00:59:59.520
+You know, there's on one end of that spectrum,
+
+00:59:59.590 --> 01:00:00.320
+we have MongoDB.
+
+01:00:00.560 --> 01:00:01.160
+That's all it does.
+
+01:00:01.540 --> 01:00:04.520
+And the other, you've got relational databases like Postgres
+
+01:00:04.550 --> 01:00:06.300
+that say, well, this column can just be
+
+01:00:07.840 --> 01:00:09.940
+JSON arbitrary stuff.
+
+01:00:11.860 --> 01:00:15.420
+Yes. We're in that space where we absolutely believe that's how
+
+01:00:15.620 --> 01:00:17.460
+most things are, a little bit of both.
+
+01:00:17.700 --> 01:00:20.600
+There is a full JSON data type in DuckDB.
+
+01:00:21.520 --> 01:00:25.380
+You can store any arbitrary document in there and then process it with
+
+01:00:25.660 --> 01:00:27.400
+some really fast JSON processing.
+
+01:00:28.160 --> 01:00:32.400
+We can also take JSON data and automatically split it out into columns if you want to
+
+01:00:32.560 --> 01:00:34.740
+unnest it so you can go back and forth there.
+
+01:00:35.240 --> 01:00:38.540
+There are also specific DuckDB nested types.
+
+01:00:39.100 --> 01:00:42.300
+If you want to enforce the typing at the column level,
+
+01:00:42.500 --> 01:00:43.440
+but you want to be nested.
+
+01:00:43.720 --> 01:00:46.020
+So you could say, I know these are going to be my keys.
+
+01:00:46.300 --> 01:00:47.420
+I know this will be my structure.
+
+01:00:48.040 --> 01:00:49.560
+You can store it all in one column
+
+01:00:50.460 --> 01:00:52.580
+and it'll be very, very quick to work with.
+
+01:00:53.860 --> 01:00:54.700
+So you kind of have both.
+
+01:00:54.720 --> 01:00:56.380
+You have the full flexibility with JSON
+
+01:00:56.500 --> 01:00:58.400
+and then you also can have nested types.
+
+01:01:00.120 --> 01:01:01.400
+Can you query into them?
+
+01:01:01.600 --> 01:01:04.220
+So if I have a JSON thing that's got like purchases
+
+01:01:04.540 --> 01:01:06.140
+and then it's got a bunch of purchase objects
+
+01:01:06.350 --> 01:01:07.680
+and then like values, can I say,
+
+01:01:07.790 --> 01:01:09.920
+give me the ones that have over $100 purchases?
+
+01:01:11.760 --> 01:01:14.720
+You can do much like Postgres and SQLite
+
+01:01:14.840 --> 01:01:16.780
+have the ability to extract pieces of JSON
+
+01:01:17.540 --> 01:01:19.180
+with the path syntax of like,
+
+01:01:19.320 --> 01:01:20.860
+go to this path and pull that value out.
+
+01:01:21.360 --> 01:01:23.160
+You absolutely can do that in DuckDB as well
+
+01:01:23.320 --> 01:01:28.280
+and say, okay, navigate to the customer object
+
+01:01:28.430 --> 01:01:29.540
+and then inside the customer object,
+
+01:01:29.630 --> 01:01:32.300
+go to this object and absolutely.
+
+01:01:33.140 --> 01:01:34.040
+Yeah, super cool.
+
+01:01:34.120 --> 01:01:38.720
+So, all right, well, I think there's probably more to dive into, honestly.
+
+01:01:41.670 --> 01:01:42.460
+But we've covered it.
+
+01:01:42.650 --> 01:01:43.620
+I think we've covered it pretty well.
+
+01:01:45.020 --> 01:01:48.720
+I think Duck TV is super exciting for the possibilities that it opens up.
+
+01:01:49.340 --> 01:01:51.980
+You know, there might be a ton of people out there who haven't heard of it
+
+01:01:52.080 --> 01:01:54.680
+or really just heard of it in passing and didn't really know.
+
+01:01:56.599 --> 01:01:59.260
+This in-process stuff that you can do,
+
+01:01:59.750 --> 01:02:02.240
+it really makes it quite accessible, quite easy,
+
+01:02:03.220 --> 01:02:04.540
+lowers the bar to getting started, right?
+
+01:02:04.660 --> 01:02:06.520
+You don't have to understand connections, security,
+
+01:02:07.080 --> 01:02:09.800
+servers, daemons, all of that.
+
+01:02:09.980 --> 01:02:12.900
+So I'm excited to see where this goes.
+
+01:02:13.040 --> 01:02:14.460
+It's already got a ton of traction.
+
+01:02:15.100 --> 01:02:18.060
+So final call to action, maybe tell people who
+
+01:02:18.380 --> 01:02:21.080
+are in that group, what do they do?
+
+01:02:21.740 --> 01:02:22.380
+You bet.
+
+01:02:22.380 --> 01:02:24.900
+I think, obviously, pip install.dkdb, give it a try.
+
+01:02:25.660 --> 01:02:26.940
+It's anywhere you can use it.
+
+01:02:27.440 --> 01:02:29.960
+MIT license, it really can fit anywhere
+
+01:02:30.060 --> 01:02:30.700
+that you're running Python.
+
+01:02:32.220 --> 01:02:33.960
+A whole lot of other fun things you could do on top of it.
+
+01:02:34.100 --> 01:02:35.680
+There's a new extension ecosystem.
+
+01:02:36.160 --> 01:02:38.780
+So if it doesn't exist in DuckDB, but you'd like it to,
+
+01:02:39.220 --> 01:02:42.320
+you can actually build an extension for DuckDB in a variety of languages.
+
+01:02:43.780 --> 01:02:46.460
+We can all together make DuckDB into whatever we'd like.
+
+01:02:47.320 --> 01:02:47.460
+Awesome.
+
+01:02:47.740 --> 01:02:48.100
+Pretty neat.
+
+01:02:48.600 --> 01:02:50.740
+Yeah. Well, good work.
+
+01:02:50.840 --> 01:02:56.540
+I love to see the open source side and then maybe
+
+01:02:56.680 --> 01:03:00.360
+a strong company that's built around it in a way that
+
+01:03:00.780 --> 01:03:02.840
+doesn't really undermine the open source value.
+
+01:03:03.300 --> 01:03:05.680
+So Mother Duck, DuckTV,
+
+01:03:05.950 --> 01:03:07.460
+it looks like a really good relationship there.
+
+01:03:07.580 --> 01:03:09.000
+So that's nice.
+
+01:03:09.460 --> 01:03:10.940
+Yeah, we even have two companies.
+
+01:03:11.050 --> 01:03:12.440
+We got DuckTV Labs and Mother Duck.
+
+01:03:12.720 --> 01:03:14.180
+So yeah, that's right.
+
+01:03:14.240 --> 01:03:15.660
+Got the foundational side as well.
+
+01:03:15.980 --> 01:03:17.520
+Yeah. Awesome. Well, Alex,
+
+01:03:17.690 --> 01:03:20.180
+thanks for being on the show and yeah.
+
+01:03:20.950 --> 01:03:22.300
+Thanks for sharing all this stuff with us. It's great.
+
+01:03:23.160 --> 01:03:24.420
+Thanks for having me. Cheers, folks.
+
+01:03:24.870 --> 01:03:25.260
+Happy analyzing.
+
+01:03:25.800 --> 01:03:26.700
+Yep. Bye.
+
