@@ -2,6 +2,19 @@
 
 This is the living tracker for Talk Python episode metadata and transcript maintenance. Update it after each episode is processed or a replacement transcript is added.
 
+## Episodes 440–449 work log
+
+- [x] 440 — title updated; description updated; existing manual English subtitles preserved; verified
+- [x] 441 — title updated; description updated; existing manual English subtitles preserved; verified
+- [x] 442 — title updated; description updated; no managed transcript; existing captions unchanged; verified
+- [ ] 443 — blocked: authoritative description contains forbidden `<` and `>` characters; no YouTube writes
+- [ ] 444 — replacement needed: `444-young-success-blueprint.vtt` cue 1125 has a non-positive duration
+- [ ] 445 — no mapped YouTube video
+- [ ] 446 — no mapped YouTube video
+- [x] 447 — title updated; description updated; existing manual English subtitles preserved; verified
+- [x] 448 — title updated; description updated; existing manual English subtitles preserved; verified
+- [x] 449 — title unchanged; description unchanged; existing manual English subtitles preserved; verified
+
 ## Episodes 450–459 work log
 
 - [x] 450 — title updated; description updated; existing manual English subtitles preserved; verified
@@ -41,6 +54,14 @@ This is the living tracker for Talk Python episode metadata and transcript maint
 
 ## Completed and verified
 
+- [x] Episodes 440–449 processed where valid
+  - Completed and verified: 440–442, 447–449
+  - Titles and descriptions updated: 440–442, 447–448
+  - Already canonical with no metadata write: 449
+  - Existing manual English subtitles preserved: 440–441, 447–449
+  - Metadata-only because no managed transcript exists: 442
+  - Blocked or unmapped: 443–446
+
 - [x] Episodes 450–459 fully processed
   - Titles updated: 450–459
   - Descriptions updated: 450–459
@@ -75,10 +96,15 @@ This is the living tracker for Talk Python episode metadata and transcript maint
 - [x] No subtitle uploads were required
 - [x] No existing YouTube chapter blocks needed preservation
 
+## Missing managed transcripts
+
+- [ ] Episode 442 needs a raw-recording YouTube VTT; metadata is complete and existing captions were left unchanged
+
 ## Replacement transcripts needed
 
 Each file below has a cue with a non-positive duration:
 
+- [ ] `444-young-success-blueprint.vtt` — cue 1125
 - [ ] `473-adhd-devs.vtt` — cue 809
 - [ ] `481-python-opinions-and-zeitgeist-with-hynek.vtt` — cue 2806
 - [ ] `482-pre-commit-hooks-for-python-devs.vtt` — cue 665
@@ -108,16 +134,20 @@ Each file below has a cue with a non-positive duration:
 
 ## Canonical metadata help needed
 
+- [ ] Episode 443 authoritative description contains literal `<` and `>` characters rejected by YouTube
 - [ ] Episode 472 authoritative description contains a literal `<` character rejected by YouTube
 
 ## YouTube mapping help needed
 
+- [ ] Episode 445 has no mapped YouTube video
+- [ ] Episode 446 has no mapped YouTube video
 - [ ] Episode 490 has no mapped YouTube video
 - [ ] Episode 497 has no mapped YouTube video
 
 ## Next steps
 
 - [ ] Replace the malformed transcripts and resolve episodes 495/496
-- [ ] Remove or rewrite the literal `<` character in episode 472’s authoritative podcast description
-- [ ] Confirm or add YouTube mappings for episodes 490/497
+- [ ] Create a managed raw-recording VTT for episode 442
+- [ ] Remove or rewrite forbidden angle brackets in episodes 443 and 472 authoritative descriptions
+- [ ] Confirm or add YouTube mappings for episodes 445, 446, 490, and 497
 - [ ] Rerun blocked episodes to update metadata and verify subtitle state
